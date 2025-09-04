@@ -1,0 +1,37 @@
+{%- set device_ids = [
+  'e8be57f3a6f4b730e455615f6ea33e9e',
+  '8db4e4f48141048204d070c44a14a811',
+  '0e0d2aa5f95b6dfd783540fb0c104ffb',
+  'a51ac9d83391d6c716cd8f8b2147621e',
+  'cfb735c3bea45ae6815f0a0f75f37e39',
+  '3308ac670ef180cb5a015d1d5d529ed6',
+  '9bb536694bc9557460bfe729a7010fd1',
+  'd1c278f3ed5d08a523a58f3ee9b2a6c5',
+  '3f5034f4acbf4f2ac4108b8c27991a93',
+  'e16a923fadc8c958f403929467f392c9',
+  '259fe073863ce8fb7c786bdc71adcba2',
+  '087ae8238d4bc1228a0778ae73c10cd5'
+] -%}
+
+{% for device_id in device_ids %}
+🔹 Device ID: {{ device_id }}
+Name: {{ device_attr(device_id, 'name_by_user') or device_attr(device_id, 'name') }}
+Model: {{ device_attr(device_id, 'model') }}
+Integration: {{ device_attr(device_id, 'via_device_id') or 'direct' }}
+
+Entities:
+{%- set entities = device_entities(device_id) %}
+{%- for eid in entities %}
+  - {{ eid }}
+    - state: {{ states(eid) }}
+    - class: {{ state_attr(eid, 'device_class') or 'n/a' }}
+    - unit_of_measurement: {{ state_attr(eid, 'unit_of_measurement') or 'n/a' }}
+    - platform: {{ device_attr(target_device_id, 'model') or 'unknown' }}
+    - integration: {{ device_attr(target_device_id, 'via_device_id') or 'direct' }}
+    - device_class: {{ state_attr(eid, 'device_class') or 'n/a' }}
+    - area: {{ area_name(eid) or 'n/a' }}
+    - area_id: {{ area_id(eid) }}
+    - area_name: {{ area_name(eid) }}
+{%- endfor %}
+---
+{% endfor %}

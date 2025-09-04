@@ -1,0 +1,2001 @@
+meta_index:
+- path: vault_legacy/legacy/README_Phanes_v3.0.md
+  rationale:
+  - Text or YAML with doctrinal governance indicators
+  - Contains language related to validation or compliance
+  - Scaffold or structural language detected
+  - Descriptors indicating disuse or deprecated status
+  - Legacy indicators suitable for archival
+  tags:
+  - doctrine
+  - regulatory
+  - scaffold
+  - orphaned
+  - archivable
+- path: vault_legacy/legacy/template_engine_complex.yaml
+  rationale:
+  - Scaffold or structural language detected
+  tags:
+  - scaffold
+- path: vault_legacy/legacy/gen_light_availability_rendered_20250427_063128.yaml
+  rationale:
+  - Scaffold or structural language detected
+  tags:
+  - scaffold
+- path: vault_legacy/legacy/deprecations_2025-04-26l.yaml
+  rationale:
+  - YAML with schema structure patterns
+  - Scaffold or structural language detected
+  tags:
+  - schema_fragment
+  - scaffold
+- path: vault_legacy/legacy/README_phanes_v4.0.md
+  rationale:
+  - Text or YAML with doctrinal governance indicators
+  - Contains language related to validation or compliance
+  - Scaffold or structural language detected
+  - Legacy indicators suitable for archival
+  tags:
+  - doctrine
+  - regulatory
+  - scaffold
+  - archivable
+- path: vault_legacy/legacy/DESIGN_PATTERNS-deprecated_2025-04-30.md
+  rationale:
+  - Text or YAML with doctrinal governance indicators
+  - Contains language related to validation or compliance
+  - Scaffold or structural language detected
+  - Descriptors indicating disuse or deprecated status
+  - Legacy indicators suitable for archival
+  tags:
+  - doctrine
+  - regulatory
+  - scaffold
+  - orphaned
+  - archivable
+- path: vault_legacy/legacy/gen_light_availability_rendered_20250427_061513.yaml
+  rationale:
+  - Scaffold or structural language detected
+  tags:
+  - scaffold
+- path: vault_legacy/legacy/ERROR_PATTERNS-deprecated_2025-04-30.md
+  rationale:
+  - Text or YAML with doctrinal governance indicators
+  - Contains language related to validation or compliance
+  - Scaffold or structural language detected
+  - Descriptors indicating disuse or deprecated status
+  - Legacy indicators suitable for archival
+  tags:
+  - doctrine
+  - regulatory
+  - scaffold
+  - orphaned
+  - archivable
+- path: vault_legacy/legacy/README_hephaestus_roomsync.md
+  rationale:
+  - Text or YAML with doctrinal governance indicators
+  - Scaffold or structural language detected
+  tags:
+  - doctrine
+  - scaffold
+- path: vault_legacy/legacy/gen_light_availability_rendered_20250427_061249.yaml
+  rationale:
+  - Scaffold or structural language detected
+  tags:
+  - scaffold
+- path: vault_legacy/legacy/phanes4_technical_manual.md
+  rationale:
+  - Contains language related to validation or compliance
+  - Scaffold or structural language detected
+  tags:
+  - regulatory
+  - scaffold
+- path: vault_legacy/legacy/DESIGN_PATTERNS_deprecated.yaml
+  rationale:
+  - Text or YAML with doctrinal governance indicators
+  - Contains language related to validation or compliance
+  - Scaffold or structural language detected
+  tags:
+  - doctrine
+  - regulatory
+  - scaffold
+- path: vault_legacy/legacy/gen_light_availability_rendered_20250427_063849.yaml
+  rationale:
+  - Scaffold or structural language detected
+  tags:
+  - scaffold
+- path: vault_legacy/legacy/entity_registry_deprecated_2025-04-27.yaml
+  rationale:
+  - Scaffold or structural language detected
+  tags:
+  - scaffold
+- path: vault_legacy/legacy/gen_light_availability_rendered_20250427_061618.yaml
+  rationale:
+  - Scaffold or structural language detected
+  tags:
+  - scaffold
+- path: vault_legacy/legacy/deprecated.yaml
+  rationale:
+  - Scaffold or structural language detected
+  tags:
+  - scaffold
+- path: vault_legacy/legacy/gen_light_availability_rendered_20250427_060802.yaml
+  rationale:
+  - Scaffold or structural language detected
+  tags:
+  - scaffold
+- path: vault_legacy/legacy/gen_light_availability_rendered_20250427_060316.yaml
+  rationale:
+  - Scaffold or structural language detected
+  tags:
+  - scaffold
+- path: vault_legacy/legacy/tree_hestia_recursion_orobouros.md
+  rationale:
+  - Contains language related to validation or compliance
+  - Scaffold or structural language detected
+  - Legacy indicators suitable for archival
+  tags:
+  - regulatory
+  - scaffold
+  - archivable
+- path: vault_legacy/legacy/ARCHITECTURE_DOCTRINE_deprecated.yaml
+  rationale:
+  - Text or YAML with doctrinal governance indicators
+  - YAML with schema structure patterns
+  - Contains language related to validation or compliance
+  - Scaffold or structural language detected
+  tags:
+  - doctrine
+  - schema_fragment
+  - regulatory
+  - scaffold
+- path: vault_legacy/legacy/canonical_registry.yaml
+  rationale:
+  - YAML with schema structure patterns
+  tags:
+  - schema_fragment
+- path: vault_legacy/legacy/gen_light_availability_rendered_20250427_062834.yaml
+  rationale:
+  - Scaffold or structural language detected
+  tags:
+  - scaffold
+- path: vault_legacy/legacy/deprecated_2025-04-30.md
+  rationale:
+  - Text or YAML with doctrinal governance indicators
+  - Contains language related to validation or compliance
+  - Scaffold or structural language detected
+  - Descriptors indicating disuse or deprecated status
+  - Legacy indicators suitable for archival
+  tags:
+  - doctrine
+  - regulatory
+  - scaffold
+  - orphaned
+  - archivable
+- path: vault_legacy/legacy/ERROR_PATTERNS_deprecated.md
+  rationale:
+  - Text or YAML with doctrinal governance indicators
+  - Contains language related to validation or compliance
+  - Scaffold or structural language detected
+  - Descriptors indicating disuse or deprecated status
+  - Legacy indicators suitable for archival
+  tags:
+  - doctrine
+  - regulatory
+  - scaffold
+  - orphaned
+  - archivable
+- path: vault_legacy/legacy/gen_light_availability_rendered_20250427_061003.yaml
+  rationale:
+  - Scaffold or structural language detected
+  tags:
+  - scaffold
+- path: vault_legacy/legacy/moved_to_ui-omega_registry_file_sensor.yaml
+  rationale:
+  - YAML with schema structure patterns
+  - Scaffold or structural language detected
+  tags:
+  - schema_fragment
+  - scaffold
+- path: vault_legacy/legacy/phanes_implementation_briefing.md
+  rationale:
+  - Text or YAML with doctrinal governance indicators
+  - Contains language related to validation or compliance
+  - Scaffold or structural language detected
+  - Descriptors indicating disuse or deprecated status
+  - Legacy indicators suitable for archival
+  tags:
+  - doctrine
+  - regulatory
+  - scaffold
+  - orphaned
+  - archivable
+- path: vault_legacy/legacy/gen_light_availability_rendered_20250427_064001.yaml
+  rationale:
+  - Scaffold or structural language detected
+  tags:
+  - scaffold
+- path: vault_legacy/legacy/deprecated_2025-04-31.md
+  rationale:
+  - Text or YAML with doctrinal governance indicators
+  - Contains language related to validation or compliance
+  - Legacy indicators suitable for archival
+  tags:
+  - doctrine
+  - regulatory
+  - archivable
+- path: vault_legacy/legacy/light_abstraction_deprecated_2025-04-27.yaml
+  rationale:
+  - YAML with schema structure patterns
+  - Scaffold or structural language detected
+  tags:
+  - schema_fragment
+  - scaffold
+- path: vault_legacy/legacy/back-up-sensors-beta-eta-migration_2025-04-36/beta/presence_layer.yaml
+  rationale:
+  - Scaffold or structural language detected
+  tags:
+  - scaffold
+- path: vault_legacy/legacy/back-up-sensors-beta-eta-migration_2025-04-36/beta/abstraction_templates.yaml
+  rationale:
+  - YAML with schema structure patterns
+  - Contains language related to validation or compliance
+  - Scaffold or structural language detected
+  tags:
+  - schema_fragment
+  - regulatory
+  - scaffold
+- path: vault_legacy/legacy/back-up-sensors-beta-eta-migration_2025-04-36/beta/lighting/lights_ensuite.yaml
+  rationale:
+  - YAML with schema structure patterns
+  tags:
+  - schema_fragment
+- path: vault_legacy/legacy/back-up-sensors-beta-eta-migration_2025-04-36/beta/lighting/lights_hallway.yaml
+  rationale:
+  - YAML with schema structure patterns
+  tags:
+  - schema_fragment
+- path: vault_legacy/legacy/back-up-sensors-beta-eta-migration_2025-04-36/beta/lighting/lights_living_room.yaml
+  rationale:
+  - YAML with schema structure patterns
+  tags:
+  - schema_fragment
+- path: vault_legacy/legacy/back-up-sensors-beta-eta-migration_2025-04-36/beta/lighting/lights_bedroom.yaml
+  rationale:
+  - YAML with schema structure patterns
+  tags:
+  - schema_fragment
+- path: vault_legacy/legacy/back-up-sensors-beta-eta-migration_2025-04-36/beta/lighting/lights_kitchen.yaml
+  rationale:
+  - YAML with schema structure patterns
+  tags:
+  - schema_fragment
+- path: vault_legacy/legacy/back-up-sensors-beta-eta-migration_2025-04-36/beta/lighting/lights_laundry.yaml
+  rationale:
+  - YAML with schema structure patterns
+  tags:
+  - schema_fragment
+- path: vault_legacy/legacy/back-up-sensors-beta-eta-migration_2025-04-36/eta/tv_integration.yaml
+  rationale:
+  - YAML with schema structure patterns
+  tags:
+  - schema_fragment
+- path: vault_legacy/legacy/back-up-sensors-beta-eta-migration_2025-04-36/eta/room_merged_sensors.yaml
+  rationale:
+  - Scaffold or structural language detected
+  tags:
+  - scaffold
+- path: vault_legacy/legacy/sensors-deprecated-2025.04.30/beta/system_problems.yaml
+  rationale:
+  - Scaffold or structural language detected
+  tags:
+  - scaffold
+- path: vault_legacy/legacy/sensors-deprecated-2025.04.30/beta/system/core.yaml
+  rationale:
+  - YAML with schema structure patterns
+  - Contains language related to validation or compliance
+  - Scaffold or structural language detected
+  tags:
+  - schema_fragment
+  - regulatory
+  - scaffold
+- path: vault_legacy/legacy/sensors-deprecated-2025.04.30/beta/presence/occupancy.yaml
+  rationale:
+  - YAML with schema structure patterns
+  - Scaffold or structural language detected
+  tags:
+  - schema_fragment
+  - scaffold
+- path: vault_legacy/legacy/sensors-deprecated-2025.04.30/beta/presence/motion.yaml
+  rationale:
+  - YAML with schema structure patterns
+  - Scaffold or structural language detected
+  tags:
+  - schema_fragment
+  - scaffold
+- path: vault_legacy/legacy/sensors-deprecated-2025.04.30/beta/climate/humidity.yaml
+  rationale:
+  - YAML with schema structure patterns
+  - Scaffold or structural language detected
+  tags:
+  - schema_fragment
+  - scaffold
+- path: vault_legacy/legacy/sensors-deprecated-2025.04.30/beta/climate/temperature.yaml
+  rationale:
+  - YAML with schema structure patterns
+  - Scaffold or structural language detected
+  tags:
+  - schema_fragment
+  - scaffold
+- path: vault_legacy/legacy/sensors-deprecated-2025.04.30/beta/lights/laundry.yaml
+  rationale:
+  - YAML with schema structure patterns
+  - Scaffold or structural language detected
+  tags:
+  - schema_fragment
+  - scaffold
+- path: vault_legacy/legacy/sensors-deprecated-2025.04.30/beta/lights/kitchen.yaml
+  rationale:
+  - YAML with schema structure patterns
+  - Scaffold or structural language detected
+  tags:
+  - schema_fragment
+  - scaffold
+- path: vault_legacy/legacy/sensors-deprecated-2025.04.30/beta/lights/bedroom.yaml
+  rationale:
+  - YAML with schema structure patterns
+  - Scaffold or structural language detected
+  tags:
+  - schema_fragment
+  - scaffold
+- path: vault_legacy/legacy/sensors-deprecated-2025.04.30/beta/lights/living_room.yaml
+  rationale:
+  - YAML with schema structure patterns
+  - Scaffold or structural language detected
+  tags:
+  - schema_fragment
+  - scaffold
+- path: vault_legacy/legacy/sensors-deprecated-2025.04.30/beta/lights/hallway.yaml
+  rationale:
+  - YAML with schema structure patterns
+  - Scaffold or structural language detected
+  tags:
+  - schema_fragment
+  - scaffold
+- path: vault_legacy/legacy/sensors-deprecated-2025.04.30/beta/lights/ensuite.yaml
+  rationale:
+  - YAML with schema structure patterns
+  - Scaffold or structural language detected
+  tags:
+  - schema_fragment
+  - scaffold
+- path: vault_legacy/legacy/sensors-deprecated-2025.04.30/delta/subsystem_evals.yaml
+  rationale:
+  - YAML with schema structure patterns
+  tags:
+  - schema_fragment
+- path: vault_legacy/legacy/sensors-deprecated-2025.04.30/delta/hermes_metrics.yaml
+  rationale:
+  - Scaffold or structural language detected
+  tags:
+  - scaffold
+- path: vault_legacy/legacy/sensors-deprecated-2025.04.30/delta/environmental_conditions.yaml
+  rationale:
+  - Scaffold or structural language detected
+  tags:
+  - scaffold
+- path: vault_legacy/legacy/sensors-deprecated-2025.04.30/gamma/presence_confidence.yaml
+  rationale:
+  - YAML with schema structure patterns
+  - Scaffold or structural language detected
+  tags:
+  - schema_fragment
+  - scaffold
+- path: vault_legacy/legacy/sensors-deprecated-2025.04.30/gamma/aether_binary_trend_flags.yaml
+  rationale:
+  - Scaffold or structural language detected
+  tags:
+  - scaffold
+- path: vault_legacy/legacy/sensors-deprecated-2025.04.30/gamma/occupancy_evaluator.yaml
+  rationale:
+  - Scaffold or structural language detected
+  tags:
+  - scaffold
+- path: vault_legacy/legacy/sensors-deprecated-2025.04.30/gamma/effective_temperature.yaml
+  rationale:
+  - Scaffold or structural language detected
+  tags:
+  - scaffold
+- path: vault_legacy/legacy/sensors-deprecated-2025.04.30/gamma/logic_sensors.yaml
+  rationale:
+  - YAML with schema structure patterns
+  - Scaffold or structural language detected
+  tags:
+  - schema_fragment
+  - scaffold
+- path: vault_legacy/legacy/sensors-deprecated-2025.04.30/gamma/proximity.yaml
+  rationale:
+  - YAML with schema structure patterns
+  tags:
+  - schema_fragment
+- path: vault_legacy/legacy/sensors-deprecated-2025.04.30/zeta/home_presence.yaml
+  rationale:
+  - YAML with schema structure patterns
+  - Scaffold or structural language detected
+  tags:
+  - schema_fragment
+  - scaffold
+- path: vault_legacy/legacy/sensors-deprecated-2025.04.30/zeta/room_presence.yaml
+  rationale:
+  - Scaffold or structural language detected
+  tags:
+  - scaffold
+- path: vault_legacy/legacy/sensors-deprecated-2025.04.30/mu/metadata_registry.yaml
+  rationale:
+  - Text or YAML with doctrinal governance indicators
+  - YAML with schema structure patterns
+  - Scaffold or structural language detected
+  tags:
+  - doctrine
+  - schema_fragment
+  - scaffold
+- path: vault_legacy/legacy/sensors-deprecated-2025.04.30/mu/light_entities_metadata.yaml
+  rationale:
+  - YAML with schema structure patterns
+  tags:
+  - schema_fragment
+- path: vault_legacy/legacy/sensors-deprecated-2025.04.30/mu/subsystem_config/soteria_config.yaml
+  rationale:
+  - YAML with schema structure patterns
+  tags:
+  - schema_fragment
+- path: vault_legacy/legacy/sensors-deprecated-2025.04.30/mu/subsystem_config/hermes_config.yaml
+  rationale:
+  - YAML with schema structure patterns
+  tags:
+  - schema_fragment
+- path: vault_legacy/legacy/sensors-deprecated-2025.04.30/mu/subsystem_config/theia_config.yaml
+  rationale:
+  - YAML with schema structure patterns
+  tags:
+  - schema_fragment
+- path: vault_legacy/legacy/sensors-deprecated-2025.04.30/mu/subsystem_config/aether_config.yaml
+  rationale:
+  - YAML with schema structure patterns
+  tags:
+  - schema_fragment
+- path: vault_legacy/legacy/sensors-deprecated-2025.04.30/mu/subsystem_config/hephaestus_config.yaml
+  rationale:
+  - YAML with schema structure patterns
+  - Contains language related to validation or compliance
+  - Scaffold or structural language detected
+  tags:
+  - schema_fragment
+  - regulatory
+  - scaffold
+- path: vault_legacy/legacy/sensors-deprecated-2025.04.30/mu/subsystem_config/athena_config.yaml
+  rationale:
+  - YAML with schema structure patterns
+  - Scaffold or structural language detected
+  tags:
+  - schema_fragment
+  - scaffold
+- path: vault_legacy/legacy/sensors-deprecated-2025.04.30/mu/diagnostics/system_diagnostics.yaml
+  rationale:
+  - YAML with schema structure patterns
+  - Scaffold or structural language detected
+  tags:
+  - schema_fragment
+  - scaffold
+- path: vault_legacy/legacy/sensors-deprecated-2025.04.30/mu/validators/signal_plane_validation.yaml
+  rationale:
+  - YAML with schema structure patterns
+  - Contains language related to validation or compliance
+  tags:
+  - schema_fragment
+  - regulatory
+- path: vault_legacy/legacy/sensors-deprecated-2025.04.30/mu/validators/abstraction_validation.yaml
+  rationale:
+  - YAML with schema structure patterns
+  - Contains language related to validation or compliance
+  - Scaffold or structural language detected
+  tags:
+  - schema_fragment
+  - regulatory
+  - scaffold
+- path: vault_legacy/legacy/sensors-deprecated-2025.04.30/mu/validators/registry_validation.yaml
+  rationale:
+  - YAML with schema structure patterns
+  - Contains language related to validation or compliance
+  tags:
+  - schema_fragment
+  - regulatory
+- path: vault_legacy/legacy/sensors-deprecated-2025.04.30/mu/validators/tier_validation.yaml
+  rationale:
+  - YAML with schema structure patterns
+  - Contains language related to validation or compliance
+  tags:
+  - schema_fragment
+  - regulatory
+- path: vault_legacy/legacy/sensors-deprecated-2025.04.30/epsilon/validation_sensors.yaml
+  rationale:
+  - YAML with schema structure patterns
+  tags:
+  - schema_fragment
+- path: vault_legacy/legacy/sensors-deprecated-2025.04.30/other/command_line_sensor.yaml
+  rationale:
+  - Scaffold or structural language detected
+  tags:
+  - scaffold
+- path: vault_legacy/legacy/sensors-deprecated-2025.04.30/eta/home/aggregated_sensors.yaml
+  rationale:
+  - YAML with schema structure patterns
+  - Scaffold or structural language detected
+  tags:
+  - schema_fragment
+  - scaffold
+- path: vault_legacy/legacy/sensors-deprecated-2025.04.30/eta/room/merged_sensors.yaml
+  rationale:
+  - YAML with schema structure patterns
+  - Scaffold or structural language detected
+  tags:
+  - schema_fragment
+  - scaffold
+- path: vault_legacy/legacy/sensors-deprecated-2025.04.30/eta/multimedia/tv_integration.yaml
+  rationale:
+  - YAML with schema structure patterns
+  - Scaffold or structural language detected
+  tags:
+  - schema_fragment
+  - scaffold
+- path: vault_legacy/legacy/sensors-deprecated-2025.04.30/hestia_templates_refactory/subsytem_package_integrity_metadata.yaml
+  rationale:
+  - Scaffold or structural language detected
+  tags:
+  - scaffold
+- path: vault_legacy/legacy/sensors-deprecated-2025.04.30/hestia_templates_refactory/hephaestus_soteria_config_templates.yaml
+  rationale:
+  - YAML with schema structure patterns
+  - Contains language related to validation or compliance
+  - Scaffold or structural language detected
+  tags:
+  - schema_fragment
+  - regulatory
+  - scaffold
+- path: vault_legacy/legacy/sensors-deprecated-2025.04.30/hestia_templates_refactory/occupancy_evaluator.yaml
+  rationale:
+  - Scaffold or structural language detected
+  tags:
+  - scaffold
+- path: vault_legacy/legacy/sensors-deprecated-2025.04.30/hestia_templates_refactory/scene_templates.yaml
+  rationale:
+  - YAML with schema structure patterns
+  - Scaffold or structural language detected
+  tags:
+  - schema_fragment
+  - scaffold
+- path: vault_legacy/legacy/sensors-deprecated-2025.04.30/hestia_templates_refactory/subsystem_diagnostics.yaml
+  rationale:
+  - YAML with schema structure patterns
+  - Scaffold or structural language detected
+  tags:
+  - schema_fragment
+  - scaffold
+- path: vault_legacy/legacy/sensors-deprecated-2025.04.30/hestia_templates_refactory/monitoring_templates.yaml
+  rationale:
+  - Scaffold or structural language detected
+  tags:
+  - scaffold
+- path: vault_legacy/legacy/sensors-deprecated-2025.04.30/hestia_templates_refactory/light_abstraction.yaml
+  rationale:
+  - YAML with schema structure patterns
+  - Scaffold or structural language detected
+  tags:
+  - schema_fragment
+  - scaffold
+- path: vault_legacy/legacy/sensors-deprecated-2025.04.30/hestia_templates_refactory/helper_validation.yaml
+  rationale:
+  - YAML with schema structure patterns
+  - Scaffold or structural language detected
+  tags:
+  - schema_fragment
+  - scaffold
+- path: vault_legacy/legacy/phanes-obsolete-files-2025-09-10/phanes_v3.0 (versioned
+    down from 4.0)/release_notes.md
+  rationale:
+  - Contains language related to validation or compliance
+  - Scaffold or structural language detected
+  - Descriptors indicating disuse or deprecated status
+  tags:
+  - regulatory
+  - scaffold
+  - orphaned
+- path: vault_legacy/legacy/phanes-obsolete-files-2025-09-10/phanes_v2.0  (versioned
+    down from 3.0)/README_Phanes_v3.0_FINAL.md
+  rationale:
+  - Text or YAML with doctrinal governance indicators
+  - Contains language related to validation or compliance
+  - Scaffold or structural language detected
+  - Descriptors indicating disuse or deprecated status
+  - Legacy indicators suitable for archival
+  tags:
+  - doctrine
+  - regulatory
+  - scaffold
+  - orphaned
+  - archivable
+- path: vault_legacy/legacy/phanes-obsolete-files-2025-09-10/phanes_v2.0  (versioned
+    down from 3.0)/meta_phanes.yaml
+  rationale:
+  - Scaffold or structural language detected
+  tags:
+  - scaffold
+- path: vault_legacy/legacy/phanes-obsolete-files-2025-09-10/phanes_v1.0  (versioned
+    down from 2.0)/README_phanes_v2.0.md
+  rationale:
+  - Text or YAML with doctrinal governance indicators
+  - Contains language related to validation or compliance
+  - Scaffold or structural language detected
+  tags:
+  - doctrine
+  - regulatory
+  - scaffold
+- path: vault_legacy/legacy/processed_PRs/FIX_20250427_BINARY_SENSOR_TEMPLATE_SCHEMA_ADDITIONAL_DATA.md
+  rationale:
+  - Text or YAML with doctrinal governance indicators
+  - Contains language related to validation or compliance
+  - Scaffold or structural language detected
+  tags:
+  - doctrine
+  - regulatory
+  - scaffold
+- path: vault_legacy/legacy/processed_PRs/PR_Template_Block_Syntax.md
+  rationale:
+  - Contains language related to validation or compliance
+  - Scaffold or structural language detected
+  - Legacy indicators suitable for archival
+  tags:
+  - regulatory
+  - scaffold
+  - archivable
+- path: vault_legacy/legacy/processed_PRs/FIX_20250427_BINARY_SENSOR_TEMPLATE_SCHEMA.md
+  rationale:
+  - Text or YAML with doctrinal governance indicators
+  - Contains language related to validation or compliance
+  - Scaffold or structural language detected
+  - Legacy indicators suitable for archival
+  tags:
+  - doctrine
+  - regulatory
+  - scaffold
+  - archivable
+- path: vault_legacy/legacy/processed_PRs/META-GOVERNANCE_update.md
+  rationale:
+  - Text or YAML with doctrinal governance indicators
+  - Contains language related to validation or compliance
+  - Scaffold or structural language detected
+  - Legacy indicators suitable for archival
+  tags:
+  - doctrine
+  - regulatory
+  - scaffold
+  - archivable
+- path: vault_legacy/legacy/processed_PRs/PR_Gamma_Tier_YAML_Standards_Macros_Final.md
+  rationale:
+  - Text or YAML with doctrinal governance indicators
+  - Contains language related to validation or compliance
+  - Scaffold or structural language detected
+  - Legacy indicators suitable for archival
+  tags:
+  - doctrine
+  - regulatory
+  - scaffold
+  - archivable
+- path: vault_legacy/legacy/processed_PRs/2025-04-27-light-availability-jinja-migration.md
+  rationale:
+  - Text or YAML with doctrinal governance indicators
+  - Scaffold or structural language detected
+  tags:
+  - doctrine
+  - scaffold
+- path: vault_legacy/legacy/hephaestus_roomsync_deprecated_22_05_25/README_hephaestus_roomsync.md
+  rationale:
+  - Text or YAML with doctrinal governance indicators
+  - Scaffold or structural language detected
+  tags:
+  - doctrine
+  - scaffold
+- path: vault_legacy/legacy/prometheus_deprecated_22_05_2025/light_availability_template.yaml
+  rationale:
+  - Scaffold or structural language detected
+  tags:
+  - scaffold
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/directory_tree.txt
+  rationale:
+  - Text or YAML with doctrinal governance indicators
+  - Descriptors indicating disuse or deprecated status
+  - Legacy indicators suitable for archival
+  tags:
+  - doctrine
+  - orphaned
+  - archivable
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/reference_index_inventory.yaml
+  rationale:
+  - Text or YAML with doctrinal governance indicators
+  - YAML with schema structure patterns
+  - Scaffold or structural language detected
+  tags:
+  - doctrine
+  - schema_fragment
+  - scaffold
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/source_path.txt
+  rationale:
+  - Text or YAML with doctrinal governance indicators
+  tags:
+  - doctrine
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/snapshot_info.txt
+  rationale:
+  - Legacy indicators suitable for archival
+  tags:
+  - archivable
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/snapshot_logs/snapshot_2025-04-30_00-08-03.log
+  rationale:
+  - Legacy indicators suitable for archival
+  tags:
+  - archivable
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/snapshot_logs/snapshot_log_26042025.log
+  rationale:
+  - Legacy indicators suitable for archival
+  tags:
+  - archivable
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/snapshot_logs/snapshot_2025-04-29_20-02-01.log
+  rationale:
+  - Legacy indicators suitable for archival
+  tags:
+  - archivable
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/snapshot_logs/home-assistant_2025-05-02T09-43-52.846Z.log
+  rationale:
+  - Legacy indicators suitable for archival
+  tags:
+  - archivable
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/snapshot_logs/snapshot_2025-04-29_23-05-05.log
+  rationale:
+  - Legacy indicators suitable for archival
+  tags:
+  - archivable
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/snapshot_logs/snapshot_2025-04-29_21-04-37.log
+  rationale:
+  - Legacy indicators suitable for archival
+  tags:
+  - archivable
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/snapshot_logs/snapshot_2025-04-30_00-30-41.log
+  rationale:
+  - Legacy indicators suitable for archival
+  tags:
+  - archivable
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/snapshot_logs/snapshot_2025-04-30_13-05-04.log
+  rationale:
+  - Legacy indicators suitable for archival
+  tags:
+  - archivable
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/snapshot_logs/snapshot_2025-04-30_00-36-52.log
+  rationale:
+  - Legacy indicators suitable for archival
+  tags:
+  - archivable
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/snapshot_logs/snapshot_2025-04-30_00-21-59.log
+  rationale:
+  - Legacy indicators suitable for archival
+  tags:
+  - archivable
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/02. artifact_updates/hestia_reference_knowledge_index
+    (2).yaml
+  rationale:
+  - Text or YAML with doctrinal governance indicators
+  - YAML with schema structure patterns
+  - Contains language related to validation or compliance
+  - Scaffold or structural language detected
+  tags:
+  - doctrine
+  - schema_fragment
+  - regulatory
+  - scaffold
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/02. artifact_updates/meta_governance_patch_PR_001.md
+  rationale:
+  - Text or YAML with doctrinal governance indicators
+  tags:
+  - doctrine
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/02. artifact_updates/hestia_reference_knowledge_index.yaml
+  rationale:
+  - Text or YAML with doctrinal governance indicators
+  - YAML with schema structure patterns
+  - Contains language related to validation or compliance
+  - Scaffold or structural language detected
+  tags:
+  - doctrine
+  - schema_fragment
+  - regulatory
+  - scaffold
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/02. artifact_updates/PERSONA_REGISTRY_UPDATED.md
+  rationale:
+  - Contains language related to validation or compliance
+  - Legacy indicators suitable for archival
+  tags:
+  - regulatory
+  - archivable
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/02. artifact_updates/##
+    [2025-04-30] Registry Sync Sensor Enh.md
+  rationale:
+  - Contains language related to validation or compliance
+  tags:
+  - regulatory
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/02. artifact_updates/#
+    README_diagnostic_prompt.md
+  rationale:
+  - Text or YAML with doctrinal governance indicators
+  - Contains language related to validation or compliance
+  - Scaffold or structural language detected
+  - Descriptors indicating disuse or deprecated status
+  tags:
+  - doctrine
+  - regulatory
+  - scaffold
+  - orphaned
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/02. artifact_updates/audit_20250502_001.md
+  rationale:
+  - Contains language related to validation or compliance
+  - Legacy indicators suitable for archival
+  tags:
+  - regulatory
+  - archivable
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/02. artifact_updates/hestia_reference_knowledge_index
+    (1).yaml
+  rationale:
+  - Text or YAML with doctrinal governance indicators
+  - YAML with schema structure patterns
+  - Contains language related to validation or compliance
+  - Scaffold or structural language detected
+  tags:
+  - doctrine
+  - schema_fragment
+  - regulatory
+  - scaffold
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/02. artifact_updates/README_Phanes_v3.0_FINAL.md
+  rationale:
+  - Text or YAML with doctrinal governance indicators
+  - Contains language related to validation or compliance
+  - Scaffold or structural language detected
+  - Descriptors indicating disuse or deprecated status
+  - Legacy indicators suitable for archival
+  tags:
+  - doctrine
+  - regulatory
+  - scaffold
+  - orphaned
+  - archivable
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/02. artifact_updates/audit_20250502_002.md
+  rationale:
+  - Contains language related to validation or compliance
+  - Legacy indicators suitable for archival
+  tags:
+  - regulatory
+  - archivable
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/02. artifact_updates/prompt_20250502_008.md
+  rationale:
+  - Contains language related to validation or compliance
+  - Scaffold or structural language detected
+  - Legacy indicators suitable for archival
+  tags:
+  - regulatory
+  - scaffold
+  - archivable
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/02. artifact_updates/PERSONA_REGISTRY_UPDATED
+    copy.md
+  rationale:
+  - Text or YAML with doctrinal governance indicators
+  - Contains language related to validation or compliance
+  tags:
+  - doctrine
+  - regulatory
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/02. artifact_updates/prompt_20250501_hestia_reference_cartography.md
+  rationale:
+  - Scaffold or structural language detected
+  tags:
+  - scaffold
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/02. artifact_updates/##
+    [2025-04-30] Registry Sync Sensor Enh copy.md
+  rationale:
+  - Text or YAML with doctrinal governance indicators
+  - Descriptors indicating disuse or deprecated status
+  - Legacy indicators suitable for archival
+  tags:
+  - doctrine
+  - orphaned
+  - archivable
+- path: "vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/02. artifact_updates/persona_core\uF022\
+    tool_steward.md"
+  rationale:
+  - Contains language related to validation or compliance
+  tags:
+  - regulatory
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/02. artifact_updates/prompt_20250502_002.md
+  rationale:
+  - Text or YAML with doctrinal governance indicators
+  tags:
+  - doctrine
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/02. artifact_updates/meta_governance_patch_schema_release_PR.md.md
+  rationale:
+  - Text or YAML with doctrinal governance indicators
+  - Contains language related to validation or compliance
+  tags:
+  - doctrine
+  - regulatory
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/02. artifact_updates/prompt_20250502_006.md
+  rationale:
+  - Text or YAML with doctrinal governance indicators
+  - Contains language related to validation or compliance
+  - Legacy indicators suitable for archival
+  tags:
+  - doctrine
+  - regulatory
+  - archivable
+- path: "vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/02. artifact_updates/#\
+    \ Task\uF022 Transform the HESTIA Alpha Light.md"
+  rationale:
+  - Contains language related to validation or compliance
+  - Legacy indicators suitable for archival
+  tags:
+  - regulatory
+  - archivable
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/02. artifact_updates/prompt_20250502_007.md
+  rationale:
+  - Text or YAML with doctrinal governance indicators
+  - Contains language related to validation or compliance
+  - Scaffold or structural language detected
+  - Legacy indicators suitable for archival
+  tags:
+  - doctrine
+  - regulatory
+  - scaffold
+  - archivable
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/02. artifact_updates/meta_governance_patch_PR.md
+  rationale:
+  - Text or YAML with doctrinal governance indicators
+  - Contains language related to validation or compliance
+  tags:
+  - doctrine
+  - regulatory
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/02. artifact_updates/prompt_20250502_003.md
+  rationale:
+  - Text or YAML with doctrinal governance indicators
+  tags:
+  - doctrine
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/03. legacy/META_GOVERNANCE-deprecated_2025-04-30.md
+  rationale:
+  - Text or YAML with doctrinal governance indicators
+  - Contains language related to validation or compliance
+  - Scaffold or structural language detected
+  - Descriptors indicating disuse or deprecated status
+  - Legacy indicators suitable for archival
+  tags:
+  - doctrine
+  - regulatory
+  - scaffold
+  - orphaned
+  - archivable
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/03. legacy/META_GOVERNANCE_deprecated.md
+  rationale:
+  - Text or YAML with doctrinal governance indicators
+  - Contains language related to validation or compliance
+  - Legacy indicators suitable for archival
+  tags:
+  - doctrine
+  - regulatory
+  - archivable
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/03. legacy/gen_light_availability_rendered_20250427_063128.yaml
+  rationale:
+  - Scaffold or structural language detected
+  tags:
+  - scaffold
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/03. legacy/deprecations_2025-04-26l.yaml
+  rationale:
+  - YAML with schema structure patterns
+  - Scaffold or structural language detected
+  tags:
+  - schema_fragment
+  - scaffold
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/03. legacy/DESIGN_PATTERNS-deprecated_2025-04-30.md
+  rationale:
+  - Text or YAML with doctrinal governance indicators
+  - Contains language related to validation or compliance
+  - Scaffold or structural language detected
+  - Descriptors indicating disuse or deprecated status
+  - Legacy indicators suitable for archival
+  tags:
+  - doctrine
+  - regulatory
+  - scaffold
+  - orphaned
+  - archivable
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/03. legacy/gen_light_availability_rendered_20250427_061513.yaml
+  rationale:
+  - Scaffold or structural language detected
+  tags:
+  - scaffold
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/03. legacy/ERROR_PATTERNS-deprecated_2025-04-30.md
+  rationale:
+  - Text or YAML with doctrinal governance indicators
+  - Contains language related to validation or compliance
+  - Scaffold or structural language detected
+  - Descriptors indicating disuse or deprecated status
+  - Legacy indicators suitable for archival
+  tags:
+  - doctrine
+  - regulatory
+  - scaffold
+  - orphaned
+  - archivable
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/03. legacy/gen_light_availability_rendered_20250427_061249.yaml
+  rationale:
+  - Scaffold or structural language detected
+  tags:
+  - scaffold
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/03. legacy/DESIGN_PATTERNS_deprecated.yaml
+  rationale:
+  - Text or YAML with doctrinal governance indicators
+  - Contains language related to validation or compliance
+  - Scaffold or structural language detected
+  tags:
+  - doctrine
+  - regulatory
+  - scaffold
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/03. legacy/gen_light_availability_rendered_20250427_063849.yaml
+  rationale:
+  - Scaffold or structural language detected
+  tags:
+  - scaffold
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/03. legacy/entity_registry_deprecated_2025-04-27.yaml
+  rationale:
+  - Scaffold or structural language detected
+  tags:
+  - scaffold
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/03. legacy/gen_light_availability_rendered_20250427_061618.yaml
+  rationale:
+  - Scaffold or structural language detected
+  tags:
+  - scaffold
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/03. legacy/deprecated.yaml
+  rationale:
+  - Scaffold or structural language detected
+  tags:
+  - scaffold
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/03. legacy/gen_light_availability_rendered_20250427_060802.yaml
+  rationale:
+  - Scaffold or structural language detected
+  tags:
+  - scaffold
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/03. legacy/gen_light_availability_rendered_20250427_060316.yaml
+  rationale:
+  - Scaffold or structural language detected
+  tags:
+  - scaffold
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/03. legacy/ARCHITECTURE_DOCTRINE_deprecated.yaml
+  rationale:
+  - Text or YAML with doctrinal governance indicators
+  - YAML with schema structure patterns
+  - Contains language related to validation or compliance
+  - Scaffold or structural language detected
+  tags:
+  - doctrine
+  - schema_fragment
+  - regulatory
+  - scaffold
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/03. legacy/canonical_registry.yaml
+  rationale:
+  - YAML with schema structure patterns
+  tags:
+  - schema_fragment
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/03. legacy/gen_light_availability_rendered_20250427_062834.yaml
+  rationale:
+  - Scaffold or structural language detected
+  tags:
+  - scaffold
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/03. legacy/ERROR_PATTERNS_deprecated.md
+  rationale:
+  - Text or YAML with doctrinal governance indicators
+  - Contains language related to validation or compliance
+  - Scaffold or structural language detected
+  - Descriptors indicating disuse or deprecated status
+  - Legacy indicators suitable for archival
+  tags:
+  - doctrine
+  - regulatory
+  - scaffold
+  - orphaned
+  - archivable
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/03. legacy/gen_light_availability_rendered_20250427_061003.yaml
+  rationale:
+  - Scaffold or structural language detected
+  tags:
+  - scaffold
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/03. legacy/gen_light_availability_rendered_20250427_064001.yaml
+  rationale:
+  - Scaffold or structural language detected
+  tags:
+  - scaffold
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/03. legacy/light_abstraction_deprecated_2025-04-27.yaml
+  rationale:
+  - YAML with schema structure patterns
+  - Scaffold or structural language detected
+  tags:
+  - schema_fragment
+  - scaffold
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/03. legacy/back-up-sensors-beta-eta-migration_2025-04-36/beta/presence_layer.yaml
+  rationale:
+  - Scaffold or structural language detected
+  tags:
+  - scaffold
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/03. legacy/back-up-sensors-beta-eta-migration_2025-04-36/beta/abstraction_templates.yaml
+  rationale:
+  - YAML with schema structure patterns
+  - Contains language related to validation or compliance
+  - Scaffold or structural language detected
+  tags:
+  - schema_fragment
+  - regulatory
+  - scaffold
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/03. legacy/back-up-sensors-beta-eta-migration_2025-04-36/beta/lighting/lights_ensuite.yaml
+  rationale:
+  - YAML with schema structure patterns
+  tags:
+  - schema_fragment
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/03. legacy/back-up-sensors-beta-eta-migration_2025-04-36/beta/lighting/lights_hallway.yaml
+  rationale:
+  - YAML with schema structure patterns
+  tags:
+  - schema_fragment
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/03. legacy/back-up-sensors-beta-eta-migration_2025-04-36/beta/lighting/lights_living_room.yaml
+  rationale:
+  - YAML with schema structure patterns
+  tags:
+  - schema_fragment
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/03. legacy/back-up-sensors-beta-eta-migration_2025-04-36/beta/lighting/lights_bedroom.yaml
+  rationale:
+  - YAML with schema structure patterns
+  tags:
+  - schema_fragment
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/03. legacy/back-up-sensors-beta-eta-migration_2025-04-36/beta/lighting/lights_kitchen.yaml
+  rationale:
+  - YAML with schema structure patterns
+  tags:
+  - schema_fragment
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/03. legacy/back-up-sensors-beta-eta-migration_2025-04-36/beta/lighting/lights_laundry.yaml
+  rationale:
+  - YAML with schema structure patterns
+  tags:
+  - schema_fragment
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/03. legacy/back-up-sensors-beta-eta-migration_2025-04-36/eta/tv_integration.yaml
+  rationale:
+  - YAML with schema structure patterns
+  tags:
+  - schema_fragment
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/03. legacy/back-up-sensors-beta-eta-migration_2025-04-36/eta/room_merged_sensors.yaml
+  rationale:
+  - Scaffold or structural language detected
+  tags:
+  - scaffold
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/03. legacy/sensors-deprecated-2025.04.30/beta/system_problems.yaml
+  rationale:
+  - Scaffold or structural language detected
+  tags:
+  - scaffold
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/03. legacy/sensors-deprecated-2025.04.30/beta/system/core.yaml
+  rationale:
+  - YAML with schema structure patterns
+  - Contains language related to validation or compliance
+  - Scaffold or structural language detected
+  tags:
+  - schema_fragment
+  - regulatory
+  - scaffold
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/03. legacy/sensors-deprecated-2025.04.30/beta/presence/occupancy.yaml
+  rationale:
+  - YAML with schema structure patterns
+  - Scaffold or structural language detected
+  tags:
+  - schema_fragment
+  - scaffold
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/03. legacy/sensors-deprecated-2025.04.30/beta/presence/motion.yaml
+  rationale:
+  - YAML with schema structure patterns
+  - Scaffold or structural language detected
+  tags:
+  - schema_fragment
+  - scaffold
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/03. legacy/sensors-deprecated-2025.04.30/beta/climate/humidity.yaml
+  rationale:
+  - YAML with schema structure patterns
+  - Scaffold or structural language detected
+  tags:
+  - schema_fragment
+  - scaffold
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/03. legacy/sensors-deprecated-2025.04.30/beta/climate/temperature.yaml
+  rationale:
+  - YAML with schema structure patterns
+  - Scaffold or structural language detected
+  tags:
+  - schema_fragment
+  - scaffold
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/03. legacy/sensors-deprecated-2025.04.30/beta/lights/laundry.yaml
+  rationale:
+  - YAML with schema structure patterns
+  - Scaffold or structural language detected
+  tags:
+  - schema_fragment
+  - scaffold
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/03. legacy/sensors-deprecated-2025.04.30/beta/lights/kitchen.yaml
+  rationale:
+  - YAML with schema structure patterns
+  - Scaffold or structural language detected
+  tags:
+  - schema_fragment
+  - scaffold
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/03. legacy/sensors-deprecated-2025.04.30/beta/lights/bedroom.yaml
+  rationale:
+  - YAML with schema structure patterns
+  - Scaffold or structural language detected
+  tags:
+  - schema_fragment
+  - scaffold
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/03. legacy/sensors-deprecated-2025.04.30/beta/lights/living_room.yaml
+  rationale:
+  - YAML with schema structure patterns
+  - Scaffold or structural language detected
+  tags:
+  - schema_fragment
+  - scaffold
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/03. legacy/sensors-deprecated-2025.04.30/beta/lights/hallway.yaml
+  rationale:
+  - YAML with schema structure patterns
+  - Scaffold or structural language detected
+  tags:
+  - schema_fragment
+  - scaffold
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/03. legacy/sensors-deprecated-2025.04.30/beta/lights/ensuite.yaml
+  rationale:
+  - YAML with schema structure patterns
+  - Scaffold or structural language detected
+  tags:
+  - schema_fragment
+  - scaffold
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/03. legacy/sensors-deprecated-2025.04.30/delta/subsystem_evals.yaml
+  rationale:
+  - YAML with schema structure patterns
+  tags:
+  - schema_fragment
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/03. legacy/sensors-deprecated-2025.04.30/delta/hermes_metrics.yaml
+  rationale:
+  - Scaffold or structural language detected
+  tags:
+  - scaffold
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/03. legacy/sensors-deprecated-2025.04.30/delta/environmental_conditions.yaml
+  rationale:
+  - Scaffold or structural language detected
+  tags:
+  - scaffold
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/03. legacy/sensors-deprecated-2025.04.30/gamma/presence_confidence.yaml
+  rationale:
+  - YAML with schema structure patterns
+  - Scaffold or structural language detected
+  tags:
+  - schema_fragment
+  - scaffold
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/03. legacy/sensors-deprecated-2025.04.30/gamma/aether_binary_trend_flags.yaml
+  rationale:
+  - Scaffold or structural language detected
+  tags:
+  - scaffold
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/03. legacy/sensors-deprecated-2025.04.30/gamma/occupancy_evaluator.yaml
+  rationale:
+  - Scaffold or structural language detected
+  tags:
+  - scaffold
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/03. legacy/sensors-deprecated-2025.04.30/gamma/effective_temperature.yaml
+  rationale:
+  - Scaffold or structural language detected
+  tags:
+  - scaffold
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/03. legacy/sensors-deprecated-2025.04.30/gamma/logic_sensors.yaml
+  rationale:
+  - YAML with schema structure patterns
+  - Scaffold or structural language detected
+  tags:
+  - schema_fragment
+  - scaffold
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/03. legacy/sensors-deprecated-2025.04.30/gamma/proximity.yaml
+  rationale:
+  - YAML with schema structure patterns
+  tags:
+  - schema_fragment
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/03. legacy/sensors-deprecated-2025.04.30/zeta/home_presence.yaml
+  rationale:
+  - YAML with schema structure patterns
+  - Scaffold or structural language detected
+  tags:
+  - schema_fragment
+  - scaffold
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/03. legacy/sensors-deprecated-2025.04.30/zeta/room_presence.yaml
+  rationale:
+  - Scaffold or structural language detected
+  tags:
+  - scaffold
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/03. legacy/sensors-deprecated-2025.04.30/mu/metadata_registry.yaml
+  rationale:
+  - Text or YAML with doctrinal governance indicators
+  - YAML with schema structure patterns
+  - Scaffold or structural language detected
+  tags:
+  - doctrine
+  - schema_fragment
+  - scaffold
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/03. legacy/sensors-deprecated-2025.04.30/mu/light_entities_metadata.yaml
+  rationale:
+  - YAML with schema structure patterns
+  tags:
+  - schema_fragment
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/03. legacy/sensors-deprecated-2025.04.30/mu/subsystem_config/soteria_config.yaml
+  rationale:
+  - YAML with schema structure patterns
+  tags:
+  - schema_fragment
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/03. legacy/sensors-deprecated-2025.04.30/mu/subsystem_config/hermes_config.yaml
+  rationale:
+  - YAML with schema structure patterns
+  tags:
+  - schema_fragment
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/03. legacy/sensors-deprecated-2025.04.30/mu/subsystem_config/theia_config.yaml
+  rationale:
+  - YAML with schema structure patterns
+  tags:
+  - schema_fragment
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/03. legacy/sensors-deprecated-2025.04.30/mu/subsystem_config/aether_config.yaml
+  rationale:
+  - YAML with schema structure patterns
+  tags:
+  - schema_fragment
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/03. legacy/sensors-deprecated-2025.04.30/mu/subsystem_config/hephaestus_config.yaml
+  rationale:
+  - YAML with schema structure patterns
+  - Contains language related to validation or compliance
+  - Scaffold or structural language detected
+  tags:
+  - schema_fragment
+  - regulatory
+  - scaffold
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/03. legacy/sensors-deprecated-2025.04.30/mu/subsystem_config/athena_config.yaml
+  rationale:
+  - YAML with schema structure patterns
+  - Scaffold or structural language detected
+  tags:
+  - schema_fragment
+  - scaffold
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/03. legacy/sensors-deprecated-2025.04.30/mu/diagnostics/system_diagnostics.yaml
+  rationale:
+  - YAML with schema structure patterns
+  - Scaffold or structural language detected
+  tags:
+  - schema_fragment
+  - scaffold
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/03. legacy/sensors-deprecated-2025.04.30/mu/validators/signal_plane_validation.yaml
+  rationale:
+  - YAML with schema structure patterns
+  - Contains language related to validation or compliance
+  tags:
+  - schema_fragment
+  - regulatory
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/03. legacy/sensors-deprecated-2025.04.30/mu/validators/abstraction_validation.yaml
+  rationale:
+  - YAML with schema structure patterns
+  - Contains language related to validation or compliance
+  - Scaffold or structural language detected
+  tags:
+  - schema_fragment
+  - regulatory
+  - scaffold
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/03. legacy/sensors-deprecated-2025.04.30/mu/validators/registry_validation.yaml
+  rationale:
+  - YAML with schema structure patterns
+  - Contains language related to validation or compliance
+  tags:
+  - schema_fragment
+  - regulatory
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/03. legacy/sensors-deprecated-2025.04.30/mu/validators/tier_validation.yaml
+  rationale:
+  - YAML with schema structure patterns
+  - Contains language related to validation or compliance
+  tags:
+  - schema_fragment
+  - regulatory
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/03. legacy/sensors-deprecated-2025.04.30/epsilon/validation_sensors.yaml
+  rationale:
+  - YAML with schema structure patterns
+  tags:
+  - schema_fragment
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/03. legacy/sensors-deprecated-2025.04.30/other/command_line_sensor.yaml
+  rationale:
+  - Scaffold or structural language detected
+  tags:
+  - scaffold
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/03. legacy/sensors-deprecated-2025.04.30/eta/home/aggregated_sensors.yaml
+  rationale:
+  - YAML with schema structure patterns
+  - Scaffold or structural language detected
+  tags:
+  - schema_fragment
+  - scaffold
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/03. legacy/sensors-deprecated-2025.04.30/eta/room/merged_sensors.yaml
+  rationale:
+  - YAML with schema structure patterns
+  - Scaffold or structural language detected
+  tags:
+  - schema_fragment
+  - scaffold
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/03. legacy/sensors-deprecated-2025.04.30/eta/multimedia/tv_integration.yaml
+  rationale:
+  - YAML with schema structure patterns
+  - Scaffold or structural language detected
+  tags:
+  - schema_fragment
+  - scaffold
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/03. legacy/sensors-deprecated-2025.04.30/hestia_templates_refactory/subsytem_package_integrity_metadata.yaml
+  rationale:
+  - Scaffold or structural language detected
+  tags:
+  - scaffold
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/03. legacy/sensors-deprecated-2025.04.30/hestia_templates_refactory/hephaestus_soteria_config_templates.yaml
+  rationale:
+  - YAML with schema structure patterns
+  - Contains language related to validation or compliance
+  - Scaffold or structural language detected
+  tags:
+  - schema_fragment
+  - regulatory
+  - scaffold
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/03. legacy/sensors-deprecated-2025.04.30/hestia_templates_refactory/occupancy_evaluator.yaml
+  rationale:
+  - Scaffold or structural language detected
+  tags:
+  - scaffold
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/03. legacy/sensors-deprecated-2025.04.30/hestia_templates_refactory/scene_templates.yaml
+  rationale:
+  - YAML with schema structure patterns
+  - Scaffold or structural language detected
+  tags:
+  - schema_fragment
+  - scaffold
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/03. legacy/sensors-deprecated-2025.04.30/hestia_templates_refactory/subsystem_diagnostics.yaml
+  rationale:
+  - YAML with schema structure patterns
+  - Scaffold or structural language detected
+  tags:
+  - schema_fragment
+  - scaffold
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/03. legacy/sensors-deprecated-2025.04.30/hestia_templates_refactory/monitoring_templates.yaml
+  rationale:
+  - Scaffold or structural language detected
+  tags:
+  - scaffold
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/03. legacy/sensors-deprecated-2025.04.30/hestia_templates_refactory/light_abstraction.yaml
+  rationale:
+  - YAML with schema structure patterns
+  - Scaffold or structural language detected
+  tags:
+  - schema_fragment
+  - scaffold
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/03. legacy/sensors-deprecated-2025.04.30/hestia_templates_refactory/helper_validation.yaml
+  rationale:
+  - YAML with schema structure patterns
+  - Scaffold or structural language detected
+  tags:
+  - schema_fragment
+  - scaffold
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/03. legacy/02.
+    past_artifact_updates/FIX_20250427_BINARY_SENSOR_TEMPLATE_SCHEMA_ADDITIONAL_DATA.md
+  rationale:
+  - Text or YAML with doctrinal governance indicators
+  - Contains language related to validation or compliance
+  - Scaffold or structural language detected
+  tags:
+  - doctrine
+  - regulatory
+  - scaffold
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/03. legacy/02.
+    past_artifact_updates/PR_Template_Block_Syntax.md
+  rationale:
+  - Contains language related to validation or compliance
+  - Scaffold or structural language detected
+  - Legacy indicators suitable for archival
+  tags:
+  - regulatory
+  - scaffold
+  - archivable
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/03. legacy/02.
+    past_artifact_updates/FIX_20250427_BINARY_SENSOR_TEMPLATE_SCHEMA.md
+  rationale:
+  - Text or YAML with doctrinal governance indicators
+  - Contains language related to validation or compliance
+  - Scaffold or structural language detected
+  - Legacy indicators suitable for archival
+  tags:
+  - doctrine
+  - regulatory
+  - scaffold
+  - archivable
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/03. legacy/02.
+    past_artifact_updates/META-GOVERNANCE_update.md
+  rationale:
+  - Text or YAML with doctrinal governance indicators
+  - Contains language related to validation or compliance
+  - Scaffold or structural language detected
+  - Legacy indicators suitable for archival
+  tags:
+  - doctrine
+  - regulatory
+  - scaffold
+  - archivable
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/03. legacy/02.
+    past_artifact_updates/PR_Gamma_Tier_YAML_Standards_Macros_Final.md
+  rationale:
+  - Text or YAML with doctrinal governance indicators
+  - Contains language related to validation or compliance
+  - Scaffold or structural language detected
+  - Legacy indicators suitable for archival
+  tags:
+  - doctrine
+  - regulatory
+  - scaffold
+  - archivable
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/03. legacy/02.
+    past_artifact_updates/2025-04-27-light-availability-jinja-migration.md
+  rationale:
+  - Text or YAML with doctrinal governance indicators
+  - Scaffold or structural language detected
+  tags:
+  - doctrine
+  - scaffold
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/01. additional_info_refs/hestia_v7_canonical_artifact_guide_v2.md
+  rationale:
+  - Text or YAML with doctrinal governance indicators
+  - Contains language related to validation or compliance
+  - Scaffold or structural language detected
+  - Descriptors indicating disuse or deprecated status
+  tags:
+  - doctrine
+  - regulatory
+  - scaffold
+  - orphaned
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/01. additional_info_refs/sensor_typology_map.yaml
+  rationale:
+  - Contains language related to validation or compliance
+  - Scaffold or structural language detected
+  tags:
+  - regulatory
+  - scaffold
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/01. additional_info_refs/hestia_v7_gamma_tier_complete_sensor_mapping.md
+  rationale:
+  - Scaffold or structural language detected
+  tags:
+  - scaffold
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/01. additional_info_refs/hestia_v7_data_flow_guidelines.md
+  rationale:
+  - Text or YAML with doctrinal governance indicators
+  - Contains language related to validation or compliance
+  - Scaffold or structural language detected
+  - Legacy indicators suitable for archival
+  tags:
+  - doctrine
+  - regulatory
+  - scaffold
+  - archivable
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/01. additional_info_refs/hestia_v7_signal_plane_guidelines.md
+  rationale:
+  - Text or YAML with doctrinal governance indicators
+  - Scaffold or structural language detected
+  - Descriptors indicating disuse or deprecated status
+  - Legacy indicators suitable for archival
+  tags:
+  - doctrine
+  - scaffold
+  - orphaned
+  - archivable
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/01. additional_info_refs/motion_sensor_map.yaml
+  rationale:
+  - Scaffold or structural language detected
+  tags:
+  - scaffold
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/01. additional_info_refs/tool_inventory_2025-05-02.md
+  rationale:
+  - Text or YAML with doctrinal governance indicators
+  - Contains language related to validation or compliance
+  - Scaffold or structural language detected
+  tags:
+  - doctrine
+  - regulatory
+  - scaffold
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/01. additional_info_refs/hestia_v7_delta_tier_implementation_plan.md
+  rationale:
+  - Text or YAML with doctrinal governance indicators
+  - Contains language related to validation or compliance
+  - Scaffold or structural language detected
+  tags:
+  - doctrine
+  - regulatory
+  - scaffold
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/01. additional_info_refs/hestia_v7_beta_refactor_guide.md
+  rationale:
+  - Text or YAML with doctrinal governance indicators
+  - Scaffold or structural language detected
+  - Descriptors indicating disuse or deprecated status
+  tags:
+  - doctrine
+  - scaffold
+  - orphaned
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/01. additional_info_refs/template_sensor_index.yaml
+  rationale:
+  - YAML with schema structure patterns
+  - Contains language related to validation or compliance
+  - Scaffold or structural language detected
+  tags:
+  - schema_fragment
+  - regulatory
+  - scaffold
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/01. additional_info_refs/ha_guidelines_configuration_include.md
+  rationale:
+  - Scaffold or structural language detected
+  - Legacy indicators suitable for archival
+  tags:
+  - scaffold
+  - archivable
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/01. additional_info_refs/deprecated_component_index.yaml
+  rationale:
+  - YAML with schema structure patterns
+  - Contains language related to validation or compliance
+  - Scaffold or structural language detected
+  tags:
+  - schema_fragment
+  - regulatory
+  - scaffold
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/01. additional_info_refs/hestia_v7_sensor_migration.md
+  rationale:
+  - Text or YAML with doctrinal governance indicators
+  - Contains language related to validation or compliance
+  - Scaffold or structural language detected
+  - Legacy indicators suitable for archival
+  tags:
+  - doctrine
+  - regulatory
+  - scaffold
+  - archivable
+- path: "vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/01. additional_info_refs/hestia_v7_\u03B4\
+    -tier_edge_case_handling Guide.md"
+  rationale:
+  - Descriptors indicating disuse or deprecated status
+  - Legacy indicators suitable for archival
+  tags:
+  - orphaned
+  - archivable
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/01. additional_info_refs/hestia_v7_refactor_beta_eta.md
+  rationale:
+  - Text or YAML with doctrinal governance indicators
+  - Scaffold or structural language detected
+  - Descriptors indicating disuse or deprecated status
+  tags:
+  - doctrine
+  - scaffold
+  - orphaned
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/01. additional_info_refs/ha-critical-templating-guidelines.md
+  rationale:
+  - Text or YAML with doctrinal governance indicators
+  - Contains language related to validation or compliance
+  - Scaffold or structural language detected
+  - Descriptors indicating disuse or deprecated status
+  - Legacy indicators suitable for archival
+  tags:
+  - doctrine
+  - regulatory
+  - scaffold
+  - orphaned
+  - archivable
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/01. additional_info_refs/template_governance_card.md
+  rationale:
+  - Text or YAML with doctrinal governance indicators
+  - Scaffold or structural language detected
+  tags:
+  - doctrine
+  - scaffold
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/01. additional_info_refs/symlink
+    tree.md
+  rationale:
+  - Contains language related to validation or compliance
+  - Scaffold or structural language detected
+  - Descriptors indicating disuse or deprecated status
+  tags:
+  - regulatory
+  - scaffold
+  - orphaned
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/01. additional_info_refs/hestia_v7_target_architecture.md
+  rationale:
+  - Text or YAML with doctrinal governance indicators
+  - Contains language related to validation or compliance
+  - Scaffold or structural language detected
+  - Legacy indicators suitable for archival
+  tags:
+  - doctrine
+  - regulatory
+  - scaffold
+  - archivable
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/05. todos/TODO_2.md
+  rationale:
+  - Text or YAML with doctrinal governance indicators
+  - Contains language related to validation or compliance
+  tags:
+  - doctrine
+  - regulatory
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/05. todos/TODO_3.md
+  rationale:
+  - Text or YAML with doctrinal governance indicators
+  - Contains language related to validation or compliance
+  - Legacy indicators suitable for archival
+  tags:
+  - doctrine
+  - regulatory
+  - archivable
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/05. todos/TODO_6.yaml
+  rationale:
+  - Scaffold or structural language detected
+  tags:
+  - scaffold
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/05. todos/TODO_4.md
+  rationale:
+  - Text or YAML with doctrinal governance indicators
+  tags:
+  - doctrine
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/05. todos/TODO_1.md
+  rationale:
+  - Text or YAML with doctrinal governance indicators
+  tags:
+  - doctrine
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/05. todos/TODO_5.md
+  rationale:
+  - Text or YAML with doctrinal governance indicators
+  - Contains language related to validation or compliance
+  - Scaffold or structural language detected
+  tags:
+  - doctrine
+  - regulatory
+  - scaffold
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/04. briefings/HESTIA
+    SYMLINK ENFORCEMENT DEBRIEF.md
+  rationale:
+  - Text or YAML with doctrinal governance indicators
+  - Contains language related to validation or compliance
+  - Scaffold or structural language detected
+  - Legacy indicators suitable for archival
+  tags:
+  - doctrine
+  - regulatory
+  - scaffold
+  - archivable
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/04. briefings/home_assistant_assistant.md
+  rationale:
+  - Text or YAML with doctrinal governance indicators
+  - Contains language related to validation or compliance
+  - Scaffold or structural language detected
+  - Legacy indicators suitable for archival
+  tags:
+  - doctrine
+  - regulatory
+  - scaffold
+  - archivable
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/04. briefings/Icaria_debrief_toolchain_status_30-04-2025.md
+  rationale:
+  - Contains language related to validation or compliance
+  - Scaffold or structural language detected
+  - Descriptors indicating disuse or deprecated status
+  - Legacy indicators suitable for archival
+  tags:
+  - regulatory
+  - scaffold
+  - orphaned
+  - archivable
+- path: "vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/04. briefings/HESTIA\
+    \ Toolchain Session Debrief (May 2 \u2013 Symlink Chain Audit.md"
+  rationale:
+  - Text or YAML with doctrinal governance indicators
+  - Contains language related to validation or compliance
+  - Scaffold or structural language detected
+  - Legacy indicators suitable for archival
+  tags:
+  - doctrine
+  - regulatory
+  - scaffold
+  - archivable
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/04. briefings/Hestia_debrief_validator_chain_status_01-05-2025.md
+  rationale:
+  - Contains language related to validation or compliance
+  - Scaffold or structural language detected
+  tags:
+  - regulatory
+  - scaffold
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/04. briefings/hestia_session_debrief.md
+  rationale:
+  - Text or YAML with doctrinal governance indicators
+  - Contains language related to validation or compliance
+  - Scaffold or structural language detected
+  tags:
+  - doctrine
+  - regulatory
+  - scaffold
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/04. briefings/hestia_session_debrief
+    macho.md
+  rationale:
+  - Text or YAML with doctrinal governance indicators
+  - Contains language related to validation or compliance
+  - Scaffold or structural language detected
+  tags:
+  - doctrine
+  - regulatory
+  - scaffold
+- path: vault_legacy/legacy/hestia-architecture-knowledge-obsolete-06-may/04. briefings/02-05-25_session_debrief_MetaStructor.md
+  rationale:
+  - Contains language related to validation or compliance
+  - Scaffold or structural language detected
+  - Legacy indicators suitable for archival
+  tags:
+  - regulatory
+  - scaffold
+  - archivable
+- path: vault_legacy/legacy/light_gen_templates_20250601/gen_beta_light_templates_20250527_210137.yaml
+  rationale:
+  - Scaffold or structural language detected
+  tags:
+  - scaffold
+- path: vault_legacy/legacy/light_gen_templates_20250601/gen_circadian_room_sensors_20250522_143905.yaml
+  rationale:
+  - Scaffold or structural language detected
+  tags:
+  - scaffold
+- path: vault_legacy/legacy/light_gen_templates_20250601/gen_beta_light_templates_20250522_143905.yaml
+  rationale:
+  - Scaffold or structural language detected
+  tags:
+  - scaffold
+- path: vault_legacy/legacy/light_gen_templates_20250601/gen_light_entities_20250601_163055.yaml
+  rationale:
+  - Text or YAML with doctrinal governance indicators
+  - YAML with schema structure patterns
+  - Scaffold or structural language detected
+  tags:
+  - doctrine
+  - schema_fragment
+  - scaffold
+- path: vault_legacy/legacy/light_gen_templates_20250601/gen_light_availability_rendered_20250522_131507.yaml
+  rationale:
+  - Scaffold or structural language detected
+  tags:
+  - scaffold
+- path: vault_legacy/legacy/snapshot_logs-obsolete-2025-05-11/snap_2025-05-10_17-20-18.log
+  rationale:
+  - Legacy indicators suitable for archival
+  tags:
+  - archivable
+- path: vault_legacy/legacy/snapshot_logs-obsolete-2025-05-11/snap_2025-05-09_06-50-24.log
+  rationale:
+  - Legacy indicators suitable for archival
+  tags:
+  - archivable
+- path: vault_legacy/legacy/snapshot_logs-obsolete-2025-05-11/snapshot_info_2025-05-10_17-36-06.txt
+  rationale:
+  - Legacy indicators suitable for archival
+  tags:
+  - archivable
+- path: vault_legacy/legacy/snapshot_logs-obsolete-2025-05-11/snap_2025-05-09_07-56-54.log
+  rationale:
+  - Legacy indicators suitable for archival
+  tags:
+  - archivable
+- path: vault_legacy/legacy/snapshot_logs-obsolete-2025-05-11/snap_2025-05-09_05-08-37.log
+  rationale:
+  - Legacy indicators suitable for archival
+  tags:
+  - archivable
+- path: vault_legacy/legacy/snapshot_logs-obsolete-2025-05-11/snap_2025-05-09_08-19-49.log
+  rationale:
+  - Legacy indicators suitable for archival
+  tags:
+  - archivable
+- path: vault_legacy/legacy/snapshot_logs-obsolete-2025-05-11/snap_2025-05-09_06-05-46.log
+  rationale:
+  - Legacy indicators suitable for archival
+  tags:
+  - archivable
+- path: vault_legacy/legacy/snapshot_logs-obsolete-2025-05-11/snap_2025-05-09_06-39-30.log
+  rationale:
+  - Legacy indicators suitable for archival
+  tags:
+  - archivable
+- path: vault_legacy/legacy/snapshot_logs-obsolete-2025-05-11/snapshot_info_2025-05-10_17-30-39.txt
+  rationale:
+  - Legacy indicators suitable for archival
+  tags:
+  - archivable
+- path: vault_legacy/legacy/snapshot_logs-obsolete-2025-05-11/snapshot_info_2025-05-10_17-20-18.txt
+  rationale:
+  - Legacy indicators suitable for archival
+  tags:
+  - archivable
+- path: vault_legacy/legacy/snapshot_logs-obsolete-2025-05-11/snap_2025-05-09_07-39-48.log
+  rationale:
+  - Legacy indicators suitable for archival
+  tags:
+  - archivable
+- path: vault_legacy/legacy/snapshot_logs-obsolete-2025-05-11/snap_2025-05-10_17-10-39.log
+  rationale:
+  - Legacy indicators suitable for archival
+  tags:
+  - archivable
+- path: vault_legacy/legacy/snapshot_logs-obsolete-2025-05-11/snap_2025-05-09_05-03-27.log
+  rationale:
+  - Legacy indicators suitable for archival
+  tags:
+  - archivable
+- path: vault_legacy/legacy/snapshot_logs-obsolete-2025-05-11/snap_2025-05-09_05-23-43.log
+  rationale:
+  - Legacy indicators suitable for archival
+  tags:
+  - archivable
+- path: vault_legacy/legacy/snapshot_logs-obsolete-2025-05-11/snap_2025-05-09_08-43-39.log
+  rationale:
+  - Legacy indicators suitable for archival
+  tags:
+  - archivable
+- path: vault_legacy/legacy/snapshot_logs-obsolete-2025-05-11/snap_2025-05-10_01-06-19.log
+  rationale:
+  - Legacy indicators suitable for archival
+  tags:
+  - archivable
+- path: vault_legacy/legacy/snapshot_logs-obsolete-2025-05-11/snap_2025-05-10_17-36-06.log
+  rationale:
+  - Legacy indicators suitable for archival
+  tags:
+  - archivable
+- path: vault_legacy/legacy/snapshot_logs-obsolete-2025-05-11/snap_2025-05-09_08-29-45.log
+  rationale:
+  - Legacy indicators suitable for archival
+  tags:
+  - archivable
+- path: vault_legacy/legacy/snapshot_logs-obsolete-2025-05-11/snap_2025-05-09_08-21-08.log
+  rationale:
+  - Legacy indicators suitable for archival
+  tags:
+  - archivable
+- path: vault_legacy/legacy/snapshot_logs-obsolete-2025-05-11/snap_2025-05-09_06-14-40.log
+  rationale:
+  - Legacy indicators suitable for archival
+  tags:
+  - archivable
+- path: vault_legacy/legacy/snapshot_logs-obsolete-2025-05-11/snapshot_info.txt
+  rationale:
+  - Legacy indicators suitable for archival
+  tags:
+  - archivable
+- path: vault_legacy/legacy/snapshot_logs-obsolete-2025-05-11/snap_2025-05-09_06-24-22.log
+  rationale:
+  - Legacy indicators suitable for archival
+  tags:
+  - archivable
+- path: vault_legacy/legacy/snapshot_logs-obsolete-2025-05-11/snap_2025-05-10_17-30-39.log
+  rationale:
+  - Legacy indicators suitable for archival
+  tags:
+  - archivable

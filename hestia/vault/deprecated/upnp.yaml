@@ -1,0 +1,11 @@
+#═══════════════════════════════════════════════════════════════
+# ▶ INTEGRATION: UPNP / IGD (Internet Gateway Device) ◀
+# Loader: !include integration/upnp.yaml
+# Schema: upnp
+# Description: Enables polling-based UPnP integration for router
+#              monitoring (e.g., bandwidth, bytes in/out, etc.)
+#═══════════════════════════════════════════════════════════════
+
+upnp:
+  local_ip: 192.168.0.104  # Replace with your Home Assistant's IP
+  poll: true               # Enables polling to improve compatibility

@@ -1,0 +1,8 @@
+---
+# ═════════════════════════════════════════════════════════════════════════════
+# ⟫⟫ Home Assistant Integration  •  Lights ◀
+# ⟫⟫ packages/integrations/light.yaml • packages: !include_dir_named packages
+# ⟫⟫ Tier: σ  •  Domain: configuration  •  Updated: 2025-08-22
+# ═════════════════════════════════════════════════════════════════════════════
+
+light: !include_dir_merge_named /config/domain/lights/

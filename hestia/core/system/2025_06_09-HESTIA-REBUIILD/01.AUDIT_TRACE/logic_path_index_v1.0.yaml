@@ -1,0 +1,705 @@
+- id: template_monitoring_notify
+  alias: "\U0001F6E0\uFE0F Template Monitoring: Notify on Errors"
+  mode: single
+  source_file: automations/automations/system/automations_template_monitoring.yaml
+  referenced_entities:
+  - binary_sensor.template_monitor_problems_epsilon
+  macro_lineage: []
+  conditions: []
+  session_reference: hestia_phase_scan_20250608_automation_trace
+- id: template_monitoring_clear_notification
+  alias: "\U0001F6E0\uFE0F Template Monitoring: Clear Error Notification"
+  mode: single
+  source_file: automations/automations/system/automations_template_monitoring.yaml
+  referenced_entities:
+  - binary_sensor.template_monitor_problems_epsilon
+  macro_lineage: []
+  conditions: []
+  session_reference: hestia_phase_scan_20250608_automation_trace
+- id: template_monitoring_attempt_recovery
+  alias: "\U0001F6E0\uFE0F Template Monitoring: Attempt Recovery"
+  mode: queued
+  source_file: automations/automations/system/automations_template_monitoring.yaml
+  referenced_entities:
+  - binary_sensor.template_monitor_problems_epsilon
+  macro_lineage: []
+  conditions: []
+  session_reference: hestia_phase_scan_20250608_automation_trace
+- id: alert_skylight_open_risky_conditions
+  alias: Warn if skylight opens during risky conditions
+  mode: single
+  source_file: automations/automations/system/automations_template_monitoring.yaml
+  referenced_entities:
+  - binary_sensor.hallway_upstairs_skylight_contact_sensor_mtr_alpha
+  - input_boolean.turn_off
+  macro_lineage: []
+  conditions:
+  - condition: not
+    conditions:
+    - condition: state
+      entity_id: input_boolean.skylight_alert_acknowledged
+      state: 'on'
+  - condition: template
+    value_template: '{{ states(''sensor.skylight_risk_level_gamma'') != ''clear''
+      }}'
+  session_reference: hestia_phase_scan_20250608_automation_trace
+- id: null
+  alias: Warn if risky condition begins while skylight is open
+  mode: single
+  source_file: automations/automations/system/automations_template_monitoring.yaml
+  referenced_entities:
+  - binary_sensor.hallway_upstairs_skylight_contact_sensor_mtr_alpha$
+  - input_boolean.turn_on
+  - person.evert
+  - sun.sun
+  - weather.forecast_home
+  macro_lineage: []
+  conditions:
+  - condition: state
+    entity_id: binary_sensor.hallway_upstairs_skylight_contact_sensor_mtr_alpha$
+    state: 'on'
+  - condition: not
+    conditions:
+    - condition: state
+      entity_id: input_boolean.skylight_risk_level_gamma
+      state: 'on'
+  - condition: template
+    value_template: '{{ states(''sensor.skylight_risk_level_gamma'') != ''clear''
+      }}'
+  session_reference: hestia_phase_scan_20250608_automation_trace
+- id: automation_ensuite_lighting_motion
+  alias: Ensuite Lighting - Motion
+  mode: single
+  source_file: automations/automations/subsystems/hermes_automations_combined.yaml
+  referenced_entities:
+  - binary_sensor.ensuite_occupancy_beta
+  - script.dispatch_light_state
+  macro_lineage: []
+  conditions:
+  - condition: time
+    after: 05:30:00
+    before: '22:00:00'
+  session_reference: hestia_phase_scan_20250608_automation_trace
+- id: automation_ensuite_fan_occupancy
+  alias: Ensuite Fan - Occupancy
+  mode: restart
+  source_file: automations/automations/subsystems/hermes_automations_combined.yaml
+  referenced_entities:
+  - binary_sensor.ensuite_occupancy_beta
+  macro_lineage: []
+  conditions: []
+  session_reference: hestia_phase_scan_20250608_automation_trace
+- id: automation_living_room_motion_lights
+  alias: Living Room Lights by Time + Motion
+  mode: single
+  source_file: automations/automations/subsystems/hermes_automations_combined.yaml
+  referenced_entities:
+  - binary_sensor.living_room_presence_gamma
+  macro_lineage: []
+  conditions:
+  - condition: time
+    after: 06:00:00
+    before: '23:00:00'
+  session_reference: hestia_phase_scan_20250608_automation_trace
+- id: automation_downstairs_lights_motion
+  alias: Motion-activated Downstairs Lights (PM - AM)
+  mode: single
+  source_file: automations/automations/subsystems/hermes_automations_combined.yaml
+  referenced_entities:
+  - binary_sensor.hallway_downstairs_motion_beta
+  - script.dispatch_light_state
+  macro_lineage: []
+  conditions:
+  - condition: or
+    conditions:
+    - condition: time
+      after: '15:00:00'
+    - condition: time
+      before: 09:00:00
+  session_reference: hestia_phase_scan_20250608_automation_trace
+- id: automation_kitchen_motion_light
+  alias: Kitchen Light - Motion
+  mode: single
+  source_file: automations/automations/subsystems/hermes_automations_combined.yaml
+  referenced_entities:
+  - binary_sensor.kitchen_motion_beta
+  - script.dispatch_light_state
+  macro_lineage: []
+  conditions:
+  - condition: time
+    after: 05:30:00
+    before: '23:00:00'
+  session_reference: hestia_phase_scan_20250608_automation_trace
+- id: automation_fallback_presence_detection
+  alias: Fallback Presence Detection
+  mode: restart
+  source_file: automations/automations/subsystems/hermes_automations_combined.yaml
+  referenced_entities:
+  - input_boolean.presence_detection_enabled
+  - input_boolean.trigger_manual_presence_fallback
+  - input_boolean.turn_off
+  - script.fallback_presence_detection
+  macro_lineage: []
+  conditions:
+  - condition: state
+    entity_id: input_boolean.presence_detection_enabled
+    state: 'on'
+  session_reference: hestia_phase_scan_20250608_automation_trace
+- id: null
+  alias: null
+  mode: null
+  source_file: automations/automations/subsystems/theia_automations_combined.yaml
+  referenced_entities: []
+  macro_lineage: []
+  conditions: []
+  session_reference: hestia_phase_scan_20250608_automation_trace
+- id: publish_omega_room_registry
+  alias: Publish Omega Room Registry to MQTT Automation
+  mode: null
+  source_file: automations/automations/subsystems/hephaestus_automations.yaml
+  referenced_entities: []
+  macro_lineage: []
+  conditions: []
+  session_reference: hestia_phase_scan_20250608_automation_trace
+- id: publish_omega_device_registry
+  alias: Publish Omega Device Registry to MQTT Automation
+  mode: null
+  source_file: automations/automations/subsystems/hephaestus_automations.yaml
+  referenced_entities: []
+  macro_lineage: []
+  conditions: []
+  session_reference: hestia_phase_scan_20250608_automation_trace
+- id: publish_alpha_sensor_registry
+  alias: Publish Alpha Sensor Registry to MQTT Automation
+  mode: null
+  source_file: automations/automations/subsystems/hephaestus_automations.yaml
+  referenced_entities: []
+  macro_lineage: []
+  conditions: []
+  session_reference: hestia_phase_scan_20250608_automation_trace
+- id: publish_alpha_light_registry
+  alias: Publish Alpha Light Registry to MQTT Automation
+  mode: null
+  source_file: automations/automations/subsystems/hephaestus_automations.yaml
+  referenced_entities: []
+  macro_lineage: []
+  conditions: []
+  session_reference: hestia_phase_scan_20250608_automation_trace
+- id: mnemo_init_post_boot
+  alias: 'Mnemosyne: Ensure prerequisites at HA boot'
+  mode: single
+  source_file: automations/automations/subsystems/hephaestus_automations.yaml
+  referenced_entities: []
+  macro_lineage: []
+  conditions: []
+  session_reference: hestia_phase_scan_20250608_automation_trace
+- id: mnemo_daily_snapshot
+  alias: 'Mnemosyne: Daily system snapshot'
+  mode: single
+  source_file: automations/automations/subsystems/hephaestus_automations.yaml
+  referenced_entities:
+  - input_boolean.maintenance_mode
+  macro_lineage: []
+  conditions:
+  - condition: state
+    entity_id: input_boolean.maintenance_mode
+    state: 'off'
+  session_reference: hestia_phase_scan_20250608_automation_trace
+- id: mnemo_weekly_comprehensive
+  alias: 'Mnemosyne: Weekly comprehensive backup'
+  mode: single
+  source_file: automations/automations/subsystems/hephaestus_automations.yaml
+  referenced_entities: []
+  macro_lineage: []
+  conditions:
+  - condition: time
+    weekday:
+    - sun
+  session_reference: hestia_phase_scan_20250608_automation_trace
+- id: mnemo_emergency_snapshot
+  alias: 'Mnemosyne: Emergency snapshot before updates'
+  mode: single
+  source_file: automations/automations/subsystems/hephaestus_automations.yaml
+  referenced_entities:
+  - update.home_assistant_core_update
+  - update.home_assistant_operating_system_update
+  macro_lineage: []
+  conditions: []
+  session_reference: hestia_phase_scan_20250608_automation_trace
+- id: macbook_charger_status
+  alias: MacBook Charger Cable Status
+  mode: restart
+  source_file: automations/automations/subsystems/soteria_automations_combined.yaml
+  referenced_entities:
+  - sensor.macbook_internal_battery_state
+  macro_lineage: []
+  conditions: []
+  session_reference: hestia_phase_scan_20250608_automation_trace
+- id: monitor_disconnect_powerdown
+  alias: "Monitor Disconnect \u2013 Power Down Display + Backlight"
+  mode: single
+  source_file: automations/automations/subsystems/soteria_automations_combined.yaml
+  referenced_entities:
+  - light.turn_off
+  - switch.hp27i_monitor
+  - switch.turn_off
+  macro_lineage: []
+  conditions:
+  - condition: state
+    entity_id: switch.hp27i_monitor
+    state: 'on'
+  session_reference: hestia_phase_scan_20250608_automation_trace
+- id: monitor_reconnect_wakeup
+  alias: "Monitor Reconnect \u2013 Wake Monitor + Conditional Light"
+  mode: restart
+  source_file: automations/automations/subsystems/soteria_automations_combined.yaml
+  referenced_entities:
+  - switch.turn_on
+  macro_lineage: []
+  conditions: []
+  session_reference: hestia_phase_scan_20250608_automation_trace
+- id: valetudo_morning_deep_clean
+  alias: Valetudo Morning Short Clean
+  mode: null
+  source_file: automations/automations/subsystems/soteria_automations_combined.yaml
+  referenced_entities:
+  - input_boolean.enable_daily_clean
+  - script.valetudo_deep_clean
+  macro_lineage: []
+  conditions:
+  - condition: state
+    entity_id: input_boolean.enable_daily_clean
+    state: 'on'
+  session_reference: hestia_phase_scan_20250608_automation_trace
+- id: valetudo_afternoon_short_clean
+  alias: Valetudo Morning Short Clean
+  mode: null
+  source_file: automations/automations/subsystems/soteria_automations_combined.yaml
+  referenced_entities:
+  - input_boolean.enable_daily_clean
+  - script.valetudo_short_clean
+  macro_lineage: []
+  conditions:
+  - condition: state
+    entity_id: input_boolean.enable_daily_clean
+    state: 'on'
+  session_reference: hestia_phase_scan_20250608_automation_trace
+- id: hestia_system_startup_sequence
+  alias: HESTIA System Startup Sequence
+  mode: single
+  source_file: automations/automations/diagnostics/automations_system_health.yaml
+  referenced_entities:
+  - script.perform_system_health_check
+  macro_lineage: []
+  conditions: []
+  session_reference: hestia_phase_scan_20250608_automation_trace
+- id: notify_fallback_integrity_issues
+  alias: Notify Fallback Integrity Issues
+  mode: queued
+  source_file: automations/automations/diagnostics/automations_system_health.yaml
+  referenced_entities:
+  - sensor.sensor_fallback_integrity
+  macro_lineage: []
+  conditions:
+  - condition: template
+    value_template: '{{ states(''sensor.sensor_fallback_integrity'') | int > 0 }}'
+  session_reference: hestia_phase_scan_20250608_automation_trace
+- id: notify_system_health_issues
+  alias: Notify on System Health Issues
+  mode: queued
+  source_file: automations/automations/diagnostics/automations_system_health.yaml
+  referenced_entities:
+  - sensor.system_health_status
+  macro_lineage: []
+  conditions: []
+  session_reference: hestia_phase_scan_20250608_automation_trace
+- id: hestia_log_error_tracker
+  alias: HESTIA - Log Error Tracker
+  mode: queued
+  source_file: automations/automations/diagnostics/automations_system_health.yaml
+  referenced_entities: []
+  macro_lineage: []
+  conditions:
+  - condition: template
+    value_template: '{{ trigger.event.data.level == ''ERROR'' }}'
+  session_reference: hestia_phase_scan_20250608_automation_trace
+- id: hestia_periodic_system_health_check_automation_temp
+  alias: HESTIA Periodic System Health Check
+  mode: queued
+  source_file: automations/automations/diagnostics/automations_system_health.yaml
+  referenced_entities:
+  - binary_sensor.system_problems_mu
+  - sensor.macro_template_library_health_check_mu
+  - sensor.system_entity_statistics_mu
+  macro_lineage: []
+  conditions: []
+  session_reference: hestia_phase_scan_20250608_automation_trace
+- id: entity_health_degradation_alert
+  alias: Entity Health Degradation Alert
+  mode: single
+  source_file: automations/automations/diagnostics/automations_system_health.yaml
+  referenced_entities:
+  - sensor.system_entity_statistics_mu
+  macro_lineage: []
+  conditions: []
+  session_reference: hestia_phase_scan_20250608_automation_trace
+- id: hestia_dependency_integrity_check_validator
+  alias: HESTIA Dependency Integrity Check
+  mode: null
+  source_file: automations/automations/diagnostics/automations_system_health.yaml
+  referenced_entities: []
+  macro_lineage: []
+  conditions: []
+  session_reference: hestia_phase_scan_20250608_automation_trace
+- id: mnemo_init_post_boot
+  alias: mnemo_init_post_boot
+  mode: single
+  source_file: automations/automations/diagnostics/system_maintenance_routines.yaml
+  referenced_entities: []
+  macro_lineage: []
+  conditions: []
+  session_reference: hestia_phase_scan_20250608_automation_trace
+- id: update_ha_repo_mirror
+  alias: update_ha_repo_mirror
+  mode: single
+  source_file: automations/automations/diagnostics/system_maintenance_routines.yaml
+  referenced_entities: []
+  macro_lineage: []
+  conditions: []
+  session_reference: hestia_phase_scan_20250608_automation_trace
+- id: hestia_daily_registry_reconciliation_alpha_to_omega_sync
+  alias: HESTIA Daily Registry Reconciliation (Alpha to Omega Sync)
+  mode: single
+  source_file: automations/automations/diagnostics/system_maintenance_routines.yaml
+  referenced_entities: []
+  macro_lineage: []
+  conditions: []
+  session_reference: hestia_phase_scan_20250608_automation_trace
+- id: run_light_template_generator_on_startup
+  alias: Run Light Template Generator on Startup
+  mode: single
+  source_file: automations/automations/diagnostics/system_maintenance_routines.yaml
+  referenced_entities: []
+  macro_lineage: []
+  conditions: []
+  session_reference: hestia_phase_scan_20250608_automation_trace
+- id: run_hestia_snapshot_on_ha_start
+  alias: Run HESTIA Snapshot on HA Startup
+  mode: single
+  source_file: automations/automations/diagnostics/system_maintenance_routines.yaml
+  referenced_entities: []
+  macro_lineage: []
+  conditions: []
+  session_reference: hestia_phase_scan_20250608_automation_trace
+- id: refresh_file_sensors
+  alias: Refresh File Sensors Every 5 Minutes
+  mode: single
+  source_file: automations/automations/diagnostics/system_maintenance_routines.yaml
+  referenced_entities: []
+  macro_lineage: []
+  conditions: []
+  session_reference: hestia_phase_scan_20250608_automation_trace
+- id: republish_all_registry_json_mqtt_automation
+  alias: Republish Registry JSONs to MQTT
+  mode: single
+  source_file: automations/automations/diagnostics/system_maintenance_routines.yaml
+  referenced_entities:
+  - script.publish_all_registries
+  macro_lineage: []
+  conditions: []
+  session_reference: hestia_phase_scan_20250608_automation_trace
+- id: null
+  alias: Fix Temperature Units for Kitchen Climate
+  mode: single
+  source_file: automations/automations/diagnostics/automations_mqtt.yaml
+  referenced_entities: []
+  macro_lineage: []
+  conditions: []
+  session_reference: hestia_phase_scan_20250608_automation_trace
+- id: aether_bedroom_dehumidifier_control
+  alias: AETHER - Bedroom Dehumidifier Control
+  mode: single
+  source_file: automations/automations/climate/aether_humidity_control_rewrapped.yaml
+  referenced_entities:
+  - binary_sensor.dehumidifier_needed_bedroom
+  - input_boolean.humidity_control_enabled
+  - input_select.humidity_control_strategy
+  - sensor.merged_bedroom_humidity_eta
+  macro_lineage: []
+  conditions:
+  - condition: state
+    entity_id: input_boolean.humidity_control_enabled
+    state: 'on'
+  session_reference: hestia_phase_scan_20250608_automation_trace
+- id: aether_ensuite_shower_detection
+  alias: AETHER - Ensuite Shower Detection & Ventilation
+  mode: restart
+  source_file: automations/automations/climate/aether_shower_humidity_control.yaml
+  referenced_entities:
+  - binary_sensor.shower_active
+  - sensor.ensuite_humidity_beta
+  macro_lineage: []
+  conditions: []
+  session_reference: hestia_phase_scan_20250608_automation_trace
+- id: aether_climate_mode_control
+  alias: AETHER - Climate Mode Selector
+  mode: null
+  source_file: automations/automations/climate/aether_mode_management_rewrapped.yaml
+  referenced_entities:
+  - binary_sensor.is_night_time
+  - input_boolean.climate_automation_enabled
+  - input_select.home_mode
+  macro_lineage: []
+  conditions:
+  - condition: state
+    entity_id: input_boolean.climate_automation_enabled
+    state: 'on'
+  session_reference: hestia_phase_scan_20250608_automation_trace
+- id: aether_window_closed_resumption
+  alias: AETHER - Resume After Window Closed
+  mode: single
+  source_file: automations/automations/climate/aether_window_detection_rewrapped.yaml
+  referenced_entities:
+  - binary_sensor.window_open_detected
+  - input_boolean.climate_automation_enabled
+  - input_boolean.climate_override_active
+  - script.turn_on
+  macro_lineage: []
+  conditions:
+  - condition: state
+    entity_id: input_boolean.climate_automation_enabled
+    state: 'on'
+  - condition: state
+    entity_id: input_boolean.climate_override_active
+    state: 'on'
+  session_reference: hestia_phase_scan_20250608_automation_trace
+- id: aether_window_open_detection
+  alias: AETHER - Window Open Detection
+  mode: single
+  source_file: automations/automations/climate/aether_window_detection_rewrapped.yaml
+  referenced_entities:
+  - binary_sensor.window_open_detected
+  - input_boolean.climate_automation_enabled
+  - input_boolean.turn_on
+  - input_boolean.window_open_detection
+  - script.turn_on
+  macro_lineage: []
+  conditions:
+  - condition: state
+    entity_id: input_boolean.window_open_detection
+    state: 'on'
+  - condition: state
+    entity_id: input_boolean.climate_automation_enabled
+    state: 'on'
+  session_reference: hestia_phase_scan_20250608_automation_trace
+- id: aether_bedroom_climate_control
+  alias: AETHER - Bedroom Climate Control
+  mode: single
+  source_file: automations/automations/climate/aether_climate_control_rewrapped.yaml
+  referenced_entities:
+  - binary_sensor.bedroom_heating_needed
+  - input_boolean.climate_automation_enabled
+  - sensor.effective_bedroom_temperature_gamma
+  macro_lineage: []
+  conditions:
+  - condition: state
+    entity_id: input_boolean.climate_automation_enabled
+    state: 'on'
+  - condition: template
+    value_template: '{% set window_open = is_state(''binary_sensor.window_open_detected'',
+      ''on'') %} {% set window_detection = is_state(''input_boolean.window_open_detection'',
+      ''on'') %} {{ not (window_open and window_detection) }}
+
+      '
+  session_reference: hestia_phase_scan_20250608_automation_trace
+- id: aether_living_room_climate_control
+  alias: AETHER - Living Room Climate Control
+  mode: single
+  source_file: automations/automations/climate/aether_climate_control_rewrapped.yaml
+  referenced_entities:
+  - binary_sensor.living_room_heating_needed
+  - input_boolean.climate_automation_enabled
+  - sensor.effective_living_room_temperature_gamma
+  macro_lineage: []
+  conditions:
+  - condition: state
+    entity_id: input_boolean.climate_automation_enabled
+    state: 'on'
+  - condition: template
+    value_template: '{% set window_open = is_state(''binary_sensor.window_open_detected'',
+      ''on'') %} {% set window_detection = is_state(''input_boolean.window_open_detection'',
+      ''on'') %} {{ not (window_open and window_detection) }}
+
+      '
+  session_reference: hestia_phase_scan_20250608_automation_trace
+- id: aether_kitchen_climate_control
+  alias: AETHER - Kitchen Climate Control
+  mode: single
+  source_file: automations/automations/climate/aether_climate_control_rewrapped.yaml
+  referenced_entities:
+  - binary_sensor.kitchen_heating_needed
+  - input_boolean.climate_automation_enabled
+  - sensor.effective_kitchen_temperature_gamma
+  macro_lineage: []
+  conditions:
+  - condition: state
+    entity_id: input_boolean.climate_automation_enabled
+    state: 'on'
+  - condition: template
+    value_template: '{% set window_open = is_state(''binary_sensor.window_open_detected'',
+      ''on'') %} {% set window_detection = is_state(''input_boolean.window_open_detection'',
+      ''on'') %} {{ not (window_open and window_detection) }}
+
+      '
+  session_reference: hestia_phase_scan_20250608_automation_trace
+- id: aether_night_time_temperature_setback
+  alias: AETHER - Night Time Temperature Setback
+  mode: single
+  source_file: automations/automations/climate/aether_climate_control_rewrapped.yaml
+  referenced_entities:
+  - input_boolean.climate_automation_enabled
+  - input_boolean.climate_override_active
+  - input_select.home_mode
+  - script.turn_on
+  macro_lineage: []
+  conditions:
+  - condition: state
+    entity_id: input_boolean.climate_automation_enabled
+    state: 'on'
+  - condition: state
+    entity_id: input_boolean.climate_override_active
+    state: 'off'
+  - condition: or
+    conditions:
+    - condition: time
+      after: '22:00:00'
+    - condition: time
+      before: 05:00:00
+    - condition: state
+      entity_id: input_select.home_mode
+      state: Sleep
+  session_reference: hestia_phase_scan_20250608_automation_trace
+- id: aether_daily_environment_report
+  alias: AETHER - Daily Environment Report
+  mode: single
+  source_file: automations/automations/climate/aether_environment_monitoring_rewrapped.yaml
+  referenced_entities:
+  - script.turn_on
+  macro_lineage: []
+  conditions: []
+  session_reference: hestia_phase_scan_20250608_automation_trace
+- id: aether_low_temperature_alert
+  alias: AETHER - Low Temperature Alert
+  mode: single
+  source_file: automations/automations/climate/aether_alerts_and_notifications_rewrapped.yaml
+  referenced_entities:
+  - input_boolean.climate_automation_enabled
+  - input_boolean.turn_off
+  - input_select.home_mode
+  - script.turn_on
+  - sensor.merged_bedroom_temperature_eta
+  - sensor.merged_ensuite_temperature_eta
+  - sensor.merged_kitchen_temperature_eta
+  - sensor.merged_living_room_temperature_eta
+  macro_lineage: []
+  conditions:
+  - condition: state
+    entity_id: input_boolean.climate_automation_enabled
+    state: 'on'
+  - condition: state
+    entity_id: input_select.home_mode
+    state: Home
+  session_reference: hestia_phase_scan_20250608_automation_trace
+- id: aether_mold_risk_alert
+  alias: AETHER - Mold Risk Alert
+  mode: single
+  source_file: automations/automations/climate/aether_alerts_and_notifications_rewrapped.yaml
+  referenced_entities: []
+  macro_lineage: []
+  conditions: []
+  session_reference: hestia_phase_scan_20250608_automation_trace
+- id: aether_sensors_anomaly_detection
+  alias: AETHER - Sensor Anomaly Detection
+  mode: single
+  source_file: automations/automations/climate/aether_alerts_and_notifications_rewrapped.yaml
+  referenced_entities:
+  - sensor.merged_bedroom_humidity_eta
+  - sensor.merged_bedroom_temperature_eta
+  - sensor.merged_ensuite_humidity_eta
+  - sensor.merged_ensuite_temperature_eta
+  - sensor.merged_kitchen_humidity_eta
+  - sensor.merged_kitchen_temperature_eta
+  - sensor.merged_living_room_humidity_eta
+  - sensor.merged_living_room_temperature_eta
+  macro_lineage: []
+  conditions: []
+  session_reference: hestia_phase_scan_20250608_automation_trace
+- id: aether_system_health_check
+  alias: AETHER - System Health Check
+  mode: single
+  source_file: automations/automations/climate/aether_alerts_and_notifications_rewrapped.yaml
+  referenced_entities:
+  - sensor.aether_system_readiness
+  macro_lineage: []
+  conditions: []
+  session_reference: hestia_phase_scan_20250608_automation_trace
+- id: validator_log_tier_chain_integrity
+  alias: Log Tier Chain Integrity to Validator Log
+  mode: queued
+  source_file: automations/automations/validation/automations_validator_logging.yaml
+  referenced_entities:
+  - input_boolean.chain_diagnostics_enabled
+  - script.log_to_validator
+  - sensor.tier_chain_integrity_status
+  macro_lineage: []
+  conditions:
+  - condition: state
+    entity_id: input_boolean.chain_diagnostics_enabled
+    state: 'on'
+  session_reference: hestia_phase_scan_20250608_automation_trace
+- id: validator_log_tier_escalation_violations
+  alias: Log Tier Escalation Violations to Validator Log
+  mode: queued
+  source_file: automations/automations/validation/automations_validator_logging.yaml
+  referenced_entities:
+  - input_boolean.chain_diagnostics_enabled
+  - script.log_to_validator
+  - sensor.tier_escalation_violations
+  macro_lineage: []
+  conditions:
+  - condition: state
+    entity_id: input_boolean.chain_diagnostics_enabled
+    state: 'on'
+  - condition: template
+    value_template: '{{ ''Violations'' in states(''sensor.tier_escalation_violations'')
+      }}'
+  session_reference: hestia_phase_scan_20250608_automation_trace
+- id: update_validation_breach_log
+  alias: Update Validation Breach Log
+  mode: queued
+  source_file: automations/automations/validation/automations_validator_logging.yaml
+  referenced_entities: []
+  macro_lineage: []
+  conditions: []
+  session_reference: hestia_phase_scan_20250608_automation_trace
+- id: handle_validation_breach_notification
+  alias: Handle Validation Breach - Notification
+  mode: queued
+  source_file: automations/automations/validation/automations_breach_handlers.yaml
+  referenced_entities: []
+  macro_lineage: []
+  conditions: []
+  session_reference: hestia_phase_scan_20250608_automation_trace
+- id: emit_breach_tier_chain_integrity
+  alias: Emit Validation Breach - Tier Chain Integrity
+  mode: single
+  source_file: automations/automations/validation/automations_tier_chain_validation.yaml
+  referenced_entities:
+  - input_boolean.chain_diagnostics_enabled
+  - sensor.tier_chain_integrity_status
+  macro_lineage: []
+  conditions:
+  - condition: state
+    entity_id: input_boolean.chain_diagnostics_enabled
+    state: 'on'
+  session_reference: hestia_phase_scan_20250608_automation_trace

@@ -1,0 +1,18 @@
+############
+# Configuration of Home Assistant. Contains the settings that
+# did not make it into the configuration.yaml.
+# https://www.home-assistant.io/docs/configuration/splitting_configuration/
+
+homeassistant:
+  name: "Hestia"
+  latitude: 51.4623937
+  longitude: -0.1289665
+  time_zone: "Europe/London"
+  unit_system: metric
+
+  auth_providers:
+    - type: homeassistant
+    - type: trusted_networks
+      trusted_networks:
+        - 192.168.0.0/24
+        - 100.92.58.104/24

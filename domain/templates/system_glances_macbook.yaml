@@ -1,0 +1,31 @@
+# ═══════════════════════════════════════════════════════════════
+# ⟫⟫ ▶ SENSOR PACK  •  MacBook Glances Diagnostics ◀
+# ⟫⟫ Monitors CPU, memory, disk and uptime from Glances over REST
+# ⟫⟫ Loader: !include_dir_merge_list from domain/templates/
+# ⟫⟫ Tier: β  •  Domain: diagnostics  •  Created: 2025-07-31
+# ═══════════════════════════════════════════════════════════════
+
+- binary_sensor:
+    - name: "Glances (MacBook) API Healthy"
+      unique_id: glances_macbook_health_ok
+      device_class: connectivity
+      state: >
+        {{ states('sensor.macbook_cpu_percent') | float(0) > 0 }}
+      attributes:
+        upstream_sources: >
+          {{ ['sensor.macbook_cpu_percent'] | tojson}}
+        tier: "μ"
+        canonical_id: "glances_macbook_health_ok_μ"
+        file: "/domain/templates/system_glances_macbook.yaml"
+        date_created: "2025-07-30"
+        last_updated: "2025-08-02"
+        is_multi_source: false
+        source_count: 1
+        data_quality: "diagnostic"
+        subsystem: "hades"
+        module: "system_health_monitor"
+        role: "diagnostic_flag"
+        type: "connectivity"
+        diagnostic_type: "api_health"
+        target_tier: "α"
+        description: "Diagnostic flag indicating Glances MacBook API is up, inferred from CPU sensor responsiveness"

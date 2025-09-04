@@ -1,0 +1,313 @@
+# ═══════════════════════════════════════════════════════════════
+# ▶ NETWORK CONFIGURATION ◀
+# Home network topology, Tailscale config, DNS & proxy integration
+# File: network_configuration.yaml
+# Domain: network  •  Created: 2025-07-01  •  Last updated: 2025-08-03
+# ═══════════════════════════════════════════════════════════════
+
+- version: 1.2
+  date_revision: 2025-08-10
+  # ══ Tailscale deployment state ══
+  tailscale:
+    interface: userspace
+    tailscale_interface_present: false
+    userspace_networking: true
+
+    ips:
+      - 100.93.61.53 # DSM (ds220plus)
+      - 100.105.130.99 # Home Assistant
+      - 100.92.58.104 # MacBook (glances agent)
+      - 100.110.187.32 # iPhone 14 (remote HA access - UK SIM)
+      - 100.122.135.12 # iPhone 11 (remote HA access - Spanish SIM)
+      - 100.69.234.125 # Apple TV
+
+    dns_name: ds220plus.reverse-beta.ts.net
+    dns_ipv6: fd7a:115c:ae0::2701:3d35
+    dns_domain: reverse-beta.ts.net
+    magicdns: enabled
+    search_domain: reverse-beta.ts.net
+    certificate_status: no_certificate_found
+    serve_enabled: false # Update to true if `tailscale serve` is configured
+
+    connectivity:
+      upnp: true
+      udp: true
+      ipv6: false
+      nat_pmp: true
+      hairpinning: false
+      client_visible_ip: 10.178.12.162
+      exit_node: false
+
+    docker_deployment:
+      image: "cloudflare/cloudflared:latest"
+      device: ds220plus
+      mode: docker-compose
+      container_name: tailscale
+      container_image: tailscale/tailscale:latest
+      data_path: /volume1/docker/tailscale/tailscale-data
+      tailscaled_args: --tun=userspace-networking
+      restart_policy: unless-stopped
+
+    devices:
+      ds220plus:
+        role: nas
+        os: Synology DSM 7
+        ip: 100.93.61.53
+        version: 1.84.3
+        hostname: ds220plus
+        dns_domain: ds220plus.reverse-beta.ts.net
+        containerized: true
+        status: online
+
+      homeassistant:
+        role: automation controller
+        ip: 100.105.130.99
+        version: 1.60.x
+        hostname: ha-core
+        containerized: false
+        status: online
+        local_ip: 192.168.0.129
+        local_ipv6:
+          - fde9:ee26:f7cb:8bd2:524:c24d:e907:a618
+          - fe80::3ad4:e55c:9789:6dcb
+        services:
+          - mqtt: [1883/tcp, 8883/tcp, 1884/tcp, 8884/tcp]
+          - web: 8123/tcp
+        autodetect_interfaces:
+          - end0 (autoconfig)
+        local_url: http://192.168.0.129:8123
+        cloud_url: active via Nabu Casa
+        tailscale_status: active
+
+      macbook:
+        role: workstation
+        ip: 100.100.227.79
+        hostname: macbook.local
+        os: macOS Ventura
+        active_services:
+          - glances agent (port 61208)
+          - ssh server
+        last_seen: recent
+        status: online
+
+      iphone14:
+        role: mobile client
+        ip: 100.89.45.24
+        hostname: iphone-xr
+        active_services:
+          - Home Assistant Companion
+          - Tailscale DERP
+        status: online
+
+      apple-tv:
+        role: media device
+        ip: 100.69.234.125
+        os: tvOS 18.5.0
+        hostname: apple-tv
+        tailscale_version: 1.84.1
+        status: online
+
+      iphone11:
+        role: mobile client
+        ip: 100.122.135.128
+        os: iOS 18.1.0
+        hostname: iphone11
+        tailscale_version: 1.84.1
+        status: online
+
+      dev-vm:
+        role: container build / test
+        ip: 100.82.212.111
+        hostname: devbox
+        os: Debian 12
+        usage: local VM on Fusion
+        tailscale_status: available
+        status: online
+
+      ds220plus_legacy:
+        role: nas (deprecated)
+        ip: 100.71.87.40
+        hostname: ds220plus
+        os: Synology DSM
+        tailscale_version: 1.58.2
+        status: pending deletion
+
+  # ══ Network devices and flow ══
+  network_topology:
+    isp: Three (UK)
+    public_gateway_ip: 10.178.12.162
+
+    modem:
+      model: Zyxel NR5103E
+      firmware: V1.00(ACBJ.4)C0
+      mode: ip-passthrough
+      wan_ip: 10.178.12.162
+      lan_ip: 192.168.1.1
+      dns:
+        - 188.31.250.128
+        - 188.31.250.129
+      features:
+        - 5G NR WAN modem
+        - APN override: auto
+        - Upstream filtering: CG-NAT (confirmed)
+        - Web UI reachable at `192.168.1.1`
+      notes: |
+        The modem passes its WAN lease to the router via passthrough mode.
+        No Tailscale installed or needed on the modem.
+
+    router:
+      model: TP-Link AX3000 (Archer AX53)
+      lan_ip: 192.168.0.1
+      dhcp_range: 192.168.0.2 - 192.168.0.253
+      wan_ip: 10.178.12.162
+      firmware: 1.2.5 Build 20240120 rel.41062(4555)
+      admin_ui: http://192.168.0.1
+      dns_override: true
+      custom_dns:
+        - 100.100.100.100 # Tailscale MagicDNS
+      public_dns_fallback:
+        - 8.8.8.8
+        - 1.1.1.1
+      features:
+        - UPNP: enabled
+        - NAT-PMP: not exposed externally
+        - IPv6: disabled
+        - Bridge mode: not required
+      notes: |
+        Admin access requires TLS offload (not fully supported).
+        Uses static WAN IP via passthrough from modem.
+
+    tailnet_routing:
+      subnet_router: homeassistant
+      advertised_subnets:
+        - 192.168.0.0/24
+        - fdad:2364:d6f2:2854::/64
+      exit_node: none
+      relay_latency:
+        preferred_relay: Paris
+        latency_ms: 28.08
+      hairpin_nat: false
+
+    local_gateway_domain: nas.xplab.io
+    tailscale_gateway_domain: ds220plus.reverse-beta.ts.net
+
+  # ══ External DNS and tunnel infrastructure ══
+  dns_configuration:
+    registrar: Ionos
+    authoritative_nameservers:
+      - toby.ns.cloudflare.com
+      - mary.ns.cloudflare.com
+
+    custom_domain: xplab.io
+    apex_records:
+      - A xplab.io → 217.160.0.86 (proxied)
+      - A www.xplab.io → 217.160.0.86 (proxied)
+      - AAAA xplab.io → 2001:8d8:100f:f000::200
+
+    subdomains:
+      - nas.xplab.io
+      - home.xplab.io
+      - clapham.xplab.io
+
+    cloudflare_proxy:
+      - nas.xplab.io → https://192.168.0.104:5001
+      - nas.xplab.io (tailscale) → https://100.93.61.53:5001
+
+    tunnel:
+      name: synology-dsm
+      id: b465a989-de77-47e4-8e81-938afb6c074f
+      connector_id: 8fdd5adb-11af-4c82-85c1-ff2e5d9bf72f
+      connector_location: ds220plus
+      fallback_status: HTTP 404 (catch-all rule)
+      certificate_policy: none
+      cloudflare_origin_cert: not configured
+      tailscale_serve_enabled: false
+
+    dns_routing:
+      tailscale_magicdns: enabled
+      search_domain: reverse-beta.ts.net
+      tailscale_dns: 100.100.100.100
+      fallback_resolvers:
+        - 8.8.8.8
+        - 8.8.4.4
+        - 1.1.1.1
+
+    notes:
+      - Domain is fully routed through Cloudflare with proxy mode enabled
+      - Public hostname nas.xplab.io proxies to DSM UI via Argo Tunnel
+      - Tailnet fallback available at ds220plus.reverse-beta.ts.net
+      - CNAMEs use Cloudflare tunnel connector with dynamic TLS offload
+      - Local override may be needed in /etc/hosts when Cloudflare is down
+
+  docker:
+    enabled: true
+    device: ds220plus
+    containers:
+      - id: 84cd27b6eac9ae7568efd986eb6b1522b684e96f9bc85d2ff3976815d5702899
+        name: tailscale
+        image: tailscale/tailscale:latest
+        commands:
+          - execution_command: "tailscaled --tun=userspace-networking"
+          - entrypoint: ""
+        cap_add:
+          - NET_ADMIN
+        volumes:
+          - /var/lib/tailscale:/var/lib/tailscale
+          - /dev/net/tun:/dev/net/tun
+        volume_bindings:
+          host_volume_file: "/homes/babylonrobot/docker/tailscale/tailscale-data"
+          is_directory: true
+          mount_point: "/var/lib/tailscale"
+          type: rw
+        network_mode: host
+        network:
+          driver: host
+          name: host
+        is_ddsm: false
+        is_package: false
+        privileged: false
+      - id: ccd2b7ed5dfcfe00f3c2f86d2d28713c38df991eb5afd701ab5eed3cf4f4d5f0
+        name: cloudflared
+        created: 2025-07-25 04:01
+        image:
+          id: cloudflare/cloudflared:latest
+          name: cloudflare/cloudflared
+          registry: docker hub
+          commands:
+            - entrypoint: "cloudflared --no-autoupdate"
+            -
+        commands:
+          - execution_command: "tunnel --no-autoupdate run --token !secret your_home_assistant_long_lived_token"
+          - entrypoint: "cloudflared--no-autoupdate"
+        volumes:
+          - /etc/cloudflared:/etc/cloudflared
+        network_mode: host
+        use_host_network: false
+        network:
+          driver: bridge
+          name: bridge
+        is_ddsm: false
+        is_package: false
+        privileged: false
+        env_variables:
+          - key: PATH
+            value: "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+          - key: SSL_CERT_FILE
+            value: "/etc/ssl/certs/ca-certificates.crt"
+          - key: mac
+            value: "02:42:ac:11:00:04"
+          - key: gateway
+            value: "172.17.0.1"
+          - key: ip
+            value: "172.17.0.2"
+  # ══ Notes & migration context ══
+  notes:
+    - As of 2025-08-03, network configuration was updated to reflect:
+        - Migration to Tailscale in userspace mode via docker-compose
+        - DSM IP passthrough using Zyxel 5G modem → TP-Link AX3000
+        - MagicDNS active with Tailnet domain: reverse-beta.ts.net
+        - Cloudflare proxy for DSM via nas.xplab.io (port 5001)
+    - Legacy Tailscale node `ds220plus` (IP 100.71.87.40) is deleted,
+      replaced by `ds220plus` (IP 100.93.61.53)
+    - All DSM traffic over Tailscale is tunneled via userspace or Argo Tunnel
+    - IPv6 routing and local tailnet TCP/PCP mapping remain disabled

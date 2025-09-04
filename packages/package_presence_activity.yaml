@@ -1,0 +1,636 @@
+# ══════════════════════════════════════════════════════════════════
+# ⟫⟫ PATCH: Home Assistant 2024.8+ Sensor Friendly Name & Validation
+# ⟫⟫ Version: 2025-08-05-patch1
+# ⟫⟫ - All template sensors now have friendly_name attributes
+# ⟫⟫ - See commit message for details
+# ══════════════════════════════════════════════════════════════════
+
+# ══ Input Helpers: Room Activity Tracking ══
+input_datetime:
+  bedroom_last_activity:
+    name: Bedroom Last Activity
+    has_date: true
+    has_time: true
+  kitchen_last_activity:
+    name: Kitchen Last Activity
+    has_date: true
+    has_time: true
+  living_room_last_activity:
+    name: Living Room Last Activity
+    has_date: true
+    has_time: true
+  ensuite_last_activity:
+    name: Ensuite Last Activity
+    has_date: true
+    has_time: true
+  hallway_downstairs_last_activity:
+    name: Hallway Downstairs Last Activity
+    has_date: true
+    has_time: true
+  hallway_upstairs_last_activity:
+    name: Hallway Upstairs Last Activity
+    has_date: true
+    has_time: true
+
+# ══ Automations: Sync Template Sensors to Helpers ══
+automation:
+  - alias: "Sync Bedroom Last Activity Helper"
+    id: 1e2d3c4b-5a6f-7e8d-9c0b-112233445566
+    trigger:
+      - platform: state
+        entity_id: sensor.bedroom_last_activity
+    action:
+      - choose:
+          - conditions:
+              - condition: template
+                value_template: "{{ states('sensor.bedroom_last_activity') not in ['unknown','unavailable','', none] }}"
+            sequence:
+              - service: input_datetime.set_datetime
+                target:
+                  entity_id: input_datetime.bedroom_last_activity
+                data:
+                  datetime: "{{ states('sensor.bedroom_last_activity') }}"
+  - alias: "Sync Kitchen Last Activity Helper"
+    id: 2a3b4c5d-6e7f-8a9b-0c1d-223344556677
+    trigger:
+      - platform: state
+        entity_id: sensor.kitchen_last_activity
+    action:
+      - choose:
+          - conditions:
+              - condition: template
+                value_template: "{{ states('sensor.kitchen_last_activity') not in ['unknown','unavailable','', none] }}"
+            sequence:
+              - service: input_datetime.set_datetime
+                target:
+                  entity_id: input_datetime.kitchen_last_activity
+                data:
+                  datetime: "{{ states('sensor.kitchen_last_activity') }}"
+  - alias: "Sync Living Room Last Activity Helper"
+    id: 3b4c5d6e-7f8a-9b0c-1d2e-334455667788
+    trigger:
+      - platform: state
+        entity_id: sensor.living_room_last_activity
+    action:
+      - choose:
+          - conditions:
+              - condition: template
+                value_template: "{{ states('sensor.living_room_last_activity') not in ['unknown','unavailable','', none] }}"
+            sequence:
+              - service: input_datetime.set_datetime
+                target:
+                  entity_id: input_datetime.living_room_last_activity
+                data:
+                  datetime: "{{ states('sensor.living_room_last_activity') }}"
+  - alias: "Sync Ensuite Last Activity Helper"
+    id: 4c5d6e7f-8a9b-0c1d-2e3f-445566778899
+    trigger:
+      - platform: state
+        entity_id: sensor.ensuite_last_activity
+    action:
+      - choose:
+          - conditions:
+              - condition: template
+                value_template: "{{ states('sensor.ensuite_last_activity') not in ['unknown','unavailable','', none] }}"
+            sequence:
+              - service: input_datetime.set_datetime
+                target:
+                  entity_id: input_datetime.ensuite_last_activity
+                data:
+                  datetime: "{{ states('sensor.ensuite_last_activity') }}"
+  - alias: "Sync Hallway Downstairs Last Activity Helper"
+    id: 5d6e7f8a-9b0c-1d2e-3f4a-556677889900
+    trigger:
+      - platform: state
+        entity_id: sensor.hallway_downstairs_last_activity
+    action:
+      - choose:
+          - conditions:
+              - condition: template
+                value_template: "{{ states('sensor.hallway_downstairs_last_activity') not in ['unknown','unavailable','', none] }}"
+            sequence:
+              - service: input_datetime.set_datetime
+                target:
+                  entity_id: input_datetime.hallway_downstairs_last_activity
+                data:
+                  datetime: "{{ states('sensor.hallway_downstairs_last_activity') }}"
+  - alias: "Sync Hallway Upstairs Last Activity Helper"
+    id: 6e7f8a9b-0c1d-2e3f-4a5b-667788990011
+    trigger:
+      - platform: state
+        entity_id: sensor.hallway_upstairs_last_activity
+    action:
+      - choose:
+          - conditions:
+              - condition: template
+                value_template: "{{ states('sensor.hallway_upstairs_last_activity') not in ['unknown','unavailable','', none] }}"
+            sequence:
+              - service: input_datetime.set_datetime
+                target:
+                  entity_id: input_datetime.hallway_upstairs_last_activity
+                data:
+                  datetime: "{{ states('sensor.hallway_upstairs_last_activity') }}"
+
+# ══ Template Sensors: Last Activity & Minutes Since Activity ══
+template:
+  # ══ Bedroom ══
+  - trigger:
+      - platform: state
+        entity_id: binary_sensor.bedroom_occupancy_beta
+        to: "on"
+    sensor:
+      - name: Bedroom Last Activity
+        unique_id: bedroom_last_activity
+        state: "{{ now().strftime('%Y-%m-%d %H:%M:%S') }}"
+        attributes:
+          friendly_name: "Bedroom Last Activity"
+          tier: "β"
+          module: "presence"
+          role: "room_timer"
+          type: "fallback"
+          subsystem: "hermes"
+          canonical_id: "bedroom_last_activity_β"
+          file: "/config/packages/package_presence_activity.yaml"
+          description: "Timestamp of last detected activity in the bedroom."
+          version: "1.0"
+          created: "2025-08-05"
+          last_updated: "2025-08-05"
+          domain: "logic"
+          upstream_sources: >
+            {{ ['binary_sensor.bedroom_occupancy_beta'] | tojson }}
+  - sensor:
+      - name: Bedroom Minutes Since Activity
+        unique_id: bedroom_minutes_since_activity
+        state: >
+          {% set last = states('sensor.bedroom_last_activity') %}
+          {% if last not in ['unknown','unavailable','',none] %}
+            {{ ((now() - (last | as_datetime)).total_seconds() / 60) | round(0) }}
+          {% else %}
+            99999
+          {% endif %}
+        unit_of_measurement: "min"
+        attributes:
+          friendly_name: "Bedroom Minutes Since Activity"
+          tier: "β"
+          module: "fallback"
+          role: "timer"
+          type: "sensor"
+          subsystem: "hermes"
+          canonical_id: "bedroom_minutes_since_activity_β"
+          file: "/config/packages/package_presence_activity.yaml"
+          description: "Minutes since last detected activity in the bedroom."
+          version: "1.0"
+          created: "2025-08-05"
+          last_updated: "2025-08-05"
+          domain: "logic"
+          area_id: bedroom
+
+  # ══ Kitchen ══
+  - trigger:
+      - platform: state
+        entity_id: binary_sensor.kitchen_occupancy_beta
+        to: "on"
+    sensor:
+      - name: Kitchen Last Activity
+        unique_id: kitchen_last_activity
+        state: "{{ now().strftime('%Y-%m-%d %H:%M:%S') }}"
+        attributes:
+          friendly_name: "Kitchen Last Activity"
+          tier: "β"
+          module: "presence"
+          role: "room_timer"
+          type: "fallback"
+          subsystem: "hermes"
+          canonical_id: "kitchen_last_activity_β"
+          file: "/config/packages/package_presence_activity.yaml"
+          description: "Timestamp of last detected activity in the kitchen."
+          version: "1.0"
+          created: "2025-08-05"
+          last_updated: "2025-08-05"
+          domain: "logic"
+  - sensor:
+      - name: Kitchen Minutes Since Activity
+        unique_id: kitchen_minutes_since_activity
+        state: >
+          {% set last = states('sensor.kitchen_last_activity') %}
+          {% if last not in ['unknown','unavailable','',none] %}
+            {{ ((now() - (last | as_datetime)).total_seconds() / 60) | round(0) }}
+          {% else %}
+            99999
+          {% endif %}
+        unit_of_measurement: "min"
+        attributes:
+          friendly_name: "Kitchen Minutes Since Activity"
+          tier: "β"
+          module: "cleaning_schedule"
+          role: "timer"
+          type: "sensor"
+          subsystem: "hermes"
+          canonical_id: "kitchen_minutes_since_activity_β"
+          file: "/config/packages/package_presence_activity.yaml"
+          description: "Minutes since last detected activity in the kitchen."
+          version: "1.0"
+          created: "2025-08-05"
+          last_updated: "2025-08-05"
+          domain: "logic"
+          area_id: kitchen
+
+  # ══ Living Room ══
+  - trigger:
+      - platform: state
+        entity_id: binary_sensor.living_room_occupancy_beta
+        to: "on"
+    sensor:
+      - name: Living Room Last Activity
+        unique_id: living_room_last_activity
+        state: "{{ now().strftime('%Y-%m-%d %H:%M:%S') }}"
+        attributes:
+          friendly_name: "Living Room Last Activity"
+          tier: "β"
+          module: "presence"
+          role: "room_timer"
+          type: "fallback"
+          subsystem: "hermes"
+          canonical_id: "living_room_last_activity_β"
+          file: "/config/packages/package_presence_activity.yaml"
+          description: "Timestamp of last detected activity in the living room."
+          version: "1.0"
+          created: "2025-08-05"
+          last_updated: "2025-08-05"
+          domain: "logic"
+  - sensor:
+      - name: Living Room Minutes Since Activity
+        unique_id: living_room_minutes_since_activity
+        state: >
+          {% set last = states('sensor.living_room_last_activity') %}
+          {% if last not in ['unknown','unavailable','',none] %}
+            {{ ((now() - (last | as_datetime)).total_seconds() / 60) | round(0) }}
+          {% else %}
+            99999
+          {% endif %}
+        unit_of_measurement: "min"
+        attributes:
+          friendly_name: "Living Room Minutes Since Activity"
+          tier: "β"
+          module: "fallback"
+          role: "timer"
+          type: "sensor"
+          subsystem: "hermes"
+          canonical_id: "living_room_minutes_since_activity_β"
+          file: "/config/packages/package_presence_activity.yaml"
+          description: "Minutes since last detected activity in the living room."
+          version: "1.0"
+          created: "2025-08-05"
+          last_updated: "2025-08-05"
+          domain: "logic"
+          area_id: living_room
+
+  # ══ Ensuite ══
+  - trigger:
+      - platform: state
+        entity_id: binary_sensor.ensuite_occupancy_beta
+        to: "on"
+    sensor:
+      - name: Ensuite Last Activity
+        unique_id: ensuite_last_activity
+        state: "{{ now().strftime('%Y-%m-%d %H:%M:%S') }}"
+        attributes:
+          friendly_name: "Ensuite Last Activity"
+          tier: "β"
+          module: "presence"
+          role: "room_timer"
+          type: "fallback"
+          subsystem: "hermes"
+          canonical_id: "ensuite_last_activity_β"
+          file: "/config/packages/package_presence_activity.yaml"
+          description: "Timestamp of last detected activity in the ensuite."
+          version: "1.0"
+          created: "2025-08-05"
+          last_updated: "2025-08-05"
+          domain: "logic"
+  - sensor:
+      - name: Ensuite Minutes Since Activity
+        unique_id: ensuite_minutes_since_activity
+        state: >
+          {% set last = states('sensor.ensuite_last_activity') %}
+          {% if last not in ['unknown','unavailable','',none] %}
+            {{ ((now() - (last | as_datetime)).total_seconds() / 60) | round(0) }}
+          {% else %}
+            99999
+          {% endif %}
+        unit_of_measurement: "min"
+        attributes:
+          friendly_name: "Ensuite Minutes Since Activity"
+          tier: "β"
+          module: "fallback"
+          role: "timer"
+          type: "sensor"
+          subsystem: "hermes"
+          canonical_id: "ensuite_minutes_since_activity_β"
+          file: "/config/packages/package_presence_activity.yaml"
+          description: "Minutes since last detected activity in the ensuite."
+          version: "1.0"
+          created: "2025-08-05"
+          last_updated: "2025-08-05"
+          domain: "logic"
+          area_id: ensuite
+
+  # ══ Hallway Downstairs ══
+  - trigger:
+      - platform: state
+        entity_id: binary_sensor.hallway_downstairs_occupancy_beta
+        to: "on"
+    sensor:
+      - name: Hallway Downstairs Last Activity
+        unique_id: hallway_downstairs_last_activity
+        state: "{{ now().strftime('%Y-%m-%d %H:%M:%S') }}"
+        attributes:
+          friendly_name: "Hallway Downstairs Last Activity"
+          tier: "β"
+          module: "presence"
+          role: "room_timer"
+          type: "fallback"
+          subsystem: "hermes"
+          canonical_id: "hallway_downstairs_last_activity_β"
+          file: "/config/packages/package_presence_activity.yaml"
+          description: "Timestamp of last detected activity in the downstairs hallway."
+          version: "1.0"
+          created: "2025-08-05"
+          last_updated: "2025-08-05"
+          domain: "logic"
+  - sensor:
+      - name: Hallway Downstairs Minutes Since Activity
+        unique_id: hallway_downstairs_minutes_since_activity
+        state: >
+          {% set last = states('sensor.hallway_downstairs_last_activity') %}
+          {% if last not in ['unknown','unavailable','',none] %}
+            {{ ((now() - (last | as_datetime)).total_seconds() / 60) | round(0) }}
+          {% else %}
+            99999
+          {% endif %}
+        unit_of_measurement: "min"
+        attributes:
+          friendly_name: "Hallway Downstairs Minutes Since Activity"
+          tier: "β"
+          module: "fallback"
+          role: "timer"
+          type: "sensor"
+          subsystem: "hermes"
+          canonical_id: "hallway_downstairs_minutes_since_activity_β"
+          file: "/config/packages/package_presence_activity.yaml"
+          description: "Minutes since last detected activity in the downstairs hallway."
+          version: "1.0"
+          created: "2025-08-05"
+          last_updated: "2025-08-05"
+          domain: "logic"
+          area_id: hallway_downstairs
+
+  # ══ Hallway Upstairs ══
+  - trigger:
+      - platform: state
+        entity_id: binary_sensor.hallway_upstairs_occupancy_beta
+        to: "on"
+    sensor:
+      - name: Hallway Upstairs Last Activity
+        unique_id: hallway_upstairs_last_activity
+        state: "{{ now().strftime('%Y-%m-%d %H:%M:%S') }}"
+        attributes:
+          friendly_name: "Hallway Upstairs Last Activity"
+          tier: "β"
+          module: "presence"
+          role: "room_timer"
+          type: "fallback"
+          subsystem: "hermes"
+          canonical_id: "hallway_upstairs_last_activity_β"
+          file: "/config/packages/package_presence_activity.yaml"
+          description: "Timestamp of last detected activity in the upstairs hallway."
+          version: "1.0"
+          created: "2025-08-05"
+          last_updated: "2025-08-05"
+          domain: "logic"
+  - sensor:
+      - name: Hallway Upstairs Minutes Since Activity
+        unique_id: hallway_upstairs_minutes_since_activity
+        state: >
+          {% set last = states('sensor.hallway_upstairs_last_activity') %}
+          {% if last not in ['unknown','unavailable','',none] %}
+            {{ ((now() - (last | as_datetime)).total_seconds() / 60) | round(0) }}
+          {% else %}
+            99999
+          {% endif %}
+        unit_of_measurement: "min"
+        attributes:
+          friendly_name: "Hallway Upstairs Minutes Since Activity"
+          tier: "β"
+          module: "fallback"
+          role: "timer"
+          type: "sensor"
+          subsystem: "hermes"
+          canonical_id: "hallway_upstairs_minutes_since_activity_β"
+          file: "/config/packages/package_presence_activity.yaml"
+          description: "Minutes since last detected activity in the upstairs hallway."
+          version: "1.0"
+          created: "2025-08-05"
+          last_updated: "2025-08-05"
+          domain: "logic"
+          area_id: hallway_upstairs
+
+  # ══ Entrance (Contact Sensor) ══
+  - trigger:
+      - platform: state
+        entity_id: binary_sensor.entrance_door_contact_matter_omega
+        to: "on"
+    sensor:
+      - name: Entrance Last Activity
+        unique_id: entrance_last_activity
+        state: "{{ now().strftime('%Y-%m-%d %H:%M:%S') }}"
+        attributes:
+          friendly_name: "Entrance Last Activity"
+          tier: "β"
+          module: "presence"
+          role: "room_timer"
+          type: "fallback"
+          subsystem: "hermes"
+          canonical_id: "entrance_last_activity_β"
+          file: "/config/packages/package_presence_activity.yaml"
+          description: "Timestamp of last detected activity at the entrance."
+          version: "1.0"
+          created: "2025-08-05"
+          last_updated: "2025-08-05"
+          domain: "logic"
+  - sensor:
+      - name: Entrance Minutes Since Activity
+        unique_id: entrance_minutes_since_activity
+        state: >
+          {% set last = states('sensor.entrance_last_activity') %}
+          {% if last not in ['unknown','unavailable','',none] %}
+            {{ ((now() - (last | as_datetime)).total_seconds() / 60) | round(0) }}
+          {% else %}
+            99999
+          {% endif %}
+        unit_of_measurement: "min"
+        attributes:
+          friendly_name: "Entrance Minutes Since Activity"
+          tier: "β"
+          module: "fallback"
+          role: "timer"
+          type: "sensor"
+          subsystem: "hermes"
+          canonical_id: "entrance_minutes_since_activity_β"
+          file: "/config/packages/package_presence_activity.yaml"
+          description: "Minutes since last detected activity at the entrance."
+          version: "1.0"
+          created: "2025-08-05"
+          last_updated: "2025-08-05"
+          domain: "logic"
+          area_id: entrance
+
+  # ══ Zone Downstairs (Aggregate) ══
+  - trigger:
+      - platform: state
+        entity_id: binary_sensor.zone_downstairs_occupancy_eta
+        to: "on"
+    sensor:
+      - name: Zone Downstairs Last Activity
+        unique_id: zone_downstairs_last_activity
+        state: "{{ now().strftime('%Y-%m-%d %H:%M:%S') }}"
+        attributes:
+          friendly_name: "Zone Downstairs Last Activity"
+          tier: "β"
+          module: "presence"
+          role: "room_timer"
+          type: "fallback"
+          subsystem: "hermes"
+          canonical_id: "zone_downstairs_last_activity_β"
+          file: "/config/packages/package_presence_activity.yaml"
+          description: "Timestamp of last detected activity in the downstairs zone."
+          version: "1.0"
+          created: "2025-08-05"
+          last_updated: "2025-08-05"
+          domain: "logic"
+  - sensor:
+      - name: Zone Downstairs Minutes Since Activity
+        unique_id: zone_downstairs_minutes_since_activity
+        state: >
+          {% set last = states('sensor.zone_downstairs_last_activity') %}
+          {% if last not in ['unknown','unavailable','',none] %}
+            {{ ((now() - (last | as_datetime)).total_seconds() / 60) | round(0) }}
+          {% else %}
+            99999
+          {% endif %}
+        unit_of_measurement: "min"
+        attributes:
+          friendly_name: "Zone Downstairs Minutes Since Activity"
+          tier: "β"
+          module: "fallback"
+          role: "timer"
+          type: "sensor"
+          subsystem: "hermes"
+          canonical_id: "zone_downstairs_minutes_since_activity_β"
+          file: "/config/packages/package_presence_activity.yaml"
+          description: "Minutes since last detected activity in the downstairs zone."
+          version: "1.0"
+          created: "2025-08-05"
+          last_updated: "2025-08-05"
+          domain: "logic"
+          area_id: zone_downstairs
+
+  # ══ Zone Upstairs (Aggregate) ══
+  - trigger:
+      - platform: state
+        entity_id: binary_sensor.zone_upstairs_occupancy_eta
+        to: "on"
+    sensor:
+      - name: Zone Upstairs Last Activity
+        unique_id: zone_upstairs_last_activity
+        state: "{{ now().strftime('%Y-%m-%d %H:%M:%S') }}"
+        attributes:
+          friendly_name: "Zone Upstairs Last Activity"
+          tier: "β"
+          module: "presence"
+          role: "room_timer"
+          type: "fallback"
+          subsystem: "hermes"
+          canonical_id: "zone_upstairs_last_activity_β"
+          file: "/config/packages/package_presence_activity.yaml"
+          description: "Timestamp of last detected activity in the upstairs zone."
+          version: "1.0"
+          created: "2025-08-05"
+          last_updated: "2025-08-05"
+          domain: "logic"
+  - sensor:
+      - name: Zone Upstairs Minutes Since Activity
+        unique_id: zone_upstairs_minutes_since_activity
+        state: >
+          {% set last = states('sensor.zone_upstairs_last_activity') %}
+          {% if last not in ['unknown','unavailable','',none] %}
+            {{ ((now() - (last | as_datetime)).total_seconds() / 60) | round(0) }}
+          {% else %}
+            99999
+          {% endif %}
+        unit_of_measurement: "min"
+        attributes:
+          friendly_name: "Zone Upstairs Minutes Since Activity"
+          tier: "β"
+          module: "fallback"
+          role: "timer"
+          type: "sensor"
+          subsystem: "hermes"
+          canonical_id: "zone_upstairs_minutes_since_activity_β"
+          file: "/config/packages/package_presence_activity.yaml"
+          description: "Minutes since last detected activity in the upstairs zone."
+          version: "1.0"
+          created: "2025-08-05"
+          last_updated: "2025-08-05"
+          domain: "logic"
+          area_id: zone_upstairs
+
+  # ══ Zone Home (Aggregate / Merged) ══
+  - trigger:
+      - platform: state
+        entity_id: binary_sensor.merged_home_occupancy_eta
+        to: "on"
+    sensor:
+      - name: Zone Home Last Activity
+        unique_id: zone_home_last_activity
+        state: "{{ now().strftime('%Y-%m-%d %H:%M:%S') }}"
+        attributes:
+          friendly_name: "Zone Home Last Activity"
+          tier: "β"
+          module: "presence"
+          role: "room_timer"
+          type: "fallback"
+          subsystem: "hermes"
+          canonical_id: "zone_home_last_activity_β"
+          file: "/config/packages/package_presence_activity.yaml"
+          description: "Timestamp of last detected activity in the home zone."
+          version: "1.0"
+          created: "2025-08-05"
+          last_updated: "2025-08-05"
+          domain: "logic"
+  - sensor:
+      - name: Zone Home Minutes Since Activity
+        unique_id: zone_home_minutes_since_activity
+        state: >
+          {% set last = states('sensor.zone_home_last_activity') %}
+          {% if last not in ['unknown','unavailable','',none] %}
+            {{ ((now() - (last | as_datetime)).total_seconds() / 60) | round(0) }}
+          {% else %}
+            99999
+          {% endif %}
+        unit_of_measurement: "min"
+        attributes:
+          friendly_name: "Zone Home Minutes Since Activity"
+          tier: "β"
+          module: "fallback"
+          role: "timer"
+          type: "sensor"
+          subsystem: "hermes"
+          canonical_id: "zone_home_minutes_since_activity_β"
+          file: "/config/packages/package_presence_activity.yaml"
+          description: "Minutes since last detected activity in the home zone."
+          version: "1.0"
+          created: "2025-08-05"
+          last_updated: "2025-08-05"
+          domain: "logic"
+          area_id: zone_home

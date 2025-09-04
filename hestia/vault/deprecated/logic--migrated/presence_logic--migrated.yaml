@@ -1,0 +1,319 @@
+# ═══════════════════════════════════════════════════════════════
+# ▶ LOGIC SENSOR: Presence Inference Fusion ◀
+# Loader: !include_dir_merge_list from entities/templates/logic/
+# Tier: γ  •  Domain: logic  •  Created: 2025-06-12
+# ═══════════════════════════════════════════════════════════════
+
+- platform: template
+  sensors:
+    bedroom_presence_gamma:
+      friendly_name: 'Bedroom Presence (Gamma)'
+      unique_id: 'bedroom_presence_gamma'
+      device_class: presence
+      value_template: >
+        {% from 'template.library.jinja' import evaluate_room_presence %}
+        {% set motion_recent = 'binary_sensor.bedroom_motion_recent_beta' %}
+        {% set occupancy_sources = ['binary_sensor.bedroom_occupancy_beta'] %}
+        {% set inferred_sources = [
+          'binary_sensor.in_bed_withings_inference_gamma',
+          'binary_sensor.desk_presence_macbook_inference_gamma'
+        ] %}
+        {{ evaluate_room_presence('bedroom', motion_recent, occupancy_sources, inferred_sources) }}
+      attribute_templates:
+        tier: 'γ'
+        canonical_id: 'bedroom_presence_γ'
+        subsystem: 'hermes'
+        module: 'presence'
+        type: 'inference_fusion'
+        role: 'gamma_presence'
+        file: '/config/hestia/binary_sensors/gamma_presence_inference.yaml'
+        origin: 'multimodal_presence_inference'
+        refactor_note: 'Phase 3: Weighted presence inference with bed/desk contextual signals'
+        upstream_sources: >
+          {{ [
+            'binary_sensor.bedroom_motion_recent_beta',
+            'binary_sensor.bedroom_occupancy_beta',
+            'binary_sensor.in_bed_withings_inference_gamma',
+            'binary_sensor.desk_presence_macbook_inference_gamma'
+          ] | tojson }}
+        inference_weights: >
+          {{ {
+            'motion_recent': 40,
+            'occupancy': 30,
+            'inferred_bed': 25,
+            'inferred_desk': 25,
+            'device_tracker': 5
+          } | tojson }}
+        presence_threshold: 30
+        room_areas: ['bed', 'desk', 'wardrobe', 'main']
+        aggregation_strategy: 'weighted presence scoring with contextual inference'
+        presence_sources: >
+          {{ {
+            'direct': ['motion_recent', 'occupancy'],
+            'inferred': ['bed_presence', 'desk_presence'],
+            'contextual': ['device_tracker']
+          } | tojson }}
+        downstream_consumers: >
+          {{ [
+            'binary_sensor.bedroom_presence_eta',
+            'sensor.bedroom_presence_decay_delta'
+          ] | tojson }}
+        version: '3.0.0'
+        last_updated: '2025-06-05'
+
+    kitchen_presence_gamma:
+      friendly_name: 'Kitchen Presence (Gamma)'
+      unique_id: 'kitchen_presence_gamma'
+      device_class: presence
+      value_template: >
+        {% from 'template.library.jinja' import evaluate_room_presence %}
+        {% set motion_recent = 'binary_sensor.kitchen_motion_recent_beta' %}
+        {% set occupancy_sources = ['binary_sensor.kitchen_occupancy_beta'] %}
+        {% set inferred_sources = [] %}
+        {{ evaluate_room_presence('kitchen', motion_recent, occupancy_sources, inferred_sources) }}
+      attribute_templates:
+        tier: 'γ'
+        canonical_id: 'kitchen_presence_γ'
+        subsystem: 'hermes'
+        module: 'presence'
+        type: 'inference_fusion'
+        role: 'gamma_presence'
+        file: '/config/hestia/binary_sensors/gamma_presence_inference.yaml'
+        origin: 'multimodal_presence_inference'
+        refactor_note: 'Phase 3: Motion and occupancy based presence inference'
+        upstream_sources: >
+          {{ [
+            'binary_sensor.kitchen_motion_recent_beta',
+            'binary_sensor.kitchen_occupancy_beta'
+          ] | tojson }}
+        inference_weights: >
+          {{ {
+            'motion_recent': 40,
+            'occupancy': 30,
+            'device_tracker': 5
+          } | tojson }}
+        presence_threshold: 30
+        room_areas: ['counters', 'dining_table', 'coffee_corner']
+        aggregation_strategy: 'weighted presence scoring with standard signals'
+        presence_sources: >
+          {{ {
+            'direct': ['motion_recent', 'occupancy'],
+            'inferred': [],
+            'contextual': ['device_tracker']
+          } | tojson }}
+        downstream_consumers: >
+          {{ [
+            'binary_sensor.shared_space_presence_eta',
+            'sensor.kitchen_presence_decay_delta'
+          ] | tojson }}
+        version: '3.0.0'
+        last_updated: '2025-06-05'
+
+    living_room_presence_gamma:
+      friendly_name: 'Living Room Presence (Gamma)'
+      unique_id: 'living_room_presence_gamma'
+      device_class: presence
+      delay_off:
+        seconds: >
+          {% from 'template.library.jinja' import get_context_timeout %}
+          {{ get_context_timeout('living_room', 5) }}
+      value_template: >
+        {% from 'template.library.jinja' import evaluate_room_presence %}
+        {% set motion_recent = 'binary_sensor.living_room_motion_recent_beta' %}
+        {% set occupancy_sources = ['binary_sensor.living_room_occupancy_beta'] %}
+        {% set inferred_sources = [] %}
+        {{ evaluate_room_presence('living_room', motion_recent, occupancy_sources, inferred_sources) }}
+      attribute_templates:
+        tier: 'γ'
+        canonical_id: 'living_room_presence_γ'
+        subsystem: 'hermes'
+        module: 'presence'
+        type: 'inference_fusion'
+        role: 'gamma_presence'
+        file: '/config/hestia/binary_sensors/gamma_presence_inference.yaml'
+        origin: 'multimodal_presence_inference'
+        refactor_note: 'Phase 3: Context-aware timeout with entertainment/gaming mode detection'
+        upstream_sources: >
+          {{ [
+            'binary_sensor.living_room_motion_recent_beta',
+            'binary_sensor.living_room_occupancy_beta'
+          ] | tojson }}
+        inference_weights: >
+          {{ {
+            'motion_recent': 40,
+            'occupancy': 30,
+            'device_tracker': 5
+          } | tojson }}
+        presence_threshold: 30
+        room_areas: ['couch', 'windows', 'desk', 'liquor_cabinet']
+        aggregation_strategy: 'weighted presence scoring with context-aware timeout'
+        context_timeout_logic: >
+          {{ {
+            'entertainment_mode': '15min (projector playing)',
+            'gaming_mode': '12min (gaming console on)',
+            'default': '5min'
+          } | tojson }}
+        presence_sources: >
+          {{ {
+            'direct': ['motion_recent', 'occupancy'],
+            'inferred': [],
+            'contextual': ['device_tracker', 'media_state', 'gaming_state']
+          } | tojson }}
+        downstream_consumers: >
+          {{ [
+            'binary_sensor.shared_space_presence_eta',
+            'sensor.living_room_presence_decay_delta'
+          ] | tojson }}
+        version: '3.0.0'
+        last_updated: '2025-06-05'
+
+    ensuite_presence_gamma:
+      friendly_name: 'Ensuite Presence (Gamma)'
+      unique_id: 'ensuite_presence_gamma'
+      device_class: presence
+      delay_off:
+        minutes: 10
+      value_template: >
+        {% from 'template.library.jinja' import evaluate_room_presence %}
+        {% set motion_recent = 'binary_sensor.ensuite_motion_recent_beta' %}
+        {% set occupancy_sources = ['binary_sensor.ensuite_occupancy_beta'] %}
+        {% set inferred_sources = [] %}
+        {{ evaluate_room_presence('ensuite', motion_recent, occupancy_sources, inferred_sources) }}
+      attribute_templates:
+        tier: 'γ'
+        canonical_id: 'ensuite_presence_γ'
+        subsystem: 'hermes'
+        module: 'presence'
+        type: 'inference_fusion'
+        role: 'gamma_presence'
+        file: '/config/hestia/binary_sensors/gamma_presence_inference.yaml'
+        origin: 'multimodal_presence_inference'
+        refactor_note: 'Phase 3: Extended timeout for private bathroom usage patterns'
+        upstream_sources: >
+          {{ [
+            'binary_sensor.ensuite_motion_recent_beta',
+            'binary_sensor.ensuite_occupancy_beta'
+          ] | tojson }}
+        inference_weights: >
+          {{ {
+            'motion_recent': 40,
+            'occupancy': 30,
+            'device_tracker': 5
+          } | tojson }}
+        presence_threshold: 30
+        room_areas: ['main']
+        timeout_behavior: 'extended_for_privacy'
+        aggregation_strategy: 'weighted presence scoring with extended private space timeout'
+        presence_sources: >
+          {{ {
+            'direct': ['motion_recent', 'occupancy'],
+            'inferred': [],
+            'contextual': ['device_tracker']
+          } | tojson }}
+        downstream_consumers: >
+          {{ [
+            'binary_sensor.private_space_presence_eta',
+            'sensor.ensuite_presence_decay_delta'
+          ] | tojson }}
+        version: '3.0.0'
+        last_updated: '2025-06-05'
+
+    hallway_downstairs_presence_gamma:
+      friendly_name: 'Hallway Downstairs Presence (Gamma)'
+      unique_id: 'hallway_downstairs_presence_gamma'
+      device_class: presence
+      value_template: >
+        {% from 'template.library.jinja' import evaluate_room_presence %}
+        {% set motion_recent = 'binary_sensor.hallway_downstairs_motion_recent_beta' %}
+        {% set occupancy_sources = ['binary_sensor.hallway_downstairs_occupancy_beta'] %}
+        {% set inferred_sources = ['binary_sensor.floor_activity_detected_gamma'] %}
+        {{ evaluate_room_presence('hallway_downstairs', motion_recent, occupancy_sources, inferred_sources) }}
+      attribute_templates:
+        tier: 'γ'
+        canonical_id: 'hallway_downstairs_presence_γ'
+        subsystem: 'hermes'
+        module: 'presence'
+        type: 'inference_fusion'
+        role: 'gamma_presence'
+        file: '/config/hestia/binary_sensors/gamma_presence_inference.yaml'
+        origin: 'multimodal_presence_inference'
+        refactor_note: 'Phase 3: Transition zone with floor activity inference'
+        upstream_sources: >
+          {{ [
+            'binary_sensor.hallway_downstairs_motion_recent_beta',
+            'binary_sensor.hallway_downstairs_occupancy_beta',
+            'binary_sensor.floor_activity_detected_gamma'
+          ] | tojson }}
+        inference_weights: >
+          {{ {
+            'motion_recent': 40,
+            'occupancy': 30,
+            'floor_activity': 20,
+            'device_tracker': 5
+          } | tojson }}
+        presence_threshold: 30
+        room_areas: ['main', 'entrance']
+        aggregation_strategy: 'weighted presence scoring with floor activity detection'
+        presence_sources: >
+          {{ {
+            'direct': ['motion_recent', 'occupancy'],
+            'inferred': ['floor_activity'],
+            'contextual': ['device_tracker']
+          } | tojson }}
+        downstream_consumers: >
+          {{ [
+            'binary_sensor.downstairs_zone_presence_eta',
+            'sensor.hallway_downstairs_presence_decay_delta'
+          ] | tojson }}
+        version: '3.0.0'
+        last_updated: '2025-06-05'
+
+    hallway_upstairs_presence_gamma:
+      friendly_name: 'Hallway Upstairs Presence (Gamma)'
+      unique_id: 'hallway_upstairs_presence_gamma'
+      device_class: presence
+      value_template: >
+        {% from 'template.library.jinja' import evaluate_room_presence %}
+        {% set motion_recent = 'binary_sensor.hallway_upstairs_motion_recent_beta' %}
+        {% set occupancy_sources = ['binary_sensor.hallway_upstairs_occupancy_beta'] %}
+        {% set inferred_sources = ['binary_sensor.floor_activity_detected_gamma'] %}
+        {{ evaluate_room_presence('hallway_upstairs', motion_recent, occupancy_sources, inferred_sources) }}
+      attribute_templates:
+        tier: 'γ'
+        canonical_id: 'hallway_upstairs_presence_γ'
+        subsystem: 'hermes'
+        module: 'presence'
+        type: 'inference_fusion'
+        role: 'gamma_presence'
+        file: '/config/hestia/binary_sensors/gamma_presence_inference.yaml'
+        origin: 'multimodal_presence_inference'
+        refactor_note: 'Phase 3: Transition zone with floor activity inference'
+        upstream_sources: >
+          {{ [
+            'binary_sensor.hallway_upstairs_motion_recent_beta',
+            'binary_sensor.hallway_upstairs_occupancy_beta',
+            'binary_sensor.floor_activity_detected_gamma'
+          ] | tojson }}
+        inference_weights: >
+          {{ {
+            'motion_recent': 40,
+            'occupancy': 30,
+            'floor_activity': 20,
+            'device_tracker': 5
+          } | tojson }}
+        presence_threshold: 30
+        room_areas: ['main']
+        aggregation_strategy: 'weighted presence scoring with floor activity detection'
+        presence_sources: >
+          {{ {
+            'direct': ['motion_recent', 'occupancy'],
+            'inferred': ['floor_activity'],
+            'contextual': ['device_tracker']
+          } | tojson }}
+        downstream_consumers: >
+          {{ [
+            'binary_sensor.upstairs_zone_presence_eta',
+            'sensor.hallway_upstairs_presence_decay_delta'
+          ] | tojson }}
+        version: '3.0.0'
+        last_updated: '2025-06-05'

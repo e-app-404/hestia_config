@@ -1,0 +1,128 @@
+# file: hifi.topology.yaml
+# -----------------------------------------------------------------------------
+# Bedroom A/V topology & declarative source map for a Universal media_player.
+# This file is consumed by the universal config (see hifi.config.yaml).
+#
+# References (read first):
+# - Universal integration: https://www.home-assistant.io/integrations/universal/
+# - 2024.8 release (service calls are now actions): https://www.home-assistant.io/blog/2024/08/07/release-20248/
+# - Universal component source (behavior & keys): https://github.com/home-assistant/core/tree/dev/homeassistant/components/universal
+# - Community sanity checks (inferences/edge-cases; lower confidence):
+#   * https://community.home-assistant.io/t/merging-media-player-statuses/876993/2
+#   * https://community.home-assistant.io/t/media-player-universal-source-in-overview/135331/13
+# -----------------------------------------------------------------------------
+
+sources: # canonical → route + control hints
+  # --- TV-native paths (no HDMI matrix video source) ---
+  "Samsung TV":
+    route:
+      kind: internal_tv
+      note: "Use TV tuner input; matrix not used for video."
+    device: media_player.bedroom_tv_alpha
+    app: "TV" # TODO: verify Samsung's tuner label ('TV', 'TV/ANT', 'TV Plus' vary by model). # confidence: 0.55
+    audio_sink: media_player.bedroom_sonos_ray
+    rationale: >
+      Tuner (DTV) on Samsung TV. Audio path likely via TV/ARC; SONOS volume is still exposed via Universal. # confidence: 0.65
+
+  "DLNA (TV)":
+    route: { kind: internal_tv }
+    device: media_player.bedroom_tv_alpha_dlna
+    app: "DLNA" # TODO: verify label; entity currently unavailable.
+    audio_sink: media_player.bedroom_sonos_ray
+    rationale: "Samsung DLNA app (control entity may be unavailable). Power TV and attempt app focus if possible." # confidence: 0.58
+
+  "Plex (Samsung TV app)":
+    route: { kind: internal_tv }
+    device: media_player.bedroom_tv_alpha_plex
+    app: "Plex" # native TV app
+    audio_sink: media_player.bedroom_sonos_ray
+    rationale: "Native Plex on TV; audio remains via TV/ARC. Universal still exposes SONOS volume." # confidence: 0.60
+
+  "Chromecast (TV)":
+    route: { kind: internal_tv }
+    device: media_player.bedroom_tv_alpha
+    app: "Chromecast" # TODO: label varies ('Cast', 'Smart View'); best-effort selection. # confidence: 0.52
+    audio_sink: media_player.bedroom_sonos_ray
+    rationale: "Cast receiver built into the TV." # confidence: 0.62
+
+  # --- HDMI matrix paths (A → TV video, B → SONOS Ray audio) ---
+  "AirPlay (via Apple TV)":
+    route:
+      kind: matrix
+      # Assumed A/B mapping: 1=Apple TV, 2=PS4, 3=Switch, 4=Wii. Keep in sync with matrix scripts.
+      a: 1
+      b: 1
+    device: media_player.bedroom_apple_tv_alpha
+    app: null # AirPlay is session-driven; no explicit app selection.
+    audio_sink: media_player.bedroom_sonos_ray
+    rationale: "Route Apple TV for AirPlay; no app selection needed." # confidence: 0.86
+
+  "Apple TV (Home screen)":
+    route: { kind: matrix, a: 1, b: 1 }
+    device: media_player.bedroom_apple_tv_alpha
+    app: null # invoke Home via remote command
+    audio_sink: media_player.bedroom_sonos_ray
+    rationale: "General Apple TV use; foreground Home via remote command." # confidence: 0.90
+
+  "Apple TV – Plex":
+    route: { kind: matrix, a: 1, b: 1 }
+    device: media_player.bedroom_apple_tv_alpha
+    app: "Plex" # select Plex from Apple TV source list
+    audio_sink: media_player.bedroom_sonos_ray
+    rationale: "Launch Plex on Apple TV and route A/B to Apple TV." # confidence: 0.93
+
+  "PlayStation 4":
+    route: { kind: matrix, a: 2, b: 2 }
+    device: media_player.playstation_4
+    app: null
+    audio_sink: media_player.bedroom_sonos_ray
+    rationale: "Route only; optional separate package can wake PS4 / show recents." # confidence: 0.92
+
+  "Nintendo Switch":
+    route: { kind: matrix, a: 3, b: 3 }
+    device: null # no native HA media_player
+    app: null
+    audio_sink: media_player.bedroom_sonos_ray
+    rationale: "Route only; no HA control entity." # confidence: 0.95
+
+  "Nintendo Wii":
+    route: { kind: matrix, a: 4, b: 4 }
+    device: null
+    app: null
+    audio_sink: media_player.bedroom_sonos_ray
+    rationale: "Route only; no HA control entity." # confidence: 0.95
+
+priority:
+  # Used by active_child/state templates: first non-off/idle child wins.
+  - media_player.bedroom_apple_tv_alpha
+  - media_player.playstation_4
+  - media_player.bedroom_tv_alpha
+  - media_player.bedroom_sonos_ray
+  # Note: Universal allows overriding active child via template (see config). # confidence: 0.90
+
+entities:
+  tv:
+    - media_player.bedroom_tv_alpha
+    - media_player.bedroom_tv_alpha_hub # will be used to switch TV<->HDMI actively
+    - media_player.bedroom_apple_tv_alpha
+    - media_player.bedroom_apple_tv_alpha_plex # restored/unavailable; not used directly. # confidence: 0.55
+  consoles:
+    - media_player.playstation_4
+  audio:
+    - media_player.bedroom_sonos_ray
+    - media_player.bedroom_sonos_surround
+
+safety:
+  power_on_wait: "3s" # give TV time to accept HDMI routing after power. # confidence: 0.78
+  matrix_switch_wait: "300ms" # IR/relay debounce between A/B commands. # confidence: 0.82
+  app_launch_wait: "2.5s" # time for Apple TV to foreground an app. # confidence: 0.75
+  retries:
+    matrix_command: 1 # optional re-send if transport flakes. # confidence: 0.70
+
+# Validation:
+# - Universal keys/behavior per docs (children, commands, attributes, templates).
+# - HA 2024.8 'action:' terminology used throughout.
+# Known constraint:
+# - Universal 'attributes' are static mappings (no Jinja), so dynamic "media_title from active child"
+#   requires a separate template sensor if desired.
+# confidence: 0.93

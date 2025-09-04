@@ -1,0 +1,305 @@
+#═══════════════════════════════════════════════════════════════
+# ▶ LOGIC SENSOR: Climate Zone Aggregation ◀
+# Loader: !include_dir_merge_named from entities/templates/logic/
+# Tier: η  •  Domain: logic  •  Created: 2025-06-12
+# migrated to
+# ═══════════════════════════════════════════════════════════════
+
+
+shared_space_presence_eta:
+  friendly_name: 'Shared Space Presence (Eta)'
+  unique_id: 'shared_space_presence_eta'
+  device_class: presence
+  value_template: >
+    {% set presence_sources = [
+      'binary_sensor.kitchen_presence_gamma',
+      'binary_sensor.living_room_presence_gamma'
+    ] %}
+    {{ presence_sources | map('states') | select('eq', 'on') | list | count > 0 }}
+  attribute_templates:
+    tier: 'η'
+    canonical_id: 'shared_space_presence_η'
+    subsystem: 'hermes'
+    module: 'zone_presence'
+    type: 'zone_aggregation'
+    role: 'eta_presence'
+    file: '/config/hestia/binary_sensors/eta_zone_presence.yaml'
+    origin: 'gamma_presence_aggregation'
+    refactor_note: 'Phase 3: Zone-level presence synthesis for shared living areas'
+    upstream_sources: >
+      {{ [
+        'binary_sensor.kitchen_presence_gamma',
+        'binary_sensor.living_room_presence_gamma'
+      ] | tojson }}
+    zone_definition: 'shared_living_spaces'
+    rooms_included: >
+      {{ ['kitchen', 'living_room'] | tojson }}
+    aggregation_strategy: 'OR logic across shared space γ-tier presence signals'
+    zone_characteristics: >
+      {{ {
+        'type': 'common_areas',
+        'floor': '1',
+        'accessibility': 'high',
+        'typical_activities': ['cooking', 'dining', 'entertainment', 'socializing']
+      } | tojson }}
+    active_rooms: >
+      {% set presence_sources = [
+        'binary_sensor.kitchen_presence_gamma',
+        'binary_sensor.living_room_presence_gamma'
+      ] %}
+      {% set room_names = ['kitchen', 'living_room'] %}
+      {% set active = [] %}
+      {% for i in range(presence_sources | length) %}
+        {% if states(presence_sources[i]) == 'on' %}
+          {% set active = active + [room_names[i]] %}
+        {% endif %}
+      {% endfor %}
+      {{ active | join(', ') if active else 'none' }}
+    downstream_consumers: >
+      {{ [
+        'sensor.home_presence_confidence_delta',
+        'binary_sensor.home_occupied_zeta'
+      ] | tojson }}
+    version: '3.0.0'
+    last_updated: '2025-06-05'
+
+private_space_presence_eta:
+  friendly_name: 'Private Space Presence (Eta)'
+  unique_id: 'private_space_presence_eta'
+  device_class: presence
+  value_template: >
+    {% set presence_sources = [
+      'binary_sensor.bedroom_presence_gamma',
+      'binary_sensor.ensuite_presence_gamma'
+    ] %}
+    {{ presence_sources | map('states') | select('eq', 'on') | list | count > 0 }}
+  attribute_templates:
+    tier: 'η'
+    canonical_id: 'private_space_presence_η'
+    subsystem: 'hermes'
+    module: 'zone_presence'
+    type: 'zone_aggregation'
+    role: 'eta_presence'
+    file: '/config/hestia/binary_sensors/eta_zone_presence.yaml'
+    origin: 'gamma_presence_aggregation'
+    refactor_note: 'Phase 3: Zone-level presence synthesis for private areas'
+    upstream_sources: >
+      {{ [
+        'binary_sensor.bedroom_presence_gamma',
+        'binary_sensor.ensuite_presence_gamma'
+      ] | tojson }}
+    zone_definition: 'private_personal_spaces'
+    rooms_included: >
+      {{ ['bedroom', 'ensuite'] | tojson }}
+    aggregation_strategy: 'OR logic across private space γ-tier presence signals'
+    zone_characteristics: >
+      {{ {
+        'type': 'private_areas',
+        'floor': '2',
+        'accessibility': 'restricted',
+        'typical_activities': ['sleeping', 'personal_care', 'work', 'relaxation']
+      } | tojson }}
+    active_rooms: >
+      {% set presence_sources = [
+        'binary_sensor.bedroom_presence_gamma',
+        'binary_sensor.ensuite_presence_gamma'
+      ] %}
+      {% set room_names = ['bedroom', 'ensuite'] %}
+      {% set active = [] %}
+      {% for i in range(presence_sources | length) %}
+        {% if states(presence_sources[i]) == 'on' %}
+          {% set active = active + [room_names[i]] %}
+        {% endif %}
+      {% endfor %}
+      {{ active | join(', ') if active else 'none' }}
+    downstream_consumers: >
+      {{ [
+        'sensor.home_presence_confidence_delta',
+        'binary_sensor.home_occupied_zeta'
+      ] | tojson }}
+    version: '3.0.0'
+    last_updated: '2025-06-05'
+
+upstairs_zone_presence_eta:
+  friendly_name: 'Upstairs Zone Presence (Eta)'
+  unique_id: 'upstairs_zone_presence_eta'
+  device_class: presence
+  value_template: >
+    {% set presence_sources = [
+      'binary_sensor.bedroom_presence_gamma',
+      'binary_sensor.ensuite_presence_gamma',
+      'binary_sensor.hallway_upstairs_presence_gamma'
+    ] %}
+    {{ presence_sources | map('states') | select('eq', 'on') | list | count > 0 }}
+  attribute_templates:
+    tier: 'η'
+    canonical_id: 'upstairs_zone_presence_η'
+    subsystem: 'hermes'
+    module: 'zone_presence'
+    type: 'zone_aggregation'
+    role: 'eta_presence'
+    file: '/config/hestia/binary_sensors/eta_zone_presence.yaml'
+    origin: 'gamma_presence_aggregation'
+    refactor_note: 'Phase 3: Floor-based presence synthesis for upstairs areas'
+    upstream_sources: >
+      {{ [
+        'binary_sensor.bedroom_presence_gamma',
+        'binary_sensor.ensuite_presence_gamma',
+        'binary_sensor.hallway_upstairs_presence_gamma'
+      ] | tojson }}
+    zone_definition: 'upstairs_floor_areas'
+    rooms_included: >
+      {{ ['bedroom', 'ensuite', 'hallway_upstairs'] | tojson }}
+    aggregation_strategy: 'OR logic across upstairs γ-tier presence signals'
+    zone_characteristics: >
+      {{ {
+        'type': 'floor_zone',
+        'floor': '2',
+        'accessibility': 'stairs_required',
+        'typical_activities': ['sleeping', 'personal_care', 'work', 'transition']
+      } | tojson }}
+    active_rooms: >
+      {% set presence_sources = [
+        'binary_sensor.bedroom_presence_gamma',
+        'binary_sensor.ensuite_presence_gamma',
+        'binary_sensor.hallway_upstairs_presence_gamma'
+      ] %}
+      {% set room_names = ['bedroom', 'ensuite', 'hallway_upstairs'] %}
+      {% set active = [] %}
+      {% for i in range(presence_sources | length) %}
+        {% if states(presence_sources[i]) == 'on' %}
+          {% set active = active + [room_names[i]] %}
+        {% endif %}
+      {% endfor %}
+      {{ active | join(', ') if active else 'none' }}
+    downstream_consumers: >
+      {{ [
+        'sensor.home_presence_confidence_delta',
+        'binary_sensor.home_occupied_zeta'
+      ] | tojson }}
+    version: '3.0.0'
+    last_updated: '2025-06-05'
+
+downstairs_zone_presence_eta:
+  friendly_name: 'Downstairs Zone Presence (Eta)'
+  unique_id: 'downstairs_zone_presence_eta'
+  device_class: presence
+  value_template: >
+    {% set presence_sources = [
+      'binary_sensor.kitchen_presence_gamma',
+      'binary_sensor.living_room_presence_gamma',
+      'binary_sensor.hallway_downstairs_presence_gamma'
+    ] %}
+    {{ presence_sources | map('states') | select('eq', 'on') | list | count > 0 }}
+  attribute_templates:
+    tier: 'η'
+    canonical_id: 'downstairs_zone_presence_η'
+    subsystem: 'hermes'
+    module: 'zone_presence'
+    type: 'zone_aggregation'
+    role: 'eta_presence'
+    file: '/config/hestia/binary_sensors/eta_zone_presence.yaml'
+    origin: 'gamma_presence_aggregation'
+    refactor_note: 'Phase 3: Floor-based presence synthesis for downstairs areas'
+    upstream_sources: >
+      {{ [
+        'binary_sensor.kitchen_presence_gamma',
+        'binary_sensor.living_room_presence_gamma',
+        'binary_sensor.hallway_downstairs_presence_gamma'
+      ] | tojson }}
+    zone_definition: 'downstairs_floor_areas'
+    rooms_included: >
+      {{ ['kitchen', 'living_room', 'hallway_downstairs'] | tojson }}
+    aggregation_strategy: 'OR logic across downstairs γ-tier presence signals'
+    zone_characteristics: >
+      {{ {
+        'type': 'floor_zone',
+        'floor': '1',
+        'accessibility': 'ground_level',
+        'typical_activities': ['cooking', 'dining', 'entertainment', 'entry', 'transition']
+      } | tojson }}
+    active_rooms: >
+      {% set presence_sources = [
+        'binary_sensor.kitchen_presence_gamma',
+        'binary_sensor.living_room_presence_gamma',
+        'binary_sensor.hallway_downstairs_presence_gamma'
+      ] %}
+      {% set room_names = ['kitchen', 'living_room', 'hallway_downstairs'] %}
+      {% set active = [] %}
+      {% for i in range(presence_sources | length) %}
+        {% if states(presence_sources[i]) == 'on' %}
+          {% set active = active + [room_names[i]] %}
+        {% endif %}
+      {% endfor %}
+      {{ active | join(', ') if active else 'none' }}
+    downstream_consumers: >
+      {{ [
+        'sensor.home_presence_confidence_delta',
+        'binary_sensor.home_occupied_zeta'
+      ] | tojson }}
+    version: '3.0.0'
+    last_updated: '2025-06-05'
+
+home_presence_synthesis_eta:
+  friendly_name: 'Home Presence Synthesis (Eta)'
+  unique_id: 'home_presence_synthesis_eta'
+  device_class: presence
+  value_template: >
+    {% set zone_sources = [
+      'binary_sensor.shared_space_presence_eta',
+      'binary_sensor.private_space_presence_eta',
+      'binary_sensor.upstairs_zone_presence_eta',
+      'binary_sensor.downstairs_zone_presence_eta'
+    ] %}
+    {{ zone_sources | map('states') | select('eq', 'on') | list | count > 0 }}
+  attribute_templates:
+    tier: 'η'
+    canonical_id: 'home_presence_synthesis_η'
+    subsystem: 'hermes'
+    module: 'zone_presence'
+    type: 'home_synthesis'
+    role: 'eta_presence'
+    file: '/config/hestia/binary_sensors/eta_zone_presence.yaml'
+    origin: 'zone_presence_aggregation'
+    refactor_note: 'Phase 3: Ultimate home presence truth signal from all zone aggregations'
+    upstream_sources: >
+      {{ [
+        'binary_sensor.shared_space_presence_eta',
+        'binary_sensor.private_space_presence_eta',
+        'binary_sensor.upstairs_zone_presence_eta',
+        'binary_sensor.downstairs_zone_presence_eta'
+      ] | tojson }}
+    zone_definition: 'whole_home_presence'
+    zones_included:
+      ['shared_space', 'private_space', 'upstairs', 'downstairs']
+    aggregation_strategy: 'OR logic across all zone η-tier presence signals'
+    zone_characteristics: >
+      {{ {
+        'type': 'whole_home',
+        'floors': ['1', '2'],
+        'accessibility': 'complete',
+        'coverage': 'comprehensive_multi_zone'
+      } | tojson }}
+    active_zones: >
+      {% set zone_sources = [
+        'binary_sensor.shared_space_presence_eta',
+        'binary_sensor.private_space_presence_eta',
+        'binary_sensor.upstairs_zone_presence_eta',
+        'binary_sensor.downstairs_zone_presence_eta'
+      ] %}
+      {% set zone_names = ['shared_space', 'private_space', 'upstairs', 'downstairs'] %}
+      {% set active = [] %}
+      {% for i in range(zone_sources | length) %}
+        {% if states(zone_sources[i]) == 'on' %}
+          {% set active = active + [zone_names[i]] %}
+        {% endif %}
+      {% endfor %}
+      {{ active | join(', ') if active else 'none' }}
+    downstream_consumers: >
+      {{ [
+        'binary_sensor.home_occupied_zeta',
+        'automation.presence_based_lighting',
+        'automation.security_arm_disarm'
+      ] | tojson }}
+    version: '3.0.0'
+    last_updated: '2025-06-05'

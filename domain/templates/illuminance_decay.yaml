@@ -1,0 +1,23 @@
+#══════════════════════════════════════════════════════════════════════════════
+# ▶ CLIMATE SENSORS: Illuminance Time Decay & Weighted Metrics ◀
+# Loader: !include_dir_merge_list domain/templates/
+# Schema: sensor (list)
+#══════════════════════════════════════════════════════════════════════════════
+
+- sensor:
+    - name: "Bedroom TV Illuminance Decay (δ)"
+      unique_id: "bedroom_tv_illuminance_decay_delta"
+      icon: mdi:brightness-6
+      state: >
+        {% set engaged = is_state('binary_sensor.bedroom_tv_entertainment_engaged_gamma', 'on') %}
+        {% set prev = states('sensor.bedroom_tv_illuminance_decay_delta')|float(0) %}
+        {% set result = 10 if engaged else max(prev - 0.1, 0) %}
+        {{ result }}
+      attributes:
+        tier: "δ"
+        canonical_id: "bedroom_tv_illuminance_decay_δ"
+        gamma_source: "binary_sensor.bedroom_tv_entertainment_engaged_gamma"
+        rationale: "Decay illuminance score when TV engaged, persists lighting effects for a short period."
+        last_updated: "{{ now().isoformat() }}"
+        description: >
+          Decay sensor for lighting persistence based on TV engagement.

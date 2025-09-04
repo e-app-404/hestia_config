@@ -1,0 +1,510 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "HESTIA Alpha Light Registry Schema",
+    "description": "Schema for light devices with multi-protocol support in the HESTIA smart home system",
+    "type": "object",
+    "required": ["_meta", "light_devices"],
+    "properties": {
+      "_meta": {
+        "type": "object",
+        "required": ["schema_version", "last_updated", "schema_notes"],
+        "properties": {
+          "schema_version": {
+            "type": "string",
+            "description": "Version of the light registry schema",
+            "example": "3.0"
+          },
+          "last_updated": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When the registry was last updated",
+            "example": "2025-05-01T14:46:50.852443Z"
+          },
+          "schema_notes": {
+            "type": "string",
+            "description": "Notes about schema validation",
+            "example": "Validated and corrected by Cerberus"
+          },
+          "validation_status": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "string",
+                "enum": ["valid", "warning", "invalid", "pending", "rebuilding"],
+                "description": "Current validation status"
+              },
+              "validated_by": {
+                "type": ["string", "null"],
+                "description": "Entity or system that performed validation"
+              },
+              "timestamp": {
+                "type": ["string", "null"],
+                "format": "date-time",
+                "description": "When the registry was last validated"
+              }
+            }
+          }
+        }
+      },
+      "protocol_definitions": {
+        "type": "object",
+        "description": "Definitions of supported communication protocols",
+        "patternProperties": {
+          "^[a-z0-9_]+$": {
+            "type": "object",
+            "required": ["name", "description", "priority"],
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "Protocol name"
+              },
+              "description": {
+                "type": "string",
+                "description": "Protocol description"
+              },
+              "priority": {
+                "type": "integer",
+                "description": "Default priority for this protocol (lower is higher priority)"
+              }
+            }
+          }
+        }
+      },
+      "integration_platforms": {
+        "type": "object",
+        "description": "Definitions of supported integration platforms",
+        "patternProperties": {
+          "^[a-z0-9_]+$": {
+            "type": "object",
+            "required": ["name", "description", "protocol", "priority"],
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "Integration platform name"
+              },
+              "alias": {
+                "type": ["string", "null"],
+                "description": "Alternative name for the platform"
+              },
+              "description": {
+                "type": "string",
+                "description": "Platform description"
+              },
+              "protocol": {
+                "oneOf": [
+                  { "type": "string" },
+                  {
+                    "type": "array",
+                    "items": { "type": "string" }
+                  }
+                ],
+                "description": "Communication protocol(s) used by this platform"
+              },
+              "priority": {
+                "type": "integer",
+                "description": "Default priority for this platform (lower is higher priority)"
+              }
+            }
+          }
+        }
+      },
+      "light_devices": {
+        "type": "object",
+        "description": "Registry of all light devices",
+        "patternProperties": {
+          "^[a-z0-9_]+_omega$": {
+            "type": "object",
+            "required": [
+              "omega_name", "friendly_name", "canonical_id", "type",
+              "location", "area_id", "integration_stack",
+              "preferred_protocol", "capabilities", "device_info"
+            ],
+            "properties": {
+              "omega_name": {
+                "type": "string",
+                "description": "System name for the device omega"
+              },
+              "friendly_name": {
+                "type": "string",
+                "description": "Human-friendly name displayed in UI"
+              },
+              "internal_name": {
+                "type": ["string", "null"],
+                "description": "Internal system identifier"
+              },
+              "canonical_id": {
+                "type": "string",
+                "description": "Unique canonical identifier with omega symbol",
+                "pattern": "^[a-z0-9_]+_ω$"
+              },
+              "type": {
+                "type": "string",
+                "enum": ["light", "switch", "lightstrip"],
+                "description": "Device type"
+              },
+              "location": {
+                "type": "object",
+                "required": ["room"],
+                "properties": {
+                  "room": {
+                    "type": "string",
+                    "description": "Room identifier"
+                  },
+                  "area": {
+                    "type": ["string", "null"],
+                    "description": "Area within room"
+                  },
+                  "role": {
+                    "type": ["string", "null"],
+                    "description": "Functional role in the area"
+                  }
+                }
+              },
+              "area_id": {
+                "type": "string",
+                "description": "Reference to room registry ID"
+              },
+              "room_area": {
+                "type": ["string", "null"],
+                "description": "Reference to area within room"
+              },
+              "integration_stack": {
+                "type": "object",
+                "description": "Available integration protocols",
+                "minProperties": 1,
+                "patternProperties": {
+                  "^[a-z0-9_]+$": {
+                    "type": "object",
+                    "required": [
+                      "protocol", "type", "canonical_id",
+                      "status", "availability_sensor"
+                    ],
+                    "properties": {
+                      "protocol": {
+                        "type": "string",
+                        "description": "Communication protocol"
+                      },
+                      "device_id": {
+                        "type": ["string", "null"],
+                        "description": "Protocol-specific device ID"
+                      },
+                      "type": {
+                        "type": "string",
+                        "description": "Device type within protocol"
+                      },
+                      "entity_id": {
+                        "type": ["string", "null"],
+                        "description": "Primary entity ID"
+                      },
+                      "origin": {
+                        "type": ["string", "null"],
+                        "description": "Original entity for this integration"
+                      },
+                      "canonical_id": {
+                        "type": "string",
+                        "description": "Canonical alpha ID for protocol",
+                        "pattern": "^[a-z0-9_]+_α(_[a-z0-9_]+)?$"
+                      },
+                      "status": {
+                        "type": "string",
+                        "enum": ["paired", "unpaired", "discovering", "failed", "fallback"],
+                        "description": "Current pairing status"
+                      },
+                      "availability_sensor": {
+                        "type": "string",
+                        "description": "Entity ID for availability sensing"
+                      }
+                    }
+                  }
+                }
+              },
+              "preferred_protocol": {
+                "type": "string",
+                "description": "Primary protocol to use"
+              },
+              "protocol_metrics": {
+                "type": "object",
+                "description": "Performance metrics for each protocol",
+                "patternProperties": {
+                  "^[a-z0-9_]+$": {
+                    "type": "object",
+                    "properties": {
+                      "last_seen": {
+                        "type": ["string", "null"],
+                        "format": "date-time",
+                        "description": "Last time device was seen via this protocol"
+                      },
+                      "response_time_ms": {
+                        "type": ["number", "null"],
+                        "description": "Average response time in milliseconds"
+                      },
+                      "reliability_score": {
+                        "type": ["number", "null"],
+                        "minimum": 0,
+                        "maximum": 100,
+                        "description": "Reliability score 0-100"
+                      }
+                    }
+                  }
+                }
+              },
+              "fallback_settings": {
+                "type": "object",
+                "properties": {
+                  "retry_attempts": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "description": "Number of retry attempts"
+                  },
+                  "retry_delay_ms": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "description": "Delay between retries in milliseconds"
+                  },
+                  "auto_switch_threshold": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "description": "Failed attempts before switching protocols"
+                  },
+                  "return_to_preferred_after": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "description": "Seconds until returning to preferred protocol"
+                  }
+                }
+              },
+              "capabilities": {
+                "type": "object",
+                "properties": {
+                  "brightness": { "type": ["boolean", "null"] },
+                  "color_temp": { "type": ["boolean", "null"] },
+                  "color": { "type": ["boolean", "null"] },
+                  "effects": { "type": ["boolean", "null"] }
+                }
+              },
+              "device_info": {
+                "type": "object",
+                "properties": {
+                  "manufacturer": {
+                    "type": ["string", "null"],
+                    "description": "Device manufacturer"
+                  },
+                  "model": {
+                    "type": ["string", "null"],
+                    "description": "Model number/code"
+                  },
+                  "model_name": {
+                    "type": ["string", "null"],
+                    "description": "Human-readable model name"
+                  },
+                  "firmware": {
+                    "type": ["string", "null"],
+                    "description": "Current firmware version"
+                  },
+                  "mac": {
+                    "type": ["string", "null"],
+                    "description": "MAC address"
+                  },
+                  "ipv4": {
+                    "type": ["string", "null"],
+                    "description": "IPv4 address if applicable"
+                  },
+                  "ipv6": {
+                    "type": ["string", "null"],
+                    "description": "IPv6 address if applicable"
+                  },
+                  "ssid": {
+                    "type": ["string", "null"],
+                    "description": "WiFi network name if applicable"
+                  },
+                  "mqtt_bindings": {
+                    "type": "object",
+                    "description": "MQTT topic and template bindings for MQTT devices",
+                    "properties": {
+                      "command_topic": { "type": "string" },
+                      "state_topic": { "type": "string" },
+                      "availability_topic": { "type": "string" },
+                      "json_template": { "type": "object" },
+                      "publish_template": { "type": "object" },
+                      "schema": { "type": "string" },
+                      "brightness_scale": { "type": "integer" },
+                      "supported_color_modes": {
+                        "type": "array",
+                        "items": { "type": "string" }
+                      },
+                      "effect_list": {
+                        "type": "array",
+                        "items": { "type": "string" }
+                      }
+                    }
+                  },
+                  "entities": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "entity": {
+                          "type": "string",
+                          "description": "Entity function/purpose"
+                        },
+                        "entity_id": {
+                          "type": "string",
+                          "description": "Unique entity identifier"
+                        },
+                        "name": {
+                          "type": "string",
+                          "description": "Friendly entity name"
+                        },
+                        "canonical_id": {
+                          "type": "string",
+                          "description": "Canonical entity ID with alpha symbol",
+                          "pattern": "^[a-z0-9_]+_α(_[a-z0-9_]+)?$"
+                        },
+                        "type": {
+                          "type": "string",
+                          "description": "Entity type"
+                        },
+                        "select_options": {
+                          "type": "array",
+                          "items": { "type": "string" },
+                          "description": "Options for select entity types"
+                        },
+                        "state": {
+                          "type": ["string", "number", "null"],
+                          "description": "Current state of the entity"
+                        },
+                        "domain": {
+                          "type": ["string", "null"],
+                          "description": "Entity domain"
+                        },
+                        "friendly_name": {
+                          "type": ["string", "null"],
+                          "description": "Human-friendly name of the entity"
+                        }
+                      }
+                    }
+                  },
+                  "history": {
+                    "type": "object",
+                    "properties": {
+                      "added": {
+                        "type": "string",
+                        "format": "date",
+                        "description": "Date device was added to system"
+                      },
+                      "protocol_switches": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "timestamp": {
+                              "type": "string",
+                              "format": "date-time",
+                              "description": "When switch occurred"
+                            },
+                            "from": {
+                              "type": "string",
+                              "description": "Original protocol"
+                            },
+                            "to": {
+                              "type": "string",
+                              "description": "New protocol"
+                            },
+                            "reason": {
+                              "type": "string",
+                              "description": "Reason for protocol switch"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "status": {
+                "type": ["string", "null"],
+                "enum": ["available", "unavailable", "degraded", null],
+                "description": "Current device status"
+              },
+              "error_reason": {
+                "type": ["string", "null"],
+                "description": "Reason for error state if applicable"
+              },
+              "device_id": {
+                "type": ["string", "null"],
+                "description": "Unique device identifier"
+              },
+              "alpha_name": {
+                "type": ["string", "null"],
+                "description": "Legacy alpha name for backward compatibility"
+              }
+            }
+          }
+        }
+      },
+      "room_light_mappings": {
+        "type": "object",
+        "description": "Mappings between rooms and lights",
+        "patternProperties": {
+          "^[a-z0-9_]+$": {
+            "type": "object",
+            "properties": {
+              "lights": {
+                "type": "array",
+                "items": { "type": "string" },
+                "description": "Light devices in this room"
+              },
+              "default_scene": {
+                "type": ["string", "null"],
+                "description": "Default lighting scene"
+              },
+              "zones": {
+                "type": "object",
+                "patternProperties": {
+                  "^[a-z0-9_]+$": {
+                    "type": "array",
+                    "items": { "type": "string" },
+                    "description": "Lights in this zone"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "validation_rules": {
+        "type": "array",
+        "description": "Validation rules for light registry",
+        "items": {
+          "type": "object",
+          "properties": {
+            "rule": {
+              "type": "string",
+              "description": "Rule identifier"
+            },
+            "target": {
+              "type": "string",
+              "description": "Target path for validation"
+            },
+            "regex": {
+              "type": "string",
+              "description": "Regex pattern for validation"
+            },
+            "condition": {
+              "type": "string",
+              "description": "Condition to be checked"
+            },
+            "must_exist": {
+              "type": "boolean",
+              "description": "Whether the target must exist"
+            },
+            "description": {
+              "type": "string",
+              "description": "Description of the rule"
+            }
+          }
+        }
+      }
+    },
+    "additionalProperties": false
+  }

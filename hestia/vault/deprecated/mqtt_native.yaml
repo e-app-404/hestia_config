@@ -1,0 +1,15 @@
+# ───────────────────────────────────────────────────────────────────────────────
+# ▶ MQTT Native Binary Sensors (domain/binary_sensors/mqtt_native.yaml)
+# Loader: !include_dir_merge_list domain/binary_sensors/
+# Platform: mqtt
+# ───────────────────────────────────────────────────────────────────────────────
+
+- platform: mqtt
+  name: "Ensuite Motion (Beta) (Real-Time)"
+  unique_id: "mqtt_ensuite_motion_real_time"
+  device_class: motion
+  state_topic: "zigbee2mqtt/ensuite_motion_alpha"
+  value_template: "{{ value_json.occupancy }}"
+  payload_on: "true"
+  payload_off: "false"
+  force_update: true

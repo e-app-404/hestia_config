@@ -1,0 +1,198 @@
+#══════════════════════════════════════════════════════════════════════════════
+# ▶ CLIMATE SENSORS: Humidity & Fusion Metrics ◀
+# Loader: !include_dir_merge_list domain/templates/
+# Schema: sensor (list)
+# TODO: Validate *_alpha entity_ids resolve correctly with post-reboot naming.
+#══════════════════════════════════════════════════════════════════════════════
+- sensor:
+    - name: "Home Humidity (Eta)"
+      unique_id: "merged_home_humidity_eta"
+      unit_of_measurement: "%"
+      device_class: humidity
+      state: >
+        {% set humidity_sensors = [
+          'sensor.merged_bedroom_humidity_eta',
+          'sensor.merged_living_room_humidity_eta',
+          'sensor.merged_kitchen_humidity_eta',
+          'sensor.ensuite_humidity_eta'
+        ] %}
+        {% set values = namespace(valid=[]) %}
+        {% for sensor in humidity_sensors %}
+          {% set val = states(sensor) | float(-1) %}
+          {% if val >= 0 and val <= 100 %}
+            {% set values.valid = values.valid + [val] %}
+          {% endif %}
+        {% endfor %}
+        {% if values.valid | count > 0 %}
+          {{ (values.valid | sum) / (values.valid | count) | round(1) }}
+        {% else %}
+          -1
+        {% endif %}
+      attributes:
+        upstream_sources: >
+          {{ ['sensor.merged_bedroom_humidity_eta','sensor.merged_living_room_humidity_eta','sensor.merged_kitchen_humidity_eta','sensor.ensuite_humidity_eta', 'binary_sensor.ensuite_shower_detected_epsilon', 'binary_sensor.ensuite_shower_end_detected_epsilon'] | tojson }}
+        area_id: "home"
+        tier: "η"
+        canonical_id: "merged_home_humidity_η"
+        file: "/config/domain/templates/humidity_logic.yaml"
+        date_created: "2025-04-26"
+        last_updated: "2025-07-20"
+        is_multi_source: true
+        source_count: 4
+        data_quality: "excellent"
+        subsystem: "aether"
+        role: "aggregation"
+        description: "Average humidity across all rooms in the home excluding soil moisture sensors"
+        version: "2.1"
+    - name: "Bedroom Humidity (Eta)"
+      unique_id: "merged_bedroom_humidity_eta"
+      unit_of_measurement: "%"
+      device_class: humidity
+      state: >
+        {% set humidity_sensors = [
+          'sensor.bedroom_ambient_climate_alpha_humidity',
+          'sensor.bedroom_dehumidifier_probreeze_humidity'
+        ] %}
+        {% set values = namespace(valid=[]) %}
+        {% for sensor in humidity_sensors %}
+          {% set val = states(sensor) | float(-1) %}
+          {% if val >= 0 and val <= 100 %}
+            {% set values.valid = values.valid + [val] %}
+          {% endif %}
+        {% endfor %}
+        {% if values.valid | count > 0 %}
+          {{ (values.valid | sum) / (values.valid | count) | round(1) }}
+        {% else %}
+          -1
+        {% endif %}
+      attributes:
+        upstream_sources: >
+          {{ ['sensor.bedroom_ambient_climate_alpha_humidity','sensor.bedroom_dehumidifier_probreeze_humidity','sensor.bedroom_monstera_soil_alpha_humidity'] | tojson }}
+        area_id: "bedroom"
+        tier: "η"
+        canonical_id: "merged_bedroom_humidity_η"
+        file: "/config/domain/templates/humidity_logic.yaml"
+        date_created: "2025-04-26"
+        last_updated: "2025-07-17"
+        is_multi_source: true
+        source_count: 2
+        data_quality: "excellent"
+        subsystem: "aether"
+        module: "room_merged_sensors"
+        role: "aggregation"
+        type: "humidity"
+        description: "Merged humidity value from multiple bedroom humidity sensors - uses average of available values"
+    - name: "Living Room Humidity (Eta)"
+      unique_id: "merged_living_room_humidity_eta"
+      unit_of_measurement: "%"
+      device_class: humidity
+      state: >
+        {% set humidity_sensors = [
+          'sensor.living_room_broadlink_rm4_alpha_humidity'
+        ] %}
+        {% set values = namespace(valid=[]) %}
+        {% for sensor in humidity_sensors %}
+          {% set val = states(sensor) | float(-1) %}
+          {% if val >= 0 and val <= 100 %}
+            {% set values.valid = values.valid + [val] %}
+          {% endif %}
+        {% endfor %}
+        {% if values.valid | count > 0 %}
+          {{ (values.valid | sum) / (values.valid | count) | round(1) }}
+        {% else %}
+          -1
+        {% endif %}
+      attributes:
+        upstream_sources: >
+          {{ ['sensor.living_room_broadlink_rm4_alpha_humidity'] | tojson }}
+        area_id: "living_room"
+        tier: "η"
+        canonical_id: "merged_living_room_humidity_η"
+        file: "/config/domain/templates/humidity_logic.yaml"
+        date_created: "2025-05-09"
+        last_updated: "2025-07-17"
+        is_multi_source: false
+        source_count: 1
+        data_quality: "good"
+        subsystem: "aether"
+        module: "room_merged_sensors"
+        role: "aggregation"
+        type: "humidity"
+        description: "Merged humidity value from living room alpha humidity sensor"
+    - name: "Merged Kitchen Humidity (Eta)"
+      unique_id: "merged_kitchen_humidity_eta"
+      unit_of_measurement: "%"
+      device_class: humidity
+      state: >
+        {% set humidity_sensors = [
+          'sensor.kitchen_ambient_climate_alpha_humidity'
+        ] %}
+        {% set values = namespace(valid=[]) %}
+        {% for sensor in humidity_sensors %}
+          {% set val = states(sensor) | float(-1) %}
+          {% if val >= 0 and val <= 100 %}
+            {% set values.valid = values.valid + [val] %}
+          {% endif %}
+        {% endfor %}
+        {% if values.valid | count > 0 %}
+          {{ (values.valid | sum) / (values.valid | count) | round(1) }}
+        {% else %}
+          -1
+        {% endif %}
+      attributes:
+        upstream_sources: >
+          {{ ['sensor.kitchen_ambient_climate_alpha_humidity'] | tojson }}
+        area_id: "kitchen"
+        tier: "η"
+        canonical_id: "merged_kitchen_humidity_η"
+        file: "/config/domain/templates/humidity_logic.yaml"
+        date_created: "2025-04-26"
+        last_updated: "2025-07-17"
+        is_multi_source: true
+        source_count: 1
+        data_quality: "good"
+        subsystem: "aether"
+        module: "room_merged_sensors"
+        role: "aggregation"
+        type: "humidity"
+        description: "Merged humidity value from kitchen alpha humidity sensor"
+    - name: "Ensuite Humidity (Eta)"
+      unique_id: "merged_ensuite_humidity_eta"
+      unit_of_measurement: "%"
+      device_class: humidity
+      state: >
+        {% set humidity_sensors = [
+          'sensor.ensuite_climate_matter_alpha_humidity',
+          'sensor.ensuite_climate_omega_humidity'
+        ] %}
+        {% set values = namespace(valid=[]) %}
+        {% for sensor in humidity_sensors %}
+          {% set val = states(sensor) | float(-1) %}
+          {% if val >= 0 and val <= 100 %}
+            {% set values.valid = values.valid + [val] %}
+          {% endif %}
+        {% endfor %}
+        {% if values.valid | count > 0 %}
+          {{ (values.valid | sum) / (values.valid | count) | round(1) }}
+        {% else %}
+          -1
+        {% endif %}
+      attributes:
+        upstream_sources: >
+          {{ ['sensor.ensuite_climate_matter_alpha_humidity', 'sensor.ensuite_climate_omega_humidity'] | tojson }}
+        downstream_consumers: >
+          {{ ['binary_sensor.ensuite_shower_detected', 'sensor.binary_sensor.ensuite_shower_end_detected', 'binary_sensor.ensuite_shower_occupancy_epsilon'] | tojson }}
+        area_id: "ensuite"
+        tier: "η"
+        canonical_id: "merged_ensuite_humidity_η"
+        file: "/config/domain/templates/humidity_logic.yaml"
+        date_created: "2025-06-03"
+        last_updated: "2025-07-17"
+        is_multi_source: true
+        source_count: 2
+        data_quality: "excellent"
+        subsystem: "aether"
+        module: "rooms"
+        role: "aggregation"
+        type: "humidity"
+        description: "Merged humidity value from ensuite alpha humidity sensor"

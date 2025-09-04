@@ -1,0 +1,10 @@
+# pack-refs with: peeled fully-peeled sorted 
+dd2ee17d42211228ed7550e7c04df1027f8c5f32 refs/heads/governance/system-instruction-v2.1-merge
+dd2ee17d42211228ed7550e7c04df1027f8c5f32 refs/heads/staging/hestia-metadata-pipeline
+bd1a187370dab6253cb3f147f3e74115baf84ce7 refs/remotes/dsm-git/main
+e96c5fcb7b0df768af42742367939292df1aa4b2 refs/remotes/dsm-git/master
+dd2ee17d42211228ed7550e7c04df1027f8c5f32 refs/remotes/dsm-git/staging/hestia-metadata-pipeline
+e96c5fcb7b0df768af42742367939292df1aa4b2 refs/remotes/dsm/master
+7fde517256962e2d35063a90ee08e3f988824340 refs/stash
+75c50ed02de3d787840cba4af4c2a957745e8163 refs/tags/PRE-CLEANUP-20250904-155438
+^dd2ee17d42211228ed7550e7c04df1027f8c5f32

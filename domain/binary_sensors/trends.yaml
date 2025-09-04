@@ -1,0 +1,65 @@
+# ══════════════════════════════════════════════════════════════════════════
+# ▶ BINARY SENSORS: Trend Sensors ◀  •  Updated: 2025-08-02
+# ⟫⟫ Illuminance, Humidity, Temperature & Solar Elevation trend analysis
+# ⟫⟫ Domain: binary_sensor (trend platform)
+# ⟫⟫ Loader: !include_dir_merge_list domain/binary_sensors/
+# ⟫⟫ Each entry is a platform dictionary under 'binary_sensor:', not nested
+# ══════════════════════════════════════════════════════════════════════════
+
+# ══ Illuminance trends (about +15 lux per hour) ══
+- platform: trend
+  sensors:
+    bedroom_illuminance_trend:
+      friendly_name: Bedroom light level trend
+      entity_id: sensor.bedroom_tv_alpha_illuminance
+      sample_duration: 3600
+      max_samples: 5
+      min_gradient: 0.004167 # 15 / 3600
+
+    living_room_illuminance_trend:
+      friendly_name: Living room light level trend
+      entity_id: sensor.living_room_multipurpose_alpha_illuminance
+      sample_duration: 3600
+      max_samples: 5
+      min_gradient: 0.004167 # 15 / 3600
+
+# ══ Ensuite humidity rising (≈ +4 %RH in 10 min) ══
+- platform: trend
+  sensors:
+    humidity_ensuite_trend:
+      friendly_name: Ensuite humidity rising
+      entity_id: sensor.ensuite_humidity_eta
+      sample_duration: 600
+      max_samples: 6
+      min_samples: 3
+      min_gradient: 0.006667 # 4 / 600
+
+# ══ Ambient temperature trends (2 h window) ══
+- platform: trend
+  sensors:
+    ambient_temp_falling:
+      friendly_name: Ambient temp falling
+      entity_id: sensor.london_ambient_weather_alpha_temperature
+      sample_duration: 7200
+      max_samples: 120
+      min_samples: 20
+      min_gradient: -0.00055 # ≈ -2 °C/h (adjust to taste)
+
+    ambient_temp_rising:
+      friendly_name: Ambient temp rising
+      entity_id: sensor.london_ambient_weather_alpha_temperature
+      sample_duration: 7200
+      max_samples: 120
+      min_samples: 20
+      min_gradient: 0.00055 # ≈ +2 °C/h
+
+# ══ Sun elevation rising (uses numeric attribute) ══
+- platform: trend
+  sensors:
+    sun_elevation_trend:
+      friendly_name: Sun rising
+      entity_id: sun.sun
+      attribute: elevation
+      sample_duration: 900
+      max_samples: 5
+      min_gradient: 0.001 # ≈ +3.6°/h

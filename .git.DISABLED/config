@@ -1,0 +1,18 @@
+[core]
+	repositoryformatversion = 0
+	filemode = true
+	bare = false
+	logallrefupdates = true
+	sshCommand = ssh -F /Volumes/config/.ssh/config
+[remote "dsm"]
+	url = ssh://dsm-git/~/git/config.git
+	fetch = +refs/heads/*:refs/remotes/dsm/*
+[remote "dsm-git"]
+	url = ssh://dsm-git-host:/volume1/HA_MIRROR
+	fetch = +refs/heads/*:refs/remotes/dsm-git/*
+[branch "staging/hestia-metadata-pipeline"]
+	vscode-merge-base = dsm-git/main
+	remote = dsm-git
+	merge = refs/heads/staging/hestia-metadata-pipeline
+[branch "governance/system-instruction-v2.1-merge"]
+	vscode-merge-base = dsm-git/staging/hestia-metadata-pipeline

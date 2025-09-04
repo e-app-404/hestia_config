@@ -1,0 +1,21 @@
+#═══════════════════════════════════════════════════════════════
+# ▶ HELPER: Number Inputs ◀
+# Loader: !include domain/helpers/input_numbers.yaml
+# Schema: input_number
+#═══════════════════════════════════════════════════════════════
+
+desk_presence_decay_delta:
+  name: Desk Presence Decay (Delta)
+  min: 0
+  max: 10
+  step: 0.1
+  mode: slider
+  icon: mdi:account-off-outline
+
+desk_presence_ethernet_decay_delta:
+  name: Desk Presence Ethernet Decay (Delta)
+  min: 0
+  max: 10
+  step: 0.1
+  mode: slider
+  icon: mdi:lan-connect

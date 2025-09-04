@@ -1,0 +1,54 @@
+# ═══════════════════════════════════════════════════════════════
+# ▶ AUTOMATION: Desk Presence Decay Logic ◀
+# Handles decay and reset for desk and ethernet presence scores
+# Loader: !include_dir_merge_list from domain/automations/
+# Tier: δ  •  Domain: logic  •  Created: 2025-08-05
+# ═══════════════════════════════════════════════════════════════
+
+- alias: "Desk Presence Decay Timer"
+  id: "desk_presence_decay_timer"
+  mode: single
+  trigger:
+    - platform: time_pattern
+      seconds: "/10"
+  variables:
+    entity: binary_sensor.desk_presence_inferred
+    input: input_number.desk_presence_decay_delta
+    decay_rate: 0.2
+    reset_value: 10
+    floor_value: 0
+  action:
+    - variables:
+        valid: "{{ states(entity) not in ['unavailable', 'unknown', 'none'] }}"
+        current: "{{ is_state(entity, 'on') if valid else false }}"
+        prev: "{{ states(input) | float(0) }}"
+        result: "{{ reset_value if current else [prev - decay_rate, floor_value] | max }}"
+    - action: input_number.set_value
+      target:
+        entity_id: "{{ input }}"
+      data:
+        value: "{{ result }}"
+
+- alias: "Desk Presence Ethernet Decay Timer"
+  id: "desk_presence_ethernet_decay_timer"
+  mode: single
+  trigger:
+    - platform: time_pattern
+      seconds: "/10"
+  variables:
+    entity: binary_sensor.desk_macbook_recent_connectivity
+    input: input_number.desk_presence_ethernet_decay_delta
+    decay_rate: 0.2
+    reset_value: 10
+    floor_value: 0
+  action:
+    - variables:
+        valid: "{{ states(entity) not in ['unavailable', 'unknown', 'none'] }}"
+        current: "{{ is_state(entity, 'on') if valid else false }}"
+        prev: "{{ states(input) | float(0) }}"
+        result: "{{ reset_value if current else [prev - decay_rate, floor_value] | max }}"
+    - action: input_number.set_value
+      target:
+        entity_id: "{{ input }}"
+      data:
+        value: "{{ result }}"

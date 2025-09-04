@@ -1,0 +1,248 @@
+#══════════════════════════════════════════════════════════════════════════════
+# ▶ CONFIG: Broadlink IR/RF Commands Configuration ◀
+# File: /config/broadlink_commands.yaml
+# This file contains the list of IR/RF commands for Broadlink devices
+#══════════════════════════════════════════════════════════════════════════════
+
+broadlink:
+  - remotes:
+      - entity_id: remote.living_room_broadlink_rm4_alpha
+        area_id: living_room
+        devices: ["tower_fan"]
+      - entity_id: remote.bedroom_broadlink_rm3_alpha
+        area_id: bedroom
+        devices: ["bedroom_hdmi_matrix", "desk_hdmi_matrix"]
+
+  - device: tower_fan
+    area_id: living_room
+    entity_id: remote.living_room_broadlink_rm4_alpha
+    commands:
+      power:
+        command: power
+        command_type: rf
+        modes: ["on", "off"]
+      speed:
+        command: speed
+        command_type: rf
+        modes: ["low", "medium", "high"]
+      oscillate:
+        command: oscillate
+        command_type: rf
+        modes: ["on", "off"]
+      mode:
+        command: mode
+        command_type: rf
+        modes: ["one", "two", "three"]
+      timer:
+        command: timer
+        command_type: rf
+        modes: "0,5hrs increments up to 8hrs"
+    example: >
+      service: remote.send_command
+      target:
+        entity_id: remote.living_room_broadlink_rm4_alpha
+      data:
+        device: living_room_fan
+        command: power
+        command_type: rf
+
+  - device: bedroom_hdmi_matrix
+    area_id: bedroom
+    entity_id: remote.bedroom_broadlink_rm3_alpha
+    commands:
+      # ——— Top row ———
+      power: { command: power, command_type: ir, modes: ["toggle"] }
+      arc: { command: arc, command_type: ir, modes: ["toggle"] }
+
+      # ——— Discrete routing ———
+      # A = Video (HDMI OUT → Bedroom TV)
+      a_1: { command: a_1, command_type: ir } # Apple TV
+      a_2: { command: a_2, command_type: ir } # PlayStation 4
+      a_3: { command: a_3, command_type: ir } # Nintendo Switch
+      a_4: { command: a_4, command_type: ir } # Nintendo Wii
+
+      # B = Audio (Optical OUT → Sonos Ray)
+      b_1: { command: b_1, command_type: ir } # Apple TV
+      b_2: { command: b_2, command_type: ir } # PlayStation 4
+      b_3: { command: b_3, command_type: ir } # Nintendo Switch
+      b_4: { command: b_4, command_type: ir } # Nintendo Wii
+
+    # Example (HA 2024.8+ uses "actions" – service calls are actions now)
+    example: >
+      action: remote.send_command
+      target:
+        entity_id: remote.bedroom_broadlink_rm3_alpha
+      data:
+        device: bedroom_hdmi_matrix
+        command: a_2
+
+    script:
+      bedroom_matrix_select_source:
+        alias: "Bedroom Matrix – Select Source (align A & B)"
+        description: "Route both video (A) and audio (B) to the same input."
+        fields:
+          source:
+            description: "Apple TV, PlayStation 4, Nintendo Switch, Nintendo Wii"
+            example: "Apple TV"
+            required: true
+            selector:
+              select:
+                options:
+                  - Apple TV
+                  - PlayStation 4
+                  - Nintendo Switch
+                  - Nintendo Wii
+          turn_on_tv:
+            description: "Turn on the Bedroom TV first"
+            default: true
+            selector: { boolean: {} }
+        sequence:
+          - if: "{{ turn_on_tv | default(true) }}"
+            then:
+              - action: media_player.turn_on
+                target: { entity_id: media_player.bedroom_tv_alpha }
+          - variables:
+              map:
+                "Apple TV": "1"
+                "PlayStation 4": "2"
+                "Nintendo Switch": "3"
+                "Nintendo Wii": "4"
+              n: "{{ map[source] }}"
+          - action: remote.send_command
+            target: { entity_id: remote.bedroom_broadlink_rm3_alpha }
+            data: { device: bedroom_hdmi_matrix, command: "a_{{ n }}" }
+          - action: remote.send_command
+            target: { entity_id: remote.bedroom_broadlink_rm3_alpha }
+            data: { device: bedroom_hdmi_matrix, command: "b_{{ n }}" }
+
+      bedroom_matrix_route_av:
+        alias: "Bedroom Matrix – Route A (video) & B (audio) separately"
+        description: "Pick different sources for video (A) and audio (B)."
+        fields:
+          video_source:
+            required: true
+            selector:
+              select:
+                options:
+                  - Apple TV
+                  - PlayStation 4
+                  - Nintendo Switch
+                  - Nintendo Wii
+          audio_source:
+            required: true
+            selector:
+              select:
+                options:
+                  - Apple TV
+                  - PlayStation 4
+                  - Nintendo Switch
+                  - Nintendo Wii
+          turn_on_tv:
+            default: true
+            selector: { boolean: {} }
+        sequence:
+          - if: "{{ turn_on_tv | default(true) }}"
+            then:
+              - action: media_player.turn_on
+                target: { entity_id: media_player.bedroom_tv_alpha }
+          - variables:
+              map:
+                "Apple TV": "1"
+                "PlayStation 4": "2"
+                "Nintendo Switch": "3"
+                "Nintendo Wii": "4"
+              v: "{{ map[video_source] }}"
+              a: "{{ map[audio_source] }}"
+          - action: remote.send_command
+            target: { entity_id: remote.bedroom_broadlink_rm3_alpha }
+            data: { device: bedroom_hdmi_matrix, command: "a_{{ v }}" }
+          - action: remote.send_command
+            target: { entity_id: remote.bedroom_broadlink_rm3_alpha }
+            data: { device: bedroom_hdmi_matrix, command: "b_{{ a }}" }
+
+      bedroom_matrix_power_toggle:
+        alias: "HDMI Matrix – Power"
+        sequence:
+          - action: remote.send_command
+            target: { entity_id: remote.bedroom_broadlink_rm3_alpha }
+            data: { device: bedroom_hdmi_matrix, command: power }
+
+      bedroom_matrix_arc_toggle:
+        alias: "HDMI Matrix – ARC"
+        sequence:
+          - action: remote.send_command
+            target: { entity_id: remote.bedroom_broadlink_rm3_alpha }
+            data: { device: bedroom_hdmi_matrix, command: arc }
+
+    lovelace:
+      type: grid
+      columns: 4
+      square: false
+      cards:
+        - type: button
+          name: Apple TV
+          icon: mdi:apple
+          tap_action:
+            action: perform-action
+            perform_action: script.bedroom_matrix_select_source
+            data: { source: "Apple TV", turn_on_tv: true }
+
+        - type: button
+          name: PlayStation 4
+          icon: mdi:sony-playstation
+          tap_action:
+            action: perform-action
+            perform_action: script.bedroom_matrix_select_source
+            data: { source: "PlayStation 4", turn_on_tv: true }
+
+        - type: button
+          name: Switch
+          icon: mdi:nintendo-switch
+          tap_action:
+            action: perform-action
+            perform_action: script.bedroom_matrix_select_source
+            data: { source: "Nintendo Switch", turn_on_tv: true }
+
+        - type: button
+          name: Wii
+          icon: mdi:gamepad-variant
+          tap_action:
+            action: perform-action
+            perform_action: script.bedroom_matrix_select_source
+            data: { source: "Nintendo Wii", turn_on_tv: true }
+
+        - type: button
+          name: Matrix Power
+          icon: mdi:power
+          tap_action:
+            action: perform-action
+            perform_action: script.bedroom_matrix_power_toggle
+
+        - type: button
+          name: ARC
+          icon: mdi:audio-input-rca
+          tap_action:
+            action: perform-action
+            perform_action: script.bedroom_matrix_arc_toggle
+
+        # Example "A1 + B2"
+        - type: button
+          name: "Video: Apple • Audio: PS4"
+          icon: mdi:monitor-speaker
+          tap_action:
+            action: perform-action
+            perform_action: script.bedroom_matrix_route_av
+            data:
+              video_source: "Apple TV"
+              audio_source: "PlayStation 4"
+              turn_on_tv: true
+
+  - device: desk_hdmi_matrix
+    area_id: desk
+    entity_id: remote.desk_broadlink_rm3_alpha
+    commands:
+      # ——— Routing ———
+      hdmi_1: { command: 1, command_type: ir, modes: ["toggle"] } # Macbook
+      hdmi_2: { command: 2, command_type: ir, modes: ["toggle"] } # RPI5 - Home Assistant Terminal
+      hdmi_3: { command: 3, command_type: ir, modes: ["toggle"] } # Unassigned
+      next: { command: next, command_type: ir, modes: ["toggle"] } # Cycles HDMI inputs

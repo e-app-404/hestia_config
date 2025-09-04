@@ -1,0 +1,15 @@
+---
+# ═════════════════════════════════════════════════════════════════════════════
+# ⟫⟫ SHELL_COMMANDS  ◀  Created: 2025-07-31  •  Domain: logic
+# ⟫⟫ loader: configuration.yaml  • packages: !include_dir_named packages
+# ⟫⟫ path: config/packages/integrations/shell_commands.yaml
+# ⟫⟫ https://www.home-assistant.io/integrations/shell_command/
+# ═════════════════════════════════════════════════════════════════════════════
+
+#shell_command:
+#  git_push_config: "/config/domain/shell_commands/git_push_logger.sh"
+shell_command:
+  git_push_config: >-
+    git -C /config
+    -c core.sshCommand='ssh -F /config/.ssh/config'
+    push dsm-git main

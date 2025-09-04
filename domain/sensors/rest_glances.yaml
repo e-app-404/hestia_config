@@ -1,0 +1,52 @@
+# ═══════════════════════════════════════════════════════════════
+# ⟫⟫ ▶ REST sensors  •  MacBook Glances Diagnostics ◀
+# ⟫⟫ Monitors CPU, memory, disk and uptime from Glances over REST
+# ⟫⟫ Loader: !include_dir_merge_list from domain/sensors/
+# ⟫⟫ Tier: α  •  Domain: diagnostics  •  Created: 2025-07-31
+# ═══════════════════════════════════════════════════════════════
+
+- platform: rest
+  name: "MacBook CPU Percent"
+  unique_id: "glances_macbook_cpu_percent"
+  resource: http://100.92.58.104:61208/api/4/cpu
+  value_template: "{{ value_json.total }}"
+  unit_of_measurement: "%"
+  scan_interval: 60
+
+- platform: rest
+  name: "MacBook Memory Percent"
+  unique_id: "glances_macbook_memory_percent"
+  resource: http://100.92.58.104:61208/api/4/mem
+  value_template: "{{ value_json.percent }}"
+  unit_of_measurement: "%"
+  scan_interval: 60
+
+- platform: rest
+  name: "MacBook Swap Percent"
+  unique_id: "glances_macbook_swap_percent"
+  resource: http://100.92.58.104:61208/api/4/mem
+  value_template: >
+    {{ value_json.swap.percent if value_json.swap is defined and value_json.swap.percent is defined else 0 }}
+  unit_of_measurement: "%"
+  scan_interval: 60
+
+- platform: rest
+  name: "MacBook Disk Used %"
+  unique_id: "glances_macbook_disk_used"
+  resource: http://100.92.58.104:61208/api/4/fs
+  value_template: >
+    {{ (value_json | selectattr('mnt', 'equalto', '/') | map(attribute='percent') | list | first | default(0)) }}
+  unit_of_measurement: "%"
+  scan_interval: 60
+
+- platform: rest
+  name: "MacBook Uptime"
+  unique_id: "glances_macbook_uptime"
+  resource: http://100.92.58.104:61208/api/4/uptime
+  value_template: >
+    {% if value_json is mapping and value_json.days is defined and value_json.hours is defined and value_json.minutes is defined %}
+      {{ value_json.days }}d {{ value_json.hours }}h {{ value_json.minutes }}m
+    {% else %}
+      unavailable
+    {% endif %}
+  scan_interval: 60

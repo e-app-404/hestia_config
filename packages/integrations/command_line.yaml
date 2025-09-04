@@ -1,0 +1,43 @@
+# ════════════════════════════════════════════════════════════════
+# ▶ INTEGRATION: Command Line Sensors ◀
+# File: /config/domain/shell_commands/git_push_logger.sh
+# Loader: packages  •  Domain: integration  •  Last Updated: 2025-08-06
+# ════════════════════════════════════════════════════════════════
+
+command_line:
+  - binary_sensor:
+      name: Git Repo Synced with DSM
+      unique_id: cli_git_repo_synced_dsm_alpha
+      device_class: connectivity
+      command: >-
+        bash -lc '
+        REMOTE=$(ssh -F /config/.ssh/config dsm-git-host "git --git-dir=/volume1/HA_MIRROR for-each-ref --format=%(objectname:short) refs/heads/main");
+        LOCAL=$(git -C /config rev-parse --short HEAD);
+        if [ "$REMOTE" = "$LOCAL" ]; then echo "on"; else echo "off"; fi
+        '
+      scan_interval: 120
+      command_timeout: 20
+
+  - binary_sensor:
+      name: "DSM Git Latest Commit Message"
+      unique_id: cli_dsm_git_commit_message_alpha
+      command: >-
+        ssh -F /config/.ssh/config dsm-git-host "git --git-dir=/volume1/HA_MIRROR show -s --format=%s refs/heads/main"
+      scan_interval: 600
+      command_timeout: 20
+
+  - sensor:
+      name: "DSM Git Repo Latest Commit"
+      unique_id: cli_dsm_git_commit_hash_alpha
+      command: >-
+        ssh -F /config/.ssh/config dsm-git-host "git --git-dir=/volume1/HA_MIRROR for-each-ref --format=%(objectname:short) refs/heads/main"
+      scan_interval: 120
+      command_timeout: 20
+
+  - sensor:
+      name: "Local Git Repo Commit Hash"
+      unique_id: cli_local_git_commit_hash_alpha
+      command: >
+        git -C /config rev-parse --short HEAD
+      scan_interval: 120
+      command_timeout: 20

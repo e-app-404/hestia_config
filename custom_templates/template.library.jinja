@@ -1,0 +1,107 @@
+{# ===========================
+   template.library.jinja (Enhanced)
+   Unified Jinja macro library for HESTIA
+   Phase 3: Added preference selection and error tolerance macros
+   Version: 3.0.1
+   =========================== #}
+
+{# Phase 3 Enhancement: Centralized Preference Selection #}
+{# Returns 'on' or 'off' AND registers dependencies via expand(). #}
+{% macro preference_select(sources) %}
+  {% set ordered = sources | sort(attribute='preference') %}
+  {% set ids = ordered | map(attribute='entity') | list %}
+  {% set ents = expand(ids) %}
+  {% set result = namespace(state='off') %}
+  {% for item in ordered %}
+    {% set e = ents | selectattr('entity_id','equalto', item.entity) | first %}
+    {% if e and e.state not in ['unavailable','unknown','none'] and e.state == 'on' %}
+      {% set result.state = 'on' %}
+      {% break %}
+    {% endif %}
+  {% endfor %}
+  {{ result.state }}
+{% endmacro %}
+
+{# Phase 3 Enhancement: Error-Tolerant Active Source Detection #}
+{% macro get_active_source(sources) %}
+  {% set ordered = sources | sort(attribute='preference') %}
+  {% set ids = ordered | map(attribute='entity') | list %}
+  {% set ents = expand(ids) %}
+  {% for item in ordered %}
+    {% set e = ents | selectattr('entity_id','equalto', item.entity) | first %}
+    {% if e and e.state not in ['unavailable','unknown','none'] and e.state == 'on' %}
+      {{ item.entity }}
+      {% break %}
+    {% endif %}
+  {% endfor %}
+{% endmacro %}
+
+{# Phase 3 Enhancement: Context-Aware Timeout Calculation #}
+{% macro get_context_timeout(room, base_minutes=5) %}
+  {% set base_seconds = base_minutes * 60 %}
+  {% if room == 'living_room' %}
+    {% if is_state('media_player.projector', 'playing') %}
+      {{ 15 * 60 }}  {# Entertainment mode: 15 minutes #}
+    {% elif is_state('switch.gaming_console', 'on') %}
+      {{ 12 * 60 }}  {# Gaming mode: 12 minutes #}
+    {% else %}
+      {{ base_seconds }}
+    {% endif %}
+  {% elif room == 'bedroom' %}
+    {% if is_state('input_boolean.sleep_mode', 'on') %}
+      {{ 20 * 60 }}  {# Sleep mode: 20 minutes #}
+    {% elif is_state('switch.monitor', 'on') %}
+      {{ 8 * 60 }}   {# Work mode: 8 minutes #}
+    {% else %}
+      {{ base_seconds }}
+    {% endif %}
+  {% elif room == 'kitchen' %}
+    {% if is_state('input_boolean.cooking_mode', 'on') %}
+      {{ 10 * 60 }}  {# Cooking mode: 10 minutes #}
+    {% else %}
+      {{ base_seconds }}
+    {% endif %}
+  {% else %}
+    {{ base_seconds }}
+  {% endif %}
+{% endmacro %}
+
+{# Phase 3: Inferred Presence Integration #}
+{% macro evaluate_room_presence(room, motion_recent, occupancy_sources, inferred_sources=[]) %}
+  {% set motion_active = is_state(motion_recent, 'on') %}
+  {% set occupancy_active = occupancy_sources | map('states') | select('eq', 'on') | list | count > 0 %}
+  {% set inferred_active = inferred_sources | map('states') | select('eq', 'on') | list | count > 0 %}
+  {% set device_present = is_state('device_tracker.iphone14', 'home') %}
+
+  {# Weighted presence calculation #}
+  {% set presence_score = 0 %}
+  {% if motion_active %}
+    {% set presence_score = presence_score + 40 %}
+  {% endif %}
+  {% if occupancy_active %}
+    {% set presence_score = presence_score + 30 %}
+  {% endif %}
+  {% if inferred_active %}
+    {% set presence_score = presence_score + 25 %}
+  {% endif %}
+  {% if device_present %}
+    {% set presence_score = presence_score + 5 %}
+  {% endif %}
+
+  {{ presence_score >= 30 }}
+{% endmacro %}
+
+{# Macro: is_valid_datetime #}
+{% macro is_valid_datetime(val) %}
+  {{ val not in ['unknown','unavailable','',none] }}
+{% endmacro %}
+
+{# Macro: days_since_cleaned #}
+{% macro days_since_cleaned(cleaned) %}
+  {% if is_valid_datetime(cleaned) %}
+    {% set cleaned_dt = as_local(strptime(cleaned, '%Y-%m-%d %H:%M:%S')) %}
+    {{ ((now() - cleaned_dt).days) }}
+  {% else %}
+    99
+  {% endif %}
+{% endmacro %}

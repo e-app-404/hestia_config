@@ -1,0 +1,20 @@
+# ═══════════════════════════════════════════════════════════════
+# ▶ LOGIC SENSOR: Bedroom Entertainment Engaged ◀
+# Loader: !include_dir_merge_named from entities/templates/logic/
+# Tier: γ  •  Domain: logic  •  Created: 2025-06-12
+# ═══════════════════════════════════════════════════════════════
+- sensor:
+  - name: 'Bedroom Entertainment Engaged (γ)'
+    unique_id: 'bedroom_entertainment_engaged_gamma'
+    state: >
+      {{ is_state('sensor.bedroom_ps4_game_active', 'True') }}
+    device_class: presence
+    delay_off: '00:05:00'
+    icon: mdi:television
+    attributes:
+      tier: 'γ'
+      domain: 'logic'
+      file: 'config/entities/templates/logic/bedroom_entertainment_engaged.yaml'
+      description: >
+        Gamma-tier logic sensor for presence inference based on PS4 game activity.
+        Aggregates β+ activity sensors into a high-certainty entertainment state.

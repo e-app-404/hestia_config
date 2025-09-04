@@ -1,0 +1,287 @@
+{
+  "$schema": "http://json-schema.org/hestia-v7/schema#",
+  "title": "sensor_signal_plane_meta.json Meta-Schema",
+  "name": "HESTIA Alpha Device Registry Schema Structure",
+  "description": "Schema definition for the canonical device registry of the HESTIA Signal Plane architecture.",
+  "type": "object",
+  "required": ["_meta", "devices"],
+  "properties": {
+    "_meta": {
+      "type": "object",
+      "required": ["version", "build_date", "build_by", "schema", "schema_version"],
+      "properties": {
+        "version": { "type": "string" },
+        "build_date": { "type": "string", "format": "date-time" },
+        "build_by": { "type": "string" },
+        "schema": { "type": "string" },
+        "schema_version": { "type": "string" }
+      }
+    },
+    "devices": {
+      "type": "object",
+      "patternProperties": {
+        "^[a-z0-9_]+_α$": {
+          "type": "object",
+          "required": [
+            "metadata",
+            "location",
+            "device_info",
+            "integration",
+            "capabilities",
+            "confidence_metrics"
+          ],
+          "properties": {
+            "metadata": {
+              "type": "object",
+              "required": [
+                "alpha_name",
+                "friendly_name",
+                "internal_name",
+                "alpha_canonical",
+                "added_date"
+              ],
+              "properties": {
+                "alpha_name": { "type": "string" },
+                "friendly_name": { "type": "string" },
+                "internal_name": { "type": "string" },
+                "alpha_canonical": { "type": "string", "pattern": "_α$" },
+                "added_date": { "type": "string", "format": "date" }
+              }
+            },
+            "location": {
+              "type": "object",
+              "required": ["room", "role", "area_id", "signal_type"],
+              "properties": {
+                "room": { "type": "string" },
+                "area": { "type": ["string", "null"] },
+                "role": { "type": "string" },
+                "signal_type": { "type": ["string", "null"] },
+                "area_id": { "type": "string" },
+                "room_area": { "type": ["string", "null"] }
+              }
+            },
+            "device_info": {
+              "type": "object",
+              "required": ["manufacturer", "model", "firmware"],
+              "properties": {
+                "manufacturer": { "type": ["string", "null"] },
+                "model": { "type": ["string", "null"] },
+                "model_name": { "type": ["string", "null"] },
+                "firmware": { "type": ["string", "null"] },
+                "mac": { "type": ["string", "null"] },
+                "ipv4": { "type": ["string", "null"] },
+                "ipv6": { "type": ["string", "null"] },
+                "ssid": { "type": ["string", "null"] },
+                "connected_via": {
+                  "type": ["array", "null"],
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "device_id": { "type": "string" },
+                      "device_name": { "type": "string" },
+                      "integration": { "type": "string" },
+                      "mac": { "type": ["string", "null"] }
+                    }
+                  }
+                }
+              }
+            },
+            "integration": {
+              "type": "object",
+              "required": ["preferred_protocol", "integration_stack"],
+              "properties": {
+                "preferred_protocol": { "type": "string" },
+                "integration_stack": {
+                  "type": "object",
+                  "patternProperties": {
+                    "^[a-z0-9_]+$": {
+                      "type": "object",
+                      "required": [
+                        "device_id",
+                        "protocol",
+                        "origin",
+                        "entity_id",
+                        "canonical_id",
+                        "status",
+                        "platform",
+                        "device_class",
+                        "availability_sensor"
+                      ],
+                      "properties": {
+                        "device_id": { "type": "string" },
+                        "protocol": { "type": "string" },
+                        "origin": { "type": "string" },
+                        "type": { "type": "string" },
+                        "class": { "type": ["string", "object"] },
+                        "signal_type": { "type": ["string", "null"] },
+                        "entity_id": { "type": "string" },
+                        "canonical_id": { "type": "string", "pattern": "_α$" },
+                        "status": {
+                          "type": "string",
+                          "enum": ["paired", "unpaired", "fallback", "disabled", "unreliable"]
+                        },
+                        "platform": { "type": "string" },
+                        "device_class": { "type": "string" },
+                        "availability_sensor": { "type": ["string", "null"] },
+                        "mqtt_topic": { "type": ["string", "null"] }
+                      }
+                    }
+                  }
+                },
+                "protocol_metrics": {
+                  "type": "object",
+                  "patternProperties": {
+                    "^[a-z0-9_]+$": {
+                      "type": "object",
+                      "properties": {
+                        "last_seen": { "type": ["string", "null"], "format": "date-time" },
+                        "response_time_ms": { "type": ["number", "null"], "minimum": 0 },
+                        "reliability_score": { "type": ["number", "null"], "minimum": 0, "maximum": 100 }
+                      }
+                    }
+                  }
+                },
+                "fallback_settings": {
+                  "type": "object",
+                  "properties": {
+                    "retry_attempts": { "type": "integer", "minimum": 0 },
+                    "retry_delay_ms": { "type": "integer", "minimum": 0 },
+                    "auto_switch_threshold": { "type": "integer", "minimum": 0 },
+                    "return_to_preferred_after": { "type": "integer", "minimum": 0 }
+                  }
+                }
+              }
+            },
+            "capabilities": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": [
+                  "entity",
+                  "entity_id",
+                  "name",
+                  "canonical_id",
+                  "type"
+                ],
+                "properties": {
+                  "entity": { "type": "string" },
+                  "entity_id": { "type": "string" },
+                  "name": { "type": "string" },
+                  "canonical_id": { "type": "string", "pattern": "_α$" },
+                  "type": { "type": "string" },
+                  "mqtt_topic": { "type": ["string", "null"] },
+                  "state": { "type": ["string", "null"] },
+                  "domain": { "type": ["string", "null"] }
+                }
+              }
+            },
+            "change_history": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["timestamp", "modified_by", "changes"],
+                "properties": {
+                  "timestamp": { "type": "string", "format": "date-time" },
+                  "modified_by": { "type": "string" },
+                  "changes": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "required": ["field", "old_value", "new_value", "reason"],
+                      "properties": {
+                        "field": { "type": "string" },
+                        "old_value": { "type": ["string", "number", "boolean", "null", "object"] },
+                        "new_value": { "type": ["string", "number", "boolean", "null", "object"] },
+                        "reason": { "type": "string" }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "history": {
+              "type": "object",
+              "properties": {
+                "added": { "type": "string", "format": "date" },
+                "protocol_switches": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "timestamp": { "type": "string", "format": "date-time" },
+                      "from": { "type": "string" },
+                      "to": { "type": "string" },
+                      "reason": { "type": "string" }
+                    }
+                  }
+                }
+              }
+            },
+            "confidence_metrics": {
+              "type": "object",
+              "required": [
+                "entity_confidence",
+                "device_confidence",
+                "relationship_confidence",
+                "requires_review"
+              ],
+              "properties": {
+                "entity_confidence": {
+                  "type": "object",
+                  "required": ["score", "factors"],
+                  "properties": {
+                    "score": { "type": "integer", "minimum": 0, "maximum": 100 },
+                    "factors": { "type": "array", "items": { "type": "string" } },
+                    "uncertain_fields": {
+                      "type": "array",
+                      "items": { "type": "string" }
+                    }
+                  }
+                },
+                "device_confidence": {
+                  "type": "object",
+                  "required": ["score", "factors"],
+                  "properties": {
+                    "score": { "type": "integer", "minimum": 0, "maximum": 100 },
+                    "factors": { "type": "array", "items": { "type": "string" } },
+                    "uncertain_fields": {
+                      "type": "array",
+                      "items": { "type": "string" }
+                    }
+                  }
+                },
+                "relationship_confidence": {
+                  "type": "object",
+                  "required": ["score", "factors"],
+                  "properties": {
+                    "score": { "type": "integer", "minimum": 0, "maximum": 100 },
+                    "factors": { "type": "array", "items": { "type": "string" } },
+                    "uncertain_fields": {
+                      "type": "array",
+                      "items": { "type": "string" }
+                    }
+                  }
+                },
+                "requires_review": { "type": "boolean" },
+                "last_validation": { "type": "string", "format": "date-time" },
+                "validated_by": { "type": "string" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "validation_summary": {
+      "type": "object",
+      "properties": {
+        "total_devices": { "type": "integer", "minimum": 0 },
+        "total_entities": { "type": "integer", "minimum": 0 },
+        "devices_requiring_review": { "type": "integer", "minimum": 0 },
+        "validation_date": { "type": "string", "format": "date-time" },
+        "validator": { "type": "string" },
+        "schema_compliant": { "type": "boolean" }
+      }
+    }
+  },
+  "additionalProperties": false
+}

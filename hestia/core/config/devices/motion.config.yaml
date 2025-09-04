@@ -1,0 +1,376 @@
+alpha:
+integrations:
+  smartthings:
+    - entity_id: binary_sensor.bedroom_security_cam_alpha_motion
+      device_class: motion
+      integration: smartthings
+      friendly_name: Cameron_wifi_alpha Motion
+      entity_area_id: bedroom
+      entity_area_name: Bedroom main
+      device_area_id: bedroom
+      device_area_name: Bedroom main
+      device_name: Cameron_wifi_alpha
+      manufacturer: TP-Link
+      model: C200
+      sw_version: "—"
+      hw_version: "—"
+      configuration_url: https://account.smartthings.com
+      via_device_name: "—"
+      via_device_id: "—"
+      device_id: 078af721482b7dc0292eed2b31e56547
+    - entity_id: binary_sensor.living_room_multipurpose_alpha_motion
+      device_class: motion
+      integration: smartthings
+      friendly_name: living_room_multipurpose_wifi_alpha Motion
+      entity_area_id: living_room
+      entity_area_name: Living Room
+      device_area_id: living_room
+      device_area_name: Living Room
+      device_name: living_room_multipurpose_wifi_alpha
+      manufacturer: "—"
+      model: "—"
+      sw_version: "—"
+      hw_version: "—"
+      configuration_url: https://account.smartthings.com
+      via_device_name: aeotec_ethernet_hub_wifi_alpha
+      via_device_id: d31814ca8714bf24a3df1782a262f9d5
+      device_id: 48f76010cb8443d91cefc403f8341141
+  tplink:
+    - entity_id: binary_sensor.bedroom_wardrobe_motion_tplink_alpha
+      device_class: motion
+      integration: tplink
+      friendly_name: bedroom_wardrobe_motion_tplink_alpha Motion
+      entity_area_id: wardrobe
+      entity_area_name: Wardrobe
+      device_area_id: wardrobe
+      device_area_name: Wardrobe
+      device_name: bedroom_wardrobe_motion_tplink_alpha
+      manufacturer: TP-Link
+      model: T100
+      sw_version: 1.12.0 Build 230512 Rel.103011
+      hw_version: 1.0
+      configuration_url: "—"
+      via_device_name: home_tapo_iot_hub_omega
+      via_device_id: 8a63c33a540b71edc4141729209835b7
+      device_id: fb379e43d7bc63a351bd1fbd21318743
+    - entity_id: binary_sensor.downstairs_presence_alpha_motion
+      device_class: motion
+      integration: tplink
+      friendly_name: downstairs_presence_alpha Motion
+      entity_area_id: downstairs
+      entity_area_name: Downstairs
+      device_area_id: downstairs
+      device_area_name: Downstairs
+      device_name: downstairs_presence_alpha
+      manufacturer: TP-Link
+      model: T100
+      sw_version: 1.12.0 Build 230512 Rel.103011
+      hw_version: 1.0
+      configuration_url: "—"
+      via_device_name: home_tapo_iot_hub_omega
+      via_device_id: 8a63c33a540b71edc4141729209835b7
+      device_id: 4035e71d2d943e6421f6f592ba2bf15f
+    - entity_id: binary_sensor.kitchen_presence_alpha_motion
+      device_class: motion
+      integration: tplink
+      friendly_name: kitchen_presence_alpha Motion
+      entity_area_id: kitchen
+      entity_area_name: Kitchen
+      device_area_id: kitchen
+      device_area_name: Kitchen
+      device_name: kitchen_presence_alpha
+      manufacturer: TP-Link
+      model: T100
+      sw_version: 1.12.0 Build 230512 Rel.103011
+      hw_version: 1.0
+      configuration_url: "—"
+      via_device_name: home_tapo_iot_hub_omega
+      via_device_id: 8a63c33a540b71edc4141729209835b7
+      device_id: e6723486164fddd8eadecb1ba6f86ae6
+    - entity_id: binary_sensor.sanctum_motion_alpha
+      device_class: motion
+      integration: tplink
+      friendly_name: sanctum_motion_alpha Motion
+      entity_area_id: bedroom
+      entity_area_name: Bedroom main
+      device_area_id: bedroom
+      device_area_name: Bedroom main
+      device_name: sanctum_motion_alpha
+      manufacturer: TP-Link
+      model: T100
+      sw_version: 1.12.0 Build 230512 Rel.103011
+      hw_version: 1.0
+      configuration_url: "—"
+      via_device_name: home_tapo_iot_hub_omega
+      via_device_id: 8a63c33a540b71edc4141729209835b7
+      device_id: 0ae434be7c1013bb073ef730cd843305
+    - entity_id: binary_sensor.upstairs_presence_alpha_motion
+      device_class: motion
+      integration: tplink
+      friendly_name: upstairs_presence_alpha Motion
+      entity_area_id: upstairs
+      entity_area_name: upstairs
+      device_area_id: upstairs
+      device_area_name: upstairs
+      device_name: upstairs_presence_alpha
+      manufacturer: TP-Link
+      model: T100
+      sw_version: 1.12.0 Build 230512 Rel.103011
+      hw_version: 1.0
+      configuration_url: "—"
+      via_device_name: home_tapo_iot_hub_omega
+      via_device_id: 8a63c33a540b71edc4141729209835b7
+      device_id: 3a27d905d0557e8718b215499dc8a558
+  mqtt:
+    - entity_id: binary_sensor.bedroom_occupancy_alpha_occupancy
+      device_class: occupancy
+      integration: mqtt
+      friendly_name: bedroom_occupancy_alpha Occupancy
+      entity_area_id: bedroom
+      entity_area_name: Bedroom main
+      device_area_id: bedroom
+      device_area_name: Bedroom main
+      device_name: bedroom_occupancy_alpha
+      manufacturer: SONOFF
+      model: Zigbee occupancy sensor
+      sw_version: 1.0.6
+      hw_version: 0
+      configuration_url: "—"
+      via_device_name: Zigbee2MQTT Bridge
+      via_device_id: 10c0dbf97bdbdbf077d62063f93f5db9
+      device_id: 1988eb5eb0ccb3138e7f6526076b8d01
+    - entity_id: binary_sensor.ensuite_motion_alpha_occupancy
+      device_class: motion
+      integration: mqtt
+      friendly_name: ensuite_motion_alpha Occupancy
+      entity_area_id: ensuite
+      entity_area_name: Ensuite
+      device_area_id: ensuite
+      device_area_name: Ensuite
+      device_name: ensuite_motion_alpha
+      manufacturer: Candeo
+      model: Motion sensor
+      sw_version: "0122052017"
+      hw_version: 1
+      configuration_url: "—"
+      via_device_name: Zigbee2MQTT Bridge
+      via_device_id: 10c0dbf97bdbdbf077d62063f93f5db9
+      device_id: 4de6fbea2da1d3db8dac0c0a68d2bdd8
+    - entity_id: binary_sensor.ensuite_occupancy_alpha_occupancy
+      device_class: occupancy
+      integration: mqtt
+      friendly_name: ensuite_occupancy_alpha Occupancy
+      entity_area_id: ensuite
+      entity_area_name: Ensuite
+      device_area_id: ensuite
+      device_area_name: Ensuite
+      device_name: ensuite_occupancy_alpha
+      manufacturer: SONOFF
+      model: Zigbee occupancy sensor
+      sw_version: 1.0.6
+      hw_version: 0
+      configuration_url: "—"
+      via_device_name: Zigbee2MQTT Bridge
+      via_device_id: 10c0dbf97bdbdbf077d62063f93f5db9
+      device_id: 010b8a398c593ba16c1098786ef51a1c
+    - entity_id: binary_sensor.kitchen_occupancy_alpha_occupancy
+      device_class: occupancy
+      integration: mqtt
+      friendly_name: kitchen_occupancy_alpha Occupancy
+      entity_area_id: kitchen
+      entity_area_name: Kitchen
+      device_area_id: kitchen
+      device_area_name: Kitchen
+      device_name: kitchen_occupancy_alpha
+      manufacturer: SONOFF
+      model: Zigbee occupancy sensor
+      sw_version: 1.0.6
+      hw_version: 0
+      configuration_url: "—"
+      via_device_name: Zigbee2MQTT Bridge
+      via_device_id: 10c0dbf97bdbdbf077d62063f93f5db9
+      device_id: 333ca4a29f4f043641c9b1d6418f1d6a
+    - entity_id: binary_sensor.living_room_occupancy_alpha_occupancy
+      device_class: occupancy
+      integration: mqtt
+      friendly_name: living_room_occupancy_alpha Occupancy
+      entity_area_id: living_room
+      entity_area_name: Living Room
+      device_area_id: living_room
+      device_area_name: Living Room
+      device_name: living_room_occupancy_alpha
+      manufacturer: SONOFF
+      model: Zigbee occupancy sensor
+      sw_version: 1.0.6
+      hw_version: 0
+      configuration_url: "—"
+      via_device_name: Zigbee2MQTT Bridge
+      via_device_id: 10c0dbf97bdbdbf077d62063f93f5db9
+      device_id: 1528bf1cccdba781a7c2a5eb03cca4c6
+  matter:
+    - entity_id: binary_sensor.bedroom_wardrobe_occupancy_matter_alpha
+      device_class: occupancy
+      integration: matter
+      friendly_name: bedroom_wardrobe_occupancy_matter_alpha Occupancy
+      entity_area_id: wardrobe
+      entity_area_name: Wardrobe
+      device_area_id: wardrobe
+      device_area_name: Wardrobe
+      device_name: bedroom_wardrobe_occupancy_matter_alpha
+      manufacturer: Tapo
+      model: T100
+      sw_version: 1.12.0
+      hw_version: 1.0
+      configuration_url: "—"
+      via_device_name: Tapo Smart IoT HUB
+      via_device_id: 4711f70922dcfe24c9e43d90b2167c54
+      device_id: f9dfaa31801e706bd99bd0858fc3853a
+    - entity_id: binary_sensor.downstairs_occupancy_matter_alpha_occupancy
+      device_class: occupancy
+      integration: matter
+      friendly_name: downstairs_occupancy_matter_alpha Occupancy
+      entity_area_id: downstairs
+      entity_area_name: Downstairs
+      device_area_id: downstairs
+      device_area_name: Downstairs
+      device_name: downstairs_occupancy_matter_alpha
+      manufacturer: Tapo
+      model: T100
+      sw_version: 1.12.0
+      hw_version: 1.0
+      configuration_url: "—"
+      via_device_name: Tapo Smart IoT HUB
+      via_device_id: 4711f70922dcfe24c9e43d90b2167c54
+      device_id: 36fc556164769c0ed04e7197ab968963
+    - entity_id: binary_sensor.kitchen_occupancy_matter_alpha_occupancy
+      device_class: occupancy
+      integration: matter
+      friendly_name: kitchen_occupancy_matter_alpha Occupancy
+      entity_area_id: kitchen
+      entity_area_name: Kitchen
+      device_area_id: kitchen
+      device_area_name: Kitchen
+      device_name: kitchen_occupancy_matter_alpha
+      manufacturer: Tapo
+      model: T100
+      sw_version: 1.12.0
+      hw_version: 1.0
+      configuration_url: "—"
+      via_device_name: Tapo Smart IoT HUB
+      via_device_id: 4711f70922dcfe24c9e43d90b2167c54
+      device_id: aa3bc9df1986d8aaa17b579d2b7806a4
+    - entity_id: binary_sensor.sanctum_occupancy_matter_alpha
+      device_class: occupancy
+      integration: matter
+      friendly_name: sanctum_occupancy_matter_alpha Occupancy
+      entity_area_id: bedroom
+      entity_area_name: Bedroom main
+      device_area_id: bedroom
+      device_area_name: Bedroom main
+      device_name: sanctum_occupancy_matter_alpha
+      manufacturer: Tapo
+      model: T100
+      sw_version: 1.12.0
+      hw_version: 1.0
+      configuration_url: "—"
+      via_device_name: Tapo Smart IoT HUB
+      via_device_id: 4711f70922dcfe24c9e43d90b2167c54
+      device_id: e2c9051060d142b15ec4b8ffe6ca95b2
+    - entity_id: binary_sensor.upstairs_occupancy_matter_alpha_occupancy
+      device_class: occupancy
+      integration: matter
+      friendly_name: upstairs_occupancy_matter_alpha Occupancy
+      entity_area_id: upstairs
+      entity_area_name: upstairs
+      device_area_id: upstairs
+      device_area_name: upstairs
+      device_name: upstairs_occupancy_matter_alpha
+      manufacturer: Tapo
+      model: T100
+      sw_version: 1.12.0
+      hw_version: 1.0
+      configuration_url: "—"
+      via_device_name: Tapo Smart IoT HUB
+      via_device_id: 4711f70922dcfe24c9e43d90b2167c54
+      device_id: bda581d138115c5a5a4f12306f346d24
+  template:
+    - entity_id: binary_sensor.ensuite_motion_realtime
+      device_class: motion
+      integration: mqtt
+      friendly_name: "Ensuite Motion (Real-Time)"
+      entity_area_id: ensuite
+      entity_area_name: Ensuite
+      device_area_id: "—"
+      device_area_name: "—"
+      device_name: "—"
+      manufacturer: "—"
+      model: "—"
+      sw_version: "—"
+      hw_version: "—"
+      configuration_url: "—"
+      via_device_name: Zigbee2MQTT Bridge
+      via_device_id: 10c0dbf97bdbdbf077d62063f93f5db9
+      device_id: "—"
+
+_meta:
+version: 1.0
+title: "Hestia Core: Motion/Occupancy Sensors"
+updated: "2025-09-04"
+devtools.library.jinja: "motion_occupancy.jinja"
+template: |
+  {%- set integrations = ['smartthings', 'tplink', 'mqtt', 'matter'] -%}
+  {%- set device_classes = ['motion', 'occupancy'] -%}
+  {%- set domain_states = (states.sensor | list) + (states.binary_sensor | list) -%}
+
+  {%- macro q(v) -%}
+  {%- if v is none or v == '' or v == 'unavailable' -%}"—"
+  {%- elif v == 'unknown' -%}"unknown"
+  {%- else -%}{{ v }}{%- endif -%}
+  {%- endmacro -%}
+
+  integrations:
+  {% for integ in integrations -%}
+    {{ integ }}:
+      entities:
+  {% set integ_entities = integration_entities(integ) | list -%}
+  {% set items = domain_states
+        | selectattr('entity_id', 'in', integ_entities)
+        | selectattr('attributes.device_class', 'in', device_classes)
+        | sort(attribute='entity_id') | list -%}
+  {% if items | length == 0 -%}
+        []
+  {% else -%}
+  {% for s in items -%}
+  {% set dev_id = device_id(s.entity_id) -%}
+  {% set via_id = dev_id and device_attr(dev_id, 'via_device_id') -%}
+  {% set dev_name = dev_id and (device_attr(dev_id, 'name_by_user') or device_attr(dev_id, 'name')) -%}
+  {% set dev_mfr = dev_id and device_attr(dev_id, 'manufacturer') -%}
+  {% set dev_model = dev_id and (device_attr(dev_id, 'model') or device_attr(dev_id, 'model_id')) -%}
+  {% set dev_sw = dev_id and device_attr(dev_id, 'sw_version') -%}
+  {% set dev_hw = dev_id and device_attr(dev_id, 'hw_version') -%}
+  {% set dev_cfg = dev_id and device_attr(dev_id, 'configuration_url') -%}
+  {% set via_name = via_id and (device_attr(via_id, 'name_by_user') or device_attr(via_id, 'name')) -%}
+  {% set ent_area_id = area_id(s.entity_id) -%}
+  {% set ent_area_name = area_name(s.entity_id) -%}
+  {% set dev_area_id = dev_id and area_id(dev_id) -%}
+  {% set dev_area_name = dev_id and area_name(dev_id) -%}
+        - entity_id: {{ s.entity_id }}
+          device_class: {{ s.attributes.device_class }}
+          integration: {{ integ }}
+          friendly_name: {{ q(s.name) }}
+          entity_area_id: {{ q(ent_area_id) }}
+          entity_area_name: {{ q(ent_area_name) }}
+          device_area_id: {{ q(dev_area_id) }}
+          device_area_name: {{ q(dev_area_name) }}
+          device_name: {{ q(dev_name) }}
+          manufacturer: {{ q(dev_mfr) }}
+          model: {{ q(dev_model) }}
+          sw_version: {{ q(dev_sw) }}
+          hw_version: {{ q(dev_hw) }}
+          configuration_url: {{ q(dev_cfg) }}
+          via_device_name: {{ q(via_name) }}
+          via_device_id: {{ q(via_id) }}
+          device_id: {{ q(dev_id) }}
+  {% endfor -%}
+  {% endif -%}
+  {% endfor -%}

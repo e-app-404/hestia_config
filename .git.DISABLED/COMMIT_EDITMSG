@@ -1,0 +1,1 @@
+:broom: reset index to strict ignore; stop tracking HA runtime, HACS, diagnostics, secrets

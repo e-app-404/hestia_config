@@ -1,0 +1,11 @@
+##########
+# The MeteoAlarm platform allows one to watch for
+# weather alerts in Europe from MeteoAlarm (EUMETNET)
+# https://www.home-assistant.io/integrations/meteoalarm
+
+binary_sensor:
+  - platform: meteoalarm
+    name: "MeteoAlarm London"
+    country: "united-kingdom"
+    province: "London & South East England"
+    language: "en-GB"  # optional, defaults to en-US

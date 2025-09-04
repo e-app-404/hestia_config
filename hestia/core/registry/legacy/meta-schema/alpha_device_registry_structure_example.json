@@ -1,0 +1,150 @@
+{
+  "_meta": {
+    "version": "v1.2.0",
+    "build_date": "2025-04-28T22:00:00Z",
+    "build_by": "Odysseus",
+    "schema": "https://hestia.local/schemas/device_registry.schema.json",
+    "change_history": []
+  },
+  "devices": {
+    "master_bedroom_motion_sensor_alpha": {
+      "metadata": {
+        "alpha_name": "Master Bedroom Motion Alpha",
+        "friendly_name": "Motion Sensor - Bedroom",
+        "internal_name": "bedroom_motion_sensor",
+        "alpha_canonical": "bedroom_motion_sensor_α",
+        "added_date": "2024-10-05"
+      },
+      "location": {
+        "room": "bedroom",
+        "area": null,
+        "role": "motion",
+        "area_id": "bedroom",
+        "room_area": null
+      },
+      "device_info": {
+        "manufacturer": "Philips Hue",
+        "model": "Hue Motion Sensor",
+        "model_name": "Hue Motion",
+        "firmware": "1.23.4",
+        "mac": "00:17:88:01:02:03",
+        "ipv4": null,
+        "ipv6": null,
+        "ssid": null
+      },
+      "integration": {
+        "preferred_protocol": "zigbee",
+        "integration_stack": {
+          "zigbee": {
+            "device_id": "hue_motion_bedroom_001",
+            "protocol": "zigbee",
+            "origin": "zha",
+            "entity_id": "binary_sensor.bedroom_motion",
+            "canonical_id": "bedroom_motion_α",
+            "status": "paired",
+            "platform": "binary_sensor",
+            "device_class": "motion",
+            "availability_sensor": null
+          }
+        }
+      },
+      "features": [
+        {
+          "entity": "battery_level",
+          "entity_id": "sensor.bedroom_motion_battery",
+          "name": "Motion Sensor Battery Level",
+          "canonical_id": "bedroom_motion_battery_α",
+          "type": "sensor"
+        }
+      ],
+      "confidence_metrics": {
+        "entity_confidence": {
+          "score": 92,
+          "factors": ["Explicit device_id match", "Clear signal role mapping"],
+          "uncertain_fields": []
+        },
+        "device_confidence": {
+          "score": 88,
+          "factors": ["Firmware confirmed", "Manufacturer present"],
+          "uncertain_fields": []
+        },
+        "relationship_confidence": {
+          "score": 95,
+          "factors": ["Canonical ID consistency"],
+          "uncertain_fields": []
+        },
+        "requires_review": false
+      }
+    },
+
+    "master_bedroom_ceiling_light_alpha": {
+      "metadata": {
+        "alpha_name": "Master Bedroom Ceiling Light Alpha",
+        "friendly_name": "Ceiling Light - Master Bedroom",
+        "internal_name": "master_bedroom_ceiling_light",
+        "alpha_canonical": "master_bedroom_ceiling_light_α",
+        "added_date": "2024-11-12"
+      },
+      "location": {
+        "room": "bedroom",
+        "area": "master",
+        "role": "lighting",
+        "area_id": "bedroom",
+        "room_area": "master"
+      },
+      "device_info": {
+        "manufacturer": "IKEA",
+        "model": "Tradfri Bulb",
+        "model_name": "TRÅDFRI LED",
+        "firmware": "2.5.022",
+        "mac": null,
+        "ipv4": null,
+        "ipv6": null,
+        "ssid": null
+      },
+      "integration": {
+        "preferred_protocol": "zigbee",
+        "integration_stack": {
+          "zigbee": {
+            "device_id": "tradfri_ceiling_light_001",
+            "protocol": "zigbee",
+            "origin": "zha",
+            "entity_id": "light.bedroom_ceiling_light",
+            "canonical_id": "bedroom_ceiling_light_α",
+            "status": "paired",
+            "platform": "light",
+            "device_class": "light",
+            "availability_sensor": null
+          }
+        }
+      },
+      "features": [
+        {
+          "entity": "brightness_control",
+          "entity_id": "light.bedroom_ceiling_light",
+          "name": "Brightness Control",
+          "canonical_id": "bedroom_ceiling_light_brightness_α",
+          "type": "light"
+        }
+      ],
+      "confidence_metrics": {
+        "entity_confidence": {
+          "score": 95,
+          "factors": ["Full entity mapping", "Manufacturer-model link verified"],
+          "uncertain_fields": []
+        },
+        "device_confidence": {
+          "score": 90,
+          "factors": ["Firmware present", "Integration complete"],
+          "uncertain_fields": []
+        },
+        "relationship_confidence": {
+          "score": 97,
+          "factors": ["Single canonical entity"],
+          "uncertain_fields": []
+        },
+        "requires_review": false
+      }
+    }
+  }
+}

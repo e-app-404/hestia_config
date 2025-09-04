@@ -1,0 +1,87 @@
+version: 4
+mqtt:
+  base_topic: zigbee2mqtt
+  server: mqtt://192.168.0.129:1883
+  user: zigbee2mqtt
+  password: zigbee2mqtt
+advanced:
+  log_level: debug
+  channel: 25
+  network_key:
+    - 62
+    - 190
+    - 76
+    - 110
+    - 38
+    - 60
+    - 133
+    - 35
+    - 57
+    - 182
+    - 19
+    - 77
+    - 194
+    - 147
+    - 130
+    - 22
+  pan_id: 60923
+  ext_pan_id:
+    - 110
+    - 96
+    - 244
+    - 33
+    - 108
+    - 180
+    - 7
+    - 134
+frontend:
+  enabled: true
+  port: 8099
+homeassistant:
+  enabled: true
+serial:
+  port: /dev/ttyUSB0
+  adapter: zstack
+  baudrate: 115200
+  rtscts: false
+devices:
+  '0x282c02bfffef334c':
+    friendly_name: bedroom_monstera_soil_alpha
+  '0x0ceff6fffe59baff':
+    friendly_name: bedroom_ambient_climate_ alpha
+  '0x842712fffe741dc5':
+    friendly_name: bedroom_climate_trv_left_alpha
+  '0x842712fffe389d8c':
+    friendly_name: bedroom_climate_trv_right_alpha
+  '0x8c65a3fffee9fdc1':
+    friendly_name: ensuite_occupancy_alpha
+    no_occupancy_since:
+      - undefined: 10
+      - undefined: 60
+  '0x0ceff6fffe6b5cd8':
+    friendly_name: bedroom_occupancy_alpha
+    no_occupancy_since:
+      - undefined: 10
+      - undefined: 60
+  '0x842712fffe3898fe':
+    friendly_name: living_room_climate_trv_alpha
+  '0x286d970001152304':
+    friendly_name: living_room_smartbutton_alpha
+  '0x842712fffe186fa1':
+    friendly_name: kitchen_climate_trv_alpha
+  '0x0ceff6fffe5b7da3':
+    friendly_name: kitchen_ambient_climate_alpha
+  '0x842712fffe17583d':
+    friendly_name: kitchen_occupancy_alpha
+    no_occupancy_since:
+      - undefined: 10
+      - undefined: 60
+  '0x286d9700011522e4':
+    friendly_name: bedroom_smart_button_alpha
+  '0x842712fffe1b2f10':
+    friendly_name: living_room_occupancy_alpha
+    no_occupancy_since:
+      - undefined: 10
+      - undefined: 60
+  '0x54ef44100093f78f':
+    friendly_name: home_magic_cube_alpha

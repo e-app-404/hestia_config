@@ -1,0 +1,100 @@
+{# ============================================================
+   HESTIA Delta-Tier Macro Library
+   Version: 1.0.0
+   Last Updated: 2025-04-28
+   Description: Standardized transformations for δ-tier sensors
+   ============================================================ #}
+
+{% macro linear_decay(current_trigger, previous_value, decay_rate=0.5, reset_value=10, floor=0) %}
+  {% if current_trigger %}
+    {{ reset_value }}
+  {% else %}
+    {{ max(previous_value | float(0) - decay_rate, floor) }}
+  {% endif %}
+{% endmacro %}
+
+{% macro exponential_decay(current_trigger, previous_value, decay_factor=0.9, reset_value=10, floor=0) %}
+  {% if current_trigger %}
+    {{ reset_value }}
+  {% else %}
+    {{ max(previous_value | float(0) * decay_factor, floor) }}
+  {% endif %}
+{% endmacro %}
+
+{% macro detect_trend(current_value, previous_value, rise_threshold=0.2, fall_threshold=0.2) %}
+  {% set current = current_value | float(0) %}
+  {% set previous = previous_value | float(0) %}
+  {% set delta = current - previous %}
+  {% if delta > rise_threshold %}
+    rising
+  {% elif delta < -fall_threshold %}
+    falling
+  {% else %}
+    stable
+  {% endif %}
+{% endmacro %}
+
+{% macro time_weighted_average(current_value, previous_average, weight=0.3) %}
+  {% set current = current_value | float(0) %}
+  {% set previous = previous_average | float(0) %}
+  {{ (current * weight) + (previous * (1 - weight)) | round(2) }}
+{% endmacro %}
+
+{# Temporal event detection #}
+{% macro detect_event(condition_met, duration_seconds, event_threshold_seconds) %}
+  {% if condition_met %}
+    {% if duration_seconds >= event_threshold_seconds %}
+      true
+    {% else %}
+      pending
+    {% endif %}
+  {% else %}
+    false
+  {% endif %}
+{% endmacro %}
+
+{% macro detect_peak(current_value, historical_values, window_size=5) %}
+  {% set values = historical_values[-window_size:] %}
+  {% if values | length >= window_size and current_value > max(values) %}
+    true
+  {% else %}
+    false
+  {% endif %}
+{% endmacro %}
+
+{% macro is_value_stable(current_value, previous_values, stability_threshold=0.1, window_size=3) %}
+  {% set values = previous_values[-window_size:] %}
+  {% if values | length >= window_size %}
+    {% set max_diff = namespace(value=0) %}
+    {% for value in values %}
+      {% set diff = abs(current_value - value) %}
+      {% if diff > max_diff.value %}
+        {% set max_diff.value = diff %}
+      {% endif %}
+    {% endfor %}
+    {{ max_diff.value <= stability_threshold }}
+  {% else %}
+    false
+  {% endif %}
+{% endmacro %}
+
+{% macro delta_tier_attributes(canonical_id, subsystem, module, role, description, 
+                              upstream_source, downstream_consumers=[], retention="Session", 
+                              update_frequency="5 minutes", custom_attributes={}) %}
+  {% set base_attributes = {
+    "canonical_id": canonical_id ~ "_δ",
+    "tier": "δ",
+    "subsystem": subsystem,
+    "module": module,
+    "type": "temporal",
+    "role": role,
+    "description": description,
+    "upstream_source": upstream_source,
+    "downstream_consumers": downstream_consumers,
+    "retention": retention,
+    "update_frequency": update_frequency,
+    "last_updated": now().strftime('%Y-%m-%d %H:%M:%S')
+  } %}
+  {% set full_attributes = base_attributes | merge(custom_attributes) %}
+  {{ full_attributes }}
+{% endmacro %}

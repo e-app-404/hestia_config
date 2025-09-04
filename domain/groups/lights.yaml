@@ -1,0 +1,138 @@
+---
+#═══════════════════════════════════════════════════════════════
+# ▶ GROUP: Light Entity Collections by Room Config ◀
+# Loader: !include_dir_merge_named domain/groups/lights.yaml
+# Schema: group
+#═══════════════════════════════════════════════════════════════
+bedroom_lights_all:
+  name: "Group Bedroom Lights - All"
+  entities:
+    - light.bedroom_accent_alpha
+    - light.bedroom_desk_alpha
+    - light.bedroom_desk_corner_alpha
+    - light.bedroom_desk_lightstrip_alpha
+    - light.bedroom_desk_wall_alpha
+    - light.bedroom_entrance_alpha
+    - light.bedroom_hifi_accent_alpha
+    - light.bedroom_main_alpha
+    - light.bedroom_mirror_lightstrip_alpha
+    - light.bedroom_nightstand_left_alpha
+    - light.bedroom_nightstand_right_alpha
+    - light.bedroom_ottoman_lightstrip_alpha
+    - light.bedroom_wall_alpha
+    - light.monitor_backlight_alpha
+  icon: mdi:lamps-outline
+
+bedroom_main_lights:
+  name: "Group Main Bedroom Lights"
+  entities:
+    - light.bedroom_accent_alpha
+    - light.bedroom_entrance_alpha
+    - light.bedroom_hifi_accent_alpha
+    - light.bedroom_main_alpha
+    - light.bedroom_mirror_lightstrip_alpha
+    - light.bedroom_wall_alpha
+  icon: mdi:lamps-outline
+
+bedroom_lights_bed_area:
+  name: "Group Bedroom Nightstand Lights"
+  entities:
+    - light.bedroom_nightstand_left_alpha
+    - light.bedroom_nightstand_right_alpha
+  icon: mdi:lamps-outline
+
+bedroom_lights_desk_area:
+  name: "Group Bedroom Lights Desk Area"
+  entities:
+    - light.bedroom_desk_alpha
+    - light.bedroom_desk_corner_alpha
+    - light.bedroom_desk_lightstrip_alpha
+    - light.bedroom_desk_wall_alpha
+    - light.monitor_backlight_alpha
+      #    - light.monitor_backlight_alpha_segment_001
+      #    - light.monitor_backlight_alpha_segment_002
+      #    - light.monitor_backlight_alpha_segment_003
+      #    - light.monitor_backlight_alpha_segment_004
+      #    - light.monitor_backlight_alpha_segment_005
+      #    - light.monitor_backlight_alpha_segment_006
+      #    - light.monitor_backlight_alpha_segment_007
+      #    - light.monitor_backlight_alpha_segment_008
+      #    - light.monitor_backlight_alpha_segment_009
+      #    - light.monitor_backlight_alpha_segment_010
+      #    - light.monitor_backlight_alpha_segment_011
+      #    - light.monitor_backlight_alpha_segment_012
+      #    - light.monitor_backlight_alpha_segment_013
+      #    - light.monitor_backlight_alpha_segment_014
+      #    - light.monitor_backlight_alpha_segment_015
+  icon: mdi:lamps-outline
+
+wardrobe_lights:
+  name: "Group Wardrobe Lights"
+  entities:
+    - light.bedroom_wardrobe_lightstrip_alpha
+  icon: mdi:lamps-outline
+
+bedroom_utility_lights:
+  name: "Group Bedroom Utility Lights"
+  entities:
+    - light.bedroom_ottoman_lightstrip_alpha
+    - light.bedroom_wardrobe_lightstrip_alpha
+  icon: mdi:lamps-outline
+
+ensuite_lights:
+  name: "Group Ensuite Lights"
+  entities:
+    - light.ensuite_accent_alpha
+    - light.ensuite_lightstrip_tplink_alpha
+    - light.ensuite_main_alpha
+  icon: mdi:lamps-outline
+
+kitchen_lights:
+  name: "Group Kitchen Lights"
+  entities:
+    - light.kitchen_ceiling_alpha
+    - light.kitchen_cupboards_lightstrip_alpha
+  icon: mdi:lamps-outline
+
+laundry_room_lights:
+  name: "Group Laundry Room Lights"
+  entities:
+    - light.laundry_ceiling_tuya_alpha
+  icon: mdi:lamps-outline
+
+living_room_lights:
+  name: "Group Living Room Lights - All"
+  entities:
+    - light.living_room_desk_alpha
+    - light.living_room_floorlamp_alpha
+    - light.living_room_foxy_alpha
+    - light.living_room_main_alpha
+    - light.living_room_side_alpha
+  icon: mdi:lamps-outline
+
+hallway_lights:
+  name: "Group Hallway Lights - All"
+  entities:
+    - light.downstairs_lightstrip_alpha
+    - light.hallway_lightstrip_alpha
+    - light.upstairs_lightstrip_alpha
+  icon: mdi:lamps-outline
+
+downstairs_lights:
+  name: "Group Downstairs Lights"
+  entities:
+    - light.downstairs_lightstrip_alpha
+    - light.hallway_lightstrip_omega
+  icon: mdi:lamps-outline
+
+upstairs_lights:
+  name: "Group Upstairs Lights"
+  entities:
+    - light.upstairs_lightstrip_omega
+  icon: mdi:lamps-outline
+
+switch_lights:
+  name: "Switch Lights"
+  entities:
+    - light.kitchen_cupboards_lightstrip_alpha
+    - light.living_room_stringlights_alpha

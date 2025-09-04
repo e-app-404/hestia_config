@@ -1,0 +1,102 @@
+# Motion Timeout Configuration Matrix
+# File: /config/hestia/configuration/motion_timeout_matrix.yaml
+# Description: Room-specific timeout tuning for motion_recent sensors
+
+timeout_profiles:
+  living_spaces:
+    description: "Main activity areas with sustained presence"
+    default_timeout_minutes: 5
+    rooms: ["bedroom", "living_room", "kitchen"]
+    rationale: "Extended timeout for areas where people linger"
+
+  transition_zones:
+    description: "Movement corridors and pathways"
+    default_timeout_minutes: 3
+    rooms: ["hallway_downstairs", "hallway_upstairs", "entrance"]
+    rationale: "Moderate timeout for areas with brief but frequent transitions"
+
+  utility_spaces:
+    description: "Quick-access storage and utility areas"
+    default_timeout_minutes: 2
+    rooms: ["wardrobe", "ottoman", "laundry"]
+    rationale: "Short timeout for brief interactions"
+
+  private_wet_areas:
+    description: "Bathrooms and private spaces with longer dwell time"
+    default_timeout_minutes: 10
+    rooms: ["ensuite", "powder_room"]
+    rationale: "Extended timeout for privacy and typical usage patterns"
+
+room_specific_overrides:
+  bedroom:
+    base_timeout_minutes: 5
+    area_modifiers:
+      desk: 
+        timeout_minutes: 8
+        reason: "Extended work sessions require longer persistence"
+      bed:
+        timeout_minutes: 15
+        reason: "Sleep and rest periods need maximum persistence"
+      wardrobe:
+        timeout_minutes: 2
+        reason: "Brief clothing selection interactions"
+
+  kitchen:
+    base_timeout_minutes: 5
+    activity_modifiers:
+      cooking_mode:
+        timeout_minutes: 10
+        trigger: "is_state('input_boolean.cooking_mode', 'on')"
+      coffee_corner:
+        timeout_minutes: 3
+        area_specific: true
+
+  living_room:
+    base_timeout_minutes: 5
+    context_modifiers:
+      entertainment_mode:
+        timeout_minutes: 15
+        trigger: "is_state('media_player.projector', 'playing')"
+      gaming_mode:
+        timeout_minutes: 12
+        trigger: "is_state('switch.gaming_console', 'on')"
+
+macro_configuration:
+  dynamic_timeout_enabled: false  # Phase 3+ feature
+  static_implementation: true     # Current Phase 2 approach
+  
+  future_enhancements:
+    context_aware_timeouts:
+      description: "Adjust timeouts based on time of day, activity mode, or room state"
+      implementation_phase: "Phase 4"
+      
+    adaptive_learning:
+      description: "Machine learning-based timeout optimization"
+      implementation_phase: "Phase 5"
+
+validation_matrix:
+  timeout_ranges:
+    minimum_seconds: 60
+    maximum_seconds: 900
+    recommended_default: 300
+    
+  performance_considerations:
+    memory_usage: "One timer per motion_recent sensor"
+    update_frequency: "On motion state change only"
+    automation_impact: "Reduced compared to input_boolean watchers"
+
+integration_notes:
+  deprecated_watchdogs:
+    - "input_boolean.bedroom_clear_watchdog"
+    - "input_boolean.kitchen_clear_watchdog"
+    - "input_boolean.living_room_clear_watchdog"
+    - "input_boolean.ensuite_clear_watchdog"
+    - "input_boolean.hallway_downstairs_clear_watchdog"
+    - "input_boolean.hallway_upstairs_clear_watchdog"
+    - "input_boolean.entrance_clear_watchdog"
+    - "input_boolean.wardrobe_clear_watchdog"
+    
+  automation_migrations_needed:
+    - "Any automations triggering on watchdog state changes"
+    - "Scripts that manually reset watchdog timers"
+    - "Lovelace cards displaying watchdog status"

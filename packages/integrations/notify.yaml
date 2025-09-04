@@ -1,0 +1,7 @@
+#═══════════════════════════════════════════════════════════════
+# ▶ NOTIFY: Notification Services ◀
+# Loader: !include domain/notify/notify.yaml
+# Schema: notify
+#═══════════════════════════════════════════════════════════════
+
+notify: !include_dir_merge_list /config/domain/notify/

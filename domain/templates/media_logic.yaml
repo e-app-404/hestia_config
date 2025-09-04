@@ -1,0 +1,196 @@
+#═══════════════════════════════════════════════════════════════
+# ▶ LOGIC SENSOR: Gaming Console & Media Player Status ◀
+# Loader: !include_dir_merge_list domain/templates/
+# Schema: sensor (list)
+# TODO: Validate *_alpha entity_ids resolve correctly with post-reboot naming.
+#═══════════════════════════════════════════════════════════════
+
+- binary_sensor:
+    - name: "Playstation 4 Status"
+      unique_id: bedroom_ps4_status_beta
+      state: >
+        {% if state_attr('media_player.playstation_4', 'media_content_type') == 'game'
+              and is_state('media_player.playstation_4', 'playing') %}
+          on
+        {% else %}
+          off
+        {% endif %}
+      attributes:
+        tier: "β"
+        canonical_id: "bedroom_ps4_status_β"
+        subsystem: "orpheus"
+        module: "gaming"
+        type: "preference_proxy"
+        role: "beta_console"
+        file: "/config/domain/templates/media_logic.yaml"
+        origin: "new"
+        protocols: ""
+        upstream_sources: >
+          {{ ['media_player.playstation_4'] | tojson }}
+        aggregation_strategy: "preference-based selection (single source)"
+        source_count: 1
+        version: "2.10"
+        created: "2025-06-11"
+        last_updated: "2025-07-17"
+        description: >
+          This sensor tracks the status of the PlayStation 4 in the bedroom.
+          It will return the current state of the media player, such as 'playing', 'paused', or 'idle'.
+          Used by β-tier logic sensors to determine gaming activity and preferences.
+        domain: "inference"
+
+    - name: "Bedroom PS4 Game Active (β)"
+      unique_id: "bedroom_ps4_game_active_beta"
+      icon: mdi:controller
+      state: >
+        {{ state_attr('media_player.playstation_4', 'media_content_type') == 'game' and
+            is_state('media_player.playstation_4', 'playing') }}
+      attributes:
+        tier: >
+          {{ ['β','η','γ','ζ'] | tojson }}
+        canonical_id: "bedroom_ps4_game_active_β"
+        subsystem: "orpheus"
+        module: "gaming"
+        type: "activity_inference"
+        role: "game_active"
+        origin: "ps4_status_sensor"
+        file: "/config/domain/templates/media_logic.yaml"
+        upstream_sources: >
+          {{ ['media_player.playstation_4'] | tojson }}
+        aggregation_strategy: "activity detection (single source)"
+        source_count: 1
+        version: "2.10"
+        created: "2025-06-11"
+        last_updated: "2025-07-17"
+        description: >
+          Inference sensor to detect if the PS4 in the bedroom is actively running a game.
+          Will return "True" or "False" as strings.
+          Used by γ-tier logic sensors to determine entertainment engagement states.
+        domain: "inference"
+
+    - name: "Bedroom Entertainment Engaged (γ)"
+      unique_id: "bedroom_entertainment_engaged_gamma"
+      state: >
+        {{ is_state('binary_sensor.bedroom_ps4_game_active', 'on') }}
+      device_class: presence
+      delay_off: "00:05:00"
+      icon: mdi:television
+      attributes:
+        tier: "γ"
+        canonical_id: "bedroom_entertainment_engaged_γ"
+        subsystem: "orpheus"
+        module: "playstation"
+        type: "logic_sensor"
+        role: "entertainment_engaged"
+        origin: "ps4_game_active_sensor"
+        file: "/config/domain/templates/media_logic.yaml"
+        upstream_sources: >
+          {{ ['sensor.bedroom_ps4_game_active'] | tojson }}
+        aggregation_strategy: "engagement detection (single source)"
+        source_count: 1
+        version: "2.10"
+        created: "2025-06-11"
+        last_updated: "2025-07-17"
+        description: >
+          Gamma-tier logic sensor for presence inference based on PS4 game activity.
+          Aggregates β+ activity sensors into a high-certainty entertainment state.
+        domain: "inference"
+
+    - name: "Bedroom TV On (β)"
+      unique_id: "bedroom_tv_on_beta"
+      icon: mdi:television
+      state: >
+        {{ is_state('media_player.bedroom_tv_alpha', 'on') or
+           (states('sensor.bedroom_tv_alpha_power')|float(0) > 5) }}
+      attributes:
+        tier: "β"
+        canonical_id: "bedroom_tv_on_β"
+        alpha_source: "media_player.bedroom_tv_alpha"
+        power_source: "sensor.bedroom_tv_alpha_power"
+        rationale: "On if TV reports 'on' or draws significant power (>5W)."
+        last_updated: "{{ now().isoformat() }}"
+        description: >
+          β-tier abstraction for bedroom TV on-state, combines media_player and power for reliability.
+
+    - name: "Bedroom TV Status"
+      unique_id: "bedroom_tv_status_beta"
+      state: >
+        {% if is_state('media_player.bedroom_tv_alpha', 'playing') %}
+          Playing
+        {% elif is_state('media_player.bedroom_tv_alpha', 'paused') %}
+          Paused
+        {% else %}
+          Stopped
+        {% endif %}
+      attributes:
+        tier: "β"
+        canonical_id: "bedroom_tv_status_β"
+        subsystem: "orpheus"
+        module: "television"
+        type: "status_proxy"
+        role: "tv_status"
+        origin: "tv_status_sensor"
+        file: "/config/domain/templates/media_logic.yaml"
+        upstream_sources: >
+          {{ ['media_player.bedroom_tv_alpha'] | tojson }}
+        aggregation_strategy: "status detection (single source)"
+        source_count: 1
+        version: "2.10"
+        created: "2025-06-11"
+        last_updated: "2025-07-17"
+        description: >
+          This sensor tracks the status of the bedroom television (media_player.bedroom_tv_alpha) and returns labels such as 'Playing', 'Paused', or 'Stopped'.
+        domain: "inference"
+
+    - name: "Bedroom TV Entertainment Engaged (γ)"
+      unique_id: "bedroom_tv_entertainment_engaged_gamma"
+      icon: mdi:television-classic
+      device_class: presence
+      delay_off: "00:03:00"
+      state: >
+        {{ is_state('binary_sensor.bedroom_tv_on_beta', 'on')
+           and not is_state('sensor.bedroom_tv_app_beta', 'Unknown') }}
+      attributes:
+        tier: "γ"
+        canonical_id: "bedroom_tv_entertainment_engaged_γ"
+        beta_source: "binary_sensor.bedroom_tv_on_beta"
+        rationale: "Engaged when TV is on and running a known app (not just powered on)."
+        last_updated: "{{ now().isoformat() }}"
+        description: >
+          Gamma-tier entertainment state: TV is on and in use for media.
+
+- sensor:
+    - name: "MacBook Active Displays"
+      unique_id: "macbook_active_displays_beta"
+      state: >
+        {% set names = state_attr('sensor.macbook_displays', 'Display Names') %}
+        {{ names | join(', ') if names else 'None' }}
+      attributes:
+        tier: "β"
+        canonical_id: "macbook_active_displays_β"
+        alpha_source: "sensor.macbook_displays"
+        upstream_sources: "sensor.macbook_displays"
+        display_names: >
+          {{ state_attr('sensor.macbook_displays', 'Display Names') or [] }}
+        display_ids: >
+          {{ state_attr('sensor.macbook_displays', 'Display IDs') or [] }}
+        rationale: "Emits all connected displays as a comma-separated string; use in fusion or decision logic."
+        last_updated: "{{ now().isoformat() }}"
+        description: >
+          "A single “active displays” sensor gives you the ground truth for all your display-based logic, and can serve as the universal input for higher-tier logic, automations, and UI."
+        created: "2025-07-25"
+        subsystem: "soteria"
+        domain: "status"
+        module: "entertainment"
+
+    - name: "Bedroom TV App (β)"
+      unique_id: "bedroom_tv_app_beta"
+      state: >
+        {{ states('sensor.bedroom_tv_alpha_tv_channel_name') or 'Unknown' }}
+      attributes:
+        tier: "β"
+        canonical_id: "bedroom_tv_app_β"
+        alpha_source: "sensor.bedroom_tv_alpha_tv_channel_name"
+        rationale: "Tracks which TV app is currently active for scene/automation logic."
+        last_updated: "{{ now().isoformat() }}"
+        description: >
+          Abstraction for current app/channel running on Bedroom TV.

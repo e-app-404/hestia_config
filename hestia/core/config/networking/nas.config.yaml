@@ -1,0 +1,152 @@
+# Network Configuration Matrix
+# File: /config/hestia/configuration/network_configuration.yaml
+# Description: Global settings for connectivity, access protocols, et al IT.
+
+synology:
+  general:
+    description: >
+      'Synology NAS Setup & Configuration'
+    server_name: DS220plus
+    ip: 192.168.0.104
+    mac: 90:09:d0:3f:69:d9
+    os: 7.2.2-72806
+    model: DS220+
+    status: ready
+  certificates:
+    provider: Cloudflare
+    cert_uploaded: true
+    location: /usr/syno/etc/certificate/system/default/
+    verified_dns: nas.xplab.io
+    https_port: 5001
+    https_status: active
+  ddns:
+    enabled: true
+    hostname: nas.xplab.io
+    provider: Cloudflare
+    method: Docker container + API token
+    zone: xplab.io
+    token_permissions:
+      - Zone - Zone Settings - Read
+      - Zone - Zone - Read
+      - Zone - DNS - Edit
+    zone_scope: All zones
+    ddns_verified_ip: 92.40.217.203
+    api_token: "" # Cloudflare API token used for DDNS updates
+    zone_id: "" # Cloudflare Zone ID
+    record_id: "" # Cloudflare DNS record ID for nas.xplab.io
+    ip_variable: "__MYIP__"
+    api_url_template: "https://api.cloudflare.com/client/v4/zones/__ZONE_ID__/dns_records/__RECORD_ID__?type=A&name=__HOSTNAME__&content=__MYIP__&ttl=1&proxied=true"
+    permissions:
+      - "Zone - Zone Settings - Read"
+      - "Zone - Zone - Read"
+      - "Zone - DNS - Edit"
+    zone_resources: "Include - All zones"
+  cloudflared_tunnel:
+    enabled: true
+    method: Docker
+    container_name: cloudflared
+    token_location: /volume1/docker/cloudflared
+    https_access: enabled
+    url: https://nas.xplab.io
+    port: 443
+    token: "" # Cloudflare Tunnel Token
+    docker_container_name: "cloudflared"
+    docker_image: "cloudflare/cloudflared:latest"
+    tunnel_command: >
+      docker run -d --name cloudflared --restart unless-stopped cloudflare/cloudflared:latest tunnel --no-autoupdate run --token __CLOUDFLARE_TUNNEL_TOKEN__
+    cli_notes:
+      - "Ensure Docker is installed and the user has permissions to access Docker socket."
+      - "Use `sudo` if permission errors occur."
+      - "Use `docker logs cloudflared` to check status after setup."
+  port_forwarding:
+    status: removed
+    ports_previously_forwarded: [5000, 5001]
+    routers: ["TP-Link AX53", "Zyxel modem"]
+    reason_removed: Superseded by Cloudflare Tunnel
+  ssh:
+    enabled: true
+    username: babylonrobot
+    commands_run:
+      - netstat -tlnp | grep 5001
+      - sudo docker run -d ... cloudflared
+      - openssl s_client ...
+      - dig +short nas.xplab.io A
+      - mkdir -p /volume1/docker/cloudflared
+  tailscale:
+    installed_via: docker-compose
+    networking_mode: userspace
+    tailnet_identity: ds220plus
+    container_location: /volume1/docker/tailscale
+    tailscale_version: "1.84.3"
+    tailscale_status: healthy
+    tailscale_ipv4: 100.93.61.53
+    tailscale_ipv6: fd7a:115c:ae0::2701:3d35
+    dns_name:
+      short: ds220plus
+      full: ds220plus.reverse-beta.ts.net
+    endpoints:
+      - 10.178.12.162:59633
+      - 92.40.217.207:30401
+      - 172.17.0.1:59633
+      - 192.168.0.104:59633
+    node_key: 41ed9b03d6aee0a0bbe1e296c63...
+    tls_cert:
+      domain: ds220plus.reverse-beta.ts.net
+      status: no_certificate_found
+    connectivity:
+      upnp: true
+      udp: true
+      nat_pmp: true
+      ipv6: false
+    relay_latency:
+      preferred: Paris
+      latency_ms: 28.08
+    migration_notes:
+      previous_tailnet_identity: ds220plus (legacy)
+      previous_tailscale_ip: 100.71.87.40
+      previous_version: 1.58.2-1
+      previous_node_key: c0f10370a30418a9c549401f3473...
+      removal_status: pending (will remove original to reclaim name)
+      reason: migrated to docker-compose with userspace networking
+      hostname_retention: short domain and full domain will revert to `ds220plus`
+cloudflare:
+  certificates:
+    source: "Cloudflare Origin Certificate"
+    domains:
+      - "nas.xplab.io"
+    files:
+      - cert.pem
+      - privkey.pem
+    paths:
+      cert: "/Volumes/home/network_admin/xplab.io.pem"
+      key: "/Volumes/home/network_admin/xplab.io.key"
+    applied_to:
+      - "Synology DSM"
+    application_path: "/usr/syno/etc/certificate/_archive"
+    config_notes:
+      - "Certificates were uploaded through Synology DSM interface."
+      - "Used for HTTPS access to nas.xplab.io over port 5001."
+  dns_records:
+    - type: "A"
+      name: "nas.xplab.io"
+      content: "__MYIP__"
+      proxied: true
+      ttl: 1
+
+security:
+  exposed_ports_removed:
+    - 5000
+    - 5001
+  from_routers:
+    - "TP-Link AX53"
+    - "Zyxel 5G Modem (Three UK)"
+
+notes:
+  - "DDNS and HTTPS remote access achieved using Cloudflare DNS and Tunnel."
+  - "All prior port-forwarding disabled as no longer required with Cloudflare Tunnel."
+  - "Record created to keep track of CLI commands, certificates, and Docker deployments."
+  - On 2025-08-03, the Synology DSM Tailscale setup was migrated from a Container Manager-managed instance (v1.58.2-1, IP 100.71.87.40) to a docker-compose deployment using userspace networking.
+  - The new container was initially registered as `ds220plus-1` with IP `100.93.61.53`, version `1.84.3`, and the hostname `ds220plus`.
+  - Short and full domain names (`ds220plus.reverse-beta.ts.net`) will be reclaimed after removing the legacy machine from the Tailscale admin console.
+  - "/dev/net/tun was unavailable on the DSM kernel, necessitating the use of `--tun=userspace-networking`."
+  - The container state is stored in `/volume1/docker/tailscale/tailscale-data`, with restart policy and version tracking handled via `docker-compose.yml`.

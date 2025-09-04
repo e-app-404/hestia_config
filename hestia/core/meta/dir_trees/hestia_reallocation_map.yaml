@@ -1,0 +1,186 @@
+# HESTIA Snapshot → Current Filesystem Reallocation Map
+# Mode: consolidation after reboot
+
+mappings:
+  # ── Top-level snapshot families ──────────────────────────────────────────────
+  apollo_knowledge/:
+    {
+      target: hestia/,
+      status: alias,
+      notes: "Flattened; 'APOLLO' tree folded into hestia/*",
+    }
+  apollo_knowledge/Volumes/Share/APOLLO/: { target: hestia/, status: alias }
+
+  # expected children under apollo_knowledge
+  core/: { target: hestia/core/, status: active, tier: "α–β" }
+  meta/:
+    {
+      target: hestia/core/meta/,
+      status: active,
+      tier: "γ",
+      notes: "changelogs, retention, meta-ledger",
+    }
+  work/:
+    {
+      target: hestia/work/,
+      status: active,
+      tier: "δ",
+      notes: "GPT scratchpads, WIP artifacts",
+    }
+  vault/:
+    {
+      target: [hestia/vault/, hestia/],
+      status: active,
+      tier: "cold",
+      notes: "legacy specs + cold storage",
+    }
+  _hass_repo_thin/:
+    { target: null, status: deprecated, notes: "local HA mirror dropped" }
+  _hass_repo_mirror/:
+    { target: null, status: deprecated, notes: "archival HA mirror dropped" }
+
+  # ── Config + repo snap layers ───────────────────────────────────────────────
+  config_snapshot/:
+    {
+      target: ha_hestia_snapshot_*/,
+      status: active,
+      notes: "point to dated bundles e.g. ha_hestia_snapshot_YYYYMMDD_*",
+    }
+  ha_repo_snap/:
+    {
+      target: null,
+      status: deprecated,
+      notes: "HA git metadata no longer bundled",
+    }
+
+  # ── Governance & doctrine ───────────────────────────────────────────────────
+  core/governance/:
+    { target: hestia/core/governance/, status: active, tier: "α" }
+  core/governance/ARCHITECTURE_DOCTRINE.md:
+    { target: hestia/core/governance/ARCHITECTURE_DOCTRINE.md, status: active }
+  core/governance/PERSONA_REGISTRY.md|.yaml:
+    { target: hestia/core/governance/persona_registry.yaml, status: active }
+  core/governance/PROMPT_REGISTRY.md:
+    { target: hestia/core/governance/prompt_registry.md, status: active }
+  core/governance/system_instruction.yaml:
+    { target: hestia/core/governance/system_instruction.yaml, status: active }
+
+  # ── Registries & meta-schema ────────────────────────────────────────────────
+  core/registry/: { target: hestia/core/registry/, status: active, tier: "β" }
+  core/registry/legacy/:
+    { target: hestia/core/registry/legacy/, status: active }
+  core/registry/meta-schema/:
+    { target: hestia/core/registry/meta-schema/, status: active }
+  core/registry/omega_registry_master.audit.json:
+    {
+      target: hestia/core/registry/omega_registry_master.audit.json,
+      status: active,
+    }
+  core/registry/legacy/alpha_sensor_registry.json:
+    {
+      target: hestia/core/registry/legacy/alpha_sensor_registry.json,
+      status: active,
+    }
+  core/registry/legacy/alpha_light_registry.json:
+    {
+      target: hestia/core/registry/legacy/alpha_light_registry.json,
+      status: active,
+    }
+  core/registry/legacy/omega_device_registry.json:
+    {
+      target: hestia/core/registry/legacy/omega_device_registry.json,
+      status: active,
+    }
+  core/registry/legacy/omega_room_registry.json:
+    {
+      target: hestia/core/registry/legacy/omega_room_registry.json,
+      status: active,
+    }
+
+  # ── Diagnostics / logs / patches ────────────────────────────────────────────
+  apollo_knowledge/meta/logs:
+    { target: hestia/diagnostics/logs/, status: active }
+  diagnostics/: { target: hestia/diagnostics/, status: active }
+  diagnostics/logs/: { target: hestia/diagnostics/logs/, status: active }
+  diagnostics/copilot/: { target: hestia/diagnostics/copilot/, status: active }
+  diagnostics/copilot_patches/:
+    { target: hestia/diagnostics/patches/copilot/, status: active }
+  diagnostics/file_notifications/:
+    { target: hestia/diagnostics/file_notifications/, status: active }
+
+  # ── Tools / engines ─────────────────────────────────────────────────────────
+  core_artifacts.tool_manifest:
+    {
+      target: hestia/tools/,
+      status: active,
+      notes: "tool registry lives alongside binaries/scripts",
+    }
+  tools/: { target: hestia/tools/, status: active }
+  tools/legacy/: { target: hestia/tools/legacy/, status: active }
+  tools/legacy/themis_validationEngine/:
+    { target: hestia/tools/legacy/themis_validationEngine/, status: active }
+  tools/legacy/mnemosyne_snapshotEngine/:
+    { target: hestia/tools/legacy/mnemosyne_snapshotEngine/, status: active }
+  tools/legacy/olympus_validationEngine/:
+    { target: hestia/tools/legacy/olympus_validationEngine/, status: active }
+  tools/legacy/hephaestus_templateEngine/:
+    { target: hestia/tools/legacy/hephaestus_templateEngine/, status: active }
+  tools/bootstrap_dev_env.sh:
+    { target: hestia/tools/bootstrap_dev_env.sh, status: active }
+  tools/validate_metadata.py:
+    { target: hestia/tools/validate_metadata.py, status: active }
+  tools/autofix_metadata.py:
+    { target: hestia/tools/autofix_metadata.py, status: active }
+
+  # ── Error lexicon & chains (paths mentioned by system_instruction.yaml) ─────
+  core/error_lexicon/VALIDATION_CHAINS.md:
+    { target: hestia/core/error_lexicon/VALIDATION_CHAINS.md, status: active }
+  core/error_lexicon/validator_log.json:
+    { target: hestia/core/error_lexicon/validator_log.json, status: active }
+  core/error_lexicon/ERROR_PATTERNS.md:
+    { target: hestia/core/error_lexicon/ERROR_PATTERNS.md, status: active }
+
+  # ── Other core artifacts enumerated in system_instruction.yaml ──────────────
+  core/architecture/developer_guidelines.md:
+    { target: hestia/core/architecture/developer_guidelines.md, status: active }
+  core/architecture/design_patterns.md:
+    { target: hestia/core/architecture/design_patterns.md, status: active }
+  core/governance/entity_map.json:
+    { target: hestia/core/governance/entity_map.json, status: active }
+  core/governance/tool_manifest.json:
+    { target: hestia/core/governance/tool_manifest.json, status: active }
+  core/architecture/nomenclature.md:
+    { target: hestia/core/architecture/nomenclature.md, status: active }
+  core/governance/META_GOVERNANCE.md:
+    {
+      target: hestia/core/META_GOVERNANCE.md,
+      status: active,
+      notes: "auditable meta-log (γ)",
+    }
+
+  # ── Path mappings (runtime references) ──────────────────────────────────────
+  home_assistant.config_root: { target: /config/, status: active }
+  home_assistant.realpath_equiv: { target: /homeassistant/, status: active }
+  home_assistant.macos_smb_equiv:
+    {
+      target: "smb://<DSM>/HA_MIRROR/config",
+      status: active,
+      notes: "Synology share backing /config mirror",
+    }
+
+  # ── Git sync telemetry (observed in snapshot) ───────────────────────────────
+  diagnostics/logs/git_sync_push_events.json:
+    {
+      target: hestia/diagnostics/logs/git_sync_push_events.json,
+      status: active,
+    }
+
+statuses:
+  active: "Path is current and supported."
+  deprecated: "No longer produced; consumers should be updated."
+  alias: "Legacy reference accepted; resolves to target."
+
+governance_notes:
+  - "Where 'alias' is retained, consider filesystem symlinks or loader aliases in validators to avoid breaking older tools."
+  - "HA repo mirrors are intentionally removed; any validator that references them must use upstream web or cached doc shards."
+  - "Keep 'core' strictly α–β; move ad-hoc notes to hestia/work to avoid governance drift."

@@ -1,0 +1,6 @@
+#═══════════════════════════════════════════════════════════
+# File: domain/helpers/counter.yaml
+# Description: Helper entity to track occurrences instances
+#═══════════════════════════════════════════════════════════
+
+counter:

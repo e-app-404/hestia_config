@@ -1,0 +1,10 @@
+#####
+# Converting old MQTT sensors to new format
+# https://www.home-assistant.io/integrations/sensor.mqtt/#new_format
+####
+
+#  - binary_sensor: !include_dir_merge_list mqtt/binary_sensor/
+#  - light: !include_dir_merge_list mqtt/light/
+#  - lock: !include_dir_merge_list mqtt/lock/
+#  - sensor: !include_dir_merge_list mqtt/sensor/
+#  - switch: !include_dir_merge_list mqtt/switch/

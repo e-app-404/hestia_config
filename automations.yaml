@@ -1,0 +1,567 @@
+- id: '1749780052070'
+  alias: macbook_activity_triggers_backlight_and_monitor_statechange
+  description: Controls monitor based on MacBook activity state
+  triggers:
+  - entity_id: binary_sensor.macbook_active
+    trigger: state
+  conditions:
+  - condition: state
+    entity_id: device_tracker.macbook
+    state: home
+  - condition: template
+    value_template: '{{ "HP 32 Display" in state_attr(''sensor.macbook_displays'',
+      ''Display Names'') }}'
+  - condition: state
+    entity_id: sensor.macbook_connection_type
+    state: Ethernet
+  actions:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: binary_sensor.macbook_active
+        state: 'on'
+      sequence:
+      - target:
+          entity_id: switch.desk_monitor
+        action: switch.turn_on
+        data: {}
+      - data:
+          transition: 0.5
+        target:
+          entity_id: light.monitor_backlight_alpha
+        action: light.turn_on
+      - data:
+          name: Macbook Automation
+          message: MacBook became active — monitor and backlight turned on.
+        action: logbook.log
+      - data:
+          title: Macbook Activity
+          message: MacBook is now active. Monitor and backlight turned on.
+          notification_id: macbook_activity
+        action: persistent_notification.create
+    - conditions:
+      - condition: state
+        entity_id: binary_sensor.macbook_active
+        state: 'off'
+      sequence:
+      - data:
+          transition: 30
+        target:
+          entity_id: light.monitor_backlight_alpha
+        action: light.turn_off
+      - delay:
+          seconds: 30
+      - target:
+          entity_id: switch.desk_monitor
+        action: switch.turn_off
+        data: {}
+      - data:
+          name: Macbook Automation
+          message: MacBook became inactive — monitor and backlight turned off.
+        action: logbook.log
+      - data:
+          title: Macbook Activity
+          message: MacBook is now inactive. Monitor and backlight turned off.
+          notification_id: macbook_activity
+        action: persistent_notification.create
+  mode: queued
+  max: 5
+- id: '1750321052992'
+  alias: "\U0001F6AA Front door opened"
+  description: ''
+  use_blueprint:
+    path: Raukze/contact-sensor-left-open-notification.yaml
+    input:
+      trigger_entity: binary_sensor.entrance_door_contact_matter_omega
+      friendly_name: Front door
+      duration_issue_state:
+        hours: 0
+        minutes: 0
+        seconds: 1
+        days: 0
+      delete_notification: false
+      duration_from_issue_state:
+        hours: 0
+        minutes: 15
+        seconds: 0
+        days: 0
+      notify_services_string: notify.mobile_app_ephone_uk, notify.mobile_app_macbook
+      notification_click_url: /lovelace/0
+      notification_title: '{{ friendly_name | default(state_attr(trigger_entity, ''friendly_name''),
+        true) }} opened'
+      notification_message: The {{ friendly_name }} was opened at {{ as_timestamp(initially_triggered_at)
+        | timestamp_custom('%T', True) }}.
+- id: '1754097607128'
+  alias: Wardrobe Motion Light Toggle
+  description: Turns the wardrobe light on when motion is detected, and turns it off
+    when no motion is detected
+  triggers:
+  - entity_id: binary_sensor.bedroom_wardrobe_occupancy_matter_alpha
+    to: 'on'
+    trigger: state
+  - entity_id: binary_sensor.bedroom_wardrobe_occupancy_matter_alpha
+    to: 'off'
+    trigger: state
+  actions:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: binary_sensor.bedroom_wardrobe_occupancy_matter_alpha
+        state: 'on'
+      sequence:
+      - target:
+          entity_id: light.bedroom_wardrobe_lightstrip_alpha
+        action: light.turn_on
+    - conditions:
+      - condition: state
+        entity_id: binary_sensor.bedroom_wardrobe_occupancy_matter_alpha
+        state: 'off'
+      sequence:
+      - target:
+          entity_id: light.bedroom_wardrobe_lightstrip_alpha
+        action: light.turn_off
+- id: '1754117006684'
+  alias: ensuite_motion_lightstrip_night
+  description: 'Ensuite: Motion-activated lights and fan (all hours).'
+  use_blueprint:
+    path: iainsmacleod/advanced_motion_automation.yaml
+    input:
+      motion_sensors:
+      - binary_sensor.ensuite_occupancy_beta
+      entity_target:
+        entity_id:
+        - light.ensuite_lightstrip_homekit_alpha
+      no_motion_wait: 30
+      use_custom_settings: true
+      condition_entity: input_boolean.motion_lights_ensuite
+      condition_states: 'on'
+      sun_condition: night
+      color:
+      - 166
+      - 0
+      - 255
+      blocking_states: 'on'
+- id: '1754133390188'
+  alias: ensuite_motion_lights_day
+  description: 'Ensuite: Motion-activated lights (Daytime profile, warm color, no
+    fan).'
+  use_blueprint:
+    path: iainsmacleod/advanced_motion_automation.yaml
+    input:
+      motion_sensors:
+      - binary_sensor.ensuite_occupancy_beta
+      entity_target:
+        entity_id:
+        - light.ensuite_accent_alpha
+        - light.ensuite_main_alpha
+      no_motion_wait: 30
+      use_custom_settings: true
+      color:
+      - 255
+      - 200
+      - 155
+      sun_condition: day
+      blocking_states: 'on'
+      condition_entity: input_boolean.motion_lights_ensuite
+      condition_states: 'on'
+- id: '1754133390190'
+  alias: ensuite_motion_lights_night
+  description: 'Ensuite: Motion-activated lights (Night profile, dimmer, no fan).'
+  variables:
+    use_custom_settings: true
+    entity_target:
+      entity_id:
+      - light.ensuite_accent_alpha
+      - light.ensuite_lightstrip_tplink_alpha
+      - light.ensuite_main_alpha
+    blocking_entity: binary_sensor.ensuite_shower_detected
+    blocking_states: 'on'
+    condition_entity: input_boolean.motion_lights_ensuite
+    condition_states: 'on'
+    sun_condition: night
+    sun_offset: 00:00
+  triggers:
+  - trigger: state
+    entity_id:
+    - binary_sensor.ensuite_occupancy_beta
+    to: 'on'
+  conditions:
+  - condition: or
+    conditions:
+    - condition: template
+      value_template: '{{ blocking_entity == None or blocking_entity == '''' }}'
+    - condition: template
+      value_template: '{% set blocking_states_list = blocking_states.split('','')
+        | map(''trim'') | list %} {{ states(blocking_entity) not in blocking_states_list
+        }}
+
+        '
+  - condition: or
+    conditions:
+    - condition: template
+      value_template: '{{ condition_entity == None or condition_entity == '''' }}'
+    - condition: template
+      value_template: '{% set states_list = condition_states.split('','') | map(''trim'')
+        | list %} {{ condition_entity != None and condition_entity != '''' and states_list
+        | length > 0 and states(condition_entity) in states_list }}
+
+        '
+  - condition: or
+    conditions:
+    - condition: template
+      value_template: '{{ sun_condition == ''none'' }}'
+    - condition: and
+      conditions:
+      - condition: template
+        value_template: '{{ sun_condition == ''day'' }}'
+      - condition: sun
+        after: sunrise
+        after_offset: 00:00
+        before: sunset
+        before_offset: 00:00
+    - condition: and
+      conditions:
+      - condition: template
+        value_template: '{{ sun_condition == ''night'' }}'
+      - condition: or
+        conditions:
+        - condition: sun
+          after: sunset
+          after_offset: 00:00
+        - condition: sun
+          before: sunrise
+          before_offset: 00:00
+  actions:
+  - choose:
+    - conditions:
+      - condition: template
+        value_template: '{{ use_custom_settings }}'
+      sequence:
+      - choose:
+        - conditions:
+          - condition: template
+            value_template: '{{ ''light.'' in entity_target.entity_id | string }}'
+          sequence:
+          - action: light.turn_on
+            target: '{{ entity_target }}'
+            data:
+              brightness: 255
+              rgb_color:
+              - 255
+              - 71
+              - 160
+        - conditions:
+          - condition: template
+            value_template: '{{ ''switch.'' in entity_target.entity_id | string }}'
+          sequence:
+          - action: switch.turn_on
+            target: '{{ entity_target }}'
+    default:
+    - choose:
+      - conditions:
+        - condition: template
+          value_template: '{{ ''light.'' in entity_target.entity_id | string }}'
+        sequence:
+        - action: light.turn_on
+          target: '{{ entity_target }}'
+      - conditions:
+        - condition: template
+          value_template: '{{ ''switch.'' in entity_target.entity_id | string }}'
+        sequence:
+        - action: switch.turn_on
+          target: '{{ entity_target }}'
+  - wait_for_trigger:
+    - trigger: state
+      entity_id:
+      - binary_sensor.ensuite_occupancy_beta
+      to: 'off'
+  - delay: 00:01:00
+  - choose:
+    - conditions:
+      - condition: template
+        value_template: '{{ ''light.'' in entity_target.entity_id | string }}'
+      sequence:
+      - action: light.turn_off
+        target: '{{ entity_target }}'
+    - conditions:
+      - condition: template
+        value_template: '{{ ''switch.'' in entity_target.entity_id | string }}'
+      sequence:
+      - action: switch.turn_off
+        target: '{{ entity_target }}'
+- id: '1754516253931'
+  alias: ensuite_motion_lightstrip_day
+  description: 'Ensuite: Motion-activated lightstrip and fan (day).'
+  use_blueprint:
+    path: iainsmacleod/advanced_motion_automation.yaml
+    input:
+      motion_sensors:
+      - binary_sensor.ensuite_occupancy_beta
+      entity_target:
+        entity_id:
+        - light.ensuite_lightstrip_homekit_alpha
+        - switch.ensuite_fan
+      no_motion_wait: 30
+      use_custom_settings: true
+      condition_entity: input_boolean.motion_lights_ensuite
+      condition_states: 'on'
+      sun_condition: day
+      color:
+      - 255
+      - 200
+      - 155
+      blocking_states: 'on'
+  mode: restart
+  max_exceeded: silent
+  variables:
+    use_custom_settings: true
+    condition_entity: binary_sensor.ensuite_occupancy_beta
+    condition_states: 'on'
+    sun_condition: night
+    sun_offset: 00:00
+    blocking_entity: binary_sensor.ensuite_shower_detected
+    blocking_states: 'on'
+    entity_target:
+      entity_id:
+      - light.ensuite_accent_alpha
+      - light.ensuite_main_alpha
+- id: notify_on_evert_zone_change
+  alias: Notify on Evert Zone Change
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: person.evert
+  condition:
+  - condition: template
+    value_template: '{{ trigger.from_state.state != trigger.to_state.state }}'
+  action:
+  - service: persistent_notification.create
+    data:
+      notification_id: evert_zone_change
+      title: 'Zone Change: Evert'
+      message: "{% set from_state = trigger.from_state.state %} {% set to_state =
+        trigger.to_state.state %} {% if from_state == 'not_home' %}\n  From Away\n{%
+        else %}\n  From {{ state_attr('zone.' ~ from_state, 'friendly_name') or from_state
+        | title }}\n{% endif %} → {% if to_state == 'not_home' %}\n  Away\n{% else
+        %}\n  {{ state_attr('zone.' ~ to_state, 'friendly_name') or to_state | title
+        }}\n{% endif %}\n"
+- id: '1754732569560'
+  alias: Fridge left open alert
+  description: ''
+  triggers:
+  - entity_id: binary_sensor.kitchen_fridge_contact_omega_matter_door
+    to: 'on'
+    for:
+      hours: 0
+      minutes: 3
+      seconds: 0
+      days: 0
+    id: send_notification
+    trigger: state
+  - entity_id: binary_sensor.kitchen_fridge_contact_omega_matter_door
+    from: 'on'
+    for:
+      seconds: 5
+    id: delete_notification
+    trigger: state
+  actions:
+  - variables:
+      notify_services_list: '{{ notify_services_string.split('','') }}'
+      number_of_notify_services: '{{ notify_services_list | count }}'
+      notification_tag: '{{ trigger_entity[-20:] }}-{{ custom_friendly_name[-20:]
+        }}-{{ notify_services_string[-20:] }}'
+      initially_triggered_at: '{{ now() }}'
+  - choose:
+    - conditions:
+      - condition: trigger
+        id: send_notification
+      - condition: []
+      sequence:
+      - repeat:
+          sequence:
+          - variables:
+              friendly_name: "{% if custom_friendly_name != '' %}\n  {{ custom_friendly_name
+                }}\n{% else %}\n  {% set expanded_trigger_entity_list = expand(trigger_entity)
+                | selectattr('state', 'eq', issue_state) | map(attribute='name') |
+                join(', ') %}\n  {{ ' & '.join(expanded_trigger_entity_list.rsplit(',
+                ', 1)) }}\n{% endif %}\n"
+          - parallel:
+            - repeat:
+                count: '{{ number_of_notify_services }}'
+                sequence:
+                - data:
+                    message: The kitchen fridge was left open at {{ as_timestamp(initially_triggered_at)
+                      | timestamp_custom('%T', True) }}.
+                    title: The {{ friendly_name }} was left open
+                    data:
+                      clickAction: /lovelace/0
+                      url: /lovelace/0
+                      tag: '{{ notification_tag }}'
+                      color: red
+                      notification_icon: mdi:{{ notification_icon_warning }}
+                      push:
+                        interruption-level: time-sensitive
+                      persistent: false
+                      sticky: false
+                  action: '{{ notify_services_list[repeat.index-1] }}'
+            - choose: []
+              default:
+              - action: tts.speak
+                target:
+                  entity_id:
+                  - tts.google_translate_en_com
+                data:
+                  cache: true
+                  media_player_entity_id: media_player.bedroom_google_home_mini_speaker
+                  message: '{{ state_attr(trigger.entity_id, ''friendly_name'') |
+                    default(''Fridge'') }} was left open at {{ as_timestamp(now())
+                    | timestamp_custom(''%T'', true) }}.
+
+                    '
+                  language: en-ca
+          - if:
+            - condition: template
+              value_template: '{{ repeat_notification }}'
+            then:
+            - delay: '{{ time_between_repeat_notification }}'
+          until:
+          - condition: template
+            value_template: '{{ not repeat_notification }}'
+    - conditions:
+      - condition: trigger
+        id: delete_notification
+      - condition: template
+        value_template: '{{ delete_notification }}'
+      sequence:
+      - parallel:
+        - repeat:
+            count: '{{ number_of_notify_services }}'
+            sequence:
+            - data:
+                message: clear_notification
+                data:
+                  tag: '{{ notification_tag }}'
+              action: '{{ notify_services_list[repeat.index-1] }}'
+        - choose: []
+          default: []
+  mode: restart
+  max_exceeded: silent
+  variables:
+    custom_friendly_name: Fridge
+    trigger_entity: binary_sensor.kitchen_fridge_contact_omega_matter_door
+    issue_state: 'on'
+    duration_issue_state:
+      hours: 0
+      minutes: 3
+      seconds: 0
+      days: 0
+    condition_send_notification: []
+    delete_notification: true
+    duration_from_issue_state:
+      seconds: 5
+    notify_services_string: notify.notify
+    notification_click_url: /lovelace/0
+    notification_title: ⚠️ The fridge was left open
+    repeat_notification: true
+    time_between_repeat_notification:
+      hours: 0
+      minutes: 1
+      seconds: 0
+      days: 0
+    notification_icon_warning: alert
+    notification_color: red
+    notification_interruption_level: time-sensitive
+    custom_action_issue_state:
+    - action: tts.speak
+      target:
+        entity_id:
+        - tts.google_translate_en_com
+      data:
+        cache: true
+        media_player_entity_id: media_player.bedroom_google_home_mini_speaker
+        message: '{{ state_attr(trigger.entity_id, ''friendly_name'') | default(''Fridge'')
+          }} was left open at {{ as_timestamp(now()) | timestamp_custom(''%T'', true)
+          }}.
+
+          '
+        language: en-ca
+    custom_action_from_issue_state: []
+- id: ensuite_motion_lights_master_20250904
+  alias: Ensuite Motion Lights (Master)
+  description: Single controller for Ensuite lights/fan (day/night), replaces GUI
+    blueprints
+  triggers:
+  - entity_id: binary_sensor.ensuite_occupancy_beta
+    to: 'on'
+    trigger: state
+  - entity_id: binary_sensor.ensuite_occupancy_beta
+    to: 'off'
+    for: 00:00:30
+    trigger: state
+  conditions:
+  - condition: state
+    entity_id: input_boolean.motion_lights_ensuite
+    state: 'on'
+  actions:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: binary_sensor.ensuite_occupancy_beta
+        state: 'on'
+      - condition: state
+        entity_id: sun.sun
+        state: above_horizon
+      sequence:
+      - condition: template
+        value_template: "{{ states('light.ensuite_main_alpha') not in ['unavailable','unknown']\n
+          \  and states('light.ensuite_accent_alpha') not in ['unavailable','unknown']
+          }}\n"
+      - target:
+          entity_id:
+          - light.ensuite_main_alpha
+          - light.ensuite_accent_alpha
+        action: light.turn_on
+    - conditions:
+      - condition: state
+        entity_id: binary_sensor.ensuite_occupancy_beta
+        state: 'on'
+      - condition: state
+        entity_id: sun.sun
+        state: below_horizon
+      sequence:
+      - target:
+          entity_id:
+          - light.ensuite_lightstrip_homekit_alpha
+          - light.ensuite_accent_alpha
+        action: light.turn_on
+      - condition: template
+        value_template: '{{ states(''light.ensuite_main_alpha'') not in [''unavailable'',''unknown'']
+          }}
+
+          '
+      - target:
+          entity_id: light.ensuite_main_alpha
+        data:
+          brightness_pct: 20
+        action: light.turn_on
+    - conditions:
+      - condition: state
+        entity_id: binary_sensor.ensuite_occupancy_beta
+        state: 'off'
+      sequence:
+      - delay: 00:00:30
+      - target:
+          entity_id:
+          - light.ensuite_lightstrip_homekit_alpha
+          - light.ensuite_accent_alpha
+        action: light.turn_off
+      - condition: template
+        value_template: '{{ states(''light.ensuite_main_alpha'') not in [''unavailable'',''unknown'']
+          }}
+
+          '
+      - target:
+          entity_id: light.ensuite_main_alpha
+        action: light.turn_off
+    default: []
+  mode: restart

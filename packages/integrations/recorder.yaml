@@ -1,0 +1,40 @@
+# ══════════════════════════════════════════════════════════════════
+# ⟫⟫ RECORDER  •  recorder.yaml  •  Home Assistant Database Logger ◀
+# ⟫⟫ stores data in a database for history and long-term analytics
+# ⟫⟫ Loader • packages: !include_dir_named integrations
+# ⟫⟫ Repo: github.com/home-assistant/core/blob/dev/homeassistant/components/recorder/__init__.py
+# ⟫⟫ Tier: core  •  Domain: configuration  •  Updated: 2025-08-01
+# ══════════════════════════════════════════════════════════════════
+recorder:
+  db_url: !secret mariadb_url
+  auto_purge: true
+  purge_keep_days: 30 # adjust to taste
+  commit_interval: 20 # fewer, larger writes
+  exclude:
+    domains:
+      - group
+      - media_player
+      - persistent_notification
+      - update
+      - zone
+      - automation # exclude automation *entity* state history (optional)
+        # NOTE: events are separate (see event_types below)
+    entity_globs:
+      - sensor.sun*
+      - sensor.time*
+      - sensor.date*
+      - weather.*
+      - sensor.*_entity_list
+      - sensor.*failover_summary
+      - sensor.*_minutes_since_*
+    entities:
+      - sun.sun
+      - sensor.date
+      - sensor.disabled_device_entities_v2
+      - sensor.disabled_device_entities
+      - group.unavailable_entities # you also purge this; excluding prevents re-growth
+      - variable.plex_tv_index
+      - variable.plex_movie_index
+    event_types:
+      - call_service # keep out chatty service-call events
+      # DO NOT list "automation_triggered" here; we want to KEEP it for audits

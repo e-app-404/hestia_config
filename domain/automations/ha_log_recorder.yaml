@@ -1,0 +1,45 @@
+# ═══════════════════════════════════════════════════════════════
+# ▶ AUTOMATION: Auto Git Push on Config Save ◀
+# Pushes HA config to DSM Git mirror every 5 min when diagnostics are on
+# Loader: !include_dir_merge_list from domain/automations/
+# Tier: ζ  •  Domain: system  •  Created: 2025-07-28
+# Tags: [git, diagnostics, config-sync, cron]
+# ═══════════════════════════════════════════════════════════════
+- id: 7e3b2c1a-4f8d-9a2e-3c7b-5d6e8f1a2b3c
+  alias: "Logbook: curated occupancy entries"
+  mode: queued
+  triggers:
+    - entity_id:
+        - binary_sensor.bedroom_occupancy_beta
+        - binary_sensor.kitchen_occupancy_beta
+        - binary_sensor.living_room_occupancy_beta
+        - binary_sensor.ensuite_occupancy_beta
+        - binary_sensor.hallway_downstairs_occupancy_beta
+        - binary_sensor.hallway_upstairs_occupancy_beta
+      to:
+        - "on"
+        - "off"
+      trigger: state
+  variables:
+    room: >-
+      {% set nice = {
+        'binary_sensor.bedroom_occupancy_beta': 'Bedroom',
+        'binary_sensor.kitchen_occupancy_beta': 'Kitchen',
+        'binary_sensor.living_room_occupancy_beta': 'Living Room',
+        'binary_sensor.ensuite_occupancy_beta': 'Ensuite',
+        'binary_sensor.hallway_downstairs_occupancy_beta': 'Downstairs Hallway',
+        'binary_sensor.hallway_upstairs_occupancy_beta': 'Upstairs Hallway'
+      } %}
+      {{ nice.get(trigger.entity_id, trigger.entity_id) }}
+    src: "{{ state_attr(trigger.entity_id, 'active_source') or 'unknown' }}"
+    tmo: >-
+      {% set t = state_attr(trigger.entity_id,'timeout') %}
+      {{ (t|join(', ') if t is iterable) if t is not none else 'n/a' }}
+  actions:
+    - service: logbook.log
+      data:
+        name: "{{ room }} Occupancy (β)"
+        entity_id: input_boolean.hermes_presence_log
+        message: >-
+          {{ 'Detected' if trigger.to_state.state == 'on' else 'Cleared' }}
+          • source: {{ src }} • timeout: {{ tmo }}

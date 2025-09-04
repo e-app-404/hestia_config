@@ -1,0 +1,196 @@
+{
+    "$schema": "http://json-schema.org/hestia_v7/schema#",
+    "title": "HESTIA Unified Room Management Schema Design",
+    "description": "Central registry schema for all rooms and their configurations in HESTIA.",
+    "version": "1.0.0",
+    "type": "object",
+    "required": ["_meta", "categories_definitions", "rooms"],
+    "properties": {
+      "_meta": {
+        "type": "object",
+        "required": [
+          "$schema", "title", "name", "version", "schema_version",
+          "last_updated", "updated_by", "migration_source_files", "validation_status"
+        ],
+        "properties": {
+          "$schema": { "type": "string", "format": "uri" },
+          "title": { "type": "string" },
+          "name": { "type": "string" },
+          "version": { "type": "string" },
+          "schema_version": { "type": "string" },
+          "last_updated": { "type": "string", "format": "date-time" },
+          "updated_by": { "type": "string" },
+          "migration_source_files": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "validation_status": {
+            "type": "object",
+            "required": ["last_validated", "status", "messages"],
+            "properties": {
+              "last_validated": { "type": "string", "format": "date-time" },
+              "status": {
+                "type": "string",
+                "enum": ["valid", "invalid", "provisional"]
+              },
+              "messages": {
+                "type": "array",
+                "items": { "type": "string" }
+              }
+            }
+          }
+        }
+      },
+      "categories_definitions": {
+        "type": "object",
+        "additionalProperties": {
+          "type": "object",
+          "required": ["name", "description", "behavior_profiles"],
+          "properties": {
+            "name": { "type": "string" },
+            "description": { "type": "string" },
+            "behavior_profiles": {
+              "type": "array",
+              "items": { "type": "string" }
+            }
+          }
+        }
+      },
+      "area_definitions": {
+        "type": "object",
+        "additionalProperties": { "type": "object" }
+      },
+      "devices": {
+        "type": "object",
+        "additionalProperties": { "type": "object" }
+      },
+      "behaviors": {
+        "type": "object",
+        "additionalProperties": { "type": "object" }
+      },
+      "behavior_schedules": {
+        "type": "array",
+        "items": { "type": "object" }
+      },
+      "rooms": {
+        "type": "object",
+        "patternProperties": {
+          "^[a-z0-9_]+$": {
+            "type": "object",
+            "required": [
+              "id", "friendly_name", "aliases", "type", "floor",
+              "groups", "categories", "areas", "adjacency",
+              "configuration", "metadata"
+            ],
+            "properties": {
+              "id": { "type": "string" },
+              "friendly_name": { "type": "string" },
+              "aliases": {
+                "type": "array",
+                "items": { "type": "string" }
+              },
+              "type": {
+                "type": "string",
+                "enum": ["common", "private", "entertainment", "utility", "work"]
+              },
+              "floor": {
+                "type": "string",
+                "enum": ["0", "1", "2", "roof", "home", "ambient"]
+              },
+              "groups": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "Floor 1", "Floor 2", "Downstairs", "Upstairs", "Personal", "Off limits"
+                  ]
+                }
+              },
+              "categories": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "common", "private", "entertainment", "sleeping", "gaming",
+                    "transit", "work", "guest", "storage", "utility"
+                  ]
+                }
+              },
+              "areas": {
+                "type": "array",
+                "items": { "type": "string" }
+              },
+              "adjacency": {
+                "type": "object",
+                "required": ["connected_rooms"],
+                "properties": {
+                  "connected_rooms": {
+                    "type": "object",
+                    "additionalProperties": {
+                      "type": "object",
+                      "required": [
+                        "connection_type", "distance_meters",
+                        "transition_time_seconds", "door_sensor", "accessibility"
+                      ],
+                      "properties": {
+                        "connection_type": {
+                          "type": "string",
+                          "enum": [
+                            "doorway", "open_archway", "hallway",
+                            "staircase", "external_door", "high_proximity"
+                          ]
+                        },
+                        "distance_meters": { "type": "number", "minimum": 0 },
+                        "transition_time_seconds": { "type": "number", "minimum": 0 },
+                        "door_sensor": {
+                          "anyOf": [
+                            { "type": "string" },
+                            { "type": "null" }
+                          ]
+                        },
+                        "accessibility": { "type": "boolean" }
+                      }
+                    }
+                  }
+                }
+              },
+              "configuration": {
+                "type": "object",
+                "properties": {
+                  "lighting": { "type": ["object", "null"] },
+                  "climate": { "type": ["object", "null"] },
+                  "presence": { "type": ["object", "null"] },
+                  "security": { "type": ["object", "null"] },
+                  "media": {
+                    "type": ["array", "null"],
+                    "items": {
+                      "type": "string",
+                      "enum": ["tv", "audio", "projector", "gaming_console"]
+                    }
+                  }
+                }
+              },
+              "metadata": {
+                "type": "object",
+                "required": ["created_at", "updated_at", "validated_by", "status"],
+                "properties": {
+                  "created_at": { "type": "string", "format": "date-time" },
+                  "updated_at": { "type": "string", "format": "date-time" },
+                  "validated_by": { "type": "string" },
+                  "status": {
+                    "type": "string",
+                    "enum": ["validated", "provisional", "deprecated"]
+                  }
+                }
+              },
+              "parent_room": {
+                "type": "string",
+                "description": "Optional. Logical container room this space is part of."
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  

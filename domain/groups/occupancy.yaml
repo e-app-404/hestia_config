@@ -1,0 +1,50 @@
+---
+#═══════════════════════════════════════════════════════════════
+# ▶ GROUP: Occupancy Sensor Entities by Tier ◀
+# Loader: !include_dir_merge_named domain/groups/occupancy.yaml
+# Schema: group
+#═══════════════════════════════════════════════════════════════
+
+#occupancy_sensors_alpha:
+#  name: "Occupancy Sensors (Alpha Tier)"
+#  entities:
+#    - binary_sensor.bedroom_occupancy_alpha_occupancy
+#    - binary_sensor.bedroom_wardrobe_occupancy_matter_alpha
+#    - binary_sensor.bedroom_wardrobe_motion_tplink_alpha
+#    - binary_sensor.kitchen_occupancy_alpha_occupancy
+#    - binary_sensor.kitchen_occupancy_matter_alpha_occupancy
+#    - binary_sensor.living_room_occupancy_alpha_occupancy
+#    - binary_sensor.ensuite_occupancy_omega_occupancy
+#    - binary_sensor.downstairs_occupancy_matter_alpha_occupancy
+#    - binary_sensor.sanctum_motion_alpha
+#    - binary_sensor.upstairs_occupancy_matter_alpha_occupancy
+#    - binary_sensor.desk_presence_inference
+#    - binary_sensor.sanctum_occupancy_matter_alpha
+#occupancy_sensors_beta:
+#  name: "Occupancy Sensors (Beta Tier)"
+#  entities:
+#    - binary_sensor.bedroom_occupancy_beta
+#    - binary_sensor.kitchen_occupancy_beta
+#    - binary_sensor.living_room_occupancy_beta
+#    - binary_sensor.ensuite_occupancy_beta
+#    - binary_sensor.hallway_downstairs_occupancy_beta
+#    - binary_sensor.hallway_upstairs_occupancy_beta
+#    - binary_sensor.desk_occupancy_beta
+#    - binary_sensor.wardrobe_occupancy_beta
+#occupancy_sensors_eta:
+#  name: "Occupancy Sensors (Eta Tier)"
+#  entities:
+#    - binary_sensor.merged_home_occupancy_eta
+#    - binary_sensor.merged_hallways_occupancy_eta
+#    - binary_sensor.zone_downstairs_occupancy_beta
+#    - binary_sensor.zone_upstairs_occupancy_beta
+
+#    - binary_sensor.sanctum_occupancy_matter_alpha
+
+#    - binary_sensor.bedroom_occupancy_beta
+
+#    - binary_sensor.ensuite_occupancy_beta
+
+#    - binary_sensor.wardrobe_occupancy_beta
+#    - binary_sensor.desk_occupancy_beta
+#    - binary_sensor.desk_presence_inference

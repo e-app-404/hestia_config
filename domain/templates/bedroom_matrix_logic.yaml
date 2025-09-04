@@ -1,0 +1,24 @@
+# ═══════════════════════════════════════════════════════════════
+# ▶ LOGIC SENSOR: Bedroom HDMI Matrix ◀
+# HDMI Last Route context sensors for automations & ambient logic
+# Loader: !include_dir_merge_list from domain/templates/
+# Tier: δ  •  Domain: logic  •  Created: 2025-08-13
+# ═══════════════════════════════════════════════════════════════
+
+- sensor:
+    - name: "Bedroom Matrix – Last Route"
+      unique_id: "bedroom_matrix_last_route"
+      state: >-
+        A: {{ states('input_select.bedroom_matrix_video_source') }}
+        | B: {{ states('input_select.bedroom_matrix_audio_source') }}
+      attributes:
+        mode: "{{ states('input_select.bedroom_matrix_mode') }}"
+        last_command: "{{ states('input_text.bedroom_matrix_last_command') }}"
+        last_updated: "{{ states('input_datetime.bedroom_matrix_last_updated') }}"
+
+- binary_sensor:
+    - name: "Bedroom Matrix – Aligned"
+      unique_id: "bedroom_matrix_aligned"
+      state: >-
+        {{ is_state('input_select.bedroom_matrix_video_source',
+                    states('input_select.bedroom_matrix_audio_source')) }}

@@ -1,0 +1,9 @@
+---
+# ═════════════════════════════════════════════════════════════════════════════
+# ⟫⟫ Home Assistant Logger  •  Defines the level of HA logging activity ◀
+# ⟫⟫ packages/integrations/logger.yaml  •  packages: !include_dir_named packages
+# ⟫⟫ Tier: σ  •  Domain: diagnostics  •  Updated: 2025-07-19
+# ═════════════════════════════════════════════════════════════════════════════
+
+logger:
+  default: warn

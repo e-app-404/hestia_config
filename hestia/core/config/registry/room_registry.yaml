@@ -1,0 +1,400 @@
+# ══════════════════════════════════════════════════════════════════════════════
+# ▶ GLOBAL ROOM REGISTRY ◀
+# ⟫⟫ Maps area_id to room-level entities for automation/stitching
+# ⟫⟫ Role: Canonical reference for cleaning, sensors, logic
+# ⟫⟫ Tier: α  •  Domain: registry •  Created: 2025-08-06
+# Reference it via: variables: !include /config/registry/rooms_registry.yaml
+# Access it via: {{ rooms['kitchen'].needs_cleaning_boolean }}
+# ══════════════════════════════════════════════════════════════════════════════
+
+_meta_schema:
+  area_id:
+    type: str
+    description: "Room area identifier (slug, lowercase, no spaces)"
+  last_activity_sensor:
+    type: str
+    description: "Entity id of last activity sensor (Home Assistant entity_id)"
+  cleaning:
+    type: dict
+    description: "Group of keys related to cleaning logic and thresholds"
+    schema:
+      segment_id:
+        type: str
+        description: "Segment number as string (for mapping to cleaning zones)"
+      last_cleaned_input:
+        type: str
+        description: "Entity id of input_datetime for last cleaned timestamp"
+      needs_cleaning_boolean:
+        type: str
+        description: "Entity id of input_boolean for cleaning flag"
+      days_since_last_cleaned_sensor:
+        type: str
+        description: "Entity id of sensor tracking days since last cleaned"
+      days_threshold:
+        type: int
+        description: "Threshold in days before room is flagged for cleaning"
+  sensors:
+    type: dict
+    description: "Lists of motion and occupancy sensors assigned to the room. Each is a list of dicts with entity_id."
+    schema:
+      motion:
+        type: list[dict]
+        description: "List of motion sensor dicts, each with entity_id."
+        item_schema:
+          entity_id:
+            type: str
+            description: "Entity id of the motion sensor."
+      occupancy:
+        type: list[dict]
+        description: "List of occupancy sensor dicts, each with entity_id."
+        item_schema:
+          entity_id:
+            type: str
+            description: "Entity id of the occupancy sensor."
+  lighting:
+    type: dict
+    description: "Lighting control block for the room"
+    schema:
+      mode:
+        type: enum
+        values: ["all", "select"]
+        description: "Apply to all lights or only selected ones"
+      targets:
+        type: list[str]
+        description: "List of light entity_ids (used if mode is 'select')"
+      auto_off:
+        type: dict
+        description: "Auto-off configuration"
+        schema:
+          enabled:
+            type: bool
+            description: "Enable/disable auto-off"
+          timer:
+            type: int
+            description: "Minutes before auto-off triggers"
+          behavior:
+            type: dict
+            description: "Behavioral flags for auto-off logic"
+            schema:
+              reset_on_on:
+                type: bool
+                description: "Reset timer if light is turned on again before timeout"
+              cancel_on_manual_off:
+                type: bool
+                description: "Cancel timer if light is turned off manually"
+      trigger:
+        type: dict
+        description: "Trigger configuration for lighting automation"
+        schema:
+          type:
+            type: enum
+            values: ["state_change", "time_window", "blocker"]
+            description: "Type of trigger for automation"
+          entity_id:
+            type: str?
+            description: "Optional: entity_id that acts as a trigger or blocker"
+          state:
+            type: str?
+            description: "Optional: state that the trigger entity must match"
+        holdout:
+          type: dict
+          description: "Holdout configuration for lighting automation (e.g., media player state to block auto-off)"
+          schema:
+            entity_id:
+              type: str
+              description: "Entity id that acts as a holdout/blocker (e.g., media player)"
+            state:
+              type: str
+              description: "State of the holdout entity that blocks automation (e.g., 'playing')"
+
+_rooms:
+  home:
+    ground_floor:
+      - living_room:
+        area_id: living_room
+        segment_id: "19"
+        last_activity_sensor: sensor.living_room_last_activity
+        cleaning:
+          last_cleaned_input: input_datetime.living_room_last_cleaned
+          needs_cleaning_boolean: input_boolean.living_room_needs_cleaning
+          days_since_last_cleaned_sensor: sensor.living_room_days_since_last_cleaned
+          days_threshold: 1
+        lighting:
+          mode: "select"
+          targets:
+            - light.living_room_side_matter_alpha
+            - light.living_room_foxy_matter_alpha
+            - light.living_room_desk_matter_alpha
+            - light.living_room_main_matter_alpha
+            - light.living_room_floorlamp_matter_alpha
+          auto_off:
+            enabled: true
+            timer: 15 # minutes
+            behavior:
+              reset_on_on: true
+              cancel_on_manual_off: true
+          trigger:
+            type: "state_change"
+            entity_id: binary_sensor.living_room_motion_occupancy
+            state: "off"
+          holdout:
+            entity_id: media_player.living_room
+            state: "playing"
+        sensors:
+          motion:
+            - entity_id: binary_sensor.living_room_multipurpose_alpha_motion
+          occupancy:
+            - entity_id: binary_sensor.living_room_occupancy_alpha_occupancy
+      - kitchen:
+        area_id: kitchen
+        segment_id: "17"
+        last_activity_sensor: sensor.kitchen_last_activity
+        last_cleaned_input: input_datetime.kitchen_last_cleaned
+        needs_cleaning_boolean: input_boolean.kitchen_needs_cleaning
+        days_since_last_cleaned_sensor: sensor.kitchen_days_since_last_cleaned
+        days_threshold: 1
+        lighting:
+          mode: "all"
+          targets: []
+          auto_off:
+            enabled: true
+            timer: 10
+            behavior:
+              reset_on_on: true
+              cancel_on_manual_off: true
+          trigger:
+            type: "state_change"
+            entity_id: ""
+            state: ""
+        sensors:
+          motion:
+            - entity_id: binary_sensor.kitchen_presence_alpha_motion
+          occupancy:
+            - entity_id: binary_sensor.kitchen_occupancy_alpha_occupancy
+      - powder_room:
+        area_id: powder_room
+        segment_id: "20"
+        last_activity_sensor: sensor.powder_room_last_activity
+        last_cleaned_input: input_datetime.powder_room_last_cleaned
+        needs_cleaning_boolean: input_boolean.powder_room_needs_cleaning
+        days_since_last_cleaned_sensor: sensor.powder_room_days_since_last_cleaned
+        days_threshold: 2
+        lighting:
+          mode: "all"
+          targets: []
+          auto_off:
+            enabled: true
+            timer: 10
+            behavior:
+              reset_on_on: true
+              cancel_on_manual_off: true
+          trigger:
+            type: "state_change"
+            entity_id: ""
+            state: ""
+        sensors:
+          motion: []
+          occupancy: []
+      - laundry_room:
+        area_id: laundry_room
+        segment_id: "16"
+        last_activity_sensor: sensor.laundry_room_last_activity
+        last_cleaned_input: input_datetime.laundry_room_last_cleaned
+        needs_cleaning_boolean: input_boolean.laundry_room_needs_cleaning
+        days_since_last_cleaned_sensor: sensor.laundry_room_days_since_last_cleaned
+        days_threshold: 2
+        lighting:
+          mode: "all"
+          targets: []
+          auto_off:
+            enabled: true
+            timer: 10
+            behavior:
+              reset_on_on: true
+              cancel_on_manual_off: true
+          trigger:
+            type: "state_change"
+            entity_id: ""
+            state: ""
+        sensors:
+          motion: []
+          occupancy: []
+
+    top_floor:
+      - evert_sanctum:
+          - bedroom:
+            area_id: bedroom
+            segment_id: ""
+            last_activity_sensor: ""
+            last_cleaned_input: ""
+            needs_cleaning_boolean: ""
+            days_since_last_cleaned_sensor: ""
+            days_threshold: 1
+            lighting:
+              mode: "all"
+              targets: []
+              auto_off:
+                enabled: false
+                timer: 10
+                behavior:
+                  reset_on_on: false
+                  cancel_on_manual_off: false
+              trigger:
+                type: "state_change"
+                entity_id: ""
+                state: ""
+            sensors:
+              motion: []
+              occupancy: []
+            subareas:
+              - wardrobe:
+                area_id: wardrobe
+                container: bedroom
+                segment_id: ""
+                last_activity_sensor: ""
+                last_cleaned_input: ""
+                needs_cleaning_boolean: ""
+                days_since_last_cleaned_sensor: ""
+                days_threshold: 1
+                lighting:
+                  mode: "all"
+                  targets: []
+                  auto_off:
+                    enabled: false
+                    timer: 10
+                    behavior:
+                      reset_on_on: false
+                      cancel_on_manual_off: false
+                  trigger:
+                    type: "state_change"
+                    entity_id: ""
+                    state: ""
+                sensors:
+                  motion: []
+                  occupancy: []
+              - desk:
+                area_id: desk
+                container: bedroom
+                segment_id: ""
+                last_activity_sensor: ""
+                last_cleaned_input: ""
+                needs_cleaning_boolean: ""
+                days_since_last_cleaned_sensor: ""
+                days_threshold: 1
+                lighting:
+                  mode: "all"
+                  targets: []
+                  auto_off:
+                    enabled: false
+                    timer: 10
+                    behavior:
+                      reset_on_on: false
+                      cancel_on_manual_off: false
+                  trigger:
+                    type: "state_change"
+                    entity_id: ""
+                    state: ""
+                sensors:
+                  motion: []
+                  occupancy: []
+          - ensuite:
+            area_id: ensuite
+            segment_id: ""
+            last_activity_sensor: ""
+            last_cleaned_input: ""
+            needs_cleaning_boolean: ""
+            days_since_last_cleaned_sensor: ""
+            days_threshold: 1
+            lighting:
+              mode: "all"
+              targets: []
+              auto_off:
+                enabled: false
+                timer: 10
+                behavior:
+                  reset_on_on: false
+                  cancel_on_manual_off: false
+              trigger:
+                type: "state_change"
+                entity_id: ""
+                state: ""
+            sensors:
+              motion: []
+              occupancy: []
+    hallway:
+      - hallway_downstairs:
+        area_id: downstairs
+        segment_id: "18"
+        last_activity_sensor: sensor.hallway_downstairs_last_activity
+        last_cleaned_input: input_datetime.downstairs_hallway_last_cleaned
+        needs_cleaning_boolean: input_boolean.downstairs_hallway_needs_cleaning
+        days_since_last_cleaned_sensor: sensor.downstairs_hallway_days_since_last_cleaned
+        days_threshold: 2
+        lighting:
+          mode: "all"
+          targets: []
+          auto_off:
+            enabled: true
+            timer: 10
+            behavior:
+              reset_on_on: true
+              cancel_on_manual_off: true
+          trigger:
+            type: "state_change"
+            entity_id: ""
+            state: ""
+        sensors:
+          motion:
+            - entity_id: binary_sensor.downstairs_presence_alpha_motion
+          occupancy: []
+      - entrance:
+        area_id: entrance
+        segment_id: ""
+        last_activity_sensor: ""
+        last_cleaned_input: ""
+        needs_cleaning_boolean: ""
+        days_since_last_cleaned_sensor: ""
+        days_threshold: 1
+        lighting:
+          mode: "all"
+          targets: []
+          auto_off:
+            enabled: false
+            timer: 10
+            behavior:
+              reset_on_on: false
+              cancel_on_manual_off: false
+          trigger:
+            type: "state_change"
+            entity_id: ""
+            state: ""
+        sensors:
+          motion: []
+          occupancy: []
+      - hallway_upstairs:
+        area_id: upstairs
+        segment_id: ""
+        last_activity_sensor: ""
+        last_cleaned_input: ""
+        needs_cleaning_boolean: ""
+        days_since_last_cleaned_sensor: ""
+        days_threshold: 1
+        lighting:
+          mode: "all"
+          targets: []
+          auto_off:
+            enabled: false
+            timer: 10
+            behavior:
+              reset_on_on: false
+              cancel_on_manual_off: false
+          trigger:
+            type: "state_change"
+            entity_id: ""
+            state: ""
+        sensors:
+          motion: []
+          occupancy: []
+
+  outside: []
+  virtual: []

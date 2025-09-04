@@ -1,0 +1,321 @@
+#══════════════════════════════════════════════════════════════════════════════
+# ▶ CLIMATE SENSORS: Temperature & Aggregated Room Metrics ◀
+# Loader: !include_dir_merge_list domain/templates/
+# Schema: sensor (list)
+# TODO: Add climate. temperature redings to aggregated sensors
+#══════════════════════════════════════════════════════════════════════════════
+- sensor:
+    - name: "Bedroom Temperature (Beta)"
+      unique_id: "bedroom_temperature_beta"
+      unit_of_measurement: "°C"
+      icon: "mdi:thermometer-chevron-up"
+      device_class: temperature
+      state: >
+        {% set val = states('sensor.merged_bedroom_temperature_eta') %}
+        {{ val if val not in ['unknown', 'unavailable', 'none', ''] else 0 }}
+      attributes:
+        tier: "β"
+        canonical_id: "bedroom_temperature_β"
+        area_id: "bedroom"
+        source_count: "1"
+        data_quality: "{{ state_attr('sensor.merged_bedroom_temperature_eta', 'data_quality') }}"
+        sources: "{{ state_attr('sensor.merged_bedroom_temperature_eta', 'sources') }}"
+        subsystem: "aether"
+        is_multi_source: false
+        is_validated: true
+        version: "1.1"
+        last_updated: "2025-07-17"
+        role: "measurement"
+        type: "temperature"
+        module: "room_temperature"
+        file: "/config/domain/templates/temperature_logic.yaml"
+        description: "Temperature reading for bedroom from merged eta sensor"
+        date_created: "2025-04-26"
+    - name: "Living Room Temperature (Beta)"
+      unique_id: "living_room_temperature_beta"
+      unit_of_measurement: "°C"
+      device_class: temperature
+      icon: "mdi:thermometer-chevron-up"
+      state: >
+        {% set val = states('sensor.merged_living_room_temperature_eta') %}
+        {{ val if val not in ['unknown', 'unavailable', 'none', ''] else 0 }}
+      attributes:
+        tier: "β"
+        canonical_id: "living_room_temperature_β"
+        area_id: "living_room"
+        source_count: 1
+        data_quality: "{{ state_attr('sensor.merged_living_room_temperature_eta', 'data_quality') }}"
+        sources: "{{ state_attr('sensor.merged_living_room_temperature_eta', 'sources') }}"
+        subsystem: "aether"
+        is_multi_source: true
+        is_validated: true
+        version: "1.1"
+        last_updated: "2025-07-17"
+        role: "measurement"
+        type: "temperature"
+        module: "room_temperature"
+        file: "/config/domain/templates/temperature_logic.yaml"
+        description: "Temperature reading for living room from merged eta sensor"
+        date_created: "2025-04-26"
+    - name: "Kitchen Temperature (Beta)"
+      unique_id: "kitchen_temperature_beta"
+      unit_of_measurement: "°C"
+      device_class: temperature
+      icon: "mdi:thermometer-chevron-up"
+      state: >
+        {% set val = states('sensor.merged_kitchen_temperature_eta') %}
+        {{ val if val not in ['unknown', 'unavailable', 'none', ''] else 0 }}
+      attributes:
+        tier: "β"
+        canonical_id: "kitchen_temperature_β"
+        area_id: "kitchen"
+        source_count: 1
+        data_quality: "{{ state_attr('sensor.merged_kitchen_temperature_eta', 'data_quality') }}"
+        sources: "{{ state_attr('sensor.merged_kitchen_temperature_eta', 'sources') }}"
+        subsystem: "aether"
+        is_multi_source: false
+        is_validated: true
+        version: "1.1"
+        last_updated: "2025-07-17"
+        role: "measurement"
+        type: "temperature"
+        module: "room_temperature"
+        file: "/config/domain/templates/temperature_logic.yaml"
+        description: "Temperature reading for kitchen from merged eta sensor"
+        date_created: "2025-04-26"
+    - name: "Ensuite Temperature (Beta)"
+      unique_id: "ensuite_temperature_beta"
+      unit_of_measurement: "°C"
+      device_class: temperature
+      icon: "mdi:thermometer-chevron-up"
+      state: >
+        {% set val = states('sensor.merged_ensuite_temperature_eta') %}
+        {{ val if val not in ['unknown', 'unavailable', 'none', ''] else 0 }}
+      attributes:
+        tier: "β"
+        canonical_id: "ensuite_temperature_β"
+        area_id: "ensuite"
+        source_count: 1
+        data_quality: "{{ state_attr('sensor.merged_ensuite_temperature_eta', 'data_quality') }}"
+        sources: "{{ state_attr('sensor.merged_ensuite_temperature_eta', 'sources') }}"
+        subsystem: "aether"
+        is_multi_source: false
+        is_validated: true
+        version: "1.1"
+        last_updated: "2025-07-17"
+        role: "measurement"
+        type: "temperature"
+        module: "room_temperature"
+        file: "/config/domain/templates/temperature_logic.yaml"
+        description: "Temperature reading for ensuite from merged eta sensor"
+        date_created: "2025-04-26"
+    #───────────────────────────────────────────────────────────────
+    # ▼ GROUP: Aggregated Eta-Tier Metrics
+    #───────────────────────────────────────────────────────────────
+    - name: "Merged Home Temperature (Eta)"
+      unique_id: "merged_home_temperature_eta"
+      unit_of_measurement: "°C"
+      device_class: temperature
+      state: >
+        {% set temp_sensors = [
+          'sensor.bedroom_temperature_beta',
+          'sensor.living_room_temperature_beta',
+          'sensor.kitchen_temperature_beta',
+          'sensor.ensuite_temperature_beta'
+        ] %}
+        {% set values = namespace(valid=[]) %}
+        {% for sensor in temp_sensors %}
+          {% set val = states(sensor) %}
+          {% if val is not none and val not in ['unknown', 'unavailable'] and val | float(default=-999) > -50 %}
+            {% set values.valid = values.valid + [val | float] %}
+          {% endif %}
+        {% endfor %}
+        {% if values.valid | count > 0 %}
+          {{ (values.valid | sum) / (values.valid | count) | round(1) }}
+        {% else %}
+          0
+        {% endif %}
+      attributes:
+        upstream_sources: >
+          {{ ['sensor.bedroom_temperature_beta','sensor.living_room_temperature_beta','sensor.kitchen_temperature_beta','sensor.ensuite_temperature_beta'] | tojson}}
+        area_id: "home"
+        tier: "η"
+        canonical_id: "merged_home_temperature_η"
+        file: "/config/domain/templates/temperature_logic.yaml"
+        date_created: "2025-04-26"
+        last_updated: "2025-07-17"
+        is_multi_source: true
+        source_count: 4
+        data_quality: "excellent"
+        subsystem: "hestia"
+        role: "aggregation"
+        description: "Average temperature across all rooms in the home"
+        type: "fusion"
+        module: "home_aggregation"
+    - name: "Merged Bedroom Temperature (Eta)"
+      unique_id: "merged_bedroom_temperature_eta"
+      unit_of_measurement: "°C"
+      device_class: temperature
+      state: >
+        {% set entity_sources = [
+          states('sensor.bedroom_ambient_climate_alpha_temperature'),
+          states('sensor.bedroom_monstera_soil_alpha_temperature'),
+          states('sensor.bedroom_dehumidifier_probreeze_temperature'),
+          state_attr('climate.bedroom_climate_trv_left_alpha', 'current_temperature'),
+          state_attr('climate.bedroom_climate_trv_right_alpha', 'current_temperature')
+        ] %}
+
+        {% set values = namespace(valid=[]) %}
+        {% for temp in entity_sources %}
+          {% if temp is not none and temp not in ['unknown', 'unavailable'] and temp | float(default=-999) > -50 %}
+            {% set values.valid = values.valid + [temp | float] %}
+          {% endif %}
+        {% endfor %}
+
+        {% if values.valid | count > 0 %}
+          {{ (values.valid | sum) / (values.valid | count) | round(1) }}
+        {% else %}
+          0
+        {% endif %}
+      attributes:
+        upstream_sources: >
+          {{ [
+            'sensor.bedroom_ambient_climate_alpha_temperature',
+            'climate.bedroom_monstera_soil_alpha_temperature',
+            'climate.bedroom_climate_trv_left_alpha.current_temperature',
+            'climate.bedroom_climate_trv_right_alpha.current_temperature'
+          ] | tojson }}
+        area_id: "bedroom"
+        tier: "η"
+        canonical_id: "merged_bedroom_temperature_η"
+        file: "/config/domain/templates/temperature_logic.yaml"
+        date_created: "2025-04-26"
+        last_updated: "2025-07-17"
+        is_multi_source: true
+        source_count: 5
+        data_quality: "excellent"
+        subsystem: "aether"
+        module: "room_merged_sensors"
+        role: "aggregation"
+        type: "temperature"
+        description: "Merged temperature value from multiple bedroom temperature sensors - uses average of available values"
+    - name: "Merged Living Room Temperature (Eta)"
+      unique_id: "merged_living_room_temperature_eta"
+      unit_of_measurement: "°C"
+      device_class: temperature
+      state: >
+        {% set sources = [
+          states('sensor.living_room_broadlink_rm4_alpha_temperature'),
+          states('sensor.living_room_multipurpose_alpha_temperature'),
+          state_attr('climate.living_room_climate_trv_alpha', 'current_temperature')
+        ] %}
+        {% set values = namespace(valid=[]) %}
+        {% for temp in sources %}
+          {% if temp is not none and temp not in ['unknown', 'unavailable'] and temp | float(default=-999) > -50 %}
+            {% set values.valid = values.valid + [temp | float] %}
+          {% endif %}
+        {% endfor %}
+        {% if values.valid | count > 0 %}
+          {{ (values.valid | sum) / (values.valid | count) | round(1) }}
+        {% else %}
+          0
+        {% endif %}
+      attributes:
+        upstream_sources: >
+          {{ [
+            'sensor.living_room_broadlink_rm4_alpha_temperature',
+            'sensor.living_room_multipurpose_alpha_temperature',
+            'climate.living_room_climate_trv_alpha.current_temperature'
+          ] | tojson }}
+        area_id: "living_room"
+        tier: "η"
+        canonical_id: "merged_living_room_temperature_η"
+        file: "/config/domain/templates/temperature_logic.yaml"
+        date_created: "2025-04-26"
+        last_updated: "2025-07-17"
+        is_multi_source: true
+        source_count: 3
+        data_quality: "excellent"
+        subsystem: "aether"
+        module: "room_merged_sensors"
+        role: "aggregation"
+        type: "temperature"
+        description: "Merged temperature value from living room alpha temperature sensors - uses average of available values"
+    - name: "Merged Kitchen Temperature (Eta)"
+      unique_id: "merged_kitchen_temperature_eta"
+      unit_of_measurement: "°C"
+      device_class: temperature
+      state: >
+        {% set sources = [
+          states('sensor.kitchen_ambient_climate_alpha_temperature'),
+          state_attr('climate.kitchen_climate_trv_alpha', 'current_temperature')
+        ] %}
+        {% set values = namespace(valid=[]) %}
+        {% for temp in sources %}
+          {% if temp is not none and temp not in ['unknown', 'unavailable'] and temp | float(default=-999) > -50 %}
+            {% set values.valid = values.valid + [temp | float] %}
+          {% endif %}
+        {% endfor %}
+        {% if values.valid | count > 0 %}
+          {{ (values.valid | sum) / (values.valid | count) | round(1) }}
+        {% else %}
+          0
+        {% endif %}
+      attributes:
+        upstream_sources: >
+          {{ [
+            'sensor.kitchen_ambient_climate_alpha_temperature',
+            'climate.kitchen_climate_trv_alpha.current_temperature'
+          ] | tojson }}
+        area_id: "kitchen"
+        tier: "η"
+        canonical_id: "merged_kitchen_temperature_η"
+        file: "/config/domain/templates/temperature_logic.yaml"
+        date_created: "2025-04-26"
+        last_updated: "2025-07-17"
+        is_multi_source: false
+        source_count: 2
+        data_quality: "good"
+        subsystem: "aether"
+        module: "room_merged_sensors"
+        role: "aggregation"
+        type: "temperature"
+        description: "Merged temperature value from kitchen alpha temperature sensor"
+    - name: "Merged Ensuite Temperature (Eta)"
+      unique_id: "merged_ensuite_temperature_eta"
+      unit_of_measurement: "°C"
+      device_class: temperature
+      state: >
+        {% set temp_sensors = [
+          'sensor.ensuite_climate_matter_alpha_temperature',
+          'sensor.ensuite_climate_omega_temperature'
+        ] %}
+        {% set values = namespace(valid=[]) %}
+        {% for sensor in temp_sensors %}
+          {% set val = states(sensor) %}
+          {% if val is not none and val not in ['unknown', 'unavailable'] and val | float(default=-999) > -50 %}
+            {% set values.valid = values.valid + [val | float] %}
+          {% endif %}
+        {% endfor %}
+        {% if values.valid | count > 0 %}
+          {{ (values.valid | sum) / (values.valid | count) | round(1) }}
+        {% else %}
+          0
+        {% endif %}
+      attributes:
+        upstream_sources: >
+          {{ ['sensor.ensuite_climate_matter_alpha_temperature', 'sensor.ensuite_climate_omega_temperature'] | tojson }}
+        area_id: "ensuite"
+        tier: "η"
+        canonical_id: "merged_ensuite_temperature_η"
+        file: "/config/domain/templates/temperature_logic.yaml"
+        date_created: "2025-04-26"
+        last_updated: "2025-07-17"
+        is_multi_source: true
+        source_count: 2
+        data_quality: "excellent"
+        subsystem: "aether"
+        module: "room_merged_sensors"
+        role: "aggregation"
+        type: "temperature"
+        description: "Merged temperature value from ensuite alpha temperature sensor"

@@ -1,0 +1,526 @@
+#═════════════════════════════════════════════════════════════════════════════
+# ▶ LOGIC SENSOR: MOTION & RECENT MOTION WITH DELAY_OFF ◀
+# Loader: !include_dir_merge_list domain/templates/
+# Schema: binary_sensor (list)
+# Tier: β  •  Domain: logic  •  Created: 2025-06-05
+# TODO: Validate *_alpha entity_ids resolve correctly with post-reboot naming.
+#═════════════════════════════════════════════════════════════════════════════
+- binary_sensor:
+    - name: "Bedroom Motion Recent (Beta)"
+      unique_id: "bedroom_motion_recent_beta"
+      device_class: motion
+      delay_off:
+        minutes: 5
+      state: "{{ is_state('binary_sensor.bedroom_motion_beta', 'on') }}"
+      attributes:
+        tier: "β"
+        canonical_id: "bedroom_motion_recent_β"
+        subsystem: "hermes"
+        module: "motion"
+        type: "delay_proxy"
+        role: "motion_timeout"
+        file: "/config/domain/templates/motion_logic"
+        delay_duration: "300s"
+        timeout_behavior: "delay_off"
+        refactor_note: "Phase 2: Timeout wrapper around preference-fused motion signal"
+        upstream_sources: >
+          {{ 'binary_sensor.bedroom_motion_beta' | tojson}}
+        downstream_consumers: >
+          {{ ['binary_sensor.bedroom_occupancy_beta', 'sensor.bedroom_motion_score_gamma'] | tojson }}
+        aggregation_strategy: "timeout-based extension"
+        version: "2.2"
+        last_updated: "2025-07-31"
+        area_id: "bedroom"
+        subarea: ""
+
+    - name: "Kitchen Motion Recent (Beta)"
+      unique_id: kitchen_motion_recent_beta
+      device_class: motion
+      delay_off:
+        minutes: 5
+      state: "{{ is_state('binary_sensor.kitchen_motion_beta', 'on') }}"
+      attributes:
+        version: "2.0"
+        last_updated: "2025-07-18"
+        created: "2025-06-05"
+        tier: "β"
+        canonical_id: "kitchen_motion_recent_β"
+        subsystem: "hermes"
+        module: "motion"
+        type: "delay_proxy"
+        role: "motion_timeout"
+        file: "/config/domain/templates/motion_logic"
+        delay_duration: "300s"
+        timeout_behavior: "delay_off"
+        upstream_sources: >
+          {{ 'binary_sensor.kitchen_motion_beta' | tojson }}
+        downstream_consumers: >
+          {{ ['binary_sensor.kitchen_occupancy_beta', 'sensor.kitchen_motion_score_gamma'] | tojson }}
+
+    - name: "Living Room Motion Recent (Beta)"
+      unique_id: living_room_motion_recent_beta
+      device_class: motion
+      delay_off:
+        minutes: 5
+      state: "{{ is_state('binary_sensor.living_room_motion_beta', 'on') }}"
+      attributes:
+        version: "2.0"
+        last_updated: "2025-07-18"
+        created: "2025-06-05"
+        tier: "β"
+        canonical_id: "living_room_motion_recent_β"
+        subsystem: "hermes"
+        module: "motion"
+        type: "delay_proxy"
+        role: "motion_timeout"
+        file: "/config/domain/templates/motion_logic"
+        delay_duration: "300s"
+        timeout_behavior: "delay_off"
+        upstream_sources: >
+          {{ 'binary_sensor.living_room_motion_beta' | tojson }}
+        downstream_consumers: >
+          {{ ['binary_sensor.living_room_occupancy_beta', 'sensor.living_room_motion_score_gamma'] | tojson }}
+
+    - name: "Ensuite Motion Recent (Beta)"
+      unique_id: ensuite_motion_recent_beta
+      device_class: motion
+      delay_off:
+        minutes: 5
+      state: "{{ is_state('binary_sensor.ensuite_motion_beta', 'on') }}"
+      attributes:
+        version: "2.2"
+        last_updated: "2025-07-31"
+        created: "2025-06-05"
+        tier: "β"
+        canonical_id: "ensuite_motion_recent_β"
+        subsystem: "hermes"
+        module: "motion"
+        type: "delay_proxy"
+        role: "motion_timeout"
+        file: "/config/domain/templates/motion_logic"
+        delay_duration: "300s"
+        timeout_behavior: "delay_off"
+        refactor_note: "Phase 2: Timeout proxy for MQTT occupancy fusion"
+        upstream_sources: >
+          {{ 'binary_sensor.ensuite_motion_beta' | tojson }}
+        downstream_consumers: >
+          {{ ['binary_sensor.ensuite_occupancy_beta', 'sensor.ensuite_motion_score_gamma'] | tojson }}
+
+    - name: "Hallway Downstairs Motion Recent (Beta)"
+      unique_id: hallway_downstairs_motion_recent_beta
+      device_class: motion
+      delay_off:
+        minutes: 5
+      state: "{{ is_state('binary_sensor.hallway_downstairs_motion_beta', 'on') }}"
+      attributes:
+        version: "2.0"
+        last_updated: "2025-07-18"
+        created: "2025-06-05"
+        tier: "β"
+        canonical_id: "hallway_downstairs_motion_recent_β"
+        subsystem: "hermes"
+        module: "motion"
+        type: "delay_proxy"
+        role: "motion_timeout"
+        file: "/config/domain/templates/motion_logic"
+        delay_duration: "300s"
+        timeout_behavior: "delay_off"
+        upstream_sources: >
+          {{ 'binary_sensor.hallway_downstairs_motion_beta' | tojson }}
+        downstream_consumers: >
+          {{ ['binary_sensor.hallway_downstairs_occupancy_beta', 'sensor.hallway_downstairs_motion_score_gamma'] | tojson }}
+        area_id: "hallway"
+        subarea: "downstairs"
+
+    - name: "Hallway Upstairs Motion Recent (Beta)"
+      unique_id: hallway_upstairs_motion_recent_beta
+      device_class: motion
+      delay_off:
+        minutes: 5
+      state: "{{ is_state('binary_sensor.hallway_upstairs_motion_beta', 'on') }}"
+      attributes:
+        version: "2.0"
+        last_updated: "2025-07-18"
+        created: "2025-06-05"
+        tier: "β"
+        canonical_id: "hallway_upstairs_motion_recent_β"
+        subsystem: "hermes"
+        module: "motion"
+        type: "delay_proxy"
+        role: "motion_timeout"
+        file: "/config/domain/templates/motion_logic"
+        delay_duration: "300s"
+        timeout_behavior: "delay_off"
+        upstream_sources: >
+          {{ 'binary_sensor.hallway_upstairs_motion_beta' | tojson }}
+        downstream_consumers: >
+          {{ ['binary_sensor.hallway_upstairs_occupancy_beta', 'sensor.hallway_upstairs_motion_score_gamma'] | tojson }}
+        area_id: "hallway"
+        subarea: "upstairs"
+
+    - name: "Entrance Motion Recent (Beta)"
+      unique_id: entrance_motion_recent_beta
+      device_class: motion
+      delay_off:
+        minutes: 3
+      state: "{{ is_state('binary_sensor.entrance_motion_beta', 'on') }}"
+      attributes:
+        version: "2.0"
+        last_updated: "2025-07-18"
+        created: "2025-06-05"
+        tier: "β"
+        canonical_id: "entrance_motion_recent_β"
+        subsystem: "hermes"
+        module: "motion"
+        type: "delay_proxy"
+        role: "motion_timeout"
+        file: "/config/domain/templates/motion_logic"
+        delay_duration: "180s"
+        timeout_behavior: "delay_off"
+        timeout_note: "Shorter timeout for high-traffic entrance area"
+        upstream_sources: "binary_sensor.entrance_motion_beta"
+        downstream_consumers: >
+          {{ ['binary_sensor.entrance_occupancy_beta', 'sensor.entrance_motion_score_gamma'] | tojson }}
+
+    - name: "Wardrobe Motion Recent (Beta)"
+      unique_id: wardrobe_motion_recent_beta
+      device_class: motion
+      delay_off:
+        minutes: 2
+      state: "{{ is_state('binary_sensor.wardrobe_motion_beta', 'on') }}"
+      attributes:
+        version: "2.0"
+        last_updated: "2025-07-18"
+        created: "2025-06-05"
+        tier: "β"
+        canonical_id: "wardrobe_motion_recent_β"
+        subsystem: "hermes"
+        module: "motion"
+        type: "delay_proxy"
+        role: "motion_timeout"
+        file: "/config/domain/templates/motion_logic"
+        delay_duration: "120s"
+        timeout_behavior: "delay_off"
+        timeout_note: "Shorter timeout for utility space with brief interactions"
+        upstream_sources: >
+          {{ 'binary_sensor.wardrobe_motion_beta' | tojson }}
+        downstream_consumers: >
+          {{ ['binary_sensor.wardrobe_occupancy_beta', 'sensor.wardrobe_motion_score_gamma'] | tojson }}
+        area_id: "bedroom"
+        subarea: "wardrobe"
+
+    #══════════════════════════════════════════════════════════════════════════
+    # Description: β-tier motion sensors with preference-aware selection logic
+    # Refactored: 2025-06-05  •  Intelligent preference-based fusion
+
+    - name: "Bedroom Motion (Beta)"
+      unique_id: "bedroom_motion_beta"
+      device_class: motion
+      state: >
+        {% from 'template.library.jinja' import preference_select %}
+        {% set sources = [
+          {'entity': 'binary_sensor.bedroom_wardrobe_occupancy_matter_alpha', 'protocol': 'matter', 'preference': 1, 'type': 'occupancy'},
+          {'entity': 'binary_sensor.bedroom_occupancy_alpha_occupancy',      'protocol': 'mqtt',   'preference': 2, 'type': 'occupancy'},
+          {'entity': 'binary_sensor.bedroom_wardrobe_motion_tplink_alpha',   'protocol': 'tplink', 'preference': 3, 'type': 'motion'}
+        ] %}
+        {{ preference_select(sources) == 'on' }}
+      attributes:
+        tier: "β"
+        canonical_id: "bedroom_motion_β"
+        subsystem: "hermes"
+        module: "motion"
+        type: "preference_proxy"
+        role: "beta_motion"
+        file: "/config/domain/templates/motion_logic"
+        protocols: "Matter(1), MQTT(2), TP-Link(3)"
+        upstream_sources: >
+          {{ ['template.library.jinja', 'binary_sensor.bedroom_wardrobe_occupancy_matter_alpha', 'binary_sensor.bedroom_occupancy_alpha_occupancy', 'binary_sensor.bedroom_wardrobe_motion_tplink_alpha'] | tojson }}
+        aggregation_strategy: "preference-based selection (occupancy primary)"
+        active_source: >
+          {% set sources = [
+            {'entity': 'binary_sensor.bedroom_wardrobe_motion_tplink_alpha',   'protocol': 'tplink', 'preference': 1, 'type': 'motion'},
+            {'entity': 'binary_sensor.bedroom_wardrobe_occupancy_matter_alpha', 'protocol': 'matter', 'preference': 2, 'type': 'occupancy'},
+            {'entity': 'binary_sensor.bedroom_occupancy_alpha_occupancy',      'protocol': 'mqtt',   'preference': 3, 'type': 'occupancy'}
+          ] %}
+          {% for item in sources | sort(attribute='preference') %}
+            {% if states(item.entity) == 'on' %}
+              {{ item.entity }}
+            {% endif %}
+          {% endfor %}
+        source_count: 3
+        version: "2.2"
+        last_updated: "2025-07-31"
+        area_id: "bedroom"
+        subarea: ""
+
+    - name: "Ensuite Motion (Beta)"
+      unique_id: "ensuite_motion_beta"
+      device_class: motion
+      state: >
+        {% from 'template.library.jinja' import preference_select %}
+        {% set sources = [
+          {'entity': 'binary_sensor.ensuite_occupancy_omega_occupancy', 'protocol': 'mqtt', 'preference': 1, 'type': 'occupancy'}
+        ] %}
+        {{ preference_select(sources) == 'on' }}
+      attributes:
+        tier: "β"
+        canonical_id: "ensuite_motion_β"
+        subsystem: "hermes"
+        module: "motion"
+        type: "preference_proxy"
+        role: "beta_motion"
+        file: "/config/domain/templates/motion_logic"
+        protocols: "MQTT(1)"
+        refactor_note: "Phase 1.1: Preference-aware single-source (extensible pattern)"
+        upstream_sources: >
+          {{ ['template.library.jinja', 'binary_sensor.ensuite_occupancy_omega_occupancy'] | tojson }}
+        aggregation_strategy: "preference-based selection (single source)"
+        active_source: >
+          {% set sources = [
+            {'entity': 'binary_sensor.ensuite_occupancy_omega_occupancy', 'protocol': 'mqtt', 'preference': 1, 'type': 'occupancy'}
+          ] %}
+          {% for item in sources | sort(attribute='preference') %}
+            {% if states(item.entity) == 'on' %}
+              {{ item.entity }}
+            {% endif %}
+          {% endfor %}
+        source_count: 1
+        version: "2.2"
+        last_updated: "2025-07-31"
+        area_id: "ensuite"
+        subarea: ""
+
+    - name: "Hallway Downstairs Motion (Beta)"
+      unique_id: "hallway_downstairs_motion_beta"
+      device_class: motion
+      state: >
+        {% from 'template.library.jinja' import preference_select %}
+        {% set sources = [
+          {'entity': 'binary_sensor.downstairs_occupancy_matter_alpha_occupancy', 'protocol': 'matter', 'preference': 1, 'type': 'occupancy'},
+          {'entity': 'binary_sensor.downstairs_presence_alpha_motion',            'protocol': 'tplink', 'preference': 2, 'type': 'motion'}
+        ] %}
+        {{ preference_select(sources) == 'on' }}
+      attributes:
+        tier: "β"
+        canonical_id: "hallway_downstairs_motion_β"
+        subsystem: "hermes"
+        module: "motion"
+        type: "preference_proxy"
+        role: "beta_motion"
+        file: "/config/domain/templates/motion_logic"
+        protocols: "Matter(1), TP-Link(2)"
+        refactor_note: "Phase 1.1: Occupancy primary, motion fallback"
+        upstream_sources: >
+          {{ ['template.library.jinja', 'binary_sensor.downstairs_occupancy_matter_alpha_occupancy', 'binary_sensor.downstairs_presence_alpha_motion'] | tojson }}
+        aggregation_strategy: "preference-based selection (occupancy primary, motion fallback)"
+        active_source: >
+          {% set sources = [
+            {'entity': 'binary_sensor.downstairs_presence_alpha_motion',            'protocol': 'tplink', 'preference': 1, 'type': 'motion'},
+            {'entity': 'binary_sensor.downstairs_occupancy_matter_alpha_occupancy', 'protocol': 'matter', 'preference': 2, 'type': 'occupancy'}
+          ] %}
+          {% for item in sources | sort(attribute='preference') %}
+            {% if states(item.entity) == 'on' %}
+              {{ item.entity }}
+            {% endif %}
+          {% endfor %}
+        source_count: 2
+        version: "2.1"
+        last_updated: "2025-06-25"
+        area_id: "hallway"
+        subarea: "downstairs"
+
+    - name: "Hallway Upstairs Motion (Beta)"
+      unique_id: "hallway_upstairs_motion_beta"
+      device_class: motion
+      state: >
+        {% from 'template.library.jinja' import preference_select %}
+        {% set sources = [
+          {'entity': 'binary_sensor.upstairs_occupancy_matter_alpha_occupancy', 'protocol': 'matter', 'preference': 1, 'type': 'occupancy'},
+          {'entity': 'binary_sensor.upstairs_presence_alpha_motion',            'protocol': 'tplink', 'preference': 2, 'type': 'motion'}
+        ] %}
+        {{ preference_select(sources) == 'on' }}
+      attributes:
+        tier: "β"
+        canonical_id: "hallway_upstairs_motion_β"
+        subsystem: "hermes"
+        module: "motion"
+        type: "preference_proxy"
+        role: "beta_motion"
+        file: "/config/domain/templates/motion_logic"
+        protocols: "Matter(1), TP-Link(2)"
+        refactor_note: "Phase 1.1: Preference-aware single-source (extensible pattern)"
+        upstream_sources: >
+          {{ ['template.library.jinja', 'binary_sensor.upstairs_occupancy_matter_alpha_occupancy', 'binary_sensor.upstairs_presence_alpha_motion'] | tojson }}
+        aggregation_strategy: "preference-based selection (single source)"
+        active_source: >
+          {% set sources = [
+            {'entity': 'binary_sensor.upstairs_presence_alpha_motion',            'protocol': 'tplink', 'preference': 1, 'type': 'motion'},
+            {'entity': 'binary_sensor.upstairs_occupancy_matter_alpha_occupancy', 'protocol': 'matter', 'preference': 2, 'type': 'occupancy'}
+          ] %}
+          {% for item in sources | sort(attribute='preference') %}
+            {% if states(item.entity) == 'on' %}
+              {{ item.entity }}
+            {% endif %}
+          {% endfor %}
+        source_count: 2
+        version: "2.1"
+        last_updated: "2025-06-25"
+        area_id: "hallway"
+        subarea: "upstairs"
+
+    - name: "Kitchen Motion (Beta)"
+      unique_id: "kitchen_motion_beta"
+      device_class: motion
+      state: >
+        {% from 'template.library.jinja' import preference_select %}
+        {% set sources = [
+          {'entity': 'binary_sensor.kitchen_occupancy_matter_alpha_occupancy', 'protocol': 'matter', 'preference': 1, 'type': 'occupancy'},
+          {'entity': 'binary_sensor.kitchen_presence_alpha_motion',            'protocol': 'tplink', 'preference': 2, 'type': 'motion'}
+        ] %}
+        {{ preference_select(sources) == 'on' }}
+      attributes:
+        tier: "β"
+        canonical_id: "kitchen_motion_β"
+        subsystem: "hermes"
+        module: "motion"
+        type: "preference_proxy"
+        role: "beta_motion"
+        file: "/config/domain/templates/motion_logic"
+        protocols: "Matter(1), TP-Link(2)"
+        refactor_note: "Phase 3: Using centralized template.library.jinja macros"
+        upstream_sources: >
+          {{ ['template.library.jinja', 'binary_sensor.kitchen_occupancy_matter_alpha_occupancy', 'binary_sensor.kitchen_presence_alpha_motion'] | tojson }}
+        aggregation_strategy: "preference-based selection (lowest preference wins)"
+        active_source: >
+          {% set sources = [
+            {'entity': 'binary_sensor.kitchen_presence_alpha_motion',            'protocol': 'tplink', 'preference': 1, 'type': 'motion'},
+            {'entity': 'binary_sensor.kitchen_occupancy_matter_alpha_occupancy', 'protocol': 'matter', 'preference': 2, 'type': 'occupancy'}
+          ] %}
+          {% for item in sources | sort(attribute='preference') %}
+            {% if states(item.entity) == 'on' %}
+              {{ item.entity }}
+            {% endif %}
+          {% endfor %}
+        source_count: 2
+        version: "2.1"
+        last_updated: "2025-07-17"
+        area_id: "kitchen"
+        subarea: ""
+
+    - name: "Living Room Motion (Beta)"
+      unique_id: "living_room_motion_beta"
+      device_class: motion
+      state: >
+        {% from 'template.library.jinja' import preference_select %}
+        {% set sources = [
+          {'entity': 'binary_sensor.living_room_multipurpose_alpha_motion', 'protocol': 'smartthings', 'preference': 1, 'type': 'motion'},
+          {'entity': 'binary_sensor.living_room_occupancy_alpha_occupancy', 'protocol': 'mqtt', 'preference': 2, 'type': 'occupancy'}
+        ] %}
+        {{ preference_select(sources) == 'on' }}
+      attributes:
+        tier: "β"
+        canonical_id: "living_room_motion_β"
+        subsystem: "hermes"
+        module: "motion"
+        type: "preference_proxy"
+        role: "beta_motion"
+        file: "/config/domain/templates/motion_logic"
+        protocols: "SmartThings(1), MQTT(2)"
+        refactor_note: "Phase 1.1: Preference-aware dual-protocol selection"
+        upstream_sources: >
+          {{ ['template.library.jinja', 'binary_sensor.living_room_multipurpose_alpha_motion', 'binary_sensor.living_room_occupancy_alpha_occupancy'] | tojson }}
+        aggregation_strategy: "preference-based selection (Smartthings primary, MQTT occupancy fallback)"
+        active_source: >
+          {% set sources = [
+            {'entity': 'binary_sensor.living_room_multipurpose_alpha_motion', 'protocol': 'smartthings', 'preference': 1, 'type': 'motion'},
+            {'entity': 'binary_sensor.living_room_occupancy_alpha_occupancy', 'protocol': 'mqtt', 'preference': 2, 'type': 'occupancy'}
+          ] %}
+          {% for item in sources | sort(attribute='preference') %}
+            {% if states(item.entity) == 'on' %}
+              {{ item.entity }}
+            {% endif %}
+          {% endfor %}
+        source_count: 2
+        version: "2.1"
+        last_updated: "2025-07-17"
+        area_id: "living_room"
+        subarea: ""
+
+    - name: "Entrance Motion (Beta)"
+      unique_id: "entrance_motion_beta"
+      device_class: motion
+      state: >
+        {% from 'template.library.jinja' import preference_select %}
+        {% set sources = [
+          {'entity': 'binary_sensor.entrance_door_occupancy_matter_alpha',     'protocol': 'matter', 'preference': 1, 'type': 'occupancy'},
+          {'entity': 'binary_sensor.entrance_door_motion_tplink_alpha_motion', 'protocol': 'tplink', 'preference': 2, 'type': 'motion'}
+        ] %}
+        {{ preference_select(sources) == 'on' }}
+      attributes:
+        tier: "β"
+        canonical_id: "entrance_motion_β"
+        subsystem: "hermes"
+        module: "motion"
+        type: "hybrid_proxy"
+        role: "beta_motion"
+        file: "/config/domain/templates/motion_logic"
+        protocols: "Matter(1), TP-Link(2)"
+        refactor_note: "Phase 1.1: Hybrid motion/occupancy with preference logic"
+        upstream_sources: >
+          {{ ['template.library.jinja', 'binary_sensor.entrance_door_occupancy_matter_alpha', 'binary_sensor.entrance_door_motion_tplink_alpha_motion'] | tojson }}
+        aggregation_strategy: "preference-based selection (occupancy primary, motion fallback)"
+        active_source: >
+          {% set sources = [
+            {'entity': 'binary_sensor.entrance_door_motion_tplink_alpha_motion', 'protocol': 'tplink', 'preference': 1, 'type': 'motion'},
+            {'entity': 'binary_sensor.entrance_door_occupancy_matter_alpha',     'protocol': 'matter', 'preference': 2, 'type': 'occupancy'}
+          ] %}
+          {% for item in sources | sort(attribute='preference') %}
+            {% if states(item.entity) == 'on' %}
+              {{ item.entity }}
+            {% endif %}
+          {% endfor %}
+        source_count: 2
+        signal_types: "{{ ['motion', 'occupancy'] | tojson }}"
+        version: "2.1"
+        last_updated: "2025-07-17"
+        area_id: "hallway"
+        subarea: "entrance"
+
+    - name: "Wardrobe Motion (Beta)"
+      unique_id: "wardrobe_motion_beta"
+      device_class: motion
+      state: >
+        {% from 'template.library.jinja' import preference_select %}
+        {% set sources = [
+          {'entity': 'binary_sensor.bedroom_wardrobe_occupancy_matter_alpha', 'protocol': 'matter', 'preference': 1, 'type': 'occupancy'},
+          {'entity': 'binary_sensor.bedroom_wardrobe_motion_tplink_alpha',    'protocol': 'tplink', 'preference': 2, 'type': 'motion'}
+        ] %}
+        {{ preference_select(sources) == 'on' }}
+      attributes:
+        tier: "β"
+        canonical_id: "wardrobe_motion_β"
+        subsystem: "hermes"
+        module: "motion"
+        type: "preference_proxy"
+        role: "beta_motion"
+        file: "/config/domain/templates/motion_logic"
+        protocols: "Matter(1), TP-Link(2)"
+        refactor_note: "Phase 1.1: Preference-aware multi-protocol wardrobe motion"
+        upstream_sources: >
+          {{ ['template.library.jinja', 'binary_sensor.bedroom_wardrobe_occupancy_matter_alpha', 'binary_sensor.bedroom_wardrobe_motion_tplink_alpha'] | tojson }}
+        aggregation_strategy: "preference-based selection (lowest preference wins)"
+        active_source: >
+          {% set sources = [
+            {'entity': 'binary_sensor.bedroom_wardrobe_motion_tplink_alpha',    'protocol': 'tplink', 'preference': 1, 'type': 'motion'},
+            {'entity': 'binary_sensor.bedroom_wardrobe_occupancy_matter_alpha', 'protocol': 'matter', 'preference': 2, 'type': 'occupancy'}
+          ] %}
+          {% for item in sources | sort(attribute='preference') %}
+            {% if states(item.entity) == 'on' %}
+              {{ item.entity }}
+            {% endif %}
+          {% endfor %}
+        source_count: 2
+        area_id: "bedroom"
+        subarea: "wardrobe"
+        version: "2.1"
+        last_updated: "2025-07-17"

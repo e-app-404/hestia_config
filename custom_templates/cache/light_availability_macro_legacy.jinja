@@ -1,0 +1,36 @@
+{% macro light_availability_sensor(light_entity, light_name, protocol_stack, version="hestia_template_engine_v3.0.3 macro_v1.5") %}
+{%- set protocol = namespace(best=None, sensor=None) %}
+
+{# -- Guard against missing protocol_stack -- #}
+{%- if protocol_stack is mapping %}
+  {%- for proto, info in protocol_stack.items() %}
+    {%- if info.get('status') == 'paired' and (protocol.best is none or info.get('preferred', false)) %}
+      {%- set protocol.best = proto %}
+      {%- set protocol.sensor = info.get('availability_sensor') %}
+    {%- endif %}
+  {%- endfor %}
+{%- endif %}
+
+{%- if protocol.sensor %}
+- name: "{{ light_entity }} Available (Alpha)"
+  unique_id: "{{ light_entity }}_available_alpha"
+  device_class: connectivity
+  state: >-
+    {{ '{{ is_state("' ~ protocol.sensor ~ '", "on") }}' }}
+  availability: >-
+    {{ '{{ has_value("' ~ protocol.sensor ~ '") }}' }}
+  attributes:
+    tier: "ε"
+    canonical_id: "{{ protocol.sensor }}"
+    subsystem: "theia"
+    type: "availability"
+    role: "connectivity_status"
+    component: "light"
+    protocol: "{{ protocol.best }}"
+    version: "1.0"
+    engine_version: "{{ version }}"
+    derived_from: "{{ protocol.sensor }}"
+    origin: "macro.light_availability_macro.jinja"
+    changelog: "{{ now().date() }}: Auto-generated availability sensor for {{ light_entity }} using macro v1.5 (engine: {{ version }})"
+{%- endif %}
+{% endmacro %}

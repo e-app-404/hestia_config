@@ -1,0 +1,1052 @@
+- id: '1754132838927'
+  name: ensuite_day_motion
+  entities:
+    light.ensuite_accent_alpha:
+      min_color_temp_kelvin: 2000
+      max_color_temp_kelvin: 6500
+      min_mireds: 153
+      max_mireds: 500
+      supported_color_modes:
+      - color_temp
+      - hs
+      color_mode:
+      brightness:
+      color_temp_kelvin:
+      color_temp:
+      hs_color:
+      rgb_color:
+      xy_color:
+      friendly_name: ensuite_accent_alpha
+      supported_features: 0
+      state: 'off'
+    light.ensuite_main_alpha:
+      min_color_temp_kelvin: 2000
+      max_color_temp_kelvin: 6500
+      min_mireds: 153
+      max_mireds: 500
+      supported_color_modes:
+      - color_temp
+      - hs
+      friendly_name: ensuite_main_alpha
+      supported_features: 0
+      state: unavailable
+    light.ensuite_lightstrip_tplink_alpha:
+      min_color_temp_kelvin: 2500
+      max_color_temp_kelvin: 6500
+      min_mireds: 153
+      max_mireds: 400
+      effect_list:
+      - 'Off'
+      - Aurora
+      - Bubbling Cauldron
+      - Candy Cane
+      - Christmas
+      - Flicker
+      - Grandma's Christmas Lights
+      - Hanukkah
+      - Haunted Mansion
+      - Icicle
+      - Lightning
+      - Ocean
+      - Rainbow
+      - Raindrop
+      - Spring
+      - Sunrise
+      - Sunset
+      - Valentines
+      supported_color_modes:
+      - color_temp
+      - hs
+      effect:
+      color_mode:
+      brightness:
+      color_temp_kelvin:
+      color_temp:
+      hs_color:
+      rgb_color:
+      xy_color:
+      friendly_name: ensuite_lightstrip_tplink_alpha
+      supported_features: 36
+      state: 'off'
+  icon: mdi:toilet
+  metadata: {}
+- id: '1754132838927'
+  name: ensuite_day_motion
+  entities:
+    light.ensuite_accent_alpha:
+      min_color_temp_kelvin: 2000
+      max_color_temp_kelvin: 6500
+      min_mireds: 153
+      max_mireds: 500
+      supported_color_modes:
+      - color_temp
+      - hs
+      color_mode:
+      brightness:
+      color_temp_kelvin:
+      color_temp:
+      hs_color:
+      rgb_color:
+      xy_color:
+      friendly_name: ensuite_accent_alpha
+      supported_features: 0
+      state: 'off'
+    light.ensuite_main_alpha:
+      min_color_temp_kelvin: 2000
+      max_color_temp_kelvin: 6500
+      min_mireds: 153
+      max_mireds: 500
+      supported_color_modes:
+      - color_temp
+      - hs
+      friendly_name: ensuite_main_alpha
+      supported_features: 0
+      state: unavailable
+    light.ensuite_lightstrip_tplink_alpha:
+      min_color_temp_kelvin: 2500
+      max_color_temp_kelvin: 6500
+      min_mireds: 153
+      max_mireds: 400
+      effect_list:
+      - 'Off'
+      - Aurora
+      - Bubbling Cauldron
+      - Candy Cane
+      - Christmas
+      - Flicker
+      - Grandma's Christmas Lights
+      - Hanukkah
+      - Haunted Mansion
+      - Icicle
+      - Lightning
+      - Ocean
+      - Rainbow
+      - Raindrop
+      - Spring
+      - Sunrise
+      - Sunset
+      - Valentines
+      supported_color_modes:
+      - color_temp
+      - hs
+      effect:
+      color_mode:
+      brightness:
+      color_temp_kelvin:
+      color_temp:
+      hs_color:
+      rgb_color:
+      xy_color:
+      friendly_name: ensuite_lightstrip_tplink_alpha
+      supported_features: 36
+      state: 'off'
+  icon: mdi:toilet
+  metadata: {}
+- id: '1754132983463'
+  name: ensuite_day_motion
+  entities:
+    light.ensuite_accent_alpha:
+      min_color_temp_kelvin: 2000
+      max_color_temp_kelvin: 6500
+      min_mireds: 153
+      max_mireds: 500
+      supported_color_modes:
+      - color_temp
+      - hs
+      color_mode:
+      brightness:
+      color_temp_kelvin:
+      color_temp:
+      hs_color:
+      rgb_color:
+      xy_color:
+      friendly_name: ensuite_accent_alpha
+      supported_features: 0
+      state: 'off'
+    light.ensuite_lightstrip_tplink_alpha:
+      min_color_temp_kelvin: 2500
+      max_color_temp_kelvin: 6500
+      min_mireds: 153
+      max_mireds: 400
+      effect_list:
+      - 'Off'
+      - Aurora
+      - Bubbling Cauldron
+      - Candy Cane
+      - Christmas
+      - Flicker
+      - Grandma's Christmas Lights
+      - Hanukkah
+      - Haunted Mansion
+      - Icicle
+      - Lightning
+      - Ocean
+      - Rainbow
+      - Raindrop
+      - Spring
+      - Sunrise
+      - Sunset
+      - Valentines
+      supported_color_modes:
+      - color_temp
+      - hs
+      effect:
+      color_mode:
+      brightness:
+      color_temp_kelvin:
+      color_temp:
+      hs_color:
+      rgb_color:
+      xy_color:
+      friendly_name: ensuite_lightstrip_tplink_alpha
+      supported_features: 36
+      state: 'off'
+    light.ensuite_main_alpha:
+      min_color_temp_kelvin: 2000
+      max_color_temp_kelvin: 6500
+      min_mireds: 153
+      max_mireds: 500
+      supported_color_modes:
+      - color_temp
+      - hs
+      friendly_name: ensuite_main_alpha
+      supported_features: 0
+      state: unavailable
+  metadata:
+    light.ensuite_accent_alpha:
+      entity_only: true
+    light.ensuite_lightstrip_tplink_alpha:
+      entity_only: true
+    light.ensuite_main_alpha:
+      entity_only: true
+- id: '1754133112082'
+  name: ensuite_lights_day_motion
+  entities:
+    light.ensuite_accent_alpha:
+      min_color_temp_kelvin: 2000
+      max_color_temp_kelvin: 6500
+      min_mireds: 153
+      max_mireds: 500
+      supported_color_modes:
+      - color_temp
+      - hs
+      color_mode: hs
+      brightness: 255
+      color_temp_kelvin:
+      color_temp:
+      hs_color:
+      - 187
+      - 98
+      rgb_color:
+      - 5
+      - 226
+      - 255
+      xy_color:
+      - 0.149
+      - 0.296
+      friendly_name: ensuite_accent_alpha
+      supported_features: 0
+      state: 'on'
+    light.ensuite_lightstrip_tplink_alpha:
+      min_color_temp_kelvin: 2500
+      max_color_temp_kelvin: 6500
+      min_mireds: 153
+      max_mireds: 400
+      effect_list:
+      - 'Off'
+      - Aurora
+      - Bubbling Cauldron
+      - Candy Cane
+      - Christmas
+      - Flicker
+      - Grandma's Christmas Lights
+      - Hanukkah
+      - Haunted Mansion
+      - Icicle
+      - Lightning
+      - Ocean
+      - Rainbow
+      - Raindrop
+      - Spring
+      - Sunrise
+      - Sunset
+      - Valentines
+      supported_color_modes:
+      - color_temp
+      - hs
+      effect: 'off'
+      color_mode: color_temp
+      brightness: 255
+      color_temp_kelvin: 3778
+      color_temp: 264
+      hs_color:
+      - 26.939
+      - 39.046
+      rgb_color:
+      - 255
+      - 200
+      - 155
+      xy_color:
+      - 0.434
+      - 0.369
+      friendly_name: ensuite_lightstrip_tplink_alpha
+      supported_features: 36
+      state: 'on'
+    light.ensuite_main_alpha:
+      min_color_temp_kelvin: 2000
+      max_color_temp_kelvin: 6500
+      min_mireds: 153
+      max_mireds: 500
+      supported_color_modes:
+      - color_temp
+      - hs
+      color_mode: hs
+      brightness: 255
+      color_temp_kelvin:
+      color_temp:
+      hs_color:
+      - 302
+      - 87.1
+      rgb_color:
+      - 255
+      - 33
+      - 248
+      xy_color:
+      - 0.393
+      - 0.163
+      friendly_name: ensuite_main_alpha
+      supported_features: 0
+      state: 'on'
+  icon: mdi:toilet
+  metadata: {}
+- id: '1755228694636'
+  name: Bedroom chill
+  entities:
+    light.bedroom_accent_alpha:
+      min_color_temp_kelvin: 2200
+      max_color_temp_kelvin: 6500
+      min_mireds: 153
+      max_mireds: 454
+      effect_list:
+      - Alarm
+      - Bedtime
+      - Candlelight
+      - Christmas
+      - Cozy
+      - Cool white
+      - Daylight
+      - Diwali
+      - Deep dive
+      - Fall
+      - Fireplace
+      - Forest
+      - Focus
+      - Golden white
+      - Halloween
+      - Jungle
+      - Mojito
+      - Night light
+      - Ocean
+      - Party
+      - Pulse
+      - Pastel colors
+      - Plantgrowth
+      - Romance
+      - Relax
+      - Sunset
+      - Spring
+      - Summer
+      - Steampunk
+      - True colors
+      - TV time
+      - White
+      - Wake-up
+      - Warm white
+      - Rhythm
+      supported_color_modes:
+      - color_temp
+      - rgbw
+      effect: Romance
+      color_mode: color_temp
+      brightness: 71
+      color_temp_kelvin: 2700
+      color_temp: 370
+      hs_color:
+      - 28.395
+      - 65.723
+      rgb_color:
+      - 255
+      - 167
+      - 87
+      xy_color:
+      - 0.525
+      - 0.388
+      rgbw_color:
+      friendly_name: bedroom_accent_alpha
+      supported_features: 4
+      state: 'on'
+    light.bedroom_entrance_alpha:
+      min_color_temp_kelvin: 2200
+      max_color_temp_kelvin: 6500
+      min_mireds: 153
+      max_mireds: 454
+      effect_list:
+      - Alarm
+      - Bedtime
+      - Candlelight
+      - Christmas
+      - Cozy
+      - Cool white
+      - Daylight
+      - Diwali
+      - Deep dive
+      - Fall
+      - Fireplace
+      - Forest
+      - Focus
+      - Golden white
+      - Halloween
+      - Jungle
+      - Mojito
+      - Night light
+      - Ocean
+      - Party
+      - Pulse
+      - Pastel colors
+      - Plantgrowth
+      - Romance
+      - Relax
+      - Sunset
+      - Spring
+      - Summer
+      - Steampunk
+      - True colors
+      - TV time
+      - White
+      - Wake-up
+      - Warm white
+      - Rhythm
+      supported_color_modes:
+      - color_temp
+      - rgbw
+      effect:
+      color_mode: rgbw
+      brightness: 26
+      color_temp_kelvin:
+      color_temp:
+      hs_color:
+      - 342.353
+      - 40
+      rgb_color:
+      - 255
+      - 153
+      - 183
+      xy_color:
+      - 0.439
+      - 0.289
+      rgbw_color:
+      - 255
+      - 153
+      - 183
+      - 0
+      friendly_name: bedroom_entrance_alpha
+      supported_features: 4
+      state: 'on'
+    light.bedroom_hifi_accent_alpha:
+      min_color_temp_kelvin: 2200
+      max_color_temp_kelvin: 6500
+      min_mireds: 153
+      max_mireds: 454
+      effect_list:
+      - Alarm
+      - Bedtime
+      - Candlelight
+      - Christmas
+      - Cozy
+      - Cool white
+      - Daylight
+      - Diwali
+      - Deep dive
+      - Fall
+      - Fireplace
+      - Forest
+      - Focus
+      - Golden white
+      - Halloween
+      - Jungle
+      - Mojito
+      - Night light
+      - Ocean
+      - Party
+      - Pulse
+      - Pastel colors
+      - Plantgrowth
+      - Romance
+      - Relax
+      - Sunset
+      - Spring
+      - Summer
+      - Steampunk
+      - True colors
+      - TV time
+      - White
+      - Wake-up
+      - Warm white
+      - Rhythm
+      supported_color_modes:
+      - color_temp
+      - rgbw
+      effect:
+      color_mode: rgbw
+      brightness: 224
+      color_temp_kelvin:
+      color_temp:
+      hs_color:
+      - 282.824
+      - 100
+      rgb_color:
+      - 182
+      - 0
+      - 255
+      xy_color:
+      - 0.288
+      - 0.11
+      rgbw_color:
+      - 182
+      - 0
+      - 255
+      - 0
+      friendly_name: bedroom_hifi_accent_alpha
+      supported_features: 4
+      state: 'on'
+    light.bedroom_desk_corner_omega:
+      min_color_temp_kelvin: 2200
+      max_color_temp_kelvin: 6500
+      min_mireds: 153
+      max_mireds: 454
+      effect_list:
+      - Alarm
+      - Bedtime
+      - Candlelight
+      - Christmas
+      - Cozy
+      - Cool white
+      - Daylight
+      - Diwali
+      - Deep dive
+      - Fall
+      - Fireplace
+      - Forest
+      - Focus
+      - Golden white
+      - Halloween
+      - Jungle
+      - Mojito
+      - Night light
+      - Ocean
+      - Party
+      - Pulse
+      - Pastel colors
+      - Plantgrowth
+      - Romance
+      - Relax
+      - Sunset
+      - Spring
+      - Summer
+      - Steampunk
+      - True colors
+      - TV time
+      - White
+      - Wake-up
+      - Warm white
+      - Rhythm
+      supported_color_modes:
+      - color_temp
+      - rgbw
+      effect: Romance
+      color_mode: color_temp
+      brightness: 71
+      color_temp_kelvin: 2700
+      color_temp: 370
+      hs_color:
+      - 28.395
+      - 65.723
+      rgb_color:
+      - 255
+      - 167
+      - 87
+      xy_color:
+      - 0.525
+      - 0.388
+      rgbw_color:
+      friendly_name: bedroom_desk_corner_omega
+      supported_features: 4
+      state: 'on'
+    light.bedroom_desk_alpha:
+      min_color_temp_kelvin: 2200
+      max_color_temp_kelvin: 6500
+      min_mireds: 153
+      max_mireds: 454
+      effect_list:
+      - Alarm
+      - Bedtime
+      - Candlelight
+      - Christmas
+      - Cozy
+      - Cool white
+      - Daylight
+      - Diwali
+      - Deep dive
+      - Fall
+      - Fireplace
+      - Forest
+      - Focus
+      - Golden white
+      - Halloween
+      - Jungle
+      - Mojito
+      - Night light
+      - Ocean
+      - Party
+      - Pulse
+      - Pastel colors
+      - Plantgrowth
+      - Romance
+      - Relax
+      - Sunset
+      - Spring
+      - Summer
+      - Steampunk
+      - True colors
+      - TV time
+      - White
+      - Wake-up
+      - Warm white
+      - Rhythm
+      supported_color_modes:
+      - color_temp
+      - rgbw
+      effect: Fireplace
+      color_mode: rgbw
+      brightness: 26
+      color_temp_kelvin:
+      color_temp:
+      hs_color:
+      - 357.025
+      - 94.902
+      rgb_color:
+      - 255
+      - 13
+      - 25
+      xy_color:
+      - 0.692
+      - 0.298
+      rgbw_color:
+      - 255
+      - 13
+      - 25
+      - 0
+      friendly_name: bedroom_desk_alpha
+      supported_features: 4
+      state: 'on'
+    light.bedroom_mirror_lightstrip_alpha:
+      min_color_temp_kelvin: 2700
+      max_color_temp_kelvin: 5000
+      min_mireds: 200
+      max_mireds: 370
+      effect_list:
+      - Alarm
+      - Bedtime
+      - Candlelight
+      - Christmas
+      - Cozy
+      - Cool white
+      - Daylight
+      - Diwali
+      - Deep dive
+      - Fall
+      - Fireplace
+      - Forest
+      - Focus
+      - Golden white
+      - Halloween
+      - Jungle
+      - Mojito
+      - Night light
+      - Ocean
+      - Party
+      - Pulse
+      - Pastel colors
+      - Plantgrowth
+      - Romance
+      - Relax
+      - Sunset
+      - Spring
+      - Summer
+      - Steampunk
+      - True colors
+      - TV time
+      - White
+      - Wake-up
+      - Warm white
+      - Rhythm
+      supported_color_modes:
+      - color_temp
+      - rgbww
+      effect: Deep dive
+      color_mode: color_temp
+      brightness: 79
+      color_temp_kelvin: 2700
+      color_temp: 370
+      hs_color:
+      - 28.395
+      - 65.723
+      rgb_color:
+      - 255
+      - 167
+      - 87
+      xy_color:
+      - 0.525
+      - 0.388
+      rgbww_color:
+      friendly_name: bedroom_mirror_lightstrip_alpha
+      supported_features: 4
+      state: 'on'
+    light.bedroom_desk_lightstrip_alpha:
+      min_color_temp_kelvin: 2700
+      max_color_temp_kelvin: 5000
+      min_mireds: 200
+      max_mireds: 370
+      effect_list:
+      - Alarm
+      - Bedtime
+      - Candlelight
+      - Christmas
+      - Cozy
+      - Cool white
+      - Daylight
+      - Diwali
+      - Deep dive
+      - Fall
+      - Fireplace
+      - Forest
+      - Focus
+      - Golden white
+      - Halloween
+      - Jungle
+      - Mojito
+      - Night light
+      - Ocean
+      - Party
+      - Pulse
+      - Pastel colors
+      - Plantgrowth
+      - Romance
+      - Relax
+      - Sunset
+      - Spring
+      - Summer
+      - Steampunk
+      - True colors
+      - TV time
+      - White
+      - Wake-up
+      - Warm white
+      - Rhythm
+      supported_color_modes:
+      - color_temp
+      - rgbww
+      effect:
+      color_mode: rgbww
+      brightness: 26
+      color_temp_kelvin:
+      color_temp:
+      hs_color:
+      - 326.087
+      - 99.216
+      rgb_color:
+      - 255
+      - 2
+      - 145
+      xy_color:
+      - 0.552
+      - 0.231
+      rgbww_color:
+      - 255
+      - 2
+      - 145
+      - 0
+      - 0
+      friendly_name: bedroom_desk_lightstrip_alpha
+      supported_features: 4
+      state: 'on'
+    light.bedroom_nightstand_left_alpha:
+      min_color_temp_kelvin: 2200
+      max_color_temp_kelvin: 6500
+      min_mireds: 153
+      max_mireds: 454
+      effect_list:
+      - Alarm
+      - Bedtime
+      - Candlelight
+      - Christmas
+      - Cozy
+      - Cool white
+      - Daylight
+      - Diwali
+      - Deep dive
+      - Fall
+      - Fireplace
+      - Forest
+      - Focus
+      - Golden white
+      - Halloween
+      - Jungle
+      - Mojito
+      - Night light
+      - Ocean
+      - Party
+      - Pulse
+      - Pastel colors
+      - Plantgrowth
+      - Romance
+      - Relax
+      - Sunset
+      - Spring
+      - Summer
+      - Steampunk
+      - True colors
+      - TV time
+      - White
+      - Wake-up
+      - Warm white
+      - Rhythm
+      supported_color_modes:
+      - color_temp
+      - rgbw
+      effect:
+      color_mode: rgbw
+      brightness: 48
+      color_temp_kelvin:
+      color_temp:
+      hs_color:
+      - 273.025
+      - 93.333
+      rgb_color:
+      - 148
+      - 17
+      - 255
+      xy_color:
+      - 0.243
+      - 0.091
+      rgbw_color:
+      - 148
+      - 17
+      - 255
+      - 0
+      friendly_name: bedroom_nightstand_left_alpha
+      supported_features: 4
+      state: 'on'
+    light.bedroom_main_alpha:
+      min_color_temp_kelvin: 2200
+      max_color_temp_kelvin: 6500
+      min_mireds: 153
+      max_mireds: 454
+      effect_list:
+      - Alarm
+      - Bedtime
+      - Candlelight
+      - Christmas
+      - Cozy
+      - Cool white
+      - Daylight
+      - Diwali
+      - Deep dive
+      - Fall
+      - Fireplace
+      - Forest
+      - Focus
+      - Golden white
+      - Halloween
+      - Jungle
+      - Mojito
+      - Night light
+      - Ocean
+      - Party
+      - Pulse
+      - Pastel colors
+      - Plantgrowth
+      - Romance
+      - Relax
+      - Sunset
+      - Spring
+      - Summer
+      - Steampunk
+      - True colors
+      - TV time
+      - White
+      - Wake-up
+      - Warm white
+      - Rhythm
+      supported_color_modes:
+      - color_temp
+      - rgbw
+      effect: Deep dive
+      color_mode: rgbw
+      brightness: 26
+      color_temp_kelvin:
+      color_temp:
+      hs_color:
+      - 237.961
+      - 80.784
+      rgb_color:
+      - 49
+      - 56
+      - 255
+      xy_color:
+      - 0.15
+      - 0.066
+      rgbw_color:
+      - 33
+      - 40
+      - 255
+      - 20
+      friendly_name: bedroom_main_alpha
+      supported_features: 4
+      state: 'on'
+    light.bedroom_desk_wall_alpha:
+      min_color_temp_kelvin: 2200
+      max_color_temp_kelvin: 6500
+      min_mireds: 153
+      max_mireds: 454
+      effect_list:
+      - Alarm
+      - Bedtime
+      - Candlelight
+      - Christmas
+      - Cozy
+      - Cool white
+      - Daylight
+      - Diwali
+      - Deep dive
+      - Fall
+      - Fireplace
+      - Forest
+      - Focus
+      - Golden white
+      - Halloween
+      - Jungle
+      - Mojito
+      - Night light
+      - Ocean
+      - Party
+      - Pulse
+      - Pastel colors
+      - Plantgrowth
+      - Romance
+      - Relax
+      - Sunset
+      - Spring
+      - Summer
+      - Steampunk
+      - True colors
+      - TV time
+      - White
+      - Wake-up
+      - Warm white
+      - Rhythm
+      supported_color_modes:
+      - color_temp
+      - rgbw
+      effect: Romance
+      color_mode: rgbw
+      brightness: 26
+      color_temp_kelvin:
+      color_temp:
+      hs_color:
+      - 353.86
+      - 84.314
+      rgb_color:
+      - 255
+      - 40
+      - 62
+      xy_color:
+      - 0.659
+      - 0.293
+      rgbw_color:
+      - 255
+      - 40
+      - 62
+      - 0
+      friendly_name: bedroom_desk_wall_alpha
+      supported_features: 4
+      state: 'on'
+    light.bedroom_wall_alpha:
+      min_color_temp_kelvin: 2200
+      max_color_temp_kelvin: 6500
+      min_mireds: 153
+      max_mireds: 454
+      effect_list:
+      - Alarm
+      - Bedtime
+      - Candlelight
+      - Christmas
+      - Cozy
+      - Cool white
+      - Daylight
+      - Diwali
+      - Deep dive
+      - Fall
+      - Fireplace
+      - Forest
+      - Focus
+      - Golden white
+      - Halloween
+      - Jungle
+      - Mojito
+      - Night light
+      - Ocean
+      - Party
+      - Pulse
+      - Pastel colors
+      - Plantgrowth
+      - Romance
+      - Relax
+      - Sunset
+      - Spring
+      - Summer
+      - Steampunk
+      - True colors
+      - TV time
+      - White
+      - Wake-up
+      - Warm white
+      - Rhythm
+      supported_color_modes:
+      - color_temp
+      - rgbw
+      effect: Ocean
+      color_mode: rgbw
+      brightness: 26
+      color_temp_kelvin:
+      color_temp:
+      hs_color:
+      - 236.857
+      - 82.353
+      rgb_color:
+      - 45
+      - 56
+      - 255
+      xy_color:
+      - 0.148
+      - 0.065
+      rgbw_color:
+      - 45
+      - 56
+      - 255
+      - 0
+      friendly_name: bedroom_wall_alpha
+      supported_features: 4
+      state: 'on'
+  icon: mdi:lightbulb-night
+  metadata: {}

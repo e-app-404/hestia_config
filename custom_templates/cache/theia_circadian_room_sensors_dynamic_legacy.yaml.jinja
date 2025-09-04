@@ -1,0 +1,22 @@
+- sensor:
+  {% import 'template.library.jinja' as macros with context %}
+  {%- for area_id, room_data in circadian_rooms.items() %}
+  {%- if room_data.configuration and room_data.configuration.lighting and 'circadian' in room_data.configuration.lighting %}
+  {%- set default_brightness = 60 %}
+  {%- set default_temp = 3500 %}
+  {%- if area_id == 'kitchen' %}
+  {%- set default_brightness = 70 %}
+  {%- set default_temp = 3700 %}
+  {%- elif area_id == 'living_room' %}
+  {%- set default_brightness = 65 %}
+  {%- set default_temp = 3600 %}
+  {%- elif area_id in ['hallway_downstairs', 'hallway_upstairs', 'downstairs'] %}
+  {%- set default_brightness = 50 %}
+  {%- set default_temp = 3000 %}
+  {%- endif %}
+  {{ macros.circadian_brightness(area_id, default_brightness) }}
+  {{ macros.lighting_from_circadian(area_id, 'brightness') }}
+  {{ macros.circadian_color_temp(area_id, default_temp) }}
+  {{ macros.lighting_from_circadian(area_id, 'temp') }}
+  {%- endif %}
+  {%- endfor %}
