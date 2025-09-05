@@ -3,128 +3,133 @@
 # ⟫⟫ Dependencies: /config/.ps4-games.BC60A7454CD9_10e7.json, script.matrix_control
 #══════════════════════════════════════════════════════════════════════════════
 
-# ══  SENSOR: parse titles from the PS4 JSON file ══
+# ── Sensor: parse titles from the PS4 JSON file via python script ──
 command_line:
-  sensor:
-    name: "PS4 – Recent Games"
-    unique_id: "ps4_recent_games_titles"
-    scan_interval: 300
-    command_timeout: 10
-    command: >-
-      python3 /config/python_scripts/ps4_recent_games.py
-      /config/.ps4-games.BC60A7454CD9_10e7.json 4
+  - sensor:
+      name: "PS4 Recent Games"
+      unique_id: ps4_recent_games
+      scan_interval: 300
+      command_timeout: 10
+      command: >-
+        python3 /config/python_scripts/ps4_recent_games.py
+        /config/.ps4-games.BC60A7454CD9_10e7.json 4
       value_template: >-
-        "{{ value_json.first.title if value_json.first is not none and 'title' in value_json.first else 'No games' }}"
-    json_attributes:
-      - count
-      - first
-      - games
-      - titles
-      - images
+        {{ value_json.first.title
+           if value_json is mapping and value_json.first is mapping and 'title' in value_json.first
+           else 'No games' }}
+      json_attributes:
+        - count
+        - first
+        - games
+        - titles
+        - images
 
-# ══  TEMPLATES ══
+# ── Template entities (images + buttons), with shared refresh triggers ──
 template:
   - trigger:
+      # Update when the recent list changes…
       - platform: state
         entity_id: sensor.ps4_recent_games
-      # optional periodic refresh
+      # …and give it a periodic bump just in case
       - platform: time_pattern
         minutes: "/30"
-  - image:
+    # --- Cover art images (fallback to a local placeholder) ---
+    image:
       - name: "PS4 – Recent #1 Art"
         unique_id: ps4_recent_art_1
         url: >-
-          {% set games = state_attr('sensor.ps4_recent_games','games') | default([], true) %}
-            "{{ games[0]['image'] if games|count > 0 and games[0] is mapping and 'image' in games[0] and games[0]['image'] else '/media/ps-placeholder.png' }}"
+          {% set games = state_attr('sensor.ps4_recent_games','games') or [] %}
+          {{ games[0]['image'] if games|count > 0 and games[0] is mapping and 'image' in games[0] and games[0]['image'] else '/media/ps-placeholder.png' }}
 
       - name: "PS4 – Recent #2 Art"
         unique_id: ps4_recent_art_2
         url: >-
-          {% set games = state_attr('sensor.ps4_recent_games','games') | default([], true) %}
-            "{{ games[1]['image'] if games|count > 1 and games[1] is mapping and 'image' in games[1] and games[1]['image'] else '/media/ps-placeholder.png' }}"
+          {% set games = state_attr('sensor.ps4_recent_games','games') or [] %}
+          {{ games[1]['image'] if games|count > 1 and games[1] is mapping and 'image' in games[1] and games[1]['image'] else '/media/ps-placeholder.png' }}
 
       - name: "PS4 – Recent #3 Art"
         unique_id: ps4_recent_art_3
         url: >-
-          {% set games = state_attr('sensor.ps4_recent_games','games') | default([], true) %}
-          {{ games[2]['image'] if games|count > 2 and games[2]['image'] else '/media/ps-placeholder.png' }}
+          {% set games = state_attr('sensor.ps4_recent_games','games') or [] %}
+          {{ games[2]['image'] if games|count > 2 and games[2] is mapping and 'image' in games[2] and games[2]['image'] else '/media/ps-placeholder.png' }}
 
       - name: "PS4 – Recent #4 Art"
         unique_id: ps4_recent_art_4
         url: >-
-          {% set games = state_attr('sensor.ps4_recent_games','games') | default([], true) %}
-          {{ games[3]['image'] if games|count > 3 and games[3]['image'] else '/media/ps-placeholder.png' }}
+          {% set games = state_attr('sensor.ps4_recent_games','games') or [] %}
+          {{ games[3]['image'] if games|count > 3 and games[3] is mapping and 'image' in games[3] and games[3]['image'] else '/media/ps-placeholder.png' }}
 
-  - button:
-      # --- Slot 1 ---
+    # --- One-tap “recent game” selection buttons ---
+    button:
+      # Slot 1
       - name: >-
-          {% set g = state_attr('sensor.ps4_recent_games','games') | default([], true) %}
-              "{{ g[0]['title'] if g|count > 0 and g[0] is mapping and 'title' in g[0] else 'PS4 – Slot 1' }}"
+          {% set g = state_attr('sensor.ps4_recent_games','games') or [] %}
+          {{ g[0]['title'] if g|count > 0 and g[0] is mapping and 'title' in g[0] else 'PS4 – Slot 1' }}
         unique_id: ps4_btn_recent_1
         icon: mdi:sony-playstation
         press:
           - variables:
-              g: "{{ state_attr('sensor.ps4_recent_games','games') | default([], true) }}"
+              g: "{{ state_attr('sensor.ps4_recent_games','games') or [] }}"
           - condition: template
-            value_template: "{{ (g | count) > 0 and g[0] is mapping }}"
+            value_template: "{{ g|count > 0 and g[0] is mapping }}"
           - variables:
               sel: "{{ g[0] }}"
           - service: script.ps4_on_game_selected
             data:
               game: "{{ sel }}"
 
-      # --- Slot 2 ---
+      # Slot 2
       - name: >-
-          {% set g = state_attr('sensor.ps4_recent_games','games') | default([], true) %}
-              "{{ g[1]['title'] if g|count > 1 and g[1] is mapping and 'title' in g[1] else 'PS4 – Slot 2' }}"
+          {% set g = state_attr('sensor.ps4_recent_games','games') or [] %}
+          {{ g[1]['title'] if g|count > 1 and g[1] is mapping and 'title' in g[1] else 'PS4 – Slot 2' }}
         unique_id: ps4_btn_recent_2
         icon: mdi:sony-playstation
         press:
           - variables:
-              g: "{{ state_attr('sensor.ps4_recent_games','games') | default([], true) }}"
+              g: "{{ state_attr('sensor.ps4_recent_games','games') or [] }}"
           - condition: template
-            value_template: "{{ (g | count) > 1 and g[1] is mapping }}"
+            value_template: "{{ g|count > 1 and g[1] is mapping }}"
           - variables:
               sel: "{{ g[1] }}"
           - service: script.ps4_on_game_selected
             data:
               game: "{{ sel }}"
 
-      # --- Slot 3 ---
+      # Slot 3
       - name: >-
-          {% set g = state_attr('sensor.ps4_recent_games','games') | default([], true) %}
-          {{ g[2]['title'] if g|count > 2 and g[2] is mapping else 'PS4 – Slot 3' }}
+          {% set g = state_attr('sensor.ps4_recent_games','games') or [] %}
+          {{ g[2]['title'] if g|count > 2 and g[2] is mapping and 'title' in g[2] else 'PS4 – Slot 3' }}
         unique_id: ps4_btn_recent_3
         icon: mdi:sony-playstation
         press:
           - variables:
-              g: "{{ state_attr('sensor.ps4_recent_games','games') | default([], true) }}"
+              g: "{{ state_attr('sensor.ps4_recent_games','games') or [] }}"
           - condition: template
-            value_template: "{{ (g | count) > 2 and g[2] is mapping }}"
+            value_template: "{{ g|count > 2 and g[2] is mapping }}"
           - variables:
               sel: "{{ g[2] }}"
           - service: script.ps4_on_game_selected
             data:
               game: "{{ sel }}"
 
-      # --- Slot 4 ---
+      # Slot 4
       - name: >-
-          {% set g = state_attr('sensor.ps4_recent_games','games') | default([], true) %}
-          {{ g[3]['title'] if g|count > 3 and g[3] is mapping else 'PS4 – Slot 4' }}
+          {% set g = state_attr('sensor.ps4_recent_games','games') or [] %}
+          {{ g[3]['title'] if g|count > 3 and g[3] is mapping and 'title' in g[3] else 'PS4 – Slot 4' }}
         unique_id: ps4_btn_recent_4
         icon: mdi:sony-playstation
         press:
           - variables:
-              g: "{{ state_attr('sensor.ps4_recent_games','games') | default([], true) }}"
+              g: "{{ state_attr('sensor.ps4_recent_games','games') or [] }}"
           - condition: template
-            value_template: "{{ (g | count) > 3 and g[3] is mapping }}"
+            value_template: "{{ g|count > 3 and g[3] is mapping }}"
           - variables:
               sel: "{{ g[3] }}"
           - service: script.ps4_on_game_selected
             data:
               game: "{{ sel }}"
 
-# ══  SCRIPTS ══
+# ── Scripts ──
 script:
   ps4_prepare_av:
     alias: "PS4 – Prepare AV (A2/B2)"
@@ -132,32 +137,27 @@ script:
     sequence:
       - action: script.matrix_control
         data:
-          source: "Playstation 4" # maps to "2" ⇒ A2+B2
-          turn_on_tv: true # power on TV before switching
-          repeats: 1 # IR reliability (tweak if needed)
+          source: "Playstation 4" # maps to your A3+B3 routing in matrix_control
+          turn_on_tv: true
+          repeats: 1
 
-  # One-tap: route to PS4, wake console, and hint selected game
   ps4_route_and_wake:
     alias: "PS4 – Route & Wake"
+    mode: single
     fields:
       game:
         description: "Optional game title to display in the hint"
         example: "STAR WARS Jedi: Survivor™"
     sequence:
-      # Route A+B to PS4 with your preferred overrides
       - action: script.matrix_control
         data:
           source: "Playstation 4"
           remote: remote.bedroom_broadlink_rm3_alpha
           device: bedroom_hdmi_matrix
           tv: media_player.bedroom_tv_alpha
-
-      # Wake the console
       - action: media_player.turn_on
         target:
           entity_id: media_player.playstation_4
-
-      # Helpful toast
       - action: persistent_notification.create
         data:
           title: "PS4 Ready"
@@ -169,23 +169,24 @@ script:
             Select **{{ t }}** on the console.
             {% endif %}
 
-  # Glue: when a game is chosen (e.g., from your buttons), route/wake with title
   ps4_on_game_selected:
     alias: "PS4 – On game selected"
     mode: queued
     fields:
       game:
-        description: "Game object with title/image/id (optional)"
+        description: "Game object with title/image/id (dict) or plain title (string)"
     sequence:
       - variables:
-          title: "{{ game.title if game is mapping else (game if game is string else '') }}"
+          title: >-
+            {% if game is mapping %}{{ game.title | default('') }}
+            {% elif game is string %}{{ game }}
+            {% else %}{% endif %}
       - action: script.ps4_route_and_wake
         data:
           game: "{{ title }}"
 
-# ══  AUTOMATIONS ══
+# ── Automations ──
 automation:
-  # Keep the select helper in sync with the sensor
   - alias: "PS4: Update game picker"
     id: 3e1f2a4b-5c6d-7e8f-9a0b-112233445567
     mode: single
@@ -197,9 +198,8 @@ automation:
         target:
           entity_id: input_select.ps4_recent_game
         data:
-          options: "{{ state_attr('sensor.ps4_recent_games', 'titles') or [] }}"
+          options: "{{ state_attr('sensor.ps4_recent_games', 'titles') or ['— none —'] }}"
 
-  # Route HDMI to PS4 whenever PS activity is detected
   - alias: "PS4: Route HDMI on activity"
     id: 0c9b8c7d-6e5f-4a3b-2c1d-ffeeddccbbaa
     mode: restart
@@ -214,7 +214,6 @@ automation:
     action:
       - service: script.ps4_prepare_av
 
-  # Refresh the HA sensor when the PS4 JSON file changes
   - alias: "PS4 – Refresh on file change"
     id: 8b7c6d5e-4f3a-2b1c-0d9e-998877665544
     trigger:

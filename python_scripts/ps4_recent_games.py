@@ -1,73 +1,158 @@
 #!/usr/bin/env python3
-import json, sys, os, pathlib
+# ps4_recent_games.py
+# Usage:
+#   python3 /config/python_scripts/ps4_recent_games.py /config/.ps4-games.BC60A7454CD9_10e7.json 4
+#
+# Emits JSON to stdout:
+#   {
+#     "count": <int>,
+#     "first": {"title": <str>, "image": <str>},
+#     "games": [{"title": <str>, "image": <str>}, ...],
+#     "titles": [<str>, ...],
+#     "images": [<str>, ...]
+#   }
 
-def die(msg, code=2):
-    print(msg, file=sys.stderr)
-    sys.exit(code)
+import json
+import sys
+from datetime import datetime
 
-if len(sys.argv) != 3:
-    die("Usage: ps4_recent_games.py <json_path> <limit>")
+PLACEHOLDER = "/media/ps-placeholder.png"
 
-json_path = sys.argv[1]
-limit = None
-try:
-    limit = int(sys.argv[2])
-except (ValueError, IndexError):
-    die("limit must be an integer")
-if limit is None:
-    die("limit argument is missing")
+def _coerce_str(v):
+    if v is None:
+        return ""
+    return str(v)
 
-if not os.path.exists(json_path):
-    # Not found → still return valid JSON so HA doesn't choke
-    print(json.dumps({
-        "count": 0, "first": None, "games": [],
-        "titles": [], "images": {}
-    }))
-    sys.exit(0)
+def _best_title(d):
+    # Try a few likely keys / structures
+    for k in ("title", "name", "titleName"):
+        if isinstance(d.get(k), str) and d[k].strip():
+            return d[k].strip()
+    # Nested variants
+    if isinstance(d.get("game"), dict):
+        for k in ("title", "name"):
+            v = d["game"].get(k)
+            if isinstance(v, str) and v.strip():
+                return v.strip()
+    return ""
 
-with open(json_path, "r", encoding="utf-8") as f:
-    data = json.load(f)
+def _best_image(d):
+    # Common keys
+    for k in ("image", "imageUrl", "cover", "coverUrl", "cover_url"):
+        v = d.get(k)
+        if isinstance(v, str) and v.strip():
+            return v.strip()
+    # Some payloads store images in arrays/objects
+    imgs = d.get("images")
+    if isinstance(imgs, list) and imgs:
+        # pick the first string-like URL
+        for v in imgs:
+            if isinstance(v, str) and v.strip():
+                return v.strip()
+            if isinstance(v, dict):
+                for key in ("url", "href", "image", "src"):
+                    vv = v.get(key)
+                    if isinstance(vv, str) and vv.strip():
+                        return vv.strip()
+    return ""
 
-# Try to normalize unknown structures
-# Accept either a list of games or an object with a list under a common key.
-if isinstance(data, dict):
-    games = list(data.values())
-elif isinstance(data, list):
-    games = data
-else:
-    games = []
-
-# Helper to pull a title & image from a game dict with different field names
-def get_title(g):
-    for k in ("title", "name", "titleName", "npTitle", "title_name"):
-        if isinstance(g, dict) and k in g and g[k]:
-            return str(g[k])
+def _best_timestamp(d):
+    # Return sortable timestamp (ISO8601 → datetime) where possible
+    # Many exports have "lastPlayed" or "last_played" or "updatedAt"
+    for k in ("lastPlayed", "last_played", "updatedAt", "last_used", "lastLaunch"):
+        v = d.get(k)
+        if isinstance(v, str) and v:
+            try:
+                return datetime.fromisoformat(v.replace("Z", "+00:00"))
+            except Exception:
+                pass
+    # Sometimes numeric epoch seconds
+    for k in ("lastPlayedTs", "last_played_ts", "updated_at_ts"):
+        v = d.get(k)
+        if isinstance(v, (int, float)):
+            try:
+                return datetime.fromtimestamp(v)
+            except Exception:
+                pass
     return None
 
-def get_image(g):
-    # common keys; adjust if your JSON uses different fields
-    for k in ("image", "icon", "cover", "thumbnail", "img"):
-        if isinstance(g, dict) and k in g and g[k]:
-            return g[k]
-    return None
+def normalize_items(raw):
+    """Return list of dicts: {'title': str, 'image': str, '_ts': datetime|None}"""
+    items = []
+    if isinstance(raw, dict):
+        # Common top-level wrappers
+        for key in ("games", "recent", "items", "data"):
+            if isinstance(raw.get(key), list):
+                raw = raw[key]
+                break
+        else:
+            # If it's a dict but not a list wrapper, bail to empty
+            raw = []
+    if not isinstance(raw, list):
+        raw = []
 
-# Slice and build outputs
-games_out = games[:limit]
-titles = [t for t in (get_title(g) for g in games_out) if t]
-images = {get_title(g): get_image(g) for g in games_out if get_title(g)}
+    for entry in raw:
+        if not isinstance(entry, dict):
+            continue
+        title = _best_title(entry)
+        image = _best_image(entry)
+        ts = _best_timestamp(entry)
+        if not title and not image:
+            # Try nested 'game' object as a last resort
+            g = entry.get("game")
+            if isinstance(g, dict):
+                title = title or _best_title(g)
+                image = image or _best_image(g)
+                ts = ts or _best_timestamp(g)
+        items.append({"title": _coerce_str(title), "image": _coerce_str(image), "_ts": ts})
+    return items
 
-first_game = games_out[0] if games_out else None
-if isinstance(first_game, dict) and "title" not in first_game:
-    t = get_title(first_game)
-    if t is not None:
-        # add a "title" field so your template works
-        first_game = {**first_game, "title": t}
+def sort_items(items):
+    # Sort by timestamp desc if available, else preserve order
+    with_ts = [x for x in items if x["_ts"] is not None]
+    without_ts = [x for x in items if x["_ts"] is None]
+    with_ts.sort(key=lambda x: x["_ts"], reverse=True)
+    return with_ts + without_ts
 
-out = {
-    "count": len(games),
-    "first": first_game,
-    "games": games_out,
-    "titles": titles,
-    "images": images
-}
-print(json.dumps(out, ensure_ascii=False))
+def main():
+    # Args
+    try:
+        path = sys.argv[1]
+    except IndexError:
+        print(json.dumps({"count": 0, "first": None, "games": [], "titles": [], "images": []}))
+        return
+    try:
+        limit = int(sys.argv[2]) if len(sys.argv) > 2 else 4
+    except Exception:
+        limit = 4
+
+    # Load file safely
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+    except Exception:
+        print(json.dumps({"count": 0, "first": None, "games": [], "titles": [], "images": []}))
+        return
+
+    items = normalize_items(data)
+    items = sort_items(items)
+    items = items[: max(0, limit)]
+
+    # Prepare output
+    out_games = []
+    for it in items:
+        title = it["title"] or "Unknown"
+        image = it["image"] or PLACEHOLDER
+        out_games.append({"title": title, "image": image})
+
+    out = {
+        "count": len(out_games),
+        "first": (out_games[0] if out_games else None),
+        "games": out_games,
+        "titles": [g["title"] for g in out_games],
+        "images": [g["image"] for g in out_games],
+    }
+    print(json.dumps(out, ensure_ascii=False))
+
+if __name__ == "__main__":
+    main()

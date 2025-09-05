@@ -6,10 +6,5 @@
 # ⟫⟫ https://www.home-assistant.io/integrations/shell_command/
 # ═════════════════════════════════════════════════════════════════════════════
 
-#shell_command:
-#  git_push_config: "/config/domain/shell_commands/git_push_logger.sh"
 shell_command:
-  git_push_config: >-
-    git -C /config
-    -c core.sshCommand='ssh -F /config/.ssh/config'
-    push dsm-git main
+  git_push_config: "git -C /config push dsm-git main"

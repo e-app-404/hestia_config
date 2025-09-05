@@ -1,144 +1,204 @@
 # ══════════════════════════════════════════════════════════════════════════════
-# ▶ DIAGNOSTIC STUB: Git Push Logging Pipeline ◀
-#
+# ▶ OPS DOC: HA → DSM Git Push Pipeline (Current & Troubleshooting) ◀
 # ══════════════════════════════════════════════════════════════════════════════
-git_push_logger_pipeline:
-  description: |
-    Validates execution of Home Assistant → DSM Git push and timestamp update pipeline.
-    Covers shell_command execution, SSH connectivity, Git sync success, and propagation
-    of sync telemetry to log, input_datetime, and command_line sensors.
+git_push_pipeline:
+  version: 2025-09-05
+  overview: |
+    Home Assistant's /config Git repo pushes to a **bare** repository on DSM:
+      • Local repo (HA container): /config
+      • Remote bare repo (DSM):    /volume1/HA_MIRROR
+      • Git remote (name):         dsm-git
+      • SSH host alias:            dsm-git-host  (defined in /config/.ssh/config)
+      • Default branch:            main  (remote may still contain legacy 'master', unused)
 
-    The pipeline is now fully adapted for a bare Git repository on DSM. All command_line
-    sensors use bare-repo-safe commands (`for-each-ref`, `show`), and the push logger script
-    logs remote commit hash and message after each push. SSH is key-based and non-interactive.
-    A secondary debug key (`id_dsm_debug`) has been deployed to support unrestricted remote
-    diagnostics and cleanup. All telemetry is exposed via sensors and JSON logs for UI
-    and diagnostics.
+    HA enforces the SSH config via:
+      git -C /config config core.sshCommand "ssh -F /config/.ssh/config"
+
+    Telemetry (helpers/sensors) verifies parity (local HEAD vs remote main) and exposes
+    push status in the UI. The push action itself is executed by a shell_command.
 
   components:
-    automation:
-      - entity_id: automation.auto_git_push_on_config_save
-      - path: "/config/domain/automations/system_git_push.yaml"
-
-    script:
-      - shell_command: "shell_command.git_push_config"
-      - path: "/config/domain/shell_commands/git_push_logger.sh"
+    shell_command:
+      id: shell_command.git_push_config
+      call: |
+        git -C /config \
+          -c core.sshCommand='ssh -F /config/.ssh/config' \
+          push dsm-git main
+      notes: |
+        • You can omit the -c override if /config already has core.sshCommand set:
+            git -C /config config --get core.sshCommand
+            → ssh -F /config/.ssh/config
+        • The remote URL stored under 'dsm-git' should be:
+            dsm-git-host:/volume1/HA_MIRROR
 
     ssh:
-      - config_path: /config/.ssh/config
-      - private_key: /config/.ssh/id_rsa
-      - debug_key: /root/.ssh/id_dsm_debug
-      - known_hosts: /config/.ssh/known_hosts
-      - core_sshCommand: "ssh -F /config/.ssh/config"
-      - remote_alias: dsm-git-host
-      - destination: babylonrobot@100.93.61.53
-      - repo_path: /volume1/HA_MIRROR
-      - repo_type: bare
-      - default_ref: refs/heads/main
+      config_path: /config/.ssh/config # HA container
+      host_alias: dsm-git-host
+      user: babylonrobot
+      host: 100.93.61.53
+      private_key: /config/.ssh/id_rsa
+      known_hosts: /config/.ssh/known_hosts
+      # The optional debug key was removed; keep config free of id_dsm_debug references.
 
-    input_datetime:
-      - entity_id: input_datetime.git_last_push_timestamp
+    git:
+      local_repo: /config
+      remote_name: dsm-git
+      remote_url: dsm-git-host:/volume1/HA_MIRROR
+      remote_type: bare
+      default_ref: refs/heads/main
+      ensure_remote_head_points_to_main: |
+        ssh -F /config/.ssh/config dsm-git-host \
+          "git --git-dir=/volume1/HA_MIRROR symbolic-ref HEAD refs/heads/main"
 
-    log:
-      - path: "/config/hestia/diagnostics/logs/git_sync_push_events.json"
-
-    template_sensor:
-      - entity_id: sensor.last_git_config_push
-      - path: "/config/domain/templates/system_git_push.yaml"
-
-    command_line_sensors:
-      - binary_sensor.git_repo_synced_with_dsm
-      - binary_sensor.dsm_git_latest_commit_message
-      - sensor.dsm_git_repo_latest_commit
-      - sensor.local_git_repo_commit_hash
-      - path: "/config/packages/integrations/command_line.yaml"
+    telemetry:
+      input_datetime:
+        - input_datetime.git_last_push_timestamp
+      template_sensor:
+        - sensor.last_git_config_push
+      command_line_sensors:
+        # parity: on when local==remote
+        - binary_sensor.git_repo_synced_with_dsm
+        # latest remote message (non-empty)
+        - binary_sensor.dsm_git_latest_commit_message
+        # remote/local commit hashes
+        - sensor.dsm_git_repo_latest_commit
+        - sensor.local_git_repo_commit_hash
 
   success_criteria:
-    - SSH connection to DSM resolves using key-based auth (no password prompt)
-    - Git push to remote 'dsm-git' succeeds or returns "Everything up-to-date"
-    - JSON log event is written to /config/hestia/diagnostics/logs/git_sync_push_events.json
-    - input_datetime.git_last_push_timestamp is updated to current ISO8601 time
-    - sensor.last_git_config_push reflects the correct updated timestamp
-    - binary_sensor.git_repo_synced_with_dsm is `on`
-    - sensor.dsm_git_repo_latest_commit matches local HEAD
-    - binary_sensor.dsm_git_latest_commit_message is not empty
-    - Remote commit hash and message are logged after each push for traceability
-    - All command_line sensors use bare-repo-safe git commands
-    - refs/heads/main is canonical (DSM repo migrated from `master`)
-    - Debug SSH key works unrestricted for manual maintenance
-    - Local repo uses core.sshCommand to force the custom SSH config
-    - Remote URL for `dsm-git` uses the host alias and bare-repo path
+    - SSH auth uses key (no password prompt) to dsm-git-host.
+    - git -C /config push dsm-git main returns: |
+        success or "Everything up-to-date".
+    - input_datetime.git_last_push_timestamp updates on successful push.
+    - sensor.last_git_config_push reflects that timestamp.
+    - binary_sensor.git_repo_synced_with_dsm == 'on'.
+    - sensor.dsm_git_repo_latest_commit == local HEAD (short hash ok).
+    - command_line sensors do NOT fail with 128; they return values.
 
-  test_result:
-    status: ✅ success
-    timestamp: 2025-08-09T20:01:14+01:00
-    log_event_written: true
-    git_push_result: "main -> main"
-    ssh_attempts: 1
-    remote_commit_hash_logged: true
-    remote_commit_message_logged: true
-    stderr_trace: |
-      [git_push_logger] Using core.sshCommand: ssh -F /config/.ssh/config
-      [git_push_logger] Checking SSH access to dsm-git-host...
-      [git_push_logger] ✅ SSH connection to dsm-git-host succeeded (publickey)
-      [git_push_logger] Verifying remote path: /volume1/HA_MIRROR (bare)
-      [git_push_logger] Attempting git push (branch=main)...
-      main -> main
-      [git_push_logger] ✅ Git push succeeded. Logging event...
-      [git_push_logger] ✅ Completed successfully.
-      [git_push_logger] ✅ Remote repo updated (refs/heads/main).
-      [git_push_logger] 📦 Commit: <hash>
-      [git_push_logger] 📝 Message: <message>
+  sanity_checks:
+    # Run inside HA container
+    - name: Verify Git uses HA SSH config
+      cmd: git -C /config config --get core.sshCommand
+      expect: ssh -F /config/.ssh/config
+    - name: Remote visible & main exists
+      cmd: git -C /config ls-remote dsm-git -h refs/heads/main
+    - name: Remote main (bare-repo-safe)
+      cmd: ssh -F /config/.ssh/config dsm-git-host "git --git-dir=/volume1/HA_MIRROR for-each-ref --format='%(objectname:short)' refs/heads/main"
+    - name: Local HEAD (short)
+      cmd: git -C /config rev-parse --short HEAD
 
-  notes: |
-    The pipeline is fully operational and hardened for a bare Git repo on DSM.
-    Additional unrestricted key (`id_dsm_debug`) is active for debugging purposes.
-    All telemetry sensors use `refs/heads/main`.
-    Push script timeout lowered to 20s for dev cycles.
-    `command=` restrictions on prior keys were bypassing shell commands — resolved via
-    dedicated key injection without `command=` bindings.
-    Further security tuning should relocate the debug key to secrets.yaml if retained.
-    During bulk ops, gate auto-push via input_boolean.diagnostics_enabled=off to avoid race conditions.
+  common_errors:
+    - id: password_prompt
+      symptom: SSH asks for password from HA or Mac.
+      fixes: |
+        • Ensure the public key for the calling host is in DSM: ~/.ssh/authorized_keys
+        • Permissions (DSM):
+            chmod 700 ~/.ssh
+            chmod 600 ~/.ssh/authorized_keys
+        • Ensure /config/.ssh/config (HA) and ~/.ssh/config (Mac) point to correct key:
+            Host dsm-git-host
+              HostName 100.93.61.53
+              User babylonrobot
+              IdentityFile /config/.ssh/id_rsa    # HA container path
+              IdentitiesOnly yes
+        • Remove malformed/duplicate authorized_keys lines (no “ssh-rsaAAAAB” without space).
+        • Confirm host key in known_hosts. First connection should add it with 'accept-new'.
 
-# What changed & what it touches
-# ──────────────────────────────
-# ---
-# Git Push Logger Pipeline Integration
-#
-# What changed & what it touches:
-# - SSH/Git wiring: remote alias is now dsm-git-host (custom ssh config)
-# - Repo path locked to bare repo: /volume1/HA_MIRROR
-# - Enforces core.sshCommand: "ssh -F /config/.ssh/config" for all git calls
-# - Canonical ref: refs/heads/main (no more master)
-#
-# Shell + automation:
-# - shell_command.git_push_config should call:
-#     git -C /config -c core.sshCommand='ssh -F /config/.ssh/config' push dsm-git main
-#   or rely on repo-local core.sshCommand
-# - Keep automation.auto_git_push_on_config_save gated with input_boolean.diagnostics_enabled: off during heavy ops
-#
-# Sensors & stored values:
-# - input_datetime.git_last_push_timestamp: stores last push ISO time (no schema change)
-# - sensor.last_git_config_push: reads timestamp, now reflects pushes to dsm-git-host
-# - Command-line sensors must use bare-repo-safe commands:
-#     # Remote latest commit hash:
-#     git --git-dir=/volume1/HA_MIRROR for-each-ref --format='%(objectname:short)' refs/heads/main
-#     # Remote latest commit message:
-#     git --git-dir=/volume1/HA_MIRROR show -s --format=%s refs/heads/main
-#     # Local HEAD:
-#     git -C /config rev-parse --short HEAD
-# - JSON log /config/hestia/diagnostics/logs/git_sync_push_events.json logs against dsm-git-host + refs/heads/main
-#
-# Home Assistant config elements:
-# - .ssh/config is the single source of truth for host alias, key, known_hosts
-# - Optionally add repo_path var to shell script:
-#     REPO_PATH=/volume1/HA_MIRROR
-#     git --git-dir="$REPO_PATH" for-each-ref ...
-#
-# Sanity checks:
-# - Remote ref via HA container:
-#     git -C /config -c core.sshCommand='ssh -F /config/.ssh/config' ls-remote ssh://dsm-git-host:/volume1/HA_MIRROR refs/heads/main
-# - Local ↔ remote parity sensors:
-#     ssh -F /config/.ssh/config dsm-git-host "git --git-dir=/volume1/HA_MIRROR for-each-ref --format='%(objectname:short)' refs/heads/main"
-#     git -C /config rev-parse --short HEAD
-# ---
+    - id: rejected_fetch_first
+      symptom: |
+        git push →  ! [rejected] main -> main (fetch first)
+      cause: Remote has commits you don’t have locally.
+      fixes: |
+        # Fetch latest remote refs, rebase your local work on top
+        git -C /config fetch dsm-git --prune
+        git -C /config pull --rebase --autostash dsm-git main
+        # (Optional) Protect current remote main with a backup tag
+        bash -lc '
+        REMOTE_SHA=$(git -C /config rev-parse dsm-git/main)
+        TAG=backup_remote_main_$(date +%Y%m%d_%H%M%S)
+        git -C /config tag -a "$TAG" -m "Backup of remote main" "$REMOTE_SHA"
+        git -C /config push dsm-git "refs/tags/$TAG:refs/tags/$TAG"
+        '
+        # Push again
+        git -C /config push dsm-git HEAD:refs/heads/main
+
+    - id: protocol_error_uploadpack_receivepack
+      symptom: |
+        fatal: protocol error: expected old/new/ref, got 'want <sha> side-band-64k ...'
+      cause: Mis-typed push refspec or invoking the wrong Git service path.
+      fixes: |
+        • Push using the **remote name** and explicit ref:
+            git -C /config push dsm-git HEAD:refs/heads/main
+        • Ensure remote URL is exactly: dsm-git-host:/volume1/HA_MIRROR
+        • Do not use raw ssh:// URL with git-upload-pack/receive-pack paths.
+
+    - id: zsh_colon_refspec
+      symptom: Refspec commands with ${VAR}:refs/... fail or expand oddly.
+      cause: zsh parameter expansion around ':'.
+      fixes: |
+        • Run those lines via bash:
+            bash -lc 'git -C /config push dsm-git "${SHA}:refs/tags/${TAG}"'
+        • Or create a local tag first, then push 'refs/tags/$TAG:refs/tags/$TAG'.
+
+    - id: exit_128_command_line_sensors
+      symptom: Command line sensors show return code 128.
+      causes: |
+        • core.sshCommand not set (Git can’t read /config/.ssh/config)
+        • Remote alias/URL mismatch
+        • SSH cannot resolve host or key permissions wrong
+      fixes: |
+        # Ensure Git uses HA SSH config
+        git -C /config config core.sshCommand "ssh -F /config/.ssh/config"
+        # Verify remote & connectivity
+        git -C /config ls-remote dsm-git -h refs/heads/main
+        ssh -F /config/.ssh/config dsm-git-host true
+
+    - id: remote_head_wrong
+      symptom: Remote defaults to 'master' instead of 'main'.
+      fixes: |
+        ssh -F /config/.ssh/config dsm-git-host \
+          "git --git-dir=/volume1/HA_MIRROR symbolic-ref HEAD refs/heads/main"
+        # (optional) Keep or delete the old 'master' branch later.
+
+  playbooks:
+    # Minimal smoke test from HA container
+    - name: smoke_test
+      steps: |
+        git -C /config config --get core.sshCommand
+        git -C /config ls-remote dsm-git -h refs/heads/main
+        ssh -F /config/.ssh/config dsm-git-host "git --git-dir=/volume1/HA_MIRROR for-each-ref --format='%(objectname:short)' refs/heads/main"
+        git -C /config rev-parse --short HEAD
+        git -C /config push dsm-git HEAD:refs/heads/main
+
+    # One-time backup-tag + push (safe in zsh by tagging first)
+    - name: backup_tag_and_push
+      steps: |
+        REMOTE_SHA=$(git -C /config rev-parse dsm-git/main)
+        TAG=backup_remote_main_$(date +%Y%m%d_%H%M%S)
+        git -C /config tag -a "$TAG" -m "Backup of remote main" "$REMOTE_SHA"
+        git -C /config push dsm-git "refs/tags/$TAG:refs/tags/$TAG"
+        git -C /config push dsm-git HEAD:refs/heads/main
+
+  housekeeping:
+    recommended_cruft_cleanup: |
+      • Remove references to non-existent debug key from configs:
+          /config/.ssh/config  → no id_dsm_debug lines
+      • Ensure only one remote is used (dsm-git). If others exist, align or remove.
+      • Keep legacy 'master' on the server for history; do not point HEAD at it.
+      • Use bare-repo-safe commands in sensors:
+          git --git-dir=/volume1/HA_MIRROR for-each-ref ...
+          git --git-dir=/volume1/HA_MIRROR show -s --format=%s refs/heads/main
+
+  appendix:
+    canonical_commands:
+      check_remote_main: >
+        git -C /config ls-remote dsm-git -h refs/heads/main
+      check_remote_main_bare_safe: >
+        ssh -F /config/.ssh/config dsm-git-host
+        "git --git-dir=/volume1/HA_MIRROR for-each-ref --format='%(objectname:short)'
+         refs/heads/main"
+      check_local_head: >
+        git -C /config rev-parse --short HEAD
+      push_main: >
+        git -C /config push dsm-git HEAD:refs/heads/main
+      set_core_sshcommand: >
+        git -C /config config core.sshCommand "ssh -F /config/.ssh/config"

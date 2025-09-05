@@ -164,7 +164,7 @@ template:
         state: >
           {% set last = states('sensor.bedroom_last_activity') %}
           {% if last not in ['unknown','unavailable','',none] %}
-            {{ ((now() - (last | as_datetime)).total_seconds() / 60) | round(0) }}
+            {{ ((now() - (last | as_datetime | as_local)).total_seconds() / 60) | round(0) }}
           {% else %}
             99999
           {% endif %}
@@ -214,7 +214,7 @@ template:
         state: >
           {% set last = states('sensor.kitchen_last_activity') %}
           {% if last not in ['unknown','unavailable','',none] %}
-            {{ ((now() - (last | as_datetime)).total_seconds() / 60) | round(0) }}
+            {{ ((now() - (last | as_datetime | as_local)).total_seconds() / 60) | round(0) }}
           {% else %}
             99999
           {% endif %}
@@ -264,7 +264,7 @@ template:
         state: >
           {% set last = states('sensor.living_room_last_activity') %}
           {% if last not in ['unknown','unavailable','',none] %}
-            {{ ((now() - (last | as_datetime)).total_seconds() / 60) | round(0) }}
+            {{ ((now() - (last | as_datetime | as_local)).total_seconds() / 60) | round(0) }}
           {% else %}
             99999
           {% endif %}
@@ -314,7 +314,7 @@ template:
         state: >
           {% set last = states('sensor.ensuite_last_activity') %}
           {% if last not in ['unknown','unavailable','',none] %}
-            {{ ((now() - (last | as_datetime)).total_seconds() / 60) | round(0) }}
+            {{ ((now() - (last | as_datetime | as_local)).total_seconds() / 60) | round(0) }}
           {% else %}
             99999
           {% endif %}
@@ -364,7 +364,7 @@ template:
         state: >
           {% set last = states('sensor.hallway_downstairs_last_activity') %}
           {% if last not in ['unknown','unavailable','',none] %}
-            {{ ((now() - (last | as_datetime)).total_seconds() / 60) | round(0) }}
+            {{ ((now() - (last | as_datetime | as_local)).total_seconds() / 60) | round(0) }}
           {% else %}
             99999
           {% endif %}
@@ -414,7 +414,7 @@ template:
         state: >
           {% set last = states('sensor.hallway_upstairs_last_activity') %}
           {% if last not in ['unknown','unavailable','',none] %}
-            {{ ((now() - (last | as_datetime)).total_seconds() / 60) | round(0) }}
+            {{ ((now() - (last | as_datetime | as_local)).total_seconds() / 60) | round(0) }}
           {% else %}
             99999
           {% endif %}
@@ -464,7 +464,7 @@ template:
         state: >
           {% set last = states('sensor.entrance_last_activity') %}
           {% if last not in ['unknown','unavailable','',none] %}
-            {{ ((now() - (last | as_datetime)).total_seconds() / 60) | round(0) }}
+            {{ ((now() - (last | as_datetime | as_local)).total_seconds() / 60) | round(0) }}
           {% else %}
             99999
           {% endif %}
@@ -514,7 +514,7 @@ template:
         state: >
           {% set last = states('sensor.zone_downstairs_last_activity') %}
           {% if last not in ['unknown','unavailable','',none] %}
-            {{ ((now() - (last | as_datetime)).total_seconds() / 60) | round(0) }}
+            {{ ((now() - (last | as_datetime | as_local)).total_seconds() / 60) | round(0) }}
           {% else %}
             99999
           {% endif %}
@@ -564,7 +564,7 @@ template:
         state: >
           {% set last = states('sensor.zone_upstairs_last_activity') %}
           {% if last not in ['unknown','unavailable','',none] %}
-            {{ ((now() - (last | as_datetime)).total_seconds() / 60) | round(0) }}
+            {{ ((now() - (last | as_datetime | as_local)).total_seconds() / 60) | round(0) }}
           {% else %}
             99999
           {% endif %}
@@ -614,7 +614,7 @@ template:
         state: >
           {% set last = states('sensor.zone_home_last_activity') %}
           {% if last not in ['unknown','unavailable','',none] %}
-            {{ ((now() - (last | as_datetime)).total_seconds() / 60) | round(0) }}
+            {{ ((now() - (last | as_datetime | as_local)).total_seconds() / 60) | round(0) }}
           {% else %}
             99999
           {% endif %}

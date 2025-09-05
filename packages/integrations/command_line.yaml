@@ -11,9 +11,21 @@ command_line:
       device_class: connectivity
       command: >-
         bash -lc '
-        REMOTE=$(ssh -F /config/.ssh/config dsm-git-host "git --git-dir=/volume1/HA_MIRROR for-each-ref --format=%(objectname:short) refs/heads/main");
-        LOCAL=$(git -C /config rev-parse --short HEAD);
-        if [ "$REMOTE" = "$LOCAL" ]; then echo "on"; else echo "off"; fi
+          set -eo pipefail
+          REMOTE=$(ssh -F /config/.ssh/config dsm-git-host "git --git-dir=/volume1/HA_MIRROR for-each-ref --format=%(objectname:short) refs/heads/main" 2>/dev/null || true);
+          LOCAL=$(git -C /config rev-parse --short HEAD 2>/dev/null || true);
+          if [ -n "$REMOTE" ] && [ -n "$LOCAL" ] && [ "$REMOTE" = "$LOCAL" ]; then echo on; else echo off; fi
+        '
+      scan_interval: 120
+      command_timeout: 20
+
+  - sensor:
+      name: "DSM Git Repo Latest Commit"
+      unique_id: cli_dsm_git_commit_hash_alpha
+      command: >-
+        bash -lc '
+          set -eo pipefail
+          ssh -F /config/.ssh/config dsm-git-host "git --git-dir=/volume1/HA_MIRROR for-each-ref --format=%(objectname:short) refs/heads/main" 2>/dev/null || echo unknown
         '
       scan_interval: 120
       command_timeout: 20
@@ -22,22 +34,20 @@ command_line:
       name: "DSM Git Latest Commit Message"
       unique_id: cli_dsm_git_commit_message_alpha
       command: >-
-        ssh -F /config/.ssh/config dsm-git-host "git --git-dir=/volume1/HA_MIRROR show -s --format=%s refs/heads/main"
+        bash -lc '
+          set -eo pipefail
+          ssh -F /config/.ssh/config dsm-git-host "git --git-dir=/volume1/HA_MIRROR show -s --format=%s refs/heads/main" 2>/dev/null || echo unknown
+        '
       scan_interval: 600
-      command_timeout: 20
-
-  - sensor:
-      name: "DSM Git Repo Latest Commit"
-      unique_id: cli_dsm_git_commit_hash_alpha
-      command: >-
-        ssh -F /config/.ssh/config dsm-git-host "git --git-dir=/volume1/HA_MIRROR for-each-ref --format=%(objectname:short) refs/heads/main"
-      scan_interval: 120
       command_timeout: 20
 
   - sensor:
       name: "Local Git Repo Commit Hash"
       unique_id: cli_local_git_commit_hash_alpha
-      command: >
-        git -C /config rev-parse --short HEAD
+      command: >-
+        bash -lc '
+          set -eo pipefail
+          git -C /config rev-parse --short HEAD 2>/dev/null || echo unknown
+        '
       scan_interval: 120
       command_timeout: 20
