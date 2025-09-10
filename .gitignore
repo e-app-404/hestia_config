@@ -196,8 +196,8 @@ home-assistant_v2.db*
 deps/
 
 # Optional: ignore entire hestia cache/work areas if they exist
-hestia/**/cache/**
-hestia/**/work/**
+hestia/cache/**
+hestia/vault/**
 # -------------------------------------------------------
 # --- Strategos HA cleanup (2025-09-04) --------------------------------
 
@@ -253,3 +253,8 @@ domain/shell_commands/**/*.sh
 
 # ----------------------------------------------------------------------
 reports/**
+/.strategos/
+/.git.DISABLED/
+/.git.DISABLED.bak*/
+/hestia/core/meta/.git.BAD*/
+/.vscode
