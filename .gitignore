@@ -258,3 +258,4 @@ reports/**
 /.git.DISABLED.bak*/
 /hestia/core/meta/.git.BAD*/
 /.vscode
+/.trash/
