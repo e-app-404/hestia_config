@@ -1,8 +1,11 @@
 {
   "folders": [
-    { "path": "." },
-    { "path": "/Volumes/share" },
-    { "path": "/Users/evertappels/.ssh" }
+    {
+      "path": "/n/ha"
+    },
+    {
+      "path": "/Users/evertappels/.ssh"
+    }
   ],
   "settings": {
     "git.enabled": false

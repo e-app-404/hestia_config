@@ -1,19 +1,17 @@
-#!/bin/bash
-set -e
-REPO="/n/ha"
 
-# Fail if any tracked file contains /Volumes/HA or /Volumes/ha
-if git -C "$REPO" ls-files &>/dev/null; then
-  if git -C "$REPO" grep -qE '/Volumes/(HA|ha)'; then
-    echo "ERROR: Tracked file contains forbidden path /Volumes/HA or /Volumes/ha"
-    exit 1
-  fi
-fi
+#!/usr/bin/env bash
+set -Eeuo pipefail
+REPO="/n/ha"; cd "$REPO"
 
-# Fail if configuration.yaml is missing
-if [ ! -f "$REPO/configuration.yaml" ]; then
-  echo "ERROR: $REPO/configuration.yaml missing"
+[ -f configuration.yaml ] || { echo "BLOCKED: missing configuration.yaml at $REPO"; exit 1; }
+
+# Fail on forbidden volume paths within config/code text files only
+if git grep -nI -E '/Volumes/(HA|ha)' -- \
+  ':!hestia/core/architecture/**' ':!hestia/vault/**' ':!hestia/work/**' \
+  '*.sh' '*.py' '*.md' '*.yaml' '*.yml' '*.json' '*.ini' '*.conf' '*.env' '*.code-workspace' '*.txt' >/dev/null; then
+  echo "BLOCKED: forbidden /Volumes/(HA|ha) path in tracked config/code."
+  echo "Remedy: neutralize to /n/ha or $HESTIA_CONFIG and re-run."
   exit 1
 fi
 
-exit 0
+echo "OK: workspace paths neutral"

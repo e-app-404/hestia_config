@@ -2,24 +2,6 @@
 
 # 1. Binary Sensors — HTTP-based reachability
 # 2. IP display sensor (for debugging)
-command_line:
-  binary_sensor:
-    name: Tailscale Funnel Reachability
-    unique_id: cli_tailscale_funnel_reachability_alpha
-    device_class: connectivity
-    command: >-
-      curl -4 -s -o /dev/null -w '%{http_code}'
-      https://homeassistant.reverse-beta.ts.net
-    payload_on: "200"
-    payload_off: "000"
-    scan_interval: 300
-
-  sensor:
-    name: "Tailscale IP (Home Assistant)"
-    unique_id: "tailscale_ip_ha_alpha"
-    command: "hostname -i"
-    value_template: "{{ value }}"
-    scan_interval: 300
 
 # 3. Template sensor — abstracts external reachability
 template:
@@ -40,7 +22,7 @@ template:
           data_quality: "derived"
           module: "tailscale"
           role: "normalized_state"
-          source_entities: >
+          upstream_sources: >
             {{ 'binary_sensor.tailscale_funnel_reachability' | tojson }}
           description: "Normalized reachability status inferred from Tailscale funnel probe"
 

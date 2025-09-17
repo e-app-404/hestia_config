@@ -1,0 +1,60 @@
+{
+  "folders": [
+    {
+      "path": "."
+    }
+  ],
+  "settings": {
+    "files.associations": {
+      "*.yaml": "yaml",
+      "*.yml": "yaml",
+      "*.j2": "jinja"
+    },
+    "yaml.schemaStore.enable": true,
+    "yaml.schemaStore.url": "https://www.schemastore.org/api/json/catalog.json",
+    "yaml.validate": true,
+    "yaml.format.enable": true,
+    "yaml.customTags": [
+      "!include",
+      "!include_dir_merge_named",
+      "!include_dir_merge_list",
+      "!include_dir_list",
+      "!include_dir_named",
+      "!secret",
+      "!env_var"
+    ],
+    "yaml.schemas": {
+      "https://www.schemastore.org/yamllint.json": "file:///Volumes/HA/config/hestia/meta/architecture/metadata.yaml"
+    },
+    "makefile.configureOnOpen": false
+  },
+  "launch": {
+    "configurations": [],
+    "compounds": []
+  },
+  "extensions": {
+    "recommendations": [
+      "redhat.vscode-yaml",
+      "keesschollaart.vscode-home-assistant",
+      "esbenp.prettier-vscode",
+      "ms-python.python",
+      "ms-python.vscode-pylance",
+      "ms-vscode.vscode-typescript-tslint-plugin",
+      "ms-vscode.vscode-typescript-next"
+    ]
+  },
+  "yaml.schemas": {
+    "https://json.schemastore.org/home-assistant.json": [
+      "configuration.yaml",
+      "**/automations.yaml",
+      "**/scripts.yaml",
+      "**/scenes.yaml",
+      "**/blueprints/**/*.yaml",
+      "**/domain/templates/**/*.yaml",
+      "**/entities/**/*.yaml"
+    ],
+    "https://json.schemastore.org/github-workflow.json": [
+      ".github/workflows/*.yaml"
+    ]
+  }
+}

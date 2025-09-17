@@ -12,7 +12,7 @@
 #    - binary_sensor.bedroom_occupancy_alpha_occupancy
 #    - binary_sensor.bedroom_wardrobe_motion_tplink_alpha
 #    - binary_sensor.ensuite_occupancy_omega_occupancy
-#    - binary_sensor.downstairs_occupancy_matter_alpha_occupancy
+#    - binary_sensor.downstairs_occupancy_alpha_matter
 #    - binary_sensor.downstairs_presence_alpha_motion
 #    - binary_sensor.upstairs_occupancy_matter_alpha_occupancy
 #    - binary_sensor.upstairs_presence_alpha_motion

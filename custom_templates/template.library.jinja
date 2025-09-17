@@ -12,14 +12,16 @@
   {% set ids = ordered | map(attribute='entity') | list %}
   {% set ents = expand(ids) %}
   {% set result = namespace(state='off') %}
+  {% set found = false %}
   {% for item in ordered %}
     {% set e = ents | selectattr('entity_id','equalto', item.entity) | first %}
     {% if e and e.state not in ['unavailable','unknown','none'] and e.state == 'on' %}
       {% set result.state = 'on' %}
+      {% set found = true %}
       {% break %}
     {% endif %}
   {% endfor %}
-  {{ result.state }}
+  {{ result.state if found else 'off' }}
 {% endmacro %}
 
 {# Phase 3 Enhancement: Error-Tolerant Active Source Detection #}
@@ -27,13 +29,21 @@
   {% set ordered = sources | sort(attribute='preference') %}
   {% set ids = ordered | map(attribute='entity') | list %}
   {% set ents = expand(ids) %}
-  {% for item in ordered %}
-    {% set e = ents | selectattr('entity_id','equalto', item.entity) | first %}
-    {% if e and e.state not in ['unavailable','unknown','none'] and e.state == 'on' %}
-      {{ item.entity }}
-      {% break %}
-    {% endif %}
-  {% endfor %}
+  {% set found = false %}
+  {% set active_entity = none %}
+  {% if ordered | length == 0 %}
+    {{ 'unknown' }} {# PATCH: Fallback for empty list #}
+  {% else %}
+    {% for item in ordered %}
+      {% set e = ents | selectattr('entity_id','equalto', item.entity) | first %}
+      {% if e and e.state not in ['unavailable','unknown','none'] and e.state == 'on' %}
+        {% set active_entity = item.entity %}
+        {% set found = true %}
+        {% break %}
+      {% endif %}
+    {% endfor %}
+    {{ active_entity if found else 'unknown' }} {# PATCH: Fallback for no active entity #}
+  {% endif %}
 {% endmacro %}
 
 {# Phase 3 Enhancement: Context-Aware Timeout Calculation #}

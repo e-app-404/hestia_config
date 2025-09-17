@@ -24,66 +24,42 @@ script:
         name: Key
         description: "Unique key (e.g., ha_startup, fridge_left_open)"
         required: true
-        selector:
-          text:
-            multiline: false
+        selector: { text: { multiline: false } }
       message:
         name: Message
         description: "What to say"
         required: true
-        selector:
-          text:
-            multiline: true
+        selector: { text: { multiline: true } }
       media_player:
         name: Media player
         description: "Media player to play on"
         required: true
-        selector:
-          entity:
-            domain: media_player
+        selector: { entity: { domain: media_player } }
       tts_entity:
         name: TTS engine
         description: "TTS entity to use"
         required: true
-        selector:
-          entity:
-            domain: tts
+        selector: { entity: { domain: tts } }
       volume:
         name: Volume
         description: "Volume level (0..1)"
         default: 0.5
-        selector:
-          number:
-            min: 0
-            max: 1
-            step: 0.05
-            mode: slider
+        selector: { number: { min: 0, max: 1, step: 0.05, mode: slider } }
       language:
         name: Language
         description: "TTS language code (e.g., en, en-ca)"
         default: en
-        selector:
-          text:
-            multiline: false
+        selector: { text: { multiline: false } }
       cooldown_sec:
         name: Cooldown (seconds)
         description: "Within this window, repeats are limited"
         default: 1800
-        selector:
-          number:
-            min: 0
-            max: 86400
-            step: 10
-            mode: slider
+        selector: { number: { min: 0, max: 86400, step: 10, mode: slider } }
       max_repeats:
         name: Max repeats inside cooldown
         description: "Extra repeats allowed within the cooldown window"
         default: 1
-        selector:
-          number:
-            min: 0
-            max: 10
-            step: 1
+        selector: { number: { min: 0, max: 10, step: 1 } }
     sequence:
       - variables:
           reg_src: "{{ state_attr('var.tts_guard','registry') | default('{}', true) }}"
@@ -100,12 +76,16 @@ script:
       - choose:
           - conditions: "{{ allow }}"
             sequence:
-              - action: tts.speak
+              - service: media_player.volume_set
+                target:
+                  entity_id: "{{ media_player }}"
+                data:
+                  volume_level: "{{ volume }}"
+              - service: tts.speak
                 target:
                   entity_id: "{{ tts_entity }}"
                 data:
                   cache: true
-                  volume_level: "{{ volume }}"
                   media_player_entity_id: "{{ media_player }}"
                   message: "{{ message }}"
                   language: "{{ language }}"
@@ -114,7 +94,7 @@ script:
                     {% set r = reg.copy() %}
                     {% set _ = r.update({ key_str: {'last_ts': now_ts, 'count': new_count } }) %}
                     {{ r }}
-              - action: var.set
+              - service: var.set
                 data:
                   entity_id: var.tts_guard
                   attributes:

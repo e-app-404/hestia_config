@@ -1,77 +1,56 @@
 {
-    "folders": [
-        {
-            "path": "."
-        },
-        {
-            "path": "/Users/evertappels/.ssh"
-        }
-    ],
-    "settings": {
-        // --- Editor hygiene ---
-        "editor.detectIndentation": false,
-        "editor.formatOnSave": true,
-        "makefile.configureOnOpen": false,
-        // --- Git: default ON (repo is clean now). Use the alt workspace below to run with Git OFF when desired.
-        "git.enabled": true,
-        // --- Explorer noise filters (UI only; Git is already ignoring runtime) ---
-        "files.exclude": {
-            "**/__pycache__": true,
-            "**/*.pyc": true,
-            "**/*.db": true,
-            "**/.storage": true,
-            "**/deps/**": true,
-            "**/vault/**": true,
-            "**/www/**": true,
-            "**/tts/**": true
-        },
-        // --- YAML & Home Assistant niceties ---
-        "files.associations": {
-            "*.yaml": "yaml",
-            "*.yml": "yaml",
-            "*.j2": "jinja",
-            "*.jinja": "jinja"
-        },
-        "yaml.schemaStore.enable": true,
-        "yaml.schemaStore.url": "https://www.schemastore.org/api/json/catalog.json",
-        "yaml.validate": true,
-        "yaml.format.enable": true,
-        "yaml.customTags": [
-            "!include",
-            "!include_dir_merge_named",
-            "!include_dir_merge_list",
-            "!include_dir_list",
-            "!include_dir_named",
-            "!secret",
-            "!env_var",
-            "!secret scalar",
-            "!secretYAML scalar"
-        ],
-        "yaml.schemas": {
-            "https://json.schemastore.org/home-assistant.json": [
-                "configuration.yaml",
-                "**/automations.yaml",
-                "**/scripts.yaml",
-                "**/scenes.yaml",
-                "**/blueprints/**/*.yaml",
-                "**/domain/templates/**/*.yaml",
-                "**/entities/**/*.yaml",
-                "file:///Volumes/config/domain/templates/occupancy_logic.yaml"
-            ],
-            "https://www.schemastore.org/yamllint.json": "file:///Volumes/config/hestia/meta/architecture/metadata.yaml",
-            "https://raw.githubusercontent.com/jelmore1674/build-changelog/refs/tags/v1/schemas/changlelog.json": "file:///Volumes/config/hestia/core/meta/architecture/metadata.yaml"
-        },
-        // --- Extension suggestions (non-blocking) ---
-        "extensions.recommendations": [
-            "redhat.vscode-yaml",
-            "keesschollaart.vscode-home-assistant",
-            "esbenp.prettier-vscode",
-            "ms-python.python",
-            "ms-python.vscode-pylance"
-        ]
+  "folders": [
+    {
+      "path": "/n/ha"
     },
-    "launch": {
-        "configurations": [],
-        "compounds": []
+    {
+      "path": "/Users/evertappels/.ssh"
     }
+  ],
+  "settings": {
+    "git.enabled": true,
+    "git.autorefresh": false,
+    "git.autoRepositoryDetection": "openEditors",
+    "git.countBadge": "off",
+    "git.openRepositoryInParentFolders": "never",
+    "git.repositoryScanIgnoredFolders": [
+      "/n/ha/share",
+      "/Users/evertappels/.ssh",
+      "zigbee2mqtt",
+      "www",
+      "tts",
+      ".storage",
+      "reports",
+      "hestia/diagnostics",
+      "hestia/work",
+      "tmp"
+    ],
+    "gitlens.currentLine.enabled": false,
+    "gitlens.hovers.enabled": false,
+    "gitlens.codeLens.enabled": false,
+    "gitlens.statusBar.enabled": false,
+    "gitlens.views.repositories.enabled": false,
+    "python.defaultInterpreterPath": "/n/ha/.venv/bin/python",
+    "python.venvPath": "/n/ha",
+    "python.terminal.activateEnvironment": true,
+    "ruff.importStrategy": "useBundled",
+    "ruff.configuration": "pyproject.toml",
+    "files.exclude": {
+      "**/__pycache__": true,
+      "***.db": true,
+      "**/.DS_Store": true,
+      "**/.storage.git/objects.git/subtree-cache.storage.git": true,
+      "**/.storage.git": false,
+      "**/.git/**": false,
+      "**/.git": false,
+      "hestia/core/meta/gitdir-visible/**": false
+    },
+    "files.watcherExclude": {
+      "hestia/core/meta/.git/**": true
+    },
+    "search.exclude": {
+      "hestia/core/meta/.git/**": true
+    },
+    "explorer.excludeGitIgnore": false
+  }
 }

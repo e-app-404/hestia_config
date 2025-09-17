@@ -5,6 +5,29 @@
 # ⟫⟫ Tier: σ  •  Domain: diagnostics  •  Created: 2025-07-25
 #═════════════════════════════════════════════════════════════════════════════
 
+# ⟫⟫ ⟫ ⟫⟫ ⟫⟫ ⟫⟫ ⟫⟫ ⟫⟫ ⟫⟫ HELPERS
+
+counter:
+  smartthings_restart_counter:
+    name: "SmartThings Restart Counter"
+    initial: 0
+    step: 1
+
+input_datetime:
+  smartthings_last_restart:
+    name: "SmartThings Last Restart"
+    has_date: true
+    has_time: true
+  smartthings_first_failure_time:
+    name: "SmartThings First Failure Time"
+    has_date: true
+    has_time: true
+
+input_text:
+  smartthings_first_failed_entity:
+    name: "SmartThings First Failed Entity"
+
+
 group:
   smartthings_entities:
     name: "SmartThings Entities"
@@ -71,7 +94,7 @@ template:
           module: "smartthings_failover"
           type: "integration_watchdog"
           role: "monitor"
-          area_id: "virtual_hub"
+          area_id: "virtual"
   - sensor:
       - name: "Time Since SmartThings Last Restart (minutes)"
         unique_id: "smartthings_minutes_since_last_restart"
@@ -95,7 +118,7 @@ template:
           module: "smartthings_failover"
           type: "integration_watchdog"
           role: "monitor"
-          area_id: "virtual_hub"
+          area_id: "virtual"
 
   - sensor:
       - name: "Time Since First SmartThings Failure (minutes)"
@@ -120,7 +143,7 @@ template:
           module: "smartthings_failover"
           type: "integration_watchdog"
           role: "monitor"
-          area_id: "virtual_hub"
+          area_id: "virtual"
   - sensor:
       - name: "SmartThings Failover Status"
         unique_id: "smartthings_failover_summary"
@@ -143,7 +166,7 @@ template:
           module: "smartthings_failover"
           type: "integration_watchdog"
           role: "monitor"
-          area_id: "virtual_hub"
+          area_id: "virtual"
 
   - sensor:
       - name: "SmartThings Entity List"
@@ -157,7 +180,7 @@ template:
           module: "smartthings_failover"
           type: "integration_watchdog"
           role: "monitor"
-          area_id: "virtual_hub"
+          area_id: "virtual"
           created: "2025-08-06"
           last_updated: "2025-08-08T19:10:54.077646+01:00"
 
@@ -236,25 +259,3 @@ automation:
         data:
           entity_id: input_datetime.smartthings_first_failure_time
           timestamp: "{{ now().timestamp() }}"
-
-# ⟫⟫ ⟫ ⟫⟫ ⟫⟫ ⟫⟫ ⟫⟫ ⟫⟫ ⟫⟫ HELPERS
-
-counter:
-  smartthings_restart_counter:
-    name: "SmartThings Restart Counter"
-    initial: 0
-    step: 1
-
-input_datetime:
-  smartthings_last_restart:
-    name: "SmartThings Last Restart"
-    has_date: true
-    has_time: true
-  smartthings_first_failure_time:
-    name: "SmartThings First Failure Time"
-    has_date: true
-    has_time: true
-
-input_text:
-  smartthings_first_failed_entity:
-    name: "SmartThings First Failed Entity"

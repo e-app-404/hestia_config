@@ -4,19 +4,16 @@
 # Schema: notify (list)
 #═══════════════════════════════════════════════════════════════
 
-notify:
-  #════════════════════
-  # Notification group "Evert": Mobile + Mac
-  - platform: group
-    name: "Evert"
-    services:
-      - action: mobile_app_ephone_uk
-      - action: mobile_app_macbook
+- platform: group
+  name: "Evert"
+  services:
+    - action: mobile_app_ephone_uk
+    - action: mobile_app_macbook
 
-  - platform: group
-    name: all_devices
-    services:
-      - action: mobile_app_epad
-      - action: mobile_app_ephone_uk
-      - action: mobile_app_iphone11
-      - action: mobile_app_macbook
+- platform: group
+  name: all_devices
+  services:
+    - action: mobile_app_epad
+    - action: mobile_app_ephone_uk
+    - action: mobile_app_iphone11
+    - action: mobile_app_macbook

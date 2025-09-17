@@ -10,8 +10,10 @@ influxdb:
   database: homeassistant
   username: homeassistant
   password: !secret influxdb_pw
-  max_retries: 3
+  max_retries: 5
   default_measurement: state
+  ssl: false
+  verify_ssl: false
   include:
     domains:
       - sensor
@@ -46,7 +48,7 @@ influxdb:
       - sensor.time*
       - sensor.*_entity_list
       - sensor.*failover_summary
-      - sensor.*_minutes_since_* # usually not worth long-term in Influx
+      - sensor.*_minutes_since_*
 
   ignore_attributes:
     - entities

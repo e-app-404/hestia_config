@@ -85,3 +85,7 @@ devices:
       - undefined: 60
   '0x54ef44100093f78f':
     friendly_name: home_magic_cube_alpha
+  '0xa4c13896b42c43fa':
+    friendly_name: ensuite_motion_alpha
+  '0xa4c138a1a7965ae3':
+    friendly_name: bedroom_bed_alpha

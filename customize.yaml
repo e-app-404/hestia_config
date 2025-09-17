@@ -1,13 +1,9 @@
 # -------------------------------------------------------------------
 # HESTIA - Customizations
-# File: /config/customizations.yaml
+# File: /config/customize.yaml
 # version: "1.0"
 # Loads default set of integrations. Do not remove.
 # -------------------------------------------------------------------
-
-#sensor.omega_room_registry_json_mqtt:
-#  icon: mdi:home-floor-1
-#  friendly_name: "Room Registry"
 
 sensor.bedroom_monstera_soil_alpha_soil_moisture:
   device_class: moisture

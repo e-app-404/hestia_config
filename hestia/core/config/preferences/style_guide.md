@@ -312,7 +312,7 @@ template: |
           Apple TV
         </button>
         <button class="px-3 py-2 rounded-full bg-cyan-500/70 hover:bg-cyan-500 text-white"
-          @click=${() => hass.callAction({action:'perform-action', perform_action:'script.matrix_control', data:{source:'PlayStation 4', remote:'remote.bedroom_broadlink_rm3_alpha', device:'bedroom_hdmi_matrix', tv:'media_player.bedroom_tv_alpha'}})}>
+          @click=${() => hass.callAction({action:'perform-action', perform_action:'script.matrix_control', data:{source:'Playstation 4', remote:'remote.bedroom_broadlink_rm3_alpha', device:'bedroom_hdmi_matrix', tv:'media_player.bedroom_tv_alpha'}})}>
           PS4
         </button>
       </div>

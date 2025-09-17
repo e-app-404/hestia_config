@@ -1,0 +1,187 @@
+---
+# ══════════════════════════════════════════════════════════════════
+# ⟫⟫ NETGEAR GS724T Integration  •  24-port managed switch ◀
+# ⟫⟫ configuration.yaml  •  packages: !include_dir_named integrations
+# ⟫⟫ Tier: sigma  •  Domain: package  •  Created: 2025-09-12
+# ⟫⟫ Home Assistant package for Netgear GS724T v3 (SNMP)
+# ══════════════════════════════════════════════════════════════════
+
+homeassistant:
+  customize_glob:
+    sensor.gs724t_*:
+      icon: mdi:ethernet
+
+sensor:
+  - platform: snmp
+    name: gs724t_sys_name
+    host: !secret snmp_netgear_host
+    community: !secret snmp_netgear_v2c_ro
+    version: "2c"
+    baseoid: 1.3.6.1.2.1.1.5.0 # sysName.0
+    scan_interval: 300
+
+  - platform: snmp
+    name: gs724t_sys_uptime_seconds
+    host: !secret snmp_netgear_host
+    community: !secret snmp_netgear_v2c_ro
+    version: "2c"
+    baseoid: 1.3.6.1.2.1.1.3.0 # sysUpTime.0 (hundredths of a second)
+    value_template: "{{ (value | int(0) / 100) | int }}"
+    unit_of_measurement: "s"
+    scan_interval: 60
+
+  - platform: snmp
+    name: gs724t_if_count
+    host: !secret snmp_netgear_host
+    community: !secret snmp_netgear_v2c_ro
+    version: "2c"
+    baseoid: 1.3.6.1.2.1.2.1.0 # ifNumber.0
+    scan_interval: 600
+
+  # ---- Link status (oper) for selected ports -------------------
+  - platform: snmp
+    name: gs724t_port1_oper_status_raw
+    host: !secret snmp_netgear_host
+    community: !secret snmp_netgear_v2c_ro
+    version: "2c"
+    baseoid: 1.3.6.1.2.1.2.2.1.8.1 # ifOperStatus.1 (1=up,2=down,...)
+    scan_interval: 30
+
+  - platform: snmp
+    name: gs724t_port2_oper_status_raw
+    host: !secret snmp_netgear_host
+    community: !secret snmp_netgear_v2c_ro
+    version: "2c"
+    baseoid: 1.3.6.1.2.1.2.2.1.8.2 # ifOperStatus.2
+    scan_interval: 30
+
+  # ---- 64-bit octet counters for uplink (Port 1) ---------------
+  - platform: snmp
+    name: gs724t_port1_in_octets
+    host: !secret snmp_netgear_host
+    community: !secret snmp_netgear_v2c_ro
+    version: "2c"
+    baseoid: 1.3.6.1.2.1.31.1.1.1.6.1 # ifHCInOctets.1
+    unit_of_measurement: "B"
+    scan_interval: 30
+
+  - platform: snmp
+    name: gs724t_port1_out_octets
+    host: !secret snmp_netgear_host
+    community: !secret snmp_netgear_v2c_ro
+    version: "2c"
+    baseoid: 1.3.6.1.2.1.31.1.1.1.10.1 # ifHCOutOctets.1
+    unit_of_measurement: "B"
+    scan_interval: 30
+
+  # ---- Friendly ifName labels (sanity map) ---------------------
+  - platform: snmp
+    name: gs724t_ifname_1
+    host: !secret snmp_netgear_host
+    community: !secret snmp_netgear_v2c_ro
+    version: "2c"
+    baseoid: 1.3.6.1.2.1.31.1.1.1.1.1 # ifName.1
+    scan_interval: 600
+
+  - platform: snmp
+    name: gs724t_ifname_2
+    host: !secret snmp_netgear_host
+    community: !secret snmp_netgear_v2c_ro
+    version: "2c"
+    baseoid: 1.3.6.1.2.1.31.1.1.1.1.2 # ifName.2
+    scan_interval: 600
+
+  # ---- Derivatives: compute B/s from octets --------------------
+  - platform: derivative
+    name: gs724t_port1_in_Bps
+    source: sensor.gs724t_port1_in_octets
+    unit_time: s
+    time_window: "00:05:00"
+    round: 0
+
+  - platform: derivative
+    name: gs724t_port1_out_Bps
+    source: sensor.gs724t_port1_out_octets
+    unit_time: s
+    time_window: "00:05:00"
+    round: 0
+
+binary_sensor:
+  - platform: template
+    sensors:
+      gs724t_port1_link:
+        friendly_name: "GS724T Port 1 Link"
+        value_template: "{{ states('sensor.gs724t_port1_oper_status_raw') | int(0) == 1 }}"
+        device_class: connectivity
+      gs724t_port2_link:
+        friendly_name: "GS724T Port 2 Link"
+        value_template: "{{ states('sensor.gs724t_port2_oper_status_raw') | int(0) == 1 }}"
+        device_class: connectivity
+
+  - platform: group
+    name: "GS724T Link (any)"
+    device_class: connectivity
+    all: false
+    entities:
+      - binary_sensor.gs724t_port1_link
+      - binary_sensor.gs724t_port2_link
+
+  - platform: group
+    name: "GS724T Link (all)"
+    device_class: connectivity
+    all: true
+    entities:
+      - binary_sensor.gs724t_port1_link
+      - binary_sensor.gs724t_port2_link
+
+# ---- Convert to bits per second for UI -------------------------
+template:
+  - sensor:
+      - name: "GS724T Port 1 In (bps)"
+        unit_of_measurement: "bit/s"
+        device_class: data_rate
+        state_class: measurement
+        state: >
+          {% set b = states('sensor.gs724t_port1_in_Bps') | float(0) %}
+          {{ (b * 8) | int }}
+      - name: "GS724T Port 1 Out (bps)"
+        unit_of_measurement: "bit/s"
+        device_class: data_rate
+        state_class: measurement
+        state: >
+          {% set b = states('sensor.gs724t_port1_out_Bps') | float(0) %}
+          {{ (b * 8) | int }}
+
+group:
+  netgear_gs724t:
+    name: "Netgear GS724T"
+    icon: mdi:ethernet
+    entities:
+      - binary_sensor.gs724t_port1_link
+      - binary_sensor.gs724t_port2_link
+      - sensor.gs724t_sys_name
+      - sensor.gs724t_sys_uptime_seconds
+      - sensor.gs724t_if_count
+      - sensor.gs724t_ifname_1
+      - sensor.gs724t_ifname_2
+      - sensor.gs724t_port1_oper_status_raw
+      - sensor.gs724t_port2_oper_status_raw
+      - sensor.gs724t_port1_in_octets
+      - sensor.gs724t_port1_out_octets
+      - sensor.gs724t_port1_in_Bps
+      - sensor.gs724t_port1_out_Bps
+      - sensor.gs724t_port_1_in_bps
+      - sensor.gs724t_port_1_out_bps
+# ---- OPTIONAL: SNMPv3 profile (comment out v2c sensors and use this) ----
+# sensor:
+#   - platform: snmp
+#     name: gs724t_sys_name_v3
+#     host: !secret snmp_netgear_host
+#     version: "3"
+#     username: !secret snmpv3_user
+#     auth_key: !secret snmpv3_auth_key
+#     auth_protocol: sha
+#     priv_key: !secret snmpv3_priv_key
+#     priv_protocol: aes
+#     baseoid: 1.3.6.1.2.1.1.5.0
+#     scan_interval: 300

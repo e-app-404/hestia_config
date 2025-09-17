@@ -43,6 +43,10 @@
       - condition: state
         entity_id: binary_sensor.macbook_active
         state: 'off'
+        for:
+          hours: 0
+          minutes: 3
+          seconds: 0
       sequence:
       - data:
           transition: 30
@@ -96,30 +100,33 @@
   description: Turns the wardrobe light on when motion is detected, and turns it off
     when no motion is detected
   triggers:
-  - entity_id: binary_sensor.bedroom_wardrobe_occupancy_matter_alpha
+  - entity_id:
+    - binary_sensor.wardrobe_motion_beta
     to: 'on'
     trigger: state
-  - entity_id: binary_sensor.bedroom_wardrobe_occupancy_matter_alpha
+  - entity_id: binary_sensor.wardrobe_motion_beta
     to: 'off'
     trigger: state
   actions:
   - choose:
     - conditions:
       - condition: state
-        entity_id: binary_sensor.bedroom_wardrobe_occupancy_matter_alpha
+        entity_id: binary_sensor.wardrobe_motion_beta
         state: 'on'
       sequence:
       - target:
           entity_id: light.bedroom_wardrobe_lightstrip_alpha
         action: light.turn_on
+        data: {}
     - conditions:
       - condition: state
-        entity_id: binary_sensor.bedroom_wardrobe_occupancy_matter_alpha
+        entity_id: binary_sensor.wardrobe_motion_beta
         state: 'off'
       sequence:
       - target:
           entity_id: light.bedroom_wardrobe_lightstrip_alpha
         action: light.turn_off
+        data: {}
 - id: '1754117006684'
   alias: ensuite_motion_lightstrip_night
   description: 'Ensuite: Motion-activated lights and fan (all hours).'
@@ -130,7 +137,7 @@
       - binary_sensor.ensuite_occupancy_beta
       entity_target:
         entity_id:
-        - light.ensuite_lightstrip_homekit_alpha
+        - light.ensuite_lightstrip_alpha_matter
       no_motion_wait: 30
       use_custom_settings: true
       condition_entity: input_boolean.motion_lights_ensuite
@@ -172,7 +179,7 @@
     entity_target:
       entity_id:
       - light.ensuite_accent_alpha
-      - light.ensuite_lightstrip_tplink_alpha
+      - light.ensuite_lightstrip_alpha
       - light.ensuite_main_alpha
     blocking_entity: binary_sensor.ensuite_shower_detected
     blocking_states: 'on'
@@ -299,7 +306,7 @@
       - binary_sensor.ensuite_occupancy_beta
       entity_target:
         entity_id:
-        - light.ensuite_lightstrip_homekit_alpha
+        - light.ensuite_lightstrip_alpha_matter
         - switch.ensuite_fan
       no_motion_wait: 30
       use_custom_settings: true
@@ -347,145 +354,94 @@
         }}\n{% endif %}\n"
 - id: '1754732569560'
   alias: Fridge left open alert
-  description: ''
   triggers:
   - entity_id: binary_sensor.kitchen_fridge_contact_omega_matter_door
     to: 'on'
-    for:
-      hours: 0
-      minutes: 3
-      seconds: 0
-      days: 0
-    id: send_notification
+    for: 00:03:00
+    id: send_alert
     trigger: state
   - entity_id: binary_sensor.kitchen_fridge_contact_omega_matter_door
     from: 'on'
-    for:
-      seconds: 5
-    id: delete_notification
+    for: 00:00:05
+    id: clear_alert
     trigger: state
   actions:
-  - variables:
-      notify_services_list: '{{ notify_services_string.split('','') }}'
-      number_of_notify_services: '{{ notify_services_list | count }}'
-      notification_tag: '{{ trigger_entity[-20:] }}-{{ custom_friendly_name[-20:]
-        }}-{{ notify_services_string[-20:] }}'
-      initially_triggered_at: '{{ now() }}'
   - choose:
     - conditions:
       - condition: trigger
-        id: send_notification
-      - condition: []
+        id: send_alert
+      - condition: template
+        value_template: '{% set last = states(''input_datetime.fridge_last_alert'')
+          %} {% set delta = now().timestamp() - as_timestamp(last) %} {{ delta > (repeat_interval_minutes
+          * 60) }}'
       sequence:
+      - variables:
+          friendly_name: '{{ custom_friendly_name }}'
+          notify_services_list: '{{ notify_services_string.split('','') }}'
+          notification_tag: fridge-alert-{{ trigger_entity[-6:] }}
       - repeat:
+          count: '{{ max_repeats }}'
           sequence:
-          - variables:
-              friendly_name: "{% if custom_friendly_name != '' %}\n  {{ custom_friendly_name
-                }}\n{% else %}\n  {% set expanded_trigger_entity_list = expand(trigger_entity)
-                | selectattr('state', 'eq', issue_state) | map(attribute='name') |
-                join(', ') %}\n  {{ ' & '.join(expanded_trigger_entity_list.rsplit(',
-                ', 1)) }}\n{% endif %}\n"
           - parallel:
             - repeat:
-                count: '{{ number_of_notify_services }}'
+                count: '{{ notify_services_list | count }}'
                 sequence:
                 - data:
-                    message: The kitchen fridge was left open at {{ as_timestamp(initially_triggered_at)
-                      | timestamp_custom('%T', True) }}.
-                    title: The {{ friendly_name }} was left open
+                    message: The {{ friendly_name }} was left open at {{ now().strftime('%H:%M:%S')
+                      }}.
+                    title: '{{ notification_title }}'
                     data:
-                      clickAction: /lovelace/0
-                      url: /lovelace/0
                       tag: '{{ notification_tag }}'
                       color: red
                       notification_icon: mdi:{{ notification_icon_warning }}
                       push:
-                        interruption-level: time-sensitive
-                      persistent: false
-                      sticky: false
-                  action: '{{ notify_services_list[repeat.index-1] }}'
-            - choose: []
-              default:
-              - action: tts.speak
-                target:
-                  entity_id:
-                  - tts.google_translate_en_com
-                data:
-                  cache: true
-                  media_player_entity_id: media_player.bedroom_google_home_mini_speaker
-                  message: '{{ state_attr(trigger.entity_id, ''friendly_name'') |
-                    default(''Fridge'') }} was left open at {{ as_timestamp(now())
-                    | timestamp_custom(''%T'', true) }}.
-
-                    '
-                  language: en-ca
-          - if:
-            - condition: template
-              value_template: '{{ repeat_notification }}'
-            then:
-            - delay: '{{ time_between_repeat_notification }}'
-          until:
-          - condition: template
-            value_template: '{{ not repeat_notification }}'
+                        interruption-level:
+                          '[object Object]':
+                      clickAction: '{{ notification_click_url }}'
+                  action: '{{ notify_services_list[repeat.index - 1] }}'
+            - data:
+                cache: true
+                media_player_entity_id: media_player.bedroom_google_home_mini_speaker
+                message: '{{ friendly_name }} was left open at {{ now().strftime(''%H:%M:%S'')
+                  }}.'
+                language: en-ca
+              action: tts.speak
+          - delay:
+              minutes: '{{ repeat_interval_minutes }}'
+      - target:
+          entity_id: input_datetime.fridge_last_alert
+        data:
+          datetime: '{{ now().isoformat() }}'
+        action: input_datetime.set_datetime
     - conditions:
       - condition: trigger
-        id: delete_notification
-      - condition: template
-        value_template: '{{ delete_notification }}'
+        id: clear_alert
       sequence:
-      - parallel:
-        - repeat:
-            count: '{{ number_of_notify_services }}'
-            sequence:
-            - data:
-                message: clear_notification
-                data:
-                  tag: '{{ notification_tag }}'
-              action: '{{ notify_services_list[repeat.index-1] }}'
-        - choose: []
-          default: []
-  mode: restart
+      - variables:
+          notify_services_list: '{{ notify_services_string.split('','') }}'
+          notification_tag: fridge-alert-{{ trigger_entity[-6:] }}
+      - repeat:
+          count: '{{ notify_services_list | count }}'
+          sequence:
+          - data:
+              message: clear_notification
+              data:
+                tag: '{{ notification_tag }}'
+            action: '{{ notify_services_list[repeat.index - 1] }}'
+  mode: single
   max_exceeded: silent
   variables:
     custom_friendly_name: Fridge
     trigger_entity: binary_sensor.kitchen_fridge_contact_omega_matter_door
     issue_state: 'on'
-    duration_issue_state:
-      hours: 0
-      minutes: 3
-      seconds: 0
-      days: 0
-    condition_send_notification: []
-    delete_notification: true
-    duration_from_issue_state:
-      seconds: 5
     notify_services_string: notify.notify
-    notification_click_url: /lovelace/0
     notification_title: ⚠️ The fridge was left open
-    repeat_notification: true
-    time_between_repeat_notification:
-      hours: 0
-      minutes: 1
-      seconds: 0
-      days: 0
     notification_icon_warning: alert
     notification_color: red
     notification_interruption_level: time-sensitive
-    custom_action_issue_state:
-    - action: tts.speak
-      target:
-        entity_id:
-        - tts.google_translate_en_com
-      data:
-        cache: true
-        media_player_entity_id: media_player.bedroom_google_home_mini_speaker
-        message: '{{ state_attr(trigger.entity_id, ''friendly_name'') | default(''Fridge'')
-          }} was left open at {{ as_timestamp(now()) | timestamp_custom(''%T'', true)
-          }}.
-
-          '
-        language: en-ca
-    custom_action_from_issue_state: []
+    notification_click_url: /lovelace/0
+    max_repeats: 3
+    repeat_interval_minutes: 1
 - id: ensuite_motion_lights_master_20250904
   alias: Ensuite Motion Lights (Master)
   description: Single controller for Ensuite lights/fan (day/night), replaces GUI
@@ -531,7 +487,7 @@
       sequence:
       - target:
           entity_id:
-          - light.ensuite_lightstrip_homekit_alpha
+          - light.ensuite_lightstrip_alpha_matter
           - light.ensuite_accent_alpha
         action: light.turn_on
       - condition: template
@@ -552,7 +508,7 @@
       - delay: 00:00:30
       - target:
           entity_id:
-          - light.ensuite_lightstrip_homekit_alpha
+          - light.ensuite_lightstrip_alpha_matter
           - light.ensuite_accent_alpha
         action: light.turn_off
       - condition: template
@@ -565,3 +521,95 @@
         action: light.turn_off
     default: []
   mode: restart
+- id: auto_plex_https_down_alert_20250907
+  alias: Plex HTTPS Down Alert
+  description: ''
+  triggers:
+  - entity_id: binary_sensor.plex_https_up
+    to: 'off'
+    for: 00:02:00
+    trigger: state
+  actions:
+  - data:
+      title: ⚠️ Plex HTTPS Down
+      message: https://plex.xplab.io not healthy for 2 minutes
+    action: persistent_notification.create
+- id: auto_plex_https_down_alert_20250907
+  alias: Plex HTTPS Down Alert
+  triggers:
+  - entity_id: binary_sensor.plex_https_up
+    to: 'off'
+    for: 00:02:00
+    trigger: state
+  actions:
+  - action: persistent_notification.create
+    data:
+      title: ⚠️ Plex HTTPS Down
+      message: https://plex.xplab.io not healthy for 2 minutes
+- id: auto_plex_https_down_alert_20250907
+  alias: Plex HTTPS Down Alert
+  triggers:
+  - entity_id: binary_sensor.plex_https_up
+    to: 'off'
+    for: 00:02:00
+    trigger: state
+  actions:
+  - action: persistent_notification.create
+    data:
+      title: ⚠️ Plex HTTPS Down
+      message: https://plex.xplab.io not healthy for 2 minutes
+- id: auto_plex_https_down_alert_20250907
+  alias: Plex HTTPS Down Alert
+  triggers:
+  - entity_id: binary_sensor.plex_https_up
+    to: 'off'
+    for: 00:02:00
+    trigger: state
+  actions:
+  - action: persistent_notification.create
+    data:
+      title: Plex HTTPS Down
+      message: https://plex.xplab.io unhealhty for over 2 minutes
+      notification_id: plex_alert_01
+- id: 1d5c50b2-2d7b-4e4b-bac5-80ad30995055
+  alias: PS4 Activated → Sync TV Input + Matrix Routing (refactored)
+  description: ''
+  triggers:
+  - entity_id: media_player.playstation_4
+    to: 'on'
+    trigger: state
+  conditions: []
+  actions:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: media_player.bedroom_tv_alpha
+        state: 'off'
+      sequence:
+      - target:
+          entity_id: media_player.bedroom_tv_alpha
+        action: media_player.turn_on
+        data: {}
+      - delay: 00:00:02
+      - data:
+          source: Playstation 4
+          remote: remote.bedroom_broadlink_rm3_alpha
+          device: bedroom_hdmi_matrix
+          tv: media_player.bedroom_tv_alpha
+          turn_on_tv: false
+        action: script.matrix_control
+    - conditions:
+      - condition: state
+        entity_id: media_player.bedroom_tv_alpha
+        state: 'on'
+      - condition: template
+        value_template: '{{ state_attr(''media_player.bedroom_tv_alpha_hub'', ''source'')
+          != ''HDMI'' }}'
+      sequence:
+      - data:
+          source: Playstation 4
+          remote: remote.bedroom_broadlink_rm3_alpha
+          device: bedroom_hdmi_matrix
+          tv: media_player.bedroom_tv_alpha
+          turn_on_tv: false
+        action: script.matrix_control

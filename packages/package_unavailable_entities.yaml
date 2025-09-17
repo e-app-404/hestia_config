@@ -36,12 +36,12 @@ template:
             {{ ['group.unavailable_entities'] | tojson }}
           tier: "μ"
           canonical_tier: "diagnostics"
-          type: "runtime_monitor"
+          type: "monitor"
           diagnostic_type: "unavailable_state_count"
-          role: "monitor"
+          role: "availability_monitor"
           module: "state_engine"
           subsystem: "athena"
-          area_id: "availability_monitor"
+          area_id: "ha_system"
           canonical_id: "unavailable_entities_μ"
           description: "Counts the number of entities currently in an 'unavailable' state from a predefined group"
           data_quality: "runtime_observed"
@@ -52,7 +52,6 @@ group:
     entities:
       - number.bedroom_accent_alpha_effect_speed
       - number.bedroom_desk_alpha_effect_speed
-      - number.bedroom_desk_corner_omega_effect_speed
       - number.bedroom_desk_lightstrip_alpha_effect_speed
       - number.bedroom_desk_wall_alpha_effect_speed
       - number.bedroom_entrance_alpha_effect_speed
