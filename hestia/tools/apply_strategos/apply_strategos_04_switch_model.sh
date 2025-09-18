@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 set -euo pipefail
-source /Volumes/HA/config/hestia/tools/apply_strategos_00_env.sh >/dev/null
+source /n/ha/hestia/tools/apply_strategos_00_env.sh >/dev/null
 
 OUT_SWITCH="${OUT_DIR}/merged/switch"
 mkdir -p "${OUT_SWITCH}"
 
-/Volumes/HA/config/.venv/bin/python3 - <<'PY'
+/n/ha/.venv/bin/python3 - <<'PY'
 import os, csv, yaml, json
 from pathlib import Path
 

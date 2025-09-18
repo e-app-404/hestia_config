@@ -1,10 +1,10 @@
 #!/bin/bash
 
 # Create a tarball of the workspace, excluding logs, databases, temp, and large media
-# Output: /Volumes/HA/config/hestia/vault/tarballs/hestia_snapshot_$timestamp.tar.gz
+# Output: /n/ha/hestia/vault/tarballs/hestia_snapshot_$timestamp.tar.gz
 
 WORKSPACE_DIR="$(cd "$(dirname "$0")/../.." && pwd)"
-TARBALL_DIR="/Volumes/HA/config/hestia/vault/tarballs"
+TARBALL_DIR="/n/ha/hestia/vault/tarballs"
 TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
 TARBALL_NAME="ha_hestia_snapshot_${TIMESTAMP}.tar.gz"
 

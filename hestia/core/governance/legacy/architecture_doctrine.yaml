@@ -1150,7 +1150,8 @@ architecture_doctrine:
     status: proposed
     example:
       good: |
-        {% set person = expand('group.family') | first | default('person.evert') %}
+        {% set family_list = expand('group.family') | list %}
+        {% set person = family_list[0] if family_list|length > 0 else 'person.evert' %}
         {% set gps = is_state(person, 'home') %}
       avoid: |
         {% set gps = is_state(person, 'home') %}  # 'person' may be undefined
@@ -1242,7 +1243,8 @@ architecture_doctrine:
     status: proposed
     example:
       good: |
-        {% set person = expand('group.family') | selectattr('state', 'defined') | map(attribute='entity_id') | list | first | default('person.fallback') %}
+        {% set defined_members = expand('group.family') | selectattr('state', 'defined') | map(attribute='entity_id') | list %}
+        {% set person = defined_members[0] if defined_members|length > 0 else 'person.fallback' %}
         {% set gps = is_state(person, 'home') %}
       avoid: |
         {% set gps = is_state(person, 'home') %}  # person might be undefined
@@ -1527,33 +1529,6 @@ architecture_doctrine:
       operational: 93
       semantic: 96
       adoption_recommendation: ready_for_injection
-  - id: macro_reference_tier_alignment_001
-    title: 'Avoid Direct Macro References to α-tier in γ-tier Sensors'
-    principle: >
-      Sensors that invoke macros (e.g., 'motion_score()') in γ-tier logic must reference properly tiered β aliases,
-      not direct α-layer devices.
-    rationale: >
-      Preserves abstraction integrity and ensures that logic flows through expected tier chains. Prevents macro misuse
-      that bypasses architectural encapsulation.
-    example:
-      good: |
-        sensor.motion_score_γ:
-          value_template: '{{ motion_level('binary_sensor.motion_β') }}'
-      avoid: |
-        sensor.motion_score_γ:
-          value_template: '{{ motion_score('binary_sensor.kitchen_motion_sensor_α') }}'
-    tier: 'γ'
-    domain: 'macro tiering'
-    derived_from: 'developer_guidelines.md'
-    status: 'proposed'
-    created: '2025-06-10'
-    contributors: ['gpt_architect']
-    tags: ['macros', 'tiering', 'validation']
-    confidence_metrics:
-      structural: 95
-      operational: 93
-      semantic: 96
-      adoption_recommendation: ready_for_injection
   - id: undefined_variable_template_crash_001
     title: 'Prevent Crashes from Undefined Template Variables'
     principle: >
@@ -1565,7 +1540,8 @@ architecture_doctrine:
     example:
       good: |
         {% set gps = is_state(person | string, 'home') %}
-        {% set person = expand('group.family') | first | default('person.evert') %}
+        {% set family_list = expand('group.family') | list %}
+        {% set person = family_list[0] if family_list|length > 0 else 'person.evert' %}
       avoid: |
         {% set gps = is_state(person, 'home') %}
     tier: 'γ'
@@ -1573,8 +1549,13 @@ architecture_doctrine:
     derived_from: 'conversation_2025-04-16.md'
     status: 'proposed'
     created: '2025-06-10'
-    contributors: ['gpt_architect']
-    tags: ['template error', 'presence', 'jinja', 'undefined variable']
+    contributors:
+      - gpt_architect
+    tags:
+      - template error
+      - presence
+      - jinja
+      - undefined variable
     confidence_metrics:
       structural: 95
       operational: 94

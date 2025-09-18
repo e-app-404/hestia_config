@@ -5,7 +5,7 @@
   "settings": {
     "git.enabled": true,
     "git.autoRepositoryDetection": "openEditors",
-    "git.repositoryScanIgnoredFolders": ["/Volumes/HA/share", "/Users/evertappels/.ssh"],
+    "git.repositoryScanIgnoredFolders": ["/n/ha/share", "/Users/evertappels/.ssh"],
     "files.exclude": {
       "**/.storage": true,
       "**/deps/**": true,

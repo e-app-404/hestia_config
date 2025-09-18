@@ -27,8 +27,8 @@
   - `$HESTIA_CONFIG_OVERRIDE` (manual override)
   - `$HOME/hestia-config` (symlink, optional)
   - `/n/ha` (autofs mount, optional)
-  - `/Volumes/HA/config`
-  - `/Volumes/HA/config`
+  - `/n/ha`
+  - `/n/ha`
 
 - **Validation:**  
   The chosen path must be a directory containing `configuration.yaml`.
@@ -65,8 +65,8 @@ _candidates=(
   "$HESTIA_CONFIG_OVERRIDE"
   "$HOME/hestia-config"        # symlink (optional)
   "/n/ha"                      # autofs neutral path (optional)
-  "/Volumes/HA/config"
-  "/Volumes/HA/config"
+  "/n/ha"
+  "/n/ha"
 )
 
 _realpath() {
@@ -165,8 +165,8 @@ set -Eeuo pipefail
 IFS=$'\n\t'
 
 # Prefer lowercase mount, then uppercase; if neither present, skip symlink (autofs may be used)
-if [ -d /Volumes/HA/config ]; then target=/Volumes/HA/config
-elif [ -d /Volumes/HA/config ]; then target=/Volumes/HA/config
+if [ -d /n/ha ]; then target=/n/ha
+elif [ -d /n/ha ]; then target=/n/ha
 else target=""
 fi
 
@@ -183,7 +183,7 @@ cat > "$HOME/ha_path.sh" <<'EOF'
 set -Eeuo pipefail
 IFS=$'\n\t'
 : "${HESTIA_CONFIG_OVERRIDE:=}"
-_candidates=("$HESTIA_CONFIG_OVERRIDE" "$HOME/hestia-config" "/n/ha" "/Volumes/HA/config" "/Volumes/HA/config")
+_candidates=("$HESTIA_CONFIG_OVERRIDE" "$HOME/hestia-config" "/n/ha" "/n/ha" "/n/ha")
 _realpath(){ if command -v python3 >/dev/null 2>&1; then python3 - "$1" <<'PY'
 import os,sys;print(os.path.realpath(sys.argv[1]))
 PY
@@ -324,8 +324,8 @@ HA_IP_LAN="192.168.0.129"
 echo "Port 8123 (LAN $HA_IP_LAN): $(probe $HA_IP_LAN 8123)"
 echo "Port 22222 (HA CLI,  $HA_IP_LAN): $(probe $HA_IP_LAN 22222)"
 
-[ -d /Volumes/HA/config ] && echo "/Volumes/ha present" || echo "/Volumes/ha not present"
-[ -d /Volumes/HA/config ] && echo "/Volumes/HA present" || echo "/Volumes/HA not present"
+[ -d /n/ha ] && echo "/n/ha present" || echo "/n/ha not present"
+[ -d /n/ha ] && echo "/n/ha present" || echo "/n/ha not present"
 [ -d /n/ha ] && echo "/n/ha mount point present" || echo "/n/ha missing (run autofs setup)"
 ```
 
@@ -380,13 +380,13 @@ On failure, propose a one-liner fix.
 
 ## Manifest of Files
 ```
-/Volumes/HA/config/hestia/tools/ha_path.sh
-/Volumes/HA/config/hestia/tools/install/hestia_one_time_install.sh
-/Volumes/HA/config/hestia/templates/autofs/auto_master.hestia.snippet
-/Volumes/HA/config/hestia/templates/autofs/auto_ha.smb
-/Volumes/HA/config/hestia/tools/doctor/hestia_doctor.sh
-/Volumes/HA/config/hestia/core/governance/output_contracts/copilot_automation_contract.md
-/Volumes/HA/config/hestia/tools/system/hestia_autofs_uninstall.sh
-/Volumes/HA/config/hestia/vault/receipts/hestia_setup.json
-/Volumes/HA/config/hestia/vault/receipts/hestia_setup.log
+/n/ha/hestia/tools/ha_path.sh
+/n/ha/hestia/tools/install/hestia_one_time_install.sh
+/n/ha/hestia/templates/autofs/auto_master.hestia.snippet
+/n/ha/hestia/templates/autofs/auto_ha.smb
+/n/ha/hestia/tools/doctor/hestia_doctor.sh
+/n/ha/hestia/core/governance/output_contracts/copilot_automation_contract.md
+/n/ha/hestia/tools/system/hestia_autofs_uninstall.sh
+/n/ha/hestia/vault/receipts/hestia_setup.json
+/n/ha/hestia/vault/receipts/hestia_setup.log
 ```

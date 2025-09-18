@@ -14,7 +14,7 @@ if [ ! -f ~/.ssh/id_ed25519 ]; then
 fi
 
 
-cd /Volumes/HA/config
+cd /n/ha
 git remote rename dsm-git "${REMOTE_NAME}" 2>/dev/null || true
 if git remote get-url "${REMOTE_NAME}" >/dev/null 2>&1; then
   git remote set-url "${REMOTE_NAME}" "${USER}@${HOST}:${BARE_PATH}"

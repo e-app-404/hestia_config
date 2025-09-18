@@ -1,5 +1,5 @@
 set -euo pipefail
-: "${CFG_DIR:=/Volumes/HA/config}"
+: "${CFG_DIR:=/n/ha}"
 
 resolve_gitdir() {
   local d="${1:-}"

@@ -31,22 +31,6 @@ input_datetime:
     has_time: true
     has_date: false
 
-input_select:
-  sonos_alarm_zone:
-    name: "Target Sonos Zone"
-    options:
-      - "media_player.bedroom_sonos_surround"
-      - "media_player.bedroom_sonos_ray"
-      - "media_player.ensuite_sonos_roam"
-  sonos_alarm_recurrence:
-    name: "Recurrence"
-    options:
-      - "DAILY"
-      - "WEEKDAYS"
-      - "WEEKENDS"
-      - "ONCE"
-    icon: mdi:alarm-check
-
 input_number:
   sonos_alarm_volume:
     name: "Alarm Volume"
@@ -118,8 +102,10 @@ script:
             {% set dev = device_id(zone) %}
             {% if dev %}
               {% set sw = expand(device_entities(dev)) | selectattr('entity_id','match','^switch\\.sonos_alarm_') | list %}
-              {% set exact = sw | selectattr('attributes.recurrence','equalto', recur) | selectattr('attributes.time','equalto', alarm_time) | list | first %}
-              {% set match = exact if exact is not none else (sw | selectattr('attributes.recurrence','equalto', recur) | list | first) %}
+              {% set exact_list = sw | selectattr('attributes.recurrence','equalto', recur) | selectattr('attributes.time','equalto', alarm_time) | list %}
+              {% set exact = exact_list[0] if exact_list|length > 0 else none %}
+              {% set match_list = sw | selectattr('attributes.recurrence','equalto', recur) | list %}
+              {% set match = exact if exact is not none else (match_list[0] if match_list|length > 0 else none) %}
               {{ match.attributes.alarm_id if match is not none else none }}
             {% else %}{{ none }}{% endif %}
       - choose:
@@ -207,8 +193,10 @@ automation:
             {% set dev = device_id(zone) %}
             {% if dev %}
               {% set sw = expand(device_entities(dev)) | selectattr('entity_id','match','^switch\\.sonos_alarm_') | list %}
-              {% set exact = sw | selectattr('attributes.recurrence','equalto', recur) | selectattr('attributes.time','equalto', alarm_time) | list | first %}
-              {% set match = exact if exact is not none else (sw | selectattr('attributes.recurrence','equalto', recur) | list | first) %}
+              {% set exact_list = sw | selectattr('attributes.recurrence','equalto', recur) | selectattr('attributes.time','equalto', alarm_time) | list %}
+              {% set exact = exact_list[0] if exact_list|length > 0 else none %}
+              {% set match_list = sw | selectattr('attributes.recurrence','equalto', recur) | list %}
+              {% set match = exact if exact is not none else (match_list[0] if match_list|length > 0 else none) %}
               {{ match.attributes.alarm_id if match is not none else none }}
             {% else %}{{ none }}{% endif %}
       - choose:
@@ -381,13 +369,11 @@ automation:
           alarm_id: >-
             {% set dev = device_id(zone) %}
             {% if dev %}
-              {% set sw = expand(device_entities(dev))
-                  | selectattr('entity_id','match','^switch\\.sonos_alarm_') | list %}
-              {% set exact = sw
-                  | selectattr('attributes.recurrence','equalto', recur)
-                  | selectattr('attributes.time','equalto', alarm_time) | list | first %}
-              {% set match = exact if exact is not none else (sw
-                  | selectattr('attributes.recurrence','equalto', recur) | list | first) %}
+              {% set sw = expand(device_entities(dev)) | selectattr('entity_id','match','^switch\\.sonos_alarm_') | list %}
+              {% set exact_list = sw | selectattr('attributes.recurrence','equalto', recur) | selectattr('attributes.time','equalto', alarm_time) | list %}
+              {% set exact = exact_list[0] if exact_list|length > 0 else none %}
+              {% set match_list = sw | selectattr('attributes.recurrence','equalto', recur) | list %}
+              {% set match = exact if exact is not none else (match_list[0] if match_list|length > 0 else none) %}
               {{ match.attributes.alarm_id if match is not none else none }}
             {% else %}{{ none }}{% endif %}
       - choose:

@@ -3,8 +3,8 @@ set -Eeuo pipefail
 IFS=$'\n\t'
 
 # Prefer lowercase mount, then uppercase; if neither present, skip symlink (autofs may be used)
-if [ -d /Volumes/HA/config ]; then target=/Volumes/HA/config
-elif [ -d /Volumes/HA/config ]; then target=/Volumes/HA/config
+if [ -d /n/ha ]; then target=/n/ha
+elif [ -d /n/ha ]; then target=/n/ha
 else target=""
 fi
 
@@ -21,7 +21,7 @@ cat > "$HOME/ha_path.sh" <<'EOF'
 set -Eeuo pipefail
 IFS=$'\n\t'
 : "${HESTIA_CONFIG_OVERRIDE:=}"
-_candidates=("$HESTIA_CONFIG_OVERRIDE" "$HOME/hestia-config" "/n/ha" "/Volumes/HA/config" "/Volumes/HA/config")
+_candidates=("$HESTIA_CONFIG_OVERRIDE" "$HOME/hestia-config" "/n/ha" "/n/ha" "/n/ha")
 _realpath(){ if command -v python3 >/dev/null 2>&1; then python3 - "$1" <<'PY'
 import os,sys;print(os.path.realpath(sys.argv[1]))
 PY

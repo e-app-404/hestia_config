@@ -1,7 +1,7 @@
 {
   "folders": [
     {
-      "path": "/Volumes/HA/config"
+      "path": "/n/ha"
     },
     {
       "path": "../../../Users/evertappels/.ssh"
@@ -35,8 +35,8 @@
       "!secretYAML scalar"
     ],
     "yaml.schemas": {
-      "https://raw.githubusercontent.com/jelmore1674/build-changelog/refs/tags/v1/schemas/changlelog.json": "file:///Volumes/HA/config/hestia/meta/architecture/metadata.yaml",
-      "https://www.schemastore.org/sourcehut-build-0.65.0.json": "file:///Volumes/HA/config/hestia/core/meta/architecture/metadata.yaml"
+      "https://raw.githubusercontent.com/jelmore1674/build-changelog/refs/tags/v1/schemas/changlelog.json": "file:///n/ha/hestia/meta/architecture/metadata.yaml",
+      "https://www.schemastore.org/sourcehut-build-0.65.0.json": "file:///n/ha/hestia/core/meta/architecture/metadata.yaml"
     }
   }
 }

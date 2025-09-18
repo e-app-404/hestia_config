@@ -10,9 +10,3 @@ homeassistant:
   time_zone: "Europe/London"
   unit_system: metric
 
-  auth_providers:
-    - type: homeassistant
-    - type: trusted_networks
-      trusted_networks:
-        - 192.168.0.0/24
-        - 100.92.58.104/24

@@ -22,7 +22,10 @@ automation ui: !include automations.yaml
 automation manual: !include_dir_merge_list domain/automations/
 
 # 🔧 for callable scripts
-script: !include_dir_merge_named domain/scripts/
+script ui: !include scripts.yaml
+
+# 🔧 for callable scripts
+script manual: !include_dir_merge_named domain/scripts/
 
 # 📥 all standalone sensors
 sensor: !include_dir_merge_list domain/sensors/

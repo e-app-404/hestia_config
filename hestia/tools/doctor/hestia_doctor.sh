@@ -24,6 +24,6 @@ HA_IP_LAN="192.168.0.129"
 echo "Port 8123 (LAN $HA_IP_LAN): $(probe $HA_IP_LAN 8123)"
 echo "Port 22222 (HA CLI,  $HA_IP_LAN): $(probe $HA_IP_LAN 22222)"
 
-[ -d /Volumes/HA/config ] && echo "/Volumes/ha present" || echo "/Volumes/ha not present"
-[ -d /Volumes/HA/config ] && echo "/Volumes/HA present" || echo "/Volumes/HA not present"
+[ -d /n/ha ] && echo "/n/ha present" || echo "/n/ha not present"
+[ -d /n/ha ] && echo "/n/ha present" || echo "/n/ha not present"
 [ -d /n/ha ] && echo "/n/ha mount point present" || echo "/n/ha missing (run autofs setup)"

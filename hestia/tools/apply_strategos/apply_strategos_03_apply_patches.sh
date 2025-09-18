@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
-source /Volumes/HA/config/hestia/tools/apply_strategos_00_env.sh >/dev/null
+source /n/ha/hestia/tools/apply_strategos_00_env.sh >/dev/null
 
 : "${OUT_DIR:?OUT_DIR not set}"
 : "${TMP_DIR:?TMP_DIR not set}"

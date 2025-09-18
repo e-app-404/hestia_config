@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
-source /Volumes/HA/config/hestia/tools/apply_strategos_00_env.sh >/dev/null
+source /n/ha/hestia/tools/apply_strategos_00_env.sh >/dev/null
 
 
 missing=()

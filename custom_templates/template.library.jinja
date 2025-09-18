@@ -14,8 +14,9 @@
   {% set result = namespace(state='off') %}
   {% set found = false %}
   {% for item in ordered %}
-    {% set e = ents | selectattr('entity_id','equalto', item.entity) | first %}
-    {% if e and e.state not in ['unavailable','unknown','none'] and e.state == 'on' %}
+    {% set e_list = ents | selectattr('entity_id','equalto', item.entity) | list %}
+    {% set e = e_list[0] if e_list|length > 0 else none %}
+    {% if e is not none and e.state not in ['unavailable','unknown','none'] and e.state == 'on' %}
       {% set result.state = 'on' %}
       {% set found = true %}
       {% break %}
@@ -35,8 +36,9 @@
     {{ 'unknown' }} {# PATCH: Fallback for empty list #}
   {% else %}
     {% for item in ordered %}
-      {% set e = ents | selectattr('entity_id','equalto', item.entity) | first %}
-      {% if e and e.state not in ['unavailable','unknown','none'] and e.state == 'on' %}
+      {% set match_list = ents | selectattr('entity_id','equalto', item.entity) | list %}
+      {% set e = match_list[0] if match_list|length > 0 else none %}
+      {% if e is not none and e.state not in ['unavailable','unknown','none'] and e.state == 'on' %}
         {% set active_entity = item.entity %}
         {% set found = true %}
         {% break %}

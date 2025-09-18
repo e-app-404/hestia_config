@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # Change to BASE="$HOME/HA" if /Volumes gives you grief
-BASE="/Volumes/HA"
+BASE="/n/ha"
 SHARES=(config addons share)
 HOSTS=(homeassistant.reverse-beta.ts.net homeassistant.local 192.168.0.129)
 

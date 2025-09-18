@@ -11,8 +11,8 @@ _candidates=(
   "$HESTIA_CONFIG_OVERRIDE"
   "$HOME/hestia-config"        # symlink (optional)
   "/n/ha"                      # autofs neutral path (optional)
-  "/Volumes/HA/config"
-  "/Volumes/HA/config"
+  "/n/ha"
+  "/n/ha"
 )
 
 _realpath() {

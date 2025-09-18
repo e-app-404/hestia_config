@@ -12,7 +12,7 @@
     "git.autorefresh": false,
     "git.autoRepositoryDetection": "openEditors",
     "git.repositoryScanIgnoredFolders": [
-      "/Volumes/HA/share",
+      "/n/ha/share",
       "/Users/evertappels/.ssh",
       "zigbee2mqtt",
       "www",
@@ -23,7 +23,7 @@
       "hestia/work",
       "tmp"
     ],
-    "python.defaultInterpreterPath": "/Volumes/HA/config/.venv/bin/python",
+    "python.defaultInterpreterPath": "/n/ha/.venv/bin/python",
     "python.terminal.activateEnvironment": true,
     "ruff.importStrategy": "useBundled",
     "ruff.configuration": "pyproject.toml",

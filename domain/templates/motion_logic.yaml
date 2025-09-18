@@ -39,14 +39,13 @@
           ] | tojson }}
         aggregation_strategy: "preference-based selection (motion-only)"
         active_source: >
-          {% set active = ([
+          {% from 'template.library.jinja' import get_active_source %}
+          {% set sources = [
             {'entity': 'binary_sensor.sanctum_motion_alpha','preference': 1},
             {'entity': 'binary_sensor.bedroom_wardrobe_motion_tplink_alpha','preference': 2},
             {'entity': 'binary_sensor.bedroom_security_cam_alpha_motion','preference': 3}
-          ] | sort(attribute='preference')
-            | selectattr('entity','is_state','on')
-            | map(attribute='entity') | list | first) %}
-          {{ active if active is not none }}
+          ] %}
+          {{ get_active_source(sources) }}
         source_count: "3"
         version: "2.4"
         last_updated: "2025-09-04"
@@ -76,13 +75,12 @@
           {{ ['template.library.jinja','binary_sensor.ensuite_motion_real_time','binary_sensor.ensuite_motion_alpha_occupancy'] | tojson }}
         aggregation_strategy: "preference-based selection (motion-only)"
         active_source: >
-          {% set active = ([
+          {% from 'template.library.jinja' import get_active_source %}
+          {% set sources = [
             {'entity': 'binary_sensor.ensuite_motion_real_time','preference': 1},
             {'entity': 'binary_sensor.ensuite_motion_alpha_occupancy','preference': 2}
-          ] | sort(attribute='preference')
-            | selectattr('entity','is_state','on')
-            | map(attribute='entity') | list | first) %}
-          {{ active if active is not none }}
+          ] %}
+          {{ get_active_source(sources) }}
         source_count: "2"
         version: "2.4"
         last_updated: "2025-09-04"
