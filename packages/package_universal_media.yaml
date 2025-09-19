@@ -664,6 +664,7 @@ script:
   # ⟫⟫ MEDIA LOGIC  •  RADIO STATIONS
   play_selected_radio:
     alias: "Play Selected Radio Station"
+    mode: single
     sequence:
       - variables:
           station: "{{ states('input_select.radio_station') }}"
@@ -675,60 +676,60 @@ script:
             } %}
             {{ mapping.get(states('input_select.radio_player'), 'media_player.bedroom_sonos_ray') }}
       - choose:
-          - conditions: "{{ station == 'Studio Brussel' }}"
+          - conditions:
+              - condition: template
+                value_template: "{{ station == 'Studio Brussel' }}"
             sequence:
               - service: media_player.play_media
                 target: { entity_id: "{{ player }}" }
                 data:
-                  {
-                    media_content_id: "http://icecast.vrtcdn.be/stubru-high.mp3",
-                    media_content_type: "music",
-                  }
-          - conditions: "{{ station == 'JOE' }}"
+                  media_content_id: "http://icecast.vrtcdn.be/stubru-high.mp3"
+                  media_content_type: "music"
+          - conditions:
+              - condition: template
+                value_template: "{{ station == 'JOE' }}"
             sequence:
               - service: media_player.play_media
                 target: { entity_id: "{{ player }}" }
                 data:
-                  {
-                    media_content_id: "https://icecast-qmusicbe-cdp.triple-it.nl/joe.mp3",
-                    media_content_type: "music",
-                  }
-          - conditions: "{{ station == 'MNM' }}"
+                  media_content_id: "https://icecast-qmusicbe-cdp.triple-it.nl/joe.mp3"
+                  media_content_type: "music"
+          - conditions:
+              - condition: template
+                value_template: "{{ station == 'MNM' }}"
             sequence:
               - service: media_player.play_media
                 target: { entity_id: "{{ player }}" }
                 data:
-                  {
-                    media_content_id: "http://icecast.vrtcdn.be/mnm-high.mp3",
-                    media_content_type: "music",
-                  }
-          - conditions: "{{ station == 'VRT Radio 1' }}"
+                  media_content_id: "http://icecast.vrtcdn.be/mnm-high.mp3"
+                  media_content_type: "music"
+          - conditions:
+              - condition: template
+                value_template: "{{ station == 'VRT Radio 1' }}"
             sequence:
               - service: media_player.play_media
                 target: { entity_id: "{{ player }}" }
                 data:
-                  {
-                    media_content_id: "http://icecast.vrtcdn.be/radio1-high.mp3",
-                    media_content_type: "music",
-                  }
-          - conditions: "{{ station == 'De Tijdloze' }}"
+                  media_content_id: "http://icecast.vrtcdn.be/radio1-high.mp3"
+                  media_content_type: "music"
+          - conditions:
+              - condition: template
+                value_template: "{{ station == 'De Tijdloze' }}"
             sequence:
               - service: media_player.play_media
                 target: { entity_id: "{{ player }}" }
                 data:
-                  {
-                    media_content_id: "http://icecast.vrtcdn.be/stubru_tijdloze-high.mp3",
-                    media_content_type: "music",
-                  }
-          - conditions: "{{ station == 'TOPradio Belgium' }}"
+                  media_content_id: "http://icecast.vrtcdn.be/stubru_tijdloze-high.mp3"
+                  media_content_type: "music"
+          - conditions:
+              - condition: template
+                value_template: "{{ station == 'TOPradio Belgium' }}"
             sequence:
               - service: media_player.play_media
                 target: { entity_id: "{{ player }}" }
                 data:
-                  {
-                    media_content_id: "http://str.topradio.be/topradio.mp3",
-                    media_content_type: "music",
-                  }
+                  media_content_id: "http://str.topradio.be/topradio.mp3"
+                  media_content_type: "music"
         default:
           - service: logbook.log
             data:
@@ -839,7 +840,7 @@ automation:
           retain: true
           payload: >-
             {{ {
-              "device": {"identifiers":["bedroom_hdmi_matrix"],"name":"Bedroom HDMI Matrix","manufacturer":"Virtual","model":"IR HDMI Matrix","suggested_area":"Bedroom"},
+              "device": {"identifiers":["bedroom_hdmi_matrix"],"name":"Bedroom HDMI Matrix","manufacturer":"Virtual","model":"IR HDMI Matrix","suggested_area":"bedroom"},
               "o": {"name":"matrix-virtual","sw":"1.1.0","url":"homeassistant://settings"},
               "~":"ha/bedroom_hdmi_matrix",
               "cmps": {
@@ -982,22 +983,35 @@ media_player:
       - media_player.bedroom_sonos_surround
       - media_player.ensuite_sonos_roam
     state_template: >-
-      {{ is_state('media_player.bedroom_tv_alpha', 'on')
-         or is_state('media_player.bedroom_apple_tv_alpha', 'playing')
-         or is_state('media_player.playstation_4', 'on')
-         or is_state('media_player.bedroom_sonos_ray', 'playing') }}
+      {% import 'custom_templates/template.library.jinja' as tpl %}
+      {{ tpl.any_child_active([
+        'media_player.bedroom_tv_alpha',
+        'media_player.bedroom_tv_alpha_hub',
+        'media_player.bedroom_tv_alpha_plex',
+        'media_player.bedroom_tv_alpha_dlna',
+        'media_player.bedroom_apple_tv_alpha',
+        'media_player.bedroom_apple_tv_alpha_plex',
+        'media_player.playstation_4',
+        'media_player.bedroom_google_home_mini_speaker',
+        'media_player.bedroom_sonos_ray',
+        'media_player.bedroom_sonos_surround',
+        'media_player.ensuite_sonos_roam'
+      ]) }}
     active_child_template: >-
-      {% if is_state('media_player.bedroom_tv_alpha', 'on') %}
-        media_player.bedroom_tv_alpha
-      {% elif is_state('media_player.bedroom_apple_tv_alpha', 'playing') %}
-        media_player.bedroom_apple_tv_alpha
-      {% elif is_state('media_player.playstation_4', 'on') %}
-        media_player.playstation_4
-      {% elif is_state('media_player.bedroom_sonos_ray', 'playing') %}
-        media_player.bedroom_sonos_ray
-      {% else %}
-        media_player.bedroom_tv_alpha
-      {% endif %}
+      {% import 'custom_templates/template.library.jinja' as tpl %}
+      {{ tpl.first_active_child([
+        'media_player.bedroom_tv_alpha',
+        'media_player.bedroom_tv_alpha_hub',
+        'media_player.bedroom_tv_alpha_plex',
+        'media_player.bedroom_tv_alpha_dlna',
+        'media_player.bedroom_apple_tv_alpha',
+        'media_player.bedroom_apple_tv_alpha_plex',
+        'media_player.playstation_4',
+        'media_player.bedroom_google_home_mini_speaker',
+        'media_player.bedroom_sonos_ray',
+        'media_player.bedroom_sonos_surround',
+        'media_player.ensuite_sonos_roam'
+      ]) }}
     attributes:
       is_volume_muted: media_player.bedroom_sonos_ray|is_volume_muted
       volume_level: media_player.bedroom_sonos_ray|volume_level
@@ -1065,21 +1079,19 @@ media_player:
       - media_player.bedroom_sonos_surround
       - media_player.ensuite_sonos_roam
     state_template: >-
-      {% set active = ['playing','paused','buffering'] %}
-        {{ states('media_player.bedroom_sonos_ray') in active
-           or states('media_player.bedroom_sonos_surround') in active
-           or states('media_player.ensuite_sonos_roam') in active }}
+      {% import 'custom_templates/template.library.jinja' as tpl %}
+      {{ tpl.any_child_active([
+        'media_player.bedroom_sonos_ray',
+        'media_player.bedroom_sonos_surround',
+        'media_player.ensuite_sonos_roam'
+      ]) }}
     active_child_template: >-
-      {% set active = ['playing','paused','buffering'] %}
-      {% if states('media_player.bedroom_sonos_ray') in active %}
-        media_player.bedroom_sonos_ray
-      {% elif states('media_player.bedroom_sonos_surround') in active %}
-        media_player.bedroom_sonos_surround
-      {% elif states('media_player.ensuite_sonos_roam') in active %}
-        media_player.ensuite_sonos_roam
-      {% else %}
-        media_player.bedroom_sonos_ray
-      {% endif %}
+      {% import 'custom_templates/template.library.jinja' as tpl %}
+      {{ tpl.first_active_child([
+        'media_player.bedroom_sonos_ray',
+        'media_player.bedroom_sonos_surround',
+        'media_player.ensuite_sonos_roam'
+      ]) }}
     attributes:
       is_volume_muted: media_player.bedroom_sonos_ray|is_volume_muted
       volume_level: media_player.bedroom_sonos_ray|volume_level
@@ -1136,95 +1148,3 @@ media_player:
             {% elif states('media_player.ensuite_sonos_roam') in active %} media_player.ensuite_sonos_roam
             {% else %} media_player.bedroom_sonos_ray {% endif %}
           is_volume_muted: "{{ is_volume_muted }}"
-
-# ══  LOVELACE COMPONENTS ══
-#
-# The following Lovelace grid card section is commented out for reference only.
-#
-# type: grid
-# columns: 3
-# square: false
-# cards:
-#   - type: entities
-#     title: PS4 – Recent
-#     entities:
-#       - input_select.ps4_recent_game
-#
-#   - type: button
-#     name: Route & Wake
-#     icon: mdi:sony-playstation
-#     tap_action:
-#       action: perform-action
-#       perform_action: script.ps4_route_and_wake
-#       data:
-#         game: "{{ states('input_select.ps4_recent_game') }}"
-#
-#   - type: button
-#     name: Refresh list
-#     icon: mdi:refresh
-#     tap_action:
-#       action: perform-action
-#       perform_action: homeassistant.update_entity
-#       data:
-#         entity_id: sensor.ps4_recent_games_titles
-#type: grid
-#columns: 4
-#square: false
-#cards:
-#  - type: picture-entity
-#    entity: image.ps4_recent_1_art
-#    show_name: false
-#    show_state: false
-#    tap_action:
-#      action: call-service
-#      service: button.press
-#      target:
-#        entity_id: button.ps4_btn_recent_1
-#
-#  - type: picture-entity
-#    entity: image.ps4_recent_2_art
-#    show_name: false
-#    show_state: false
-#    tap_action:
-#      action: call-service
-#      service: button.press
-#      target:
-#        entity_id: button.ps4_btn_recent_2
-#
-#  - type: picture-entity
-#    entity: image.ps4_recent_3_art
-#    show_name: false
-#    show_state: false
-#    tap_action:
-#      action: call-service
-#      service: button.press
-#      target:
-#        entity_id: button.ps4_btn_recent_3
-#
-#  - type: picture-entity
-#    entity: image.ps4_recent_4_art
-#    show_name: false
-#    show_state: false
-#    tap_action:
-#      action: call-service
-#      service: button.press
-#      target:
-#        entity_id: button.ps4_btn_recent_4
-
-# ═══ DASHBOARD COMPONENTS ═══
-# type: grid
-# columns: 3
-# square: false
-# cards:
-#   - type: entities
-#    title: Plex – Choose Show
-#     entities: [input_select.plex_show]
-#   - type: entities
-#     title: Plex – Choose Movie
-#    entities: [input_select.plex_movie]
-#  - type: button
-#    name: Refresh Lists
-#    icon: mdi:refresh
-#    tap_action:
-#      action: perform-action
-#      perform_action: script.plex_refresh_library_lists

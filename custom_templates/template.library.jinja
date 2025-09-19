@@ -117,3 +117,35 @@
     99
   {% endif %}
 {% endmacro %}
+
+{# ------------------------- #}
+{# Macro: first_active_child & any_child_active #}
+{# Centralized helpers for universal media_player templates. #}
+{% macro first_active_child(children, active_states=None) -%}
+  {%- set active_states = active_states or ['playing','paused','buffering','on'] -%}
+  {# Coerce string to single-item list, keep lists as-is #}
+  {%- if children is string -%}
+    {%- set children = [children] -%}
+  {%- endif -%}
+  {%- for c in children -%}
+    {%- set s = states(c) if c is defined else 'unavailable' -%}
+    {%- if s in active_states -%}
+      {{ c }}
+      {%- break -%}
+    {%- endif -%}
+  {%- endfor -%}
+{%- endmacro %}
+
+{% macro any_child_active(children, active_states=None, output='on') -%}
+  {%- set active_states = active_states or ['playing','paused','buffering','on'] -%}
+  {%- if children is string -%}
+    {%- set children = [children] -%}
+  {%- endif -%}
+  {%- for c in children -%}
+    {%- if states(c) in active_states -%}
+      {{ output }}
+      {%- return -%}
+    {%- endif -%}
+  {%- endfor -%}
+  {{ 'off' if output == 'on' else 'false' }}
+{%- endmacro %}
