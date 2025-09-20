@@ -4,7 +4,6 @@
 # Integration: template (trigger-based)
 # ───────────────────────────────────────────────────────────────────────────────
 
-# MQTT → Trigger-based template binary_sensor (no legacy platform: mqtt usage)
 - trigger:
     - platform: mqtt
       topic: zigbee2mqtt/ensuite_motion_alpha
@@ -12,7 +11,7 @@
       event: start
   binary_sensor:
     - name: "Ensuite Motion (Real-Time)"
-      unique_id: ensuite_motion_realtime
+      unique_id: ensuite_motion_real_time
       device_class: motion
       # Pulse 'on' when payload indicates motion; false at HA start. Auto clears after 2s.
       state: >-
@@ -27,7 +26,7 @@
       auto_off: 2
       attributes:
         tier: "α"
-        canonical_id: "ensuite_motion_realtime_α"
+        canonical_id: "ensuite_motion_real_time_α"
         subsystem: "hermes"
         area_id: "ensuite"
         type: "real_time_motion"

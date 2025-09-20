@@ -4,7 +4,11 @@
 # ⟫⟫ Domain: template • Loader: !include_dir_merge_list domain/template/
 # ⟫⟫ Schema: sensor (list) • Created: 2025-07-17
 # ════════════════════════════════════════════════════════════════════════════════
-
+# Future-Ready Notes:
+# - The tracked_entities list can be expanded to include tuples like (entity, weight) or (entity, confidence).
+# - Later enhancements could add logic for zone filtering, last_seen logic, or entity device_class.
+# - Wrapping the logic in a macro or a Python script is viable for dynamic or weighted states.
+  
 - sensor:
     - name: "Any Home Presence"
       unique_id: any_home_presence
@@ -32,13 +36,8 @@
           Away
         {% endif %}
       attributes:
-        notes: >
-          Future-Ready Notes:
-          - The tracked_entities list can be expanded to include tuples like (entity, weight) or (entity, confidence).
-          - Later enhancements could add logic for zone filtering, last_seen logic, or entity device_class.
-          - Wrapping the logic in a macro or a Python script is viable for dynamic or weighted states.
         file: "/config/domain/templates/tracking_logic.yaml"
-        source_count: 11
+        source_count: "1"
 
     - name: "Macbook Presence"
       unique_id: macbook_presence

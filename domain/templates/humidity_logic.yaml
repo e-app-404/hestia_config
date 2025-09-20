@@ -38,7 +38,7 @@
         date_created: "2025-04-26"
         last_updated: "2025-07-20"
         is_multi_source: true
-        source_count: 4
+        source_count: "4"
         data_quality: "excellent"
         subsystem: "aether"
         role: "aggregation"
@@ -75,7 +75,7 @@
         date_created: "2025-04-26"
         last_updated: "2025-07-17"
         is_multi_source: true
-        source_count: 2
+        source_count: "2"
         data_quality: "excellent"
         subsystem: "aether"
         module: "room_merged_sensors"
@@ -112,7 +112,7 @@
         date_created: "2025-05-09"
         last_updated: "2025-07-17"
         is_multi_source: false
-        source_count: 1
+        source_count: "1"
         data_quality: "good"
         subsystem: "aether"
         module: "room_merged_sensors"
@@ -149,7 +149,7 @@
         date_created: "2025-04-26"
         last_updated: "2025-07-17"
         is_multi_source: true
-        source_count: 1
+        source_count: "1"
         data_quality: "good"
         subsystem: "aether"
         module: "room_merged_sensors"
@@ -182,6 +182,7 @@
           {{ ['sensor.ensuite_climate_matter_alpha_humidity', 'sensor.ensuite_climate_omega_humidity'] | tojson }}
         downstream_consumers: >
           {{ ['binary_sensor.ensuite_shower_detected', 'sensor.binary_sensor.ensuite_shower_end_detected', 'binary_sensor.ensuite_shower_occupancy_epsilon'] | tojson }}
+        floor_id: "sanctum"
         area_id: "ensuite"
         tier: "η"
         canonical_id: "merged_ensuite_humidity_η"
@@ -189,7 +190,7 @@
         date_created: "2025-06-03"
         last_updated: "2025-07-17"
         is_multi_source: true
-        source_count: 2
+        source_count: "2"
         data_quality: "excellent"
         subsystem: "aether"
         module: "rooms"

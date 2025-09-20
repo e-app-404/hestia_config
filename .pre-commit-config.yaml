@@ -4,10 +4,17 @@ repos:
     hooks:
       - id: yamllint
         args: [--format, colored, -s]
+
   - repo: local
     hooks:
       - id: validate-metadata
         name: Validate HESTIA metadata
         entry: .venv/bin/python hestia/tools/validate_metadata.py
         language: system
+        pass_filenames: false
+      - id: hestia-workspace-enforcer
+        name: Hestia Workspace Enforcer
+        entry: hestia/tools/system/hestia_workspace_enforcer.sh
+        language: script
+        types: [yaml, sh, py, txt]
         pass_filenames: false

@@ -1,0 +1,6 @@
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+extend-exclude = ["www", "tts", ".storage", "reports", "hestia/diagnostics", "hestia/work"]
+[tool.ruff.lint]
+select = ["E","F","I"]         # basic pyflakes/pycodestyle + isort

@@ -111,7 +111,8 @@
 {% macro extract_json_field(state, path, default='unknown') %}
   {% if is_state_valid(state) %}
     {% set parsed = state | from_json | default({}) %}
-    {{ path | selectattr("0", "in", parsed) | map(attribute=1) | first | default(default) }}
+    {% set vals = path | selectattr("0", "in", parsed) | map(attribute=1) | list %}
+    {{ vals[0] if vals|length > 0 else default }}
   {% else %}
     {{ default }}
   {% endif %}

@@ -1,0 +1,25 @@
+# packages/recorder_policy.yaml
+# Purpose: reduce DB growth & memory churn; keep short history; exclude noisy domains
+recorder:
+  purge_keep_days: 3
+  auto_purge: true
+  commit_interval: 30
+  exclude:
+    domains:
+      - automation
+      - camera
+      - event
+      - logbook
+      - media_player
+      - persistent_notification
+      - recorder
+      - updater
+    entity_globs:
+      - sensor.*_uptime*
+      - sensor.time*
+  include:
+    domains:
+      - binary_sensor
+      - sensor
+      - switch
+      - light

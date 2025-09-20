@@ -1,0 +1,65 @@
+{
+  "folders": [
+    { "path": "." }
+  ],
+  "settings": {
+    "git.enabled": true,
+    "git.autoRepositoryDetection": "openEditors",
+    "git.repositoryScanIgnoredFolders": ["/n/ha/share", "/Users/evertappels/.ssh"],
+    "files.exclude": {
+      "**/.storage": true,
+      "**/deps/**": true,
+      "**/www/**": true,
+      "**/tts/**": true,
+      "**/__pycache__": true,
+      "**/*.pyc": true,
+      "**/*.db": true,
+      "reports/**": true,
+      "hestia/diagnostics/**": true,
+      "hestia/work/**": true,
+      "zigbee2mqtt/**": true
+    },
+    "search.exclude": {
+      "**/.storage": true,
+      "**/deps/**": true,
+      "**/www/**": true,
+      "**/tts/**": true,
+      "**/__pycache__": true,
+      "**/*.pyc": true,
+      "**/*.db": true,
+      "reports/**": true,
+      "hestia/diagnostics/**": true,
+      "hestia/work/**": true,
+      "zigbee2mqtt/**": true
+    },
+    "window.title": "HA Live — ${rootName} — ${activeEditorShort}",
+    "terminal.integrated.env.osx": { "PATH": "/opt/homebrew/bin:${env:PATH}" },
+    "ruff.importStrategy": "useBundled",
+    "ruff.logLevel": "info",
+    "ruff.lint.run": "onSave",
+    "editor.codeActionsOnSave": {
+      "source.organizeImports.ruff": "explicit",
+      "source.fixAll.ruff": "explicit"
+    },
+    "python.defaultInterpreterPath": "/opt/homebrew/bin/python3",
+    "yaml.schemaStore.enable": true,
+    "yaml.schemaStore.url": "https://www.schemastore.org/api/json/catalog.json",
+    "yaml.validate": true,
+    "yaml.format.enable": true,
+    "yaml.customTags": [
+      "!include","!include_dir_merge_named","!include_dir_merge_list",
+      "!include_dir_list","!include_dir_named","!secret","!env_var"
+    ],
+    "yaml.schemas": {
+      "https://json.schemastore.org/home-assistant.json": [
+        "configuration.yaml",
+        "**/automations.yaml",
+        "**/scripts.yaml",
+        "**/scenes.yaml",
+        "**/blueprints/**/*.yaml",
+        "**/domain/templates/**/*.yaml",
+        "**/entities/**/*.yaml"
+      ]
+    }
+  }
+}

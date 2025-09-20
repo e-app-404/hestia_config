@@ -5,4 +5,4 @@
 # ⟫⟫ Tier: σ  •  Domain: configuration  •  Updated: 2025-08-22
 # ═════════════════════════════════════════════════════════════════════════════
 
-light: !include_dir_merge_named /config/domain/lights/
+light: !include_dir_merge_list /config/domain/lights/

@@ -5,6 +5,29 @@
 # ⟫⟫ Tier: σ  •  Domain: diagnostics  •  Created: 2025-07-25
 #═════════════════════════════════════════════════════════════════════════════
 
+# ⟫⟫ ⟫ ⟫⟫ ⟫⟫ ⟫⟫ ⟫⟫ ⟫⟫ ⟫⟫ HELPERS
+
+counter:
+  smartthings_restart_counter:
+    name: "SmartThings Restart Counter"
+    initial: 0
+    step: 1
+
+input_datetime:
+  smartthings_last_restart:
+    name: "SmartThings Last Restart"
+    has_date: true
+    has_time: true
+  smartthings_first_failure_time:
+    name: "SmartThings First Failure Time"
+    has_date: true
+    has_time: true
+
+input_text:
+  smartthings_first_failed_entity:
+    name: "SmartThings First Failed Entity"
+
+
 group:
   smartthings_entities:
     name: "SmartThings Entities"
@@ -71,7 +94,10 @@ template:
           module: "smartthings_failover"
           type: "integration_watchdog"
           role: "monitor"
-          area_id: "virtual_hub"
+          scope: "smartthings"
+          area_id: "virtual"
+          floor_id: "hestia"
+
   - sensor:
       - name: "Time Since SmartThings Last Restart (minutes)"
         unique_id: "smartthings_minutes_since_last_restart"
@@ -93,9 +119,11 @@ template:
           canonical_tier: "diagnostics"
           diagnostic_type: "restart_interval"
           module: "smartthings_failover"
-          type: "integration_watchdog"
+          type: "watchdog"
+          scope: "smartthings"
           role: "monitor"
-          area_id: "virtual_hub"
+          area_id: "virtual"
+          floor_id: "hestia"
 
   - sensor:
       - name: "Time Since First SmartThings Failure (minutes)"
@@ -118,9 +146,11 @@ template:
           canonical_tier: "diagnostics"
           diagnostic_type: "failure_duration"
           module: "smartthings_failover"
-          type: "integration_watchdog"
+          type: "watchdog"
           role: "monitor"
-          area_id: "virtual_hub"
+          scope: "integrations"
+          area_id: "virtual"
+          floor_id: "hestia"
   - sensor:
       - name: "SmartThings Failover Status"
         unique_id: "smartthings_failover_summary"
@@ -143,7 +173,9 @@ template:
           module: "smartthings_failover"
           type: "integration_watchdog"
           role: "monitor"
-          area_id: "virtual_hub"
+          scope: "smartthings"
+          area_id: "virtual"
+          floor_id: "hestia"
 
   - sensor:
       - name: "SmartThings Entity List"
@@ -153,14 +185,15 @@ template:
           entities: "{{ integration_entities('smartthings') | sort }}"
           tier: "μ"
           canonical_tier: "diagnostics"
+          canonical_id: "smartthings_entity_list_μ"
           diagnostic_type: "entity_availability"
           module: "smartthings_failover"
           type: "integration_watchdog"
           role: "monitor"
-          area_id: "virtual_hub"
+          area_id: "virtual"
           created: "2025-08-06"
           last_updated: "2025-08-08T19:10:54.077646+01:00"
-
+          
 automation:
   - alias: "SmartThings Integration Issue Detected"
     id: "automation_smartthings_integration_issue_detected"
@@ -188,73 +221,46 @@ automation:
           - conditions: >
               {{ states('input_datetime.smartthings_first_failure_time') in ['unknown','unavailable',''] }}
             sequence:
-              - action: input_datetime.set_datetime
+              - service: input_datetime.set_datetime
                 data:
                   entity_id: input_datetime.smartthings_first_failure_time
                   timestamp: "{{ now().timestamp() }}"
-
-      - variables:
-          st_entity: "{{ (integration_entities('smartthings') | first) | default('', true) }}"
-          st_entry_id: "{{ config_entry_id(st_entity) if st_entity else '' }}"
-
-      - choose:
+      - alias: Set SmartThings entry ID variable
+        variables:
+          st_entry_id: >
+            {% set st_list = integration_entities('smartthings') | list %}
+            {{ config_entry_id(st_list[0]) if st_list|length > 0 else '' }}
+      - alias: Reload SmartThings integration if entry ID is available
+        choose:
           - conditions: "{{ st_entry_id | string | length > 0 }}"
             sequence:
-              - alias: Reload SmartThings integration
-                action: homeassistant.reload_config_entry
+              - service: homeassistant.reload_config_entry
                 data:
                   entry_id: "{{ st_entry_id }}"
         default: []
-
       - alias: Remove old SmartThings notification
-        action: persistent_notification.dismiss
+        service: persistent_notification.dismiss
         data:
           notification_id: smartthings_reload
-
       - alias: Notify about reload
-        action: persistent_notification.create
+        service: persistent_notification.create
         data:
           title: "SmartThings Reload Triggered"
           message: >
             SmartThings entities unavailable: {{
               state_attr('sensor.unavailable_smartthings_entities', 'entities') | join(', ') }}
           notification_id: smartthings_reload
-
       - alias: Increment restart counter
-        action: counter.increment
+        service: counter.increment
         target:
           entity_id: counter.smartthings_restart_counter
-
       - alias: Record last restart timestamp
-        action: input_datetime.set_datetime
+        service: input_datetime.set_datetime
         data:
           entity_id: input_datetime.smartthings_last_restart
           timestamp: "{{ now().timestamp() }}"
-
       - alias: Record first failure timestamp
-        action: input_datetime.set_datetime
+        service: input_datetime.set_datetime
         data:
           entity_id: input_datetime.smartthings_first_failure_time
           timestamp: "{{ now().timestamp() }}"
-
-# ⟫⟫ ⟫ ⟫⟫ ⟫⟫ ⟫⟫ ⟫⟫ ⟫⟫ ⟫⟫ HELPERS
-
-counter:
-  smartthings_restart_counter:
-    name: "SmartThings Restart Counter"
-    initial: 0
-    step: 1
-
-input_datetime:
-  smartthings_last_restart:
-    name: "SmartThings Last Restart"
-    has_date: true
-    has_time: true
-  smartthings_first_failure_time:
-    name: "SmartThings First Failure Time"
-    has_date: true
-    has_time: true
-
-input_text:
-  smartthings_first_failed_entity:
-    name: "SmartThings First Failed Entity"

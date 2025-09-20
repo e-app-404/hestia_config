@@ -39,17 +39,17 @@
           ] | tojson }}
         aggregation_strategy: "preference-based selection (motion-only)"
         active_source: >
-          {% set active = ([
+          {% from 'template.library.jinja' import get_active_source %}
+          {% set sources = [
             {'entity': 'binary_sensor.sanctum_motion_alpha','preference': 1},
             {'entity': 'binary_sensor.bedroom_wardrobe_motion_tplink_alpha','preference': 2},
             {'entity': 'binary_sensor.bedroom_security_cam_alpha_motion','preference': 3}
-          ] | sort(attribute='preference')
-            | selectattr('entity','is_state','on')
-            | map(attribute='entity') | list | first) %}
-          {{ active if active is not none }}
-        source_count: 3
+          ] %}
+          {{ get_active_source(sources) }}
+        source_count: "3"
         version: "2.4"
         last_updated: "2025-09-04"
+        floor_id: "sanctum"
         area_id: "bedroom"
 
     - name: "Ensuite Motion (Beta)"
@@ -58,8 +58,8 @@
       state: >
         {% from 'template.library.jinja' import preference_select %}
         {% set sources = [
-          {'entity': 'binary_sensor.ensuite_motion_realtime',        'protocol': 'mqtt', 'preference': 1, 'type': 'motion'},
-          {'entity': 'binary_sensor.ensuite_motion_alpha_occupancy', 'protocol': 'mqtt', 'preference': 2, 'type': 'motion'}
+          {'entity': 'binary_sensor.ensuite_motion_real_time',        'protocol': 'mqtt', 'preference': 1, 'type': 'motion'},
+          {'entity': 'binary_sensor.ensuite_motion_alpha_occupancy', 'protocol': 'mqtt', 'preference': 2, 'type': 'occupancy'}
         ] %}
         {{ preference_select(sources) == 'on' }}
       attributes:
@@ -72,19 +72,19 @@
         file: "/config/domain/templates/motion_logic"
         protocols: "MQTT(1,2)"
         upstream_sources: >
-          {{ ['template.library.jinja','binary_sensor.ensuite_motion_realtime','binary_sensor.ensuite_motion_alpha_occupancy'] | tojson }}
+          {{ ['template.library.jinja','binary_sensor.ensuite_motion_real_time','binary_sensor.ensuite_motion_alpha_occupancy'] | tojson }}
         aggregation_strategy: "preference-based selection (motion-only)"
         active_source: >
-          {% set active = ([
-            {'entity': 'binary_sensor.ensuite_motion_realtime','preference': 1},
+          {% from 'template.library.jinja' import get_active_source %}
+          {% set sources = [
+            {'entity': 'binary_sensor.ensuite_motion_real_time','preference': 1},
             {'entity': 'binary_sensor.ensuite_motion_alpha_occupancy','preference': 2}
-          ] | sort(attribute='preference')
-            | selectattr('entity','is_state','on')
-            | map(attribute='entity') | list | first) %}
-          {{ active if active is not none }}
-        source_count: 2
+          ] %}
+          {{ get_active_source(sources) }}
+        source_count: "2"
         version: "2.4"
         last_updated: "2025-09-04"
+        floor_id: "sanctum"
         area_id: "ensuite"
 
     - name: "Hallway Downstairs Motion (Beta)"
@@ -109,7 +109,7 @@
           {{ ['template.library.jinja','binary_sensor.downstairs_presence_alpha_motion'] | tojson }}
         aggregation_strategy: "preference-based selection (motion-only)"
         active_source: "binary_sensor.downstairs_presence_alpha_motion"
-        source_count: 1
+        source_count: "1"
         version: "2.2"
         last_updated: "2025-09-04"
         area_id: "hallway"
@@ -137,7 +137,7 @@
           {{ ['template.library.jinja','binary_sensor.upstairs_presence_alpha_motion'] | tojson }}
         aggregation_strategy: "preference-based selection (motion-only)"
         active_source: "binary_sensor.upstairs_presence_alpha_motion"
-        source_count: 1
+        source_count: "1"
         version: "2.2"
         last_updated: "2025-09-04"
         area_id: "hallway"
@@ -165,7 +165,7 @@
           {{ ['template.library.jinja','binary_sensor.kitchen_presence_alpha_motion'] | tojson }}
         aggregation_strategy: "preference-based selection (motion-only)"
         active_source: "binary_sensor.kitchen_presence_alpha_motion"
-        source_count: 1
+        source_count: "1"
         version: "2.2"
         last_updated: "2025-09-04"
         area_id: "kitchen"
@@ -192,7 +192,7 @@
           {{ ['template.library.jinja','binary_sensor.living_room_multipurpose_alpha_motion'] | tojson }}
         aggregation_strategy: "preference-based selection (motion-only)"
         active_source: "binary_sensor.living_room_multipurpose_alpha_motion"
-        source_count: 1
+        source_count: "1"
         version: "2.2"
         last_updated: "2025-09-04"
         area_id: "living_room"
@@ -219,9 +219,10 @@
           {{ ['template.library.jinja','binary_sensor.bedroom_wardrobe_motion_tplink_alpha'] | tojson }}
         aggregation_strategy: "preference-based selection (motion-only)"
         active_source: "binary_sensor.bedroom_wardrobe_motion_tplink_alpha"
-        source_count: 1
+        source_count: "1"
         version: "2.2"
         last_updated: "2025-09-04"
+        floor_id: "sanctum"
         area_id: "bedroom"
         subarea: "wardrobe"
 
@@ -247,11 +248,11 @@
           {{ ['template.library.jinja','binary_sensor.sanctum_motion_alpha'] | tojson }}
         aggregation_strategy: "preference-based selection (motion-only)"
         active_source: "binary_sensor.sanctum_motion_alpha"
-        source_count: 1
+        source_count: "1"
         version: "1.0"
         last_updated: "2025-09-04"
+        floor_id: "sanctum"
         area_id: "bedroom"
-        subarea: "sanctum"
 
     # ────────────────────────── RECENT (delay_off) WRAPPERS ─────────────────
     - name: "Bedroom Motion Recent (Beta)"
@@ -277,6 +278,7 @@
         aggregation_strategy: "timeout-based extension"
         version: "2.3"
         last_updated: "2025-09-04"
+        floor_id: "sanctum"
         area_id: "bedroom"
 
     - name: "Kitchen Motion Recent (Beta)"
@@ -349,6 +351,7 @@
           {{ ['binary_sensor.ensuite_occupancy_beta','sensor.ensuite_motion_score_gamma'] | tojson }}
         version: "2.3"
         last_updated: "2025-09-04"
+        floor_id: "sanctum"
         area_id: "ensuite"
 
     - name: "Hallway Downstairs Motion Recent (Beta)"
@@ -424,6 +427,7 @@
           {{ ['binary_sensor.wardrobe_occupancy_beta','sensor.wardrobe_motion_score_gamma'] | tojson }}
         version: "2.1"
         last_updated: "2025-09-04"
+        floor_id: "sanctum"
         area_id: "bedroom"
         subarea: "wardrobe"
 
@@ -449,5 +453,5 @@
           {{ ['binary_sensor.sanctum_occupancy_beta','sensor.sanctum_motion_score_gamma'] | tojson }}
         version: "1.0"
         last_updated: "2025-09-04"
+        floor_id: "sanctum"
         area_id: "bedroom"
-        subarea: "sanctum"

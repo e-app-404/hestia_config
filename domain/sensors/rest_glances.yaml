@@ -9,15 +9,15 @@
   name: "MacBook CPU Percent"
   unique_id: "glances_macbook_cpu_percent"
   resource: http://100.92.58.104:61208/api/4/cpu
-  value_template: "{{ value_json.total }}"
+  value_template: "{{ value_json.total | default(0) }}"
   unit_of_measurement: "%"
-  scan_interval: 60
+  scan_interval: 120
 
 - platform: rest
   name: "MacBook Memory Percent"
   unique_id: "glances_macbook_memory_percent"
   resource: http://100.92.58.104:61208/api/4/mem
-  value_template: "{{ value_json.percent }}"
+  value_template: "{{ value_json.percent | default(0) }}"
   unit_of_measurement: "%"
   scan_interval: 60
 
@@ -26,7 +26,7 @@
   unique_id: "glances_macbook_swap_percent"
   resource: http://100.92.58.104:61208/api/4/mem
   value_template: >
-    {{ value_json.swap.percent if value_json.swap is defined and value_json.swap.percent is defined else 0 }}
+    {{ value_json.swap.percent if value_json.swap is defined and value_json.swap.percent is defined else 0 }} # PATCH: Already error tolerant
   unit_of_measurement: "%"
   scan_interval: 60
 
@@ -35,7 +35,7 @@
   unique_id: "glances_macbook_disk_used"
   resource: http://100.92.58.104:61208/api/4/fs
   value_template: >
-    {{ (value_json | selectattr('mnt', 'equalto', '/') | map(attribute='percent') | list | first | default(0)) }}
+    {{ (value_json | selectattr('mnt', 'equalto', '/') | map(attribute='percent') | list | first | default(0)) }} # PATCH: Already error tolerant
   unit_of_measurement: "%"
   scan_interval: 60
 

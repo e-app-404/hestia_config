@@ -20,7 +20,7 @@
         date_created: "2025-07-30"
         last_updated: "2025-08-02"
         is_multi_source: false
-        source_count: 1
+        source_count: "1"
         data_quality: "diagnostic"
         subsystem: "hades"
         module: "system_health_monitor"

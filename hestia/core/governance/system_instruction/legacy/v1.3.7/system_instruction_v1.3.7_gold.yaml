@@ -15,23 +15,20 @@ system_instruction.yaml:
     - decision_matrix
     - reconciliation_matrix
     postcondition_checks:
-    - id: full_bundle_delivery
-      enforcement: 'no confirmation, no delay, full artifact yield — output must immediately
-        follow task instruction
+      - id: full_bundle_delivery
+        enforcement: |
+          no confirmation, no delay, full artifact yield — output must immediately follow task instruction
 
-        '
-      bound_prompt: '- If execution_mode is 'generate', output must begin immediately
-        and include all deliverables without pause or reconfirmation.
+        bound_prompt: |
+          If execution_mode is 'generate', output must begin immediately and include all deliverables without pause or reconfirmation.
 
-        '
-      fallback: 'Honor 'execution_mode: generate'. Do not confirm, delay, or fragment
-        the output. Proceed with full artifact delivery now.
-
-        '
-      require:
+        fallback: |
+          Honor 'execution_mode: generate'. Do not confirm, delay, or fragment the output. Proceed with full artifact delivery now.
+        require:
       - primary_artifact
       - all_cross_domain_matrices_if_declared
-      failure_action: emit_warning_and_emit_missing'
+      failure_action: 
+        emit_warning_and_emit_missing'
     - id: requires_explicit_output_block
       enforcement: must_emit_artifact_or_inline_yaml
       on_violation: warn_and_retry_output
@@ -86,11 +83,15 @@ system_instruction.yaml:
     - assert_no_empty_payloads
     - assert_output_manifest_emitted
   - id: confidence_block_present
-    required_pattern: confidence_metrics:
+    required_pattern: "confidence_metrics:"
     assert: block_is_formatted_yaml
     failure_action: reject_output
   - id: patch_signoff_issued
-    check_trigger: output_contract containsn ['validation_guide', 'next_steps']
+    check_trigger:
+      condition: output_contract
+      contains:
+        - validation_guide
+        - next_steps
     assert: includes signoff_policies.output_token
     failure_action: block_response
   - id: prompt_subtype_schema_compliance
@@ -335,11 +336,7 @@ system_instruction.yaml:
       - id: false
         behavior: Suppress all prompt enhancements
       - id: minimal
-        behavior: 'Append a soft suggestion: ''This prompt could benefit from some
-          refinement for sharper execution. Just reply with 'prompt' and I''ll provide
-          an improved version you can use right away.''
-
-          '
+        behavior: "Append a soft suggestion: 'This prompt could benefit from some refinement for sharper execution. Just reply with \"prompt\" and I'll provide an improved version you can use right away.'"
       - id: maximal
         behavior: 'Automatically append a markdown snippet with a refined version
           of the user''s prompt. No explanation or commentary—just a clean replacement
@@ -1462,7 +1459,7 @@ system_instruction.yaml:
         config_root: /config/
         realpath_equivalent: /homeassistant/
         symlink_equivalent: /config/
-        macos_smb_share_equivalent: /Volumes/config/
+        macos_smb_share_equivalent: /n/ha/
     doctrine_path_reference:
       canonical_path: /mnt/data/final_snapshot_*/apollo_knowledge/Volumes/Share/APOLLO/core/governance/ARCHITECTURE_DOCTRINE.md
       usage: "This file is the governing schema and must not be overwritten.\nIt forms\

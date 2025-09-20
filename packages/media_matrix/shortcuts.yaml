@@ -42,12 +42,12 @@ automation:
           service: send_command
           service_data:
             device: ofa_urc_7935_streamer
-            command: spare_a
+            command: spare_3
     action:
       - service: logbook.log
         data:
           name: "URC 7935"
-          message: "A key pressed – Routing to Playstation 4 (a_2 + b_2)"
+          message: "A key pressed – Routing to Playstation 4 (a_2 + b_3)"
       - service: input_text.set_value
         target:
           entity_id: input_text.urc_7935_last_command
@@ -72,7 +72,7 @@ automation:
       - service: logbook.log
         data:
           name: "URC 7935"
-          message: "H key pressed – Routing to Nintendo Switch (a_3 + b_3)"
+          message: "H key pressed – Routing to Nintendo Switch (a_2 + b_2)"
       - service: input_text.set_value
         target:
           entity_id: input_text.urc_7935_last_command

@@ -5,11 +5,12 @@
 # ⟫⟫ Repo: github.com/home-assistant/core/blob/dev/homeassistant/components/recorder/__init__.py
 # ⟫⟫ Tier: core  •  Domain: configuration  •  Updated: 2025-08-01
 # ══════════════════════════════════════════════════════════════════
+
 recorder:
   db_url: !secret mariadb_url
   auto_purge: true
-  purge_keep_days: 30 # adjust to taste
-  commit_interval: 20 # fewer, larger writes
+  purge_keep_days: 7
+  commit_interval: 30
   exclude:
     domains:
       - group
@@ -17,8 +18,10 @@ recorder:
       - persistent_notification
       - update
       - zone
-      - automation # exclude automation *entity* state history (optional)
-        # NOTE: events are separate (see event_types below)
+      - automation
+      - service_removed
+      - service_executed
+      - call_service
     entity_globs:
       - sensor.sun*
       - sensor.time*
@@ -28,13 +31,19 @@ recorder:
       - sensor.*failover_summary
       - sensor.*_minutes_since_*
     entities:
+      - sensor.current_date_natural
+      - sensor.current_date_description
+      - sensor.current_time_legacy
+      - sensor.current_time
+      - sensor.date_time_iso
+      - sensor.date_time_utc_iso
+      - sensor.date_time_utc
+      - sensor.date_time
       - sun.sun
-      - sensor.date
-      - sensor.disabled_device_entities_v2
       - sensor.disabled_device_entities
-      - group.unavailable_entities # you also purge this; excluding prevents re-growth
+      - group.unavailable_entities
       - variable.plex_tv_index
       - variable.plex_movie_index
     event_types:
-      - call_service # keep out chatty service-call events
+      - call_service
       # DO NOT list "automation_triggered" here; we want to KEEP it for audits

@@ -1,0 +1,42 @@
+{
+  "folders": [
+    {
+      "path": "/n/ha"
+    },
+    {
+      "path": "../../../Users/evertappels/.ssh"
+    }
+  ],
+  "settings": {
+    "editor.detectIndentation": false,
+    "editor.formatOnSave": true,
+    "files.exclude": {
+      "**/__pycache__": true,
+      "**/*.pyc": true,
+      "**/*.db": true,
+      "**/.storage": false,
+      "**/deps/**": true,
+      "/config/hestia/tools/config_manager/output/diff/versions": true,
+      "/config/venv": true,
+      "/config/image": true,
+      "/config/www": true,
+      "/config/zigbee.db": true,
+      "*/vault/*": true
+    },
+    "python-envs.pythonProjects": [
+      {
+        "path": "",
+        "envManager": "ms-python.python:system",
+        "packageManager": "ms-python.python:pip"
+      }
+    ],
+    "yaml.customTags": [
+      "!secret scalar",
+      "!secretYAML scalar"
+    ],
+    "yaml.schemas": {
+      "https://raw.githubusercontent.com/jelmore1674/build-changelog/refs/tags/v1/schemas/changlelog.json": "file:///n/ha/hestia/meta/architecture/metadata.yaml",
+      "https://www.schemastore.org/sourcehut-build-0.65.0.json": "file:///n/ha/hestia/core/meta/architecture/metadata.yaml"
+    }
+  }
+}

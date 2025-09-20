@@ -2,7 +2,6 @@
 # ▶ CLIMATE SENSORS: Illuminance & Fusion Metrics ◀
 # Loader: !include_dir_merge_list domain/templates/
 # Schema: sensor (list)
-# TODO: Validate *_alpha entity_ids resolve correctly with post-reboot naming.
 #══════════════════════════════════════════════════════════════════════════════
 
 - sensor:
@@ -18,7 +17,7 @@
         tier: "β"
         canonical_id: "living_room_illuminance_β"
         area_id: "living_room"
-        source_count: 1
+        source_count: "1"
         data_quality: "{{ state_attr('sensor.living_room_multipurpose_alpha_illuminance', 'data_quality') }}"
         sources: "{{ state_attr('sensor.living_room_multipurpose_alpha_illuminance', 'sources') }}"
         subsystem: "aether"
@@ -45,7 +44,7 @@
         tier: "β"
         canonical_id: "bedroom_illuminance_β"
         area_id: "bedroom"
-        source_count: 1
+        source_count: "1"
         data_quality: "{{ state_attr('sensor.bedroom_illuminance_wifi_alpha_illuminance', 'data_quality') }}"
         sources: "{{ state_attr('sensor.bedroom_illuminance_wifi_alpha_illuminance', 'sources') }}"
         subsystem: "aether"
@@ -92,7 +91,7 @@
         date_created: "2025-04-26"
         last_updated: "2025-08-06"
         is_multi_source: true
-        source_count: 2
+        source_count: "2"
         data_quality: "excellent"
         subsystem: "aether"
         module: "illuminance"

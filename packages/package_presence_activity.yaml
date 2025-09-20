@@ -1,5 +1,5 @@
 # ══════════════════════════════════════════════════════════════════
-# ⟫⟫ PATCH: Home Assistant 2024.8+ Sensor Friendly Name & Validation
+# ⟫⟫ Home Assistant 2024.8+ Sensor Friendly Name & Validation
 # ⟫⟫ Version: 2025-08-05-patch1
 # ⟫⟫ - All template sensors now have friendly_name attributes
 # ⟫⟫ - See commit message for details
@@ -183,7 +183,8 @@ template:
           created: "2025-08-05"
           last_updated: "2025-08-05"
           domain: "logic"
-          area_id: bedroom
+          floor_id: "sanctum"
+          area_id: "bedroom"
 
   # ══ Kitchen ══
   - trigger:

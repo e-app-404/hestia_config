@@ -8,8 +8,12 @@ homeassistant:
   packages: !include_dir_named packages
   allowlist_external_dirs:
     - "/config/hestia/diagnostics/logs"
-    - "/config/hestia/diagnostics/file_notifications"
+    - "/config/hestia/diagnostics/notifications"
     - "/config"
+    - "/config/hestia/work/scratch"
+    - "/config/hestia/tools/utils"
+    - "/config/hestia/work"
+    - "/config/hestia/core/governance/system_instruction"
 
 # 🔧 UI-based automations (editable via GUI)
 automation ui: !include automations.yaml
@@ -18,7 +22,10 @@ automation ui: !include automations.yaml
 automation manual: !include_dir_merge_list domain/automations/
 
 # 🔧 for callable scripts
-script: !include_dir_merge_named domain/scripts/
+script ui: !include scripts.yaml
+
+# 🔧 for callable scripts
+script manual: !include_dir_merge_named domain/scripts/
 
 # 📥 all standalone sensors
 sensor: !include_dir_merge_list domain/sensors/
@@ -36,5 +43,3 @@ input_number: !include domain/helpers/input_number.yaml
 input_datetime: !include domain/helpers/input_datetime.yaml
 input_text: !include domain/helpers/input_text.yaml
 counter: !include domain/helpers/counter.yaml
-
-default_config:

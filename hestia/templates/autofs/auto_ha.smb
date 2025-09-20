@@ -1,0 +1,5 @@
+# /etc/auto_ha.smb
+# Direct map for Home Assistant config share
+# Default to Bonjour (mDNS); switch to Tailscale FQDN if preferred.
+#/n/ha  -fstype=smbfs ://homeassistant.reverse-beta.ts.net/config   # Tailscale option
+/n/ha   -fstype=smbfs ://homeassistant.local/config

@@ -6,48 +6,276 @@
 
 command_line:
   - binary_sensor:
-      name: Git Repo Synced with DSM
+      name: "Git Repo Synced with DSM"
       unique_id: cli_git_repo_synced_dsm_alpha
       device_class: connectivity
       command: >-
         bash -lc '
           set -eo pipefail
-          REMOTE=$(ssh -F /config/.ssh/config dsm-git-host "git --git-dir=/volume1/HA_MIRROR for-each-ref --format=%(objectname:short) refs/heads/main" 2>/dev/null || true);
+          REMOTE=$(ssh -F /config/.ssh/config -o BatchMode=yes -o ConnectTimeout=5 -o StrictHostKeyChecking=no dsm-git-host "git --git-dir=/volume1/HA_MIRROR for-each-ref --format=%(objectname:short) refs/heads/main" 2>/dev/null || true);
           LOCAL=$(git -C /config rev-parse --short HEAD 2>/dev/null || true);
           if [ -n "$REMOTE" ] && [ -n "$LOCAL" ] && [ "$REMOTE" = "$LOCAL" ]; then echo on; else echo off; fi
         '
+      payload_on: "on"
+      payload_off: "off"
       scan_interval: 120
-      command_timeout: 20
-
-  - sensor:
-      name: "DSM Git Repo Latest Commit"
-      unique_id: cli_dsm_git_commit_hash_alpha
-      command: >-
-        bash -lc '
-          set -eo pipefail
-          ssh -F /config/.ssh/config dsm-git-host "git --git-dir=/volume1/HA_MIRROR for-each-ref --format=%(objectname:short) refs/heads/main" 2>/dev/null || echo unknown
-        '
-      scan_interval: 120
-      command_timeout: 20
-
-  - binary_sensor:
-      name: "DSM Git Latest Commit Message"
-      unique_id: cli_dsm_git_commit_message_alpha
-      command: >-
-        bash -lc '
-          set -eo pipefail
-          ssh -F /config/.ssh/config dsm-git-host "git --git-dir=/volume1/HA_MIRROR show -s --format=%s refs/heads/main" 2>/dev/null || echo unknown
-        '
-      scan_interval: 600
-      command_timeout: 20
+      command_timeout: 30
+      value_template: "{{ value | default('off') | trim }}"
 
   - sensor:
       name: "Local Git Repo Commit Hash"
-      unique_id: cli_local_git_commit_hash_alpha
+      unique_id: cli_local_git_commit_hash_alpha_2
+      command: >-
+        sh -lc '
+          if [ -d /config/.git ]; then
+            out=$(git -C /config rev-parse --short HEAD 2>/dev/null || echo unknown)
+          else
+            out=not-a-git-repo
+          fi
+          printf "%s" "$out"
+          exit 0
+        '
+      value_template: "{{ (value | default('unknown')) | trim }}"
+      scan_interval: 120
+      command_timeout: 30
+
+  - binary_sensor:
+      name: "Local Git Repo Present"
+      unique_id: cli_local_git_repo_present
+      device_class: connectivity
+      command: >-
+        sh -lc 'test -d /config/.git && echo on || echo off'
+      payload_on: "on"
+      payload_off: "off"
+      scan_interval: 600
+      command_timeout: 30
+      value_template: "{{ value | default('off') | trim }}"
+
+  - sensor:
+      name: "DSM Git Latest Commit Message"
+      unique_id: cli_dsm_git_commit_message_alpha
+      command: >-
+        sh -lc '
+          out=$(\
+            ssh -F /config/.ssh/config \
+                -o BatchMode=yes -o ConnectTimeout=5 \
+                dsm-git-host \
+                "git --git-dir=/volume1/HA_MIRROR show -s --format=%s refs/heads/main" \
+            2>/dev/null\
+          ) || out=unknown
+          [ -n "$out" ] || out=unknown
+          printf "%s" "$out"
+          exit 0
+        '
+      scan_interval: 600
+      command_timeout: 30
+      value_template: "{{ value | default('unknown') | trim }}"
+
+  # Ensure no duplicate unique_id values exist for sensors and binary_sensors.
+
+  # ──  Debugging (Cloudflare Tunnel) ─────────────────────────────
+
+  - binary_sensor:
+      name: "Plex HTTPS Up"
+      unique_id: cli_plex_https_up
+      device_class: connectivity
       command: >-
         bash -lc '
           set -eo pipefail
-          git -C /config rev-parse --short HEAD 2>/dev/null || echo unknown
+          CODE=$(curl -s -o /dev/null -w "%{http_code}" https://plex.xplab.io/identity || echo 000);
+          case "$CODE" in 200|301|302|307|308) echo -n on ;; *) echo -n off ;; esac
+        '
+      payload_on: "on"
+      payload_off: "off"
+      scan_interval: 30
+      command_timeout: 30
+      value_template: "{{ value | default('off') | trim }}"
+
+  - sensor:
+      name: "Plex HTTPS Code"
+      unique_id: cli_plex_https_code
+      command: >-
+        bash -lc '
+          set -eo pipefail
+          curl -s -o /dev/null -w "%{http_code}" https://plex.xplab.io/identity | tr -d "\n"
+        '
+      scan_interval: 60
+      command_timeout: 30
+      value_template: "{{ value | default('unknown') | trim }}"
+
+  - sensor:
+      name: "Plex HTTPS TTFB ms"
+      unique_id: cli_plex_https_ttfb_ms
+      unit_of_measurement: ms
+      command: >-
+        bash -lc '
+          set -eo pipefail
+          T=$(curl -o /dev/null -s -w "%{time_starttransfer}" https://plex.xplab.io/identity || echo 0);
+          awk -v t="$T" "BEGIN{printf \"%d\", t*1000}" | tr -d "\n"
+        '
+      scan_interval: 60
+      command_timeout: 30
+      value_template: "{{ value | default('unknown') | trim }}"
+
+  # ── Tailscale (direct private WAN) ─────────────────────────────
+
+  - binary_sensor:
+      name: "Plex Tailnet Up"
+      unique_id: cli_plex_tailnet_up
+      device_class: connectivity
+      command: >-
+        bash -lc '
+          set -eo pipefail
+          CODE=$(curl -s -o /dev/null -w "%{http_code}" http://100.93.61.53:32400/identity || echo 000);
+          if [ "$CODE" = "200" ]; then echo -n on; else echo -n off; fi
+        '
+      payload_on: "on"
+      payload_off: "off"
+      scan_interval: 60
+      command_timeout: 20
+
+  - sensor:
+      name: "Plex Tailnet Code"
+      unique_id: cli_plex_tailnet_code
+      command: >-
+        bash -lc '
+          set -eo pipefail
+          curl -s -o /dev/null -w "%{http_code}" http://100.93.61.53:32400/identity | tr -d "\n"
+        '
+      scan_interval: 60
+      command_timeout: 20
+
+  # ── LAN (on-site sanity) ──────────────────────────────────────
+
+  - binary_sensor:
+      name: "Plex LAN Up"
+      unique_id: cli_plex_lan_up
+      device_class: connectivity
+      command: >-
+        bash -lc '
+          set -eo pipefail
+          CODE=$(curl -s -o /dev/null -w "%{http_code}" http://192.168.0.104:32400/identity || echo 000);
+          if [ "$CODE" = "200" ]; then echo -n on; else echo -n off; fi
+        '
+      payload_on: "on"
+      payload_off: "off"
+      scan_interval: 120
+      command_timeout: 20
+
+  - sensor:
+      name: "Plex LAN Code"
+      unique_id: cli_plex_lan_code
+      command: >-
+        bash -lc '
+          set -eo pipefail
+          curl -s -o /dev/null -w "%{http_code}" http://192.168.0.104:32400/identity | tr -d "\n"
         '
       scan_interval: 120
       command_timeout: 20
+
+  # ▶ INTEGRATION: Command Line Sensors — Cloudflared/Plex Tunnel ◀
+
+  - binary_sensor:
+      name: "Cloudflared Running"
+      unique_id: cli_cloudflared_running
+      device_class: connectivity
+      command: >-
+        sh -lc '
+          out=$(\
+            ssh -i /config/.ssh/id_ed25519 \
+                -o BatchMode=yes -o ConnectTimeout=5 -o StrictHostKeyChecking=no \
+                babylonrobot@192.168.0.104 \
+                "sudo -n /usr/local/bin/docker inspect -f '\''{% raw %}{{ .State.Running }}{% endraw %}'\'' cloudflared 2>/dev/null || echo false" \
+            2>/dev/null\
+          ) || out=false
+          case "$out" in true|false) printf "%s" "$out";; *) printf "false";; esac
+          exit 0
+        '
+      payload_on: "true"
+      payload_off: "false"
+      scan_interval: 30
+      command_timeout: 20
+
+  # Cloudflared errors in last 60s
+  - sensor:
+      name: "Cloudflared Errors Per Min"
+      unique_id: cli_cloudflared_errors_per_min
+      unit_of_measurement: "events/min"
+      command: >-
+        sh -lc '
+          out=$(ssh -q -i /config/.ssh/id_ed25519 \
+                -o BatchMode=yes -o ConnectTimeout=8 -o StrictHostKeyChecking=no \
+                babylonrobot@192.168.0.104 \
+                "sudo -n /usr/local/bin/docker logs --since 60s cloudflared 2>/dev/null" \
+            2>/dev/null \
+            | awk '\''BEGIN{IGNORECASE=1} /(^|[[:space:]])50[234]([[:space:]]|$)|timeout|connection reset|handshake|origin error/{c++} END{print c+0}'\'' 2>/dev/null)
+          if ! [[ "$out" =~ ^[0-9]+$ ]]; then
+            out=0
+          fi
+          printf "%s" "$out"
+          exit 0
+        '
+      value_template: >
+        {% set v = (value | default('0')) | trim %}
+        {{ v|int(0) }}
+      state_class: measurement
+      scan_interval: 60
+      command_timeout: 30
+
+  # Cloudflared cancels in last 60s
+  - sensor:
+      name: "Cloudflared Canceled Per Min"
+      unique_id: cli_cloudflared_canceled_per_min
+      unit_of_measurement: "events/min"
+      command: >-
+        sh -lc '
+          out=$(ssh -q -i /config/.ssh/id_ed25519 \
+                -o BatchMode=yes -o ConnectTimeout=8 -o StrictHostKeyChecking=no \
+                babylonrobot@192.168.0.104 \
+                "sudo -n /usr/local/bin/docker logs --since 60s cloudflared 2>/dev/null" \
+            2>/dev/null \
+            | awk '\''BEGIN{IGNORECASE=1} /context canceled|canceled by remote/{c++} END{print c+0}'\'' 2>/dev/null)
+          if ! [[ "$out" =~ ^[0-9]+$ ]]; then
+            out=0
+          fi
+          printf "%s" "$out"
+          exit 0
+        '
+      value_template: >
+        {% set v = (value | default('0')) | trim %}
+        {{ v|int(0) }}
+      state_class: measurement
+      scan_interval: 60
+      command_timeout: 30
+
+  # One-off debug sensor to print what’s available
+  - sensor:
+      name: "CLI Debug HA Tools"
+      unique_id: cli_debug_ha_tools
+      command: >-
+        sh -lc '
+          for x in sh bash ssh git curl awk grep tr; do
+            command -v "$x" || echo "missing:$x"
+          done
+        '
+      scan_interval: 60
+
+# ▶ INTEGRATION: Command Line Sensors — Cloudflared/Plex Tunnel ◀
+
+  - binary_sensor:
+      name: "Tailscale Funnel Reachability"
+      unique_id: cli_tailscale_funnel_reachability_alpha
+      device_class: connectivity
+      command: >-
+        curl -4 -s -o /dev/null -w '%{http_code}'
+        https://homeassistant.reverse-beta.ts.net
+      payload_on: "200"
+      payload_off: "000"
+      scan_interval: 300
+
+  - sensor:
+      name: "Tailscale IP (Home Assistant)"
+      unique_id: "tailscale_ip_ha_alpha"
+      command: "hostname -i"
+      value_template: "{{ value }}"
+      scan_interval: 300

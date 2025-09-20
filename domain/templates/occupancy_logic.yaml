@@ -18,7 +18,7 @@
           {'entity': 'binary_sensor.bedroom_occupancy_alpha_occupancy',      'protocol': 'mqtt',   'preference': 1, 'type': 'occupancy'},
           {'entity': 'binary_sensor.bedroom_wardrobe_occupancy_matter_alpha','protocol': 'matter', 'preference': 2, 'type': 'occupancy'},
           {'entity': 'binary_sensor.wardrobe_occupancy_beta',                'protocol': 'logic',  'preference': 3, 'type': 'occupancy'},
-          {'entity': 'binary_sensor.desk_presence_inferred',                 'protocol': 'wifi',   'preference': 4, 'type': 'occupancy'}
+          {'entity': 'binary_sensor.desk_occupancy_beta', 'protocol': 'wifi',   'preference': 4, 'type': 'occupancy'}
         ] %}
         {{ preference_select(sources) == 'on' }}
       attributes:
@@ -47,13 +47,14 @@
             {'entity': 'binary_sensor.wardrobe_occupancy_beta','preference': 3},
             {'entity': 'binary_sensor.desk_presence_inferred','preference': 4}
           ] %}
-          {{ get_active_source(sources) }}
-        source_count: 4
+          {{ get_active_source(sources) or 'unknown' }}
+        source_count: "4"
         related_motion_entity: "binary_sensor.bedroom_motion_beta"
         related_motion_recent_entity: "binary_sensor.bedroom_motion_recent_beta"
-        replacements_note: "desk_presence_macbook_inference → desk_presence_inferred; ethernet inference removed"
+        replacements_note: "desk_occupancy_macbook_inference → desk_occupancy_beta; ethernet inference removed"
         version: "2.4"
         last_updated: "2025-09-04"
+        floor_id: "sanctum"
         area_id: "bedroom"
 
     - name: "Kitchen Occupancy (Beta)"
@@ -85,8 +86,8 @@
             {'entity': 'binary_sensor.kitchen_occupancy_alpha_occupancy', 'preference': 1},
             {'entity': 'binary_sensor.kitchen_occupancy_matter_alpha_occupancy', 'preference': 2}
           ] %}
-          {{ get_active_source(sources) }}
-        source_count: 2
+          {{ get_active_source(sources) or 'unknown' }}
+        source_count: "2"
         downstream_consumers: >
           {{ ["sensor.kitchen_last_activity"] | tojson }}
         version: "3.3"
@@ -120,8 +121,8 @@
           {% set sources = [
             {'entity': 'binary_sensor.living_room_occupancy_alpha_occupancy', 'preference': 1}
           ] %}
-          {{ get_active_source(sources) }}
-        source_count: 1
+          {{ get_active_source(sources) or 'unknown' }}
+        source_count: "1"
         downstream_consumers: >
           {{ ["sensor.living_room_last_activity"] | tojson }}
         version: "3.3"
@@ -158,8 +159,8 @@
             {'entity': 'binary_sensor.ensuite_occupancy_alpha_occupancy', 'preference': 1},
             {'entity': 'binary_sensor.ensuite_shower_occupancy_epsilon', 'preference': 2}
           ] %}
-          {{ get_active_source(sources) }}
-        source_count: 2
+          {{ get_active_source(sources) or 'unknown' }}
+        source_count: "2"
         downstream_consumers: >
           {{ ["sensor.ensuite_last_activity"] | tojson }}
         version: "3.5"
@@ -173,7 +174,7 @@
       state: >
         {% from 'template.library.jinja' import preference_select %}
         {% set sources = [
-          {'entity': 'binary_sensor.downstairs_occupancy_matter_alpha_occupancy', 'protocol': 'matter', 'preference': 1, 'type': 'occupancy'}
+          {'entity': 'binary_sensor.downstairs_occupancy_alpha_matter', 'protocol': 'matter', 'preference': 1, 'type': 'occupancy'}
         ] %}
         {{ preference_select(sources) == 'on' }}
       attributes:
@@ -189,13 +190,13 @@
         active_source: >
           {% from 'template.library.jinja' import get_active_source %}
           {% set sources = [
-            {'entity': 'binary_sensor.downstairs_occupancy_matter_alpha_occupancy', 'preference': 1}
+            {'entity': 'binary_sensor.downstairs_occupancy_alpha_matter', 'preference': 1}
           ] %}
-          {{ get_active_source(sources) }}
+          {{ get_active_source(sources) or 'unknown' }}
         aggregation_strategy: "single-source matter occupancy"
         upstream_sources: >
-          {{ ['template.library.jinja','binary_sensor.downstairs_occupancy_matter_alpha_occupancy'] | tojson }}
-        source_count: 1
+          {{ ['template.library.jinja','binary_sensor.downstairs_occupancy_alpha_matter'] | tojson }}
+        source_count: "1"
         downstream_consumers: >
           {{ 'sensor.hallway_downstairs_last_activity' | tojson }}
         version: "3.5"
@@ -227,8 +228,8 @@
           {% set sources = [
             {'entity': 'binary_sensor.upstairs_occupancy_matter_alpha_occupancy', 'preference': 1}
           ] %}
-          {{ get_active_source(sources) }}
-        source_count: 1
+          {{ get_active_source(sources) or 'unknown' }}
+        source_count: "1"
         downstream_consumers: >
           {{ 'sensor.hallway_upstairs_last_activity' | tojson }}
         version: "3.6"
@@ -291,14 +292,14 @@
       attributes:
         upstream_sources: >
           {{ ['binary_sensor.hallway_downstairs_occupancy_beta','binary_sensor.hallway_upstairs_occupancy_beta'] | tojson }}
-        area_id: "hallways"
+        area_id: "hallway"
         tier: "η"
         canonical_id: "merged_hallways_occupancy_η"
         file: "/config/domain/templates/occupancy_logic"
         date_created: "2025-08-05"
         last_updated: "2025-09-04"
         is_multi_source: true
-        source_count: 2
+        source_count: "2"
         data_quality: "excellent"
         subsystem: "hermes"
         role: "aggregation"
@@ -326,7 +327,7 @@
         area_id: "downstairs"
         file: "/config/domain/templates/occupancy_logic"
         is_multi_source: true
-        source_count: 3
+        source_count: "3"
         upstream_sources: >
           {{ ['binary_sensor.kitchen_occupancy_beta','binary_sensor.hallway_downstairs_occupancy_beta','binary_sensor.living_room_occupancy_beta'] | tojson }}
         role: "aggregation"
@@ -360,7 +361,7 @@
         area_id: "upstairs"
         file: "/config/domain/templates/occupancy_logic"
         is_multi_source: true
-        source_count: 5
+        source_count: "5"
         upstream_sources: >
           {{ ['binary_sensor.hallway_upstairs_occupancy_beta','binary_sensor.bedroom_occupancy_beta','binary_sensor.desk_presence_inferred','binary_sensor.wardrobe_occupancy_beta','binary_sensor.ensuite_occupancy_beta'] | tojson }}
         role: "aggregation"
@@ -400,14 +401,14 @@
             {'entity': 'binary_sensor.bedroom_occupancy_beta','preference': 2},
             {'entity': 'binary_sensor.ensuite_occupancy_beta','preference': 3}
           ] %}
-          {{ get_active_source(sources) }}
-        source_count: 3
+          {{ get_active_source(sources) or 'unknown' }}
+        source_count: "3"
         related_motion_entity: "binary_sensor.sanctum_motion_beta"
         related_motion_recent_entity: "binary_sensor.sanctum_motion_recent_beta"
         version: "1.1"
         last_updated: "2025-09-04"
+        floor_id: "sanctum"
         area_id: "bedroom"
-        subarea: "sanctum"
 
     #───────────────────────────────────────────────────────────────
     # ▼ GROUP: Sanctum Subareas
@@ -434,7 +435,7 @@
         upstream_sources: >
           {{ [{'entity': 'binary_sensor.desk_presence_inferred', 'protocol': 'wifi', 'preference': 1, 'type': 'occupancy'}] | tojson }}
         aggregation_strategy: "single-source desk occupancy"
-        source_count: 1
+        source_count: "1"
         version: "1.1"
         last_updated: "2025-09-04"
 
@@ -459,6 +460,31 @@
         upstream_sources: >
           {{ [{'entity': 'binary_sensor.bedroom_wardrobe_occupancy_matter_alpha', 'protocol': 'matter', 'preference': 1, 'type': 'occupancy'}] | tojson }}
         aggregation_strategy: "single-source standardized wardrobe occupancy"
-        source_count: 1
+        source_count: "1"
+        version: "1.1"
+        last_updated: "2025-09-04"
+
+    - name: "Bed Occupancy (Beta)"
+      unique_id: bed_occupancy_beta
+      device_class: occupancy
+      state: >
+        {% from 'template.library.jinja' import preference_select %}
+        {% set sources = [
+          {'entity': 'binary_sensor.bedroom_bed_alpha_vibration', 'protocol': 'mqtt', 'preference': 1, 'type': 'vibration'}
+        ] %}
+        {{ preference_select(sources) == 'on' }}
+      attributes:
+        tier: "β"
+        canonical_id: "bed_occupancy_β"
+        subsystem: "hermes"
+        module: "occupancy"
+        type: "proxy"
+        role: "standardized"
+        file: "/config/domain/templates/occupancy_logic"
+        protocols: "MQTT(1)"
+        upstream_sources: >
+          {{ [{'entity': 'binary_sensor.bedroom_bed_alpha_vibration', 'protocol': 'mqtt', 'preference': 1, 'type': 'vibration'}] | tojson }}
+        aggregation_strategy: "single-source standardized bed occupancy"
+        source_count: "1"
         version: "1.1"
         last_updated: "2025-09-04"

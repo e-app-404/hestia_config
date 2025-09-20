@@ -108,7 +108,7 @@
         current_hour: "{{ now().hour }}"
         is_working_hours: "{{ 9 <= now().hour < 17 }}"
         aggregation_strategy: "hour-based range evaluation"
-        source_count: 1
+        source_count: "1"
         version: "1.2"
         created: "2025-07-17"
         last_updated: "2025-07-20"
