@@ -1,0 +1,32 @@
+rehydration_seed:
+  id: "JANUS_DSM_PORTAL_SEED_v1"
+  timestamp_utc: "2025-09-19T11:00:00Z"
+  governance:
+    signoff_mode: "auto_affirm_with_prompt"
+    confidence_scoring: "always_on"
+    doctrine_files:
+      - "/mnt/data/system_instruction.yaml"
+  strategic_context:
+    objective: "Publish dual-surface DSM web front for nas.xplab.io"
+    constraints:
+      - "No heavy new services; keep Apache 2.4 + PHP 8.2"
+      - "Secure /portal via DSM Reverse Proxy + Tailscale allowlist"
+      - "Cloudflare/Tunnel optional; do not break local access"
+  environment:
+    dsm_version: "7.2+"
+    installed_packages: ["Web Station","Apache 2.4","PHP 8.2","MariaDB","phpMyAdmin","Node.js v18"]
+  artifacts_mounts:
+    public_root: "/volume1/web/public"
+    portal_root: "/volume1/web/portal"
+    shared_assets: "/volume1/web/_assets"
+  reverse_proxy_rules:
+    - {location: "/portal", upstream: "http://127.0.0.1:80/portal", auth: "DSM", allowlist: ["100.64.0.0/10"]}
+    - {location: "/ha", upstream: "http://192.168.0.129:8123", strip_prefix: true}
+    - {location: "/grafana", upstream: "http://<grafana-host>:3000", strip_prefix: true}
+  acceptance_criteria_ref: "/mnt/data/xplab_portal_manifest.yaml"
+  next_actions:
+    - "Create Web Service: xplab-public → /volume1/web/public"
+    - "Create Web Portal: nas.xplab.io → service xplab-public (ports 80/443)"
+    - "Apply Reverse Proxy rules"
+    - "Run acceptance checks from manifest"
+  handoff_tag: "HANDOFF/STRATEGOS/DSM-PORTAL/2025-09-19"

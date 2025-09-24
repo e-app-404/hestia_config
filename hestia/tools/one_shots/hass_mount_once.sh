@@ -1,3 +1,54 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Idempotent helper to mount the canonical edit root at $HOME/hass using macOS Keychain-backed
+# credentials and mount_smbfs -N. Intended for use from a LaunchAgent with KeepAlive.NetworkState.
+
+MOUNT_POINT="${MOUNT_POINT:-$HOME/hass}"
+SMB_USER="${SMB_USER:-}"
+SMB_HOST="${SMB_HOST:-}"
+SMB_SHARE="${SMB_SHARE:-}"
+
+usage() {
+  cat <<EOF >&2
+Usage: export SMB_USER SMB_HOST SMB_SHARE and run this script.
+Example:
+  SMB_USER=ha SMB_HOST=192.168.0.104 SMB_SHARE=ha-share $0
+
+The script is idempotent: if $MOUNT_POINT is already mounted it exits 0.
+EOF
+  exit 2
+}
+
+if [ -z "$SMB_USER" ] || [ -z "$SMB_HOST" ] || [ -z "$SMB_SHARE" ]; then
+  usage
+fi
+
+# Detect already-mounted
+if mount | egrep -q " on ${MOUNT_POINT} "; then
+  echo "ALREADY_MOUNTED ${MOUNT_POINT}"
+  exit 0
+fi
+
+mkdir -p "$MOUNT_POINT"
+chmod 700 "$MOUNT_POINT"
+
+URL="//${SMB_USER}@${SMB_HOST}/${SMB_SHARE}"
+echo "Mounting $URL -> $MOUNT_POINT (using Keychain via -N)"
+
+# Attempt mount using mount_smbfs (macOS). The -N flag uses Keychain credentials.
+if command -v mount_smbfs >/dev/null 2>&1; then
+  if mount_smbfs -N "$URL" "$MOUNT_POINT"; then
+    echo "MOUNT_OK $MOUNT_POINT"
+    exit 0
+  else
+    echo "MOUNT_FAIL mount_smbfs returned non-zero" >&2
+    exit 3
+  fi
+else
+  echo "MOUNT_NOT_AVAILABLE: mount_smbfs not found on PATH" >&2
+  exit 4
+fi
 #!/bin/sh
 # Idempotent user mount helper for HA Pi /config -> ~/hass
 # - exits 0 if already mounted at $MNT

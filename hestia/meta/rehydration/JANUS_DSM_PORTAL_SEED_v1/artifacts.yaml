@@ -1,0 +1,35 @@
+artifacts:
+  schema:
+    - path: /mnt/data/system_instruction.yaml
+      role: governance
+    - path: /mnt/data/metadata_schema.yaml
+      role: meta-schema
+    - path: /mnt/data/hades_config_index.yaml
+      role: index
+
+  network_context:
+    - /mnt/data/network.configuration.yaml
+    - /mnt/data/network.topology.json
+    - /mnt/data/tailscale_machines.topology.json
+    - /mnt/data/nas.config.yaml
+    - /mnt/data/tailscale_reverse_proxy.diagnostics.yaml
+
+  diagnostics:
+    - /mnt/data/git_push_logger_pipeline.yaml
+    - /mnt/data/ha_remote_config_export.md
+
+  dsm_portal_payload (app):
+    - /mnt/data/volume1-web-public-index.html        # → /volume1/web/public/index.html
+    - /mnt/data/volume1-web-portal-index.html        # → /volume1/web/portal/index.html
+    - /mnt/data/volume1-web-_assets-app.css          # → /volume1/web/_assets/app.css
+    - /mnt/data/volume1-web-_assets-app.js           # → /volume1/web/_assets/app.js
+    - /mnt/data/volume1-web-_assets-portal.config.json # → /volume1/web/_assets/portal.config.json
+
+  dsm_portal_guides (enrichment/contract):
+    - /mnt/data/volume1-web-README-portal-setup.md   # reverse-proxy + test checklist
+    - /mnt/data/xplab_portal_manifest.yaml           # acceptance criteria & deliverables
+
+notes:
+  hashing:
+    status: "not computed in-session"
+    action: "compute sha256 post-import in runner; attach to this index as ids"

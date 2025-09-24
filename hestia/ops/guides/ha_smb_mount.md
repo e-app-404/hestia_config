@@ -1,3 +1,13 @@
+---
+title: "Interactive SMB mount for Home Assistant data"
+date: 2025-09-24
+authors:
+  - "Evert Appels"
+status: Draft
+related:
+  - "ADR-0016: Canonical HA edit root & non-interactive SMB mount"
+---
+
 # Interactive SMB mount for Home Assistant data
 
 This document describes the recommended per-user mount of the Home Assistant Pi `/config` Samba share into the console user's home directory. The goal is a single, user-owned edit root at `~/hass` that editors like VS Code can write to without permission issues. This guide covers what changed, where files live, exact reproducible commands, and recommended follow-ups (keychain, launchd, and avoiding duplicate mounts).
@@ -15,8 +25,8 @@ We mount the Home Assistant Pi's Samba `/config` share to `~/hass` using a user 
 ```bash
 # install helper + agent (user context)
 install -d "$HOME/bin" "$HOME/Library/LaunchAgents" "$HOME/Library/Logs"
-install -m 0755 /n/ha/hestia/ops/scripts/hass_mount_once.sh "$HOME/bin/hass_mount_once.sh"
-install -m 0644 /n/ha/hestia/ops/LaunchAgents/com.local.hass.mount.plist "$HOME/Library/LaunchAgents/com.local.hass.mount.plist"
+install -m 0755 /n/ha/hestia/tools/one_shots/hass_mount_once.sh "$HOME/bin/hass_mount_once.sh"
+install -m 0644 /n/ha/hestia/tools/one_shots/com.local.hass.mount.plist "$HOME/Library/LaunchAgents/com.local.hass.mount.plist"
 
 # load agent
 launchctl unload -w  "$HOME/Library/LaunchAgents/com.local.hass.mount.plist" 2>/dev/null || true
@@ -35,7 +45,9 @@ launchctl load  -w   "$HOME/Library/LaunchAgents/com.local.hass.mount.plist"
     security find-internet-password -s homeassistant.local -a evertappels -r 'smb '
     ```
 
-- Retired: system LaunchDaemon and helper paths such as `/Library/LaunchDaemons/com.local.ha.mount.real.plist`, `/usr/local/sbin/ha_mount_helper`, and `/private/var/ha_real` are not used in this per-user model and should remain retired to avoid conflicting mounts.
+ - Retired: system LaunchDaemon and helper paths such as `/Library/LaunchDaemons/com.local.ha.mount.real.plist`, `/usr/local/sbin/ha_mount_helper`, and `/private/var/ha_real` are not used in this per-user model and should remain retired to avoid conflicting mounts.
+
+Important: ADR-0016 requires an explicit acknowledgement before disabling or removing system daemons. Any operator action or script that unloads/removes a system LaunchDaemon MUST set the environment token `ACK_DISABLE_SYSTEM_DAEMON=I_UNDERSTAND` (or otherwise follow ADR enforcement) to avoid accidental destructive changes.
 
 ## Quick interactive test (end-to-end)
 Make a temporary mount point and mount as the console user (non-interactive if the login keychain item exists):
