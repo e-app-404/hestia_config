@@ -31,12 +31,15 @@
   {% set raw = states(entity_id) | default('{}') | from_json %}
   {% if raw is mapping %}
     {% set current = raw %}
+    {% set ns = namespace(done=false) %}
     {% for k in key_path %}
-      {% if k in current %}
-        {% set current = current[k] %}
-      {% else %}
-        {% set current = default %}
-        {% break %}
+      {% if not ns.done %}
+        {% if k in current %}
+          {% set current = current[k] %}
+        {% else %}
+          {% set current = default %}
+          {% set ns.done = true %}
+        {% endif %}
       {% endif %}
     {% endfor %}
     {{ current }}
@@ -84,19 +87,19 @@
   {% if is_state_valid(dev_state) and is_state_valid(room_state) %}
     {% set dev_data = dev_state | from_json %}
     {% set room_data = room_state | from_json %}
+    {% set ns = namespace(done=false) %}
     {% for d in dev_data.devices.values() %}
-      {% if d.requires_review %}
+      {% if not ns.done and d.requires_review %}
         {{ 'review' }}
-        {% set ns = namespace(done=true) %}
-        {% break %}
+        {% set ns.done = true %}
       {% endif %}
     {% endfor %}
     {% if ns is not defined or not ns.done %}
+      {% set ns2 = namespace(done=false) %}
       {% for r in room_data.rooms.values() %}
-        {% if r.status == 'review' %}
+        {% if not ns2.done and r.status == 'review' %}
           {{ 'review' }}
-          {% set ns = namespace(done=true) %}
-          {% break %}
+          {% set ns2.done = true %}
         {% endif %}
       {% endfor %}
     {% endif %}

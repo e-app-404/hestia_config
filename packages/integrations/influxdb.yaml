@@ -1,67 +1,57 @@
-# ═══════════════════════════════════════════════════════════════════════════
-# ⟫⟫ INFLUXDB•  influxdb.yaml  •  Home Assistant InfluxDB Integration ◀
-# ⟫⟫ Enables exporting of all state changes to an external InfluxDB database
-# ⟫⟫ Loader configuration.yaml • packages: !include_dir_named integrations
-# ⟫⟫ Tier: core  •  Domain: configuration  •  Updated: 2025-08-01
-# ══════════════════════════════════════════════════════════════════
 influxdb:
-  host: a0d7b954-influxdb
+  api_version: 2
+  host: 192.168.0.104
   port: 8086
-  database: homeassistant
-  username: homeassistant
-  password: !secret influxdb_pw
-  max_retries: 5
-  default_measurement: state
+  token: !secret influxdb_token
+  organization: Hestia
+  bucket: homeassistant
   ssl: false
   verify_ssl: false
-  include:
-    domains:
-      - sensor
-      - binary_sensor
-      - climate
-      - switch
-    entity_globs:
-      # environment
-      - sensor.temperature_*
-      - sensor.humidity_*
-      # energy/power
-      - sensor.*_energy
-      - sensor.*_power
-      # motion/occupancy
-      - binary_sensor.motion_*
-      - binary_sensor.occupancy_*
-      # your health/sleep & media library metrics
-      - sensor.evert_health_biometrics_*
-      - binary_sensor.evert_health_biometrics_*
-      - sensor.evert_sleep_*
-      - sensor.ds220plus_library_*
 
-  exclude:
-    domains:
-      - media_player
-      - zone
-      - updater
-      - group
-    entity_globs:
-      - sensor.sun*
-      - sensor.date*
-      - sensor.time*
-      - sensor.*_entity_list
-      - sensor.*failover_summary
-      - sensor.*_minutes_since_*
+  # Optional tuning (keep commented until validated)
+  # max_retries: 3
+  # default_measurement: state
+  # tags:
+  #   source: homeassistant
+  # include:
+  #   entities: []
+  # exclude:
+  #   domains: []
 
-  ignore_attributes:
-    - entities
-    - upstream_sources
-    - description
-    - friendly_name
-    - icon
-    - subsystem
-    - module
-    - canonical_id
-    - canonical_tier
-
-  tags_attributes:
-    - unit_of_measurement
-    - device_class
-    - friendly_name
+  # --- Advanced options (disabled during validation) ---
+  # include:
+  #   domains: [sensor, binary_sensor, climate, switch]
+  #   entity_globs:
+  #     - sensor.temperature_*
+  #     - sensor.humidity_*
+  #     - sensor.*_energy
+  #     - sensor.*_power
+  #     - binary_sensor.motion_*
+  #     - binary_sensor.occupancy_*
+  #     - sensor.evert_health_biometrics_*
+  #     - binary_sensor.evert_health_biometrics_*
+  #     - sensor.evert_sleep_*
+  #     - sensor.ds220plus_library_*
+  # exclude:
+  #   domains: [media_player, zone, updater, group]
+  #   entity_globs:
+  #     - sensor.sun*
+  #     - sensor.date*
+  #     - sensor.time*
+  #     - sensor.*_entity_list
+  #     - sensor.*failover_summary
+  #     - sensor.*_minutes_since_*
+  # ignore_attributes:
+  #   - entities
+  #   - upstream_sources
+  #   - description
+  #   - friendly_name
+  #   - icon
+  #   - subsystem
+  #   - module
+  #   - canonical_id
+  #   - canonical_tier
+  # tags_attributes:
+  #   - unit_of_measurement
+  #   - device_class
+  #   - friendly_name

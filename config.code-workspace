@@ -20,10 +20,9 @@
       "www",
       "tts",
       "reports",
-      "hestia/diagnostics",
-      "hestia/core/system",
-      "hestia/work",
-      "tmp"
+      "hestia/vault",
+      "tmp",
+      ".venv"
     ],
     "gitlens.currentLine.enabled": false,
     "gitlens.hovers.enabled": false,
@@ -40,6 +39,7 @@
       "**/.DS_Store": true,
       "**/.storage.git/objects.git/subtree-cache.storage.git": true,
       "**/.storage.git": false,
+      "**/.venv": true,
       "**/.git/**": false,
       "**/.git": false,
       "hestia/core/meta/gitdir-visible/**": false,
@@ -50,7 +50,7 @@
       "**/*.pyc": true,
       "reports/**": true,
       "hestia/diagnostics/**": true,
-      "hestia/work/**": true,
+      "hestia/work/**": false,
       "zigbee2mqtt/**": true
     },
     "files.watcherExclude": {
@@ -59,6 +59,7 @@
     "search.exclude": {
       "hestia/core/meta/.git/**": true,
       "**/.storage": true,
+      "**/.venv": true,
       "**/deps/**": true,
       "**/www/**": true,
       "**/tts/**": true,
@@ -89,6 +90,13 @@
         "**/scenes.yaml",
         "**/blueprints/**/*.yaml",
         "**/domain/templates/**/*.yaml",
+        "**/domain/automations/**/*.yaml",
+        "**/domain/scripts/**/*.yaml",
+        "**/domain/groups/**/*.yaml",
+        "**/domain/sensors/**/*.yaml",
+        "**/domain/binary_sensors/**/*.yaml",
+        "**/domain/lights/**/*.yaml",
+        "**/domain/helpers/**/*.yaml",
         "**/entities/**/*.yaml"
       ]
     },

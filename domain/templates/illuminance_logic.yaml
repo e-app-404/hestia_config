@@ -44,6 +44,7 @@
         tier: "β"
         canonical_id: "bedroom_illuminance_β"
         area_id: "bedroom"
+        floor_id: "sanctum"
         source_count: "1"
         data_quality: "{{ state_attr('sensor.bedroom_illuminance_wifi_alpha_illuminance', 'data_quality') }}"
         sources: "{{ state_attr('sensor.bedroom_illuminance_wifi_alpha_illuminance', 'sources') }}"

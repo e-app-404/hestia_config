@@ -1,3 +1,56 @@
+# Home Assistant runtime / noisy files
+.storage/
+.cloud/
+deps/
+.venv/
+tmp/
+*.db
+*.db-shm
+*.db-wal
+home-assistant.log*
+.HA_VERSION
+.uuid
+influx.cookie
+icloud3.log
+
+# Python artifacts
+__pycache__/
+*.pyc
+
+# Editor / IDE
+.vscode/
+.idea/
+.DS_Store
+._*
+
+# Backups / archives
+backups/
+backup*/
+*.tar.gz
+*.zip
+
+# Secrets (do NOT commit)
+secrets.yaml
+secrets.yml
+secrets.*.yaml
+
+# Guard against nested vendor repos/objects
+**/.git/
+
+# Allowlist: ensure canonical config stays tracked
+!configuration.yaml
+!automations.yaml
+!scripts.yaml
+!scenes.yaml
+!packages/
+!custom_components/
+!blueprints/
+!themes/
+!www/
+.venv/
+__pycache__/
+*.py[cod]
+/.venv/
 # Dev tooling ignores
 .venv/
 .pytest_cache/
@@ -120,6 +173,13 @@ virtualization/vagrant/config
 !.vscode/extensions.json
 !.vscode/tasks.json
 .env
+
+# Template patcher: ignore tools but keep scripts/patches
+hestia/tools/template_patcher/tools/*
+!hestia/tools/template_patcher/patch_ha_templates.sh
+!hestia/tools/template_patcher/rollback_ha_templates.sh
+!hestia/tools/template_patcher/patches/
+!hestia/tools/template_patcher/scratch/
 
 # Windows Explorer
 desktop.ini

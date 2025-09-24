@@ -1,3 +1,13 @@
+#!/usr/bin/env bash
+set -euo pipefail
+# Block root-level packaging/build droppings in HA share
+for f in pyproject.toml setup.cfg setup.py Pipfile poetry.lock package.json yarn.lock pnpm-lock.yaml node_modules dist build .venv; do
+  if [ -e "./$f" ]; then
+    echo "ERROR: Disallowed file/dir at repo root: $f" >&2
+    exit 1
+  fi
+done
+echo "Workspace enforcer: OK"
 
 #!/usr/bin/env bash
 set -Eeuo pipefail

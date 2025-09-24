@@ -8,7 +8,7 @@
 # ═══ SENSORS & LOGIC ═══
 template:
   - sensor:
-      - name: "Bedroom Matrix – Last Route"
+      - name: "Bedroom Matrix: Last Route"
         unique_id: "bedroom_matrix_last_route"
         state: >-
           A: {{
@@ -65,8 +65,8 @@ template:
         attributes:
           tier: "β"
           canonical_id: "macbook_active_displays_β"
-          alpha_source: "sensor.macbook_displays"
-          upstream_sources: "sensor.macbook_displays"
+          upstream_sources: >
+            {{ "sensor.macbook_displays" | tojson }}
           display_names: >
             {{ state_attr('sensor.macbook_displays', 'Display Names') or [] }}
           display_ids: >
@@ -89,7 +89,8 @@ template:
         attributes:
           tier: "β"
           canonical_id: "bedroom_tv_app_β"
-          alpha_source: "sensor.bedroom_tv_alpha_tv_channel_name"
+          upstream_sources: >
+            {{ "sensor.bedroom_tv_alpha_tv_channel_name" | tojson }}
           rationale: "Tracks which TV app is currently active for scene/automation logic."
           description: "Abstraction for current app/channel running on Bedroom TV."
           file: "/config/packages/package_universal_media.yaml"
@@ -105,6 +106,8 @@ template:
           last_changed: "{{ states.media_player.playstation_4.last_changed if states.media_player.playstation_4 is defined else '' }}"
           tier: "μ"
           canonical_id: "ps4_telemetry_μ"
+          upstream_sources: >
+            {{ ["media_player.playstation_4"] | tojson }}
           rationale: "Diagnostic telemetry sensor for PS4 media_player state and attributes."
           description: >
             \"Diagnostic sensor to expose raw PS4 media_player state and key attributes for troubleshooting and validation
@@ -171,7 +174,7 @@ template:
             True when PS4 is actively running a game (media_player state playing + type game).
 
       - name: "Bedroom Entertainment Engaged"
-        unique_id: "bedroom_entertainment_engaged_gamma"
+        unique_id: "bedroom_entertainment_engaged"
         device_class: presence
         delay_off: "00:05:00"
         icon: mdi:television
@@ -186,7 +189,7 @@ template:
           role: "entertainment_engaged"
           file: "/config/packages/package_universal_media.yaml"
           upstream_sources: >
-            {{ ["media_player.bedroom_ps4_game_active_beta"] | tojson }}
+            {{ ["binary_sensor.bedroom_ps4_game_active_beta"] | tojson }}
           aggregation_strategy: "engagement detection (single source)"
           source_count: "1"
           version: "2.10"
@@ -197,17 +200,17 @@ template:
           floor_id: "sanctum"
           area_id: "bedroom"
 
-      - name: "Bedroom TV Entertainment Engaged"
-        unique_id: "bedroom_tv_entertainment_engaged_gamma"
+      - name: "Bedroom TV: Actively Running"
+        unique_id: "bedroom_tv_actively_running"
         icon: mdi:television-classic
         device_class: presence
         delay_off: "00:03:00"
         state: >
           {{ is_state('binary_sensor.bedroom_tv_on_beta', 'on')
-          and not is_state('sensor.bedroom_tv_app_beta', 'Unknown') }}
+             and states('sensor.bedroom_tv_app_beta') != 'Unknown' }}
         attributes:
           tier: "γ"
-          canonical_id: "bedroom_tv_entertainment_engaged_γ"
+          canonical_id: "bedroom_tv_actively_running_γ"
           beta_source: "binary_sensor.bedroom_tv_on_beta"
           rationale: "Engaged when TV is on and running a known app (not just powered on)."
           description: >
@@ -218,13 +221,13 @@ template:
         icon: mdi:television
         state: >
           {% set tv_state = states('media_player.bedroom_tv_alpha') %}
-          {% set power = states('sensor.bedroom_tv_power_proxy') | float(0) %}
+          {% set power = states('sensor.bedroom_tv_alpha_power') | float(0) %}
           {{ tv_state == 'on' or power > 5 }}
         attributes:
           tier: "β"
           canonical_id: "bedroom_tv_on_β"
           alpha_source: "media_player.bedroom_tv_alpha"
-          power_source: "sensor.bedroom_tv_power_proxy"
+          power_source: "sensor.bedroom_tv_alpha_power"
           rationale: "On if TV reports 'on' or draws significant power (>5W)."
           description: >
             β-tier abstraction for bedroom TV on-state, combines media_player and power for reliability.
@@ -235,7 +238,7 @@ template:
           role: "tv_power"
           file: "/config/packages/package_universal_media.yaml"
           upstream_sources: >
-            {{ ['media_player.bedroom_tv_alpha', 'sensor.bedroom_tv_power_proxy'] | tojson }}
+            {{ ['media_player.bedroom_tv_alpha', 'sensor.bedroom_tv_alpha_power'] | tojson }}
           aggregation_strategy: "status detection (multi-source)"
           source_count: "2"
           version: "2.10"
@@ -810,18 +813,6 @@ automation:
             {{ state_attr('sensor.bedroom_matrix_last_route','last_command') }}
             ({{ state_attr('sensor.bedroom_matrix_last_route','mode') }})
 
-  - alias: "Bedroom Matrix: availability online at HA start"
-    id: bedroom_matrix_mqtt_online_20250910_a
-    trigger:
-      - platform: homeassistant
-        event: start
-    action:
-      - service: mqtt.publish
-        data:
-          topic: ha/bedroom_hdmi_matrix/status
-          payload: "online"
-          qos: 1
-          retain: true
 
   - alias: "Bedroom Matrix: MQTT Discovery (one-shot)"
     id: "bedroom_matrix_discovery_once_20250910_a"

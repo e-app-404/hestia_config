@@ -1,0 +1,318 @@
+checkpoint:
+  label: "HA + Influx + macOS SMB — continuity snapshot"
+  captured_at_utc: "2025-09-24T20:00:00Z"
+
+  operator:
+    local_user: "evertappels"
+    host_os: "macOS"
+
+  systems:
+    nas:
+      hostname: "nas.xplab.io"
+      tailnet_hostname: "ds220plus.reverse-beta.ts.net"
+      ip: "192.168.0.104"
+      model: "Synology DS220+"
+      os: "DSM 7.x"
+      services:
+        - name: "InfluxDB 2.x"
+          http: "http://192.168.0.104:8086"
+          version_seen: "v2.7.12"
+        - name: "SMB (CIFS)"
+          tcp_445: "reachable (previously tested)"
+        - name: "Git Server (git-shell via SSH)"
+          tcp_22: "reachable"
+          auth: "publickey (gituser)"
+
+    home_assistant:
+      status:
+        ha_core_check: "OK (Processing... Done.)"
+        ha_core_restart: "Completed; no influx debug lines emitted"
+      env_notes:
+        - "VS Code workspace access blocked by SMB mount instability"
+        - "ha CLI available on HA host; not available in VS Code container env"
+
+  influxdb:
+    org:
+      name: "Hestia"
+      id: "dbe505ac34560afd"
+    bucket:
+      name: "homeassistant"
+      id: "baa7a66ff602926f"
+      retention_seconds: 2592000
+    tokens:
+      - label: "influxdb_token (Home Assistant writer)"
+        token_partial: "d9W22UZsy-****=="
+        auth_id: "0f871d3b65db2000"
+        user: "homeassistant"
+        org_id: "dbe505ac34560afd"
+        perms:
+          - { action: "read",  resource: { type: "buckets", id: "baa7a66ff602926f" } }
+          - { action: "write", resource: { type: "buckets", id: "baa7a66ff602926f" } }
+    health_checks:
+      - curl: "GET /health"
+        result: { status: "pass", version: "v2.7.12" }
+    smoke_test:
+      write:
+        endpoint: "/api/v2/write?org=Hestia&bucket=homeassistant&precision=ns"
+        line_protocol: "ha_smoketest,host=nas value=1i <ns>"
+        http_status: 204
+      query:
+        flux: "from(bucket:\"homeassistant\") |> range(start:-5m) |> filter(fn:(r)=>r._measurement==\"ha_smoketest\") |> last()"
+        observed_last_value: 1
+
+  home_assistant_config:
+    split_config:
+      packages_dir: "packages/"
+      influx_config_file: "packages/integrations/influxdb.yaml"
+      logger_config_file: "packages/integrations/logger.yaml"
+    influxdb_yaml_current:
+      api_version: 2
+      host: "192.168.0.104"
+      port: 8086
+      token: "!secret influxdb_token"
+      organization: "Hestia"
+      bucket: "homeassistant"
+      advanced_options_commented: true
+    logger_yaml_current:
+      logger:
+        default: "info"
+        logs:
+          homeassistant.components.influxdb: "debug"
+          influxdb_client.client.write: "debug"
+          influxdb_client.client.influxdb_client: "debug"
+    repo_state_notes:
+      - "Earlier HEAD still had legacy v1-style host: a0d7b954-influxdb (ghost token) — now corrected in working tree."
+      - "ha_influx_diag.sh added (commit 64e4c94) to repo root in one session."
+      - "Unification confirmed: single include root `/config/packages`; `packages/integrations/` contains `influxdb.yaml` and `logger.yaml`."
+
+  diag_artifacts:
+    files_created_or_used:
+      - path: "/config/diag/influx_health.txt"
+      - path: "/config/diag/influx_write_head.txt"
+      - path: "/config/diag/influx_query.txt"
+      - path: "/config/diag/ha_core_full.log"
+      - path: "/config/diag/ha_influx_tail.log"
+      - path: "/config/diag/ha_core_check.txt"
+      - path: "/n/ha/ha_influx_diag.sh"
+    scripts_snippets:
+      - name: "ha_influx_diag.sh (current intent)"
+        purpose: "health + write + query + ha core logs"
+        note: "Run on HA host; non-interactive curl-based write/query proven."
+
+  smb_mounting_on_mac:
+    goals:
+      - "Provide reliable, writable mount for HA config in VS Code"
+    history:
+      attempts:
+        - autofs_map_n_ha:
+            path: "/etc/auto_ha"
+            master_fragment: "/etc/auto_master.d/ha.autofs"
+            target: "/n/ha -> //babylonrobot@192.168.0.104/home"
+            result: "Autofs placeholder visible; writes failed with 'No locks available'."
+        - manual_mount_volumes_ha:
+            cmd: "mount_smbfs //babylonrobot@192.168.0.104/home /Volumes/ha"
+            result: "Successful interactive mount; writeable; later unmounted."
+        - launchdaemon_root_mount:
+            helper: "/usr/local/sbin/ha_mount_helper"
+            plist: "/Library/LaunchDaemons/com.local.ha.mount.real.plist"
+            first_target: "/Volumes/ha_real"
+            result: "Failed due to collision with existing /Volumes/HA autofs tree (case-insensitive path)."
+        - non_volumes_target:
+            target: "/private/var/ha_real"
+            result: "Intermittent failures; rc=64 ('File exists'); later switched to auth focus."
+        - non_volumes_auth_focus:
+            target: "/private/var/ha_real"
+            shares_tried: ["HA_MIRROR", "home", "git", "hestia"]
+            method: "System.keychain + mount_smbfs -N; also direct URL with user:pass"
+            result: "All attempts returned 'Authentication error' from server."
+    keychain:
+      intended_entries:
+        - scope: "System.keychain"
+          account: "babylonrobot"
+          server: "192.168.0.104"
+          protocol: "smb "     # four-char SecProtocolType with trailing space
+          allowed_binaries:
+            - "/sbin/mount_smbfs"
+            - "/usr/libexec/automountd"
+        - scope: "Login.keychain"
+          account: "babylonrobot"
+          server: "192.168.0.104"
+          protocol: "smb "
+          allowed_binaries:
+            - "/sbin/mount_smbfs"
+      notes:
+        - "Protocol must be 'smb ' (four characters)."
+        - "System.keychain item creation must pass keychain as positional last arg; no '-k' flag exists."
+        - "As of this checkpoint, System.keychain item exists but DSM rejects credentials for 'babylonrobot' (auth error)."
+    macos_specifics:
+      mount_helper: "/sbin/mount_smbfs"
+      supports_u_g_flags: false
+      autofs_errors_seen:
+        - "No locks available (automountd) for /Volumes/HA and /n/ha"
+      mount_errors_seen:
+        - "File exists (rc=64) when target occupied or /Volumes name collision"
+        - "Authentication error (server rejected connection) for user 'babylonrobot'"
+    current_state:
+      autofs:
+        active_paths:
+          - "/Volumes/HA (map auto_ha, automounted)"
+          - "/n/ha (map auto_smb, automounted)"
+        decision: "Do not modify without explicit approval (disruptive)."
+      non_volumes_target:
+        path: "/private/var/ha_real"
+        exists: true
+        is_mounted: false
+        open_handles: 0
+        last_attempt_result: "AUTHENTICATION_ERROR (DSM rejected SMB creds for 'babylonrobot')"
+        preferred_share: "HA_MIRROR"
+    safe_plan_locked_in:
+      - "Use non-/Volumes target: /private/var/ha_real"
+      - "System+Login keychains with protocol 'smb ' (four-char) only"
+      - "Root-owned helper + LaunchDaemon with RunAtLoad + KeepAlive.NetworkState"
+      - "No autofs changes unless explicitly approved"
+
+  git_pipeline:
+    mac_to_nas:
+      working_user: "gituser"
+      endpoints:
+        lan: "ssh://gituser@192.168.0.104/volume1/git/omega_registry.git"
+        tailnet: "ssh://gituser@ds220plus.reverse-beta.ts.net/volume1/git/omega_registry.git"
+      status: "push OK from mac → NAS (public key)"
+    nas_to_github_mirror:
+      repo: "omega_registry"
+      keypaths:
+        private: "/var/services/homes/gituser/.ssh/omega_registry_mirror_key"
+        public: "/var/services/homes/gituser/.ssh/omega_registry_mirror_key.pub"
+      post_receive_hook:
+        path: "/volume1/git/omega_registry.git/hooks/post-receive"
+        mirror_target: "git@github.com:e-app-404/omega_registry.git"
+        log_path: "/volume1/git/_mirror_logs/omega_registry.log"
+      status: "mirror attempted; blocked by large files on GitHub pre-receive"
+      remediation_options:
+        - "rewrite history / enable Git LFS on large artifacts"
+        - "maintain filtered mirror of repo without large blobs"
+    dns_observation:
+      mac_to_tailnet: "intermittent resolution; LAN IP stable"
+
+  canonical_commands:
+    # Influx health / org / bucket checks (OK)
+    influx_orgs:   "curl -s -H 'Authorization: Token $TOKEN' 'http://192.168.0.104:8086/api/v2/orgs?org=Hestia' | jq ."
+    influx_buckets:"curl -s -H 'Authorization: Token $TOKEN' 'http://192.168.0.104:8086/api/v2/buckets?org=Hestia' | jq ."
+    write_smoke:   "curl -s -i -X POST 'http://192.168.0.104:8086/api/v2/write?org=Hestia&bucket=homeassistant&precision=ns' -H 'Authorization: Token $TOKEN' --data-binary 'ha_smoketest,host=nas value=1i $(date +%s%N)'"
+    query_smoke:   "curl -s 'http://192.168.0.104:8086/api/v2/query?org=Hestia' -H 'Authorization: Token $TOKEN' -H 'Content-Type: application/json' -d '{\"query\":\"from(bucket:\\\"homeassistant\\\") |> range(start:-5m) |> filter(fn:(r)=>r._measurement==\\\"ha_smoketest\\\") |> last()\"}'"
+
+    # Keychain (prompted vs. programmatic)
+    keychain_login_add_prompt:  "security add-internet-password -a babylonrobot -s 192.168.0.104 -r 'smb ' -T /sbin/mount_smbfs -l ha_nas_login"
+    keychain_system_add_with_pw: "sudo env PW='<password>' security add-internet-password -a babylonrobot -s 192.168.0.104 -r 'smb ' -T /sbin/mount_smbfs -T /usr/libexec/automountd -l ha_nas_system -w \"$PW\" /Library/Keychains/System.keychain"
+    keychain_system_delete:     "sudo security delete-internet-password -s 192.168.0.104 -a babylonrobot -r 'smb ' /Library/Keychains/System.keychain"
+
+    # SMB tests
+    smb_list_shares_prompt:     "smbutil view '//babylonrobot@192.168.0.104'"
+    manual_mount_nonvol_prompt: "sudo mount_smbfs '//babylonrobot@192.168.0.104/HA_MIRROR' /private/var/ha_real"
+    manual_mount_nonvol_keychain:"sudo mount_smbfs -N '//babylonrobot@192.168.0.104/HA_MIRROR' /private/var/ha_real"
+
+  decisions_and_guards:
+    non_destructive_by_default: true
+    avoid_autofs_touch: true
+    disruptive_autofs_replacement_requires: "explicit 'REPLACE_AUTOF' approval"
+    secrets_handling:
+      - "Do not echo tokens/passwords in logs"
+      - "Prefer Keychain or interactive prompt; for System.keychain use positional keychain arg"
+    vs_code_constraints:
+      - "Copilot runs commands itself where possible"
+      - "Minimal outputs; structured JSON when requested"
+    account_alignment_required: "DSM SMB username must match the password provided; confirm account is SMB-enabled and has RW on chosen share"
+
+  open_issues:
+    - id: "macOS-autofs-locks"
+      desc: "automountd spamming 'No locks available' on /Volumes/HA and /n/ha"
+      status: "ongoing; isolated from non-/Volumes approach"
+    - id: "mount_smbfs-file-exists"
+      desc: "Intermittent 'File exists' rc=64 on /private/var/ha_real during helper runs"
+      suspects:
+        - "stale directory or previous interrupted mount attempt"
+        - "race with LaunchDaemon start"
+      next_actions:
+        - "ensure clean dir; single sudo mount with -N, then install daemon"
+    - id: "SMB-auth-babylonrobot"
+      desc: "DSM rejects SMB logon for user 'babylonrobot' across multiple shares ('Authentication error')"
+      status: "blocking"
+      evidence:
+        - "System.keychain entry present (ptcl='smb ', srvr=192.168.0.104, acct=babylonrobot)"
+        - "mount_smbfs with -N and direct URL both fail with Authentication error"
+      next_actions:
+        - "On DSM: confirm user 'babylonrobot' is enabled and allowed for SMB"
+        - "Set/Reset password for 'babylonrobot' and re-test"
+        - "Confirm RW permissions on target share (prefer 'HA_MIRROR'); remove dotfile veto if present"
+        - "Re-run one-shot mount to /private/var/ha_real"
+    - id: "VSCode-access"
+      desc: "Workspace blocked until stable SMB mount present"
+      unblock_plan:
+        - "stabilize /private/var/ha_real mount (prefer share 'HA_MIRROR')"
+        - "optional symlink: ln -snf /private/var/ha_real ~/HA"
+
+  acceptance_criteria:
+    - "Mount present at /private/var/ha_real with non-interactive credentials and writable by local user"
+    - "LaunchDaemon restores mount after reboot/network changes"
+    - "HA→Influx logs visible at DEBUG and recent measurements present (secondary priority)"
+
+  strategos_followup:
+    summary:
+      - "Root cause: incorrect keychain add invocation (positional keychain path required; '-k' is invalid) — System.keychain item not created correctly."
+      - "Protocol must be 'smb ' (four characters) when creating keychain internet-password items."
+      - "Prefer non-/Volumes target: /private/var/ha_real for stable mounts on macOS."
+      - "Do not modify autofs maps without explicit approval; autofs collisions and 'No locks available' were observed."
+    one_shot_mount_block:
+      purpose: "Create correct System.keychain entry, perform one-shot mount attempts (HA_MIRROR first), and verify write."
+      prompts:
+        - "sudo: macOS admin password for local user"
+        - "NAS SMB password for 'babylonrobot' (prompted if not found in keychain)"
+      actions: |
+        # High-level steps executed as a single root script
+        1. Delete any existing System.keychain item for server/account
+        2. Add internet-password to System.keychain with protocol 'smb ' and trust for /sbin/mount_smbfs (and automountd)
+        3. Attempt mounts for shares: HA_MIRROR, home, git, hestia to /private/var/ha_real
+        4. Write a probe file to verify writability
+      success_indicators:
+        - "mount output shows /private/var/ha_real mounted"
+        - "/private/var/ha_real/probe.txt contains 'ok'"
+      failure_indicators:
+        - "MOUNT_FAILED: server refused connection or credentials incorrect"
+        - "WRITE_FAILED: share rejects writes or dotfile veto present"
+
+    persistence_and_daemon:
+      helper_path: "/usr/local/sbin/ha_mount_helper"
+      launchdaemon_plist: "/Library/LaunchDaemons/com.local.ha.mount.real.plist"
+      install_steps: |
+        1. Create helper at `helper_path` which mounts the share used by the one-shot and logs to /var/log/ha-mount.log
+        2. Install LaunchDaemon plist with RunAtLoad and KeepAlive(NetworkState)
+        3. bootstrap/enable/kickstart the LaunchDaemon and verify mount after a short wait
+      verification: "launchctl print system/com.local.ha.mount.real ; mount | grep ' /private/var/ha_real ' ; tail -n 100 /var/log/ha-mount.log"
+
+  keychain_validation:
+    notes:
+      - "Use `security find-internet-password -s <server> -a <account> -r 'smb ' -g` to inspect items."
+      - "System.keychain operations require sudo and positional keychain path as the final arg."
+    recommended_commands:
+      verify_user_item: "security find-internet-password -s 192.168.0.104 -a babylonrobot -r 'smb ' -g"
+      verify_system_item: "sudo security find-internet-password -s 192.168.0.104 -a babylonrobot -r 'smb ' -g /Library/Keychains/System.keychain || true"
+      add_system_item_with_pw: |
+        sudo env PW='<password>' security add-internet-password -a babylonrobot -s 192.168.0.104 -r 'smb ' -T /sbin/mount_smbfs -T /usr/libexec/automountd -l ha_nas_system -w "$PW" /Library/Keychains/System.keychain
+
+  git_normalization:
+    intent: "Canonicalize DSM git remotes to ds220plus.reverse-beta.ts.net with gituser; keep GitHub as a push mirror when desired."
+    omega_registry:
+      set_origin: "ssh://gituser@ds220plus.reverse-beta.ts.net/volume1/git/omega_registry.git"
+      push_mirror: "https://github.com/e-app-404/omega_registry.git"
+    ha_bb8:
+      set_origin: "ssh://gituser@ds220plus.reverse-beta.ts.net/volume1/git-mirrors/ha-config.git"
+
+  acceptance_and_rollout:
+    acceptance_checks:
+      - "mount shows /private/var/ha_real and probe.txt contains ok"
+      - "LaunchDaemon restarts mount after reboot/network change"
+      - "HA logs show influxdb debug traces and recent measurements present in Influx"
+    rollback_guards:
+      - "Do not edit autofs maps without explicit 'REPLACE_AUTOF' approval"
+      - "Only delete /config/hestia/diag artifacts after archiving if needed"
+

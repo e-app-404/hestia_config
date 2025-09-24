@@ -76,7 +76,7 @@
   use_blueprint:
     path: Raukze/contact-sensor-left-open-notification.yaml
     input:
-      trigger_entity: binary_sensor.entrance_door_contact_matter_omega
+      trigger_entity: binary_sensor.entrance_door_alpha_contact
       friendly_name: Front door
       duration_issue_state:
         hours: 0
@@ -355,12 +355,12 @@
 - id: '1754732569560'
   alias: Fridge left open alert
   triggers:
-  - entity_id: binary_sensor.kitchen_fridge_contact_omega_matter_door
+  - entity_id: binary_sensor.kitchen_fridge_contact_omega_door
     to: 'on'
     for: 00:03:00
     id: send_alert
     trigger: state
-  - entity_id: binary_sensor.kitchen_fridge_contact_omega_matter_door
+  - entity_id: binary_sensor.kitchen_fridge_contact_omega_door
     from: 'on'
     for: 00:00:05
     id: clear_alert
@@ -432,7 +432,7 @@
   max_exceeded: silent
   variables:
     custom_friendly_name: Fridge
-    trigger_entity: binary_sensor.kitchen_fridge_contact_omega_matter_door
+    trigger_entity: binary_sensor.kitchen_fridge_contact_omega_door
     issue_state: 'on'
     notify_services_string: notify.notify
     notification_title: ⚠️ The fridge was left open
@@ -534,32 +534,8 @@
       title: ⚠️ Plex HTTPS Down
       message: https://plex.xplab.io not healthy for 2 minutes
     action: persistent_notification.create
-- id: auto_plex_https_down_alert_20250907
-  alias: Plex HTTPS Down Alert
-  triggers:
-  - entity_id: binary_sensor.plex_https_up
-    to: 'off'
-    for: 00:02:00
-    trigger: state
-  actions:
-  - action: persistent_notification.create
-    data:
-      title: ⚠️ Plex HTTPS Down
-      message: https://plex.xplab.io not healthy for 2 minutes
-- id: auto_plex_https_down_alert_20250907
-  alias: Plex HTTPS Down Alert
-  triggers:
-  - entity_id: binary_sensor.plex_https_up
-    to: 'off'
-    for: 00:02:00
-    trigger: state
-  actions:
-  - action: persistent_notification.create
-    data:
-      title: ⚠️ Plex HTTPS Down
-      message: https://plex.xplab.io not healthy for 2 minutes
-- id: auto_plex_https_down_alert_20250907
-  alias: Plex HTTPS Down Alert
+- id: auto_plex_https_down_alert_alias
+  alias: Plex HTTPS Down Alert (Notification)
   triggers:
   - entity_id: binary_sensor.plex_https_up
     to: 'off'
@@ -569,47 +545,18 @@
   - action: persistent_notification.create
     data:
       title: Plex HTTPS Down
-      message: https://plex.xplab.io unhealhty for over 2 minutes
+      message: https://plex.xplab.io unhealthy for over 2 minutes
       notification_id: plex_alert_01
-- id: 1d5c50b2-2d7b-4e4b-bac5-80ad30995055
-  alias: PS4 Activated → Sync TV Input + Matrix Routing (refactored)
-  description: ''
-  triggers:
-  - entity_id: media_player.playstation_4
-    to: 'on'
-    trigger: state
-  conditions: []
-  actions:
-  - choose:
-    - conditions:
-      - condition: state
-        entity_id: media_player.bedroom_tv_alpha
-        state: 'off'
-      sequence:
-      - target:
-          entity_id: media_player.bedroom_tv_alpha
-        action: media_player.turn_on
-        data: {}
-      - delay: 00:00:02
-      - data:
-          source: Playstation 4
-          remote: remote.bedroom_broadlink_rm3_alpha
-          device: bedroom_hdmi_matrix
-          tv: media_player.bedroom_tv_alpha
-          turn_on_tv: false
-        action: script.matrix_control
-    - conditions:
-      - condition: state
-        entity_id: media_player.bedroom_tv_alpha
-        state: 'on'
-      - condition: template
-        value_template: '{{ state_attr(''media_player.bedroom_tv_alpha_hub'', ''source'')
-          != ''HDMI'' }}'
-      sequence:
-      - data:
-          source: Playstation 4
-          remote: remote.bedroom_broadlink_rm3_alpha
-          device: bedroom_hdmi_matrix
-          tv: media_player.bedroom_tv_alpha
-          turn_on_tv: false
-        action: script.matrix_control
+
+- id: bedroom_matrix_mqtt_online_20250910_a
+  alias: "Bedroom Matrix: availability online at HA start"
+  trigger:
+    - platform: homeassistant
+      event: start
+  action:
+    - service: mqtt.publish
+      data:
+        topic: ha/bedroom_hdmi_matrix/status
+        payload: "online"
+        qos: 1
+        retain: true

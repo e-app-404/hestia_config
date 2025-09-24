@@ -1,4 +1,4 @@
-#####
+---
 # This integration can expose regular REST commands as services.
 # Services can be called from a script or in automation.
 # This loads up  RESTful commands.

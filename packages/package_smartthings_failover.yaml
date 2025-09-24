@@ -27,7 +27,6 @@ input_text:
   smartthings_first_failed_entity:
     name: "SmartThings First Failed Entity"
 
-
 group:
   smartthings_entities:
     name: "SmartThings Entities"

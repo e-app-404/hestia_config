@@ -1,5 +1,5 @@
 sensor:
-{% import 'template.library.jinja' as macros with context %}
+{% import 'custom_templates/template.library.jinja' as macros with context %}
 {% set _ = macros.circadian_brightness('bedroom', 60) %}
 {% set _ = macros.lighting_from_circadian('bedroom', 'brightness') %}
 {% set _ = macros.circadian_color_temp('bedroom', 3500) %}

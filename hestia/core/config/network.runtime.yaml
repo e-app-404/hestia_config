@@ -1,0 +1,53 @@
+---
+isp: "Three (UK)"
+public_gateway_ip: 10.178.12.162
+modem:
+  model: "Zyxel NR5103E"
+  firmware: "V1.00(ACBJ.4)C0"
+  mode: "ip-passthrough"
+  wan_ip: 10.178.12.162
+  lan_ip: 192.168.1.1
+  dns:
+    - 188.31.250.128
+    - 188.31.250.129
+  features:
+    - "5G NR WAN modem"
+    - "APN override: auto"
+    - "Upstream filtering: CG-NAT (confirmed)"
+    - "Web UI reachable at `192.168.1.1`"
+  notes: |
+    The modem passes its WAN lease to the router via passthrough mode.
+    No Tailscale installed or needed on the modem.
+router:
+  model: "TP-Link AX3000 (Archer AX53)"
+  lan_ip: 192.168.0.1
+  dhcp_range: "192.168.0.2 - 192.168.0.253"
+  wan_ip: 10.178.12.162
+  firmware: "1.2.5 Build 20240120 rel.41062(4555)"
+  admin_ui: "http://192.168.0.1"
+  dns_override: true
+  custom_dns:
+    - 100.100.100.100
+  public_dns_fallback:
+    - 8.8.8.8
+    - 1.1.1.1
+  features:
+    - "UPNP: enabled"
+    - "NAT-PMP: not exposed externally"
+    - "IPv6: disabled"
+    - "Bridge mode: not required"
+  notes: |
+    Admin access requires TLS offload (not fully supported).
+    Uses static WAN IP via passthrough from modem.
+tailnet_routing:
+  subnet_router: homeassistant
+  advertised_subnets:
+    - 192.168.0.0/24
+    - fdad:2364:d6f2:2854::/64
+  exit_node: none
+  relay_latency:
+    preferred_relay: Paris
+    latency_ms: 28.08
+  hairpin_nat: false
+local_gateway_domain: nas.xplab.io
+tailscale_gateway_domain: ds220plus.reverse-beta.ts.net

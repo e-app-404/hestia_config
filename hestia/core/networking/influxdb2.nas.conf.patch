@@ -1,0 +1,113 @@
+{
+   "CapAdd" : null,
+   "CapDrop" : null,
+   "cmd" : "influxd",
+   "cmd_v2" : "influxd",
+   "cpu_priority" : 0,
+   "enable_publish_all_ports" : false,
+   "enable_restart_policy" : false,
+   "enabled" : true,
+   "env_variables" : [
+      {
+         "key" : "DOCKER_INFLUXDB_INIT_RETENTION",
+         "value" : "30d"
+      },
+      {
+         "key" : "DOCKER_INFLUXDB_INIT_ADMIN_TOKEN",
+         "value" : "9b1f********f4e7c3b1c6e7d2f3a4b5c6d7e8f9"  // truncated for security
+         // matches secrets.yaml !influxdb_admin_token
+      },
+      {
+         "key" : "DOCKER_INFLUXDB_INIT_MODE",
+         "value" : "setup"
+      },
+      {
+         "key" : "DOCKER_INFLUXDB_INIT_USERNAME",
+         "value" : "homeassistant"
+      },
+      {
+         "key" : "DOCKER_INFLUXDB_INIT_PASSWORD",
+         "value" : "Ea!clapham25"
+      },
+      {
+         "key" : "DOCKER_INFLUXDB_INIT_ORG",
+         "value" : "Hestia"
+      },
+      {
+         "key" : "DOCKER_INFLUXDB_INIT_BUCKET",
+         "value" : "homeassistant"
+      },
+      {
+         "key" : "PATH",
+         "value" : "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+      },
+      {
+         "key" : "GOSU_VER",
+         "value" : "1.16"
+      },
+      {
+         "key" : "INFLUXDB_VERSION",
+         "value" : "2.7.12"
+      },
+      {
+         "key" : "INFLUX_CLI_VERSION",
+         "value" : "2.7.5"
+      },
+      {
+         "key" : "INFLUX_CONFIGS_PATH",
+         "value" : "/etc/influxdb2/influx-configs"
+      },
+      {
+         "key" : "INFLUXD_INIT_PORT",
+         "value" : "9999"
+      },
+      {
+         "key" : "INFLUXD_INIT_PING_ATTEMPTS",
+         "value" : "600"
+      },
+      {
+         "key" : "DOCKER_INFLUXDB_INIT_CLI_CONFIG_NAME",
+         "value" : "default"
+      }
+   ],
+   "exporting" : false,
+   "id" : "7816fb5656c695ffe996dae9501c97ced444320bb41da77e0b2b9dc9c1998232",
+   "image" : "influxdb:2.7",
+   "is_ddsm" : false,
+   "is_package" : false,
+   "labels" : {},
+   "links" : [],
+   "memory_limit" : 0,
+   "name" : "influxdb2",
+   "network" : [
+      {
+         "driver" : "bridge",
+         "name" : "bridge"
+      }
+   ],
+   "network_mode" : "default",
+   "port_bindings" : [
+      {
+         "container_port" : 8086,
+         "host_port" : 8086,
+         "type" : "tcp"
+      }
+   ],
+   "privileged" : false,
+   "shortcut" : {
+      "enable_shortcut" : false,
+      "enable_status_page" : false,
+      "enable_web_page" : false,
+      "web_page_url" : ""
+   },
+   "use_host_network" : false,
+   "version" : 2,
+   "volume_bindings" : [
+      {
+         "host_volume_file" : "/docker/influxdb2",
+         "is_directory" : true,
+         "mount_point" : "/var/lib/influxdb2",
+         "type" : "rw"
+      }
+   ]
+}

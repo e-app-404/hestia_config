@@ -16,8 +16,9 @@
       attributes:
         tier: "δ"
         canonical_id: "bedroom_tv_illuminance_decay_δ"
-        gamma_source: "binary_sensor.bedroom_tv_entertainment_engaged_gamma"
+        upstream_sources: >
+          {{ "binary_sensor.bedroom_tv_entertainment_engaged_gamma" | tojson }}
         rationale: "Decay illuminance score when TV engaged, persists lighting effects for a short period."
-        last_updated: "{{ now().isoformat() }}"
+        last_updated: "2025-09-21"
         description: >
           Decay sensor for lighting persistence based on TV engagement.

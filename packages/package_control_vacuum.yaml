@@ -289,7 +289,7 @@ script:
     sequence:
       - condition: template
         value_template: >
-          {% from 'template.library.jinja' import is_valid_datetime %}
+          {% from 'custom_templates/template.library.jinja' import is_valid_datetime %}
           {% set last = states(activity_sensor) %}
           {% set cleaned = states(cleaned_datetime) %}
           {% if is_valid_datetime(last) and is_valid_datetime(cleaned) %}
@@ -416,10 +416,10 @@ template:
       - name: Living Room Days Since Last Cleaned
         unique_id: living_room_days_since_last_cleaned
         availability: >-
-          {% import 'template.library.jinja' as lib %}
+          {% import 'custom_templates/template.library.jinja' as lib %}
           {{ lib.is_valid_datetime(states('input_datetime.living_room_last_cleaned')) }}
         state: >-
-          {% import 'template.library.jinja' as lib %}
+          {% import 'custom_templates/template.library.jinja' as lib %}
           {{ lib.days_since_cleaned(states('input_datetime.living_room_last_cleaned')) }}
         unit_of_measurement: "days"
         icon: mdi:counter
@@ -427,10 +427,10 @@ template:
       - name: Kitchen Days Since Last Cleaned
         unique_id: kitchen_days_since_last_cleaned
         availability: >-
-          {% import 'template.library.jinja' as lib %}
+          {% import 'custom_templates/template.library.jinja' as lib %}
           {{ lib.is_valid_datetime(states('input_datetime.kitchen_last_cleaned')) }}
         state: >-
-          {% import 'template.library.jinja' as lib %}
+          {% import 'custom_templates/template.library.jinja' as lib %}
           {{ lib.days_since_cleaned(states('input_datetime.kitchen_last_cleaned')) }}
         unit_of_measurement: "days"
         icon: mdi:counter
@@ -438,10 +438,10 @@ template:
       - name: Powder Room Days Since Last Cleaned
         unique_id: powder_room_days_since_last_cleaned
         availability: >-
-          {% import 'template.library.jinja' as lib %}
+          {% import 'custom_templates/template.library.jinja' as lib %}
           {{ lib.is_valid_datetime(states('input_datetime.powder_room_last_cleaned')) }}
         state: >-
-          {% import 'template.library.jinja' as lib %}
+          {% import 'custom_templates/template.library.jinja' as lib %}
           {{ lib.days_since_cleaned(states('input_datetime.powder_room_last_cleaned')) }}
         unit_of_measurement: "days"
         icon: mdi:counter
@@ -449,10 +449,10 @@ template:
       - name: Downstairs Hallway Days Since Last Cleaned
         unique_id: downstairs_hallway_days_since_last_cleaned
         availability: >-
-          {% import 'template.library.jinja' as lib %}
+          {% import 'custom_templates/template.library.jinja' as lib %}
           {{ lib.is_valid_datetime(states('input_datetime.downstairs_hallway_last_cleaned')) }}
         state: >-
-          {% import 'template.library.jinja' as lib %}
+          {% import 'custom_templates/template.library.jinja' as lib %}
           {{ lib.days_since_cleaned(states('input_datetime.downstairs_hallway_last_cleaned')) }}
         unit_of_measurement: "days"
         icon: mdi:counter
@@ -460,10 +460,10 @@ template:
       - name: Laundry Room Days Since Last Cleaned
         unique_id: laundry_room_days_since_last_cleaned
         availability: >-
-          {% import 'template.library.jinja' as lib %}
+          {% import 'custom_templates/template.library.jinja' as lib %}
           {{ lib.is_valid_datetime(states('input_datetime.laundry_room_last_cleaned')) }}
         state: >-
-          {% import 'template.library.jinja' as lib %}
+          {% import 'custom_templates/template.library.jinja' as lib %}
           {{ lib.days_since_cleaned(states('input_datetime.laundry_room_last_cleaned')) }}
         unit_of_measurement: "days"
         icon: mdi:counter

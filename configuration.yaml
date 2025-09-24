@@ -7,9 +7,9 @@ homeassistant:
   customize: !include customize.yaml
   packages: !include_dir_named packages
   allowlist_external_dirs:
+    - "/config"
     - "/config/hestia/diagnostics/logs"
     - "/config/hestia/diagnostics/notifications"
-    - "/config"
     - "/config/hestia/work/scratch"
     - "/config/hestia/tools/utils"
     - "/config/hestia/work"
@@ -43,3 +43,5 @@ input_number: !include domain/helpers/input_number.yaml
 input_datetime: !include domain/helpers/input_datetime.yaml
 input_text: !include domain/helpers/input_text.yaml
 counter: !include domain/helpers/counter.yaml
+
+

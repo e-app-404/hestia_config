@@ -1,0 +1,8 @@
+{
+  "orgID": "dbe505ac34560afd",
+  "description": "Home Assistant writer",
+  "permissions": [
+    {"action":"read","resource":{"type":"buckets","orgID":"dbe505ac34560afd","id":"baa7a66ff602926f"}},
+    {"action":"write","resource":{"type":"buckets","orgID":"dbe505ac34560afd","id":"baa7a66ff602926f"}}
+  ]
+}

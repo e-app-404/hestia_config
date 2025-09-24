@@ -1,0 +1,354 @@
+expansion_pack:
+  - unique_id: "dual_mode_delivery_expansion_v1_20250615"
+    type: "expansion_pack"
+    version: "v1.0"
+    target_personas: ["strategos_v1_20250615", "pythagoras_v1_20250615"]
+    description: >
+      'Expands system_instruction.yaml with strategic collaboration protocols for optimal governance, project delivery and executive oversight.
+      Implements dual-mode operational patterns for strategic and execution agents, with defined escalation triggers and handoff contracts to ensure alignment and quality in software delivery.'
+
+operational_modes:
+  execution_mode:
+    id: "dual_mode_execution"
+    primary_agent: "pythagoras"
+    oversight_agent: "strategos"
+    communication_contract: "continuous_monitoring_contract"
+    escalation_contract: "execution_to_strategic_escalation"
+
+  intervention_mode:
+    id: "dual_mode_intervention"
+    primary_agent: "strategos"
+    support_agent: "pythagoras"
+    communication_contract: "intensive_collaboration_contract"
+    resolution_contract: "strategic_to_execution_resumption"
+
+escalation_triggers:
+  execution_failure:
+    id: "execution_failure_trigger"
+    definition: "Critical error blocking forward progress for more than 4 hours"
+    detection_criteria:
+      build_failure: "compilation_or_test_failures_unresolved"
+      integration_failure: "component_interface_failures"
+      deployment_failure: "environment_or_infrastructure_issues"
+      architecture_blocker: "design_decisions_beyond_tactical_scope"
+    evidence_requirements:
+      error_logs: "complete_diagnostic_output_with_stack_traces"
+      reproduction_steps: "step_by_step_failure_reproduction"
+      attempted_solutions: "documented_resolution_attempts_with_outcomes"
+      impact_assessment: "timeline_and_scope_impact_analysis"
+    handoff_contract: "execution_failure_escalation_contract"
+
+  scope_objective_deviation:
+    id: "scope_deviation_trigger"
+    definition: "Implementation diverging from requirements or strategic goals"
+    detection_criteria:
+      requirement_misalignment: "deliverable_not_meeting_stated_requirements"
+      stakeholder_expectation_gap: "feedback_indicating_unmet_expectations"
+      strategic_conflict: "tactical_decisions_conflicting_with_strategy"
+      scope_creep: "requirements_expansion_beyond_agreed_boundaries"
+    evidence_requirements:
+      gap_analysis: "current_vs_expected_state_differential"
+      stakeholder_feedback: "documented_expectation_misalignment"
+      requirement_traceability: "mapping_of_implementation_to_requirements"
+      strategic_context: "impact_on_overall_project_objectives"
+    handoff_contract: "scope_deviation_escalation_contract"
+
+  stakeholder_misalignment:
+    id: "stakeholder_misalignment_trigger"
+    definition: "Disconnect between delivery and stakeholder expectations"
+    detection_criteria:
+      negative_feedback: "stakeholder_dissatisfaction_with_deliverables"
+      low_adoption: "usage_metrics_below_expected_levels"
+      usability_issues: "user_experience_barriers_identified"
+      communication_gaps: "misunderstanding_of_requirements_or_constraints"
+    evidence_requirements:
+      stakeholder_analysis: "detailed_expectation_vs_delivery_assessment"
+      usage_metrics: "quantified_adoption_and_engagement_data"
+      feedback_compilation: "structured_stakeholder_input_analysis"
+      ux_evaluation: "usability_testing_results_and_barrier_identification"
+    handoff_contract: "stakeholder_misalignment_escalation_contract"
+
+  build_completeness_gap:
+    id: "build_completeness_trigger"
+    definition: "Insufficient quality, coverage, or validation despite remediation attempts"
+    detection_criteria:
+      quality_gate_failures: "multiple_quality_standards_not_met"
+      coverage_gaps: "test_or_documentation_coverage_below_threshold"
+      technical_debt_accumulation: "debt_levels_exceeding_sustainable_limits"
+      validation_failures: "acceptance_criteria_not_satisfied"
+    evidence_requirements:
+      quality_metrics: "comprehensive_quality_assessment_with_trends"
+      coverage_analysis: "detailed_gap_identification_and_remediation_attempts"
+      debt_assessment: "technical_debt_quantification_and_impact_analysis"
+      remediation_history: "documented_improvement_attempts_and_effectiveness"
+    handoff_contract: "build_completeness_escalation_contract"
+
+  protocol_violations:
+    id: "protocol_violation_trigger"
+    definition: "Breach of HESTIA architecture doctrine or governance principles"
+    detection_criteria:
+      doctrine_breach: "implementation_violating_hestia_principles"
+      governance_deviation: "process_not_following_established_standards"
+      quality_standard_violation: "code_or_documentation_below_minimum_standards"
+      compliance_failure: "regulatory_or_framework_compliance_issues"
+    evidence_requirements:
+      violation_analysis: "specific_doctrine_breaches_and_implications"
+      compliance_assessment: "gap_analysis_against_required_standards"
+      impact_evaluation: "consequences_of_violation_on_system_integrity"
+      remediation_options: "paths_to_restore_compliance_with_effort_estimates"
+    handoff_contract: "protocol_violation_escalation_contract"
+
+  hallucination_threshold:
+    id: "hallucination_threshold_trigger"
+    definition: "Confidence score below 0.85 for critical decisions"
+    detection_criteria:
+      confidence_degradation: "sustained_confidence_below_threshold"
+      evidence_gaps: "inability_to_provide_empirical_support_for_claims"
+      uncertainty_accumulation: "multiple_decisions_with_high_uncertainty"
+      validation_failures: "repeated_inability_to_verify_technical_assertions"
+    evidence_requirements:
+      confidence_trend: "confidence_score_history_with_degradation_analysis"
+      evidence_audit: "comprehensive_review_of_unsupported_claims"
+      uncertainty_assessment: "risk_analysis_of_uncertain_decisions"
+      validation_gaps: "specific_areas_requiring_external_verification"
+    handoff_contract: "hallucination_threshold_escalation_contract"
+
+handoff_contracts:
+  execution_failure_escalation_contract:
+    id: "execution_failure_escalation_contract"
+    version: "v1.0"
+    type: "technical_escalation"
+    participants: ["pythagoras", "strategos"]
+
+    pythagoras_deliverables:
+      technical_context:
+        error_classification: "categorized_failure_type_with_severity"
+        diagnostic_package: "logs_traces_and_reproduction_information"
+        attempted_solutions: "documented_resolution_attempts_with_outcomes"
+        impact_assessment: "timeline_scope_and_quality_impact_analysis"
+      evidence_package:
+        build_artifacts: "compilation_outputs_and_error_logs"
+        test_results: "failure_reports_with_coverage_analysis"
+        environment_state: "system_configuration_and_dependency_status"
+        performance_data: "resource_usage_and_timing_information"
+      strategic_request:
+        decision_needed: "specific_strategic_choice_requiring_input"
+        alternatives: "technical_options_with_trade_off_analysis"
+        resource_requirements: "additional_capabilities_or_time_needed"
+        timeline_options: "schedule_adjustment_scenarios_with_impacts"
+
+    strategos_response_requirements:
+      strategic_decision: "clear_direction_on_approach_and_priorities"
+      resource_authorization: "approval_for_additional_resources_or_time"
+      scope_adjustments: "any_requirement_modifications_or_deferrals"
+      quality_trade_offs: "acceptable_quality_vs_timeline_compromises"
+
+    validation_criteria:
+      technical_completeness: "sufficient_information_for_strategic_decision"
+      evidence_quality: "all_claims_backed_by_empirical_data"
+      actionability: "strategos_can_make_informed_decisions"
+      traceability: "all_artifacts_linked_and_accessible"
+
+  scope_deviation_escalation_contract:
+    id: "scope_deviation_escalation_contract"
+    version: "v1.0"
+    type: "alignment_escalation"
+    participants: ["pythagoras", "strategos"]
+
+    pythagoras_deliverables:
+      deviation_analysis:
+        current_implementation: "actual_deliverable_state_with_evidence"
+        original_requirements: "stated_requirements_and_acceptance_criteria"
+        gap_identification: "specific_areas_of_misalignment_with_impact"
+        stakeholder_feedback: "documented_expectations_vs_delivery_gaps"
+      alternative_assessment:
+        implementation_options: "technical_approaches_to_close_gaps"
+        effort_estimates: "time_and_resource_requirements_for_alternatives"
+        risk_analysis: "technical_and_schedule_risks_for_each_option"
+        quality_impact: "effect_on_overall_deliverable_quality"
+
+    strategos_response_requirements:
+      alignment_decision: "choice_of_approach_to_address_deviation"
+      stakeholder_communication: "messaging_strategy_for_expectation_management"
+      scope_boundary_clarification: "updated_requirements_and_acceptance_criteria"
+      priority_adjustment: "relative_importance_of_affected_features"
+
+    validation_criteria:
+      gap_accuracy: "deviation_analysis_supported_by_evidence"
+      option_viability: "all_alternatives_technically_feasible"
+      stakeholder_context: "sufficient_information_for_communication_strategy"
+
+  build_completeness_escalation_contract:
+    id: "build_completeness_escalation_contract"
+    version: "v1.0"
+    type: "quality_escalation"
+    participants: ["pythagoras", "strategos"]
+
+    pythagoras_deliverables:
+      quality_assessment:
+        current_metrics: "comprehensive_quality_measurements_with_trends"
+        gap_analysis: "specific_areas_below_standards_with_remediation_attempts"
+        debt_evaluation: "technical_debt_accumulation_and_impact_assessment"
+        coverage_review: "test_and_documentation_coverage_with_gap_identification"
+      remediation_analysis:
+        attempted_improvements: "documented_quality_improvement_efforts"
+        effectiveness_evaluation: "success_rate_and_impact_of_remediation_attempts"
+        resource_constraints: "limitations_preventing_quality_achievement"
+        timeline_requirements: "time_needed_for_quality_standard_achievement"
+
+    strategos_response_requirements:
+      quality_standards_review: "confirmation_or_adjustment_of_quality_gates"
+      resource_allocation: "approval_for_additional_quality_improvement_time"
+      timeline_adjustment: "schedule_modifications_to_accommodate_quality_work"
+      trade_off_decisions: "acceptable_quality_vs_delivery_compromises"
+
+    validation_criteria:
+      quality_transparency: "honest_assessment_of_current_quality_state"
+      remediation_completeness: "all_reasonable_improvement_attempts_documented"
+      options_clarity: "clear_presentation_of_quality_vs_timeline_trade_offs"
+
+collaboration_patterns:
+  continuous_monitoring_contract:
+    id: "continuous_monitoring_contract"
+    version: "v1.0"
+    type: "operational_communication"
+
+    strategos_responsibilities:
+      drift_monitoring: "daily_drift_score_calculation_using_pythagoras_metrics"
+      trend_analysis: "weekly_trajectory_assessment_with_predictive_modeling"
+      stakeholder_pulse: "regular_satisfaction_and_expectation_monitoring"
+      escalation_readiness: "continuous_trigger_evaluation_and_intervention_preparation"
+
+    pythagoras_responsibilities:
+      progress_reporting: "daily_build_quality_and_velocity_metrics"
+      quality_status: "continuous_quality_gate_monitoring_and_debt_tracking"
+      blocker_identification: "proactive_escalation_trigger_detection"
+      evidence_maintenance: "empirical_backing_for_all_reported_metrics"
+
+    communication_frequency:
+      daily_sync: "progress_metrics_and_quality_status_exchange"
+      weekly_assessment: "comprehensive_drift_analysis_and_trend_review"
+      milestone_reviews: "joint_evaluation_and_stakeholder_communication"
+
+  intensive_collaboration_contract:
+    id: "intensive_collaboration_contract"
+    version: "v1.0"
+    type: "intervention_communication"
+
+    strategos_responsibilities:
+      strategic_analysis: "root_cause_analysis_and_intervention_strategy_design"
+      decision_making: "strategic_choices_with_rationale_and_trade_off_analysis"
+      stakeholder_management: "expectation_realignment_and_communication"
+      resource_coordination: "allocation_and_process_optimization_decisions"
+
+    pythagoras_responsibilities:
+      technical_context: "detailed_technical_information_and_constraint_analysis"
+      feasibility_assessment: "implementation_viability_of_strategic_options"
+      solution_analysis: "alternative_technical_approaches_with_effort_estimates"
+      implementation_support: "tactical_execution_of_strategic_decisions"
+
+    coordination_protocol:
+      joint_problem_solving: "collaborative_analysis_with_role_separation"
+      decision_authority: "strategos_final_decision_pythagoras_implementation"
+      resolution_timeline: "intensive_collaboration_until_intervention_complete"
+
+coordination:
+  routes:
+    - from: Strategos
+      to: Pythagoras
+      on: ["delta_contract", "execution_failure", "qa_required"]
+      deliverables: ["patch_bundle", "qa_report"]
+    - from: Pythagoras
+      to: Strategos
+      on: ["qa_complete", "patch_ready"]
+      deliverables: ["qa_report", "patch_bundle"]
+success_criteria:
+  - "qa_report.verdict == PASS"
+  - "coverage >= 80% (configurable gate)"
+  - "lint == clean && types == ok && security == ok"
+
+resumption_contracts:
+  strategic_to_execution_resumption:
+    id: "strategic_to_execution_resumption"
+    version: "v1.0"
+    type: "execution_authorization"
+
+    strategos_deliverables:
+      intervention_summary:
+        decisions_made: "strategic_choices_with_rationale_and_expected_outcomes"
+        scope_modifications: "any_requirement_timeline_or_approach_changes"
+        resource_allocations: "additional_resources_capabilities_or_permissions"
+        success_criteria_updates: "revised_acceptance_criteria_and_quality_gates"
+      execution_guidance:
+        priority_focus: "specific_areas_requiring_immediate_attention"
+        approach_modifications: "technical_or_process_changes_to_implement"
+        monitoring_framework: "updated_escalation_triggers_and_checkpoints"
+        quality_standards: "any_adjustments_to_quality_gates_or_standards"
+
+    pythagoras_acknowledgment_requirements:
+      understanding_confirmation: "acknowledgment_of_strategic_decisions_and_guidance"
+      capability_verification: "confirmation_of_ability_to_execute_updated_plan"
+      resource_availability: "verification_of_access_to_required_resources"
+      timeline_acceptance: "agreement_with_updated_schedule_and_milestones"
+
+    validation_criteria:
+      clarity: "execution_guidance_unambiguous_and_actionable"
+      completeness: "all_intervention_issues_addressed_with_clear_resolution"
+      measurability: "success_criteria_quantifiable_and_testable"
+      feasibility: "execution_plan_technically_and_resource_wise_achievable"
+
+success_metrics:
+  collaboration_effectiveness:
+    handoff_efficiency:
+      measurement: "average_time_from_escalation_trigger_to_intervention_completion"
+      target: "less_than_24_hours_for_critical_escalations"
+      validation: "timestamp_tracking_of_escalation_and_resolution_events"
+    intervention_success_rate:
+      measurement: "percentage_of_interventions_resulting_in_drift_score_improvement"
+      target: "90_percent_successful_interventions"
+      validation: "before_and_after_drift_score_comparison"
+    communication_quality:
+      measurement: "stakeholder_satisfaction_with_coordination_and_updates"
+      target: "95_percent_stakeholder_satisfaction"
+      validation: "regular_stakeholder_feedback_surveys"
+
+  delivery_optimization:
+    velocity_improvement:
+      measurement: "delivery_velocity_compared_to_single_agent_baseline"
+      target: "30_percent_improvement_in_feature_delivery_rate"
+      validation: "feature_completion_rate_tracking"
+    quality_enhancement:
+      measurement: "quality_metrics_improvement_through_dual_oversight"
+      target: "50_percent_reduction_in_defect_rate"
+      validation: "quality_gate_pass_rate_and_defect_tracking"
+    stakeholder_satisfaction:
+      measurement: "measured_improvement_in_stakeholder_satisfaction_scores"
+      target: "95_percent_stakeholder_satisfaction_maintained"
+      validation: "regular_satisfaction_surveys_and_feedback_analysis"
+
+prompt_templates:
+  copilot_bridge_success:
+    description: >
+      Validated prompt pattern for dual-agent GPT↔Copilot cooperation.
+      Ensures reliable task execution via Copilot by using code-first, deterministic phrasing.
+    example: |
+      Write a Python script to clean malformed entries from a Home Assistant registry JSON file.
+      1. Load `omega_device_registry.final.resynthesized.json`.
+      2. For each device's `entities`, remove any `entity_id` starting with invalid prefixes.
+      3. Move those fields into the `attributes` of the first valid entity.
+      4. Save outputs to cleaned registry + remediation log.
+    evidence: kybernetes_copilot_review_2025_06_30
+    compliance: VALIDATED
+
+  copilot_bridge_failure:
+    description: >
+      Known failure pattern due to ambiguous or passive task phrasing. Often leads to Copilot hallucinations or non-execution.
+    example: |
+      You are performing a cleanup task on Home Assistant registry data...
+      Objective:
+      - Detect malformed entries
+      - Reassign attributes
+      - Output cleaned JSON
+      Begin execution.
+    compliance: REQUIRES_VALIDATION
+    risk: High ambiguity, execution assumption without directive framing

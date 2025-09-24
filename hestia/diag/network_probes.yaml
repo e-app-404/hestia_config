@@ -1,0 +1,47 @@
+---
+# Diagnostics: Network probes
+# Generated from tailscale topology and diagnostics playbooks
+probes:
+  - id: probe_nas_icmp
+    name: "NAS (ds220plus) ICMP"
+    type: icmp
+    target: 100.93.61.53
+    interval: 60
+    description: "ICMP reachability to Synology NAS over tailnet"
+
+  - id: probe_ha_http
+    name: "Home Assistant HTTP"
+    type: http
+    target: ha-core.reverse-beta.ts.net
+    port: 8123
+    path: /
+    interval: 60
+    description: "HTTP(S) probe to Home Assistant UI (verify reverse proxy)"
+
+  - id: probe_macbook_glances_tcp
+    name: "Macbook Glances TCP"
+    type: tcp
+    target: 100.100.227.79
+    port: 61208
+    interval: 120
+    description: "TCP probe to Glances agent running on macbook (example port)"
+
+notes: |
+  - Targets and ports were inferred from `hestia/core/devices/tailscale_machines.topology.json`
+    and the tailscale diagnostics playbook. Confirm actual service ports and adjust.
+  - Consider adding DNS-based probes for gateway domains (ds220plus.reverse-beta.ts.net).
+---
+# Diagnostics: Network probes
+# Purpose: Define active probes/targets for network diagnostics and SLAs.
+name: network_probes
+description: |
+  Placeholder for network probes used by diagnostics and monitoring. Include
+  hosts, expected latency thresholds, probe schedule, and alerting hooks.
+tags:
+  - diagnostics
+  - monitoring
+  - placeholder
+probes: []
+todo: |
+  - Populate with common targets: default gateway, DNS servers, external IPs.
+  - Add probe types: icmp, http, tcp, traceroute; include expected thresholds.

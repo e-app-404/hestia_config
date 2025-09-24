@@ -12,17 +12,16 @@
   {% set ids = ordered | map(attribute='entity') | list %}
   {% set ents = expand(ids) %}
   {% set result = namespace(state='off') %}
-  {% set found = false %}
+  {%- set found_ns = namespace(found=false) -%}
   {% for item in ordered %}
     {% set e_list = ents | selectattr('entity_id','equalto', item.entity) | list %}
     {% set e = e_list[0] if e_list|length > 0 else none %}
     {% if e is not none and e.state not in ['unavailable','unknown','none'] and e.state == 'on' %}
       {% set result.state = 'on' %}
-      {% set found = true %}
-      {% break %}
+      {%- set found_ns.found = true -%}
     {% endif %}
   {% endfor %}
-  {{ result.state if found else 'off' }}
+  {{ result.state if found_ns.found else 'off' }}
 {% endmacro %}
 
 {# Phase 3 Enhancement: Error-Tolerant Active Source Detection #}
@@ -30,7 +29,7 @@
   {% set ordered = sources | sort(attribute='preference') %}
   {% set ids = ordered | map(attribute='entity') | list %}
   {% set ents = expand(ids) %}
-  {% set found = false %}
+  {%- set found_ns = namespace(found=false) -%}
   {% set active_entity = none %}
   {% if ordered | length == 0 %}
     {{ 'unknown' }} {# PATCH: Fallback for empty list #}
@@ -40,11 +39,10 @@
       {% set e = match_list[0] if match_list|length > 0 else none %}
       {% if e is not none and e.state not in ['unavailable','unknown','none'] and e.state == 'on' %}
         {% set active_entity = item.entity %}
-        {% set found = true %}
-        {% break %}
+        {%- set found_ns.found = true -%}
       {% endif %}
     {% endfor %}
-    {{ active_entity if found else 'unknown' }} {# PATCH: Fallback for no active entity #}
+    {{ active_entity if found_ns.found else 'unknown' }} {# PATCH: Fallback for no active entity #}
   {% endif %}
 {% endmacro %}
 
@@ -123,29 +121,25 @@
 {# Centralized helpers for universal media_player templates. #}
 {% macro first_active_child(children, active_states=None) -%}
   {%- set active_states = active_states or ['playing','paused','buffering','on'] -%}
-  {# Coerce string to single-item list, keep lists as-is #}
-  {%- if children is string -%}
-    {%- set children = [children] -%}
-  {%- endif -%}
+  {%- set children = [children] if (children is string) else children -%}
+  {%- set ns = namespace(found=false, first=None) -%}
   {%- for c in children -%}
-    {%- set s = states(c) if c is defined else 'unavailable' -%}
-    {%- if s in active_states -%}
-      {{ c }}
-      {%- break -%}
+    {%- if ns.found == false and (states(c) is defined and states(c) in active_states) -%}
+      {%- set ns.first = c -%}
+      {%- set ns.found = true -%}
     {%- endif -%}
   {%- endfor -%}
+  {{ ns.first if ns.found else '' }}
 {%- endmacro %}
 
 {% macro any_child_active(children, active_states=None, output='on') -%}
   {%- set active_states = active_states or ['playing','paused','buffering','on'] -%}
-  {%- if children is string -%}
-    {%- set children = [children] -%}
-  {%- endif -%}
+  {%- set children = [children] if (children is string) else children -%}
+  {%- set ns = namespace(found=false) -%}
   {%- for c in children -%}
     {%- if states(c) in active_states -%}
-      {{ output }}
-      {%- return -%}
+      {%- set ns.found = true -%}
     {%- endif -%}
   {%- endfor -%}
-  {{ 'off' if output == 'on' else 'false' }}
+  {{ output if ns.found else ('off' if output == 'on' else 'false') }}
 {%- endmacro %}
