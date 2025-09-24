@@ -1,0 +1,22 @@
+name: Guardrails - REST command
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: ["**"]
+
+jobs:
+  guardrails:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+      - name: Run guardrails check
+        working-directory: ./
+        run: |
+          chmod +x hestia/guardrails/check_rest_command_guardrails.sh
+          hestia/guardrails/check_rest_command_guardrails.sh

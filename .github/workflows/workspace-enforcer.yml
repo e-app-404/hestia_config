@@ -1,0 +1,9 @@
+name: workspace-enforcer
+on: [pull_request]
+jobs:
+  enforce:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Enforce neutral paths
+        run: bash hestia/tools/system/hestia_workspace_enforcer.sh

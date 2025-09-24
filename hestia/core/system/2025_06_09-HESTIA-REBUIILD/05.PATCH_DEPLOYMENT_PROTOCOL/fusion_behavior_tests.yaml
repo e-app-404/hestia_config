@@ -1,0 +1,602 @@
+- logic_id: template_monitoring_notify
+  test_case: Simulate emitter activation for template_monitoring_notify
+  trigger_entities:
+  - binary_sensor.template_monitor_problems_epsilon
+  expected_conditions: always_true
+  expected_outcome: action_executed
+  mock_state: simulate_required_states
+  session_reference: hestia_phase_scan_20250608_fusion_tests
+- logic_id: template_monitoring_clear_notification
+  test_case: Simulate emitter activation for template_monitoring_clear_notification
+  trigger_entities:
+  - binary_sensor.template_monitor_problems_epsilon
+  expected_conditions: always_true
+  expected_outcome: action_executed
+  mock_state: simulate_required_states
+  session_reference: hestia_phase_scan_20250608_fusion_tests
+- logic_id: template_monitoring_attempt_recovery
+  test_case: Simulate emitter activation for template_monitoring_attempt_recovery
+  trigger_entities:
+  - binary_sensor.template_monitor_problems_epsilon
+  expected_conditions: always_true
+  expected_outcome: action_executed
+  mock_state: simulate_required_states
+  session_reference: hestia_phase_scan_20250608_fusion_tests
+- logic_id: alert_skylight_open_risky_conditions
+  test_case: Simulate emitter activation for alert_skylight_open_risky_conditions
+  trigger_entities:
+  - binary_sensor.hallway_upstairs_skylight_contact_sensor_mtr_alpha
+  - input_boolean.turn_off
+  expected_conditions:
+  - condition: not
+    conditions:
+    - condition: state
+      entity_id: input_boolean.skylight_alert_acknowledged
+      state: 'on'
+  - condition: template
+    value_template: '{{ states(''sensor.skylight_risk_level_gamma'') != ''clear''
+      }}'
+  expected_outcome: action_executed
+  mock_state: simulate_required_states
+  session_reference: hestia_phase_scan_20250608_fusion_tests
+- logic_id: automation_ensuite_lighting_motion
+  test_case: Simulate emitter activation for automation_ensuite_lighting_motion
+  trigger_entities:
+  - binary_sensor.ensuite_occupancy_beta
+  - script.dispatch_light_state
+  expected_conditions:
+  - condition: time
+    after: 05:30:00
+    before: '22:00:00'
+  expected_outcome: action_executed
+  mock_state: simulate_required_states
+  session_reference: hestia_phase_scan_20250608_fusion_tests
+- logic_id: automation_ensuite_fan_occupancy
+  test_case: Simulate emitter activation for automation_ensuite_fan_occupancy
+  trigger_entities:
+  - binary_sensor.ensuite_occupancy_beta
+  expected_conditions: always_true
+  expected_outcome: action_executed
+  mock_state: simulate_required_states
+  session_reference: hestia_phase_scan_20250608_fusion_tests
+- logic_id: automation_living_room_motion_lights
+  test_case: Simulate emitter activation for automation_living_room_motion_lights
+  trigger_entities:
+  - binary_sensor.living_room_presence_gamma
+  expected_conditions:
+  - condition: time
+    after: 06:00:00
+    before: '23:00:00'
+  expected_outcome: action_executed
+  mock_state: simulate_required_states
+  session_reference: hestia_phase_scan_20250608_fusion_tests
+- logic_id: automation_downstairs_lights_motion
+  test_case: Simulate emitter activation for automation_downstairs_lights_motion
+  trigger_entities:
+  - binary_sensor.hallway_downstairs_motion_beta
+  - script.dispatch_light_state
+  expected_conditions:
+  - condition: or
+    conditions:
+    - condition: time
+      after: '15:00:00'
+    - condition: time
+      before: 09:00:00
+  expected_outcome: action_executed
+  mock_state: simulate_required_states
+  session_reference: hestia_phase_scan_20250608_fusion_tests
+- logic_id: automation_kitchen_motion_light
+  test_case: Simulate emitter activation for automation_kitchen_motion_light
+  trigger_entities:
+  - binary_sensor.kitchen_motion_beta
+  - script.dispatch_light_state
+  expected_conditions:
+  - condition: time
+    after: 05:30:00
+    before: '23:00:00'
+  expected_outcome: action_executed
+  mock_state: simulate_required_states
+  session_reference: hestia_phase_scan_20250608_fusion_tests
+- logic_id: automation_fallback_presence_detection
+  test_case: Simulate emitter activation for automation_fallback_presence_detection
+  trigger_entities:
+  - input_boolean.presence_detection_enabled
+  - input_boolean.trigger_manual_presence_fallback
+  - input_boolean.turn_off
+  - script.fallback_presence_detection
+  expected_conditions:
+  - condition: state
+    entity_id: input_boolean.presence_detection_enabled
+    state: 'on'
+  expected_outcome: action_executed
+  mock_state: simulate_required_states
+  session_reference: hestia_phase_scan_20250608_fusion_tests
+- logic_id: publish_omega_room_registry
+  test_case: Simulate emitter activation for publish_omega_room_registry
+  trigger_entities: []
+  expected_conditions: always_true
+  expected_outcome: action_executed
+  mock_state: simulate_required_states
+  session_reference: hestia_phase_scan_20250608_fusion_tests
+- logic_id: publish_omega_device_registry
+  test_case: Simulate emitter activation for publish_omega_device_registry
+  trigger_entities: []
+  expected_conditions: always_true
+  expected_outcome: action_executed
+  mock_state: simulate_required_states
+  session_reference: hestia_phase_scan_20250608_fusion_tests
+- logic_id: publish_alpha_sensor_registry
+  test_case: Simulate emitter activation for publish_alpha_sensor_registry
+  trigger_entities: []
+  expected_conditions: always_true
+  expected_outcome: action_executed
+  mock_state: simulate_required_states
+  session_reference: hestia_phase_scan_20250608_fusion_tests
+- logic_id: publish_alpha_light_registry
+  test_case: Simulate emitter activation for publish_alpha_light_registry
+  trigger_entities: []
+  expected_conditions: always_true
+  expected_outcome: action_executed
+  mock_state: simulate_required_states
+  session_reference: hestia_phase_scan_20250608_fusion_tests
+- logic_id: mnemo_init_post_boot
+  test_case: Simulate emitter activation for mnemo_init_post_boot
+  trigger_entities: []
+  expected_conditions: always_true
+  expected_outcome: action_executed
+  mock_state: simulate_required_states
+  session_reference: hestia_phase_scan_20250608_fusion_tests
+- logic_id: mnemo_daily_snapshot
+  test_case: Simulate emitter activation for mnemo_daily_snapshot
+  trigger_entities:
+  - input_boolean.maintenance_mode
+  expected_conditions:
+  - condition: state
+    entity_id: input_boolean.maintenance_mode
+    state: 'off'
+  expected_outcome: action_executed
+  mock_state: simulate_required_states
+  session_reference: hestia_phase_scan_20250608_fusion_tests
+- logic_id: mnemo_weekly_comprehensive
+  test_case: Simulate emitter activation for mnemo_weekly_comprehensive
+  trigger_entities: []
+  expected_conditions:
+  - condition: time
+    weekday:
+    - sun
+  expected_outcome: action_executed
+  mock_state: simulate_required_states
+  session_reference: hestia_phase_scan_20250608_fusion_tests
+- logic_id: mnemo_emergency_snapshot
+  test_case: Simulate emitter activation for mnemo_emergency_snapshot
+  trigger_entities:
+  - update.home_assistant_core_update
+  - update.home_assistant_operating_system_update
+  expected_conditions: always_true
+  expected_outcome: action_executed
+  mock_state: simulate_required_states
+  session_reference: hestia_phase_scan_20250608_fusion_tests
+- logic_id: macbook_charger_status
+  test_case: Simulate emitter activation for macbook_charger_status
+  trigger_entities:
+  - sensor.macbook_internal_battery_state
+  expected_conditions: always_true
+  expected_outcome: action_executed
+  mock_state: simulate_required_states
+  session_reference: hestia_phase_scan_20250608_fusion_tests
+- logic_id: monitor_disconnect_powerdown
+  test_case: Simulate emitter activation for monitor_disconnect_powerdown
+  trigger_entities:
+  - light.turn_off
+  - switch.hp27i_monitor
+  - switch.turn_off
+  expected_conditions:
+  - condition: state
+    entity_id: switch.hp27i_monitor
+    state: 'on'
+  expected_outcome: action_executed
+  mock_state: simulate_required_states
+  session_reference: hestia_phase_scan_20250608_fusion_tests
+- logic_id: monitor_reconnect_wakeup
+  test_case: Simulate emitter activation for monitor_reconnect_wakeup
+  trigger_entities:
+  - switch.turn_on
+  expected_conditions: always_true
+  expected_outcome: action_executed
+  mock_state: simulate_required_states
+  session_reference: hestia_phase_scan_20250608_fusion_tests
+- logic_id: valetudo_morning_deep_clean
+  test_case: Simulate emitter activation for valetudo_morning_deep_clean
+  trigger_entities:
+  - input_boolean.enable_daily_clean
+  - script.valetudo_deep_clean
+  expected_conditions:
+  - condition: state
+    entity_id: input_boolean.enable_daily_clean
+    state: 'on'
+  expected_outcome: action_executed
+  mock_state: simulate_required_states
+  session_reference: hestia_phase_scan_20250608_fusion_tests
+- logic_id: valetudo_afternoon_short_clean
+  test_case: Simulate emitter activation for valetudo_afternoon_short_clean
+  trigger_entities:
+  - input_boolean.enable_daily_clean
+  - script.valetudo_short_clean
+  expected_conditions:
+  - condition: state
+    entity_id: input_boolean.enable_daily_clean
+    state: 'on'
+  expected_outcome: action_executed
+  mock_state: simulate_required_states
+  session_reference: hestia_phase_scan_20250608_fusion_tests
+- logic_id: hestia_system_startup_sequence
+  test_case: Simulate emitter activation for hestia_system_startup_sequence
+  trigger_entities:
+  - script.perform_system_health_check
+  expected_conditions: always_true
+  expected_outcome: action_executed
+  mock_state: simulate_required_states
+  session_reference: hestia_phase_scan_20250608_fusion_tests
+- logic_id: notify_fallback_integrity_issues
+  test_case: Simulate emitter activation for notify_fallback_integrity_issues
+  trigger_entities:
+  - sensor.sensor_fallback_integrity
+  expected_conditions:
+  - condition: template
+    value_template: '{{ states(''sensor.sensor_fallback_integrity'') | int > 0 }}'
+  expected_outcome: action_executed
+  mock_state: simulate_required_states
+  session_reference: hestia_phase_scan_20250608_fusion_tests
+- logic_id: notify_system_health_issues
+  test_case: Simulate emitter activation for notify_system_health_issues
+  trigger_entities:
+  - sensor.system_health_status
+  expected_conditions: always_true
+  expected_outcome: action_executed
+  mock_state: simulate_required_states
+  session_reference: hestia_phase_scan_20250608_fusion_tests
+- logic_id: hestia_log_error_tracker
+  test_case: Simulate emitter activation for hestia_log_error_tracker
+  trigger_entities: []
+  expected_conditions:
+  - condition: template
+    value_template: '{{ trigger.event.data.level == ''ERROR'' }}'
+  expected_outcome: action_executed
+  mock_state: simulate_required_states
+  session_reference: hestia_phase_scan_20250608_fusion_tests
+- logic_id: hestia_periodic_system_health_check_automation_temp
+  test_case: Simulate emitter activation for hestia_periodic_system_health_check_automation_temp
+  trigger_entities:
+  - binary_sensor.system_problems_mu
+  - sensor.macro_template_library_health_check_mu
+  - sensor.system_entity_statistics_mu
+  expected_conditions: always_true
+  expected_outcome: action_executed
+  mock_state: simulate_required_states
+  session_reference: hestia_phase_scan_20250608_fusion_tests
+- logic_id: entity_health_degradation_alert
+  test_case: Simulate emitter activation for entity_health_degradation_alert
+  trigger_entities:
+  - sensor.system_entity_statistics_mu
+  expected_conditions: always_true
+  expected_outcome: action_executed
+  mock_state: simulate_required_states
+  session_reference: hestia_phase_scan_20250608_fusion_tests
+- logic_id: hestia_dependency_integrity_check_validator
+  test_case: Simulate emitter activation for hestia_dependency_integrity_check_validator
+  trigger_entities: []
+  expected_conditions: always_true
+  expected_outcome: action_executed
+  mock_state: simulate_required_states
+  session_reference: hestia_phase_scan_20250608_fusion_tests
+- logic_id: update_ha_repo_mirror
+  test_case: Simulate emitter activation for update_ha_repo_mirror
+  trigger_entities: []
+  expected_conditions: always_true
+  expected_outcome: action_executed
+  mock_state: simulate_required_states
+  session_reference: hestia_phase_scan_20250608_fusion_tests
+- logic_id: hestia_daily_registry_reconciliation_alpha_to_omega_sync
+  test_case: Simulate emitter activation for hestia_daily_registry_reconciliation_alpha_to_omega_sync
+  trigger_entities: []
+  expected_conditions: always_true
+  expected_outcome: action_executed
+  mock_state: simulate_required_states
+  session_reference: hestia_phase_scan_20250608_fusion_tests
+- logic_id: run_light_template_generator_on_startup
+  test_case: Simulate emitter activation for run_light_template_generator_on_startup
+  trigger_entities: []
+  expected_conditions: always_true
+  expected_outcome: action_executed
+  mock_state: simulate_required_states
+  session_reference: hestia_phase_scan_20250608_fusion_tests
+- logic_id: run_hestia_snapshot_on_ha_start
+  test_case: Simulate emitter activation for run_hestia_snapshot_on_ha_start
+  trigger_entities: []
+  expected_conditions: always_true
+  expected_outcome: action_executed
+  mock_state: simulate_required_states
+  session_reference: hestia_phase_scan_20250608_fusion_tests
+- logic_id: refresh_file_sensors
+  test_case: Simulate emitter activation for refresh_file_sensors
+  trigger_entities: []
+  expected_conditions: always_true
+  expected_outcome: action_executed
+  mock_state: simulate_required_states
+  session_reference: hestia_phase_scan_20250608_fusion_tests
+- logic_id: republish_all_registry_json_mqtt_automation
+  test_case: Simulate emitter activation for republish_all_registry_json_mqtt_automation
+  trigger_entities:
+  - script.publish_all_registries
+  expected_conditions: always_true
+  expected_outcome: action_executed
+  mock_state: simulate_required_states
+  session_reference: hestia_phase_scan_20250608_fusion_tests
+- logic_id: aether_bedroom_dehumidifier_control
+  test_case: Simulate emitter activation for aether_bedroom_dehumidifier_control
+  trigger_entities:
+  - binary_sensor.dehumidifier_needed_bedroom
+  - input_boolean.humidity_control_enabled
+  - input_select.humidity_control_strategy
+  - sensor.merged_bedroom_humidity_eta
+  expected_conditions:
+  - condition: state
+    entity_id: input_boolean.humidity_control_enabled
+    state: 'on'
+  expected_outcome: action_executed
+  mock_state: simulate_required_states
+  session_reference: hestia_phase_scan_20250608_fusion_tests
+- logic_id: aether_ensuite_shower_detection
+  test_case: Simulate emitter activation for aether_ensuite_shower_detection
+  trigger_entities:
+  - binary_sensor.shower_active
+  - sensor.ensuite_humidity_beta
+  expected_conditions: always_true
+  expected_outcome: action_executed
+  mock_state: simulate_required_states
+  session_reference: hestia_phase_scan_20250608_fusion_tests
+- logic_id: aether_climate_mode_control
+  test_case: Simulate emitter activation for aether_climate_mode_control
+  trigger_entities:
+  - binary_sensor.is_night_time
+  - input_boolean.climate_automation_enabled
+  - input_select.home_mode
+  expected_conditions:
+  - condition: state
+    entity_id: input_boolean.climate_automation_enabled
+    state: 'on'
+  expected_outcome: action_executed
+  mock_state: simulate_required_states
+  session_reference: hestia_phase_scan_20250608_fusion_tests
+- logic_id: aether_window_closed_resumption
+  test_case: Simulate emitter activation for aether_window_closed_resumption
+  trigger_entities:
+  - binary_sensor.window_open_detected
+  - input_boolean.climate_automation_enabled
+  - input_boolean.climate_override_active
+  - script.turn_on
+  expected_conditions:
+  - condition: state
+    entity_id: input_boolean.climate_automation_enabled
+    state: 'on'
+  - condition: state
+    entity_id: input_boolean.climate_override_active
+    state: 'on'
+  expected_outcome: action_executed
+  mock_state: simulate_required_states
+  session_reference: hestia_phase_scan_20250608_fusion_tests
+- logic_id: aether_window_open_detection
+  test_case: Simulate emitter activation for aether_window_open_detection
+  trigger_entities:
+  - binary_sensor.window_open_detected
+  - input_boolean.climate_automation_enabled
+  - input_boolean.turn_on
+  - input_boolean.window_open_detection
+  - script.turn_on
+  expected_conditions:
+  - condition: state
+    entity_id: input_boolean.window_open_detection
+    state: 'on'
+  - condition: state
+    entity_id: input_boolean.climate_automation_enabled
+    state: 'on'
+  expected_outcome: action_executed
+  mock_state: simulate_required_states
+  session_reference: hestia_phase_scan_20250608_fusion_tests
+- logic_id: aether_bedroom_climate_control
+  test_case: Simulate emitter activation for aether_bedroom_climate_control
+  trigger_entities:
+  - binary_sensor.bedroom_heating_needed
+  - input_boolean.climate_automation_enabled
+  - sensor.effective_bedroom_temperature_gamma
+  expected_conditions:
+  - condition: state
+    entity_id: input_boolean.climate_automation_enabled
+    state: 'on'
+  - condition: template
+    value_template: '{% set window_open = is_state(''binary_sensor.window_open_detected'',
+      ''on'') %} {% set window_detection = is_state(''input_boolean.window_open_detection'',
+      ''on'') %} {{ not (window_open and window_detection) }}
+
+      '
+  expected_outcome: action_executed
+  mock_state: simulate_required_states
+  session_reference: hestia_phase_scan_20250608_fusion_tests
+- logic_id: aether_living_room_climate_control
+  test_case: Simulate emitter activation for aether_living_room_climate_control
+  trigger_entities:
+  - binary_sensor.living_room_heating_needed
+  - input_boolean.climate_automation_enabled
+  - sensor.effective_living_room_temperature_gamma
+  expected_conditions:
+  - condition: state
+    entity_id: input_boolean.climate_automation_enabled
+    state: 'on'
+  - condition: template
+    value_template: '{% set window_open = is_state(''binary_sensor.window_open_detected'',
+      ''on'') %} {% set window_detection = is_state(''input_boolean.window_open_detection'',
+      ''on'') %} {{ not (window_open and window_detection) }}
+
+      '
+  expected_outcome: action_executed
+  mock_state: simulate_required_states
+  session_reference: hestia_phase_scan_20250608_fusion_tests
+- logic_id: aether_kitchen_climate_control
+  test_case: Simulate emitter activation for aether_kitchen_climate_control
+  trigger_entities:
+  - binary_sensor.kitchen_heating_needed
+  - input_boolean.climate_automation_enabled
+  - sensor.effective_kitchen_temperature_gamma
+  expected_conditions:
+  - condition: state
+    entity_id: input_boolean.climate_automation_enabled
+    state: 'on'
+  - condition: template
+    value_template: '{% set window_open = is_state(''binary_sensor.window_open_detected'',
+      ''on'') %} {% set window_detection = is_state(''input_boolean.window_open_detection'',
+      ''on'') %} {{ not (window_open and window_detection) }}
+
+      '
+  expected_outcome: action_executed
+  mock_state: simulate_required_states
+  session_reference: hestia_phase_scan_20250608_fusion_tests
+- logic_id: aether_night_time_temperature_setback
+  test_case: Simulate emitter activation for aether_night_time_temperature_setback
+  trigger_entities:
+  - input_boolean.climate_automation_enabled
+  - input_boolean.climate_override_active
+  - input_select.home_mode
+  - script.turn_on
+  expected_conditions:
+  - condition: state
+    entity_id: input_boolean.climate_automation_enabled
+    state: 'on'
+  - condition: state
+    entity_id: input_boolean.climate_override_active
+    state: 'off'
+  - condition: or
+    conditions:
+    - condition: time
+      after: '22:00:00'
+    - condition: time
+      before: 05:00:00
+    - condition: state
+      entity_id: input_select.home_mode
+      state: Sleep
+  expected_outcome: action_executed
+  mock_state: simulate_required_states
+  session_reference: hestia_phase_scan_20250608_fusion_tests
+- logic_id: aether_daily_environment_report
+  test_case: Simulate emitter activation for aether_daily_environment_report
+  trigger_entities:
+  - script.turn_on
+  expected_conditions: always_true
+  expected_outcome: action_executed
+  mock_state: simulate_required_states
+  session_reference: hestia_phase_scan_20250608_fusion_tests
+- logic_id: aether_low_temperature_alert
+  test_case: Simulate emitter activation for aether_low_temperature_alert
+  trigger_entities:
+  - input_boolean.climate_automation_enabled
+  - input_boolean.turn_off
+  - input_select.home_mode
+  - script.turn_on
+  - sensor.merged_bedroom_temperature_eta
+  - sensor.merged_ensuite_temperature_eta
+  - sensor.merged_kitchen_temperature_eta
+  - sensor.merged_living_room_temperature_eta
+  expected_conditions:
+  - condition: state
+    entity_id: input_boolean.climate_automation_enabled
+    state: 'on'
+  - condition: state
+    entity_id: input_select.home_mode
+    state: Home
+  expected_outcome: action_executed
+  mock_state: simulate_required_states
+  session_reference: hestia_phase_scan_20250608_fusion_tests
+- logic_id: aether_mold_risk_alert
+  test_case: Simulate emitter activation for aether_mold_risk_alert
+  trigger_entities: []
+  expected_conditions: always_true
+  expected_outcome: action_executed
+  mock_state: simulate_required_states
+  session_reference: hestia_phase_scan_20250608_fusion_tests
+- logic_id: aether_sensors_anomaly_detection
+  test_case: Simulate emitter activation for aether_sensors_anomaly_detection
+  trigger_entities:
+  - sensor.merged_bedroom_humidity_eta
+  - sensor.merged_bedroom_temperature_eta
+  - sensor.merged_ensuite_humidity_eta
+  - sensor.merged_ensuite_temperature_eta
+  - sensor.merged_kitchen_humidity_eta
+  - sensor.merged_kitchen_temperature_eta
+  - sensor.merged_living_room_humidity_eta
+  - sensor.merged_living_room_temperature_eta
+  expected_conditions: always_true
+  expected_outcome: action_executed
+  mock_state: simulate_required_states
+  session_reference: hestia_phase_scan_20250608_fusion_tests
+- logic_id: aether_system_health_check
+  test_case: Simulate emitter activation for aether_system_health_check
+  trigger_entities:
+  - sensor.aether_system_readiness
+  expected_conditions: always_true
+  expected_outcome: action_executed
+  mock_state: simulate_required_states
+  session_reference: hestia_phase_scan_20250608_fusion_tests
+- logic_id: validator_log_tier_chain_integrity
+  test_case: Simulate emitter activation for validator_log_tier_chain_integrity
+  trigger_entities:
+  - input_boolean.chain_diagnostics_enabled
+  - script.log_to_validator
+  - sensor.tier_chain_integrity_status
+  expected_conditions:
+  - condition: state
+    entity_id: input_boolean.chain_diagnostics_enabled
+    state: 'on'
+  expected_outcome: action_executed
+  mock_state: simulate_required_states
+  session_reference: hestia_phase_scan_20250608_fusion_tests
+- logic_id: validator_log_tier_escalation_violations
+  test_case: Simulate emitter activation for validator_log_tier_escalation_violations
+  trigger_entities:
+  - input_boolean.chain_diagnostics_enabled
+  - script.log_to_validator
+  - sensor.tier_escalation_violations
+  expected_conditions:
+  - condition: state
+    entity_id: input_boolean.chain_diagnostics_enabled
+    state: 'on'
+  - condition: template
+    value_template: '{{ ''Violations'' in states(''sensor.tier_escalation_violations'')
+      }}'
+  expected_outcome: action_executed
+  mock_state: simulate_required_states
+  session_reference: hestia_phase_scan_20250608_fusion_tests
+- logic_id: update_validation_breach_log
+  test_case: Simulate emitter activation for update_validation_breach_log
+  trigger_entities: []
+  expected_conditions: always_true
+  expected_outcome: action_executed
+  mock_state: simulate_required_states
+  session_reference: hestia_phase_scan_20250608_fusion_tests
+- logic_id: handle_validation_breach_notification
+  test_case: Simulate emitter activation for handle_validation_breach_notification
+  trigger_entities: []
+  expected_conditions: always_true
+  expected_outcome: action_executed
+  mock_state: simulate_required_states
+  session_reference: hestia_phase_scan_20250608_fusion_tests
+- logic_id: emit_breach_tier_chain_integrity
+  test_case: Simulate emitter activation for emit_breach_tier_chain_integrity
+  trigger_entities:
+  - input_boolean.chain_diagnostics_enabled
+  - sensor.tier_chain_integrity_status
+  expected_conditions:
+  - condition: state
+    entity_id: input_boolean.chain_diagnostics_enabled
+    state: 'on'
+  expected_outcome: action_executed
+  mock_state: simulate_required_states
+  session_reference: hestia_phase_scan_20250608_fusion_tests

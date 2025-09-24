@@ -1,0 +1,138 @@
+{# ======================================================================
+   HESTIA Hephaestus-specific Delta-Tier Macros
+   Version: 1.0.0
+   Last Updated: 2025-04-30
+   Description: Specialized temporal macros for Hephaestus subsystem
+   ====================================================================== #}
+
+{% macro tool_health_decay(last_run_timestamp, cooldown_minutes, base_score=100, decay_rate=5) %}
+  {% set last_run = as_datetime(last_run_timestamp) %}
+  {% set current_time = now() %}
+  {% set time_diff = (current_time - last_run).total_seconds() %}
+  {% set cooldown_seconds = cooldown_minutes * 60 %}
+  {% if time_diff <= cooldown_seconds %}
+    {{ base_score }}
+  {% else %}
+    {% set hours_since_cooldown = (time_diff - cooldown_seconds) / 3600 %}
+    {{ max(base_score - (hours_since_cooldown * decay_rate), 0) | round(1) }}
+  {% endif %}
+{% endmacro %}
+
+{% macro configuration_stability_tracker(current_config, previous_config, previous_score=100, recovery_rate=5, instability_score=50) %}
+  {% if previous_config != '{}' and previous_config != current_config %}
+    {{ instability_score }}
+  {% elif previous_score < 100 %}
+    {{ min(previous_score + recovery_rate, 100) }}
+  {% else %}
+    {{ 100 }}
+  {% endif %}
+{% endmacro %}
+
+{% macro registry_sync_event_detector(current_event, last_event, last_sync_time, previous_delay=0) %}
+  {% if current_event != last_event and current_event != '' %}
+    0
+  {% else %}
+    {% set last_sync = as_datetime(last_sync_time) %}
+    {% set last_file_change = state_attr('sensor.registry_sync_latency_delta', 'last_file_change_time') | default(last_sync) %}
+    {% if last_file_change != last_sync %}
+      {{ (now() - as_datetime(last_file_change)).total_seconds() | int }}
+    {% else %}
+      {{ previous_delay }}
+    {% endif %}
+  {% endif %}
+{% endmacro %}
+
+{% macro tool_execution_age_tracker(tool_timestamps) %}
+  {% set now_ts = now().timestamp() %}
+  {% set total_age = namespace(sum=0, count=0) %}
+  
+  {% for tool, timestamp in tool_timestamps.items() %}
+    {% if timestamp not in ['unavailable', 'unknown', 'none', ''] %}
+      {% set tool_age = now_ts - as_timestamp(timestamp) %}
+      {% set total_age.sum = total_age.sum + tool_age %}
+      {% set total_age.count = total_age.count + 1 %}
+    {% endif %}
+  {% endfor %}
+  
+  {% if total_age.count > 0 %}
+    {{ (total_age.sum / total_age.count) | int }}
+  {% else %}
+    unknown
+  {% endif %}
+{% endmacro %}
+
+{% macro metadata_completeness_trend(files_scanned, metadata_blocks, previous_ratio, threshold=2) %}
+  {% if files_scanned == 0 %}
+    unknown
+  {% else %}
+    {% set current_ratio = (metadata_blocks / files_scanned) * 100 %}
+    
+    {% if current_ratio - previous_ratio > threshold %}
+      improving
+    {% elif previous_ratio - current_ratio > threshold %}
+      declining
+    {% else %}
+      stable
+    {% endif %}
+  {% endif %}
+{% endmacro %}
+ 
+{% macro error_recovery_pattern(current_errors, error_history) %}
+  {% if error_history | count > 0 %}
+    {% set peak = error_history | max %}
+    {% if current_errors == 0 and peak > 0 %}
+      recovered
+    {% elif current_errors > 0 and current_errors < peak %}
+      recovering
+    {% elif current_errors > peak %}
+      deteriorating
+    {% else %}
+      stable
+    {% endif %}
+  {% else %}
+    {% if current_errors > 0 %}
+      initial_errors
+    {% else %}
+      healthy
+    {% endif %}
+  {% endif %}
+{% endmacro %}
+
+{% macro hephaestus_delta_attributes(canonical_id, module, role, description, 
+                              upstream_source, downstream_consumers=[], retention="Session", 
+                              update_frequency="5 minutes", custom_attributes={}) %}
+  {% set base_attributes = {
+    "canonical_id": canonical_id ~ "_δ",
+    "tier": "δ",
+    "subsystem": "hephaestus",
+    "module": module,
+    "type": "temporal",
+    "role": role,
+    "description": description,
+    "upstream_source": upstream_source,
+    "downstream_consumers": downstream_consumers,
+    "retention": retention,
+    "update_frequency": update_frequency,
+    "last_updated": now().strftime('%Y-%m-%d %H:%M:%S')
+  } %}
+  {% set full_attributes = base_attributes | merge(custom_attributes) %}
+  {{ full_attributes }}
+{% endmacro %}
+
+{% macro tool_ages_json() %}
+  {% set tools = {
+    'iris': states('input_datetime.iris_last_run'),
+    'charon': states('sensor.charon_last_audit'),
+    'clio': states('input_datetime.clio_last_run'),
+    'phanes': states('input_datetime.phanes_last_run')
+  } %}
+  {% set now_ts = now().timestamp() %}
+  {% set ns = namespace(data={}) %}
+  {% for tool, last_run in tools.items() %}
+    {% if last_run not in ['unavailable', 'unknown', 'none', ''] %}
+      {% set tool_age = (now_ts - as_timestamp(last_run)) | int %}
+      {% set ns.data = ns.data | combine({ tool: tool_age }) %}
+    {% endif %}
+  {% endfor %}
+  {{ ns.data | tojson }}
+{% endmacro %}

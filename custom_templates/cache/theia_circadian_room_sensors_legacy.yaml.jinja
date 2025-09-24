@@ -1,0 +1,26 @@
+sensor:
+{% import 'custom_templates/template.library.jinja' as macros with context %}
+{% set _ = macros.circadian_brightness('bedroom', 60) %}
+{% set _ = macros.lighting_from_circadian('bedroom', 'brightness') %}
+{% set _ = macros.circadian_color_temp('bedroom', 3500) %}
+{% set _ = macros.lighting_from_circadian('bedroom', 'temp') %}
+{% set _ = macros.circadian_brightness('ensuite', 60) %}
+{% set _ = macros.lighting_from_circadian('ensuite', 'brightness') %}
+{% set _ = macros.circadian_color_temp('ensuite', 3500) %}
+{% set _ = macros.lighting_from_circadian('ensuite', 'temp') %}
+{% set _ = macros.circadian_brightness('kitchen', 70) %}
+{% set _ = macros.lighting_from_circadian('kitchen', 'brightness') %}
+{% set _ = macros.circadian_color_temp('kitchen', 3700) %}
+{% set _ = macros.lighting_from_circadian('kitchen', 'temp') %}
+{% set _ = macros.circadian_brightness('living_room', 65) %}
+{% set _ = macros.lighting_from_circadian('living_room', 'brightness') %}
+{% set _ = macros.circadian_color_temp('living_room', 3600) %}
+{% set _ = macros.lighting_from_circadian('living_room', 'temp') %}
+{% set _ = macros.circadian_brightness('hallway_downstairs', 50) %}
+{% set _ = macros.lighting_from_circadian('hallway_downstairs', 'brightness') %}
+{% set _ = macros.circadian_color_temp('hallway_downstairs', 3000) %}
+{% set _ = macros.lighting_from_circadian('hallway_downstairs', 'temp') %}
+{% set _ = macros.circadian_brightness('hallway_upstairs', 50) %}
+{% set _ = macros.lighting_from_circadian('hallway_upstairs', 'brightness') %}
+{% set _ = macros.circadian_color_temp('hallway_upstairs', 3000) %}
+{% set _ = macros.lighting_from_circadian('hallway_upstairs', 'temp') %}

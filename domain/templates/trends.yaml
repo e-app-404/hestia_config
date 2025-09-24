@@ -1,0 +1,66 @@
+# # ═══════════════════════════════════════════════════════════════════════
+# # ▶ SENSOR PACKAGE: Environmental & Trend Sensors ◀
+# # ⟫⟫ Illuminance, Humidity, Temperature & Solar Elevation trend analysis
+# # ⟫⟫ Domain: sensor • Schema: sensor (list) • Platforms: trend, template
+# # ⟫⟫ Loader: !include_dir_merge_list domain/sensor/
+# # ⟫⟫ Created: 2025-07-17
+# # ═══════════════════════════════════════════════════════════════════════
+# - binary_sensor:
+#     - platform: template
+#       sensors:
+#         # temperature_trend:
+#         #   friendly_name: "Temperature Trend"
+#         #   file: "/config/domain/templates/trends.yaml"
+#         #   source_count: "2"
+#         #   value_template: >
+#         #     {% set temp_now = states('sensor.temperature_now') | float %}
+#         #     {% set temp_past = states('sensor.temperature_past') | float %}
+#         #     {% if temp_now > temp_past %}
+#         #       Rising
+#         #     {% elif temp_now < temp_past %}
+#         #       Falling
+#         #     {% else %}
+#         #       Stable
+#         #     {% endif %}
+#
+#         merged_home_temperature_trend_eta:
+#           friendly_name: "Merged Home Temperature Trend (Eta)"
+#           unique_id: "merged_home_temperature_trend_eta"
+#           unit_of_measurement: "°C/h"
+#           device_class: temperature
+#           state: >
+#             {% set trend_sensors = [
+#               'sensor.bedroom_temperature_trend_eta',
+#               'sensor.living_room_temperature_trend_eta',
+#               'sensor.kitchen_temperature_trend_eta',
+#               'sensor.ensuite_temperature_trend_eta'
+#             ] %}
+#             {% set values = namespace(valid=[]) %}
+#             {% for sensor in trend_sensors %}
+#               {% set val = states(sensor) | float(-273) %}
+#               {% if val > -50 %}
+#                 {% set values.valid = values.valid + [val] %}
+#               {% endif %}
+#             {% endfor %}
+#             {% if values.valid | count > 0 %}
+#               {{ (values.valid | sum) / (values.valid | count) | round(2) }}
+#             {% else %}
+#               unknown
+#             {% endif %}
+#           attributes:
+#             upstream_sources: >
+#               {{ ['sensor.bedroom_temperature_trend_eta','sensor.living_room_temperature_trend_eta','sensor.kitchen_temperature_trend_eta','sensor.ensuite_temperature_trend_eta'] | tojson}}
+#             area_id: "home"
+#             tier: "η"
+#             canonical_id: "merged_home_temperature_trend_η"
+#             file: "/config/domain/templates/trends.yaml"
+#             date_created: "2025-04-26"
+#             last_updated: "2025-07-17"
+#             is_multi_source: true
+#             source_count: "4"
+#             data_quality: "excellent"
+#             subsystem: "aether"
+#             module: "climate"
+#             role: "aggregation"
+#             type: "fusion"
+#             description: "Average temperature trend across all rooms in the home"

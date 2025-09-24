@@ -1,0 +1,50 @@
+{% macro update_thermostat(thermostat, temp_sensor, heating_needed_sensor) %}
+    {% set temp = states(temp_sensor) | float(20) %}
+    {% set mode = 'heat' if is_state(heating_needed_sensor, 'on') else 'off' %}
+    {
+        "climate": "{{ thermostat }}",
+        "temperature": {{ temp }},
+        "hvac_mode": "{{ mode }}"
+    }
+{% endmacro %}
+{{ update_thermostat('climate.bedroom', 'sensor.effective_bedroom_temperature', 'binary_sensor.bedroom_heating_needed') }}
+
+{% macro decide_hvac_mode(current_temp, target_temp, tolerance) %}
+  {% if current_temp < (target_temp - tolerance) %}
+    heat
+  {% elif current_temp > (target_temp + tolerance) %}
+    off
+  {% else %}
+    heat
+  {% endif %}
+{% endmacro %}
+
+{% macro classify_climate_status(current_temp, target_temp, humidity, tolerance) %}
+  {% if current_temp < (target_temp - tolerance) %}
+    too_cold
+  {% elif current_temp > (target_temp + tolerance) %}
+    too_warm
+  {% elif humidity > 70 %}
+    too_humid
+  {% elif humidity < 30 %}
+    too_dry
+  {% else %}
+    optimal
+  {% endif %}
+{% endmacro %}
+
+{% macro classify_ensuite_climate_status(current_temp, target_temp, humidity, tolerance, shower_active) %}
+  {% if shower_active %}
+    shower_mode
+  {% elif current_temp < (target_temp - tolerance) %}
+    too_cold
+  {% elif current_temp > (target_temp + tolerance) %}
+    too_warm
+  {% elif humidity > 75 %}
+    too_humid
+  {% elif humidity < 30 %}
+    too_dry
+  {% else %}
+    optimal
+  {% endif %}
+{% endmacro %}

@@ -1,0 +1,38 @@
+{
+	"id": "0f871d3b65db2000",
+	"token": "d9W22UZsy-ZapCCYbJCbkWKPEg7GgnFLpN5id65ErdsgHarkaBJ7zz1CPTO6YyzDTBEsypqx0C5d1CmsSvDSdg==",
+	"status": "active",
+	"description": "Home Assistant writer",
+	"orgID": "dbe505ac34560afd",
+	"org": "Hestia",
+	"userID": "0f82723f5658c000",
+	"user": "homeassistant",
+	"permissions": [
+		{
+			"action": "read",
+			"resource": {
+				"type": "buckets",
+				"id": "baa7a66ff602926f",
+				"orgID": "dbe505ac34560afd",
+				"name": "homeassistant",
+				"org": "Hestia"
+			}
+		},
+		{
+			"action": "write",
+			"resource": {
+				"type": "buckets",
+				"id": "baa7a66ff602926f",
+				"orgID": "dbe505ac34560afd",
+				"name": "homeassistant",
+				"org": "Hestia"
+			}
+		}
+	],
+	"links": {
+		"self": "/api/v2/authorizations/0f871d3b65db2000",
+		"user": "/api/v2/users/0f82723f5658c000"
+	},
+	"createdAt": "2025-09-21T13:29:57.386568212Z",
+	"updatedAt": "2025-09-21T13:29:57.386568212Z"
+}

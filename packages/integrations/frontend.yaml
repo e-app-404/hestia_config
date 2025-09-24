@@ -1,0 +1,8 @@
+---
+# ═════════════════════════════════════════════════════════════════════════════
+# ⟫⟫ Home Assistant Frontend  •  ... ◀
+# ⟫⟫ packages/integrations/frontend.yaml • packages: !include_dir_named packages
+# ⟫⟫ Tier: σ  •  Domain: configuration  •  Updated: 2025-08-11
+# ═════════════════════════════════════════════════════════════════════════════
+frontend:
+  themes: !include_dir_named /config/domain/themes/

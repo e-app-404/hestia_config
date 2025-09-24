@@ -1,0 +1,152 @@
+{# ==============================
+   HESTIA Gamma-Tier Macro Library
+   Version: 1.0.1
+   Last Updated: 2025-04-28
+   Description: Standardized transformations for γ-tier sensors
+   ============================== #}
+
+{% macro normalize_range(value, min_in, max_in, min_out=0, max_out=100) %}
+  {# Normalizes a value from input range to output range #}
+  {% set input_range = max_in - min_in %}
+  {% set output_range = max_out - min_out %}
+  {% if input_range == 0 %}
+    {{ min_out }}
+  {% else %}
+    {% set normalized = ((value - min_in) / input_range) * output_range + min_out %}
+    {{ normalized | round(2) }}
+  {% endif %}
+{% endmacro %}
+
+{% macro clip_value(value, min_val, max_val) %}
+  {# Limits a value to a specified range #}
+  {{ [min_val, [value, max_val] | min] | max }}
+{% endmacro %}
+
+{% macro apply_deadzone(value, target, threshold) %}
+  {# Suppresses small deviations within threshold of target #}
+  {% set diff = (value - target) | abs %}
+  {% if diff <= threshold %}
+    {{ target }}
+  {% else %}
+    {{ value }}
+  {% endif %}
+{% endmacro %}
+
+{% macro safe_aggregate(method, entities, default_value) %}
+  {# Safely aggregates multiple entity values with fallback #}
+  {% set values = [] %}
+  {% for entity in entities %}
+    {% set val = states(entity) | float(None) %}
+    {% if val is not none %}
+      {% set values = values + [val] %}
+    {% endif %}
+  {% endfor %}
+
+  {% if values | length == 0 %}
+    {{ default_value }}
+  {% elif method == 'mean' %}
+    {{ (values | sum) / (values | length) }}
+  {% elif method == 'median' %}
+    {# Simplified median calculation #}
+    {% set sorted_values = values | sort %}
+    {% set middle = (values | length) // 2 %}
+    {% if values | length % 2 == 0 %}
+      {{ (sorted_values[middle - 1] + sorted_values[middle]) / 2 }}
+    {% else %}
+      {{ sorted_values[middle] }}
+    {% endif %}
+  {% elif method == 'min' %}
+    {{ values | min }}
+  {% elif method == 'max' %}
+    {{ values | max }}
+  {% else %}
+    {{ default_value }}
+  {% endif %}
+{% endmacro %}
+
+{% macro weighted_aggregate(values_with_weights, default_value) %}
+  {# Performs weighted aggregation of values #}
+  {% set total_weight = namespace(value=0) %}
+  {% set weighted_sum = namespace(value=0) %}
+
+  {% for item in values_with_weights %}
+    {% set value = item.value | float(None) %}
+    {% set weight = item.weight | float(0) %}
+
+    {% if value is not none and weight > 0 %}
+      {% set weighted_sum.value = weighted_sum.value + (value * weight) %}
+      {% set total_weight.value = total_weight.value + weight %}
+    {% endif %}
+  {% endfor %}
+
+  {% if total_weight.value > 0 %}
+    {{ (weighted_sum.value / total_weight.value) | round(2) }}
+  {% else %}
+    {{ default_value }}
+  {% endif %}
+{% endmacro %}
+
+{% macro validate_tiered_entity(entity_id, expected_tier) %}
+  {# Validates entity tier and dependencies #}
+  {% set tier = state_attr(entity_id, 'tier') | default('') %}
+  {% set valid = tier == expected_tier %}
+  {{ valid }}
+{% endmacro %}
+
+{% macro check_data_freshness(entity_id, max_age_seconds=300) %}
+  {# Determines if entity data is fresh enough to use #}
+  {% set last_updated = state_attr(entity_id, 'last_updated') %}
+  {% if last_updated %}
+    {% set age_seconds = (as_timestamp(now()) - as_timestamp(last_updated)) | int %}
+    {{ age_seconds <= max_age_seconds }}
+  {% else %}
+    {{ false }}
+  {% endif %}
+{% endmacro %}
+
+{% macro room_lighting_mode(area_id) %}
+  {# Determines the lighting mode for a room based on multiple factors #}
+  {% set occupancy = is_state('binary_sensor.%s_presence_msf' % area_id, 'on') %}
+  {% set manual_override = is_state('input_boolean.%s_lighting_override' % area_id, 'on') %}
+  {% set scene_active = states('sensor.active_lighting_scene_%s' % area_id) %}
+
+  {% if manual_override %}
+    manual
+  {% elif scene_active != 'none' %}
+    {{ scene_active }}
+  {% elif occupancy %}
+    auto
+  {% else %}
+    off
+  {% endif %}
+{% endmacro %}
+
+{% macro environment_risk_score(temp, humidity) %}
+  {# Calculates environmental risk score based on temperature and humidity #}
+  {% set mold_risk = temp < 18 and humidity > 65 %}
+  {% set dry_air_risk = humidity < 30 %}
+  {% set high_temp_risk = temp > 28 %}
+  {% set low_temp_risk = temp < 16 %}
+
+  {% set risk_score = 0 %}
+  {% if mold_risk %}{% set risk_score = risk_score + 50 %}{% endif %}
+  {% if dry_air_risk %}{% set risk_score = risk_score + 30 %}{% endif %}
+  {% if high_temp_risk %}{% set risk_score = risk_score + 40 %}{% endif %}
+  {% if low_temp_risk %}{% set risk_score = risk_score + 40 %}{% endif %}
+
+  {{ [risk_score, 100] | min }}
+{% endmacro %}
+
+{% macro device_availability(entity_id) %}
+  {# Assess entity availability with graduated states #}
+  {% set state = states(entity_id) %}
+  {% if state == 'unavailable' %}
+    unavailable
+  {% elif state == 'unknown' %}
+    unknown
+  {% elif state in ['none', ''] %}
+    none
+  {% else %}
+    available
+  {% endif %}
+{% endmacro %}

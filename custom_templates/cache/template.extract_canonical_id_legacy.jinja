@@ -1,0 +1,4 @@
+{% macro extract_canonical_from_sensor(sensor) %}
+  {% set base = sensor.split('.')[-1].rsplit('_available', 1)[0] %}
+  {{ 'binary_sensor.' + base }}
+{% endmacro %}

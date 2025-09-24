@@ -1,0 +1,8 @@
+---
+# ═════════════════════════════════════════════════════════════════════════════
+# ⟫⟫ Home Assistant Integration  •  SQL Sensors ◀
+# ⟫⟫ packages/integrations/sql.yaml • packages: !include_dir_named packages
+# ⟫⟫ Tier: σ  •  Domain: configuration  •  Updated: 2025-09-20
+# ═════════════════════════════════════════════════════════════════════════════
+
+sql: !include_dir_merge_list /config/domain/sql/

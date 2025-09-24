@@ -1,0 +1,112 @@
+{
+  "folders": [
+    {
+      "path": "/n/ha"
+    },
+    {
+      "path": "/Users/evertappels/.ssh"
+    }
+  ],
+  "settings": {
+    "git.enabled": true,
+    "git.autorefresh": false,
+    "git.autoRepositoryDetection": "openEditors",
+    "git.countBadge": "off",
+    "git.openRepositoryInParentFolders": "never",
+    "git.repositoryScanIgnoredFolders": [
+      "/n/ha/share",
+      "/Users/evertappels/.ssh",
+      "zigbee2mqtt",
+      "www",
+      "tts",
+      "reports",
+      "hestia/vault",
+      "tmp",
+      ".venv"
+    ],
+    "gitlens.currentLine.enabled": false,
+    "gitlens.hovers.enabled": false,
+    "gitlens.codeLens.enabled": false,
+    "gitlens.statusBar.enabled": false,
+    "gitlens.views.repositories.enabled": false,
+  "python.defaultInterpreterPath": "/n/ha/.venv/bin/python",
+    "python.terminal.activateEnvironment": true,
+    "ruff.importStrategy": "useBundled",
+    "ruff.configuration": "pyproject.toml",
+    "files.exclude": {
+      "**/__pycache__": true,
+      "**/*.db": true,
+      "**/.DS_Store": true,
+      "**/.storage.git/objects.git/subtree-cache.storage.git": true,
+      "**/.storage.git": false,
+      "**/.venv": true,
+      "**/.git/**": false,
+      "**/.git": false,
+      "hestia/core/meta/gitdir-visible/**": false,
+      "**/.storage": true,
+      "**/deps/**": true,
+      "**/www/**": true,
+      "**/tts/**": true,
+      "**/*.pyc": true,
+      "reports/**": true,
+      "hestia/diagnostics/**": true,
+      "hestia/work/**": false,
+      "zigbee2mqtt/**": true
+    },
+    "files.watcherExclude": {
+      "hestia/core/meta/.git/**": true
+    },
+    "search.exclude": {
+      "hestia/core/meta/.git/**": true,
+      "**/.storage": true,
+      "**/.venv": true,
+      "**/deps/**": true,
+      "**/www/**": true,
+      "**/tts/**": true,
+      "**/*.pyc": true,
+      "**/*.db": true,
+      "reports/**": true,
+      "hestia/diagnostics/**": true,
+      "hestia/work/**": true,
+      "zigbee2mqtt/**": true
+    },
+    "explorer.excludeGitIgnore": false,
+    "files.associations": {
+      "*.yaml": "home-assistant"
+    },
+    "yaml.schemaStore.enable": true,
+    "yaml.schemaStore.url": "https://www.schemastore.org/api/json/catalog.json",
+    "yaml.validate": true,
+    "yaml.format.enable": true,
+    "yaml.customTags": [
+      "!include","!include_dir_merge_named","!include_dir_merge_list",
+      "!include_dir_list","!include_dir_named","!secret","!env_var"
+    ],
+    "yaml.schemas": {
+      "https://json.schemastore.org/home-assistant.json": [
+        "configuration.yaml",
+        "**/automations.yaml",
+        "**/scripts.yaml",
+        "**/scenes.yaml",
+        "**/blueprints/**/*.yaml",
+        "**/domain/templates/**/*.yaml",
+        "**/domain/automations/**/*.yaml",
+        "**/domain/scripts/**/*.yaml",
+        "**/domain/groups/**/*.yaml",
+        "**/domain/sensors/**/*.yaml",
+        "**/domain/binary_sensors/**/*.yaml",
+        "**/domain/lights/**/*.yaml",
+        "**/domain/helpers/**/*.yaml",
+        "**/entities/**/*.yaml"
+      ]
+    },
+  "ruff.logLevel": "info",
+    "editor.codeActionsOnSave": {
+      "source.organizeImports.ruff": "explicit",
+      "source.fixAll.ruff": "explicit"
+    },
+    "terminal.integrated.env.osx": { "PATH": "/opt/homebrew/bin:${env:PATH}" },
+    "window.title": "HA Live — ${rootName} — ${activeEditorShort}",
+    "makefile.configureOnOpen": false
+  }
+}

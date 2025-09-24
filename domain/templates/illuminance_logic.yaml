@@ -1,0 +1,101 @@
+#══════════════════════════════════════════════════════════════════════════════
+# ▶ CLIMATE SENSORS: Illuminance & Fusion Metrics ◀
+# Loader: !include_dir_merge_list domain/templates/
+# Schema: sensor (list)
+#══════════════════════════════════════════════════════════════════════════════
+
+- sensor:
+    - name: "Living Room Illuminance (Beta)"
+      unique_id: "living_room_illuminance_beta"
+      unit_of_measurement: "lx"
+      device_class: illuminance
+      icon: mdi:lumx
+      state: >
+        {% set val = states('sensor.living_room_multipurpose_alpha_illuminance') %}
+        {{ val if val not in ['unknown', 'unavailable', 'none', ''] else 0 }}
+      attributes:
+        tier: "β"
+        canonical_id: "living_room_illuminance_β"
+        area_id: "living_room"
+        source_count: "1"
+        data_quality: "{{ state_attr('sensor.living_room_multipurpose_alpha_illuminance', 'data_quality') }}"
+        sources: "{{ state_attr('sensor.living_room_multipurpose_alpha_illuminance', 'sources') }}"
+        subsystem: "aether"
+        is_multi_source: false
+        is_validated: true
+        version: "1.2"
+        last_updated: "2025-08-04"
+        role: "proxy"
+        type: "standardized_sensor"
+        module: "illuminance"
+        file: "/config/domain/templates/illuminance_logic.yaml"
+        description: "Standardized illuminance reading for living room from merged alpha sensor"
+        created: "2025-08-06"
+
+    - name: "Bedroom Illuminance (Beta)"
+      unique_id: "bedroom_illuminance_beta"
+      unit_of_measurement: "lx"
+      device_class: illuminance
+      icon: mdi:lumx
+      state: >
+        {% set val = states('sensor.bedroom_illuminance_wifi_alpha_illuminance') %}
+        {{ val if val not in ['unknown', 'unavailable', 'none', ''] else 0 }}
+      attributes:
+        tier: "β"
+        canonical_id: "bedroom_illuminance_β"
+        area_id: "bedroom"
+        floor_id: "sanctum"
+        source_count: "1"
+        data_quality: "{{ state_attr('sensor.bedroom_illuminance_wifi_alpha_illuminance', 'data_quality') }}"
+        sources: "{{ state_attr('sensor.bedroom_illuminance_wifi_alpha_illuminance', 'sources') }}"
+        subsystem: "aether"
+        is_multi_source: false
+        is_validated: true
+        version: "1.0"
+        last_updated: "2025-08-06"
+        role: "proxy"
+        type: "standardized_sensor"
+        module: "illuminance"
+        file: "/config/domain/templates/illuminance_logic.yaml"
+        description: "Standardized illuminance reading for bedroom from merged alpha sensor"
+        created: "2025-08-05"
+
+    # ══ Merged Group Sensors ══
+    - name: "Home Illuminance (Eta)"
+      unique_id: "merged_home_illuminance_eta"
+      unit_of_measurement: "lx"
+      device_class: illuminance
+      state: >
+        {% set illuminance_sensors = [
+          'sensor.bedroom_illuminance_wifi_alpha_illuminance',
+          'sensor.living_room_occupancy_illuminance_alpha'
+        ] %}
+        {% set values = namespace(valid=[]) %}
+        {% for sensor in illuminance_sensors %}
+          {% set val = states(sensor) | float(-1) %}
+          {% if val >= 0 %}
+            {% set values.valid = values.valid + [val] %}
+          {% endif %}
+        {% endfor %}
+        {% if values.valid | count > 0 %}
+          {{ values.valid | max }}
+        {% else %}
+          0
+        {% endif %}
+      attributes:
+        upstream_sources: >
+          {{ ['sensor.bedroom_illuminance_wifi_alpha_illuminance','sensor.living_room_occupancy_illuminance_alpha'] | tojson }}
+        area_id: "home"
+        tier: "η"
+        canonical_id: "merged_home_illuminance_η"
+        file: "/config/domain/templates/illuminance_logic.yaml"
+        date_created: "2025-04-26"
+        last_updated: "2025-08-06"
+        is_multi_source: true
+        source_count: "2"
+        data_quality: "excellent"
+        subsystem: "aether"
+        module: "illuminance"
+        role: "aggregation"
+        type: "fusion"
+        description: "Maximum illuminance detected in any room of the home"

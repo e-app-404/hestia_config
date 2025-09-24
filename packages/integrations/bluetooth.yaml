@@ -1,0 +1,7 @@
+---
+# ═════════════════════════════════════════════════════════════════════════════
+# ⟫⟫ Home Assistant Bluetooth  •  Detects nearby Bluetooth devices  ◀
+# ⟫⟫ packages/integrations/bluetooth.yaml  •  packages: !include_dir_named packages
+# ⟫⟫ Tier: σ  •  Domain: configuration  •  Updated: 2025-08-02
+# ═════════════════════════════════════════════════════════════════════════════
+bluetooth:

@@ -1,0 +1,450 @@
+{# Unified Home Assistant Entity Macro Library v4.1+expanded #}
+{# Consolidates: beta_light_template_macro + light_availability_macro + circadian_macro #}
+{# Eliminates artificial tier separation and subsystem boundaries #}
+
+{# ============================================================================ #}
+{# UTILITY MACROS #}
+{# ============================================================================ #}
+
+{% macro generate_render_id(seed="") %}
+  {{ "%016x" % (range(1)|random * 2**52) }}
+{% endmacro %}
+
+{# --------------------------------------------------------------------------- #}
+{# YAML-safe folded-scalar helper                                              #}
+{# --------------------------------------------------------------------------- #}
+{% macro yaml_scalar(key, expr, indent_spaces=8) -%}
+{{ " " * indent_spaces }}{{ key }}: >
+{{ " " * (indent_spaces + 2) }}{{ expr }}
+{%- endmacro %}
+
+{# ============================================================================ #}
+{# UNIFIED LIGHT ENTITY GENERATION - HARDENED (v4.0.1)                         #}
+{# ============================================================================ #}
+
+{% macro generate_light_entity(entity_data, context_metadata=None) %}
+{#
+  Hardened macro v4.0.1 for YAML schema safety and Home Assistant contract compliance
+#}
+
+{% set canonical_id     = entity_data.canonical_id   | default("unknown_light") %}
+{% set unique_id        = entity_data.unique_id      | default((canonical_id | generate_unique_id)) %}
+{% set entity_id        = entity_data.entity_id      | default("light.unknown") %}
+{% set friendly_name    = entity_data.friendly_name  | default("Unknown Light") %}
+{% set light_slug       = entity_data.light_slug     | default("unknown_light") %}
+{% set protocol_stack   = entity_data.protocol_stack | default({}) %}
+{% set availability_sensor = entity_data.availability_sensor | default("") %}
+{% set device_info      = entity_data.device_info    | default({}) %}
+{% set capabilities     = device_info.get('capabilities', {}) %}
+
+      # Light Entity: {{ friendly_name }}
+      # canonical_id: {{ canonical_id }}
+      # entity_id: {{ entity_id }}
+      # render_trace_id: {{ context_metadata.render_id | default('unknown') if context_metadata else 'unknown' }}
+
+      {{ light_slug }}:
+        friendly_name: "{{ friendly_name }}"
+        unique_id: "{{ unique_id }}"
+
+{{ yaml_scalar(
+    'value_template',
+    '{% raw %}{{ is_state(\'{% endraw %}' ~ entity_id ~ '{% raw %}\', \'on\') }}{% endraw %}',
+    8) }}
+
+{% if availability_sensor %}
+{{ yaml_scalar(
+    'availability',
+    '{% raw %}{{ is_state(\'{% endraw %}' ~ availability_sensor ~ '{% raw %}\', \'on\') }}{% endraw %}',
+    8) }}
+{% else %}
+{{ yaml_scalar(
+    'availability',
+    '{% raw %}{{ has_value(\'{% endraw %}' ~ entity_id ~ '{% raw %}\') }}{% endraw %}',
+    8) }}
+{% endif %}
+
+        turn_on:
+          service: script.resolve_protocol
+          data:
+            canonical_id: "{{ canonical_id }}"
+            operation: "turn_on"
+            protocol_stack: {{ protocol_stack | tojson }}
+
+        turn_off:
+          service: script.resolve_protocol
+          data:
+            canonical_id: "{{ canonical_id }}"
+            operation: "turn_off"
+            protocol_stack: {{ protocol_stack | tojson }}
+
+{{ yaml_scalar(
+    'level_template',
+    '{% raw %}{{ state_attr(\'{% endraw %}' ~ entity_id ~ '{% raw %}\', \'brightness\') | default(255) }}{% endraw %}',
+    8) }}
+
+{{ yaml_scalar(
+    'color_template',
+    '{% raw %}{{ state_attr(\'{% endraw %}' ~ entity_id ~ '{% raw %}\', \'rgb_color\') | default([255, 255, 255]) }}{% endraw %}',
+    8) }}
+
+{{ yaml_scalar(
+    'color_temp_template',
+    '{% raw %}{{ state_attr(\'{% endraw %}' ~ entity_id ~ '{% raw %}\', \'color_temp\') | default(370) }}{% endraw %}',
+    8) }}
+
+        attributes:
+          canonical_id: "{{ canonical_id }}"
+          entity_type: "light"
+          derived_from: "{{ entity_id }}"
+          engine_version: "4.0.1-hardened"
+          generated_at: "{{ now().isoformat() }}"
+          render_trace_id: "{{ context_metadata.render_id | default('unknown') if context_metadata else 'unknown' }}"
+
+          model: "{{ device_info.model | default('Unknown') }}"
+          manufacturer: "{{ device_info.manufacturer | default('Unknown') }}"
+
+          supports_brightness:   {{ "true" if capabilities.get('brightness',   true) else "false" }}
+          supports_color_temp:   {{ "true" if capabilities.get('color_temp',  true) else "false" }}
+          supports_color:        {{ "true" if capabilities.get('color',       true) else "false" }}
+
+          protocol_stack: {{ protocol_stack | tojson }}
+
+{% endmacro %}
+
+{# ============================================================================ #}
+{# UNIFIED AVAILABILITY SENSOR GENERATION - HARDENED (v4.0.1)                  #}
+{# ============================================================================ #}
+
+{% macro generate_availability_sensor(entity_data, context_metadata=None) %}
+{# Hardened macro v4.0.1 – YAML-safe folded scalars for state & availability #}
+
+{% set canonical_id        = entity_data.canonical_id | default("unknown_availability") %}
+{% set unique_id           = entity_data.unique_id    | default((canonical_id + "_availability" | generate_unique_id)) %}
+{% set friendly_name       = entity_data.friendly_name | default("Unknown Device") %}
+{% set source_entity       = entity_data.entity_id    | default("unknown.entity") %}
+{% set availability_source = entity_data.availability_sensor | default("") %}
+
+# Availability Sensor: {{ friendly_name }}
+# canonical_id: {{ canonical_id }}_availability
+# source_entity: {{ source_entity }}
+# render_trace_id: {{ context_metadata.render_id | default('unknown') if context_metadata else 'unknown' }}
+
+- name: "{{ friendly_name }} Available"
+  unique_id: "{{ unique_id }}"
+  device_class: connectivity
+
+{% if availability_source %}
+{{ yaml_scalar(
+    'state',
+    '{% raw %}{{ is_state(\'{% endraw %}' ~ availability_source ~ '{% raw %}\', \'on\') }}{% endraw %}',
+    2) }}
+{% else %}
+{{ yaml_scalar(
+    'state',
+    '{% raw %}{{ has_value(\'{% endraw %}' ~ source_entity ~ '{% raw %}\') }}{% endraw %}',
+    2) }}
+{% endif %}
+
+{{ yaml_scalar(
+    'availability',
+    '{% raw %}{{ has_value(\'{% endraw %}' ~ source_entity ~ '{% raw %}\') }}{% endraw %}',
+    2) }}
+
+  attributes:
+    canonical_id: "{{ canonical_id }}_availability"
+    entity_type: "availability"
+    derived_from: "{{ source_entity }}"
+    engine_version: "4.0.1-hardened"
+    generated_at: "{{ now().isoformat() }}"
+    render_trace_id: "{{ context_metadata.render_id | default('unknown') if context_metadata else 'unknown' }}"
+    monitored_entity: "{{ source_entity }}"
+    availability_source: "{{ availability_source }}"
+{% endmacro %}
+
+{# ============================================================================ #}
+{# UNIFIED CIRCADIAN SENSOR GENERATION                                         #}
+{# ============================================================================ #}
+
+{% macro generate_circadian_brightness_sensor(room_data, context_metadata=None) %}
+{#
+  Unified circadian brightness sensor
+#}
+
+{% set area_id            = room_data.area_id | default("unknown_room") %}
+{% set canonical_id       = area_id + "_circadian_brightness" %}
+{% set unique_id          = canonical_id | generate_unique_id %}
+{% set default_brightness = room_data.default_brightness | default(60) %}
+
+# Circadian Brightness Sensor: {{ area_id | title }}
+# canonical_id: {{ canonical_id }}
+# render_trace_id: {{ context_metadata.render_id | default('unknown') if context_metadata else 'unknown' }}
+
+- name: "{{ area_id | title }} Circadian Brightness"
+  unique_id: "{{ unique_id }}"
+  state: >-
+    {{ default_brightness }}
+  attributes:
+    canonical_id: "{{ canonical_id }}"
+    entity_type: "circadian_brightness"
+    engine_version: "4.0.1-hardened"
+    generated_at: "{{ now().isoformat() }}"
+    render_trace_id: "{{ context_metadata.render_id | default('unknown') if context_metadata else 'unknown' }}"
+    area_id: "{{ area_id }}"
+    circadian_type: "brightness"
+    default_value: {{ default_brightness }}
+    brightness_range: [1, 100]
+
+{% endmacro %}
+
+{# ============================================================================ #}
+{# ALPHA SENSOR FANOUT GENERATION - NEW v4.0.1 (HARDENED)                     #}
+{# ============================================================================ #}
+
+{% macro macro_fanout_alpha_sensor(sensor_data, context_metadata=None) %}
+{#
+  Renders a fanout sensor group definition for an alpha-tier physical device
+  emitting multiple binary_sensor entities across integrations.
+
+  Parameters:
+    sensor_data.area_id: string
+    sensor_data.canonical_id: string
+    sensor_data.base_entity_name: string
+    sensor_data.integrations: list of integration objects
+    sensor_data.physical_device: device info object (optional)
+    sensor_data.location: location info object (optional)
+    sensor_data.availability_sensor: optional entity_id for availability
+#}
+
+{# QA Guardrail: Input validation #}
+{% if sensor_data is not defined %}
+# ERROR: sensor_data parameter is required
+{% else %}
+
+{% set area_id = sensor_data.area_id | default("unknown_room") %}
+{% set canonical_id = sensor_data.canonical_id | default("unknown_sensor_α") %}
+{% set base_entity_name = sensor_data.base_entity_name | default("unknown_sensor") %}
+{% set integrations = sensor_data.integrations | default([]) %}
+{% set physical_device = sensor_data.physical_device | default({}) %}
+{% set location = sensor_data.location | default({}) %}
+{% set availability_sensor = sensor_data.availability_sensor %}
+
+{# QA Guardrail: Validate minimum requirements #}
+{% if integrations | length < 2 %}
+# QA Warning: Fanout requires at least 2 integrations, found {{ integrations | length }}
+# canonical_id: {{ canonical_id }}
+{% else %}
+
+{# QA Guardrail: Validate entity_id uniqueness #}
+{% set entity_ids = integrations | map(attribute='entity_id') | list %}
+{% if entity_ids | length != (entity_ids | unique | list | length) %}
+# QA Warning: Duplicate entity_ids detected in fanout configuration
+# canonical_id: {{ canonical_id }}
+{% else %}
+
+{# QA Guardrail: Validate canonical_id format #}
+{% if not canonical_id.endswith('_α') %}
+# QA Warning: Invalid canonical_id format. Expected to end with '_α'
+# Found: {{ canonical_id }}
+{% else %}
+
+# Alpha Sensor Fanout: {{ canonical_id }}
+# base_entity: {{ base_entity_name }}
+# render_trace_id: {{ context_metadata.render_id | default('unknown') if context_metadata else 'unknown' }}
+
+- shared_origin_id: "{{ canonical_id }}"
+  canonical_sensor_id: "binary_sensor.{{ base_entity_name }}_beta"
+
+{% if physical_device %}
+  physical_device:
+  {% for key in ['name', 'manufacturer', 'model', 'firmware', 'mac', 'hub_id'] %}
+    {% if physical_device[key] %}
+    {{ key }}: "{{ physical_device[key] }}"
+    {% endif %}
+  {% endfor %}
+{% endif %}
+
+  location:
+    area_id: "{{ area_id }}"
+  {% if location.room %}
+    room: "{{ location.room }}"
+  {% endif %}
+  {% if location.area %}
+    area: "{{ location.area }}"
+  {% endif %}
+    role: "{{ location.role | default('presence') }}"
+
+  feed_entities:
+  {% for integration in integrations %}
+    - entity_id: "{{ integration.entity_id }}"
+      integration: "{{ integration.name }}"
+    {% if integration.platform %}
+      platform: "{{ integration.platform }}"
+    {% endif %}
+    {% if integration.device_class %}
+      device_class: "{{ integration.device_class }}"
+    {% endif %}
+      role: alpha_feed
+    {% if integration.confidence_score %}
+      confidence_score: {{ integration.confidence_score }}
+    {% endif %}
+  {% endfor %}
+
+  preferred_feed: "{{ integrations[0].entity_id }}"
+
+  fallback_strategy:
+    retry_attempts: 2
+    retry_delay_ms: 500
+    auto_switch_threshold: 3
+    return_to_preferred_after: 60
+
+  tier: α
+
+  fusion_strategy:
+    method: any_true
+    confidence_required: 75
+
+  {% if availability_sensor %}
+  availability_sensor: "{{ availability_sensor }}"
+  {% endif %}
+
+{% endif %}
+{% endif %}
+{% endif %}
+{% endif %}
+{% endmacro %}
+
+{# ============================================================================ #}
+{# UNIFIED BATCH PROCESSING - HARDENED (v4.0.1)                                 #}
+{# ============================================================================ #}
+
+{% macro generate_light_entities_batch(entities_list, context_metadata=None) %}
+{# Hardened batch light generation v4.0.1 - YAML-safe indentation #}
+
+{% if entities_list is not defined or not entities_list %}
+# QA Warning: No light entities provided for batch generation
+{% else %}
+
+# Unified Light Entity Batch Generation
+# entities_count: {{ entities_list | length }}
+# render_trace_id: {{ context_metadata.render_id | default('unknown') if context_metadata else 'unknown' }}
+# engine_version: 4.0.1-hardened
+
+light:
+  - platform: template
+    lights:
+{% for entity in entities_list %}
+{{ generate_light_entity(entity, context_metadata) | indent(6, true) }}
+{% endfor %}
+
+# Batch Summary
+# total_entities: {{ entities_list | length }}
+# timestamp: {{ now().isoformat() }}
+
+{% endif %}
+{% endmacro %}
+
+{% macro generate_availability_sensors_batch(entities_list, context_metadata=None) %}
+{# Hardened batch availability generation v4.0.1 - YAML-safe indentation #}
+
+{% if entities_list is not defined or not entities_list %}
+# QA Warning: No entities provided for availability sensor generation
+{% else %}
+
+# Unified Availability Sensor Batch Generation
+# entities_count: {{ entities_list | length }}
+# render_trace_id: {{ context_metadata.render_id | default('unknown') if context_metadata else 'unknown' }}
+# engine_version: 4.0.1-hardened
+
+binary_sensor:
+{% for entity in entities_list %}
+{{ generate_availability_sensor(entity, context_metadata) | indent(2, true) }}
+{% endfor %}
+
+# Batch Summary
+# total_availability_sensors: {{ entities_list | length }}
+# timestamp: {{ now().isoformat() }}
+
+{% endif %}
+{% endmacro %}
+
+{% macro generate_circadian_sensors_batch(rooms_list, context_metadata=None) %}
+{# Unified batch circadian generation #}
+
+{% if rooms_list is not defined or not rooms_list %}
+# QA Warning: No rooms provided for circadian sensor generation
+{% else %}
+
+# Unified Circadian Sensor Batch Generation
+# rooms_count: {{ rooms_list | length }}
+# render_trace_id: {{ context_metadata.render_id | default('unknown') if context_metadata else 'unknown' }}
+
+sensor:
+{% for room in rooms_list %}
+{{ generate_circadian_brightness_sensor(room, context_metadata) }}
+{% endfor %}
+
+# Batch Summary
+# total_circadian_sensors: {{ rooms_list | length }}
+# timestamp: {{ now().isoformat() }}
+
+{% endif %}
+{% endmacro %}
+
+{% macro generate_sensor_fanout_batch(sensors_list, context_metadata=None) %}
+{# Unified batch sensor fanout generation #}
+
+{% if sensors_list is not defined or not sensors_list %}
+# QA Warning: No sensors provided for fanout generation
+{% else %}
+
+# Alpha Sensor Fanout Registry Batch Generation
+# sensors_count: {{ sensors_list | length }}
+# render_trace_id: {{ context_metadata.render_id | default('unknown') if context_metadata else 'unknown' }}
+# engine_version: 4.0.1-hardened
+
+sensor_fanout_registry:
+{% for sensor in sensors_list %}
+{{ macro_fanout_alpha_sensor(sensor, context_metadata) }}
+{% endfor %}
+
+# Batch Summary
+# total_sensor_fanouts: {{ sensors_list | length }}
+# timestamp: {{ now().isoformat() }}
+
+{% endif %}
+{% endmacro %}
+
+{# ============================================================================ #}
+{# UNIFIED VALIDATION                                                          #}
+{# ============================================================================ #}
+
+{% macro validate_entity_metadata(entity_data, entity_type="light") %}
+{# Unified validation #}
+
+{% set issues = [] %}
+{% set required_fields = ['canonical_id', 'entity_id', 'friendly_name'] %}
+
+{% if entity_data is not defined %}
+  {% set _ = issues.append('entity_data is undefined') %}
+{% else %}
+  {% for field in required_fields %}
+    {% if not entity_data.get(field) %}
+      {% set _ = issues.append('Missing required field: ' + field) %}
+    {% endif %}
+  {% endfor %}
+
+  {% if entity_type == "light" %}
+    {% if not entity_data.get('light_slug') %}
+      {% set _ = issues.append('Missing light_slug for light entity') %}
+    {% endif %}
+  {% endif %}
+{% endif %}
+
+{
+  "valid": {{ "true" if issues | length == 0 else "false" }},
+  "issues": {{ issues | tojson }},
+  "entity_type": "{{ entity_type }}",
+  "canonical_id": "{{ entity_data.canonical_id | default('unknown') if entity_data is defined else 'undefined' }}",
+  "validated_at": "{{ now().isoformat() }}"
+}
+{% endmacro %}

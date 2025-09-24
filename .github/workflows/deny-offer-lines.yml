@@ -1,0 +1,23 @@
+name: deny-offer-lines
+on: [push, pull_request]
+jobs:
+  deny-offers:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Scan repo for offer phrases
+        run: |
+          set -euo pipefail
+          regex="(?i)\\b(if you(?:'d| would)?(?: like| want(?: me to)?)?|if you'd like|if you want me to|I can (?:also )?(?:do|add|implement))\\b"
+          # search markdown/text files only
+          files=$(git ls-files '*.*' | grep -E '\.(md|markdown|txt|yml|yaml)$' || true)
+          if [ -n "$files" ]; then
+            for f in $files; do
+              if grep -Pqo "$regex" "$f"; then
+                echo "Forbidden phrase found in $f"
+                grep -nP "$regex" "$f" || true
+                exit 1
+              fi
+            done
+          fi
+          echo "No forbidden offer-phrases found."

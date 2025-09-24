@@ -1,0 +1,749 @@
+- room: ensuite
+  occupancy_model:
+    motion_emitters:
+      - binary_sensor.ensuite_motion
+      - binary_sensor.ensuite_motion_
+      - binary_sensor.ensuite_motion_beta
+      - binary_sensor.ensuite_motion_recent_beta
+      - sensor.ensuite_motion_decay
+      - sensor.ensuite_motion_score
+      - sensor.ensuite_motion_score_gamma
+      - sensor.motion_score_ensuite
+    presence_emitters:
+      - binary_sensor.ensuite_occupancy
+      - binary_sensor.ensuite_occupancy_
+      - binary_sensor.ensuite_occupancy_alpha
+      - binary_sensor.ensuite_occupancy_beta
+      - binary_sensor.ensuite_occupancy_rate_limited
+      - binary_sensor.ensuite_occupancy_validated
+      - binary_sensor.ensuite_presence_gamma
+      - binary_sensor.ensuite_presence_msf
+      - binary_sensor.ensuite_presence_msf_zeta
+      - binary_sensor.ensuite_presence_validated_
+      - sensor.ensuite_occupancy_decay
+      - sensor.ensuite_occupancy_decay_delta
+      - sensor.ensuite_presence_confidence
+      - sensor.ensuite_presence_decay_delta
+    requires_temporal_logic: false
+    has_duplicate_definitions: false
+    automations:
+      - aether_ensuite_shower_detection
+      - aether_low_temperature_alert
+      - aether_sensors_anomaly_detection
+      - automation_ensuite_fan_occupancy
+      - automation_ensuite_lighting_motion
+    fusion_chains:
+      - aether_ensuite_shower_detection
+      - aether_low_temperature_alert
+      - aether_sensors_anomaly_detection
+      - automation_ensuite_fan_occupancy
+      - automation_ensuite_lighting_motion
+  logic_context:
+    - id: aether_ensuite_shower_detection
+      mode: restart
+      source_file: automations/automations/climate/aether_shower_humidity_control.yaml
+      unregistered_entities: &id003
+        - binary_sensor.shower_active
+        - sensor.ensuite_humidity_beta
+      has_conditions: false
+    - id: aether_low_temperature_alert
+      mode: single
+      source_file: automations/automations/climate/aether_alerts_and_notifications_rewrapped.yaml
+      unregistered_entities: &id001
+        - input_boolean.climate_automation_enabled
+        - input_boolean.turn_off
+        - input_select.home_mode
+        - script.turn_on
+        - sensor.merged_bedroom_temperature_eta
+        - sensor.merged_ensuite_temperature_eta
+        - sensor.merged_kitchen_temperature_eta
+        - sensor.merged_living_room_temperature_eta
+      has_conditions: true
+    - id: aether_sensors_anomaly_detection
+      mode: single
+      source_file: automations/automations/climate/aether_alerts_and_notifications_rewrapped.yaml
+      unregistered_entities: &id002
+        - sensor.merged_bedroom_humidity_eta
+        - sensor.merged_bedroom_temperature_eta
+        - sensor.ensuite_humidity_eta
+        - sensor.merged_ensuite_temperature_eta
+        - sensor.merged_kitchen_humidity_eta
+        - sensor.merged_kitchen_temperature_eta
+        - sensor.merged_living_room_humidity_eta
+        - sensor.merged_living_room_temperature_eta
+      has_conditions: false
+    - id: automation_ensuite_fan_occupancy
+      mode: restart
+      source_file: automations/automations/subsystems/hermes_automations_combined.yaml
+      unregistered_entities:
+        - binary_sensor.ensuite_occupancy_beta
+      has_conditions: false
+    - id: automation_ensuite_lighting_motion
+      mode: single
+      source_file: automations/automations/subsystems/hermes_automations_combined.yaml
+      unregistered_entities: &id008
+        - binary_sensor.ensuite_occupancy_beta
+        - script.dispatch_light_state
+      has_conditions: true
+  session_reference: hestia_phase_scan_20250608_occupancy_contract
+- room: hallway
+  occupancy_model:
+    motion_emitters:
+      - binary_sensor.hallway_downstairs_motion
+      - binary_sensor.hallway_downstairs_motion_beta
+      - binary_sensor.hallway_downstairs_motion_recent_beta
+      - binary_sensor.hallway_downstairs_motion_smartthings_alpha
+      - binary_sensor.hallway_downstairs_motion_tplink_alpha
+      - binary_sensor.hallway_downstairs_motion_wifi_alpha_cloud_connection
+      - binary_sensor.hallway_entrance_motion_beta
+      - binary_sensor.hallway_entrance_motion_tplink_alpha
+      - binary_sensor.hallway_entrance_motion_wifi_alpha
+      - binary_sensor.hallway_motion
+      - binary_sensor.hallway_upstairs_motion_beta
+      - binary_sensor.hallway_upstairs_motion_recent_beta
+      - binary_sensor.hallway_upstairs_motion_tplink_alpha
+      - binary_sensor.hallway_upstairs_motion_validated
+      - binary_sensor.hallway_upstairs_motion_wifi_alpha
+      - sensor.hallway_downstairs_motion_score
+      - sensor.hallway_downstairs_motion_score_gamma
+      - sensor.hallway_upstairs_motion_score
+      - sensor.hallway_upstairs_motion_score_gamma
+      - sensor.motion_score_hallway_downstairs
+      - sensor.motion_score_hallway_entrance
+      - sensor.motion_score_hallway_upstairs
+    presence_emitters:
+      - binary_sensor.hallway_downstairs_occupancy_
+      - binary_sensor.hallway_downstairs_occupancy_beta
+      - binary_sensor.hallway_downstairs_occupancy_mtr_alpha
+      - binary_sensor.hallway_downstairs_occupancy_rate_limited
+      - binary_sensor.hallway_downstairs_occupancy_validated
+      - binary_sensor.hallway_downstairs_presence_gamma
+      - binary_sensor.hallway_downstairs_presence_validated_
+      - binary_sensor.hallway_entrance_occupancy_beta
+      - binary_sensor.hallway_entrance_occupancy_mtr_alpha
+      - binary_sensor.hallway_occupancy
+      - binary_sensor.hallway_upstairs_occupancy_
+      - binary_sensor.hallway_upstairs_occupancy_beta
+      - binary_sensor.hallway_upstairs_occupancy_matter_alpha
+      - binary_sensor.hallway_upstairs_occupancy_rate_limited
+      - binary_sensor.hallway_upstairs_occupancy_validated
+      - binary_sensor.hallway_upstairs_presence_gamma
+      - binary_sensor.hallway_upstairs_presence_validated_
+      - sensor.hallway_downstairs_occupancy_decay
+      - sensor.hallway_downstairs_occupancy_decay_delta
+      - sensor.hallway_downstairs_presence_confidence
+      - sensor.hallway_downstairs_presence_decay_delta
+      - sensor.hallway_upstairs_occupancy_decay
+      - sensor.hallway_upstairs_occupancy_decay_delta
+      - sensor.hallway_upstairs_presence_confidence
+      - sensor.hallway_upstairs_presence_decay_delta
+    requires_temporal_logic: false
+    has_duplicate_definitions: false
+    automations:
+      - alert_skylight_open_risky_conditions
+      - automation_downstairs_lights_motion
+    fusion_chains:
+      - alert_skylight_open_risky_conditions
+      - automation_downstairs_lights_motion
+  logic_context:
+    - id: alert_skylight_open_risky_conditions
+      mode: single
+      source_file: automations/automations/system/automations_template_monitoring.yaml
+      unregistered_entities: &id006
+        - binary_sensor.hallway_upstairs_skylight_contact_sensor_mtr_alpha
+        - input_boolean.turn_off
+      has_conditions: true
+    - id: automation_downstairs_lights_motion
+      mode: single
+      source_file: automations/automations/subsystems/hermes_automations_combined.yaml
+      unregistered_entities: &id007
+        - binary_sensor.hallway_downstairs_motion_beta
+        - script.dispatch_light_state
+      has_conditions: true
+  session_reference: hestia_phase_scan_20250608_occupancy_contract
+- room: kitchen
+  occupancy_model:
+    motion_emitters:
+      - binary_sensor.kitchen_motion
+      - binary_sensor.kitchen_motion_
+      - binary_sensor.kitchen_motion_beta
+      - binary_sensor.kitchen_motion_recent_beta
+      - binary_sensor.kitchen_motion_tplink_alpha
+      - binary_sensor.kitchen_motion_wifi_smartthings_alpha
+      - sensor.kitchen_motion_decay
+      - sensor.kitchen_motion_score
+      - sensor.kitchen_motion_score_gamma
+      - sensor.motion_score_kitchen
+    presence_emitters:
+      - binary_sensor.kitchen_occupancy
+      - binary_sensor.kitchen_occupancy_
+      - binary_sensor.kitchen_occupancy_alpha
+      - binary_sensor.kitchen_occupancy_beta
+      - binary_sensor.kitchen_occupancy_matter
+      - binary_sensor.kitchen_occupancy_matter_alpha
+      - binary_sensor.kitchen_occupancy_rate_limited
+      - binary_sensor.kitchen_occupancy_validated
+      - binary_sensor.kitchen_presence_gamma
+      - binary_sensor.kitchen_presence_msf
+      - binary_sensor.kitchen_presence_msf_zeta
+      - binary_sensor.kitchen_presence_sensor_beta
+      - binary_sensor.kitchen_presence_validated_
+      - sensor.kitchen_occupancy_decay
+      - sensor.kitchen_occupancy_decay_delta
+      - sensor.kitchen_presence_confidence
+      - sensor.kitchen_presence_decay_delta
+    requires_temporal_logic: false
+    has_duplicate_definitions: false
+    automations:
+      - aether_kitchen_climate_control
+      - aether_low_temperature_alert
+      - aether_sensors_anomaly_detection
+      - automation_kitchen_motion_light
+    fusion_chains:
+      - aether_kitchen_climate_control
+      - aether_low_temperature_alert
+      - aether_sensors_anomaly_detection
+      - automation_kitchen_motion_light
+  logic_context:
+    - id: aether_kitchen_climate_control
+      mode: single
+      source_file: automations/automations/climate/aether_climate_control_rewrapped.yaml
+      unregistered_entities: &id004
+        - binary_sensor.kitchen_heating_needed
+        - input_boolean.climate_automation_enabled
+        - sensor.effective_kitchen_temperature_gamma
+      has_conditions: true
+    - id: aether_low_temperature_alert
+      mode: single
+      source_file: automations/automations/climate/aether_alerts_and_notifications_rewrapped.yaml
+      unregistered_entities: *id001
+      has_conditions: true
+    - id: aether_sensors_anomaly_detection
+      mode: single
+      source_file: automations/automations/climate/aether_alerts_and_notifications_rewrapped.yaml
+      unregistered_entities: *id002
+      has_conditions: false
+    - id: automation_kitchen_motion_light
+      mode: single
+      source_file: automations/automations/subsystems/hermes_automations_combined.yaml
+      unregistered_entities: &id009
+        - binary_sensor.kitchen_motion_beta
+        - script.dispatch_light_state
+      has_conditions: true
+  session_reference: hestia_phase_scan_20250608_occupancy_contract
+- room: living
+  occupancy_model:
+    motion_emitters:
+      - binary_sensor.living_room_aeotec_sensor_motion
+      - binary_sensor.living_room_motion
+      - binary_sensor.living_room_motion_
+      - binary_sensor.living_room_motion_beta
+      - binary_sensor.living_room_motion_recent_beta
+      - binary_sensor.living_room_multipurpose_motion_alpha
+      - sensor.living_room_motion_decay
+      - sensor.living_room_motion_score
+      - sensor.living_room_motion_score_gamma
+      - sensor.motion_score_living_room
+    presence_emitters:
+      - binary_sensor.living_room_occupancy
+      - binary_sensor.living_room_occupancy_
+      - binary_sensor.living_room_occupancy_alpha
+      - binary_sensor.living_room_occupancy_beta
+      - binary_sensor.living_room_occupancy_rate_limited
+      - binary_sensor.living_room_occupancy_validated
+      - binary_sensor.living_room_presence_gamma
+      - binary_sensor.living_room_presence_msf
+      - binary_sensor.living_room_presence_msf_zeta
+      - binary_sensor.living_room_presence_validated_
+      - sensor.living_room_occupancy_decay
+      - sensor.living_room_occupancy_decay_delta
+      - sensor.living_room_occupancy_illuminance_alpha
+      - sensor.living_room_presence_confidence
+      - sensor.living_room_presence_decay_delta
+    requires_temporal_logic: false
+    has_duplicate_definitions: false
+    automations:
+      - aether_living_room_climate_control
+      - aether_low_temperature_alert
+      - aether_sensors_anomaly_detection
+      - automation_living_room_motion_lights
+    fusion_chains:
+      - aether_living_room_climate_control
+      - aether_low_temperature_alert
+      - aether_sensors_anomaly_detection
+      - automation_living_room_motion_lights
+  logic_context:
+    - id: aether_living_room_climate_control
+      mode: single
+      source_file: automations/automations/climate/aether_climate_control_rewrapped.yaml
+      unregistered_entities: &id005
+        - binary_sensor.living_room_heating_needed
+        - input_boolean.climate_automation_enabled
+        - sensor.effective_living_room_temperature_gamma
+      has_conditions: true
+    - id: aether_low_temperature_alert
+      mode: single
+      source_file: automations/automations/climate/aether_alerts_and_notifications_rewrapped.yaml
+      unregistered_entities: *id001
+      has_conditions: true
+    - id: aether_sensors_anomaly_detection
+      mode: single
+      source_file: automations/automations/climate/aether_alerts_and_notifications_rewrapped.yaml
+      unregistered_entities: *id002
+      has_conditions: false
+    - id: automation_living_room_motion_lights
+      mode: single
+      source_file: automations/automations/subsystems/hermes_automations_combined.yaml
+      unregistered_entities:
+        - binary_sensor.living_room_presence_gamma
+      has_conditions: true
+  session_reference: hestia_phase_scan_20250608_occupancy_contract
+- room: unassigned
+  occupancy_model:
+    motion_emitters:
+      - automation.motion_score_decay_refresh
+      - binary_sensor.downstairs_motion_sensor
+      - binary_sensor.downstairs_motion_tapo_t100_beta
+      - binary_sensor.entrance_motion
+      - binary_sensor.entrance_motion_beta
+      - binary_sensor.entrance_motion_motion
+      - binary_sensor.msf_motion
+      - binary_sensor.security_motion_detected
+      - binary_sensor.tp_link_tapo_t100_downstairs_motion_sensor_cloud_connection
+      - binary_sensor.upstairs_motion_motion
+      - binary_sensor.upstairs_motion_sensor
+      - binary_sensor.wardrobe_motion_beta
+      - binary_sensor.wardrobe_motion_sensor
+      - binary_sensor.wardrobe_motion_sensor_beta
+      - binary_sensor.wardrobe_motion_sensor_motion
+      - binary_sensor.wardrobe_motion_sensor_wifi_st_alpha
+      - sensor.desk_motion_score
+      - sensor.entrance_motion_score
+      - sensor.entrance_motion_score_gamma
+      - sensor.motion_score_wardrobe
+      - sensor.ottoman_motion_score
+      - sensor.soteria_motion_security_decay
+      - sensor.wardrobe_motion_score
+      - sensor.wardrobe_motion_score_gamma
+    presence_emitters:
+      - automation.presence_based_lighting
+      - binary_sensor.desk_presence_inferred_gamma
+      - binary_sensor.downstairs_occupancy
+      - binary_sensor.downstairs_occupancy_mtr_beta
+      - binary_sensor.downstairs_presence_sensor_beta
+      - binary_sensor.downstairs_zone_presence_eta
+      - binary_sensor.entrance_occupancy
+      - binary_sensor.entrance_occupancy_beta
+      - binary_sensor.entrance_presence_beta
+      - binary_sensor.entrance_presence_cloud_connection_alpha
+      - binary_sensor.home_presence_msf
+      - binary_sensor.home_presence_synthesis_eta
+      - binary_sensor.presence_iphone14
+      - binary_sensor.presence_system_enabled_
+      - binary_sensor.private_space_presence_eta
+      - binary_sensor.room_presence_reliable_
+      - binary_sensor.shared_space_presence_eta
+      - binary_sensor.upstairs_occupancy
+      - binary_sensor.upstairs_presence_sensor_beta
+      - binary_sensor.upstairs_zone_presence_eta
+      - binary_sensor.wardrobe_occupancy
+      - binary_sensor.wardrobe_occupancy_beta
+      - binary_sensor.wardrobe_occupancy_mtr_alpha
+      - input_boolean.presence_debug_mode
+      - input_boolean.presence_detection_enabled
+      - input_boolean.presence_detection_logging
+      - input_boolean.trigger_manual_presence_fallback
+      - script.fallback_presence_detection
+      - script.rate_limited_presence_mode_change
+      - script.validate_presence_config
+      - sensor.bed_presence_decay_delta
+      - sensor.desk_presence_decay_delta
+      - sensor.hermes_fused_presence_score_beta
+      - sensor.hermes_presence_confidence_delta
+      - sensor.hermes_presence_confidence_gamma
+      - sensor.hermes_room_presence_assessment
+      - sensor.hermes_room_presence_assessment_delta
+      - sensor.home_presence_aggregated_
+      - sensor.home_presence_confidence
+      - sensor.home_presence_confidence_delta
+      - sensor.home_presence_duration
+      - sensor.home_presence_duration_delta
+      - sensor.occupancy_entity_map
+      - sensor.presence_abstraction_layer
+      - sensor.presence_abstraction_layer_delta
+      - sensor.presence_confidence
+      - sensor.room_presence_confidence
+      - sensor.soteria_presence_status
+    requires_temporal_logic: false
+    has_duplicate_definitions: false
+    automations:
+      - aether_bedroom_climate_control
+      - aether_bedroom_dehumidifier_control
+      - aether_climate_mode_control
+      - aether_daily_environment_report
+      - aether_ensuite_shower_detection
+      - aether_kitchen_climate_control
+      - aether_living_room_climate_control
+      - aether_low_temperature_alert
+      - aether_night_time_temperature_setback
+      - aether_system_health_check
+      - aether_window_closed_resumption
+      - aether_window_open_detection
+      - alert_skylight_open_risky_conditions
+      - automation_downstairs_lights_motion
+      - automation_ensuite_lighting_motion
+      - automation_fallback_presence_detection
+      - automation_kitchen_motion_light
+      - emit_breach_tier_chain_integrity
+      - entity_health_degradation_alert
+      - hestia_periodic_system_health_check_automation_temp
+      - hestia_system_startup_sequence
+      - macbook_charger_status
+      - mnemo_daily_snapshot
+      - mnemo_emergency_snapshot
+      - monitor_disconnect_powerdown
+      - monitor_reconnect_wakeup
+      - notify_fallback_integrity_issues
+      - notify_system_health_issues
+      - republish_all_registry_json_mqtt_automation
+      - template_monitoring_attempt_recovery
+      - template_monitoring_clear_notification
+      - template_monitoring_notify
+      - valetudo_afternoon_short_clean
+      - valetudo_morning_deep_clean
+      - validator_log_tier_chain_integrity
+      - validator_log_tier_escalation_violations
+    fusion_chains:
+      - aether_bedroom_climate_control
+      - aether_bedroom_dehumidifier_control
+      - aether_climate_mode_control
+      - aether_daily_environment_report
+      - aether_ensuite_shower_detection
+      - aether_kitchen_climate_control
+      - aether_living_room_climate_control
+      - aether_low_temperature_alert
+      - aether_night_time_temperature_setback
+      - aether_system_health_check
+      - aether_window_closed_resumption
+      - aether_window_open_detection
+      - alert_skylight_open_risky_conditions
+      - automation_downstairs_lights_motion
+      - automation_ensuite_lighting_motion
+      - automation_fallback_presence_detection
+      - automation_kitchen_motion_light
+      - emit_breach_tier_chain_integrity
+      - entity_health_degradation_alert
+      - hestia_periodic_system_health_check_automation_temp
+      - hestia_system_startup_sequence
+      - macbook_charger_status
+      - mnemo_daily_snapshot
+      - monitor_disconnect_powerdown
+      - monitor_reconnect_wakeup
+      - notify_fallback_integrity_issues
+      - notify_system_health_issues
+      - republish_all_registry_json_mqtt_automation
+      - template_monitoring_attempt_recovery
+      - template_monitoring_clear_notification
+      - template_monitoring_notify
+      - valetudo_afternoon_short_clean
+      - valetudo_morning_deep_clean
+      - validator_log_tier_chain_integrity
+      - validator_log_tier_escalation_violations
+  logic_context:
+    - id: aether_bedroom_climate_control
+      mode: single
+      source_file: automations/automations/climate/aether_climate_control_rewrapped.yaml
+      unregistered_entities: &id010
+        - binary_sensor.bedroom_heating_needed
+        - input_boolean.climate_automation_enabled
+        - sensor.effective_bedroom_temperature_gamma
+      has_conditions: true
+    - id: aether_bedroom_dehumidifier_control
+      mode: single
+      source_file: automations/automations/climate/aether_humidity_control_rewrapped.yaml
+      unregistered_entities: &id011
+        - binary_sensor.dehumidifier_needed_bedroom
+        - input_boolean.humidity_control_enabled
+        - input_select.humidity_control_strategy
+        - sensor.merged_bedroom_humidity_eta
+      has_conditions: true
+    - id: aether_climate_mode_control
+      mode: null
+      source_file: automations/automations/climate/aether_mode_management_rewrapped.yaml
+      unregistered_entities:
+        - binary_sensor.is_night_time
+        - input_boolean.climate_automation_enabled
+        - input_select.home_mode
+      has_conditions: true
+    - id: aether_daily_environment_report
+      mode: single
+      source_file: automations/automations/climate/aether_environment_monitoring_rewrapped.yaml
+      unregistered_entities:
+        - script.turn_on
+      has_conditions: false
+    - id: aether_ensuite_shower_detection
+      mode: restart
+      source_file: automations/automations/climate/aether_shower_humidity_control.yaml
+      unregistered_entities: *id003
+      has_conditions: false
+    - id: aether_kitchen_climate_control
+      mode: single
+      source_file: automations/automations/climate/aether_climate_control_rewrapped.yaml
+      unregistered_entities: *id004
+      has_conditions: true
+    - id: aether_living_room_climate_control
+      mode: single
+      source_file: automations/automations/climate/aether_climate_control_rewrapped.yaml
+      unregistered_entities: *id005
+      has_conditions: true
+    - id: aether_low_temperature_alert
+      mode: single
+      source_file: automations/automations/climate/aether_alerts_and_notifications_rewrapped.yaml
+      unregistered_entities: *id001
+      has_conditions: true
+    - id: aether_night_time_temperature_setback
+      mode: single
+      source_file: automations/automations/climate/aether_climate_control_rewrapped.yaml
+      unregistered_entities:
+        - input_boolean.climate_automation_enabled
+        - input_boolean.climate_override_active
+        - input_select.home_mode
+        - script.turn_on
+      has_conditions: true
+    - id: aether_system_health_check
+      mode: single
+      source_file: automations/automations/climate/aether_alerts_and_notifications_rewrapped.yaml
+      unregistered_entities:
+        - sensor.aether_system_readiness
+      has_conditions: false
+    - id: aether_window_closed_resumption
+      mode: single
+      source_file: automations/automations/climate/aether_window_detection_rewrapped.yaml
+      unregistered_entities:
+        - binary_sensor.window_open_detected
+        - input_boolean.climate_automation_enabled
+        - input_boolean.climate_override_active
+        - script.turn_on
+      has_conditions: true
+    - id: aether_window_open_detection
+      mode: single
+      source_file: automations/automations/climate/aether_window_detection_rewrapped.yaml
+      unregistered_entities:
+        - binary_sensor.window_open_detected
+        - input_boolean.climate_automation_enabled
+        - input_boolean.turn_on
+        - input_boolean.window_open_detection
+        - script.turn_on
+      has_conditions: true
+    - id: alert_skylight_open_risky_conditions
+      mode: single
+      source_file: automations/automations/system/automations_template_monitoring.yaml
+      unregistered_entities: *id006
+      has_conditions: true
+    - id: automation_downstairs_lights_motion
+      mode: single
+      source_file: automations/automations/subsystems/hermes_automations_combined.yaml
+      unregistered_entities: *id007
+      has_conditions: true
+    - id: automation_ensuite_lighting_motion
+      mode: single
+      source_file: automations/automations/subsystems/hermes_automations_combined.yaml
+      unregistered_entities: *id008
+      has_conditions: true
+    - id: automation_fallback_presence_detection
+      mode: restart
+      source_file: automations/automations/subsystems/hermes_automations_combined.yaml
+      unregistered_entities:
+        - input_boolean.presence_detection_enabled
+        - input_boolean.trigger_manual_presence_fallback
+        - input_boolean.turn_off
+        - script.fallback_presence_detection
+      has_conditions: true
+    - id: automation_kitchen_motion_light
+      mode: single
+      source_file: automations/automations/subsystems/hermes_automations_combined.yaml
+      unregistered_entities: *id009
+      has_conditions: true
+    - id: emit_breach_tier_chain_integrity
+      mode: single
+      source_file: automations/automations/validation/automations_tier_chain_validation.yaml
+      unregistered_entities:
+        - input_boolean.chain_diagnostics_enabled
+        - sensor.tier_chain_integrity_status
+      has_conditions: true
+    - id: entity_health_degradation_alert
+      mode: single
+      source_file: automations/automations/diagnostics/automations_system_health.yaml
+      unregistered_entities:
+        - sensor.system_entity_statistics_mu
+      has_conditions: false
+    - id: hestia_periodic_system_health_check_automation_temp
+      mode: queued
+      source_file: automations/automations/diagnostics/automations_system_health.yaml
+      unregistered_entities:
+        - binary_sensor.system_problems_mu
+        - sensor.macro_template_library_health_check_mu
+        - sensor.system_entity_statistics_mu
+      has_conditions: false
+    - id: hestia_system_startup_sequence
+      mode: single
+      source_file: automations/automations/diagnostics/automations_system_health.yaml
+      unregistered_entities:
+        - script.perform_system_health_check
+      has_conditions: false
+    - id: macbook_charger_status
+      mode: restart
+      source_file: automations/automations/subsystems/soteria_automations_combined.yaml
+      unregistered_entities:
+        - sensor.macbook_internal_battery_state
+      has_conditions: false
+    - id: mnemo_daily_snapshot
+      mode: single
+      source_file: automations/automations/subsystems/hephaestus_automations.yaml
+      unregistered_entities:
+        - input_boolean.maintenance_mode
+      has_conditions: true
+    - id: monitor_disconnect_powerdown
+      mode: single
+      source_file: automations/automations/subsystems/soteria_automations_combined.yaml
+      unregistered_entities:
+        - light.turn_off
+        - switch.hp27i_monitor
+        - switch.turn_off
+      has_conditions: true
+    - id: monitor_reconnect_wakeup
+      mode: restart
+      source_file: automations/automations/subsystems/soteria_automations_combined.yaml
+      unregistered_entities:
+        - switch.turn_on
+      has_conditions: false
+    - id: notify_fallback_integrity_issues
+      mode: queued
+      source_file: automations/automations/diagnostics/automations_system_health.yaml
+      unregistered_entities:
+        - sensor.sensor_fallback_integrity
+      has_conditions: true
+    - id: notify_system_health_issues
+      mode: queued
+      source_file: automations/automations/diagnostics/automations_system_health.yaml
+      unregistered_entities:
+        - sensor.system_health_status
+      has_conditions: false
+    - id: republish_all_registry_json_mqtt_automation
+      mode: single
+      source_file: automations/automations/diagnostics/system_maintenance_routines.yaml
+      unregistered_entities:
+        - script.publish_all_registries
+      has_conditions: false
+    - id: template_monitoring_attempt_recovery
+      mode: queued
+      source_file: automations/automations/system/automations_template_monitoring.yaml
+      unregistered_entities:
+        - binary_sensor.template_monitor_problems_epsilon
+      has_conditions: false
+    - id: template_monitoring_clear_notification
+      mode: single
+      source_file: automations/automations/system/automations_template_monitoring.yaml
+      unregistered_entities:
+        - binary_sensor.template_monitor_problems_epsilon
+      has_conditions: false
+    - id: template_monitoring_notify
+      mode: single
+      source_file: automations/automations/system/automations_template_monitoring.yaml
+      unregistered_entities:
+        - binary_sensor.template_monitor_problems_epsilon
+      has_conditions: false
+    - id: valetudo_afternoon_short_clean
+      mode: null
+      source_file: automations/automations/subsystems/soteria_automations_combined.yaml
+      unregistered_entities:
+        - input_boolean.enable_daily_clean
+        - script.valetudo_short_clean
+      has_conditions: true
+    - id: valetudo_morning_deep_clean
+      mode: null
+      source_file: automations/automations/subsystems/soteria_automations_combined.yaml
+      unregistered_entities:
+        - input_boolean.enable_daily_clean
+        - script.valetudo_deep_clean
+      has_conditions: true
+    - id: validator_log_tier_chain_integrity
+      mode: queued
+      source_file: automations/automations/validation/automations_validator_logging.yaml
+      unregistered_entities:
+        - input_boolean.chain_diagnostics_enabled
+        - script.log_to_validator
+        - sensor.tier_chain_integrity_status
+      has_conditions: true
+    - id: validator_log_tier_escalation_violations
+      mode: queued
+      source_file: automations/automations/validation/automations_validator_logging.yaml
+      unregistered_entities:
+        - input_boolean.chain_diagnostics_enabled
+        - script.log_to_validator
+        - sensor.tier_escalation_violations
+      has_conditions: true
+  session_reference: hestia_phase_scan_20250608_occupancy_contract
+- room: bedroom
+  occupancy_model:
+    motion_emitters:
+      - binary_sensor.bedroom_motion_
+      - binary_sensor.bedroom_motion_beta
+      - binary_sensor.bedroom_motion_recent_beta
+      - binary_sensor.bedroom_wardrobe_motion_beta
+      - sensor.bedroom_motion_decay
+      - sensor.bedroom_motion_score
+      - sensor.bedroom_motion_score_gamma
+      - sensor.motion_score_bedroom
+    presence_emitters:
+      - binary_sensor.bedroom_occupancy
+      - binary_sensor.bedroom_occupancy_
+      - binary_sensor.bedroom_occupancy_alpha
+      - binary_sensor.bedroom_occupancy_beta
+      - binary_sensor.bedroom_occupancy_rate_limited
+      - binary_sensor.bedroom_occupancy_validated
+      - binary_sensor.bedroom_presence_eta
+      - binary_sensor.bedroom_presence_gamma
+      - binary_sensor.bedroom_presence_msf
+      - binary_sensor.bedroom_presence_msf_zeta
+      - binary_sensor.bedroom_presence_validated_
+      - binary_sensor.bedroom_wardrobe_occupancy_wifi_tplink_alpha
+      - binary_sensor.bedroom_wardrobe_presence_cloud_connection_alpha
+      - sensor.bedroom_occupancy_decay
+      - sensor.bedroom_occupancy_decay_delta
+      - sensor.bedroom_presence_confidence
+      - sensor.bedroom_presence_decay_delta
+    requires_temporal_logic: false
+    has_duplicate_definitions: false
+    automations:
+      - aether_bedroom_climate_control
+      - aether_bedroom_dehumidifier_control
+      - aether_low_temperature_alert
+      - aether_sensors_anomaly_detection
+    fusion_chains:
+      - aether_bedroom_climate_control
+      - aether_bedroom_dehumidifier_control
+      - aether_low_temperature_alert
+      - aether_sensors_anomaly_detection
+  logic_context:
+    - id: aether_bedroom_climate_control
+      mode: single
+      source_file: automations/automations/climate/aether_climate_control_rewrapped.yaml
+      unregistered_entities: *id010
+      has_conditions: true
+    - id: aether_bedroom_dehumidifier_control
+      mode: single
+      source_file: automations/automations/climate/aether_humidity_control_rewrapped.yaml
+      unregistered_entities: *id011
+      has_conditions: true
+    - id: aether_low_temperature_alert
+      mode: single
+      source_file: automations/automations/climate/aether_alerts_and_notifications_rewrapped.yaml
+      unregistered_entities: *id001
+      has_conditions: true
+    - id: aether_sensors_anomaly_detection
+      mode: single
+      source_file: automations/automations/climate/aether_alerts_and_notifications_rewrapped.yaml
+      unregistered_entities: *id002
+      has_conditions: false
+  session_reference: hestia_phase_scan_20250608_occupancy_contract

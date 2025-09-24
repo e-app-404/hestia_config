@@ -1,0 +1,173 @@
+{% macro validate_registry(value) %}
+  {% set parsed = value | default('{}') %}
+  {% set json = parsed | from_json %}
+  {{ 'valid' if json is mapping else 'invalid' }}
+{% endmacro %}
+
+{% macro validate_registry_strict(value) %}
+  {% set parsed = value | default('{}') %}
+  {% set json = {} %}
+  {% if parsed.startswith('{') %}
+    {% set json = parsed | from_json %}
+  {% endif %}
+  {{ 'valid' if json is mapping else 'invalid' }}
+{% endmacro %}
+
+{% macro validate_registry_status(raw_state, entity) %}
+  {% set json = raw_state | default('{}') | from_json %}
+  {% if json is mapping %}
+    {% set status = json.get('_meta', {}).get('validation_status', {}).get('status') %}
+    {% if status in ['valid', 'warning'] %}
+      {{ status }}
+    {% else %}
+      invalid
+    {% endif %}
+  {% else %}
+    parse_error
+  {% endif %}
+{% endmacro %}
+
+{% macro extract_registry_attribute(entity_id, key_path, default='unknown') %}
+  {% set raw = states(entity_id) | default('{}') | from_json %}
+  {% if raw is mapping %}
+    {% set current = raw %}
+    {% set ns = namespace(done=false) %}
+    {% for k in key_path %}
+      {% if not ns.done %}
+        {% if k in current %}
+          {% set current = current[k] %}
+        {% else %}
+          {% set current = default %}
+          {% set ns.done = true %}
+        {% endif %}
+      {% endif %}
+    {% endfor %}
+    {{ current }}
+  {% else %}
+    unreadable
+  {% endif %}
+{% endmacro %}
+
+{% macro extract_entity_id(registry_type, canonical_name) %}
+  {% set registry = state_attr('sensor.entity_registry', registry_type) %}
+  {{ registry[canonical_name]['entity_id'] if registry and canonical_name in registry else '' }}
+{% endmacro %}
+
+{% macro extract_canonical_from_sensor(sensor) %}
+  {% set base = sensor.split('.')[-1].rsplit('_available', 1)[0] %}
+  {{ 'binary_sensor.' + base }}
+{% endmacro %}
+
+{%- macro count_entities_by_flag(sensor_entity, attribute, flag_field, flag_value=true) -%}
+  {%- set raw = state_attr(sensor_entity, attribute) | default('[]') %}
+  {%- set entities = raw | from_json %}
+  {%- if entities is iterable %}
+    {%- set ns = namespace(count=0) %}
+    {%- for e in entities %}
+      {%- if e.get(flag_field) == flag_value %}
+        {%- set ns.count = ns.count + 1 %}
+      {%- endif %}
+    {%- endfor %}
+    {{ ns.count }}
+  {%- else %}
+    0
+  {%- endif %}
+{%- endmacro %}
+
+{% macro resolve(room, device_class) %}
+  {% set abstraction = state_attr('sensor.alpha_sensor_registry_json', 'sensor_abstractions') | default({}) %}
+  {{ abstraction.get(room, {}).get(device_class ~ '_validated', {}).preferred | default('sensor_not_found') }}
+{% endmacro %}
+
+{% macro is_state_valid(state) %}
+  {{ state not in ['unknown', 'unavailable', None] }}
+{% endmacro %}
+
+{% macro evaluate_merge_status(dev_state, room_state) %}
+  {% if is_state_valid(dev_state) and is_state_valid(room_state) %}
+    {% set dev_data = dev_state | from_json %}
+    {% set room_data = room_state | from_json %}
+    {% set ns = namespace(done=false) %}
+    {% for d in dev_data.devices.values() %}
+      {% if not ns.done and d.requires_review %}
+        {{ 'review' }}
+        {% set ns.done = true %}
+      {% endif %}
+    {% endfor %}
+    {% if ns is not defined or not ns.done %}
+      {% set ns2 = namespace(done=false) %}
+      {% for r in room_data.rooms.values() %}
+        {% if not ns2.done and r.status == 'review' %}
+          {{ 'review' }}
+          {% set ns2.done = true %}
+        {% endif %}
+      {% endfor %}
+    {% endif %}
+    {% if ns is not defined or not ns.done %}
+      {{ 'ok' }}
+    {% endif %}
+  {% else %}
+    {{ 'ok' }}
+  {% endif %}
+{% endmacro %}
+
+{% macro extract_json_field(state, path, default='unknown') %}
+  {% if is_state_valid(state) %}
+    {% set parsed = state | from_json | default({}) %}
+    {% set vals = path | selectattr("0", "in", parsed) | map(attribute=1) | list %}
+    {{ vals[0] if vals|length > 0 else default }}
+  {% else %}
+    {{ default }}
+  {% endif %}
+{% endmacro %}
+
+{% macro count_entities(state, key) %}
+  {% if is_state_valid(state) %}
+    {% set parsed = state | from_json | default({}) %}
+    {{ parsed[key] | count if key in parsed else 0 }}
+  {% else %}
+    n/a
+  {% endif %}
+{% endmacro %}
+
+{% macro get_room_device(room, device_type, device_index=0) %}
+  {% set abstraction = state_attr("sensor.abstraction_layer", "entity_abstractions") | default("{}") | from_json %}
+  {% set abstraction_device = abstraction.get(room, {}).get(device_type ~ "_validated", {}) %}
+  {% if abstraction_device and 'preferred' in abstraction_device %}
+    {{ abstraction_device.preferred }}
+  {% else %}
+    {% set rooms_data = state_attr("sensor.omega_room_registry_json", "rooms") | default("{}") | from_json %}
+    {% set room_data = rooms_data.get(room, {}) %}
+    {% set devices = room_data.get("devices", {}).get(device_type, []) %}
+    {% if devices is string %}
+      {{ devices }}
+    {% elif devices is sequence and device_index < devices | length %}
+      {{ devices[device_index] }}
+    {% else %}
+      device_not_found
+    {% endif %}
+  {% endif %}
+{% endmacro %}
+
+{% macro get_room_lights(room, include_groups=false, include_children=false) %}
+  {% set rooms_data = state_attr("sensor.omega_room_registry_json", "rooms") | default("{}") | from_json %}
+  {% set room_data = rooms_data.get(room, {}) %}
+  {% set lights = room_data.get("devices", {}).get("lights", []) %}
+  {% set light_groups = room_data.get("devices", {}).get("light_groups", []) if include_groups else [] %}
+  {% set child_rooms = rooms_data.items() | selectattr("1.parent", "equalto", room) | map(attribute=0) | list %}
+  {% set child_lights = [] %}
+  {% for child in child_rooms %}
+    {% set child_data = rooms_data.get(child, {}).get("devices", {}) %}
+    {% set child_lights = child_lights + child_data.get("lights", []) %}
+    {% if include_groups %}
+      {% set child_lights = child_lights + child_data.get("light_groups", []) %}
+    {% endif %}
+  {% endfor %}
+  {{ (lights if lights is iterable else []) + (light_groups if light_groups is iterable else []) + (child_lights if child_lights is iterable else []) }}
+{% endmacro %}
+
+{% macro get_room_timeout(room, timeout_type='motion') %}
+  {% set rooms_data = state_attr("sensor.omega_room_registry_json", "rooms") | default("{}") | from_json %}
+  {% set room_data = rooms_data.get(room, {}) %}
+  {{ room_data.get("timeout_settings", {}).get(timeout_type, 300) }}
+{% endmacro %}

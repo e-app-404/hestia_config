@@ -1,0 +1,35 @@
+- id: 7e1b2c9a-3f4d-4e8a-9b2c-8e5d1a7c2f3b
+  alias: "Recorder purge noisy entities"
+  trigger:
+    - platform: time
+      at: "04:20:00"
+  action:
+    - alias: "Daily: purge entity rows (no repack)"
+      action: recorder.purge_entities
+      data:
+        keep_days: 0
+        entity_id:
+          - group.unavailable_entities
+          - sensor.smartthings_entity_list
+        apply_filter: true
+        repack: false
+
+- id: 1a2b3c4d-5e6f-7a8b-9c0d-111213141516
+  alias: "Recorder weekly repack"
+  trigger:
+    - platform: time
+      at: "04:25:00"
+  condition:
+    - condition: template
+      value_template: "{{ now().isoweekday() == 1 }}" # Monday
+  action:
+    - alias: "Weekly: repack DB"
+      action: recorder.purge
+      data:
+        keep_days: 0
+        repack: true
+    - action: persistent_notification.create
+      data:
+        title: "Recorder Repack Success"
+        message: "Repacked at {{ now().isoformat() }}."
+        notification_id: recorder_repack_success

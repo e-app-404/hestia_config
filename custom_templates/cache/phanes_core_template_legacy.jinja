@@ -1,0 +1,34 @@
+
+# Template: phanes_core_template.jinja
+# Description: Declarative scaffold for Phanes v2.0 dynamic light entity generation
+
+- platform: template
+  lights:
+    {{ light_slug }}:
+      friendly_name: "{{ friendly_name }}"
+      value_template: >
+        {{ value_template | default("") }}
+      turn_on:
+        service: script.resolve_protocol
+        data:
+          canonical_id: "{{ canonical_id }}"
+          operation: "turn_on"
+      turn_off:
+        service: script.resolve_protocol
+        data:
+          canonical_id: "{{ canonical_id }}"
+          operation: "turn_off"
+      level_template: >
+        {{ level_template }}
+      color_template: >
+        {{ color_template }}
+      color_temp_template: >
+        {{ color_temp_template }}
+      attributes:
+        canonical_id: "{{ canonical_id }}"
+        canonical_alpha: "{{ canonical_alpha }}"
+        protocol_stack: {{ protocol_stack | default({}) | tojson }}
+        integration_paths: {{ integration_paths | default([]) | tojson }}
+        model: "{{ model }}"
+        manufacturer: "{{ manufacturer }}"
+        firmware: "{{ firmware }}"

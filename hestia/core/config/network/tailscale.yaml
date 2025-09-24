@@ -1,0 +1,84 @@
+---
+# Connectivity: Tailscale
+# Canonicalized from topology and network.conf exports in workspace
+name: tailscale
+description: |
+  Canonical Tailscale connectivity manifest. This file records known
+  tailnet machines, advertised subnets, gateway domains, and a placeholder
+  for ACL/policy references. Secrets (keys, ACL tokens) must not be inlined
+  here; reference the vault using the `vault://` URI scheme.
+tags:
+  - connectivity
+  - tailscale
+  - network
+
+tailnet:
+  name: reverse-beta
+  advertised_subnets:
+    - 192.168.0.0/24
+    - fdad:2364:d6f2:2854::/64
+  subnet_router: homeassistant
+  exit_node: null
+  hairpin_nat: false
+  preferred_relay: Paris
+  relay_latency_ms: 28.08
+
+gateway_domains:
+  local_gateway_domain: nas.xplab.io
+  tailscale_gateway_domain: ds220plus.reverse-beta.ts.net
+
+machines:
+  - id: ds220plus
+    role: nas
+    ip: 100.93.61.53
+    os: "Synology DSM 7"
+    version: "1.84.3"
+    interface: docker-compose
+    dns_name: ds220plus.reverse-beta.ts.net
+    services:
+      - tailscale
+      - docker
+  - id: homeassistant
+    role: automation
+    ip: 100.105.130.99
+    os: "Home Assistant OS"
+    version: "1.60.x"
+    dns_name: ha-core.reverse-beta.ts.net
+    services:
+      - home_assistant
+      - subnet_router
+  - id: macbook
+    role: workstation
+    ip: 100.100.227.79
+    os: "macOS Ventura"
+    services:
+      - glances
+      - ssh
+  - id: ipad
+    role: mobile
+    ip: 100.64.201.33
+  - id: iphone11
+    role: mobile
+    ip: 100.122.135.128
+  - id: dev-vm
+    role: test-vm
+    ip: 100.82.212.111
+  - id: apple-tv
+    role: media
+    ip: 100.69.234.125
+
+policies:
+  # Reference to the Tailscale ACL / policy document or ACL export.
+  # Replace with a vault or repository pointer when available.
+  acl_document: "vault://hestia/tailscale/acl#latest"  # TODO: create vault entry
+  auth_keys: "vault://hestia/tailscale/keys#rotating"   # DO NOT STORE KEYS INLINE
+
+serve:
+  funnel_supported: true
+  recommended_https_port: 5001
+
+notes: |
+  - This manifest was synthesized from `hestia/core/devices/tailscale_machines.topology.json`
+    and `hestia/core/networking/network.conf` exports. Confirm values before use.
+  - To populate `policies.acl_document` create a vault entry containing the
+    Tailscale ACL JSON/YAML and update the URI above.

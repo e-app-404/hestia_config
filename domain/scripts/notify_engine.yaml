@@ -1,0 +1,141 @@
+# ══════════════════════════════════════════════════════════════════
+# ⟫⟫ NOTIFY ENGINE  •  Unified Notification Delivery Script ◀
+# ⟫⟫ script: notify_engine  •  HESTIA Notification Logic
+# ⟫⟫ Tier: γ  •  Domain: notification  •  Created: 2025-08-05
+# ⟫⟫ Last Updated: 2025-08-05
+# ══════════════════════════════════════════════════════════════════
+
+notify_engine:
+  alias: "Unified Notification Engine"
+  mode: queued
+  sequence:
+    - condition: state
+      entity_id: input_boolean.text_notifications
+      state: "on"
+
+    - variables:
+        who_device: "{{ (who | default('all')) | lower }}"
+        notify_services:
+          ipad: notify.mobile_app_epad
+          iphone: notify.mobile_app_ephone_uk
+          iphone_spain: notify.mobile_app_iphone11
+          macbook: notify.mobile_app_macbook
+          all: notify.all_devices
+          evert: notify.mobile_app_ephone_uk
+          persistent: notify.persistent_notification
+
+        _has_target: "{{ target_id is defined and (target_id|string)|length > 0 }}"
+
+    - choose:
+        # Known recipient?
+        - conditions: "{{ who_device in notify_services.keys() }}"
+          sequence:
+            # with an explicit target provided (ONLY when present)
+            - choose:
+                - conditions: "{{ _has_target }}"
+                  sequence:
+                    - alias: "Notify (with target)"
+                      continue_on_error: true
+                      action: "{{ notify_services[who_device] }}"
+                      data:
+                        title: "{{ title | default('') }}"
+                        message: >
+                          {{ value1 | default('') }}
+                          {% if value2 is defined %}{{ '\n' + value2 }}{% endif %}
+                          {% if value3 is defined %}{{ '\n' + value3 }}{% endif %}
+                        target: "{{ target_id }}"
+                        data:
+                          subtitle: "{{ subtitle | default('') }}"
+                          subject: "{{ subtitle | default('') }}"
+                          attachment:
+                            url: "{{ clickAction | default('') }}"
+                            content-type: "{{ content_type | default('') }}"
+                            hide-thumbnail: false
+                          url: "{{ clickAction | default('') }}"
+                          clickAction: "{{ clickAction | default('') }}"
+                          apns_headers:
+                            apns-collapse-id: "{{ tag_id | default('') }}"
+                          group: "{{ group | default('') }}"
+                          tag: "{{ tag_id | default('') }}"
+                          entity_id: "{{ camera_entity | default('') }}"
+                          file: "{{ file | default('') }}"
+                          caption: "{{ caption | default('') }}"
+                          push:
+                            category: "{{ ios_category | default('') }}"
+                            sound: "{{ ios_sound | default('default') }}"
+                            badge: "{{ ios_badge | default('') }}"
+              # no target provided -> do NOT include the key at all
+              default:
+                - alias: "Notify (no target)"
+                  continue_on_error: true
+                  action: "{{ notify_services[who_device] }}"
+                  data:
+                    title: "{{ title | default('') }}"
+                    message: >
+                      {{ value1 | default('') }}
+                      {% if value2 is defined %}{{ '\n' + value2 }}{% endif %}
+                      {% if value3 is defined %}{{ '\n' + value3 }}{% endif %}
+                    data:
+                      subtitle: "{{ subtitle | default('') }}"
+                      subject: "{{ subtitle | default('') }}"
+                      attachment:
+                        url: "{{ clickAction | default('') }}"
+                        content-type: "{{ content_type | default('') }}"
+                        hide-thumbnail: false
+                      url: "{{ clickAction | default('') }}"
+                      clickAction: "{{ clickAction | default('') }}"
+                      apns_headers:
+                        apns-collapse-id: "{{ tag_id | default('') }}"
+                      group: "{{ group | default('') }}"
+                      tag: "{{ tag_id | default('') }}"
+                      entity_id: "{{ camera_entity | default('') }}"
+                      file: "{{ file | default('') }}"
+                      caption: "{{ caption | default('') }}"
+                      push:
+                        category: "{{ ios_category | default('') }}"
+                        sound: "{{ ios_sound | default('default') }}"
+                        badge: "{{ ios_badge | default('') }}"
+
+      default:
+        - sequence:
+            - action: notify.all_devices
+              data:
+                title: "Notification Delivery Error"
+                message: >
+                  Notification for '{{ who_device }}' could not be delivered.
+                  Please check device integration or spelling.
+                data:
+                  group: "notification_error"
+# ------------------------------------------------------------------
+# USAGE & ENGINE DETAILS (for maintainers)
+#
+# Hardened Notification Engine Script
+#
+# Key Improvements:
+#   • Validation: Only sends to a known/allowed device, else fallback to notify.notify or logs error.
+#   • Extensible: Easily add/remove supported devices.
+#   • Supports group/individual targets based on who variable.
+#   • Handles case where who is missing or unrecognized.
+#   • Compatible with HA 2024.8+ action syntax.
+#   • Allows for future expansion (Telegram, Discord, etc).
+#
+# How to Use:
+#   When calling this script, specify:
+#     • who: (ipad, ephone_uk, iphone11, macbook, all, etc)
+#     • title:, value1:, value2:, value3: for message content
+#     • Optional advanced fields as documented
+#
+#   Example usage:
+#     - service: script.notify_engine
+#       data:
+#         who: iphone11
+#         title: "Home Alert"
+#         value1: "Garage door was left open."
+#
+# Key Hardenings:
+#   • Only sends to recognized devices.
+#   • Falls back and notifies on error.
+#   • Supports all devices in your screenshot.
+#   • Modular and ready for future expansion.
+#   • Uses 2024.8+ action: syntax.
+# ------------------------------------------------------------------

@@ -1,0 +1,7 @@
+#═══════════════════════════════════════════════════════════════
+# ▶ HELPER: Select Dropdowns ◀
+# Loader: !include domain/helpers/input_select.yaml
+# Schema: input_select
+#═══════════════════════════════════════════════════════════════
+
+#input_select:

@@ -1,0 +1,9 @@
+#════════════════════════════════════════════════
+# ▶ SENSOR: USGS Earthquakes Feed ◀
+# Loader: !include_dir_merge_list domain/sensor/
+# Schema: usgs_earthquakes_feed
+#════════════════════════════════════════════════
+
+platform: usgs_earthquakes_feed
+feed_type: "past_week_all_earthquakes"
+radius: 350

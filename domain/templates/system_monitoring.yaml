@@ -1,0 +1,8 @@
+# ════════════════════════════════════════════════════════════════════════════════
+# ▶ SENSOR: System Monitoring ◀
+# ⟫⟫ Metrics from InfluxDB, history stats, and system date/time
+# ⟫⟫ Domain: template • Loader: !include_dir_merge_list domain/templates/
+# ⟫⟫ Schema: sensor (list) • Created: 2025-07-17
+# ════════════════════════════════════════════════════════════════════════════════
+
+{}

@@ -1,0 +1,52 @@
+---
+# packages/recorder_sqlite.yaml
+# Engine: SQLite (default). No MariaDB / Influx required.
+# Effect: short retention, tight commit cadence, filtered domains.
+recorder:
+  auto_purge: true
+  purge_keep_days: 7
+  commit_interval: 30
+
+  exclude:
+    domains:
+      - automation
+      - camera
+      - event
+      - group
+      - logbook
+      - media_player
+      - persistent_notification
+      - recorder
+      - update
+      - updater
+      - zone
+    entity_globs:
+      - sensor.sun*
+      - sensor.time*
+      - sensor.date*
+      - sensor.*_uptime*
+      - sensor.*_entity_list
+      - sensor.*failover_summary
+      - sensor.*_minutes_since_*
+      - weather.*
+      - binary_sensor.*day
+    entities:
+      - sensor.current_date_natural
+      - sensor.current_date_description
+      - sensor.current_time_legacy
+      - sensor.current_time
+      - sensor.schedule_status
+      - sensor.disabled_device_entities
+      - group.unavailable_entities
+      - group.smartthings_entities
+      - var.plex_tv_index
+      - var.plex_movie_index
+    event_types:
+      - call_service                 # keep 'automation_triggered' (do NOT exclude)
+
+  include:
+    domains:
+      - binary_sensor
+      - sensor
+      - switch
+      - light

@@ -1,0 +1,47 @@
+# minimalist package setup with config split. Packages are
+# listed by their names (each package is titled 'integration_key')
+# This way, integrations are front-loaded as packages.
+# https://www.home-assistant.io/docs/configuration/splitting_configuration/
+
+homeassistant:
+  customize: !include customize.yaml
+  packages: !include_dir_named packages
+  allowlist_external_dirs:
+    - "/config"
+    - "/config/hestia/diagnostics/logs"
+    - "/config/hestia/diagnostics/notifications"
+    - "/config/hestia/work/scratch"
+    - "/config/hestia/tools/utils"
+    - "/config/hestia/work"
+    - "/config/hestia/core/governance/system_instruction"
+
+# 🔧 UI-based automations (editable via GUI)
+automation ui: !include automations.yaml
+
+# 🔧 YAML-based automations (in domain folder)
+automation manual: !include_dir_merge_list domain/automations/
+
+# 🔧 for callable scripts
+script ui: !include scripts.yaml
+
+# 🔧 for callable scripts
+script manual: !include_dir_merge_named domain/scripts/
+
+# 📥 all standalone sensors
+sensor: !include_dir_merge_list domain/sensors/
+
+# 📥 all standalone binary sensors
+binary_sensor: !include_dir_merge_list domain/binary_sensors/
+
+# 📥 all `sensor:` & `binary_sensor:` under `template`
+template: !include_dir_merge_list domain/templates/
+
+# 📥 helpers → file-per-domain
+input_boolean: !include domain/helpers/input_boolean.yaml
+input_select: !include domain/helpers/input_select.yaml
+input_number: !include domain/helpers/input_number.yaml
+input_datetime: !include domain/helpers/input_datetime.yaml
+input_text: !include domain/helpers/input_text.yaml
+counter: !include domain/helpers/counter.yaml
+
+

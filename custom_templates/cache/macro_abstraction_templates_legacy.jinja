@@ -1,0 +1,19 @@
+{% macro device_is_available(entity) %}
+  {{ states(entity) not in ['unavailable', 'unknown', 'none', ''] }}
+{% endmacro %}
+
+{% macro get_validated_sensor_state(entity_id) %}
+  {% set parts = entity_id.split('_') %}
+  {% set room = parts[0] %}
+  {% set device_type = parts[1] if parts | length > 1 else 'occupancy' %}
+  {{ is_valid_state(get_validated_entity(room, device_type)) }}
+{% endmacro %}
+
+{% macro rate_limited_state(entity_id, cooldown_entity, last_off_time_entity) %}
+  {% set sensor_id = entity_id | replace('_rate_limited', '_validated') %}
+  {% set cooldown = states(cooldown_entity) | int(3) %}
+  {% set last_off_time = get_last_off_time(last_off_time_entity) %}
+  {% set time_since_off = 0 if last_off_time in ['unknown', 'unavailable', 'none', '']
+      else (as_timestamp(now()) - as_timestamp(last_off_time)) | int %}
+  {{ 'on' if states(sensor_id) == 'on' and time_since_off >= cooldown else 'off' }}
+{% endmacro %}

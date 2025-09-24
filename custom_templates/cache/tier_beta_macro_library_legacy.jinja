@@ -1,0 +1,5 @@
+{# Standardized β-tier template}
+{% macro beta_entity(alpha_source, default_state) %}
+  {% set state = states(alpha_source) %}
+  {{ state if state not in ['unavailable', 'unknown', 'none'] else default_state }}
+{% endmacro %}

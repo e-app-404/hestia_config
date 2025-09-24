@@ -1,0 +1,52 @@
+# ══════════════════════════════════════════════════════════════════
+# ▶ OOM GUARD • Persistent notice when memory is high for 5 minutes
+# File: packages/oom_guard.yaml
+# Tier: γ  •  Domain: automation  •  Created: 2025-09-19
+# Notes:
+# - Do NOT configure `platform: systemmonitor` here. Add the integration via UI.
+# - This automation watches `sensor.system_monitor_memory_usage` provided by System Monitor.
+# ══════════════════════════════════════════════════════════════════
+
+homeassistant:
+  customize: {}
+
+template:
+  - sensor:
+      - name: "oom_memory_use_percent"
+        unique_id: "oom_memory_use_percent"
+        unit_of_measurement: "%"
+        state: "{{ states('sensor.system_monitor_memory_usage') | float(0) }}"
+        availability: >-
+          {{ states('sensor.system_monitor_memory_usage') not in ['unknown','unavailable','none',''] }}
+
+input_number:
+  oom_threshold_percent:
+    name: OOM threshold (%)
+    min: 50
+    max: 99
+    step: 1
+    mode: box
+    unit_of_measurement: "%"
+    icon: mdi:memory
+    initial: 90
+
+automation:
+  - id: oom_notice_when_high_5min
+    alias: "OOM: persistent notice when memory high for 5m"
+    mode: restart
+    trigger:
+      # Trigger only when HA's memory percent stays ABOVE the threshold for 5 minutes
+      - platform: numeric_state
+        entity_id: sensor.system_monitor_memory_usage
+        above: input_number.oom_threshold_percent
+        for: "00:05:00"
+    condition: []
+    action:
+      - service: persistent_notification.create
+        data:
+          title: "High Memory Use"
+          message: >-
+            Memory has been above {{ states('input_number.oom_threshold_percent') | int }}%
+            for 5 minutes.
+            Current: {{ (states('sensor.system_monitor_memory_usage') | float(0)) | round(1) }}%.
+            Check add-ons/integrations (DB size, media indexers, diagnostics).

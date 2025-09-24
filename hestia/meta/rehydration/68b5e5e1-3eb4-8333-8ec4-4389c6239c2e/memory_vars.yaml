@@ -1,0 +1,31 @@
+memory:
+  last_valid_patch:
+    summary: "Supervisor-only DIAG; 15s HEALTH_SUMMARY; filestdout forwarder; single control-plane"
+    version: "2025.8.21.28"
+    files:
+      - addon/run.sh
+      - addon/config.yaml
+      - addon/services.d/ble_bridge/run
+      - addon/services.d/echo_responder/down
+  last_decision_checkpoint:
+    label: "Supervisor-only verification PASS"
+    evidence:
+      - DIAG lines present (entry, attempt, start, exit)
+      - HEALTH_SUMMARY ticks over time
+      - MQTT connected/subscribed lines in Supervisor logs
+  clustered_entities:
+    core:
+      - run.sh (controller)
+      - bb8_core.main (child)
+      - bb8_core.echo_responder (child)
+      - Supervisor (log surface)
+      - Mosquitto (broker)
+    count: 5
+  inclusion_coverage:
+    code: control-plane + both children + logging + s6 wiring
+    docs: ops + sanity + troubleshooting + ADR
+  semantic_summary: >
+    HA-BB8 add-on hardened for environments where docker CLI is unavailable;
+    all diagnostics exposed via Supervisor logs, single control-plane enforced,
+    health and respawn evidenced without container access.
+  open_validation_loops: []

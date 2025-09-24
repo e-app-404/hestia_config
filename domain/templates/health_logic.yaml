@@ -1,0 +1,250 @@
+#════════════════════════════════════════════════════════════════
+# Unified Sleep Status Sensors for Evert Health Biometrics
+# ⟫⟫ Merging sleep phase sensors into a single binary sensor
+# ⟫⟫ Domain: template • Loader: !include_dir_merge_list domain/templates/
+# ⟫⟫ Tier: η  •  Created: 2025-08-05
+# TODO: Confirm the exact values returned by the three sleep phase sensors (on, 1, or some numeric duration).
+# TODO timestamp: 2025-08-05
+# ════════════════════════════════════════════════════════════════
+
+- sensor:
+    - name: "Evert Sleep Probability Score"
+      unique_id: "evert_sleep_probability_score_gamma"
+      unit_of_measurement: "%"
+      state: >
+        {% set grace = 600 %}
+        {% set now_ts = now().timestamp() %}
+
+        {% set sensors = {
+          'deep': states.sensor.evert_health_biometrics_deep_sleep,
+          'light': states.sensor.evert_health_biometrics_light_sleep,
+          'rem': states.sensor.evert_health_biometrics_rem_sleep
+        } %}
+
+        {% set weights = {'deep': 0.4, 'light': 0.3, 'rem': 0.3} %}
+        {% set score = 0 %}
+        {% for key, sensor in sensors.items() %}
+          {% set value = sensor.state | float(0) %}
+          {% set recent = (now_ts - sensor.last_changed.timestamp()) < grace %}
+          {% set modality_score = 1.0 if value > 0 else 0.5 if recent else 0 %}
+          {% set score = score + (modality_score * weights[key]) %}
+        {% endfor %}
+        {{ (score * 100) | round(1) }}
+      attributes:
+        tier: "γ"
+        canonical_id: "evert_health_biometrics_sleep_score_γ"
+        file: "/config/domain/templates/health_logic.yaml"
+        module: "sleep"
+        role: "aggregation"
+        type: "sensor"
+        subsystem: "hypnos"
+        created: "2025-08-05"
+        last_updated: "2025-08-07"
+        upstream_sources: >
+          {{ ['sensor.evert_health_biometrics_deep_sleep',
+                'sensor.evert_health_biometrics_light_sleep',
+                'sensor.evert_health_biometrics_rem_sleep'] | tojson }}
+        description: "A companion sensor that exposes the raw score for diagnostics or visualization (e.g., in a gauge card)."
+
+    - name: "Bed Presence"
+      unique_id: "evert_bed_presence_gamma"
+      state: >-
+        {% set deep = states('sensor.evert_health_biometrics_deep_sleep') | float(0) %}
+        {% set light = states('sensor.evert_health_biometrics_light_sleep') | float(0) %}
+        {% set rem = states('sensor.evert_health_biometrics_rem_sleep') | float(0) %}
+        {% if deep > 0 or light > 0 or rem > 0 %}
+          In Bed
+        {% else %}
+          Out of Bed
+        {% endif %}
+      icon: >-
+        {% set deep = states('sensor.evert_health_biometrics_deep_sleep') | float(0) %}
+        {% set light = states('sensor.evert_health_biometrics_light_sleep') | float(0) %}
+        {% set rem = states('sensor.evert_health_biometrics_rem_sleep') | float(0) %}
+        {% if deep > 0 or light > 0 or rem > 0 %}
+          mdi:bed
+        {% else %}
+          mdi:bed-empty
+        {% endif %}
+      availability: >-
+        {{ states('sensor.evert_health_biometrics_deep_sleep') not in ['unknown','unavailable']
+            and states('sensor.evert_health_biometrics_light_sleep') not in ['unknown','unavailable']
+            and states('sensor.evert_health_biometrics_rem_sleep') not in ['unknown','unavailable'] }}
+      attributes:
+        tier: "γ"
+        canonical_id: "evert_bed_presence_γ"
+        file: "/config/domain/templates/health_logic.yaml"
+        module: "sleep"
+        role: "aggregation"
+        type: "diagnostic"
+        subsystem: "hypnos"
+        created: "2025-08-05"
+        last_updated: "2025-08-07"
+        upstream_sources: >
+          {{ ['sensor.evert_health_biometrics_deep_sleep',
+               'sensor.evert_health_biometrics_light_sleep',
+               'sensor.evert_health_biometrics_rem_sleep'] | tojson }}
+        description: "Determines bed presence based on whether any sleep stage duration is greater than zero."
+        display: "Bed Presence"
+
+    # ═══ Sleep Status Summary Sensor ═══
+    - name: "Evert Sleep State"
+      unique_id: "evert_sleep_state_γ"
+      state: >
+        {% set eta = is_state('binary_sensor.evert_asleep', 'on') %}
+        {% set in_bed = is_state('binary_sensor.evert_in_bed', 'on') %}
+        {% set at_home = is_state('binary_sensor.evert_at_home', 'on') %}
+
+        {% if eta and in_bed and at_home %}
+          asleep
+        {% elif in_bed and at_home %}
+          in_bed
+        {% elif not eta and at_home %}
+          awake
+        {% elif not in_bed and not eta %}
+          out_of_bed
+        {% else %}
+          unknown
+        {% endif %}
+      attributes:
+        tier: "γ"
+        canonical_id: "evert_sleep_state_γ"
+        file: "/config/domain/templates/health_logic.yaml"
+        module: "sleep"
+        role: "summary"
+        type: "diagnostic"
+        subsystem: "hypnos"
+        created: "2025-08-05"
+        last_updated: "2025-08-07"
+        upstream_sources: >
+          {{ ['binary_sensor.evert_asleep',
+               'binary_sensor.evert_in_bed',
+               'binary_sensor.evert_at_home'] | tojson }}
+        description: "Summary state combining modular sleep and location sensors."
+
+    - name: "Sleep Quality Label"
+      unique_id: "evert_sleep_quality_label"
+      state: >
+        {% set score = states('sensor.evert_health_biometrics_sleep_score') | float(0) %}
+        {% if score >= 85 %}
+          excellent
+        {% elif score >= 70 %}
+          good
+        {% elif score >= 50 %}
+          fair
+        {% else %}
+          poor
+        {% endif %}
+      attributes:
+        tier: "γ"
+        canonical_id: "evert_sleep_quality_label_γ"
+        file: "/config/domain/templates/health_logic.yaml"
+        module: "sleep"
+        role: "classifier"
+        type: "sensor"
+        subsystem: "hypnos"
+        created: "2025-08-07"
+        last_updated: "2025-08-07"
+        upstream_sources: >
+          {{ ['sensor.evert_health_biometrics_sleep_score'] | tojson }}
+        description: "Classifies sleep score into quality tiers."
+
+- binary_sensor:
+    - name: "Evert Health Biometrics Sleep ETA"
+      unique_id: "evert_health_biometrics_sleep_eta"
+      device_class: occupancy
+      state: >
+        {% set score = states('sensor.evert_sleep_probability_score') | float(0) %}
+        {% set threshold = 60 %}
+        {% set min_duration = 300 %}
+        {% set age = now().timestamp() - as_timestamp(this.last_changed) %}
+
+        {% if (score > threshold and (this.state == 'off' or age > min_duration)) or
+              (score <= threshold and (this.state == 'on' and age > min_duration)) %}
+          {{ score > threshold }}
+        {% else %}
+          {{ this.state == 'on' }}
+        {% endif %}
+      attributes:
+        tier: "η"
+        canonical_id: "evert_health_biometrics_sleep_η"
+        file: "/config/domain/templates/health_logic.yaml"
+        module: "sleep"
+        role: "aggregation"
+        type: "diagnostic"
+        subsystem: "hypnos"
+        created: "2025-08-05"
+        last_updated: "2025-08-07"
+        upstream_sources: >
+          {{ ['sensor.evert_sleep_probability_score'] | tojson }}
+        downstream_consumers: >
+          {{ ['sensor.evert_sleep_probability_score',
+               'sensor.evert_bed_presence_gamma',
+               'influxdb.include.entity_globs',
+               'recorder.include.entities'] | tojson }}
+        aggregation_strategy: "probabilistic score with time-decay and jitter suppression"
+        description: "A binary sensor that uses a probabilistic score with time-decay and jitter suppression, derived from current sensor states, recent history, and possibly other heuristics."
+
+    - name: "Evert In Bed"
+      unique_id: "evert_in_bed"
+      state: >
+        {% set deep = states('sensor.evert_health_biometrics_deep_sleep') | float(0) %}
+        {% set light = states('sensor.evert_health_biometrics_light_sleep') | float(0) %}
+        {% set rem = states('sensor.evert_health_biometrics_rem_sleep') | float(0) %}
+        {{ deep > 0 or light > 0 or rem > 0 }}
+      device_class: occupancy
+      attributes:
+        tier: "γ"
+        canonical_id: "evert_in_bed_γ"
+        file: "/config/domain/templates/health_logic.yaml"
+        module: "sleep"
+        role: "evaluator"
+        type: "binary_sensor"
+        subsystem: "hypnos"
+        created: "2025-08-07"
+        last_updated: "2025-08-07"
+        upstream_sources: >
+          {{ ['sensor.evert_health_biometrics_deep_sleep',
+               'sensor.evert_health_biometrics_light_sleep',
+               'sensor.evert_health_biometrics_rem_sleep'] | tojson }}
+        description: "Determines if Evert is currently in bed based on any non-zero sleep phase durations."
+
+    - name: "Evert Asleep"
+      unique_id: "evert_asleep"
+      state: >
+        {{ states('sensor.evert_sleep_probability_score') | float(0) > 60 }}
+      device_class: occupancy
+      attributes:
+        tier: "γ"
+        canonical_id: "evert_asleep_γ"
+        file: "/config/domain/templates/health_logic.yaml"
+        module: "sleep"
+        role: "evaluator"
+        type: "binary_sensor"
+        subsystem: "hypnos"
+        created: "2025-08-07"
+        last_updated: "2025-08-07"
+        upstream_sources: >
+          {{ ['sensor.evert_sleep_probability_score'] | tojson }}
+        description: "Assesses if Evert is asleep based on a sleep probability score threshold."
+
+    - name: "Evert At Home"
+      unique_id: "evert_at_home"
+      state: >
+        {{ is_state('sensor.evert_current_location', 'Home') }}
+      device_class: presence
+      attributes:
+        tier: "γ"
+        canonical_id: "evert_at_home_γ"
+        file: "/config/domain/templates/health_logic.yaml"
+        module: "sleep"
+        role: "evaluator"
+        type: "binary_sensor"
+        subsystem: "hypnos"
+        created: "2025-08-07"
+        last_updated: "2025-08-07"
+        upstream_sources: >
+          {{ ['sensor.evert_current_location'] | tojson }}
+        description: "Tracks if Evert is currently at the Home location."
+# Notes for Finalization
+# For future expansion, consider making in_bed, sleeping, location separate sensors and combining them with a select or helper if needed.

@@ -1,0 +1,19 @@
+session_recap:
+  session_label: STRATEGOS::HA-BB8::SupervisorOnly-Hardening
+  trace_id: STRAT-HA-BB8-2025-09-03T06:50Z-001
+  operational_mode:
+    control_plane: single
+    observability: supervisor-only
+    heartbeat_interval_s: 15
+artifacts: |
+  See meta/rehydration/68b5e5e1-3eb4-8333-8ec4-4389c6239c2e/artifact_index.yaml
+phases: |
+  See meta/rehydration/68b5e5e1-3eb4-8333-8ec4-4389c6239c2e/phases.yaml
+memory_vars: |
+  See meta/rehydration/68b5e5e1-3eb4-8333-8ec4-4389c6239c2e/memory_vars.yaml
+rehydration_seed: |
+  See meta/rehydration/68b5e5e1-3eb4-8333-8ec4-4389c6239c2e/rehydration_seed.yaml
+notes: |
+  This consolidated file is a short pointer file that references the individual
+  artifact YAML/MD files and is intended to be a single entrypoint for CI
+  validation or rehydration tooling.

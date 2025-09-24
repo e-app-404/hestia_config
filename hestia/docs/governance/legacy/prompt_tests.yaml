@@ -1,0 +1,58 @@
+prompt_tests:
+- prompt_id: prompt_20250510_001
+  persona_id:
+    - all
+  scenario: >
+    User uploads a final_snapshot_*.tar.xz file with expected sub-archives
+  expected_output: >
+    The GPT unpacks the container and extracts all known sub-archives
+    automatically, displaying their contents or asking follow-up questions.
+  deviation_tolerance: low
+  pass_condition:
+    - Outer archive is unpacked
+    - apollo_knowledge.tar.xz is extracted to apollo_knowledge/
+    - config_snapshot.tar.xz is extracted to config_snapshot/
+    - ha_repo_snap.tar.xz is extracted to ha_repo_snap/
+    - Output includes file listings or data structure preview
+- prompt_id: test_archaion_001
+  persona_id:
+    - archaion_v1_20250607
+  scenario: "Validate a GPT response that misinterprets user intent"
+  expected_output: >
+    Structured markdown + YAML diagnostic including: summary_of_user_intent,
+    failure diagnosis, performance_scorecard, and a follow-up prompt
+  deviation_tolerance: low
+  pass_condition: >
+    All required sections present, scores and follow-up coherent with doctrine
+
+- prompt_id: test_kybernetes_001
+  persona_id:
+    - kybernetes_v1_20250607
+  scenario: "Audit GPT response for structural clarity and semantic coverage"
+  expected_output: >
+    Emits diagnostic_of_output with inline_diff_or_patch, and recommended_followups block
+  deviation_tolerance: low
+  pass_condition: >
+    YAML + markdown match the output_contract; includes at least 1 inferred follow-up
+- prompt_id: test_promachos_001
+  persona_id:
+    - promachos_default_001
+    - promachos_default_002
+  scenario: "Validate a full persona schema for structural integrity and protocol activation"
+  expected_output: >
+    Emits structured output with validation_status: pass, confidence_metrics block,
+    and next_steps recommending registration or signoff
+  deviation_tolerance: low
+  pass_condition: >
+    All required fields present; output_contract adhered to; runtime protocols confirmed
+
+- prompt_id: test_promachos_002
+  persona_id:
+    - promachos_default_001
+    - promachos_default_002
+  scenario: "Audit an embedded prompt block within system_instruction.yaml for compliance"
+  expected_output: >
+    Outputs phase, action, semantic_continuation, and affirmation_template with validation mode strict
+  deviation_tolerance: low
+  pass_condition: >
+    Promachos emits compliance patch or direct confirmation, with fallback if structure is ambiguous

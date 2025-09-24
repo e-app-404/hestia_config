@@ -1,0 +1,152 @@
+{% macro subsystem_integrity(subsystem) %}
+  {% set total = states('sensor.' ~ subsystem ~ '_declared_total') | int(0) %}
+  {% set active = states | selectattr('attributes.subsystem', 'equalto', subsystem) | list | count %}
+  {% set missing = total - active %}
+  {% set percentage = (missing / total * 100) | round(1) if total > 0 else 0 %}
+  {% set status = 'operational' if percentage == 0 else 'degraded' if percentage < 10 else 'critical' %}
+  {{ {
+    'status': status,
+    'total': total,
+    'active': active,
+    'missing': missing,
+    'percentage': percentage,
+    'missing_entities': states 
+      | selectattr('attributes.subsystem', 'equalto', subsystem)
+      | selectattr('state', 'in', ['unavailable', 'unknown', 'none']) 
+      | map(attribute='entity_id') | list
+  } | tojson }}
+{% endmacro %}
+
+{% macro entity_availability(domain) %}
+  {% set domain_entities = states[domain] | list %}
+  {% set unavailable = domain_entities | selectattr('state', 'in', ['unavailable', 'unknown']) | list %}
+  {% set percentage = (unavailable | count / domain_entities | count * 100) | round(1) if domain_entities | count > 0 else 0 %}
+  {% set status = 'operational' if percentage == 0 else 'degraded' if percentage < 10 else 'critical' %}
+  {{ {
+    'status': status,
+    'total': domain_entities | count,
+    'unavailable_count': unavailable | count,
+    'percentage': percentage,
+    'unavailable_entities': unavailable | map(attribute='entity_id') | list
+  } | tojson }}
+{% endmacro %}
+
+{% macro registry_validator(registry_sensor, reference_attribute) %}
+  {% set registry = state_attr(registry_sensor, reference_attribute) %}
+  {% if registry is mapping and registry != {} %}
+    {% set result = {
+      'status': 'valid',
+      'entries': registry | length,
+      'last_validated': now().isoformat()
+    } %}
+  {% else %}
+    {% set result = {
+      'status': 'invalid',
+      'entries': 0,
+      'last_validated': now().isoformat(),
+      'error': 'Registry is empty or invalid'
+    } %}
+  {% endif %}
+  {{ result | tojson }}
+{% endmacro %}
+
+{% macro confidence_score(primary_entity, fallback_entities) %}
+  {% set primary_available = states(primary_entity) not in ['unavailable', 'unknown', 'none'] %}
+  {% set fallbacks_available = namespace(count=0, total=fallback_entities | length) %}
+  
+  {% for entity in fallback_entities %}
+    {% if states(entity) not in ['unavailable', 'unknown', 'none'] %}
+      {% set fallbacks_available.count = fallbacks_available.count + 1 %}
+    {% endif %}
+  {% endfor %}
+  
+  {% if primary_available %}
+    {% set score = 100 %}
+  {% elif fallbacks_available.count > 0 %}
+    {% set score = (fallbacks_available.count / fallbacks_available.total * 80) | round %}
+  {% else %}
+    {% set score = 0 %}
+  {% endif %}
+  
+  {{ {
+    'score': score,
+    'primary_available': primary_available,
+    'fallbacks_available': fallbacks_available.count,
+    'total_fallbacks': fallbacks_available.total,
+    'confidence_level': 'high' if score > 80 else 'medium' if score > 40 else 'low'
+  } | tojson }}
+{% endmacro %}
+
+{% macro protocol_distribution(device_registry_sensor) %}
+  {% set devs = state_attr(device_registry_sensor, 'light_types') | from_json %}
+  {% set counts = namespace(wifi=0, matter=0, zigbee=0, zwave=0, other=0) %}
+  {% set unavailable = namespace(wifi=0, matter=0, zigbee=0, zwave=0, other=0) %}
+  
+  {% if devs is mapping and devs.direct_lights is mapping %}
+    {% for light in devs.direct_lights.values() %}
+      {% if light.entity_id_wifi %}
+        {% set counts.wifi = counts.wifi + 1 %}
+        {% if light.entity_id_wifi and is_state(light.entity_id_wifi, 'unavailable') %}
+          {% set unavailable.wifi = unavailable.wifi + 1 %}
+        {% endif %}
+      {% endif %}
+      
+      {% if light.entity_id_matter %}
+        {% set counts.matter = counts.matter + 1 %}
+        {% if light.entity_id_matter and is_state(light.entity_id_matter, 'unavailable') %}
+          {% set unavailable.matter = unavailable.matter + 1 %}
+        {% endif %}
+      {% endif %}
+      
+      {% if light.entity_id_zigbee %}
+        {% set counts.zigbee = counts.zigbee + 1 %}
+        {% if light.entity_id_zigbee and is_state(light.entity_id_zigbee, 'unavailable') %}
+          {% set unavailable.zigbee = unavailable.zigbee + 1 %}
+        {% endif %}
+      {% endif %}
+      
+      {% if light.entity_id_zwave %}
+        {% set counts.zwave = counts.zwave + 1 %}
+        {% if light.entity_id_zwave and is_state(light.entity_id_zwave, 'unavailable') %}
+          {% set unavailable.zwave = unavailable.zwave + 1 %}
+        {% endif %}
+      {% endif %}
+    {% endfor %}
+  {% endif %}
+  
+  {{ {
+    'counts': {
+      'wifi': counts.wifi,
+      'matter': counts.matter,
+      'zigbee': counts.zigbee,
+      'zwave': counts.zwave,
+      'other': counts.other
+    },
+    'unavailable': {
+      'wifi': unavailable.wifi,
+      'matter': unavailable.matter,
+      'zigbee': unavailable.zigbee,
+      'zwave': unavailable.zwave,
+      'other': unavailable.other
+    },
+    'total_devices': counts.wifi + counts.matter + counts.zigbee + counts.zwave + counts.other,
+    'total_unavailable': unavailable.wifi + unavailable.matter + unavailable.zigbee + unavailable.zwave + unavailable.other
+  } | tojson }}
+{% endmacro %}
+
+{% macro calculate_risk_score(values, weights) %}
+  {% set score = namespace(value=0) %}
+  {% for key, value in values.items() %}
+    {% if key in weights %}
+      {% set score.value = score.value + (value * weights[key]) %}
+    {% endif %}
+  {% endfor %}
+  
+  {% set normalized_score = [score.value, 100] | min %}
+  
+  {{ {
+    'score': normalized_score,
+    'level': 'high' if normalized_score > 50 else 'medium' if normalized_score > 20 else 'low',
+    'breakdown': {key: (value * weights[key]) for key, value in values.items() if key in weights}
+  } | tojson }}
+{% endmacro %}

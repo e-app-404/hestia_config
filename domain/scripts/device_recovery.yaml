@@ -1,0 +1,48 @@
+# ══════════════════════════════════════════════════════════════════
+# ⟫⟫ DEVICE RECOVERY  •  Fault Tolerance & Fallback Protocol ◀
+# ⟫⟫ script: device_recovery  •  Subsystem: HESTIA
+# ⟫⟫ Tier: γ  •  Domain: maintenance  •  Created: 2025-08-05
+# ⟫⟫ Attempts to recover an unavailable entity via retries,
+#    logs the failure, and notifies the user if unsuccessful.
+# ⟫⟫ Last Updated: 2025-08-05
+# ══════════════════════════════════════════════════════════════════
+
+device_recovery:
+  alias: "Attempt Device Recovery"
+  mode: restart
+  fields:
+    device_entity_id:
+      description: Entity ID of the device to recover
+      example: binary_sensor.bedroom_occupancy
+      required: true
+  sequence:
+    - repeat:
+        count: 3
+        sequence:
+          - alias: Update device state
+            service: homeassistant.update_entity
+            target:
+              entity_id: "{{ device_entity_id }}"
+          - delay: "00:00:05"
+          - condition: template
+            value_template: "{{ states(device_entity_id) != 'unavailable' }}"
+          - stop:
+    - condition: template
+      value_template: "{{ states(device_entity_id) == 'unavailable' }}"
+    - alias: Log to system log
+      service: system_log.write
+      data:
+        message: "⚠️ Recovery failed for {{ device_entity_id }} after 3 attempts."
+        level: warning
+    - alias: Notify user of persistent failure
+      service: script.notify_engine
+      data:
+        who: "evert"
+        title: "Device Recovery Failed"
+        value1: "⚠️ Could not recover {{ device_entity_id }} after 3 attempts at {{ now().strftime('%Y-%m-%d %H:%M:%S') }}"
+        group: ha
+        tag_id: "information"
+        importance_id: default
+        color: "orange"
+        sticky: true
+        timeout_sec: 180

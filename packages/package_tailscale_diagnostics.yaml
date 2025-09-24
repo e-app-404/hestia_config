@@ -1,0 +1,61 @@
+# File: packages/package_tailscale_diagnostics.yaml
+
+# 1. Binary Sensors — HTTP-based reachability
+# 2. IP display sensor (for debugging)
+
+# 3. Template sensor — abstracts external reachability
+template:
+  - binary_sensor:
+      - name: HA Tailscale Online
+        unique_id: template_ha_tailscale_online
+        device_class: connectivity
+        state: >-
+          {{ is_state('binary_sensor.tailscale_funnel_reachability','on') }}
+        attributes:
+          tier: "β"
+          canonical_id: "ha_tailscale_online_β"
+          canonical_tier: "abstract_signal"
+          subsystem: "hades"
+          area_id: "network_stack"
+          type: "availability_flag"
+          diagnostic_type: "connectivity_status"
+          data_quality: "derived"
+          module: "tailscale"
+          role: "normalized_state"
+          upstream_sources: >
+            {{ 'binary_sensor.tailscale_funnel_reachability' | tojson }}
+          description: "Normalized reachability status inferred from Tailscale funnel probe"
+
+# 4. Automation to alert on disconnection
+automation:
+  - alias: Notify if Tailscale goes offline
+    id: automation_notify_tailscale_offline
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.ha_tailscale_online
+        to: "off"
+        for:
+          minutes: 5
+    action:
+      - alias: "Create persistent notification"
+        service: persistent_notification.create
+        data:
+          title: Tailscale Alert
+          message: >
+            Tailscale Funnel is unreachable at https://homeassistant.reverse-beta.ts.net
+
+# 5. Group for Lovelace visibility
+group:
+  tailscale_diagnostics:
+    name: Tailscale Diagnostics
+    entities:
+      - binary_sensor.tailscale_ds220
+      - binary_sensor.tailscale_macbook
+      - binary_sensor.nas_xplab_io
+      - binary_sensor.tailscale_iphone14
+      - binary_sensor.tailscale_iphone11
+      - binary_sensor.tailscale_ha_add_on
+      - binary_sensor.tailscale_nas_xplab_io
+      - binary_sensor.tailscale_funnel_reachability
+      - binary_sensor.ha_tailscale_online
+      - sensor.tailscale_ip_home_assistant

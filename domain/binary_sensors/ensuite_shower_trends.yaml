@@ -1,0 +1,53 @@
+# ───────────────────────────────────────────────────────────────────────────────
+# ▶ Ensuite Shower Trend Sensor (domain/binary_sensors/ensuite_shower_trend.yaml)
+# Loader: !include_dir_merge_list domain/binary_sensors/
+# Platform: trend — detects shower activity based on humidity rise
+# ───────────────────────────────────────────────────────────────────────────────
+
+- platform: trend
+  sensors:
+    ensuite_shower_detected:
+      unique_id: "ensuite_shower_detected_epsilon"
+      friendly_name: "Ensuite Shower Detected"
+      device_class: moisture
+      entity_id: sensor.ensuite_humidity_eta
+      max_samples: 4
+      min_samples: 2
+      min_gradient: 0.5
+      sample_duration: 120
+
+    ensuite_shower_end_detected:
+      unique_id: "ensuite_shower_end_detected_epsilon"
+      friendly_name: "Ensuite Shower End Detected"
+      device_class: moisture
+      entity_id: sensor.ensuite_humidity_eta
+      max_samples: 4
+      min_samples: 2
+      min_gradient: -0.5
+      sample_duration: 120
+
+- platform: template
+  sensors:
+    ensuite_shower_recent:
+      friendly_name: "Ensuite Shower Recent"
+      unique_id: "ensuite_shower_recent_epsilon"
+      device_class: moisture
+      delay_off:
+        minutes: 10
+      value_template: "{{ is_state('binary_sensor.ensuite_shower_detected', 'on') }}"
+      attribute_templates:
+        tier: "ε"
+        canonical_id: "ensuite_shower_recent_ε"
+        file: "/config/domain/templates/humidity_logic.yaml"
+        role: "shower_timeout"
+        module: "shower"
+        subsystem: "aether"
+        type: "timeout"
+        downstream_consumers: ""
+        upstream_sources: >
+          {{ 'binary_sensor.ensuite_shower_detected' | tojson }}
+        delay_duration: "600s"
+        area_id: "ensuite"
+        subarea: ""
+        created: "2025-07-31"
+        last_updated: "2025-07-31"

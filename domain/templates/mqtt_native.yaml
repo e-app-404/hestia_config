@@ -1,0 +1,45 @@
+# ───────────────────────────────────────────────────────────────────────────────
+# ▶ MQTT Native Binary Sensors (domain/templates/mqtt_native.yaml)
+# Loader: !include_dir_merge_list domain/templates/
+# Integration: template (trigger-based)
+# ───────────────────────────────────────────────────────────────────────────────
+
+- trigger:
+    - platform: mqtt
+      topic: zigbee2mqtt/ensuite_motion_alpha
+    - platform: homeassistant
+      event: start
+  binary_sensor:
+    - name: "Ensuite Motion (Real-Time)"
+      unique_id: ensuite_motion_real_time
+      device_class: motion
+      # Pulse 'on' when payload indicates motion; false at HA start. Auto clears after 2s.
+      state: >-
+        {% if trigger.platform == 'homeassistant' %}
+          false
+        {% else %}
+          {{
+            (trigger.payload_json.occupancy | default(false))
+            or (trigger.payload_json.action   | default('') | lower == 'motion')
+          }}
+        {% endif %}
+      auto_off: 2
+      attributes:
+        tier: "α"
+        canonical_id: "ensuite_motion_real_time_α"
+        subsystem: "hermes"
+        area_id: "ensuite"
+        type: "real_time_motion"
+        diagnostic_type: "motion_event"
+        data_quality: "runtime_observed"
+        validation_status: "valid"
+        module: "zigbee2mqtt"
+        role: "normalized_state"
+        source_entities: "{{ 'zigbee2mqtt/ensuite_motion_alpha' | tojson }}"
+        description: "Real-time motion event inferred from Zigbee2MQTT occupancy/action"
+        created: "2024-09-03"
+        file: "/config/domain/templates/mqtt_native.yaml"
+        upstream_sources: "{{ ['zigbee2mqtt/ensuite_motion_alpha'] | tojson }}"
+        protocols: "mqtt"
+        version: "1.1"
+        last_updated: "2025-09-04"
