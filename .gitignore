@@ -30,3 +30,8 @@ node_modules/
 *.from_backup_*
 _backup_*/**
 htmlcov/**
+.DS_Store
+.vscode/
+*.code-workspace
+coverage.json
+pytest-report.xml
