@@ -1,0 +1,456 @@
+#═════════════════════════════════════════════════════════════════════════════
+# ▶ LOGIC SENSOR: MOTION & RECENT MOTION WITH DELAY_OFF ◀
+# Loader: !include_dir_merge_list domain/templates/
+# Schema: binary_sensor (list)
+# Tier: β  •  Domain: logic  •  Updated: 2025-09-04
+# Notes:
+#   • Motion aggregation now uses motion-only sources (occupancy removed).
+#   • Sources aligned to canonical alpha-tier motion list.
+#═════════════════════════════════════════════════════════════════════════════
+
+- binary_sensor:
+    - name: "Bedroom Motion (Beta)"
+      unique_id: "bedroom_motion_beta"
+      device_class: motion
+      state: |
+        {% from 'custom_templates/template.library.jinja' import preference_select %}
+        {% set sources = [
+          {'entity': 'binary_sensor.sanctum_motion_alpha',                 'protocol': 'tplink',      'preference': 1, 'type': 'motion'},
+          {'entity': 'binary_sensor.bedroom_wardrobe_motion_tplink_alpha', 'protocol': 'tplink',      'preference': 2, 'type': 'motion'},
+          {'entity': 'binary_sensor.bedroom_security_cam_alpha_motion',    'protocol': 'smartthings', 'preference': 3, 'type': 'motion'}
+        ] %}
+        {{ preference_select(sources) == 'on' }}
+      attributes:
+        tier: "β"
+        canonical_id: "bedroom_motion_β"
+        subsystem: "hermes"
+        module: "motion"
+        type: "preference_proxy"
+        role: "beta_motion"
+        file: "/config/domain/templates/motion_logic"
+        protocols: "TP-Link(1,2), SmartThings(3)"
+        upstream_sources: >
+          {{ [
+            'template.library.jinja',
+            'binary_sensor.sanctum_motion_alpha',
+            'binary_sensor.bedroom_wardrobe_motion_tplink_alpha',
+            'binary_sensor.bedroom_security_cam_alpha_motion'
+          ] | tojson }}
+        aggregation_strategy: "preference-based selection (motion-only)"
+        active_source: >
+          {% from 'custom_templates/template.library.jinja' import get_active_source %}
+          {% set sources = [
+            {'entity': 'binary_sensor.sanctum_motion_alpha','preference': 1},
+            {'entity': 'binary_sensor.bedroom_wardrobe_motion_tplink_alpha','preference': 2},
+            {'entity': 'binary_sensor.bedroom_security_cam_alpha_motion','preference': 3}
+          ] %}
+          {{ get_active_source(sources) }}
+        source_count: "3"
+        version: "2.4"
+        last_updated: "2025-09-20"
+        floor_id: "sanctum"
+        area_id: "bedroom"
+
+    - name: "Ensuite Motion (Beta)"
+      unique_id: "ensuite_motion_beta"
+      device_class: motion
+      state: |
+        {% from 'custom_templates/template.library.jinja' import preference_select %}
+        {% set sources = [
+          {'entity': 'binary_sensor.ensuite_motion_real_time',        'protocol': 'mqtt', 'preference': 1, 'type': 'motion'},
+          {'entity': 'binary_sensor.ensuite_motion_alpha_occupancy', 'protocol': 'mqtt', 'preference': 2, 'type': 'occupancy'}
+        ] %}
+        {{ preference_select(sources) == 'on' }}
+      attributes:
+        tier: "β"
+        canonical_id: "ensuite_motion_β"
+        subsystem: "hermes"
+        module: "motion"
+        type: "preference_proxy"
+        role: "beta_motion"
+        file: "/config/domain/templates/motion_logic"
+        protocols: "MQTT(1,2)"
+        upstream_sources: >
+          {{ ['custom_templates/template.library.jinja','binary_sensor.ensuite_motion_real_time','binary_sensor.ensuite_motion_alpha_occupancy'] | tojson }}
+        aggregation_strategy: "preference-based selection (motion-only)"
+        active_source: >
+          {% from 'custom_templates/template.library.jinja' import get_active_source %}
+          {% set sources = [
+            {'entity': 'binary_sensor.ensuite_motion_real_time','preference': 1},
+            {'entity': 'binary_sensor.ensuite_motion_alpha_occupancy','preference': 2}
+          ] %}
+          {{ get_active_source(sources) }}
+        source_count: "2"
+        version: "2.4"
+        last_updated: "2025-09-20"
+        floor_id: "sanctum"
+        area_id: "ensuite"
+
+    - name: "Hallway Downstairs Motion (Beta)"
+      unique_id: "hallway_downstairs_motion_beta"
+      device_class: motion
+      state: |
+        {% from 'custom_templates/template.library.jinja' import preference_select %}
+        {% set sources = [
+          {'entity': 'binary_sensor.downstairs_presence_alpha_motion', 'protocol': 'tplink', 'preference': 1, 'type': 'motion'}
+        ] %}
+        {{ preference_select(sources) == 'on' }}
+      attributes:
+        tier: "β"
+        canonical_id: "hallway_downstairs_motion_β"
+        subsystem: "hermes"
+        module: "motion"
+        type: "preference_proxy"
+        role: "beta_motion"
+        file: "/config/domain/templates/motion_logic"
+        protocols: "TP-Link(1)"
+        upstream_sources: >
+          {{ ['custom_templates/template.library.jinja','binary_sensor.downstairs_presence_alpha_motion'] | tojson }}
+        aggregation_strategy: "preference-based selection (motion-only)"
+        active_source: "binary_sensor.downstairs_presence_alpha_motion"
+        source_count: "1"
+        version: "2.2"
+        last_updated: "2025-09-20"
+        area_id: "hallway"
+        subarea: "downstairs"
+
+    - name: "Hallway Upstairs Motion (Beta)"
+      unique_id: "hallway_upstairs_motion_beta"
+      device_class: motion
+      state: |
+        {% from 'custom_templates/template.library.jinja' import preference_select %}
+        {% set sources = [
+          {'entity': 'binary_sensor.upstairs_presence_alpha_motion', 'protocol': 'tplink', 'preference': 1, 'type': 'motion'}
+        ] %}
+        {{ preference_select(sources) == 'on' }}
+      attributes:
+        tier: "β"
+        canonical_id: "hallway_upstairs_motion_β"
+        subsystem: "hermes"
+        module: "motion"
+        type: "preference_proxy"
+        role: "beta_motion"
+        file: "/config/domain/templates/motion_logic"
+        protocols: "TP-Link(1)"
+        upstream_sources: >
+          {{ ['custom_templates/template.library.jinja','binary_sensor.upstairs_presence_alpha_motion'] | tojson }}
+        aggregation_strategy: "preference-based selection (motion-only)"
+        active_source: "binary_sensor.upstairs_presence_alpha_motion"
+        source_count: "1"
+        version: "2.2"
+        last_updated: "2025-09-20"
+        area_id: "hallway"
+        subarea: "upstairs"
+
+    - name: "Kitchen Motion (Beta)"
+      unique_id: "kitchen_motion_beta"
+      device_class: motion
+      state: |
+        {% from 'custom_templates/template.library.jinja' import preference_select %}
+        {% set sources = [
+          {'entity': 'binary_sensor.kitchen_presence_alpha_motion', 'protocol': 'tplink', 'preference': 1, 'type': 'motion'}
+        ] %}
+        {{ preference_select(sources) == 'on' }}
+      attributes:
+        tier: "β"
+        canonical_id: "kitchen_motion_β"
+        subsystem: "hermes"
+        module: "motion"
+        type: "preference_proxy"
+        role: "beta_motion"
+        file: "/config/domain/templates/motion_logic"
+        protocols: "TP-Link(1)"
+        upstream_sources: >
+          {{ ['custom_templates/template.library.jinja','binary_sensor.kitchen_presence_alpha_motion'] | tojson }}
+        aggregation_strategy: "preference-based selection (motion-only)"
+        active_source: "binary_sensor.kitchen_presence_alpha_motion"
+        source_count: "1"
+        version: "2.2"
+        last_updated: "2025-09-20"
+        area_id: "kitchen"
+
+    - name: "Living Room Motion (Beta)"
+      unique_id: "living_room_motion_beta"
+      device_class: motion
+      state: |
+        {% from 'custom_templates/template.library.jinja' import preference_select %}
+        {% set sources = [
+          {'entity': 'binary_sensor.living_room_multipurpose_alpha_motion', 'protocol': 'smartthings', 'preference': 1, 'type': 'motion'}
+        ] %}
+        {{ preference_select(sources) == 'on' }}
+      attributes:
+        tier: "β"
+        canonical_id: "living_room_motion_β"
+        subsystem: "hermes"
+        module: "motion"
+        type: "preference_proxy"
+        role: "beta_motion"
+        file: "/config/domain/templates/motion_logic"
+        protocols: "SmartThings(1)"
+        upstream_sources: >
+          {{ ['custom_templates/template.library.jinja','binary_sensor.living_room_multipurpose_alpha_motion'] | tojson }}
+        aggregation_strategy: "preference-based selection (motion-only)"
+        active_source: "binary_sensor.living_room_multipurpose_alpha_motion"
+        source_count: "1"
+        version: "2.2"
+        last_updated: "2025-09-20"
+        area_id: "living_room"
+
+    - name: "Wardrobe Motion (Beta)"
+      unique_id: "wardrobe_motion_beta"
+      device_class: motion
+      state: |
+        {% from 'custom_templates/template.library.jinja' import preference_select %}
+        {% set sources = [
+          {'entity': 'binary_sensor.bedroom_wardrobe_motion_tplink_alpha', 'protocol': 'tplink', 'preference': 1, 'type': 'motion'}
+        ] %}
+        {{ preference_select(sources) == 'on' }}
+      attributes:
+        tier: "β"
+        canonical_id: "wardrobe_motion_β"
+        subsystem: "hermes"
+        module: "motion"
+        type: "preference_proxy"
+        role: "beta_motion"
+        file: "/config/domain/templates/motion_logic"
+        protocols: "TP-Link(1)"
+        upstream_sources: >
+          {{ ['custom_templates/template.library.jinja','binary_sensor.bedroom_wardrobe_motion_tplink_alpha'] | tojson }}
+        aggregation_strategy: "preference-based selection (motion-only)"
+        active_source: "binary_sensor.bedroom_wardrobe_motion_tplink_alpha"
+        source_count: "1"
+        version: "2.2"
+        last_updated: "2025-09-20"
+        floor_id: "sanctum"
+        area_id: "bedroom"
+        subarea: "wardrobe"
+
+    - name: "Sanctum Motion (Beta)"
+      unique_id: "sanctum_motion_beta"
+      device_class: motion
+      state: |
+        {% from 'custom_templates/template.library.jinja' import preference_select %}
+        {% set sources = [
+          {'entity': 'binary_sensor.sanctum_motion_alpha', 'protocol': 'tplink', 'preference': 1, 'type': 'motion'}
+        ] %}
+        {{ preference_select(sources) == 'on' }}
+      attributes:
+        tier: "β"
+        canonical_id: "sanctum_motion_β"
+        subsystem: "hermes"
+        module: "motion"
+        type: "preference_proxy"
+        role: "beta_motion"
+        file: "/config/domain/templates/motion_logic"
+        protocols: "TP-Link(1)"
+        upstream_sources: >
+          {{ ['custom_templates/template.library.jinja','binary_sensor.sanctum_motion_alpha'] | tojson }}
+        aggregation_strategy: "preference-based selection (motion-only)"
+        active_source: "binary_sensor.sanctum_motion_alpha"
+        source_count: "1"
+        version: "1.0"
+        last_updated: "2025-09-20"
+        floor_id: "sanctum"
+        area_id: "bedroom"
+
+    # ────────────────────────── RECENT (delay_off) WRAPPERS ─────────────────
+    - name: "Bedroom Motion Recent (Beta)"
+      unique_id: "bedroom_motion_recent_beta"
+      device_class: motion
+      delay_off:
+        minutes: 5
+      state: "{{ is_state('binary_sensor.bedroom_motion_beta', 'on') }}"
+      attributes:
+        tier: "β"
+        canonical_id: "bedroom_motion_recent_β"
+        subsystem: "hermes"
+        module: "motion"
+        type: "delay_proxy"
+        role: "motion_timeout"
+        file: "/config/domain/templates/motion_logic"
+        delay_duration: "300s"
+        timeout_behavior: "delay_off"
+        upstream_sources: >
+          {{ 'binary_sensor.bedroom_motion_beta' | tojson }}
+        downstream_consumers: >
+          {{ ['binary_sensor.bedroom_occupancy_beta','sensor.bedroom_motion_score_gamma'] | tojson }}
+        aggregation_strategy: "timeout-based extension"
+        version: "2.3"
+        last_updated: "2025-09-20"
+        floor_id: "sanctum"
+        area_id: "bedroom"
+
+    - name: "Kitchen Motion Recent (Beta)"
+      unique_id: kitchen_motion_recent_beta
+      device_class: motion
+      delay_off:
+        minutes: 5
+      state: "{{ is_state('binary_sensor.kitchen_motion_beta', 'on') }}"
+      attributes:
+        tier: "β"
+        canonical_id: "kitchen_motion_recent_β"
+        subsystem: "hermes"
+        module: "motion"
+        type: "delay_proxy"
+        role: "motion_timeout"
+        file: "/config/domain/templates/motion_logic"
+        delay_duration: "300s"
+        timeout_behavior: "delay_off"
+        upstream_sources: >
+          {{ 'binary_sensor.kitchen_motion_beta' | tojson }}
+        downstream_consumers: >
+          {{ ['binary_sensor.kitchen_occupancy_beta','sensor.kitchen_motion_score_gamma'] | tojson }}
+        version: "2.1"
+        last_updated: "2025-09-20"
+        area_id: "kitchen"
+
+    - name: "Living Room Motion Recent (Beta)"
+      unique_id: living_room_motion_recent_beta
+      device_class: motion
+      delay_off:
+        minutes: 5
+      state: "{{ is_state('binary_sensor.living_room_motion_beta', 'on') }}"
+      attributes:
+        tier: "β"
+        canonical_id: "living_room_motion_recent_β"
+        subsystem: "hermes"
+        module: "motion"
+        type: "delay_proxy"
+        role: "motion_timeout"
+        file: "/config/domain/templates/motion_logic"
+        delay_duration: "300s"
+        timeout_behavior: "delay_off"
+        upstream_sources: >
+          {{ 'binary_sensor.living_room_motion_beta' | tojson }}
+        downstream_consumers: >
+          {{ ['binary_sensor.living_room_occupancy_beta','sensor.living_room_motion_score_gamma'] | tojson }}
+        version: "2.1"
+        last_updated: "2025-09-20"
+        area_id: "living_room"
+
+    - name: "Ensuite Motion Recent (Beta)"
+      unique_id: ensuite_motion_recent_beta
+      device_class: motion
+      delay_off:
+        minutes: 5
+      state: "{{ is_state('binary_sensor.ensuite_motion_beta', 'on') }}"
+      attributes:
+        tier: "β"
+        canonical_id: "ensuite_motion_recent_β"
+        subsystem: "hermes"
+        module: "motion"
+        type: "delay_proxy"
+        role: "motion_timeout"
+        file: "/config/domain/templates/motion_logic"
+        delay_duration: "300s"
+        timeout_behavior: "delay_off"
+        upstream_sources: >
+          {{ 'binary_sensor.ensuite_motion_beta' | tojson }}
+        downstream_consumers: >
+          {{ ['binary_sensor.ensuite_occupancy_beta','sensor.ensuite_motion_score_gamma'] | tojson }}
+        version: "2.3"
+        last_updated: "2025-09-20"
+        floor_id: "sanctum"
+        area_id: "ensuite"
+
+    - name: "Hallway Downstairs Motion Recent (Beta)"
+      unique_id: hallway_downstairs_motion_recent_beta
+      device_class: motion
+      delay_off:
+        minutes: 5
+      state: "{{ is_state('binary_sensor.hallway_downstairs_motion_beta', 'on') }}"
+      attributes:
+        tier: "β"
+        canonical_id: "hallway_downstairs_motion_recent_β"
+        subsystem: "hermes"
+        module: "motion"
+        type: "delay_proxy"
+        role: "motion_timeout"
+        file: "/config/domain/templates/motion_logic"
+        delay_duration: "300s"
+        timeout_behavior: "delay_off"
+        upstream_sources: >
+          {{ 'binary_sensor.hallway_downstairs_motion_beta' | tojson }}
+        downstream_consumers: >
+          {{ ['binary_sensor.hallway_downstairs_occupancy_beta','sensor.hallway_downstairs_motion_score_gamma'] | tojson }}
+        version: "2.1"
+        last_updated: "2025-09-20"
+        area_id: "hallway"
+        subarea: "downstairs"
+
+    - name: "Hallway Upstairs Motion Recent (Beta)"
+      unique_id: hallway_upstairs_motion_recent_beta
+      device_class: motion
+      delay_off:
+        minutes: 5
+      state: "{{ is_state('binary_sensor.hallway_upstairs_motion_beta', 'on') }}"
+      attributes:
+        tier: "β"
+        canonical_id: "hallway_upstairs_motion_recent_β"
+        subsystem: "hermes"
+        module: "motion"
+        type: "delay_proxy"
+        role: "motion_timeout"
+        file: "/config/domain/templates/motion_logic"
+        delay_duration: "300s"
+        timeout_behavior: "delay_off"
+        upstream_sources: >
+          {{ 'binary_sensor.hallway_upstairs_motion_beta' | tojson }}
+        downstream_consumers: >
+          {{ ['binary_sensor.hallway_upstairs_occupancy_beta','sensor.hallway_upstairs_motion_score_gamma'] | tojson }}
+        version: "2.1"
+        last_updated: "2025-09-20"
+        area_id: "hallway"
+        subarea: "upstairs"
+
+    - name: "Wardrobe Motion Recent (Beta)"
+      unique_id: wardrobe_motion_recent_beta
+      device_class: motion
+      delay_off:
+        minutes: 2
+      state: "{{ is_state('binary_sensor.wardrobe_motion_beta', 'on') }}"
+      attributes:
+        tier: "β"
+        canonical_id: "wardrobe_motion_recent_β"
+        subsystem: "hermes"
+        module: "motion"
+        type: "delay_proxy"
+        role: "motion_timeout"
+        file: "/config/domain/templates/motion_logic"
+        delay_duration: "120s"
+        timeout_behavior: "delay_off"
+        timeout_note: "Shorter timeout for utility space with brief interactions"
+        upstream_sources: >
+          {{ 'binary_sensor.wardrobe_motion_beta' | tojson }}
+        downstream_consumers: >
+          {{ ['binary_sensor.wardrobe_occupancy_beta','sensor.wardrobe_motion_score_gamma'] | tojson }}
+        version: "2.1"
+        last_updated: "2025-09-20"
+        floor_id: "sanctum"
+        area_id: "bedroom"
+        subarea: "wardrobe"
+
+    - name: "Sanctum Motion Recent (Beta)"
+      unique_id: sanctum_motion_recent_beta
+      device_class: motion
+      delay_off:
+        minutes: 5
+      state: "{{ is_state('binary_sensor.sanctum_motion_beta', 'on') }}"
+      attributes:
+        tier: "β"
+        canonical_id: "sanctum_motion_recent_β"
+        subsystem: "hermes"
+        module: "motion"
+        type: "delay_proxy"
+        role: "motion_timeout"
+        file: "/config/domain/templates/motion_logic"
+        delay_duration: "300s"
+        timeout_behavior: "delay_off"
+        upstream_sources: >
+          {{ 'binary_sensor.sanctum_motion_beta' | tojson }}
+        downstream_consumers: >
+          {{ ['binary_sensor.sanctum_occupancy_beta','sensor.sanctum_motion_score_gamma'] | tojson }}
+        version: "1.0"
+        last_updated: "2025-09-20"
+        floor_id: "sanctum"
+        area_id: "bedroom"

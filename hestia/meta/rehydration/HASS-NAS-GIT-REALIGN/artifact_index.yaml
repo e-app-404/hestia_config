@@ -1,0 +1,35 @@
+artifact_index:
+  repo_artifacts:
+    - path: "hestia/docs/ADR/ADR-0016-canonical-ha-smb-mount.md"
+      note: "updated Implementation ref"
+    - path: ".env.sample"
+      note: "parameterized HA_MOUNT"
+    - path: ".vscode-configs/config-lean.sample.code-workspace"
+      note: "VS Code sample workspace"
+    - path: ".vscode-configs/README.md"
+      note: "how to use the VS Code sample"
+    - path: "hestia/tools/validators/scan_hardcoded_ha.sh"
+      note: "rg with grep fallback; validator script"
+    - path: ".github/workflows/hardcoded-ha-guard.yml"
+      note: "CI guard workflow to run validator"
+    - path: "PR_BODY_chore-parameterize-ha-mount.md"
+      note: "PR description and acceptance checklist"
+
+  external_infra:
+    nas_bare_repo:
+      path: "/volume1/git-mirrors/ha-config.git"
+      owner: "gituser:users"
+    tailnet_host:
+      hostname: "ds220plus.reverse-beta.ts.net"
+      address: "100.93.61.53"
+
+  uploaded_bundles:
+    - name: "ADR.tar.gz"
+      note: "local bundle containing ADR governance"
+
+  git_ids:
+    remote_main_pre_merge: "97e2368"
+    local_merged_push: "6361248"
+    feature_branch:
+      name: "chore/parameterize-ha-mount"
+      note: "HEAD includes workspace sample + ADR note"

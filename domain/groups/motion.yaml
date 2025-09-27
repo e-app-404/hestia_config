@@ -1,0 +1,45 @@
+---
+#═══════════════════════════════════════════════════════════════
+# ▶ GROUP: Motion Sensor Entities by Tier ◀
+# Loader: !include_dir_merge_named domain/groups/motion.yaml
+# Schema: group
+#═══════════════════════════════════════════════════════════════
+
+#motion_sensors_alpha:
+#  name: "Motion Sensors (Alpha Tier)"
+#  entities:
+#    - binary_sensor.bedroom_wardrobe_occupancy_matter_alpha
+#    - binary_sensor.bedroom_occupancy_alpha_occupancy
+#    - binary_sensor.bedroom_wardrobe_motion_tplink_alpha
+#    - binary_sensor.ensuite_occupancy_omega_occupancy
+#    - binary_sensor.downstairs_occupancy_alpha_matter
+#    - binary_sensor.downstairs_presence_alpha_motion
+#    - binary_sensor.upstairs_occupancy_matter_alpha_occupancy
+#    - binary_sensor.upstairs_presence_alpha_motion
+#    - binary_sensor.kitchen_occupancy_matter_alpha_occupancy
+#    - binary_sensor.kitchen_presence_alpha_motion
+#    - binary_sensor.living_room_multipurpose_alpha_motion
+#    - binary_sensor.living_room_occupancy_alpha_occupancy
+#    - binary_sensor.sanctum_motion_alpha
+
+#motion_sensors_beta:
+#  name: "Motion Sensors (Beta Tier)"
+#  entities:
+#    - binary_sensor.bedroom_motion_beta
+#    - binary_sensor.kitchen_motion_beta
+#    - binary_sensor.living_room_motion_beta
+#    - binary_sensor.ensuite_motion_beta
+#    - binary_sensor.hallway_downstairs_motion_beta
+#    - binary_sensor.hallway_upstairs_motion_beta
+#    - binary_sensor.wardrobe_motion_beta
+
+#motion_recent_sensors_beta:
+#  name: "Motion Recent Sensors (Beta Tier)"
+#  entities:
+#    - binary_sensor.bedroom_motion_recent_beta
+#    - binary_sensor.kitchen_motion_recent_beta
+#    - binary_sensor.living_room_motion_recent_beta
+#    - binary_sensor.ensuite_motion_recent_beta
+#    - binary_sensor.hallway_downstairs_motion_recent_beta
+#    - binary_sensor.hallway_upstairs_motion_recent_beta
+#    - binary_sensor.wardrobe_motion_recent_beta

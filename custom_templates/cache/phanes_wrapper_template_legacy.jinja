@@ -1,0 +1,20 @@
+# Dynamic wrapper for phanes_core_template.jinja  
+# Loops through light_entities and renders each one using the original Phanes template
+
+light:
+{% for light_entity in light_entities %}
+{% set light_slug = light_entity.light_slug %}
+{% set friendly_name = light_entity.friendly_name %}
+{% set value_template = light_entity.value_template %}
+{% set canonical_id = light_entity.canonical_id %}
+{% set canonical_alpha = light_entity.canonical_alpha %}
+{% set level_template = light_entity.level_template %}
+{% set color_template = light_entity.color_template %}
+{% set color_temp_template = light_entity.color_temp_template %}
+{% set protocol_stack = light_entity.protocol_stack | default({}) %}
+{% set integration_paths = light_entity.integration_paths | default([]) %}
+{% set model = light_entity.model | default('') %}
+{% set manufacturer = light_entity.manufacturer | default('') %}
+{% set firmware = light_entity.firmware | default('') %}
+{% include 'phanes_core_template.jinja' %}
+{% endfor %}

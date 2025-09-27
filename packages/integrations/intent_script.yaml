@@ -1,0 +1,4 @@
+###############
+# Define custom intents for HA Assist
+
+intent_script: {}

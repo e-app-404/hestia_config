@@ -1,0 +1,21 @@
+# ═══════════════════════════════════════════════════════════════
+# ▶ AUTOMATION: Auto Git Push on Config Save ◀
+# Pushes HA config to DSM Git mirror every 5 min when diagnostics are on
+# Loader: !include_dir_merge_list from domain/automations/
+# Tier: ζ  •  Domain: system  •  Created: 2025-07-28
+# Tags: [git, diagnostics, config-sync, cron]  
+# ═══════════════════════════════════════════════════════════════
+- id: "auto_git_hub_push_on_config_save"
+  alias: "Auto Git Push on Config Save"
+  description: "Push changes in /config to DSM Git mirror every 5 minutes when diagnostics are enabled"
+  trigger:
+    - platform: time_pattern
+      minutes: "/5"
+  condition:
+    - condition: state
+      entity_id: input_boolean.diagnostics_enabled
+      state: "on"
+  action:
+    - alias: "Execute shell command for Git push"
+      service: shell_command.git_push_config
+  mode: single

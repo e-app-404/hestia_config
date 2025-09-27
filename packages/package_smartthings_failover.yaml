@@ -1,0 +1,265 @@
+# ══════════════════════════════════════════════════════════════════════════════
+# ⟫⟫ SMARTTHINGS FAILOVER PACKAGE ◀ SmartThings watchdog
+# ⟫⟫ Monitors availability & triggers integration reload if needed
+# ⟫⟫ configuration.yaml  •  packages: !include_dir_named integrations
+# ⟫⟫ Tier: σ  •  Domain: diagnostics  •  Created: 2025-07-25
+#═════════════════════════════════════════════════════════════════════════════
+
+# ⟫⟫ ⟫ ⟫⟫ ⟫⟫ ⟫⟫ ⟫⟫ ⟫⟫ ⟫⟫ HELPERS
+
+counter:
+  smartthings_restart_counter:
+    name: "SmartThings Restart Counter"
+    initial: 0
+    step: 1
+
+input_datetime:
+  smartthings_last_restart:
+    name: "SmartThings Last Restart"
+    has_date: true
+    has_time: true
+  smartthings_first_failure_time:
+    name: "SmartThings First Failure Time"
+    has_date: true
+    has_time: true
+
+input_text:
+  smartthings_first_failed_entity:
+    name: "SmartThings First Failed Entity"
+
+group:
+  smartthings_entities:
+    name: "SmartThings Entities"
+    entities:
+      - binary_sensor.bedroom_security_cam_alpha_motion
+      - binary_sensor.bedroom_wardrobe_motion_alpha
+      - binary_sensor.entrance_door_motion_smartthings_alpha
+      - binary_sensor.evert_alpha_presence_iphone_presence
+      - binary_sensor.kitchen_motion_wifi_alpha
+      - binary_sensor.living_room_multipurpose_alpha_motion
+      - light.kitchen_cupboards_lightstrip_wifi_alpha
+      - media_player.bedroom_tv_alpha
+      - sensor.bedroom_illuminance_wifi_alpha_brightness_intensity
+      - sensor.bedroom_illuminance_wifi_alpha_illuminance
+      - sensor.bedroom_tv_alpha_energy
+      - sensor.bedroom_tv_alpha_energy_difference
+      - sensor.bedroom_tv_alpha_energy_saved
+      - sensor.bedroom_tv_alpha_power
+      - sensor.bedroom_tv_alpha_power_energy
+      - sensor.bedroom_tv_alpha_tv_channel
+      - sensor.bedroom_tv_alpha_tv_channel_name
+      - sensor.ensuite_ambient_climate_alpha_humidity
+      - sensor.ensuite_ambient_climate_alpha_temperature
+      - sensor.home_iot_hub_tapo_alarm
+      - sensor.kitchen_lightstrip_alpha_energy
+      - sensor.kitchen_lightstrip_alpha_energy_difference
+      - sensor.living_room_multipurpose_alpha_battery
+      - sensor.living_room_multipurpose_alpha_illuminance
+      - sensor.living_room_multipurpose_alpha_temperature
+      - sensor.living_room_stringlights_alpha_energy
+      - sensor.living_room_stringlights_alpha_energy_difference
+      - switch.bedroom_illuminance_wifi_alpha
+      - switch.bedroom_virtual_illuminance_level_1
+      - switch.bedroom_virtual_illuminance_level_2
+      - switch.bedroom_virtual_illuminance_level_3
+      - switch.bedroom_virtual_illuminance_level_4
+      - switch.kitchen_lightstrip_alpha
+      - switch.living_room_stringlights_alpha
+      - switch.power_hub_aeotec_smartthings_plug_1
+      - switch.powerstrip_ha_rpi5_plug_3
+
+# ⟫⟫ ⟫ ⟫⟫ ⟫⟫ ⟫⟫ ⟫⟫ ⟫⟫ ⟫⟫ TEMPLATES
+
+template:
+  - sensor:
+      - name: "Unavailable SmartThings Entities"
+        unique_id: "unavailable_smartthings_entities"
+        icon: '{{ iif(states(this.entity_id)|int(0) > 0, "mdi:alert-circle", "mdi:check-circle") }}'
+        state_class: measurement
+        unit_of_measurement: "entities"
+        state: >
+          {% set entities = state_attr('group.smartthings_entities', 'entity_id') %}
+          {% set unavailable = expand(entities) | selectattr('state', 'in', ['unavailable', 'unknown']) | list %}
+          {{ unavailable | count }}
+        attributes:
+          entities: >
+            {% set entities = state_attr('group.smartthings_entities', 'entity_id') %}
+            {{ expand(entities) | selectattr('state', 'in', ['unavailable', 'unknown']) | map(attribute='entity_id') | list }}
+          upstream_sources: >
+            {{ state_attr('group.smartthings_entities', 'entity_id') | tojson }}
+          tier: "μ"
+          canonical_tier: "diagnostics"
+          diagnostic_type: "entity_unavailability"
+          module: "smartthings_failover"
+          type: "integration_watchdog"
+          role: "monitor"
+          scope: "smartthings"
+          area_id: "virtual"
+          floor_id: "hestia"
+
+  - sensor:
+      - name: "Time Since SmartThings Last Restart (minutes)"
+        unique_id: "smartthings_minutes_since_last_restart"
+        unit_of_measurement: "min"
+        state_class: measurement
+        state: >
+          {% set t = states('input_datetime.smartthings_last_restart') %}
+          {% if t not in ['unknown', 'unavailable', None] %}
+            {% set ts = as_timestamp(t) %}
+            {% set delta = (now().timestamp() - ts) / 60 %}
+            {{ delta | round(1) }}
+          {% else %}
+            unknown
+          {% endif %}
+        attributes:
+          upstream_sources: >
+            {{ ['input_datetime.smartthings_last_restart'] | tojson }}
+          tier: "μ"
+          canonical_tier: "diagnostics"
+          diagnostic_type: "restart_interval"
+          module: "smartthings_failover"
+          type: "watchdog"
+          scope: "smartthings"
+          role: "monitor"
+          area_id: "virtual"
+          floor_id: "hestia"
+
+  - sensor:
+      - name: "Time Since First SmartThings Failure (minutes)"
+        unique_id: "smartthings_minutes_since_first_failure"
+        unit_of_measurement: "min"
+        state_class: measurement
+        state: >
+          {% set t = states('input_datetime.smartthings_first_failure_time') %}
+          {% if t not in ['unknown', 'unavailable', None] %}
+            {% set ts = as_timestamp(t) %}
+            {% set delta = (now().timestamp() - ts) / 60 %}
+            {{ delta | round(1) }}
+          {% else %}
+            unknown
+          {% endif %}
+        attributes:
+          upstream_sources: >
+            {{ ['input_datetime.smartthings_first_failure_time'] | tojson }}
+          tier: "μ"
+          canonical_tier: "diagnostics"
+          diagnostic_type: "failure_duration"
+          module: "smartthings_failover"
+          type: "watchdog"
+          role: "monitor"
+          scope: "integrations"
+          area_id: "virtual"
+          floor_id: "hestia"
+  - sensor:
+      - name: "SmartThings Failover Status"
+        unique_id: "smartthings_failover_summary"
+        icon: "mdi:lan-disconnect"
+        state: >
+          {% set failed = states('input_text.smartthings_first_failed_entity') %}
+          {% set since = states('sensor.smartthings_minutes_since_first_failure') %}
+          {% set count = states('sensor.unavailable_smartthings_entities') %}
+          {% if count | int(0) > 0 %}
+            {{ count }} unavailable (first: {{ failed }}, since: {{ since }} min)
+          {% else %}
+            OK
+          {% endif %}
+        attributes:
+          upstream_sources: >
+            {{ ['sensor.smartthings_minutes_since_first_failure', 'sensor.unavailable_smartthings_entities', 'input_text.smartthings_first_failed_entity'] | tojson }}
+          tier: "μ"
+          canonical_tier: "diagnostics"
+          diagnostic_type: "summary_status"
+          module: "smartthings_failover"
+          type: "integration_watchdog"
+          role: "monitor"
+          scope: "smartthings"
+          area_id: "virtual"
+          floor_id: "hestia"
+
+  - sensor:
+      - name: "SmartThings Entity List"
+        unique_id: smartthings_entity_list
+        state: "{{ integration_entities('smartthings') | count }}"
+        attributes:
+          entities: "{{ integration_entities('smartthings') | sort }}"
+          tier: "μ"
+          canonical_tier: "diagnostics"
+          canonical_id: "smartthings_entity_list_μ"
+          diagnostic_type: "entity_availability"
+          module: "smartthings_failover"
+          type: "integration_watchdog"
+          role: "monitor"
+          area_id: "virtual"
+          created: "2025-08-06"
+          last_updated: "2025-08-08T19:10:54.077646+01:00"
+          
+automation:
+  - alias: "SmartThings Integration Issue Detected"
+    id: "automation_smartthings_integration_issue_detected"
+    description: "Reload SmartThings integration if entities are unavailable"
+    mode: restart
+    trigger:
+      - platform: state
+        entity_id: sensor.unavailable_smartthings_entities
+        for: "00:05:00"
+    condition:
+      - condition: numeric_state
+        entity_id: sensor.unavailable_smartthings_entities
+        above: 0
+      - condition: template
+        value_template: >
+          {% set last = states('input_datetime.smartthings_last_restart') %}
+          {% if last in ['unknown', 'unavailable', ''] %}
+            true
+          {% else %}
+            {{ (now().timestamp() - as_timestamp(last)) > 900 }}
+          {% endif %}
+    action:
+      - alias: Record first failure timestamp (only if not set)
+        choose:
+          - conditions: >
+              {{ states('input_datetime.smartthings_first_failure_time') in ['unknown','unavailable',''] }}
+            sequence:
+              - service: input_datetime.set_datetime
+                data:
+                  entity_id: input_datetime.smartthings_first_failure_time
+                  timestamp: "{{ now().timestamp() }}"
+      - alias: Set SmartThings entry ID variable
+        variables:
+          st_entry_id: >
+            {% set st_list = integration_entities('smartthings') | list %}
+            {{ config_entry_id(st_list[0]) if st_list|length > 0 else '' }}
+      - alias: Reload SmartThings integration if entry ID is available
+        choose:
+          - conditions: "{{ st_entry_id | string | length > 0 }}"
+            sequence:
+              - service: homeassistant.reload_config_entry
+                data:
+                  entry_id: "{{ st_entry_id }}"
+        default: []
+      - alias: Remove old SmartThings notification
+        service: persistent_notification.dismiss
+        data:
+          notification_id: smartthings_reload
+      - alias: Notify about reload
+        service: persistent_notification.create
+        data:
+          title: "SmartThings Reload Triggered"
+          message: >
+            SmartThings entities unavailable: {{
+              state_attr('sensor.unavailable_smartthings_entities', 'entities') | join(', ') }}
+          notification_id: smartthings_reload
+      - alias: Increment restart counter
+        service: counter.increment
+        target:
+          entity_id: counter.smartthings_restart_counter
+      - alias: Record last restart timestamp
+        service: input_datetime.set_datetime
+        data:
+          entity_id: input_datetime.smartthings_last_restart
+          timestamp: "{{ now().timestamp() }}"
+      - alias: Record first failure timestamp
+        service: input_datetime.set_datetime
+        data:
+          entity_id: input_datetime.smartthings_first_failure_time
+          timestamp: "{{ now().timestamp() }}"

@@ -1,0 +1,49 @@
+{% macro get_subsystem_status(problem_count) %}
+  {% if problem_count > 5 %}
+    critical
+  {% elif problem_count > 0 %}
+    degraded
+  {% else %}
+    operational
+  {% endif %}
+{% endmacro %}
+
+{% macro get_debug_entities(subsystem) %}
+  {{ states
+      | selectattr('attributes.subsystem', 'equalto', subsystem)
+      | selectattr('attributes.debug', 'defined')
+      | selectattr('attributes.debug', 'equalto', true)
+      | map(attribute='entity_id')
+      | list }}
+{% endmacro %}
+
+{% macro get_problem_entities(subsystem) %}
+  {{ states
+      | selectattr('attributes.subsystem', 'equalto', subsystem)
+      | selectattr('state', 'in', ['unavailable', 'unknown', 'none'])
+      | map(attribute='entity_id')
+      | list }}
+{% endmacro %}
+
+{% macro subsystem_entity_integrity(subsystem="", total=0) %}
+  {% set active = states | selectattr('entity_id', 'search', subsystem) | list | length %}
+  {% set missing = total - active %}
+  {% set status = 'All declared entities are active.' if active == total else active ~ ' of ' ~ total ~ ' declared entities are active.' %}
+  {{ {'active': active, 'missing': missing, 'status': status} | tojson }}
+{% endmacro %}
+
+
+{% macro get_active_subsystems() %}
+  {% set subs = state_attr('sensor.hestia_config', 'subsystems') %}
+  {% set subs_clean = subs if subs is mapping else {} %}
+  
+  {{ subs_clean | dictsort | selectattr('1') | map(attribute='0') | list }}
+{% endmacro %}
+
+{% set subsystems = states | selectattr('attributes.tier', 'defined') | selectattr('attributes.tier', 'equalto', 'ε') | selectattr('attributes.subsystem', 'defined') | groupby('attributes.subsystem') %}
+{% set result = {} %}
+{% for subsystem, entities in subsystems %}
+  {% set entity_ids = entities | map(attribute='entity_id') | list %}
+  {% set result = dict(result.items() + [(subsystem, entity_ids)]) %}
+{% endfor %}
+{{ result | tojson }}

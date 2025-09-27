@@ -1,0 +1,207 @@
+contract:
+  planned_change: >
+    Stabilize Home Assistant Core by (a) enforcing repo invariants via CI,
+    (b) executing a 7-day recorder purge, (c) observing churn and compacting
+    the SQLite DB, and (d) function-testing the OOM guard — with zero repo
+    content changes and strict idempotency.
+
+  objective:
+    - Reduce state churn and memory pressure without altering configuration files.
+    - Validate OOM sentinel behavior end-to-end.
+    - Produce an evidence bundle suitable for postmortem and future migration.
+
+  scope:
+    repo: true      # run CI guardrails only (no file edits)
+    host: true      # read-only diagnostics, service calls, VACUUM
+    content_edits: false
+
+  canonical_paths:
+    recorder_yaml: "packages/integrations/recorder.yaml"
+    guardrails_dir: "hestia/guardrails"
+    github_workflow: ".github/workflows/ha-governance.yml"
+    evidence_dir_host: "/tmp/evidence/recorder"         # host temp
+    evidence_archive: "/tmp/evidence/recorder_bundle.tar.gz"
+
+  deliverable:
+    - "CI summary (all guardrail steps with pass/fail)"
+    - "CSV: top_entities.csv, domain_counts.csv, attr_bloat_top.csv (from DB copy)"
+    - "DB size before/after VACUUM + % reduction"
+    - "OOM guard notification proof and restored threshold value"
+    - "Command transcripts for acceptance checks"
+
+  action_needed:
+    - id: CI-GOV-01
+      description: "Run governance workflow"
+      run:
+        - "Trigger GitHub Action: HA Governance"
+        - "Collect job logs for: duplicate_keys, yamllint, recorder_uniqueness, no_symlinks, unique_automation_ids, unique_unique_ids, containerized check_config"
+      evidence: "Attach CI job summary and key step logs"
+
+    - id: HOST-PREFLIGHT-02
+      description: "Read-only preflight & baseline capture (DB copy)"
+      run:
+        - "mkdir -p /tmp/evidence/recorder"
+        - "cp -v /config/home-assistant_v2.db /tmp/hass_v2_copy.db"
+        - "sqlite3 /tmp/hass_v2_copy.db 'PRAGMA integrity_check;' > /tmp/evidence/recorder/integrity.txt"
+        - "sqlite3 -header -csv /tmp/hass_v2_copy.db \"SELECT COUNT(*) AS states_total FROM states;\" > /tmp/evidence/recorder/states_total.csv"
+        - |
+          sqlite3 -header -csv /tmp/hass_v2_copy.db "
+            SELECT sm.entity_id, COUNT(*) AS cnt
+            FROM states s JOIN states_meta sm ON s.metadata_id = sm.metadata_id
+            GROUP BY sm.entity_id ORDER BY cnt DESC LIMIT 50;" \
+            > /tmp/evidence/recorder/top_entities.csv
+        - |
+          sqlite3 -header -csv /tmp/hass_v2_copy.db "
+            SELECT CASE WHEN instr(sm.entity_id,'.')>0
+                        THEN substr(sm.entity_id,1,instr(sm.entity_id,'.')-1)
+                        ELSE sm.entity_id END AS domain,
+                   COUNT(*) AS cnt
+            FROM states s JOIN states_meta sm ON s.metadata_id = sm.metadata_id
+            GROUP BY domain ORDER BY cnt DESC LIMIT 50;" \
+            > /tmp/evidence/recorder/domain_counts.csv
+        - |
+          sqlite3 -header -csv /tmp/hass_v2_copy.db "
+            SELECT sm.entity_id, COUNT(*) AS cnt,
+                   MAX(LENGTH(s.attributes)) AS max_attr_len,
+                   AVG(LENGTH(s.attributes)) AS avg_attr_len
+            FROM states s JOIN states_meta sm ON s.metadata_id = sm.metadata_id
+            GROUP BY sm.entity_id ORDER BY max_attr_len DESC LIMIT 30;" \
+            > /tmp/evidence/recorder/attr_bloat_top.csv
+        - "dmesg | egrep -i 'out of memory|killed process|oom' | tail -n 50 > /tmp/evidence/recorder/oom_tail.txt"
+      evidence: "CSV + integrity.txt + oom_tail.txt"
+
+    - id: REC-PURGE-03
+      description: "Execute recorder purge — keep 7 days"
+      run:
+        - "ha services call recorder.purge '{\"keep_days\": 7, \"repack\": false}'"
+        - "sleep 60 && tail -n 200 /config/home-assistant.log > /tmp/evidence/recorder/post_purge_log_tail.txt"
+      note: "No config writes; service call only."
+
+    - id: OBSERVE-04
+      description: "Short observation window and delta measurement"
+      run:
+        - "sleep 7200  # ~2h to let churn trend reflect"
+        - "cp -v /config/home-assistant_v2.db /tmp/hass_v2_copy_after.db"
+        - |
+          sqlite3 -header -csv /tmp/hass_v2_copy_after.db "
+            SELECT COUNT(*) AS states_last_24h
+            FROM states
+            WHERE last_updated >= DATETIME('now','-1 day');" \
+            > /tmp/evidence/recorder/states_last_24h.csv
+        - |
+          sqlite3 -header -csv /tmp/hass_v2_copy_after.db "
+            SELECT sm.entity_id, COUNT(*) AS cnt
+            FROM states s JOIN states_meta sm ON s.metadata_id = sm.metadata_id
+            WHERE s.last_updated >= DATETIME('now','-1 day')
+            GROUP BY sm.entity_id ORDER BY cnt DESC LIMIT 30;" \
+            > /tmp/evidence/recorder/top_entities_24h.csv
+
+    - id: DB-VACUUM-05
+      description: "Controlled DB compact once churn drops"
+      run:
+        - "ls -lh /config/home-assistant_v2.db > /tmp/evidence/recorder/db_size_before.txt"
+        - "ha core stop"
+        - "sqlite3 /config/home-assistant_v2.db 'VACUUM;'"
+        - "ha core start"
+        - "sleep 30 && ls -lh /config/home-assistant_v2.db > /tmp/evidence/recorder/db_size_after.txt"
+
+    - id: OOM-TEST-06
+      description: "OOM sentinel functional test (idempotent)"
+      run:
+        - "cur=$(printf '%.0f' $(echo $(ha state get sensor.system_monitor_memory_usage | awk '{print $NF}') )) || true"
+        - "prev=$(ha state get input_number.oom_threshold_percent | awk '{print $NF}' || echo 90)"
+        - "test -n \"$cur\" && new=$(( cur > 5 ? cur-1 : 5 )) || new=$prev"
+        - "ha service call input_number.set_value '{\"entity_id\":\"input_number.oom_threshold_percent\",\"value\":'\"$new\"'}'"
+        - "sleep 360"
+        - "ha service call input_number.set_value '{\"entity_id\":\"input_number.oom_threshold_percent\",\"value\":'\"$prev\"'}'"
+        - "grep -i 'oom_memory_alert' -n /config/home-assistant.log | tail -n 50 > /tmp/evidence/recorder/oom_guard_proof.txt"
+      note: "Temporarily set threshold below current usage, confirm notification, then restore."
+
+    - id: EVIDENCE-PACK-07
+      description: "Bundle evidence"
+      run:
+        - "tar -C /tmp -czf /tmp/evidence/recorder_bundle.tar.gz evidence/recorder"
+        - "echo '/tmp/evidence/recorder_bundle.tar.gz ready'"
+
+  rationale:
+    - "Recorder churn and prior duplicate configs contributed to memory pressure and OOMs."
+    - "Policy is now centralized and enforced; this run executes remediation without config edits."
+
+  status: "scheduled"
+
+  location:
+    - "packages/integrations/recorder.yaml"
+    - "hestia/guardrails/*"
+
+  RACI_matrix:
+    Responsible: ["Copilot (executor)"]
+    Accountable: ["Strategos"]
+    Consulted: ["Evert"]
+    Informed: ["Home-Ops"]
+
+  acceptance_criteria:
+    # CI / repo invariants
+    - id: AC-CI-01
+      check: "Single recorder at canonical path"
+      verify:
+        - "bash hestia/guardrails/check_recorder_uniqueness.sh  # exit 0"
+    - id: AC-CI-02
+      check: "No YAML duplicate keys + YAML lint"
+      verify:
+        - "bash hestia/guardrails/check_duplicate_keys.sh  # exit 0"
+    - id: AC-CI-03
+      check: "No symlinks in HA-loaded trees"
+      verify:
+        - "bash hestia/guardrails/check_no_symlinks.sh  # exit 0"
+    - id: AC-CI-04
+      check: "Unique automation ids and unique_id values"
+      verify:
+        - "python3 hestia/guardrails/check_unique_automation_ids.py  # exit 0"
+        - "python3 hestia/guardrails/check_unique_unique_ids.py      # exit 0"
+    - id: AC-CI-05
+      check: "Containerized config validation"
+      verify:
+        - "Home Assistant check_config step exits 0"
+
+    # Host outcomes (relative to baseline captured in HOST-PREFLIGHT-02)
+    - id: AC-DB-01
+      check: "State churn reduced in last 24h"
+      verify:
+        - "Compute baseline_total from states_total.csv"
+        - "Compute last24 from states_last_24h.csv"
+        - "PASS if last24 <= max(100000, 0.50 * baseline_total)"
+    - id: AC-DB-02
+      check: "Top talkers tamed"
+      verify:
+        - "Each entity in top_entities_24h.csv has cnt <= 10000"
+        - "Globs sensor.*_device_time*, sensor.time*, sensor.date* show 0 rows in last 6h (manual spot-check acceptable)"
+    - id: AC-DB-03
+      check: "DB compacted"
+      verify:
+        - "Size reduction >= 25% ((before-after)/before >= 0.25) using db_size_before/after.txt"
+
+    - id: AC-OOM-01
+      check: "OOM guard triggers and clears"
+      verify:
+        - "Notification logged (oom_guard_proof.txt contains create + dismiss lines)"
+        - "input_number.oom_threshold_percent restored to previous value"
+
+    - id: AC-IDEMP-01
+      check: "No new helpers/entities/automations created by this run"
+      verify:
+        - "No repo diffs; only service calls used"
+        - "HA log shows no new entity registrations during the window"
+
+  risk_assessment:
+    - "Recorder purge may run long on large DBs (monitor logs)."
+    - "VACUUM blocks HA while core is stopped (perform in quiet window)."
+    - "OOM guard test requires temporarily lowering threshold; ensure restoration."
+
+  rollback:
+    - "If purge or VACUUM cause issues, restore /config/home-assistant_v2.db from preflight copy and restart core."
+    - "Revert OOM threshold to prior value (recorded in evidence)."
+    - "No repo changes to revert (CI-only)."
+
+  timeline:
+    start: "2025-09-25T18:00:00+01:00"
+    end:   "2025-09-27T18:00:00+01:00"

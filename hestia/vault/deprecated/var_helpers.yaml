@@ -1,0 +1,10 @@
+# ════════════════════════════════════════════════════════════════════════
+# ▶ LEGACY: This file is deprecated and will be removed in the future.
+# ▶ Use the latest version of the package_tts_gate.yaml instead.
+# ════════════════════════════════════════════════════════════════════════
+
+tts_guard:
+  friendly_name: "TTS Gate Registry"
+  initial_value: 0
+  attributes:
+    registry: "{}" # JSON dict: { "<key>": { last_ts: float, count: int } }

@@ -1,0 +1,13 @@
+{
+  "folders": [
+    {
+      "path": "${workspaceFolder}"
+    },
+    {
+      "path": "/Users/evertappels/.ssh"
+    }
+  ],
+  "settings": {
+    "git.enabled": false
+  }
+}

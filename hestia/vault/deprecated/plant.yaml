@@ -1,0 +1,20 @@
+##########
+# Plant monitor integration.
+# https://www.home-assistant.io/integrations/plant
+
+plant:
+  monstera:
+    sensors:
+      moisture: sensor.bedroom_monstera_soil_alpha_humidity
+      battery: sensor.bedroom_monstera_soil_alpha_battery
+      temperature: sensor.bedroom_monstera_soil_alpha_temperature
+      #conductivity: sensor.my_sensor_conductivity
+      brightness: sensor.bedroom_tv_alpha_illuminance
+    min_moisture: 30
+    max_moisture: 60
+    min_battery: 10
+    min_temperature: 18
+    max_temperature: 29
+    min_brightness: 4000
+    max_brightness: 10000
+    check_days: 3

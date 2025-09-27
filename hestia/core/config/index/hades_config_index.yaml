@@ -1,0 +1,103 @@
+hades_config_index:
+  version: 1
+  generated_at: "2025-08-09T00:00:00Z"
+  root_hint: "/config/hestia/core/config/"
+  # sources lists the discovered base directories that match */hestia/core/config
+  sources: []
+
+  artifacts:
+    network:
+      - path: "/config/hestia/core/config/network/topology.yaml"
+        file: "topology.yaml"
+        title: null
+        tags: ["layer3"]
+
+      - path: "/config/hestia/core/config/network/vlans.yaml"
+        file: "vlans.yaml"
+        title: null
+        tags: ["layer3"]
+
+      - path: "/config/hestia/core/config/network/dhcp_dns.yaml"
+        file: "dhcp_dns.yaml"
+        title: null
+        tags: ["layer3"]
+
+      - path: "/config/hestia/core/config/connectivity/tailscale.yaml"
+        file: "tailscale.yaml"
+        title: null
+        tags: ["tailscale", "hades"]
+
+      - path: "/config/hestia/core/config/connectivity/mullvad.yaml"
+        file: "mullvad.yaml"
+        title: null
+        tags: ["mullvad", "hades"]
+
+      - path: "/config/hestia/core/config/storage/samba.yaml"
+        file: "samba.yaml"
+        title: null
+        tags: ["samba", "hades"]
+
+    diagnostics:
+      - path: "/config/hestia/core/config/diagnostics/network_probes.yaml"
+        file: "network_probes.yaml"
+        title: null
+        tags: ["healthcheck", "hades"]
+
+      - path: "/config/hestia/core/config/diagnostics/alert_thresholds.yaml"
+        file: "alert_thresholds.yaml"
+        title: null
+        tags: ["healthcheck"]
+
+      - path: "/config/hestia/core/config/diagnostics/glances.yaml"
+        file: "glances.yaml"
+        title: null
+        tags: ["glances", "hades"]
+
+    topology:
+      - path: "/config/hestia/core/config/network/topology_sites.yaml"
+        file: "topology_sites.yaml"
+        title: null
+        tags: ["layer3", "hades"]
+
+      - path: "/config/hestia/core/config/network/topology_links.yaml"
+        file: "topology_links.yaml"
+        title: null
+        tags: ["layer3"]
+
+    generic:
+      - path: "/config/hestia/core/config/hades_overview.yaml"
+        file: "hades_overview.yaml"
+        title: null
+        tags: ["hades", "home_assistant", "synology_dsm"]
+
+      - path: "/config/hestia/core/config/notes.yaml"
+        file: "notes.yaml"
+        title: null
+        tags: []
+
+  retrieval_hints:
+    # How I’ll use this map to answer quickly and precisely
+    - "Prefer category order: diagnostics → network → topology → generic when resolving troubleshooting questions."
+    - "If query mentions VPN, prioritize files tagged tailscale/mullvad under network/connectivity."
+    - "If query mentions Synology/DSM or SMB errors, jump to storage/samba.yaml and diagnostics/glances.yaml."
+    - "For routing/VLAN/subnet questions, start with network/vlans.yaml then topology_* files."
+    - "When alerts/thresholds are referenced, open diagnostics/alert_thresholds.yaml first."
+
+  governance:
+    tier_assumptions:
+      network: "β–γ"
+      diagnostics: "γ–δ"
+      topology: "γ"
+      generic: "μ"
+    validation_expectations:
+      - "YAML must load with safe_load; multi-doc allowed."
+      - "Use metadata_schema.yaml enums for tags where applicable."
+      - "Diagnostics artifacts should declare thresholds + grace windows."
+
+  ci_checks:
+    - id: yaml_load
+      description: "All mapped files must parse via yaml.safe_load_all"
+    - id: path_exists
+      description: "All canonical paths must exist under /config/"
+    - id: tag_policy
+      description: "Only approved tags: tailscale, mullvad, samba, glances, hades, layer3, healthcheck, home_assistant, synology_dsm"

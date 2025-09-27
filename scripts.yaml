@@ -1,0 +1,7 @@
+# ════════════════════════════════════════════════
+# ▶ SCRIPT DEFINITIONS — GUI-BASED SEQUENCES ◀
+# Domain: script  •  Source: scripts.yaml
+# Loader: !include_dir_merge_named (dict-based)
+# ════════════════════════════════════════════════
+
+{}

@@ -1,0 +1,69 @@
+phases:
+  - id: "P1"
+    title: "Repo de-tangling"
+    description: "Handle nested .git, symlink guards, and large files to consolidate repository root"
+    outputs:
+      - "new root .git"
+      - "updated ignore rules"
+    status: "completed"
+
+  - id: "P2"
+    title: "NAS ACL & visibility fix"
+    description: "Correct ACLs and visibility for NAS volumes used by git mirrors"
+    outputs:
+      - "synoacltool run"
+      - "chmod/chown on /volume1 and /volume1/git-mirrors"
+    status: "completed"
+
+  - id: "P3"
+    title: "Push topology"
+    description: "Make origin the LAN push target and tailnet fetch-only"
+    outputs:
+      - "origin=LAN push"
+      - "tailnet=fetch-only"
+    status: "completed"
+
+  - id: "P4"
+    title: "Parameterize workspace"
+    description: "Parameterize mounts and editor/runtime settings; provide sample files and align docs"
+    outputs:
+      - ".env.sample"
+      - "VS Code sample workspace"
+      - "ADR-0016 Implementation update"
+    status: "completed"
+
+  - id: "P5"
+    title: "Guardrails"
+    description: "Add validator script, CI workflow, and a local pre-commit hook to prevent regressions"
+    outputs:
+      - "hestia/tools/validators/scan_hardcoded_ha.sh"
+      - ".github/workflows/hardcoded-ha-guard.yml"
+      - "local pre-commit hook"
+    status: "completed"
+
+  - id: "P6"
+    title: "Merge strategy"
+    description: "Resolve non-fast-forward merges with backups and allow-unrelated-histories where required"
+    outputs:
+      - "backup branches/tags"
+      - "final push to origin"
+    status: "completed"
+
+  - id: "P7"
+    title: "PR authoring"
+    description: "Draft PR with body and acceptance checklist for the feature branch"
+    outputs:
+      - "PR_BODY_chore-parameterize-ha-mount.md"
+    status: "completed-awaiting-pr"
+
+  - id: "P8"
+    title: "Cross-repo planning"
+    description: "Plan rollout for BB-8 Addon and Omega Registry with docs and guards"
+    outputs:
+      - "rollout notes"
+    status: "planned"
+
+pending_actions:
+  - "open PR from chore/parameterize-ha-mount to main"
+  - "optional: create param-sweep branch for shell scripts"
+

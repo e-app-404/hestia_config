@@ -1,0 +1,1521 @@
+# File: /config/domain/templates/climate_logic.yaml
+# Description: Beta tier abstraction for temperature sensor entities
+- sensor:
+    - name: "Temperature Sensors Metadata (Mu)"
+      unique_id: "temperature_sensors_metadata_mu"
+      state: "reintegrating"
+      attributes:
+        module: "temperature"
+        type: "metadata"
+        file: "/config/domain/templates/climate_logic.yaml"
+        description: "Beta tier abstraction for temperature sensor entities"
+        version: "1.0"
+        last_updated: "2025-06-26"
+        #dependencies: "registry_lookups, template.library.jinja"
+        canonical_id: "temperature_sensors_metadata_μ"
+        tier: "μ"
+        subsystem: "aether"
+        #entity_count: ""
+        #room_id: >
+        #  {{ ["bedroom", "living_room", "kitchen", "ensuite"] | tojson }}
+
+    - name: "Bedroom Temperature (Beta)"
+      unique_id: "bedroom_temperature_beta"
+      unit_of_measurement: "°C"
+      icon: "mdi:thermometer-chevron-up"
+      device_class: temperature
+      state: "{{ states('sensor.merged_bedroom_temperature_eta') }}"
+      attributes:
+        tier: "β"
+        canonical_id: "bedroom_temperature_β"
+        origin: "sensor.merged_bedroom_temperature_eta"
+        room_id: "bedroom"
+        source_count: "{{ state_attr('sensor.merged_bedroom_temperature_eta', 'valid_sources_count') }}"
+        data_quality: "{{ state_attr('sensor.merged_bedroom_temperature_eta', 'data_quality') }}"
+        sources: "{{ state_attr('sensor.merged_bedroom_temperature_eta', 'sources') }}"
+        subsystem: "aether"
+        is_multi_source: "true"
+        is_validated: "true"
+
+    - name: "Living Room Temperature (Beta)"
+      unique_id: "living_room_temperature_beta"
+      unit_of_measurement: "°C"
+      device_class: temperature
+      icon: "mdi:thermometer-chevron-up"
+      state: "{{ states('sensor.merged_living_room_temperature_eta') }}"
+      attributes:
+        tier: "β"
+        canonical_id: "living_room_temperature_β"
+        origin: "sensor.merged_living_room_temperature_eta"
+        room_id: "living_room"
+        source_count: "{{ state_attr('sensor.merged_living_room_temperature_eta', 'valid_sources_count') }}"
+        data_quality: "{{ state_attr('sensor.merged_living_room_temperature_eta', 'data_quality') }}"
+        sources: "{{ state_attr('sensor.merged_living_room_temperature_eta', 'sources') }}"
+        subsystem: "aether"
+        is_multi_source: "true"
+        is_validated: "true"
+
+    - name: "Kitchen Temperature (Beta)"
+      unique_id: "kitchen_temperature_beta"
+      unit_of_measurement: "°C"
+      device_class: temperature
+      icon: "mdi:thermometer-chevron-up"
+      state: "{{ states('sensor.merged_kitchen_temperature_eta') }}"
+      attributes:
+        tier: "β"
+        canonical_id: "kitchen_temperature_β"
+        origin: "sensor.merged_kitchen_temperature_eta"
+        room_id: "kitchen"
+        source_count: "{{ state_attr('sensor.merged_kitchen_temperature_eta', 'valid_sources_count') }}"
+        data_quality: "{{ state_attr('sensor.merged_kitchen_temperature_eta', 'data_quality') }}"
+        sources: "{{ state_attr('sensor.merged_kitchen_temperature_eta', 'sources') }}"
+        subsystem: "aether"
+        is_multi_source: "false"
+        is_validated: "true"
+
+    - name: "Ensuite Temperature (Beta)"
+      unique_id: "ensuite_temperature_beta"
+      unit_of_measurement: "°C"
+      device_class: temperature
+      icon: "mdi:thermometer-chevron-up"
+      state: "{{ states('sensor.merged_ensuite_temperature_eta') }}"
+      attributes:
+        tier: "β"
+        canonical_id: "ensuite_temperature_β"
+        origin: "sensor.merged_ensuite_temperature_eta"
+        room_id: "ensuite"
+        source_count: "{{ state_attr('sensor.merged_ensuite_temperature_eta', 'valid_sources_count') }}"
+        data_quality: "{{ state_attr('sensor.merged_ensuite_temperature_eta', 'data_quality') }}"
+        sources: "{{ state_attr('sensor.merged_ensuite_temperature_eta', 'sources') }}"
+        subsystem: "aether"
+        is_multi_source: "false"
+        is_validated: "true"
+
+# File: /config/hestia/sensors/eta/home/aggregated_sensors.yaml
+# Description: Eta tier data fusion for home-wide sensor aggregations
+# Version: 2.0.0
+# Last Updated: 2025-04-26
+
+- sensor:
+    - name: "Metadata - Home Aggregated Sensors (Eta)"
+      unique_id: "metadata_home_aggregated_sensors_eta"
+      state: "ok"
+      attributes:
+        module: "Home Aggregated Sensors"
+        type: "metadata"
+        file: "/config/hestia/sensors/eta/home/aggregated_sensors.yaml"
+        description: "Eta tier data fusion for home-wide sensor aggregations"
+        version: "2.0.0"
+        last_updated: "2025-04-26"
+        dependencies: "registry_lookups, template.library.jinja"
+        canonical_id: "metadata_home_aggregated_sensors_η"
+        tier: "μ"
+        subsystem: "hestia"
+        entity_count: "5"
+
+    - name: "Merged Home Temperature (Eta)"
+      unique_id: "merged_home_temperature_eta"
+      unit_of_measurement: "°C"
+      device_class: temperature
+      state: >
+        {% set temp_sensors = [
+          'sensor.bedroom_temperature_beta',
+          'sensor.living_room_temperature_beta',
+          'sensor.kitchen_temperature_beta',
+          'sensor.ensuite_temperature_beta'
+        ] %}
+        {% set values = namespace(valid=[]) %}
+        {% for sensor in temp_sensors %}
+          {% set val = states(sensor) | float(-273) %}
+          {% if val > -50 %}
+            {% set values.valid = values.valid + [val] %}
+          {% endif %}
+        {% endfor %}
+        {% if values.valid | count > 0 %}
+          {{ (values.valid | sum) / (values.valid | count) | round(1) }}
+        {% else %}
+          unknown
+        {% endif %}
+      attributes:
+        source_entities: >
+          {{ [
+          'sensor.bedroom_temperature_beta',
+          'sensor.living_room_temperature_beta',
+          'sensor.kitchen_temperature_beta',
+          'sensor.ensuite_temperature_beta'
+          ] | tojson }}
+        room_id: "home"
+        tier: "η"
+        canonical_id: "merged_home_temperature_η"
+        file: "/config/hestia/sensors/eta/home/aggregated_sensors.yaml"
+        date_created: "2025-04-26"
+        last_updated: "2025-04-26"
+        is_multi_source: "true"
+        source_count: >
+          {% set temp_sensors = [
+            'sensor.bedroom_temperature_beta',
+            'sensor.living_room_temperature_beta',
+            'sensor.kitchen_temperature_beta',
+            'sensor.ensuite_temperature_beta'
+          ] %}
+          {% set values = namespace(valid=[]) %}
+          {% for sensor in temp_sensors %}
+            {% set val = states(sensor) | float(-273) %}
+            {% if val > -50 %}
+              {% set values.valid = values.valid + [val] %}
+            {% endif %}
+          {% endfor %}
+          {{ values.valid | count }}
+        data_quality: >
+          {% set count = state_attr('sensor.merged_home_temperature_eta', 'source_count') | int(0) %}
+          {% set total = 4 %}
+          {% if count >= 3 %}
+            excellent
+          {% elif count == 2 %}
+            good
+          {% elif count == 1 %}
+            limited
+          {% else %}
+            poor
+          {% endif %}
+        subsystem: "hestia"
+        description: "Average temperature across all rooms in the home"
+
+    - name: "Merged Home Humidity (Eta)"
+      unique_id: "merged_home_humidity_eta"
+      unit_of_measurement: "%"
+      device_class: humidity
+      state: >
+        {% set humidity_sensors = [
+          'sensor.bedroom_humidity_beta',
+          'sensor.living_room_humidity_beta',
+          'sensor.kitchen_humidity_beta',
+          'sensor.ensuite_humidity_beta'
+        ] %}
+        {% set values = namespace(valid=[]) %}
+        {% for sensor in humidity_sensors %}
+          {% set val = states(sensor) | float(-1) %}
+          {% if val >= 0 and val <= 100 %}
+            {% set values.valid = values.valid + [val] %}
+          {% endif %}
+        {% endfor %}
+        {% if values.valid | count > 0 %}
+          {{ (values.valid | sum) / (values.valid | count) | round(1) }}
+        {% else %}
+          unknown
+        {% endif %}
+      attributes:
+        source_entities: >
+          {{ [
+          'sensor.bedroom_humidity_beta',
+          'sensor.living_room_humidity_beta',
+          'sensor.kitchen_humidity_beta',
+          'sensor.ensuite_humidity_beta'
+          ] | tojson }}
+        room_id: "home"
+        tier: "η"
+        canonical_id: "merged_home_humidity_η"
+        file: "/config/hestia/sensors/eta/home/aggregated_sensors.yaml"
+        date_created: "2025-04-26"
+        last_updated: "2025-04-26"
+        is_multi_source: "true"
+        source_count: >
+          {% set humidity_sensors = [
+            'sensor.bedroom_humidity_beta',
+            'sensor.living_room_humidity_beta',
+            'sensor.kitchen_humidity_beta',
+            'sensor.ensuite_humidity_beta'
+          ] %}
+          {% set values = namespace(valid=[]) %}
+          {% for sensor in humidity_sensors %}
+            {% set val = states(sensor) | float(-1) %}
+            {% if val >= 0 and val <= 100 %}
+              {% set values.valid = values.valid + [val] %}
+            {% endif %}
+          {% endfor %}
+          {{ values.valid | count }}
+        data_quality: >
+          {% set count = state_attr('sensor.merged_home_humidity_eta', 'source_count') | int(0) %}
+          {% set total = 4 %}
+          {% if count >= 3 %}
+            excellent
+          {% elif count == 2 %}
+            good
+          {% elif count == 1 %}
+            limited
+          {% else %}
+            poor
+          {% endif %}
+        subsystem: "hestia"
+        description: "Average humidity across all rooms in the home"
+
+    - name: "Merged Home Illuminance (Eta)"
+      unique_id: "merged_home_illuminance_eta"
+      unit_of_measurement: "lx"
+      device_class: illuminance
+      state: >
+        {% set illuminance_sensors = [
+          'sensor.bedroom_illuminance_msf_001',
+          'sensor.living_room_occupancy_illuminance_alpha',
+          'sensor.living_room_multipurpose_alpha_illuminance'
+        ] %}
+        {% set values = namespace(valid=[]) %}
+        {% for sensor in illuminance_sensors %}
+          {% set val = states(sensor) | float(-1) %}
+          {% if val >= 0 %}
+            {% set values.valid = values.valid + [val] %}
+          {% endif %}
+        {% endfor %}
+        {% if values.valid | count > 0 %}
+          {{ values.valid | max }}
+        {% else %}
+          unknown
+        {% endif %}
+      attributes:
+        source_entities: >
+          {{ [
+          'sensor.bedroom_illuminance_msf_001',
+          'sensor.living_room_occupancy_illuminance_alpha',
+          'sensor.sensor.living_room_multipurpose_alpha_illuminance'
+          ] | tojson }}
+        room_id: "home"
+        tier: "η"
+        canonical_id: "merged_home_illuminance_η"
+        file: "/config/hestia/sensors/eta/home/aggregated_sensors.yaml"
+        date_created: "2025-04-26"
+        last_updated: "2025-04-26"
+        is_multi_source: "true"
+        source_count: >
+          {% set illuminance_sensors = [
+            'sensor.bedroom_illuminance_msf_001',
+            'sensor.living_room_occupancy_illuminance_alpha',
+            'sensor.living_room_multipurpose_alpha_illuminance'
+          ] %}
+          {% set values = namespace(valid=[]) %}
+          {% for sensor in illuminance_sensors %}
+            {% set val = states(sensor) | float(-1) %}
+            {% if val >= 0 %}
+              {% set values.valid = values.valid + [val] %}
+            {% endif %}
+          {% endfor %}
+          {{ values.valid | count }}
+        data_quality: >
+          {% set count = state_attr('sensor.merged_home_illuminance_eta', 'source_count') | int(0) %}
+          {% set total = 3 %}
+          {% if count >= 2 %}
+            excellent
+          {% elif count == 1 %}
+            good
+          {% else %}
+            poor
+          {% endif %}
+        subsystem: "hestia"
+        description: "Maximum illuminance detected in any room of the home"
+
+# File: /config/hestia/sensors/beta/climate/temperature.yaml
+# Description: Beta tier abstraction for temperature sensor entities
+- sensor:
+    - name: "Metadata - Temperature Sensors (Beta)"
+      unique_id: "metadata_temperature_sensors_beta"
+      state: "ok"
+      attributes:
+        module: "Temperature Sensors Abstraction"
+        type: "metadata"
+        file: "/config/hestia/sensors/beta/climate/temperature.yaml"
+        description: "Beta tier abstraction for temperature sensor entities"
+        version: "2.0.0"
+        last_updated: "2025-04-26"
+        dependencies: "registry_lookups, template.library.jinja"
+        canonical_id: "metadata_temperature_sensors_β"
+        tier: "μ"
+        subsystem: "aether"
+        entity_count: "4"
+        room_id: >
+          {{ ["bedroom", "living_room", "kitchen", "ensuite"] | tojson }}
+
+    - name: "Bedroom Temperature (Beta)"
+      unique_id: "bedroom_temperature_beta"
+      unit_of_measurement: "°C"
+      icon: "mdi:thermometer-chevron-up"
+      device_class: temperature
+      state: "{{ states('sensor.merged_bedroom_temperature_eta') }}"
+      attributes:
+        tier: "β"
+        canonical_id: "bedroom_temperature_β"
+        origin: "sensor.merged_bedroom_temperature_eta"
+        room_id: "bedroom"
+        source_count: "{{ state_attr('sensor.merged_bedroom_temperature_eta', 'valid_sources_count') }}"
+        data_quality: "{{ state_attr('sensor.merged_bedroom_temperature_eta', 'data_quality') }}"
+        sources: "{{ state_attr('sensor.merged_bedroom_temperature_eta', 'sources') }}"
+        subsystem: "aether"
+        is_multi_source: "true"
+        is_validated: "true"
+
+    - name: "Living Room Temperature (Beta)"
+      unique_id: "living_room_temperature_beta"
+      unit_of_measurement: "°C"
+      device_class: temperature
+      icon: "mdi:thermometer-chevron-up"
+      state: "{{ states('sensor.merged_living_room_temperature_eta') }}"
+      attributes:
+        tier: "β"
+        canonical_id: "living_room_temperature_β"
+        origin: "sensor.merged_living_room_temperature_eta"
+        room_id: "living_room"
+        source_count: "{{ state_attr('sensor.merged_living_room_temperature_eta', 'valid_sources_count') }}"
+        data_quality: "{{ state_attr('sensor.merged_living_room_temperature_eta', 'data_quality') }}"
+        sources: "{{ state_attr('sensor.merged_living_room_temperature_eta', 'sources') }}"
+        subsystem: "aether"
+        is_multi_source: "true"
+        is_validated: "true"
+
+    - name: "Kitchen Temperature (Beta)"
+      unique_id: "kitchen_temperature_beta"
+      unit_of_measurement: "°C"
+      device_class: temperature
+      icon: "mdi:thermometer-chevron-up"
+      state: "{{ states('sensor.merged_kitchen_temperature_eta') }}"
+      attributes:
+        tier: "β"
+        canonical_id: "kitchen_temperature_β"
+        origin: "sensor.merged_kitchen_temperature_eta"
+        room_id: "kitchen"
+        source_count: "{{ state_attr('sensor.merged_kitchen_temperature_eta', 'valid_sources_count') }}"
+        data_quality: "{{ state_attr('sensor.merged_kitchen_temperature_eta', 'data_quality') }}"
+        sources: "{{ state_attr('sensor.merged_kitchen_temperature_eta', 'sources') }}"
+        subsystem: "aether"
+        is_multi_source: "false"
+        is_validated: "true"
+
+    - name: "Ensuite Temperature (Beta)"
+      unique_id: "ensuite_temperature_beta"
+      unit_of_measurement: "°C"
+      device_class: temperature
+      icon: "mdi:thermometer-chevron-up"
+      state: "{{ states('sensor.merged_ensuite_temperature_eta') }}"
+      attributes:
+        tier: "β"
+        canonical_id: "ensuite_temperature_β"
+        origin: "sensor.merged_ensuite_temperature_eta"
+        room_id: "ensuite"
+        source_count: "{{ state_attr('sensor.merged_ensuite_temperature_eta', 'valid_sources_count') }}"
+        data_quality: "{{ state_attr('sensor.merged_ensuite_temperature_eta', 'data_quality') }}"
+        sources: "{{ state_attr('sensor.merged_ensuite_temperature_eta', 'sources') }}"
+        subsystem: "aether"
+        is_multi_source: "false"
+        is_validated: "true"
+
+    # File: /config/hestia/sensors/eta/room/merged_sensors.yaml
+    # Description: Eta tier data fusion for room-level sensor aggregations
+
+    - name: "Merged Bedroom Humidity (Eta)"
+      unique_id: "merged_bedroom_humidity_eta"
+      unit_of_measurement: "%"
+      device_class: humidity
+      state: >
+        {% set humidity_sensors = [
+          'sensor.bedroom_climate_humidity',
+          'sensor.bedroom_probreeze_humidity_alpha'
+        ] %}
+        {% set values = namespace(valid=[]) %}
+        {% for sensor in humidity_sensors %}
+          {% set val = states(sensor) | float(-1) %}
+          {% if val >= 0 and val <= 100 %}
+            {% set values.valid = values.valid + [val] %}
+          {% endif %}
+        {% endfor %}
+        {% if values.valid | count > 0 %}
+          {{ (values.valid | sum) / (values.valid | count) | round(1) }}
+        {% else %}
+          unknown
+        {% endif %}
+      attributes:
+        source_entities: >
+          {{ [
+          'sensor.bedroom_climate_humidity',
+          'sensor.bedroom_probreeze_humidity_alpha'
+          ] | tojson }}
+        room_id: "bedroom"
+        tier: "η"
+        canonical_id: "merged_bedroom_humidity_η"
+        file: "/config/hestia/sensors/eta/room/merged_sensors.yaml"
+        date_created: "2025-04-26"
+        last_updated: "2025-04-26"
+        is_multi_source: "true"
+        source_count: >
+          {% set humidity_sensors = [
+            'sensor.bedroom_climate_humidity',
+            'sensor.bedroom_probreeze_humidity_alpha'
+          ] %}
+          {% set values = namespace(valid=[]) %}
+          {% for sensor in humidity_sensors %}
+            {% set val = states(sensor) | float(-1) %}
+            {% if val >= 0 and val <= 100 %}
+              {% set values.valid = values.valid + [val] %}
+            {% endif %}
+          {% endfor %}
+          {{ values.valid | count }}
+        data_quality: >
+          {% set count = state_attr('sensor.merged_bedroom_humidity_eta', 'source_count') | int(0) %}
+          {% set total = 2 %}
+          {% if count >= 2 %}
+            excellent
+          {% elif count == 1 %}
+            good
+          {% else %}
+            poor
+          {% endif %}
+        subsystem: "aether"
+        module: "room_merged_sensors"
+        role: "eta_sensor"
+        type: "humidity"
+        description: "Merged humidity value from multiple bedroom humidity sensors - uses average of available values"
+
+    - name: "Merged Living Room Illuminance (Eta)"
+      unique_id: "merged_living_room_illuminance_eta"
+      unit_of_measurement: "lx"
+      device_class: illuminance
+      state: >
+        {% set illuminance_sensors = [
+          'sensor.living_room_multipurpose_alpha_illuminance',
+          'sensor.living_room_occupancy_illuminance_alpha'
+        ] %}
+        {% set values = namespace(valid=[]) %}
+        {% for sensor in illuminance_sensors %}
+          {% set val = states(sensor) | float(-1) %}
+          {% if val >= 0 %}
+            {% set values.valid = values.valid + [val] %}
+          {% endif %}
+        {% endfor %}
+        {% if values.valid | count > 0 %}
+          {{ (values.valid | sum) / (values.valid | count) | round(1) }}
+        {% else %}
+          unknown
+        {% endif %}
+      attributes:
+        source_entities: >
+          {{ [
+          'sensor.living_room_multipurpose_alpha_illuminance',
+          'sensor.living_room_occupancy_illuminance_alpha'
+          ] | tojson }}
+        room_id: "living_room"
+        tier: "η"
+        canonical_id: "merged_living_room_illuminance_η"
+        file: "/config/hestia/sensors/eta/room/merged_sensors.yaml"
+        date_created: "2025-04-26"
+        last_updated: "2025-04-26"
+        is_multi_source: true
+        source_count: >
+          {% set illuminance_sensors = [
+            'sensor.living_room_multipurpose_alpha_illuminance',
+            'sensor.living_room_occupancy_illuminance_alpha'
+          ] %}
+          {% set values = namespace(valid=[]) %}
+          {% for sensor in illuminance_sensors %}
+            {% set val = states(sensor) | float(-1) %}
+            {% if val >= 0 %}
+              {% set values.valid = values.valid + [val] %}
+            {% endif %}
+          {% endfor %}
+          {{ values.valid | count }}
+        data_quality: >
+          {% set count = state_attr('sensor.merged_living_room_illuminance_eta', 'source_count') | int(0) %}
+          {% set total = 2 %}
+          {% if count >= 2 %}
+            excellent
+          {% elif count == 1 %}
+            good
+          {% else %}
+            poor
+          {% endif %}
+        subsystem: "theia"
+        module: "room_merged_sensors"
+        role: "eta_sensor"
+        type: "illuminance"
+        description: "Merged illuminance value from multiple living room illuminance sensors - uses average of available values"
+
+    - name: "Merged Living Room Temperature (Eta)"
+      unique_id: "merged_living_room_temperature_eta"
+      unit_of_measurement: "°C"
+      device_class: temperature
+      state: >
+        {% set temp_sensors = [
+          'sensor.living_room_multipurpose_temperature_alpha',
+          'sensor.living_room_smartbutton_temperature_alpha',
+          'sensor.living_room_broadlink_temperature_alpha'
+        ] %}
+        {% set values = namespace(valid=[]) %}
+        {% for sensor in temp_sensors %}
+          {% set val = states(sensor) | float(-273) %}
+          {% if val > -50 %}
+            {% set values.valid = values.valid + [val] %}
+          {% endif %}
+        {% endfor %}
+        {% if values.valid | count > 0 %}
+          {{ (values.valid | sum) / (values.valid | count) | round(1) }}
+        {% else %}
+          unknown
+        {% endif %}
+      attributes:
+        source_entities: >
+          {{ [
+          'sensor.living_room_multipurpose_temperature_alpha',
+          'sensor.living_room_smartbutton_temperature_alpha',
+          'sensor.living_room_broadlink_temperature_alpha'
+          ] | tojson }}
+        room_id: "living_room"
+        tier: "η"
+        canonical_id: "merged_living_room_temperature_η"
+        file: "/config/hestia/sensors/eta/room/merged_sensors.yaml"
+        date_created: "2025-04-26"
+        last_updated: "2025-04-26"
+        is_multi_source: true
+        source_count: >
+          {% set temp_sensors = [
+            'sensor.living_room_multipurpose_temperature_alpha',
+            'sensor.living_room_smartbutton_temperature_alpha',
+            'sensor.living_room_broadlink_temperature_alpha'
+          ] %}
+          {% set values = namespace(valid=[]) %}
+          {% for sensor in temp_sensors %}
+            {% set val = states(sensor) | float(-273) %}
+            {% if val > -50 %}
+              {% set values.valid = values.valid + [val] %}
+            {% endif %}
+          {% endfor %}
+          {{ values.valid | count }}
+        data_quality: >
+          {% set count = state_attr('sensor.merged_living_room_temperature_eta', 'source_count') | int(0) %}
+          {% set total = 4 %}
+          {% if count >= 3 %}
+            excellent
+          {% elif count == 2 %}
+            good
+          {% elif count == 1 %}
+            limited
+          {% else %}
+            poor
+          {% endif %}
+        subsystem: "aether"
+        module: "room_merged_sensors"
+        role: "eta_sensor"
+        type: "temperature"
+        description: "Merged temperature value from multiple living room temperature sensors - uses average of available values"
+        gpt_flag: "need to retrieve temperature value from climate living_room_climate_temperature"
+
+    - name: "Merged Living Room humidity (Eta)"
+      unique_id: "merged_living_room_humidity_eta"
+      unit_of_measurement: "°C"
+      device_class: humidity
+      state: >
+        {% set humidity_sensors = [
+          'sensor.living_room_broadlink_humidity_alpha'
+        ] %}
+        {% set values = namespace(valid=[]) %}
+          {% for sensor in humidity_sensors %}
+            {% set val = states(sensor) | float(-1) %}
+            {% if val >= 0 and val <= 100 %}
+              {% set values.valid = values.valid + [val] %}
+            {% endif %}
+          {% endfor %}
+          {% if values.valid | count > 0 %}
+            {{ (values.valid | sum) / (values.valid | count) | round(1) }}
+          {% else %}
+            unknown
+          {% endif %}
+      attributes:
+        source_entities: >
+          {{ [
+          'sensor.living_room_broadlink_humidity_alpha'
+          ] | tojson }}
+        room_id: "living_room"
+        tier: "η"
+        canonical_id: "merged_living_room_humidity_η"
+        file: "/config/hestia/sensors/eta/room/merged_sensors.yaml"
+        date_created: "2025-05-09"
+        last_updated: "2025-05-09"
+        is_multi_source: "false"
+        source_count: >
+          {% set humidity_sensors = [
+            'sensor.living_room_broadlink_humidity_alpha'
+          ] %}
+          {% set values = namespace(valid=[]) %}
+            {% for sensor in humidity_sensors %}
+              {% set val = states(sensor) | float(-1) %}
+              {% if val >= 0 and val <= 100 %}
+                {% set values.valid = values.valid + [val] %}
+              {% endif %}
+            {% endfor %}
+            {% if values.valid | count > 0 %}
+              {{ (values.valid | sum) / (values.valid | count) | round(1) }}
+            {% else %}
+              unknown
+            {% endif %}
+        data_quality: >
+          {% set count = state_attr('sensor.merged_living_room_humidity_eta', 'source_count') | int(0) %}
+          {% set total = 4 %}
+          {% if count >= 3 %}
+            excellent
+          {% elif count == 2 %}
+            good
+          {% elif count == 1 %}
+            limited
+          {% else %}
+            poor
+          {% endif %}
+        subsystem: "aether"
+        module: "room_merged_sensors"
+        role: "eta_sensor"
+        type: "humidity"
+        description: "Merged humidity value from multiple living room humidity sensors - dummy interim placeholder"
+
+    - name: "Merged Ensuite Temperature (Eta)"
+      unique_id: "merged_ensuite_temperature_eta"
+      unit_of_measurement: "°C"
+      device_class: temperature
+      state: >
+        {% set temp_sensors = [
+          'sensor.ensuite_climate_temperature_mtr_alpha',
+          'sensor.ensuite_climate_temperature_wifi_alpha'
+        ] %}
+        {% set values = namespace(valid=[]) %}
+        {% for sensor in temp_sensors %}
+          {% set val = states(sensor) | float(-273) %}
+          {% if val > -50 %}
+            {% set values.valid = values.valid + [val] %}
+          {% endif %}
+        {% endfor %}
+        {% if values.valid | count > 0 %}
+          {{ (values.valid | sum) / (values.valid | count) | round(1) }}
+        {% else %}
+          unknown
+        {% endif %}
+      attributes:
+        source_entities: >
+          {{ [
+          'sensor.ensuite_climate_temperature_mtr_alpha',
+          'sensor.ensuite_climate_temperature_wifi_alpha'
+          ] | tojson }}
+        room_id: "ensuite"
+        tier: "η"
+        canonical_id: "merged_ensuite_temperature_η"
+        file: "/config/hestia/sensors/eta/room/merged_sensors.yaml"
+        date_created: "2025-04-26"
+        last_updated: "2025-04-26"
+        is_multi_source: true
+        source_count: >
+          {% set temp_sensors = [
+            'sensor.ensuite_climate_temperature_mtr_alpha',
+            'sensor.ensuite_climate_temperature_wifi_alpha'
+          ] %}
+          {% set values = namespace(valid=[]) %}
+          {% for sensor in temp_sensors %}
+            {% set val = states(sensor) | float(-273) %}
+            {% if val > -50 %}
+              {% set values.valid = values.valid + [val] %}
+            {% endif %}
+          {% endfor %}
+          {{ values.valid | count }}
+        data_quality: >
+          {% set count = state_attr('sensor.merged_ensuite_temperature_eta', 'source_count') | int(0) %}
+          {% set total = 2 %}
+          {% if count >= 2 %}
+            excellent
+          {% elif count == 1 %}
+            good
+          {% else %}
+            poor
+          {% endif %}
+        subsystem: "aether"
+        module: "room_merged_sensors"
+        role: "eta_sensor"
+        type: "temperature"
+        description: "Merged temperature value from multiple ensuite temperature sensors - uses average of available values"
+
+    - name: "Merged Ensuite Humidity (Eta)"
+      unique_id: "merged_ensuite_humidity_eta"
+      unit_of_measurement: "%"
+      device_class: humidity
+      state: >
+        {% set humidity_sensors = [
+          'sensor.ensuite_climate_humidity_matter_alpha',
+          'sensor.ensuite_climate_humidity_wifi_alpha'
+        ] %}
+        {% set values = namespace(valid=[]) %}
+        {% for sensor in humidity_sensors %}
+          {% set val = states(sensor) | float(-1) %}
+          {% if val >= 0 and val <= 100 %}
+            {% set values.valid = values.valid + [val] %}
+          {% endif %}
+        {% endfor %}
+        {% if values.valid | count > 0 %}
+          {{ (values.valid | sum) / (values.valid | count) | round(1) }}
+        {% else %}
+          unknown
+        {% endif %}
+      attributes:
+        source_entities: >
+          {{ [
+          'sensor.ensuite_climate_humidity_matter_alpha', 'sensor.ensuite_climate_humidity_wifi_alpha',
+          ] | tojson }}
+        room_id: "ensuite"
+        tier: "η"
+        canonical_id: "merged_ensuite_humidity_η"
+        file: "/config/hestia/sensors/eta/room/merged_sensors.yaml"
+        date_created: "2025-06-03"
+        last_updated: "2025-06-03"
+        is_multi_source: "true"
+        source_count: >
+          {% set humidity_sensors = [
+            'sensor.ensuite_climate_humidity_matter_alpha', 'sensor.ensuite_climate_humidity_wifi_alpha'
+          ] %}
+          {% set values = namespace(valid=[]) %}
+          {% for sensor in humidity_sensors %}
+            {% set val = states(sensor) | float(-1) %}
+            {% if val >= 0 and val <= 100 %}
+              {% set values.valid = values.valid + [val] %}
+            {% endif %}
+          {% endfor %}
+          {{ values.valid | count }}
+        data_quality: >
+          {% set count = state_attr('sensor.ensuite_humidity_eta', 'source_count') | int(0) %}
+          {% set total = 2 %}
+          {% if count >= 2 %}
+            excellent
+          {% elif count == 1 %}
+            good
+          {% else %}
+            poor
+          {% endif %}
+        subsystem: "aether"
+        module: "room_merged_sensors"
+        role: "eta_sensor"
+        type: "humidity"
+        description: "Merged humidity value from multiple kitchen humidity sensors - dummy interim placeholder"
+
+    - name: "Merged Kitchen Temperature (Eta)"
+      unique_id: "merged_kitchen_temperature_eta"
+      unit_of_measurement: "°C"
+      device_class: temperature
+      state: >
+        {% set temp_sensors = [
+          'sensor.kitchen_climate_temperature_mqtt_alpha'
+        ] %}
+        {% set values = namespace(valid=[]) %}
+        {% for sensor in temp_sensors %}
+          {% set val = states(sensor) | float(-273) %}
+          {% if val > -50 %}
+            {% set values.valid = values.valid + [val] %}
+          {% endif %}
+        {% endfor %}
+        {% if values.valid | count > 0 %}
+          {{ (values.valid | sum) / (values.valid | count) | round(1) }}
+        {% else %}
+          unknown
+        {% endif %}
+      attributes:
+        source_entities: >
+          {{ [
+          'sensor.kitchen_climate_temperature_mqtt_alpha'
+          ] | tojson }}
+        room_id: "kitchen"
+        tier: "η"
+        canonical_id: "merged_kitchen_temperature_η"
+        file: "/config/hestia/sensors/eta/room/merged_sensors.yaml"
+        date_created: "2025-04-26"
+        last_updated: "2025-04-26"
+        is_multi_source: "false"
+        source_count: >
+          {% set temp_sensors = [
+            'sensor.kitchen_climate_temperature_mqtt_alpha'
+          ] %}
+          {% set values = namespace(valid=[]) %}
+          {% for sensor in temp_sensors %}
+            {% set val = states(sensor) | float(-273) %}
+            {% if val > -50 %}
+              {% set values.valid = values.valid + [val] %}
+            {% endif %}
+          {% endfor %}
+          {{ values.valid | count }}
+        data_quality: >
+          {% set count = state_attr('sensor.merged_kitchen_temperature_eta', 'source_count') | int(0) %}
+          {% set total = 2 %}
+          {% if count >= 2 %}
+            excellent
+          {% elif count == 1 %}
+            good
+          {% else %}
+            poor
+          {% endif %}
+        subsystem: "aether"
+        module: "room_merged_sensors"
+        role: "eta_sensor"
+        type: "temperature"
+        description: "Merged temperature value from multiple kitchen temperature sensors - dummy interim placeholder"
+
+    - name: "Merged Kitchen Humidity (Eta)"
+      unique_id: "merged_kitchen_humidity_eta"
+      unit_of_measurement: "%"
+      device_class: humidity
+      state: >
+        {% set humidity_sensors = [
+          'sensor.kitchen_climate_humidity_zigbee2mqtt_alpha'
+        ] %}
+        {% set values = namespace(valid=[]) %}
+        {% for sensor in humidity_sensors %}
+          {% set val = states(sensor) | float(-1) %}
+          {% if val >= 0 and val <= 100 %}
+            {% set values.valid = values.valid + [val] %}
+          {% endif %}
+        {% endfor %}
+        {% if values.valid | count > 0 %}
+          {{ (values.valid | sum) / (values.valid | count) | round(1) }}
+        {% else %}
+          unknown
+        {% endif %}
+      attributes:
+        source_entities: >
+          {{ [
+          'sensor.kitchen_climate_humidity_zigbee2mqtt_alpha'
+          ] | tojson }}
+        room_id: "kitchen"
+        tier: "η"
+        canonical_id: "merged_kitchen_humidity_η"
+        file: "/config/hestia/sensors/eta/room/merged_sensors.yaml"
+        date_created: "2025-04-26"
+        last_updated: "2025-04-26"
+        is_multi_source: true
+        source_count: >
+          {% set humidity_sensors = [
+            'sensor.kitchen_climate_humidity_zigbee2mqtt_alpha'
+          ] %}
+          {% set values = namespace(valid=[]) %}
+          {% for sensor in humidity_sensors %}
+            {% set val = states(sensor) | float(-1) %}
+            {% if val >= 0 and val <= 100 %}
+              {% set values.valid = values.valid + [val] %}
+            {% endif %}
+          {% endfor %}
+          {{ values.valid | count }}
+        data_quality: >
+          {% set count = state_attr('sensor.merged_kitchen_humidity_eta', 'source_count') | int(0) %}
+          {% set total = 2 %}
+          {% if count >= 2 %}
+            excellent
+          {% elif count == 1 %}
+            good
+          {% else %}
+            poor
+          {% endif %}
+        subsystem: "aether"
+        module: "room_merged_sensors"
+        role: "eta_sensor"
+        type: "humidity"
+        description: "Merged humidity value from multiple kitchen humidity sensors - dummy interim placeholder"
+
+# File: /config/hestia/sensors/eta/room/merged_sensors.yaml
+# Description: Eta tier data fusion for room-level sensor aggregations
+# Version: 2.0.0
+# Last Updated: 2025-04-26
+
+- sensor:
+    - name: "Room Merged Sensors Metadata (Mu)"
+      unique_id: "metadata_room_merged_sensors_eta"
+      state: "ok"
+      attributes:
+        module: "room_merged_sensors"
+        type: "metadata"
+        file: "/config/hestia/sensors/eta/room/merged_sensors.yaml"
+        description: "Eta tier data fusion for room-level sensor aggregations"
+        version: "2.0.0"
+        last_updated: "2025-06-03"
+        dependencies: "registry_lookups, template.library.jinja"
+        canonical_id: "metadata_room_merged_sensors_η"
+        tier: "μ"
+        subsystem: "hestia"
+        role: "eta_sensors"
+        entity_count: "9"
+
+    - name: "Merged Bedroom Temperature (Eta)"
+      unique_id: "merged_bedroom_temperature_eta"
+      unit_of_measurement: "°C"
+      device_class: temperature
+      state: >
+        {% set temp_sensors = [
+          'sensor.bedroom_climate_temperature',
+          'sensor.monstera_ambient_temperature',
+          'sensor.bedroom_smartbutton_temperature',
+          'sensor.probreeze_temperature'
+        ] %}
+        {% set values = namespace(valid=[]) %}
+        {% for sensor in temp_sensors %}
+          {% set val = states(sensor) | float(-273) %}
+          {% if val > -50 %}
+            {% set values.valid = values.valid + [val] %}
+          {% endif %}
+        {% endfor %}
+        {% if values.valid | count > 0 %}
+          {{ (values.valid | sum) / (values.valid | count) | round(1) }}
+        {% else %}
+          unknown
+        {% endif %}
+      attributes:
+        source_entities: >
+          {{ [
+          'sensor.bedroom_climate_temperature',
+          'sensor.monstera_ambient_temperature',
+          'sensor.bedroom_smartbutton_temperature',
+          'sensor.probreeze_temperature'
+          ] | tojson }}
+        room_id: "bedroom"
+        tier: "η"
+        canonical_id: "merged_bedroom_temperature_η"
+        file: "/config/hestia/sensors/eta/room/merged_sensors.yaml"
+        date_created: "2025-04-26"
+        last_updated: "2025-04-26"
+        is_multi_source: "true"
+        source_count: >
+          {% set temp_sensors = [
+            'sensor.bedroom_climate_temperature',
+            'sensor.monstera_ambient_temperature',
+            'sensor.bedroom_smartbutton_temperature',
+            'sensor.probreeze_temperature'
+          ] %}
+          {% set values = namespace(valid=[]) %}
+          {% for sensor in temp_sensors %}
+            {% set val = states(sensor) | float(-273) %}
+            {% if val > -50 %}
+              {% set values.valid = values.valid + [val] %}
+            {% endif %}
+          {% endfor %}
+          {{ values.valid | count }}
+        data_quality: >
+          {% set count = state_attr('sensor.merged_bedroom_temperature_eta', 'source_count') | int(0) %}
+          {% set total = 4 %}
+          {% if count >= 3 %}
+            excellent
+          {% elif count == 2 %}
+            good
+          {% elif count == 1 %}
+            limited
+          {% else %}
+            poor
+          {% endif %}
+        subsystem: "aether"
+        module: "room_merged_sensors"
+        role: "eta_sensor"
+        type: "temperature"
+        description: "Merged temperature value from multiple bedroom temperature sensors - uses average of available values"
+
+    - name: "Merged Bedroom Humidity (Eta)"
+      unique_id: "merged_bedroom_humidity_eta"
+      unit_of_measurement: "%"
+      device_class: humidity
+      state: >
+        {% set humidity_sensors = [
+          'sensor.bedroom_climate_humidity',
+          'sensor.bedroom_probreeze_humidity_alpha'
+        ] %}
+        {% set values = namespace(valid=[]) %}
+        {% for sensor in humidity_sensors %}
+          {% set val = states(sensor) | float(-1) %}
+          {% if val >= 0 and val <= 100 %}
+            {% set values.valid = values.valid + [val] %}
+          {% endif %}
+        {% endfor %}
+        {% if values.valid | count > 0 %}
+          {{ (values.valid | sum) / (values.valid | count) | round(1) }}
+        {% else %}
+          unknown
+        {% endif %}
+      attributes:
+        source_entities: >
+          {{ [
+          'sensor.bedroom_climate_humidity',
+          'sensor.bedroom_probreeze_humidity_alpha'
+          ] | tojson }}
+        room_id: "bedroom"
+        tier: "η"
+        canonical_id: "merged_bedroom_humidity_η"
+        file: "/config/hestia/sensors/eta/room/merged_sensors.yaml"
+        date_created: "2025-04-26"
+        last_updated: "2025-04-26"
+        is_multi_source: "true"
+        source_count: >
+          {% set humidity_sensors = [
+            'sensor.bedroom_climate_humidity',
+            'sensor.bedroom_probreeze_humidity_alpha'
+          ] %}
+          {% set values = namespace(valid=[]) %}
+          {% for sensor in humidity_sensors %}
+            {% set val = states(sensor) | float(-1) %}
+            {% if val >= 0 and val <= 100 %}
+              {% set values.valid = values.valid + [val] %}
+            {% endif %}
+          {% endfor %}
+          {{ values.valid | count }}
+        data_quality: >
+          {% set count = state_attr('sensor.merged_bedroom_humidity_eta', 'source_count') | int(0) %}
+          {% set total = 2 %}
+          {% if count >= 2 %}
+            excellent
+          {% elif count == 1 %}
+            good
+          {% else %}
+            poor
+          {% endif %}
+        subsystem: "aether"
+        module: "room_merged_sensors"
+        role: "eta_sensor"
+        type: "humidity"
+        description: "Merged humidity value from multiple bedroom humidity sensors - uses average of available values"
+
+    - name: "Merged Living Room Illuminance (Eta)"
+      unique_id: "merged_living_room_illuminance_eta"
+      unit_of_measurement: "lx"
+      device_class: illuminance
+      state: >
+        {% set illuminance_sensors = [
+          'sensor.living_room_multipurpose_alpha_illuminance',
+          'sensor.living_room_occupancy_illuminance_alpha'
+        ] %}
+        {% set values = namespace(valid=[]) %}
+        {% for sensor in illuminance_sensors %}
+          {% set val = states(sensor) | float(-1) %}
+          {% if val >= 0 %}
+            {% set values.valid = values.valid + [val] %}
+          {% endif %}
+        {% endfor %}
+        {% if values.valid | count > 0 %}
+          {{ (values.valid | sum) / (values.valid | count) | round(1) }}
+        {% else %}
+          unknown
+        {% endif %}
+      attributes:
+        source_entities: >
+          {{ [
+          'sensor.living_room_multipurpose_alpha_illuminance',
+          'sensor.living_room_occupancy_illuminance_alpha'
+          ] | tojson }}
+        room_id: "living_room"
+        tier: "η"
+        canonical_id: "merged_living_room_illuminance_η"
+        file: "/config/hestia/sensors/eta/room/merged_sensors.yaml"
+        date_created: "2025-04-26"
+        last_updated: "2025-04-26"
+        is_multi_source: true
+        source_count: >
+          {% set illuminance_sensors = [
+            'sensor.living_room_multipurpose_alpha_illuminance',
+            'sensor.living_room_occupancy_illuminance_alpha'
+          ] %}
+          {% set values = namespace(valid=[]) %}
+          {% for sensor in illuminance_sensors %}
+            {% set val = states(sensor) | float(-1) %}
+            {% if val >= 0 %}
+              {% set values.valid = values.valid + [val] %}
+            {% endif %}
+          {% endfor %}
+          {{ values.valid | count }}
+        data_quality: >
+          {% set count = state_attr('sensor.merged_living_room_illuminance_eta', 'source_count') | int(0) %}
+          {% set total = 2 %}
+          {% if count >= 2 %}
+            excellent
+          {% elif count == 1 %}
+            good
+          {% else %}
+            poor
+          {% endif %}
+        subsystem: "theia"
+        module: "room_merged_sensors"
+        role: "eta_sensor"
+        type: "illuminance"
+        description: "Merged illuminance value from multiple living room illuminance sensors - uses average of available values"
+
+    - name: "Merged Living Room Temperature (Eta)"
+      unique_id: "merged_living_room_temperature_eta"
+      unit_of_measurement: "°C"
+      device_class: temperature
+      state: >
+        {% set temp_sensors = [
+          'sensor.living_room_multipurpose_temperature_alpha',
+          'sensor.living_room_smartbutton_temperature_alpha',
+          'sensor.living_room_broadlink_temperature_alpha'
+        ] %}
+        {% set values = namespace(valid=[]) %}
+        {% for sensor in temp_sensors %}
+          {% set val = states(sensor) | float(-273) %}
+          {% if val > -50 %}
+            {% set values.valid = values.valid + [val] %}
+          {% endif %}
+        {% endfor %}
+        {% if values.valid | count > 0 %}
+          {{ (values.valid | sum) / (values.valid | count) | round(1) }}
+        {% else %}
+          unknown
+        {% endif %}
+      attributes:
+        source_entities: >
+          {{ [
+          'sensor.living_room_multipurpose_temperature_alpha',
+          'sensor.living_room_smartbutton_temperature_alpha',
+          'sensor.living_room_broadlink_temperature_alpha'
+          ] | tojson }}
+        room_id: "living_room"
+        tier: "η"
+        canonical_id: "merged_living_room_temperature_η"
+        file: "/config/hestia/sensors/eta/room/merged_sensors.yaml"
+        date_created: "2025-04-26"
+        last_updated: "2025-04-26"
+        is_multi_source: true
+        source_count: >
+          {% set temp_sensors = [
+            'sensor.living_room_multipurpose_temperature_alpha',
+            'sensor.living_room_smartbutton_temperature_alpha',
+            'sensor.living_room_broadlink_temperature_alpha'
+          ] %}
+          {% set values = namespace(valid=[]) %}
+          {% for sensor in temp_sensors %}
+            {% set val = states(sensor) | float(-273) %}
+            {% if val > -50 %}
+              {% set values.valid = values.valid + [val] %}
+            {% endif %}
+          {% endfor %}
+          {{ values.valid | count }}
+        data_quality: >
+          {% set count = state_attr('sensor.merged_living_room_temperature_eta', 'source_count') | int(0) %}
+          {% set total = 4 %}
+          {% if count >= 3 %}
+            excellent
+          {% elif count == 2 %}
+            good
+          {% elif count == 1 %}
+            limited
+          {% else %}
+            poor
+          {% endif %}
+        subsystem: "aether"
+        module: "room_merged_sensors"
+        role: "eta_sensor"
+        type: "temperature"
+        description: "Merged temperature value from multiple living room temperature sensors - uses average of available values"
+        gpt_flag: "need to retrieve temperature value from climate living_room_climate_temperature"
+
+    - name: "Merged Living Room humidity (Eta)"
+      unique_id: "merged_living_room_humidity_eta"
+      unit_of_measurement: "°C"
+      device_class: humidity
+      state: >
+        {% set humidity_sensors = [
+          'sensor.living_room_broadlink_humidity_alpha'
+        ] %}
+        {% set values = namespace(valid=[]) %}
+          {% for sensor in humidity_sensors %}
+            {% set val = states(sensor) | float(-1) %}
+            {% if val >= 0 and val <= 100 %}
+              {% set values.valid = values.valid + [val] %}
+            {% endif %}
+          {% endfor %}
+          {% if values.valid | count > 0 %}
+            {{ (values.valid | sum) / (values.valid | count) | round(1) }}
+          {% else %}
+            unknown
+          {% endif %}
+      attributes:
+        source_entities: >
+          {{ [
+          'sensor.living_room_broadlink_humidity_alpha'
+          ] | tojson }}
+        room_id: "living_room"
+        tier: "η"
+        canonical_id: "merged_living_room_humidity_η"
+        file: "/config/hestia/sensors/eta/room/merged_sensors.yaml"
+        date_created: "2025-05-09"
+        last_updated: "2025-05-09"
+        is_multi_source: "false"
+        source_count: >
+          {% set humidity_sensors = [
+            'sensor.living_room_broadlink_humidity_alpha'
+          ] %}
+          {% set values = namespace(valid=[]) %}
+            {% for sensor in humidity_sensors %}
+              {% set val = states(sensor) | float(-1) %}
+              {% if val >= 0 and val <= 100 %}
+                {% set values.valid = values.valid + [val] %}
+              {% endif %}
+            {% endfor %}
+            {% if values.valid | count > 0 %}
+              {{ (values.valid | sum) / (values.valid | count) | round(1) }}
+            {% else %}
+              unknown
+            {% endif %}
+        data_quality: >
+          {% set count = state_attr('sensor.merged_living_room_humidity_eta', 'source_count') | int(0) %}
+          {% set total = 4 %}
+          {% if count >= 3 %}
+            excellent
+          {% elif count == 2 %}
+            good
+          {% elif count == 1 %}
+            limited
+          {% else %}
+            poor
+          {% endif %}
+        subsystem: "aether"
+        module: "room_merged_sensors"
+        role: "eta_sensor"
+        type: "humidity"
+        description: "Merged humidity value from multiple living room humidity sensors - dummy interim placeholder"
+
+    - name: "Merged Ensuite Temperature (Eta)"
+      unique_id: "merged_ensuite_temperature_eta"
+      unit_of_measurement: "°C"
+      device_class: temperature
+      state: >
+        {% set temp_sensors = [
+          'sensor.ensuite_climate_temperature_mtr_alpha',
+          'sensor.ensuite_climate_temperature_wifi_alpha'
+        ] %}
+        {% set values = namespace(valid=[]) %}
+        {% for sensor in temp_sensors %}
+          {% set val = states(sensor) | float(-273) %}
+          {% if val > -50 %}
+            {% set values.valid = values.valid + [val] %}
+          {% endif %}
+        {% endfor %}
+        {% if values.valid | count > 0 %}
+          {{ (values.valid | sum) / (values.valid | count) | round(1) }}
+        {% else %}
+          unknown
+        {% endif %}
+      attributes:
+        source_entities: >
+          {{ [
+          'sensor.ensuite_climate_temperature_mtr_alpha',
+          'sensor.ensuite_climate_temperature_wifi_alpha'
+          ] | tojson }}
+        room_id: "ensuite"
+        tier: "η"
+        canonical_id: "merged_ensuite_temperature_η"
+        file: "/config/hestia/sensors/eta/room/merged_sensors.yaml"
+        date_created: "2025-04-26"
+        last_updated: "2025-04-26"
+        is_multi_source: true
+        source_count: >
+          {% set temp_sensors = [
+            'sensor.ensuite_climate_temperature_mtr_alpha',
+            'sensor.ensuite_climate_temperature_wifi_alpha'
+          ] %}
+          {% set values = namespace(valid=[]) %}
+          {% for sensor in temp_sensors %}
+            {% set val = states(sensor) | float(-273) %}
+            {% if val > -50 %}
+              {% set values.valid = values.valid + [val] %}
+            {% endif %}
+          {% endfor %}
+          {{ values.valid | count }}
+        data_quality: >
+          {% set count = state_attr('sensor.merged_ensuite_temperature_eta', 'source_count') | int(0) %}
+          {% set total = 2 %}
+          {% if count >= 2 %}
+            excellent
+          {% elif count == 1 %}
+            good
+          {% else %}
+            poor
+          {% endif %}
+        subsystem: "aether"
+        module: "room_merged_sensors"
+        role: "eta_sensor"
+        type: "temperature"
+        description: "Merged temperature value from multiple ensuite temperature sensors - uses average of available values"
+
+    - name: "Merged Ensuite Humidity (Eta)"
+      unique_id: "merged_ensuite_humidity_eta"
+      unit_of_measurement: "%"
+      device_class: humidity
+      state: >
+        {% set humidity_sensors = [
+          'sensor.ensuite_climate_humidity_matter_alpha',
+          'sensor.ensuite_climate_humidity_wifi_alpha'
+        ] %}
+        {% set values = namespace(valid=[]) %}
+        {% for sensor in humidity_sensors %}
+          {% set val = states(sensor) | float(-1) %}
+          {% if val >= 0 and val <= 100 %}
+            {% set values.valid = values.valid + [val] %}
+          {% endif %}
+        {% endfor %}
+        {% if values.valid | count > 0 %}
+          {{ (values.valid | sum) / (values.valid | count) | round(1) }}
+        {% else %}
+          unknown
+        {% endif %}
+      attributes:
+        source_entities: >
+          {{ [
+          'sensor.ensuite_climate_humidity_matter_alpha', 'sensor.ensuite_climate_humidity_wifi_alpha',
+          ] | tojson }}
+        room_id: "ensuite"
+        tier: "η"
+        canonical_id: "merged_ensuite_humidity_η"
+        file: "/config/hestia/sensors/eta/room/merged_sensors.yaml"
+        date_created: "2025-06-03"
+        last_updated: "2025-06-03"
+        is_multi_source: "true"
+        source_count: >
+          {% set humidity_sensors = [
+            'sensor.ensuite_climate_humidity_matter_alpha', 'sensor.ensuite_climate_humidity_wifi_alpha'
+          ] %}
+          {% set values = namespace(valid=[]) %}
+          {% for sensor in humidity_sensors %}
+            {% set val = states(sensor) | float(-1) %}
+            {% if val >= 0 and val <= 100 %}
+              {% set values.valid = values.valid + [val] %}
+            {% endif %}
+          {% endfor %}
+          {{ values.valid | count }}
+        data_quality: >
+          {% set count = state_attr('sensor.merged_ensuite_humidity_eta', 'source_count') | int(0) %}
+          {% set total = 2 %}
+          {% if count >= 2 %}
+            excellent
+          {% elif count == 1 %}
+            good
+          {% else %}
+            poor
+          {% endif %}
+        subsystem: "aether"
+        module: "room_merged_sensors"
+        role: "eta_sensor"
+        type: "humidity"
+        description: "Merged humidity value from multiple kitchen humidity sensors - dummy interim placeholder"
+
+    - name: "Merged Kitchen Temperature (Eta)"
+      unique_id: "merged_kitchen_temperature_eta"
+      unit_of_measurement: "°C"
+      device_class: temperature
+      state: >
+        {% set temp_sensors = [
+          'sensor.kitchen_climate_temperature_mqtt_alpha'
+        ] %}
+        {% set values = namespace(valid=[]) %}
+        {% for sensor in temp_sensors %}
+          {% set val = states(sensor) | float(-273) %}
+          {% if val > -50 %}
+            {% set values.valid = values.valid + [val] %}
+          {% endif %}
+        {% endfor %}
+        {% if values.valid | count > 0 %}
+          {{ (values.valid | sum) / (values.valid | count) | round(1) }}
+        {% else %}
+          unknown
+        {% endif %}
+      attributes:
+        source_entities: >
+          {{ [
+          'sensor.kitchen_climate_temperature_mqtt_alpha'
+          ] | tojson }}
+        room_id: "kitchen"
+        tier: "η"
+        canonical_id: "merged_kitchen_temperature_η"
+        file: "/config/hestia/sensors/eta/room/merged_sensors.yaml"
+        date_created: "2025-04-26"
+        last_updated: "2025-04-26"
+        is_multi_source: "false"
+        source_count: >
+          {% set temp_sensors = [
+            'sensor.kitchen_climate_temperature_mqtt_alpha'
+          ] %}
+          {% set values = namespace(valid=[]) %}
+          {% for sensor in temp_sensors %}
+            {% set val = states(sensor) | float(-273) %}
+            {% if val > -50 %}
+              {% set values.valid = values.valid + [val] %}
+            {% endif %}
+          {% endfor %}
+          {{ values.valid | count }}
+        data_quality: >
+          {% set count = state_attr('sensor.merged_kitchen_temperature_eta', 'source_count') | int(0) %}
+          {% set total = 2 %}
+          {% if count >= 2 %}
+            excellent
+          {% elif count == 1 %}
+            good
+          {% else %}
+            poor
+          {% endif %}
+        subsystem: "aether"
+        module: "room_merged_sensors"
+        role: "eta_sensor"
+        type: "temperature"
+        description: "Merged temperature value from multiple kitchen temperature sensors - dummy interim placeholder"
+
+    - name: "Merged Kitchen Humidity (Eta)"
+      unique_id: "merged_kitchen_humidity_eta"
+      unit_of_measurement: "%"
+      device_class: humidity
+      state: >
+        {% set humidity_sensors = [
+          'sensor.kitchen_climate_humidity_zigbee2mqtt_alpha'
+        ] %}
+        {% set values = namespace(valid=[]) %}
+        {% for sensor in humidity_sensors %}
+          {% set val = states(sensor) | float(-1) %}
+          {% if val >= 0 and val <= 100 %}
+            {% set values.valid = values.valid + [val] %}
+          {% endif %}
+        {% endfor %}
+        {% if values.valid | count > 0 %}
+          {{ (values.valid | sum) / (values.valid | count) | round(1) }}
+        {% else %}
+          unknown
+        {% endif %}
+      attributes:
+        source_entities: >
+          {{ [
+          'sensor.kitchen_climate_humidity_zigbee2mqtt_alpha'
+          ] | tojson }}
+        room_id: "kitchen"
+        tier: "η"
+        canonical_id: "merged_kitchen_humidity_η"
+        file: "/config/hestia/sensors/eta/room/merged_sensors.yaml"
+        date_created: "2025-04-26"
+        last_updated: "2025-04-26"
+        is_multi_source: true
+        source_count: >
+          {% set humidity_sensors = [
+            'sensor.kitchen_climate_humidity_zigbee2mqtt_alpha'
+          ] %}
+          {% set values = namespace(valid=[]) %}
+          {% for sensor in humidity_sensors %}
+            {% set val = states(sensor) | float(-1) %}
+            {% if val >= 0 and val <= 100 %}
+              {% set values.valid = values.valid + [val] %}
+            {% endif %}
+          {% endfor %}
+          {{ values.valid | count }}
+        data_quality: >
+          {% set count = state_attr('sensor.merged_kitchen_humidity_eta', 'source_count') | int(0) %}
+          {% set total = 2 %}
+          {% if count >= 2 %}
+            excellent
+          {% elif count == 1 %}
+            good
+          {% else %}
+            poor
+          {% endif %}
+        subsystem: "aether"
+        module: "room_merged_sensors"
+        role: "eta_sensor"
+        type: "humidity"
+        description: "Merged humidity value from multiple kitchen humidity sensors - dummy interim placeholder"
+
+#───────────────────────────────────────────────────────────────
+# ▼ INCLUDE: Climate Sensor Subcomponents
+#───────────────────────────────────────────────────────────────
+
+- !include domain/templates/climate/temperature_logic.yaml
+- !include domain/templates/climate/humidity_logic.yaml
+- !include domain/templates/climate/illuminance_logic.yaml

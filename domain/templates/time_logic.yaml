@@ -1,0 +1,150 @@
+# ════════════════════════════════════════════════════════════════════════════════
+# ▶ LOGIC SENSOR: Time Sensors ◀
+# ⟫⟫ Timestamp logic, shift status, and time snapshots
+# ⟫⟫ Domain: template • Loader: !include_dir_merge_list domain/template/
+# ⟫⟫ Schema: sensor (list) • Created: 2025-07-17
+# ════════════════════════════════════════════════════════════════════════════════
+
+- trigger:
+    - platform: time_pattern
+      seconds: "/1" # Updates every second
+  sensor:
+    - name: "Current Time"
+      unique_id: "current_time_alpha"
+      state: >
+        {{ now().isoformat() }}
+      icon: mdi:clock
+      availability: "{{ not is_state('sensor.time', 'unavailable') }}"
+      attributes:
+        canonical_id: "current_time_α"
+        source: "system clock"
+        resolution: "1s"
+        subsystem: "chronos"
+        timezone: "{{ now().tzinfo }}"
+        timestamp_epoch: "{{ now().timestamp() | int }}"
+        module: "clock"
+        role: "proxy"
+        type: "info"
+        tier: "α"
+        description: "Proxy sensor exposing current time in ISO 8601 format."
+        domain: "temporal"
+        upstream_sources: ""
+        downstream_consumers: ""
+        file: "/config/domain/templates/time_logic.yaml"
+        created: "2025-07-17T12:00:00Z"
+        last_updated: "2025-07-20T08:00:00Z"
+        version: "1.2"
+
+    - name: "Current Time (hh:mm:ss)"
+      unique_id: "current_time_legacy"
+      state: "{{ now().strftime('%H:%M:%S') }}"
+      attributes:
+        downstream_consumers: >
+          {{ "sensor.schedule_status" | tojson }}
+
+- trigger:
+    - platform: time_pattern
+      minutes: "/1"
+  sensor:
+    - name: "Weekday Name"
+      unique_id: "weekday_name_gamma"
+      state: "{{ now().strftime('%A') }}"
+      icon: mdi:calendar
+      attributes:
+        canonical_id: "current_weekday_γ"
+        subsystem: "chronos"
+        domain: "temporal"
+        module: "calendar"
+        role: "proxy"
+        type: "info"
+        tier: "γ"
+        description: "Returns the current day of the week as a full name (e.g., Friday)."
+        version: "1.0"
+        file: "/config/domain/templates/time_logic.yaml"
+
+- trigger:
+    - platform: time_pattern
+      minutes: "/1"
+  sensor:
+    - name: "Current Date (Natural)"
+      unique_id: "current_date_natural_gamma"
+      state: >
+        {% set day = now().day %}
+        {% set suffix = 'th' if 11 <= day <= 13 else
+                        'st' if day % 10 == 1 else
+                        'nd' if day % 10 == 2 else
+                        'rd' if day % 10 == 3 else 'th' %}
+        {{ now().strftime('%B') }} {{ day }}{{ suffix }}
+      icon: mdi:calendar-text
+      attributes:
+        canonical_id: "current_date_natural_γ"
+        subsystem: "chronos"
+        domain: "temporal"
+        module: "clock"
+        role: "proxy"
+        type: "info"
+        tier: "γ"
+        description: "Returns the current date in natural language format (e.g., August 6th)."
+        version: "1.0"
+        file: "/config/domain/templates/time_logic.yaml"
+
+- trigger:
+    - platform: time_pattern
+      minutes: "/1" # Updates every minute
+  sensor:
+    - name: "Schedule Status"
+      unique_id: "schedule_status_beta"
+      state: >
+        {% set now_time = states('sensor.current_time_legacy') %}
+        {% if 9 <= now().hour < 17 %}
+          Office hours ({{ now_time }})
+        {% else %}
+          Out of office ({{ now_time }})
+        {% endif %}
+      availability: "{{ not is_state('sensor.time', 'unavailable') }}"
+      attributes:
+        canonical_id: "schedule_status_β"
+        subsystem: "chronos"
+        current_hour: "{{ now().hour }}"
+        is_working_hours: "{{ 9 <= now().hour < 17 }}"
+        aggregation_strategy: "hour-based range evaluation"
+        source_count: "1"
+        version: "1.2"
+        created: "2025-07-17"
+        last_updated: "2025-07-20"
+        description: "Evaluates whether the current time falls within working hours (09:00–17:00)."
+        domain: "temporal"
+        module: "scheduling"
+        role: "evaluator"
+        type: "status"
+        tier: "β"
+        upstream_sources: >
+          {{"sensor.current_time_legacy" | tojson }}
+        downstream_consumers: ""
+        file: "/config/domain/templates/time_logic.yaml"
+
+- trigger:
+    - platform: time_pattern
+      minutes: "/1"
+  sensor:
+    - name: "Current Date Description"
+      unique_id: "current_date_description_gamma"
+      state: >
+        {% set day = now().day %}
+        {% set suffix = 'th' if 11 <= day <= 13 else
+                        'st' if day % 10 == 1 else
+                        'nd' if day % 10 == 2 else
+                        'rd' if day % 10 == 3 else 'th' %}
+        Today is {{ now().strftime('%A') }}, {{ now().strftime('%B') }} {{ day }}{{ suffix }}
+      icon: mdi:calendar-account
+      attributes:
+        canonical_id: "current_date_description_γ"
+        subsystem: "chronos"
+        domain: "temporal"
+        module: "clock"
+        role: "formatter"
+        type: "info"
+        tier: "γ"
+        version: "1.0"
+        description: "Returns a merged sentence-style summary of the current weekday and date (e.g., 'Today is Friday, August 6th')."
+        file: "/config/domain/templates/time_logic.yaml"

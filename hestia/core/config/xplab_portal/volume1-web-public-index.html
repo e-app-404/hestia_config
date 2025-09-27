@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>xplab • Home</title>
+  <link rel="preload" href="/_assets/app.css" as="style">
+  <link rel="stylesheet" href="/_assets/app.css">
+  <link rel="icon" href="data:,">
+</head>
+
+<body class="surface">
+  <header class="site-header">
+    <h1>Welcome to xplab</h1>
+    <p class="sub">This is the public landing for nas.xplab.io</p>
+  </header>
+
+  <main id="app" class="container">
+    <section>
+      <h2>Service Catalog</h2>
+      <div id="public-tiles" class="tiles"></div>
+    </section>
+
+    <section class="muted">
+      <h3>Looking for the private portal?</h3>
+      <p><a class="btn" href="/portal/">Open the Ops Console</a></p>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <span id="year"></span> • xplab
+  </footer>
+
+  <script src="/_assets/app.js"></script>
+  <script>
+    (async () => {
+      const cfg = await window.XPLAB.loadConfig();
+      const publicTiles = window.XPLAB.filterTiles(cfg, t => t.visibility === 'public');
+      window.XPLAB.renderTiles(document.getElementById('public-tiles'), publicTiles);
+      document.getElementById('year').textContent = new Date().getFullYear();
+    })();
+  </script>
+</body>
+
+</html>

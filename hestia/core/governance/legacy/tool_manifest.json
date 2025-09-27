@@ -1,0 +1,434 @@
+[
+  {
+    "tool_name": "Charon",
+    "entry_point": "launch_charon.py",
+    "version": "v1.3",
+    "status": "operational",
+    "modes": [
+      "off",
+      "manual",
+      "dry_run",
+      "live"
+    ],
+    "dependencies": [
+      "json",
+      "argparse",
+      "collections",
+      "datetime"
+    ],
+    "owner": "hephaestus",
+    "latest_status": "merge_candidate"
+  },
+  {
+    "tool_name": "Clio",
+    "entry_point": "launch_clio.py",
+    "version": "v0.9",
+    "status": "paused",
+    "modes": [],
+    "dependencies": [
+      "yaml",
+      "git",
+      "requests",
+      "logging",
+      "datetime"
+    ],
+    "owner": "documentation_pipeline",
+    "latest_status": "under_review"
+  },
+  {
+    "tool_name": "Phalanx",
+    "entry_point": "launch_phalanx.py",
+    "version": "v1.0",
+    "status": "operational",
+    "modes": [],
+    "dependencies": [
+      "os",
+      "yaml"
+    ],
+    "owner": "config_mapping_team",
+    "latest_status": "merge_candidate"
+  },
+  {
+    "tool_name": "YAML Diff/Changelog",
+    "entry_point": "yaml_diff_changelog.py",
+    "version": "v1.4",
+    "status": "operational",
+    "modes": [],
+    "dependencies": [
+      "deepdiff",
+      "yaml"
+    ],
+    "owner": "config_ops",
+    "latest_status": "merge_candidate"
+  },
+  {
+    "tool_name": "YAML Merger",
+    "entry_point": "yaml_merger.py",
+    "version": "v1.0",
+    "status": "operational",
+    "modes": [],
+    "dependencies": [
+      "yaml"
+    ],
+    "owner": "config_ops",
+    "latest_status": "merge_candidate"
+  },
+  {
+    "tool_name": "write_validator_log.py",
+    "entry_point": "write_validator_log.py",
+    "version": "v1.1",
+    "status": "operational",
+    "modes": [],
+    "dependencies": [
+      "json",
+      "os",
+      "sys"
+    ],
+    "owner": "validation_engine",
+    "latest_status": "merge_candidate"
+  },
+  {
+    "tool_name": "Iris",
+    "entry_point": "iris_validator.py",
+    "version": "v2.1",
+    "status": "deprecated",
+    "modes": [
+      "manual",
+      "live"
+    ],
+    "dependencies": [
+      "yaml",
+      "re"
+    ],
+    "owner": "validation_engine",
+    "latest_status": "merged",
+    "merged_into": "Olympus"
+  },
+  {
+    "tool_name": "Metis",
+    "entry_point": "launch_metis.py",
+    "version": "v1.0",
+    "status": "deprecated",
+    "modes": [],
+    "dependencies": [
+      "yaml",
+      "os"
+    ],
+    "owner": "validation_engine",
+    "latest_status": "merged",
+    "merged_into": "Olympus"
+  },
+  {
+    "tool_name": "Phanes",
+    "entry_point": "phanes_v4/phanes.py",
+    "version": "v4.2",
+    "status": "legacy",
+    "modes": [
+      "render",
+      "debug"
+    ],
+    "dependencies": [
+      "jinja2",
+      "os",
+      "yaml",
+      "argparse"
+    ],
+    "owner": "hephaestus",
+    "latest_status": "merged",
+    "merged_into": "Template Engine"
+  },
+  {
+    "tool_name": "Cerberus",
+    "entry_point": "cerberus.py",
+    "version": "v1.0",
+    "status": "deprecated",
+    "modes": [
+      "audit"
+    ],
+    "dependencies": [
+      "yaml",
+      "os",
+      "json"
+    ],
+    "owner": "phanes",
+    "latest_status": "merged",
+    "merged_into": "Template Engine"
+  },
+  {
+    "tool_name": "Protocol Resolver",
+    "entry_point": "protocol_resolver.py",
+    "version": "v0.5",
+    "status": "deprecated",
+    "modes": [],
+    "dependencies": [
+      "re",
+      "json"
+    ],
+    "owner": "phanes",
+    "latest_status": "merged",
+    "merged_into": "Template Engine"
+  },
+  {
+    "tool_name": "Prometheus",
+    "entry_point": "prometheus_renderer.py",
+    "version": "v3.0",
+    "status": "deprecated",
+    "modes": [
+      "render"
+    ],
+    "dependencies": [
+      "jinja2",
+      "os",
+      "yaml"
+    ],
+    "owner": "hephaestus",
+    "latest_status": "merged",
+    "merged_into": "Template Engine"
+  },
+  {
+    "tool_name": "Template Engine",
+    "entry_point": "hestia_template_engine.py",
+    "version": "v3.2.0",
+    "status": "operational",
+    "modes": [
+      "render",
+      "validate",
+      "lint",
+      "preview"
+    ],
+    "dependencies": [
+      "jinja2",
+      "yaml",
+      "argparse",
+      "os",
+      "glob",
+      "datetime"
+    ],
+    "owner": "hephaestus",
+    "latest_status": "active"
+  },
+  {
+    "tool_name": "Olympus",
+    "entry_point": "validation_engine.py",
+    "version": "v2.0.0",
+    "status": "operational",
+    "modes": [
+      "iris",
+      "metis",
+      "registry",
+      "diff_audit",
+      "tier",
+      "coverage"
+    ],
+    "dependencies": [
+      "pyyaml",
+      "requests",
+      "jsonschema",
+      "argparse",
+      "logging",
+      "os",
+      "sys",
+      "json",
+      "datetime",
+      "pathlib",
+      "typing"
+    ],
+    "optional_dependencies": [
+      "ruamel.yaml",
+      "colorama",
+      "pytest",
+      "pytest-cov"
+    ],
+    "owner": "hestia_architecture_team",
+    "description": "Unified validation engine supporting Iris, Metis, Registry, Diff Audit, Tier, and Coverage modules",
+    "capabilities": [
+      "metadata_validation",
+      "yaml_rule_checking",
+      "auto_fixing",
+      "subsystem_introspection",
+      "registry_resolution",
+      "diff_comparison",
+      "tier_chain_auditing",
+      "coverage_tracking",
+      "home_assistant_integration",
+      "schema_validation",
+      "plugin_architecture"
+    ],
+    "cli_commands": {
+      "list": "List available validator modules",
+      "run --mode iris": "Execute Iris metadata validation",
+      "run --mode metis": "Execute Metis subsystem audit",
+      "run --mode registry": "Run entity registry validator",
+      "run --mode diff_audit": "Compare YAML directory snapshots",
+      "run --mode tier": "Validate tier integrity and canonical chains",
+      "run --mode coverage": "Audit coverage gaps in room/device mapping"
+    },
+    "output_formats": [
+      "json",
+      "yaml"
+    ],
+    "integration_points": [
+      "home_assistant_api",
+      "home_assistant_sensors",
+      "home_assistant_events",
+      "lovelace_dashboards"
+    ],
+    "configuration_files": [
+      "rules/iris_rules.yaml",
+      "rules/production_rules.yaml",
+      "homeassistant_integration.yaml",
+      "olympus_dashboard.yaml"
+    ],
+    "schema_files": [
+      "schema/iris_audit.schema.json",
+      "schema/validator_log.schema.json",
+      "schema/registry_audit.schema.json",
+      "schema/tier_audit.schema.json",
+      "schema/coverage_audit.schema.json"
+    ],
+    "test_coverage": "97%",
+    "documentation": [
+      "docs/index.md",
+      "docs/iris_module.md",
+      "docs/metis_module.md",
+      "docs/registry_module.md",
+      "docs/config_diff_module.md",
+      "docs/tier_validation_module.md",
+      "docs/coverage_module.md",
+      "README.md"
+    ]
+  },
+  {
+    "tool_name": "Iris",
+    "entry_point": "launch_iris.py",
+    "version": "v2.1",
+    "status": "deprecated",
+    "modes": [
+      "manual",
+      "live"
+    ],
+    "dependencies": [
+      "yaml",
+      "requests",
+      "os",
+      "sys"
+    ],
+    "owner": "legacy_validation_team",
+    "deprecation_status": "merged",
+    "merged_into": "Olympus",
+    "migration_path": "Use 'olympus run --mode iris' instead of 'launch_iris.py'",
+    "deprecation_date": "2025-05-23",
+    "end_of_life": "2025-12-31"
+  },
+  {
+    "tool_name": "Metis",
+    "entry_point": "launch_metis.py",
+    "version": "v1.0",
+    "status": "deprecated",
+    "modes": [],
+    "dependencies": [
+      "yaml",
+      "os"
+    ],
+    "owner": "legacy_validation_team",
+    "deprecation_status": "merged",
+    "merged_into": "Olympus",
+    "migration_path": "Use 'olympus run --mode metis' instead of 'launch_metis.py'",
+    "deprecation_date": "2025-05-23",
+    "end_of_life": "2025-12-31"
+  },
+  {
+    "tool_name": "Charon",
+    "entry_point": "launch_charon.py",
+    "version": "v1.3",
+    "status": "operational",
+    "modes": [
+      "off",
+      "manual",
+      "dry_run",
+      "live"
+    ],
+    "dependencies": [
+      "json",
+      "argparse",
+      "collections",
+      "datetime"
+    ],
+    "owner": "infra_validation_team",
+    "deprecation_status": "active",
+    "integration_candidate": "olympus",
+    "notes": "Candidate for future integration into Olympus as a plugin module"
+  },
+  {
+    "tool_name": "Validation Engine (Legacy)",
+    "entry_point": "validation_engine.py",
+    "version": "v1.0",
+    "status": "deprecated",
+    "modes": [
+      "iris",
+      "metis"
+    ],
+    "dependencies": [
+      "argparse",
+      "logging",
+      "yaml",
+      "json",
+      "os",
+      "requests",
+      "datetime"
+    ],
+    "owner": "validation_engine_team",
+    "deprecation_status": "superseded",
+    "superseded_by": "Olympus",
+    "migration_path": "Direct replacement - same CLI interface with enhanced functionality",
+    "deprecation_date": "2025-05-23"
+  },
+  {
+    "tool_id": "git_mirror_explorer",
+    "name": "Home Assistant Repo Mirror Access Tool",
+    "description": "Enables GPTs to access and consult the shallow Git mirror of the Home Assistant Core repo via blob, tree, commit, and shortlog operations.",
+    "entrypoint": "/share/APOLLO/themis/git_cat/git_cat.sh",
+    "inputs": {
+      "mode": ["blob", "tree", "log", "show"],
+      "ref": "git ref or commit hash",
+      "path": "path to file within repo, relative to root"
+    },
+    "outputs": {
+      "type": "text/plain",
+      "log_path": "/share/APOLLO/themis/git_cat/log/"
+    },
+    "required_files": [
+      "/share/APOLLO/_hass_repo_thin/HEAD",
+      "/share/APOLLO/_hass_repo_thin/refs/",
+      "/share/APOLLO/themis/git_cat/git_cat.sh"
+    ],
+    "tags": ["git", "repo", "documentation", "code_ref", "home_assistant"],
+    "owner": "themis",
+    "snapshot_included": true
+  },
+  {
+    "tool_id": "update_hass_repo_mirrors",
+    "name": "Update Home Assistant Git Mirrors",
+    "description": "Fetches latest commits into both full and thin repo mirrors from the official GitHub repository.",
+    "entrypoint": "/config/hestia/tools/themis/update-hass-repos.sh",
+    "inputs": {},
+    "outputs": {
+      "type": "stdout"
+    },
+    "tags": ["git", "sync", "fetch", "update"],
+    "owner": "themis",
+    "requires_internet": true
+  },
+  {
+    "tool_name": "Mnemosyne",
+    "entry_point": "mnemosyne_orchestrator.py",
+    "version": "v1.0.0",
+    "status": "operational",
+    "modes": ["snapshot", "phase", "validate", "archive"],
+    "dependencies": ["os", "json", "shutil", "subprocess", "yaml"],
+    "owner": "hephaestus",
+    "latest_status": "active",
+    "description": "Snapshot lifecycle orchestrator for git-sync, archive registration, and snapshot phase execution"
+  }
+
+]

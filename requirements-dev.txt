@@ -1,0 +1,8 @@
+yamllint==1.*
+jsonschema==4.*
+yamllint==1.*
+ruamel.yaml==0.18.15
+pandas==2.*
+click==8.*
+pre-commit==3.*
+tabulate==0.9.*

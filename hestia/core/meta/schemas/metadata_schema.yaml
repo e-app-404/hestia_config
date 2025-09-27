@@ -1,0 +1,740 @@
+_meta:
+  title: HESTIA Sensor Metadata Schema
+  purpose: >
+    Defines the allowed keys, value types, and enumerations for sensor template entity metadata in the HESTIA architecture. Used for validation, documentation, and automation of sensor logic abstraction.
+  usage: >
+    This schema is intended for validating, documenting, and automating the metadata for all sensor template entities in HESTIA-based Home Assistant configurations.
+  date_created: 2025-07-18
+  last_updated: 2025-07-18
+  version: 1.0
+  author: Copilot (with user guidance)
+  references:
+    - https://github.com/e-app-404/hestia
+    - docs/HESTIA_architecture.md
+
+metadata_schema:
+  module:
+    definition: >
+      Represents the functional grouping or template engine domain that a sensor belongs to. It scopes the logic reusability across different contexts (e.g., climate vs media), and helps group templates by shared logic patterns.
+    scope:
+      - Reusable logic layer
+      - Domain-scoped (e.g., temperature, media, tracking)
+      - Not tied to file paths or entity IDs
+    distinction: >
+      Unlike subsystem, which maps to architecture orchestration or validator ownership, module is logic-layer focused — defining what the sensor is about.
+    enum:
+      [
+        climate,
+        tracking,
+        media,
+        temporal,
+        control,
+        config,
+        lighting,
+        health,
+        security,
+        diagnostics,
+        registry,
+        presence,
+        system,
+        fallback,
+      ]
+
+  role:
+    definition: >
+      Describes the semantic function of the sensor — how it contributes structurally to information flow. It governs the relationship to source entities and how it transforms or exposes information.
+    scope:
+      - Transformation logic: aggregation, annotation, proxying
+      - Flow control: evaluator, controller, relay
+      - Human-facing naming conventions
+    distinction: >
+      role determines how the sensor behaves, not what kind of data it represents (type) or where it’s orchestrated (subsystem).
+    enum:
+      [
+        proxy,
+        relay,
+        evaluator,
+        transformer,
+        comparator,
+        rescaler,
+        differencer,
+        aggregation,
+        arbitrator,
+        reconciler,
+        classifier,
+        controller,
+        delayer,
+        timer,
+        window,
+        throttler,
+        latcher,
+        counter,
+        accumulator,
+        averager,
+        tracker,
+        state,
+        anchor,
+        notifier,
+        publisher,
+        auditor,
+        decorator,
+        fallback,
+        observer,
+        predictor,
+        inhibitor,
+        generator,
+        description,
+        template,
+        multiplier,
+        proxy_group,
+        gatekeeper,
+      ]
+    enum_definitions:
+      proxy: "Direct exposure of state."
+      relay: "Logic pass-through."
+      evaluator: "Boolean or threshold logic."
+      transformer: "Value manipulation or unit conversion."
+      comparator: "Input-to-input comparison."
+      rescaler: "Normalization or range adjustment."
+      differencer: "Emits delta between successive values."
+      aggregation: "Fuses multiple source states."
+      arbitrator: "Selects one from many sources."
+      reconciler: "Resolves conflicts between diverging sources."
+      classifier: "Labels or interprets input based on pattern."
+      controller: "Drives actuator behavior based on rules."
+      delayer: "Defers transitions by time."
+      timer: "Emits elapsed durations."
+      window: "Marks active time intervals."
+      throttler: "Limits rate of updates or transitions."
+      latcher: "Holds state until explicitly reset."
+      counter: "Discrete event counter."
+      accumulator: "Sums or integrates values over time."
+      averager: "Mean or smoothing of data."
+      tracker: "Retains last value, source, or change."
+      state: "Resolved or computed persistent value."
+      anchor: "Declarative config reference or system constant."
+      notifier: "Emits state for external publication (e.g., MQTT or UI)."
+      publisher: "Explicitly publishes structured document (e.g., to MQTT)."
+      auditor: "Monitors compliance with config or runtime rules."
+      decorator: "Adds metadata or context to another entity."
+      fallback: "Used only when primary input fails."
+      observer: "Passive monitor without influencing logic."
+      predictor: "Forecasts future state."
+      inhibitor: "Blocks transitions based on conditions."
+      generator: "Emits synthetic values (time pulses, triggers)."
+      description: "Semantic labeling sensor."
+      template: "Exposes logic for other sensors to reuse."
+      multiplier: "Performs multiplicative scaling (e.g., cost = kWh × tariff)."
+      proxy_group: "Groups multiple proxy states into a single entity (UI or dashboard logic)."
+      gatekeeper: "Controls downstream flow based on preconditions or security rules."
+
+  type:
+    definition: >
+      Represents the syntactic or categorical classification of the sensor — how it behaves structurally in a YAML or automation sense.
+    scope:
+      - Describes signal shape: binary, numeric, computed
+      - Disambiguates between sensor, fusion, temporal, metadata
+    distinction: >
+      While role is semantic (behavioral), type is syntactic — a fusion type might have an aggregation role, or a metadata type might be a proxy.
+    enum: [sensor, metadata, fusion, temporal, control, state, schedule, system]
+
+  tier:
+    definition: >
+      Defines the sensor’s structural placement in the HESTIA architecture — its level of abstraction and how it should be interpreted in governance chains.
+    scope:
+      - Structural layering (α to ε)
+      - Drives validator behavior and pattern promotion logic
+    distinction: >
+      Only tier controls architectural hierarchy. It is not inferred from behavior but declared by design intent.
+    enum: ["α", "β", "γ", "δ", "ε", "η", "μ", "ζ"]
+    enum_definitions:
+      "α": "Canonical foundation: Immutable doctrine, architecture rules, and core system principles."
+      "β": "Validator-aligned: Structured configuration entities managed by validator logic."
+      "γ": "Reusable patterns: Subsystem templates, abstracted logic blocks, and design patterns."
+      "δ": "Site-local overrides: Room-specific or context-bound definitions tailored to individual deployments."
+      "ε": "Edge-case logic: Experimental, deprecated, or environment-specific branches not intended for reuse."
+      "η": "Fused outputs: Aggregated sensor states derived from multiple source entities."
+      "μ": "Metadata-only: Non-behavioral descriptive constructs (e.g., registries, lookup tables, tags)."
+      "ζ": "Decision tier: final, high-level derived states used to drive automations and external actions."
+
+  subsystem:
+    definition: >
+      The architectural persona, validator, or logic orchestrator responsible for the governance, validation, or execution of a sensor’s logic.
+      Subsystem denotes the "who" behind the logic—mapping each entity to a named agent, validator, or orchestration layer within the HESTIA architecture.
+      This enables traceability, modular responsibility, and clear separation of concerns across the system.
+      Closely related to the `domain` field.
+    scope:
+      - Ownership and stewardship of logic, validation, or orchestration for a given sensor or template.
+      - Used for tracing logic back to HESTIA agents (e.g., hermes, theia, aether, orpheus, hestia, hephaestus, athena, soteria).
+      - Supports modular governance, allowing for distributed development, review, and maintenance by subsystem owners.
+      - Enables architectural documentation, auditability, and targeted troubleshooting by subsystem.
+      - May be used to enforce policy, validation, or runtime behaviors specific to the subsystem’s domain.
+    distinction: >
+      Unlike `module`, which describes the functional or domain grouping (e.g., climate, media, presence), `subsystem` identifies the architectural or validator persona that owns, reviews, or governs the logic.
+      Subsystem is about responsibility and traceability, not functional purpose.
+      For example, a sensor with `subsystem: orpheus` is governed by the Orpheus agent, which may specialize in media and entertainment logic, while `subsystem: aether` may focus on climate or environmental logic.
+      This distinction supports both technical and organizational clarity.
+    enum:
+      [
+        hermes,
+        theia,
+        aether,
+        orpheus,
+        hestia,
+        hephaestus,
+        athena,
+        soteria,
+        chronos,
+        perseus,
+        hypnos,
+      ]
+    enum_definitions:
+      hermes: "Handles presence, context, and zone synthesis logic. Responsible for inference and aggregation of occupancy and activity signals."
+      theia: "Visual analytics and lighting. Governs logic related to light, vision, and sensor fusion for environmental awareness."
+      aether: "Climate, air quality, and environmental control. Owns logic for temperature, humidity, and related environmental metrics."
+      orpheus: "Media, entertainment, and user engagement. Manages logic for media players, gaming consoles, and entertainment state inference."
+      hestia: "Core system orchestration and configuration. Responsible for system-level governance, registry, and configuration management."
+      hephaestus: "Toolchain management and automated template generation."
+      athena: "Security, access control, and policy enforcement. Governs logic for alarms, access, and security-related automations."
+      soteria: "Small electronics, personal devices, and trackers."
+      chronos: "Timekeeping, scheduling, and temporal logic. Manages logic for timers, calendars, and event scheduling."
+      perseus: "Person presence and activity tracking."
+      hypnos: "Sleep and rest management. Oversees logic for sleep tracking, rest states, and related health metrics."
+
+  # Additional codified metadata fields found in attributes:
+  canonical_id:
+    definition: >
+      The canonical, unique identifier for the sensor entity, following HESTIA naming conventions. Used for cross-referencing, traceability, and registry lookups.
+    type: string
+    required: true
+    example: "bedroom_temperature_β"
+
+  file:
+    definition: >
+      The absolute or workspace-relative path to the YAML file where the entity is defined. Used for traceability, patch logging, and automated documentation.
+    type: string
+    required: true
+    example: "/config/domain/templates/temperature_logic.yaml"
+
+  upstream_sources:
+    definition: >
+      List of entity_ids or sensors that serve as direct inputs to this entity’s logic. Used for dependency mapping, validation, and documentation.
+    type: list (YAML or JSON string)
+    required: false
+    example:
+      [
+        "sensor.bedroom_climate_temperature",
+        "sensor.monstera_ambient_temperature",
+      ]
+
+  downstream_consumers:
+    definition: >
+      List of entity_ids, automations, or consumers that directly depend on this entity.
+      Prefer a YAML list in source files; downstream attributes may serialize as JSON.
+    type: list
+    required: false
+
+  # ── Spatial / area contract enrichments ────────────────────────────
+  floor_id:
+    definition: >
+      The floor/level identifier for multi-level spatial containment (e.g., "ground_floor", "top_floor").
+      Used for spatial reasoning and propagation rules.
+    type: string
+    required: false
+    example: "top_floor"
+
+  area_type:
+    definition: >
+      The type of spatial node most closely associated with this entity.
+      Aligns to area hierarchy taxons (e.g., area, subarea, floor, service, person, container).
+    enum: [area, subarea, floor, service, person, container]
+    required: false
+    example: "subarea"
+
+  tags:
+    definition: >
+      Free-form labels used for classification, filtering, or propagation hints.
+      Useful for flags like "transit", "structural_connector", "aggregation", etc.
+    type: list
+    required: false
+    example: ["transit", "aggregation"]
+
+  inference_weight:
+    definition: >
+      Weight used when this entity contributes to higher-level spatial or logic inference.
+      Allows weighted aggregation across areas/containers.
+    type: number
+    required: false
+    example: 0.7
+
+  contributes_to:
+    definition: >
+      List of canonical IDs or entity_ids this entity contributes to (downstream targets).
+      Enables explicit graph mapping beyond downstream_consumers.
+    type: list
+    required: false
+    example: ["bedroom_presence_γ", "home_occupancy_ζ"]
+
+  inferred_by:
+    definition: >
+      Canonical ID or process name that inferred this entity's state (when not directly sensed).
+    type: string
+    required: false
+    example: "presence_fusion_η"
+
+  # ── Graph / dependency relationships ───────────────────────────────
+  feeds_from:
+    definition: >
+      Tier- or entity-level dependencies this entity ingests (abstract form, complements upstream_sources).
+      Use for cross-package dependency graphs (e.g., ["α"] or ["sensor.a", "sensor.b"]).
+    type: list
+    required: false
+    example: ["α", "sensor.kitchen_temperature"]
+
+  feeds_into:
+    definition: >
+      Declares which tiers or entities this entity is intended to supply.
+      Used to validate pipeline directionality (e.g., ["γ", "δ"]).
+    type: list
+    required: false
+    example: ["γ", "ζ"]
+
+  # ── Validation, privacy, retention, and quality ────────────────────
+  data_quality:
+    definition: >
+      Qualitative assessment of data fidelity and provenance.
+    enum: [runtime_observed, validated, simulated, deprecated]
+    required: false
+
+  privacy_level:
+    definition: >
+      Sensitivity classification for the entity's data.
+    enum: [public, internal, private, restricted]
+    required: false
+
+  retention_policy:
+    definition: >
+      Suggested history retention in days for this entity (hint to Recorder/Influx policy).
+    type: integer
+    required: false
+    example: 30
+
+  validation_status:
+    definition: >
+      Current metadata validation state used by CI/workflows.
+    enum: [valid, pending_review, needs_fix, deprecated]
+    required: false
+
+  validator_id:
+    definition: >
+      Identifier of the validator/agent responsible for this entity's checks (ties into subsystem/orchestrator).
+    type: string
+    required: false
+    example: "athena"
+
+  audit_log_required:
+    definition: >
+      Whether audit events must be persisted when validation fails or rules fire.
+    type: boolean
+    required: false
+    example: true
+
+  # ── Units & numeric requirements ───────────────────────────────────
+  unit_of_measurement:
+    definition: >
+      Unit for numeric sensors. Required when state_class is numeric ("measurement", "total", "total_increasing").
+    type: string
+    required: false
+    example: "entities"
+
+  # ── Tier naming clarity (optional but explicit) ────────────────────
+  tier_symbol:
+    definition: >
+      The Greek symbol representing the tier (e.g., "β"). Redundant with `tier` but included for explicitness.
+    type: string
+    required: false
+    example: "β"
+
+  tier_name:
+    definition: >
+      Human-readable tier name (e.g., "Abstraction Tier"). Useful for documentation rendering.
+    type: string
+    required: false
+    example: "Abstraction Tier"
+
+tier_rules:
+  α:
+    required_fields: ["device_id"]
+    feeds_from: []
+    feeds_into: ["β", "η"]
+    annotations: ["tier", "canonical_id", "subsystem"]
+    validation:
+      directionality: "terminal_source"
+      regression_guard: true
+      override_aware: false
+
+  β:
+    required_fields: ["tier", "canonical_id", "alpha_source"]
+    feeds_from: ["α"]
+    feeds_into: ["γ", "δ", "ζ"]
+    annotations: ["tier", "canonical_id", "upstream_sources"]
+    validation:
+      directionality: "unidirectional"
+      regression_guard: true
+      override_aware: true
+
+  η:
+    required_fields: ["tier", "upstream_sources", "merge_logic"]
+    feeds_from: ["α", "β"]
+    feeds_into: ["γ", "δ"]
+    annotations: ["tier", "merge_strategy"]
+    validation:
+      directionality: "unidirectional"
+      aggregation_mandatory: true
+      override_aware: true
+      traceability: true
+
+  γ:
+    required_fields: ["tier", "source_entity", "formula_type"]
+    feeds_from: ["β", "η"]
+    feeds_into: ["δ", "ε", "ζ"]
+    annotations: ["tier", "score_model", "confidence"]
+    validation:
+      bounded: true
+      regression_guard: true
+      override_aware: true
+      traceability: true
+
+  δ:
+    required_fields: ["tier", "source_entity", "decay_type"]
+    feeds_from: ["γ", "β"]
+    feeds_into: ["ε", "ζ"]
+    annotations: ["tier", "decay_strategy"]
+    validation:
+      decay_bounds: true
+      regression_guard: true
+      override_aware: true
+      traceability: true
+
+  ε:
+    required_fields: ["tier", "source_entity", "threshold", "validation_type"]
+    feeds_from: ["δ", "γ"]
+    feeds_into: ["ζ"]
+    annotations: ["tier", "validator_id"]
+    validation:
+      threshold_required: true
+      fallback_required: true
+      traceability: true
+
+  ζ:
+    required_fields: ["tier", "primary_source", "fallback_behavior"]
+    feeds_from: ["ε", "δ", "β"]
+    feeds_into: []
+    annotations: ["tier", "decision_path"]
+    validation:
+      fallback_required: true
+      silence_protection: true
+      override_support: true
+      traceability: true
+
+  μ:
+    required_fields: ["tier", "target_tier"]
+    feeds_from: ["*"]
+    feeds_into: []
+    annotations: ["tier", "health_scope"]
+    validation:
+      alert_on_failure: true
+      audit_log_required: true
+
+ha_yaml:
+  automations:
+    # ── Automation ID Structure Rule ───────────────────────────────
+    automation_id:
+      definition: >
+        All Home Assistant automation IDs must be globally unique and follow the UUID format:
+          8-4-4-4-12 hexadecimal characters (e.g., 1a2b3c4d-5e6f-7a8b-9c0d-111213141516).
+        This ensures traceability, prevents collisions, and supports robust cross-referencing in CI and documentation.
+      type: string
+      required: true
+      pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+      example: "1a2b3c4d-5e6f-7a8b-9c0d-111213141516"
+
+  universal:
+    $schema: "http://json-schema.org/draft-07/schema#"
+    title: Home Assistant Universal Media Player
+    type: object
+    properties:
+      media_player:
+        type: array
+        items:
+          type: object
+          required: [platform, name]
+          properties:
+            platform:
+              const: universal
+            name:
+              type: string
+            unique_id:
+              type: string
+            device_class:
+              type: string
+            children:
+              type: array
+              items:
+                type: string # entity_id
+            active_child_template:
+              type: string # Jinja
+            state_template:
+              type: string # Jinja
+            browse_media_entity:
+              type: string # entity_id
+            attributes:
+              oneOf:
+                - type: object
+                  additionalProperties:
+                    type: string
+                    # format: "entity_id|attribute" or just "entity_id"
+                - type: array
+                  items:
+                    type: object
+                    additionalProperties:
+                      type: string
+            commands:
+              type: object
+              patternProperties:
+                "^[a-z0-9_]+$":
+                  $ref: "#/definitions/serviceCall" # cv.SERVICE_SCHEMA
+              additionalProperties: false
+          additionalProperties: false
+    definitions:
+      serviceTarget:
+        type: object
+        properties:
+          entity_id:
+            oneOf:
+              - type: string
+              - type: array
+                items:
+                  type: string
+          area_id:
+            oneOf:
+              - type: string
+              - type: array
+                items:
+                  type: string
+          device_id:
+            oneOf:
+              - type: string
+              - type: array
+                items:
+                  type: string
+        additionalProperties: true
+      serviceCall:
+        type: object
+        properties:
+          action:
+            type: string
+            pattern: "^[a-z0-9_]+\\.[a-z0-9_]+$"
+          service:
+            type: string
+            pattern: "^[a-z0-9_]+\\.[a-z0-9_]+$" # legacy alias
+          target:
+            $ref: "#/definitions/serviceTarget"
+          data:
+            type: object
+        additionalProperties: false
+        anyOf:
+          - required: [action]
+          - required: [service]
+
+  variables:
+    var:
+      type: map
+      required: true
+      description: "Configuration for a Home Assistant variable entity."
+      fields:
+        unique_id:
+          type: string
+          required: false
+          description: "Unique identifier for VAR entity, to enable overriding settings from within the UI, such as the entity name or room. Use with care, and only if explicitly required!"
+        friendly_name:
+          type: string
+          required: false
+          description: "Name to use in the frontend."
+        friendly_name_template:
+          type: template
+          required: false
+          description: "Template for the name to be used in the frontend (overrides friendly_name). Evaluated on every update. To pass a template to be evaluated once by var.set, use the friendly_name parameter in a data_template."
+        initial_value:
+          type: match_all
+          required: false
+          description: "Initial value when Home Assistant starts."
+        value_template:
+          type: template
+          required: false
+          description: "Template for the value (overrides initial_value). Evaluated on every update. To pass a template to be evaluated once by var.set, use the value parameter in a data_template."
+        attributes:
+          type: map
+          required: false
+          description: "Dictionary of attributes equivalent to that of Home Assistant template sensor attributes. Evaluated on every update."
+        tracked_entity_id:
+          type: "string | list"
+          required: false
+          description: "A list of entity IDs so the variable reacts to state changes of these entities."
+        tracked_event_type:
+          type: "string | list"
+          required: false
+          description: "A list of event types so the variable reacts to these events firing."
+        query:
+          type: string
+          required: false
+          description: "An SQL QUERY string, should return 1 result at most."
+        column:
+          type: string
+          required: false
+          description: "The SQL COLUMN to select from the result of the SQL QUERY."
+        restore:
+          type: boolean
+          required: false
+          default: true
+          description: "Restores the value of the variable whenever Home Assistant is restarted."
+        force_update:
+          type: boolean
+          required: false
+          default: false
+          description: "Trigger a state change event every time the value of the variable is updated, even if the value hasn't changed. If false, state change events will only be triggered by distinct changes in value."
+        unit_of_measurement:
+          type: string
+          required: false
+          description: "Defines the units of measurement of the variable, if any. This will also influence the graphical presentation in the history visualization as a continuous value. Variables with missing unit_of_measurement are shown as discrete values."
+        icon:
+          type: string
+          required: false
+          description: "Icon to display for the component."
+        icon_template:
+          type: template
+          required: false
+          description: "Template for the icon to be used in the frontend (overrides icon). Evaluated on every update. To pass a template to be evaluated once by var.set, use the icon parameter in a data_template."
+        entity_picture:
+          type: string
+          required: false
+          description: "Picture to display for the component."
+        entity_picture_template:
+          type: template
+          required: false
+          description: "Template for the entity_picture to be used in the frontend (overrides entity_picture). Evaluated on every update. To pass a template to be evaluated once by var.set, use the entity_picture parameter in a data_template."
+
+hestia_style_conventions:
+  global_header:
+    description: |
+      To ensure clarity, maintainability, and visual separation in HESTIA YAML packages,
+      use these conventions for global headers.
+    placement: at the very top of file
+    style_inputs:
+      - Use box-drawing characters and clear labeling for package name, context, tier, domain, and date.
+      - Place this header at the very top of the YAML file.
+      - fields:
+          title:
+            schema: ["str"]
+            required: true
+            meta-description: "The package or feature name, e.g. 'SONOS ALARM'."
+          description:
+            schema: ["str?"]
+            required: false
+            meta-description: "Short description of the package's purpose."
+          file_context:
+            schema: ["str"]
+            required: true
+            meta-description: "File or loader context, e.g. 'configuration.yaml', package name, or loader directive."
+          tier:
+            schema: ["str", "enum"]
+            required: true
+            meta-description: "Greek letter or tier name, e.g. 'γ'."
+          domain:
+            schema: ["str", "enum"]
+            required: true
+            meta-description: "Domain or logical grouping, e.g. 'automation', 'media', 'diagnostics'."
+          created:
+            schema: ["str", "date"]
+            required: true
+            meta-description: "Creation date in YYYY-MM-DD format."
+          last_updated:
+            schema: ["str?", "date?"]
+            required: false
+            meta-description: "Last updated date, if present."
+          dependencies:
+            schema: ["str?"]
+            required: false
+            meta-description: "List of dependencies or related files, if present."
+          github_url:
+            schema: ["str?"]
+            required: false
+            meta-description: "Link to the relevant GitHub repo, if present."
+          documentation_url:
+            schema: ["str?"]
+            required: false
+            meta-description: "Link to documentation, if present."
+      - All lines must be commented.
+      - Adjust content as appropriate for the package (e.g., name, tier, domain, add Last Updated, Dependencies, etc.).
+    approved_elements: ["⟫⟫", "•", "◀", "══"]
+    sample: |
+      # ══════════════════════════════════════════════════════════════════
+      # ⟫⟫ SONOS ALARM  •  Customizable Bedroom Music Alarm Package ◀
+      # ⟫⟫ configuration.yaml  •  packages: !include_dir_named integrations
+      # ⟫⟫ Tier: γ  •  Domain: automation  •  Created: 2025-06-14
+      # ══════════════════════════════════════════════════════════════════
+    notes:
+      - Use box-drawing characters and clear labeling for package name, context, tier, domain, and date.
+      - Place this header at the very top of the YAML file.
+      - Adjust content as appropriate for the package (e.g., name, tier, domain, add Last Updated, Dependencies, etc.).
+
+  section_divider:
+    description: |
+      To ensure clarity, maintainability, and visual separation in HESTIA YAML packages,
+      use these conventions for content dividers:
+    placement: before each major 'domain' section
+    style_inputs:
+      - Use box-drawing characters and clear labeling for section titles.
+      - Place the divider on a separate line, with no other content.
+      - fields:
+          section_title:
+            schema: ["str"]
+            required: true
+            meta-description: "The name of the section, e.g. 'Input Helpers', 'Scripts', 'Automations'."
+          description:
+            schema: ["str?"]
+            required: false
+            meta-description: "Optional short description of the section's purpose."
+          domain:
+            schema: ["str?", "enum?"]
+            required: false
+            meta-description: "Domain or logical grouping if relevant, e.g. 'automation', 'template'."
+      - Place before each major logical section (e.g., scripts, automations, helpers).
+      - Do not over-use; a subheader is not to be used as a meta-title.
+    approved_elements: ["═══", "#", ":", "•", "→"]
+    sample: |
+      # ═══ Input Helpers ═══
+      # ═══ Automations  •  Cleaning Logic & Notifications ═══
+      # ═══ Sensors  •  (REST → JSON) ═══
+      # ═══ Scripts ═══
+
+  Example Usage: |
+    # ══════════════════════════════════════════════════════════════════
+    # ⟫⟫ SONOS ALARM  •  Customizable Bedroom Music Alarm Package ◀
+    # ⟫⟫ configuration.yaml  •  packages: !include_dir_named integrations
+    # ⟫⟫ Tier: γ  •  Domain: automation  •  Created: 2025-06-14
+    # ══════════════════════════════════════════════════════════════════
+    #
+    # ═══ Input Helpers ═══
+    input_select:
+      ...
+    # ═══ Scripts ═══
+    script:
+      ...
+    # ═══ Automations ═══
+    automation:
+      ...
+  rationale:
+    - Improves readability and navigation in large YAML files.
+    - Supports automated documentation and code review.
+    - Encourages consistent structure across all HESTIA packages.

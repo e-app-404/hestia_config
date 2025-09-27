@@ -1,0 +1,62 @@
+name: Rehydration seed validation
+
+on:
+  pull_request:
+    paths:
+      - 'meta/rehydration/**'
+      - '.github/PULL_REQUEST_TEMPLATE/**'
+      - '.github/workflows/rehydration-seed.yml'
+
+jobs:
+  validate-seed:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate consolidated YAML exists
+        run: |
+          if ! ls meta/rehydration/**/consolidated_rehydration.yaml >/dev/null 2>&1; then
+            echo "consolidated_rehydration.yaml missing"; exit 1
+          fi
+
+      - name: Validate YAML syntax
+        run: |
+          python3 - <<'PY'
+          import sys, glob, yaml
+          files = glob.glob('meta/rehydration/**/consolidated_rehydration.yaml', recursive=True)
+          if not files:
+              print('no consolidated file found')
+              sys.exit(2)
+          for f in files:
+              with open(f) as fh:
+                  try:
+                      yaml.safe_load(fh)
+                      print('ok', f)
+                  except Exception as e:
+                      print('yaml parse error', f, e)
+                      sys.exit(3)
+          PY
+
+                - name: Lint seeds (structure)
+                  run: |
+                    python3 - <<'PY'
+          import glob, yaml, sys
+          files = glob.glob('meta/rehydration/**/consolidated_rehydration.yaml', recursive=True)
+          if not files:
+              sys.exit(0)
+          c = yaml.safe_load(open(files[0]))
+          required = ['session_recap','artifacts','phases','memory_vars','rehydration_seed']
+          missing = [r for r in required if r not in c]
+          if missing:
+              print('missing keys', missing)
+              sys.exit(4)
+          print('structure ok')
+          PY
+
+  pr-notify:
+    needs: validate-seed
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Emit seed summary
+        run: echo "Seed validated — see meta/rehydration for details"

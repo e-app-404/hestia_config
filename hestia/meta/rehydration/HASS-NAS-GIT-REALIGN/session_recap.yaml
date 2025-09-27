@@ -1,0 +1,80 @@
+session_label: HASS-NAS-GIT-REALIGN
+trace_id: trc-2025-09-24-01
+active_personas:
+  - name: Strategos
+    role: orchestration + governance
+  - name: Promachos
+    role: ops executor + shells, git, ACLs
+  - name: Kybernetes
+    role: meta-capture + enrichment
+operational_mode:
+  - repair
+  - parameterize
+  - guard
+escalation: 
+  details: NAS Git ACL & remote topology
+  escalation_context:
+    trigger: local repo not pushing to NAS; hard-coded /n/ha in code; no guardrails
+    mitigation: ACL fix, push topology change, parameterize code, add validator + CI guard
+last_validated_checkpoint:
+  label: "Local repo fixed, merged, pushed to origin; tailnet fetch-only; ADR-0016 implemented; workspace param + validator + CI guard added; PR body drafted"
+  version: "2025.9.24.22"
+  evidence: git push success, remote config, ADR note, .env.sample, validator script, CI workflow, PR body file
+governance_traits:    
+  allow_docs_reference_canonical_mount: true
+  forbid_hardcoded_mounts_in_code: true
+  require_ack_tokens_for_destructive_ops:
+    - ACK_DISABLE_SYSTEM_DAEMON
+    - ACK_AUTOMOUNT_CHANGES
+    - ACK_REPO_CLEAN
+unresolved_blockers: []
+strategic_posture:
+  intent: "stabilize + codify + template for reuse (smaller, repeatable diffs; strong guardrails)"
+  next_focus:
+    - "open PR from chore/parameterize-ha-mount to main; merge after review"
+    - "(optional) param-sweep across shell scripts; open PR + merge"
+    - "extend pattern to BB-8 Addon / Omega Registry (docs + guards; no code changes yet)"
+  summary:
+    overview: |
+      This session focused on making the repository portable for developer machines while
+      preserving canonical documentation references to the NAS mount path (/n/ha). The
+      approach was conservative: parameterize runtime/editor settings with an environment
+      variable (HA_MOUNT), add tracked sample files (.env.sample, .vscode-configs), and
+      enforce a validator to prevent reintroducing hard-coded /n/ha in code. Work was
+      performed on a feature branch (chore/parameterize-ha-mount) and pushed to origin.
+    technical_foundation: |
+      Core technologies and choices include Git (local NAS origin + optional tailnet mirror),
+      zsh/shell tooling, ripgrep (rg) with grep fallback in scripts, VS Code workspace samples,
+      GitHub Actions for CI, and ADR-based governance. Sensitive/editor-specific files
+      (.env, .vscode) remain untracked; tracked samples and a validator + CI guard protect
+      against regressions.
+    codebase_status: |
+      Tracked changes include: .env.sample, a hardened validator script (hestia/tools/validators/scan_hardcoded_ha.sh),
+      a GitHub Actions workflow to run the validator, workspace samples under .vscode-configs,
+      an ADR update (ADR-0016) referencing the samples, and a PR body file. A local pre-commit
+      hook was installed (local-only) to run the validator. The feature branch was pushed to origin.
+    problem_resolution: |
+      Issues encountered (ignored files, legitimate docs references, transient terminal restart)
+      were addressed by leaving sensitive files uncommitted while adding tracked samples,
+      excluding docs from the validator to avoid false positives, and re-running the final
+      verification steps after reconnecting. The validator + CI guard and pre-commit hook
+      provide continuous protection.
+    progress_tracking: |
+      Completed: branch creation and push, validator + CI workflow, .env.sample, VS Code samples,
+      ADR note, README, local pre-commit hook (local only), and PR body file. Optional work
+      (parameterization sweep across scripts, tracked hook-installer) remains open as separate
+      follow-ups.
+    active_work_state: |
+      The feature branch chore/parameterize-ha-mount is ready for a PR to main. CI is expected
+      to run the validator on the PR. A script-sweep plan exists and can be executed on a
+      separate throwaway branch if requested.
+    recent_operations: |
+      Representative commands and outcomes: created a probe that triggered the pre-commit
+      validator, validated the guard, created and committed workspace samples and ADR notes,
+      installed a local pre-commit hook, and pushed the feature branch to the NAS origin.
+      Validator checks reported "OK: no hard-coded /n/ha outside docs" at checkpoints.
+    continuation_plan: |
+      Immediate recommended action: open a PR from chore/parameterize-ha-mount to main using
+      the committed PR body (PR_BODY_chore-parameterize-ha-mount.md). Optional follow-ups:
+      run a parameterization sweep on a throwaway branch, or add a tracked installer script
+      for the local pre-commit hook.

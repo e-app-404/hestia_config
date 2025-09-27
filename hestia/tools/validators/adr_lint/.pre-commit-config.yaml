@@ -1,0 +1,9 @@
+repos:
+  - repo: local
+    hooks:
+      - id: hestia-adr-lint
+        name: hestia-adr-lint
+        entry: hestia-adr-lint hestia/docs/ADR --format human
+        language: system
+        pass_filenames: false
+        stages: [commit]

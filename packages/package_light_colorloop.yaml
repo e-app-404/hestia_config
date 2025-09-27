@@ -1,0 +1,79 @@
+---
+# ══════════════════════════════════════════════════════════════════
+# ⟫⟫ LIGHT COLORLOOP  •  Vaporwave Color Loop for Smart Bulbs ◀
+# ⟫⟫ configuration.yaml  •  packages: !include_dir_named packages
+# ⟫⟫ Tier: β  •  Domain: script  •  Created: 2025-07-17
+# ══════════════════════════════════════════════════════════════════
+script:
+  light_colorloop:
+    alias: Function - Light - Colorloop
+    description: >
+      Emulates a colorloop effect on a target light by cycling through a sequence of RGB values.
+      Useful for bulbs that do not natively support this effect.
+    mode: parallel
+    fields:
+      light:
+        description: 'The light to apply the colorloop effect to.'
+        example: 'light.smart_bulb'
+        required: true
+        selector:
+          entity:
+            domain: light
+
+      transition:
+        description: 'Time in seconds between each color transition.'
+        example: '5'
+        required: false
+        default: 5
+        selector:
+          number:
+            min: 1
+            max: 30
+            step: 1
+            unit_of_measurement: seconds
+            mode: slider
+
+      repeat_count:
+        description: 'Number of color changes to cycle through.'
+        example: '6'
+        required: false
+        default: 6
+        selector:
+          number:
+            min: 1
+            max: 100
+            step: 1
+            mode: box
+
+    variables:
+      colors:
+        - [247, 37, 133]
+        - [181, 23, 158]
+        - [114, 9, 183]
+        - [86, 11, 173]
+        - [72, 12, 168]
+        - [58, 12, 163]
+        - [63, 55, 201]
+        - [67, 97, 238]
+        - [72, 149, 239]
+        - [76, 201, 240]
+        - [245, 252, 31]
+        - [26, 9, 13]
+        - [74, 49, 77]
+
+    sequence:
+      - repeat:
+          count: "{{ repeat_count | default(6) | int }}"
+          sequence:
+            - alias: 'Change to color'
+              service: light.turn_on
+              target:
+                entity_id: "{{ light }}"
+              data:
+                transition: "{{ transition | default(5) | int }}"
+                rgb_color: >
+                  {{ colors[(repeat.index - 1) % colors | length] }}
+
+            - alias: 'Wait for the next color'
+              delay:
+                seconds: "{{ transition | default(5) | int }}"

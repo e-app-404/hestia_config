@@ -1,0 +1,19 @@
+#═══════════════════════════════════════════════════════════════
+# ▶ NOTIFY: Custom Notification Services ◀
+# Loader: !include domain/notify/custom_notify.yaml
+# Schema: notify (list)
+#═══════════════════════════════════════════════════════════════
+
+- platform: group
+  name: "Evert"
+  services:
+    - action: mobile_app_ephone_uk
+    - action: mobile_app_macbook
+
+- platform: group
+  name: all_devices
+  services:
+    - action: mobile_app_epad
+    - action: mobile_app_ephone_uk
+    - action: mobile_app_iphone11
+    - action: mobile_app_macbook

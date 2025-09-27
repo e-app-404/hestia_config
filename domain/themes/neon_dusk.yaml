@@ -1,0 +1,19 @@
+---
+modes:
+  dark:
+    primary-color: "#E91E63" # neon pink
+    accent-color: "#00E5FF" # cyan
+    warning-color: "#FFD54F" # warm yellow
+    success-color: "#26C6DA"
+    error-color: "#FF5370"
+    card-background-color: "rgba(15,17,26,0.65)"
+    ha-card-border-radius: "16px"
+    ha-card-box-shadow: "0 6px 24px rgba(0,0,0,0.45)"
+    primary-background-color: "#0A0C13" # canvas
+    secondary-background-color: "#0F1220"
+    text-color: "#ECEFF1"
+    secondary-text-color: "#AAB2C0"
+    paper-item-icon-color: "#AAB2C0"
+    paper-item-icon-active-color: "#FF2BD6"
+    # Optional backdrop gradient
+    background-image: "linear-gradient(135deg,#1b0d2a 0%,#0d1231 60%,#071d27 100%)"

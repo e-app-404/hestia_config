@@ -1,0 +1,4 @@
+---
+# NOTE: Recorder policy is now **centralized** in `packages/integrations/recorder.yaml`
+# per ADR-0014.v2. This file intentionally contains **no** `recorder:` block.
+# Keep as documentation/comments only to avoid duplicate top-level keys

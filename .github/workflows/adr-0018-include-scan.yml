@@ -1,0 +1,71 @@
+name: ADR-0018 include-scan
+
+on:
+  push:
+    branches:
+      - '**'
+  pull_request:
+    branches:
+      - '**'
+
+jobs:
+  include-scan:
+    name: ADR-0018 include-scan (warn-first)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run include-scan (warn-first for 30d)
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "Running ADR-0018 include-scan (warn-first mode)..."
+          # Determine enforcement date from repository timestamp file (if present)
+          ENFORCE_FILE=".github/ops/adr0018_enforce_since"
+          ENFORCE_EPOCH=0
+          if [ -f "$ENFORCE_FILE" ]; then
+            ENFORCE_ISO=$(cat "$ENFORCE_FILE" | tr -d '\n' || true)
+            if [ -n "$ENFORCE_ISO" ]; then
+              ENFORCE_EPOCH=$(date -d "$ENFORCE_ISO" +%s 2>/dev/null || date -j -f "%Y-%m-%dT%H:%M:%SZ" "$ENFORCE_ISO" +%s 2>/dev/null || true)
+            fi
+          fi
+          NOW_EPOCH=$(date +%s)
+          echo "Enforce date (ISO): ${ENFORCE_ISO:-<none>} (epoch: ${ENFORCE_EPOCH:-0})"
+          echo "Now epoch: ${NOW_EPOCH}"
+
+          # Paths/patterns that must never be tracked (prefix match)
+          BANNED_PREFIX='^(\.storage/|\.cloud/|\.venv|deps/|__pycache__/|\.mypy_cache/|hestia/reports/|\.trash/|\.quarantine/|artifacts/)'
+
+          WARN=0
+
+          echo "Checking for tracked banned path prefixes..."
+          BAD=$(git ls-files -z | xargs -0 -n1 | grep -E -n "$BANNED_PREFIX" || true)
+          if [ -n "$BAD" ]; then
+            echo "\nWARNING: Tracked files found matching ADR-0018 banned prefixes. These will fail CI after a 30-day grace period.\nPlease move/untrack these files per ADR-0018 and re-run." >&2
+            echo "$BAD" >&2
+            WARN=1
+          else
+            echo "No tracked banned path prefixes found."
+          fi
+
+          echo "Checking for tracked backup files (*.bk.*)..."
+          BK_FILES=$(git ls-files '*.bk.*' 2>/dev/null || true)
+          if [ -n "$BK_FILES" ]; then
+            echo "\nWARNING: Tracked backup files detected (must be untracked or moved to hestia/vault/backups). These will fail CI after a 30-day grace period:" >&2
+            echo "$BK_FILES" >&2
+            WARN=1
+          fi
+
+          if [ "$WARN" -eq 1 ]; then
+            if [ "$NOW_EPOCH" -ge "$ENFORCE_EPOCH" ] && [ "$ENFORCE_EPOCH" -ne 0 ]; then
+              echo "\nERROR: ADR-0018 enforcement active and violations detected. Failing CI." >&2
+              exit 1
+            else
+              echo "ADR-0018 include-scan: WARN (grace period active). See ADR-0018 for remediation steps."
+              exit 0
+            fi
+          else
+            echo "ADR-0018 include-scan: OK"
+            exit 0
+          fi

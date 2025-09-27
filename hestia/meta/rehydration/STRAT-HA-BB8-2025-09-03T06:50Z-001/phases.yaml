@@ -1,0 +1,41 @@
+phases:
+  - id: P1
+    label: Root-cause analysis (restart loops)
+    outputs: ["diagnostic hypotheses", "initial DIAG plan"]
+    status: completed
+
+  - id: P2
+    label: Supervised runloop + DIAG (run.sh)
+    outputs: ["RUNLOOP attempt", "child start/exit logs", "restart cap"]
+    status: completed
+
+  - id: P3
+    label: Health checks + heartbeats
+    outputs: ["/tmp/bb8_heartbeat_main", "/tmp/bb8_heartbeat_echo", "HEALTH_SUMMARY lines"]
+    status: completed
+
+  - id: P4
+    label: S6 wiring (single control-plane)
+    outputs: ["services.d/ble_bridge/run  run.sh", "services.d/echo_responder/down"]
+    status: completed
+
+  - id: P5
+    label: Log-path normalization + resilience
+    outputs: ["normalize_log_path()", "best-effort file append + stdout"]
+    status: completed
+
+  - id: P6
+    label: Supervisor-only operations adoption
+    outputs: ["stdout DIAG", "filestdout forwarder", "15s HEALTH_SUMMARY"]
+    status: completed
+
+  - id: P7
+    label: Documentation + governance
+    outputs:
+      - "docs/OPERATIONS_OVERVIEW.md (Supervisor-only)"
+      - "docs/SANITY_CHECKS.md"
+      - "docs/TROUBLESHOOTING_RECIPES.md"
+      - "docs/ADR/ADR-0011-supervisor-only-ops.md"
+    status: completed
+
+pending_copilot_instructions: []

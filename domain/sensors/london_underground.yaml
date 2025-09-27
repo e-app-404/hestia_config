@@ -1,0 +1,18 @@
+#═══════════════════════════════════════════════════════════════
+# ▶ SENSOR: Public Transportation (London Underground) ◀
+# Loader: !include_dir_merge_list domain/sensor
+# Schema: london_underground
+#═══════════════════════════════════════════════════════════════
+
+- platform: london_underground
+  line:
+    - Northern
+    - Windrush
+    - Central
+    - Circle
+    - District
+    - DLR
+    - Elizabeth line
+    - Hammersmith & City
+    - Jubilee
+    - Victoria

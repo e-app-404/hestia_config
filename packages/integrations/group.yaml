@@ -1,0 +1,8 @@
+---
+# ═════════════════════════════════════════════════════════════════════════════
+# ⟫⟫ Home Assistant Integration  •  Groups ◀
+# ⟫⟫ packages/integrations/group.yaml • packages: !include_dir_named packages
+# ⟫⟫ Tier: σ  •  Domain: configuration  •  Updated: 2025-08-22
+# ═════════════════════════════════════════════════════════════════════════════
+
+group: !include_dir_merge_named /config/domain/groups/

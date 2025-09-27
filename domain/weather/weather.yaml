@@ -1,0 +1,6 @@
+#═══════════════════════════════════════════════════════════════
+# ▶ WEATHER: Weather Platforms ◀
+# Loader: !include domain/weather/weather.yaml
+# Schema: weather
+#═══════════════════════════════════════════════════════════════
+weather:

@@ -1,0 +1,141 @@
+# ════════════════════════════════════════════════════════════════════════
+# ▶ LOGIC SENSOR: Weekday and Weekend Classification ◀
+# Loader: !include_dir_merge_list from entities/templates/binary_sensors/
+# Tier: γ  •  Domain: calendar  •  Created: 2025-06-12
+# ════════════════════════════════════════════════════════════════════════
+
+- binary_sensor:
+    - name: "Weekday"
+      unique_id: "calendar_logic_weekday"
+      icon: mdi:calendar-week
+      state: "{{ now().weekday() < 5 }}"
+      attributes:
+        tier: "γ"
+        canonical_id: "calendar_weekday_γ"
+        file: /config/hestia/binary_sensors/calendar_weekday.yaml
+        origin: datetime_logic
+        description: "Returns true if today is a weekday"
+        created: "2025-06-12"
+        domain: "calendar"
+        version: "1.1"
+        last_updated: "2025-07-18"
+
+    - name: "Weekend"
+      unique_id: "calendar_logic_weekend"
+      icon: mdi:calendar-weekend
+      state: "{{ now().weekday() in [5, 6] }}"
+      attributes:
+        tier: "γ"
+        canonical_id: "calendar_weekend_γ"
+        file: /config/hestia/binary_sensors/calendar_weekend.yaml
+        origin: datetime_logic
+        description: "Returns true if today is a weekend"
+        created: "2025-06-12"
+        domain: "calendar"
+        version: "1.1"
+        last_updated: "2025-07-18"
+
+    - name: "Monday"
+      unique_id: "calendar_logic_monday"
+      icon: mdi:calendar
+      state: "{{ now().weekday() == 0 }}"
+      attributes:
+        tier: "γ"
+        canonical_id: "calendar_monday_γ"
+        file: /config/hestia/binary_sensors/calendar_monday.yaml
+        origin: datetime_logic
+        description: "Returns true if today is Monday"
+        created: "2025-06-27"
+        domain: "calendar"
+        version: "1.1"
+        last_updated: "2025-07-18"
+
+    - name: "Tuesday"
+      unique_id: "calendar_logic_tuesday"
+      icon: mdi:calendar
+      state: "{{ now().weekday() == 1 }}"
+      attributes:
+        tier: "γ"
+        canonical_id: "calendar_tuesday_γ"
+        file: /config/hestia/binary_sensors/calendar_tuesday.yaml
+        origin: datetime_logic
+        description: "Returns true if today is Tuesday"
+        created: "2025-06-27"
+        domain: "calendar"
+        version: "1.1"
+        last_updated: "2025-07-18"
+
+    - name: "Wednesday"
+      unique_id: "calendar_logic_wednesday"
+      icon: mdi:calendar
+      state: "{{ now().weekday() == 2 }}"
+      attributes:
+        tier: "γ"
+        canonical_id: "calendar_wednesday_γ"
+        file: /config/hestia/binary_sensors/calendar_wednesday.yaml
+        origin: datetime_logic
+        description: "Returns true if today is Wednesday"
+        created: "2025-06-27"
+        domain: "calendar"
+        version: "1.1"
+        last_updated: "2025-07-18"
+
+    - name: "Thursday"
+      unique_id: "calendar_logic_thursday"
+      icon: mdi:calendar
+      state: "{{ now().weekday() == 3 }}"
+      attributes:
+        tier: "γ"
+        canonical_id: "calendar_thursday_γ"
+        file: /config/hestia/binary_sensors/calendar_thursday.yaml
+        origin: datetime_logic
+        description: "Returns true if today is Thursday"
+        created: "2025-06-27"
+        domain: "calendar"
+        version: "1.1"
+        last_updated: "2025-07-18"
+
+    - name: "Friday"
+      unique_id: "calendar_logic_friday"
+      icon: mdi:calendar
+      state: "{{ now().weekday() == 4 }}"
+      attributes:
+        tier: "γ"
+        canonical_id: "calendar_friday_γ"
+        file: /config/hestia/binary_sensors/calendar_friday.yaml
+        origin: datetime_logic
+        description: "Returns true if today is Friday"
+        created: "2025-06-27"
+        domain: "calendar"
+        version: "1.1"
+        last_updated: "2025-07-18"
+
+    - name: "Saturday"
+      unique_id: "calendar_logic_saturday"
+      icon: mdi:calendar
+      state: "{{ now().weekday() == 5 }}"
+      attributes:
+        tier: "γ"
+        canonical_id: "calendar_saturday_γ"
+        file: /config/hestia/binary_sensors/calendar_saturday.yaml
+        origin: datetime_logic
+        description: "Returns true if today is Saturday"
+        created: "2025-06-27"
+        domain: "calendar"
+        version: "1.1"
+        last_updated: "2025-07-18"
+
+    - name: "Sunday"
+      unique_id: "calendar_logic_sunday"
+      icon: mdi:calendar
+      state: "{{ now().weekday() == 6 }}"
+      attributes:
+        tier: "γ"
+        canonical_id: "calendar_sunday_γ"
+        file: /config/hestia/binary_sensors/calendar_sunday.yaml
+        origin: datetime_logic
+        description: "Returns true if today is Sunday"
+        created: "2025-06-27"
+        domain: "calendar"
+        version: "1.1"
+        last_updated: "2025-07-18"

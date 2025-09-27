@@ -1,0 +1,79 @@
+id: strategy_clarification_prompt
+mode: auto-optimization
+description: >
+  I want to establish a clean-slate rebuild of HESTIA that's not just a technical reset, but a systemic distillation of intent, purpose, and architecture. The current state is fragmented, with redundant docs, half-formed ideas, and legacy cruft. I need to use this archival pass not to preserve everything, but to identify what should be carried forward and why—so that what emerges post-reset is lean, navigable, and deeply intentional.
+personas_linked: "Promachos"
+
+hestia_reboot_strategy_contract:
+  status: in_progress
+  activity_contract:
+    notes: Status to change to complete after final parse of core/, meta/, work/.
+    purpose: >
+      Transform the cluttered, fragmented /share volume into a clean, modular, and intentional rebuild source for HESTIA. Not everything will be carried forward—only what has operational value, semantic role, or configuration logic still applicable.
+    objectives:
+      - Index and evaluate legacy documentation and configuration structures
+      - Identify essential artifacts worth carrying forward
+      - Flag or archive deprecated, redundant, or obsolete entries
+      - Reorganize content into role-based, operationally aligned domains
+    output:
+      - A series of tightly scoped deliverables that map the system as-is, support decision-making, and future operationalization.
+      - hestia_canonical_index:
+          - A YAML or Markdown index of all parsed content across core/, meta/, work/, and other active knowledge directories.
+          - Definition of the role each artifact serves (e.g., schema, system instruction, user prompt, devtool, sensor registry, etc.)
+          - Preservation grade:
+              Label each item with a recommended next-steps action: keep as-is archive-only refactor discard
+          - Utilization Matrix:
+              Cross-reference which files are referenced, used, or rendered by: automations scripts template success_indicators toolchains
+          - Indexed Artifacts: see hestia_canonical_index.yaml
+      - handoff scaffold: JSON/YAML/Markdown-ready bundle that can feed into the reinitialization protocol post-reset.
+      - canonical_index.yaml: live artifact with metadata per entry
+      - rebuild_strategy.md: high-level sequencing of post-reset operations
+      - system_instruction_patch.yaml: to apply new operating assumptions
+    scope:
+      criteria_for_deprecation:
+        - legacy placeholder files with no references or evolution
+        - redundant copies or near-duplicates across domains
+        - passive archival logs not referenced by anything
+      criteria_for_preservation:
+        - referenced in a system instruction or GPT schema
+        - actively used in prompt workflows, tools, or configuration logic
+        - author-tagged as authoritative, foundational, or in active use
+      exclude:
+        - GIT mirror clones, extracted archives, cache folders
+        - corrupted, abandoned, or junk files unless tagged
+      include:
+        - all folders in core/, work/, vault/, meta/ (unless explicitly archived)
+        - system declarations and persona constructs
+        - included_folders:
+            - core/: >
+                "- Primary domain for runtime-ready knowledge and policy definitions"
+                "- Contains foundational logic in core/persona, core/gnos, core/schema, core/system"
+    success_indicators:
+      - Every artifact is tagged, contextualized, and indexed with fate
+      - Nothing preserved without a reason
+      - Rebuild sequence emerges clearly from retained structure
+
+handoff_scaffold:
+  id: hestia_toolchain_handoff_2025
+  status: active
+  last_updated: 2025-06-07T00:00:00.000Z
+  scope: runtime + declarative logic
+  deliverables:
+    - output/signal_emitters.yaml:
+      maps_to: "config/sensors/"
+    - output/sensor_class_matrix.yaml:
+      maps_to: "config/sensors/"
+    - output/logic_path_index.yaml:
+      maps_to: config/logic/
+    - core.config_entries
+    - core.device_registry
+    - core.entity_registry
+    - custom_templates/
+  notes: |
+    This scaffold reflects the minimum viable logic architecture required for bootstrapping the rebuilt Home Assistant environment with declarative runtime logic, signal emitter traceability, and macro pattern recall.
+    To be consumed by: config/00_init_layer and config/init.yaml hooks
+    All artifacts are ready for format-safe injection.
+  handoff_trigger: manual activation post-reset completion
+  handoff_consumer:
+    - config/00_init_layer
+    - config/init.yaml hooks

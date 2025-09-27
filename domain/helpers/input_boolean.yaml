@@ -1,0 +1,9 @@
+#═══════════════════════════════════════════════════════════════
+# ▶ HELPER: Boolean Toggles ◀
+# Loader: !include domain/helpers/input_boolean.yaml
+# Schema: input_boolean
+#═══════════════════════════════════════════════════════════════
+input_boolean:
+house_alert_enabled:
+  name: "House Alert"
+  icon: mdi:package

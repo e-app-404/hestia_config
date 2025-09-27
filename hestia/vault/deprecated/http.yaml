@@ -1,0 +1,15 @@
+#####
+# The http component serves all files and data required for the
+# Home Assistant frontend.
+#
+# https://www.home-assistant.io/components/http/
+#####
+
+http:
+  #ssl_profile: intermediate
+  #ssl_certificate: !secret fullchain_pem
+  #ssl_key: !secret privkey_pem
+  #ip_ban_enabled: true
+  #login_attempts_threshold: 5
+  #use_x_forwarded_for: true
+  #trusted_proxies: !secret proxy_list

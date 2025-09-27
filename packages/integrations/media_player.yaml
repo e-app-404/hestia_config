@@ -1,0 +1,8 @@
+---
+# ═══════════════════════════════════════════════════════════════════════════════
+# ⟫⟫ UNIVERSAL MEDIA PLAYER • Universal Media Player multi media_player combo ◀
+# ⟫⟫ Loader: .config.yaml    •    packages: !include_dir_named packages
+# ⟫⟫ Domain: integration • Subsystem: orpheus •  Updated: 2025-08-12
+# ═══════════════════════════════════════════════════════════════════════════════
+
+media_player: {}

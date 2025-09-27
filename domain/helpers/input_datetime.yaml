@@ -1,0 +1,12 @@
+#═══════════════════════════════════════════════════════════════
+# ▶ HELPER: Date/Time Values ◀
+# Loader: !include domain/helpers/input_datetime.yaml
+# Schema: input_datetime
+#═══════════════════════════════════════════════════════════════
+#input_datetime:
+
+git_last_push_timestamp:
+  name: git last push timestamp
+  has_date: true
+  icon: mdi:restart
+  has_time: true

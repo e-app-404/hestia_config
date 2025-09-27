@@ -1,0 +1,23 @@
+# File: /config/entities/inference/playstation_activity.yaml
+# Description: β-tier motion recent sensors with delay_off logic (Phase 2)
+# Created: 2025-06-11
+# Version: 1.0
+
+- platform: template
+  sensors:
+    bedroom_ps4_game_active_beta:
+      friendly_name: 'Bedroom PS4 Game Active (β)'
+      unique_id: 'bedroom_ps4_game_active_beta'
+      icon_template: mdi:controller
+      device_class: running
+      value_template: >
+         {{ state_attr('media_player.playstation_4', 'media_content_type') == 'game' and
+            is_state('media_player.playstation_4', 'playing') }}
+      attribute_templates:
+         tier: >
+            {{ ['β','η','γ','ζ'] | tojson }}
+         domain: 'inference'
+         file: 'config/entities/inference/playstation_activity.yaml'
+         description: >
+            Inference sensor to detect if the PS4 in the bedroom is actively running a game.
+            Used by γ-tier logic sensors to determine entertainment engagement states.

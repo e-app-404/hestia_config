@@ -1,0 +1,76 @@
+sensor:
+  - name: Metadata - Temperature Trends (Delta)
+    unique_id: metadata_temperature_trends_delta
+    state: active
+    attributes:
+      description: "Delta-tier temperature trend sensors for environmental monitoring"
+      file: /config/hestia/sensors/delta/climate/temperature_trends.yaml
+      version: 1.0.0
+      last_updated: '2025-04-26'
+      tier: "μ"
+      subsystem: "aether"
+      canonical_id: "metadata_temperature_trends_delta_μ"
+      origin_file: "/config/hestia/config/aether/templates/aether_binary_trend_flags.yaml"
+
+  - name: bedroom_temperature_falling
+    unique_id: bedroom_temperature_falling
+    device_class: cold
+    state: "{{ is_state('sensor.bedroom_temperature_trend', 'falling') }}"
+    attributes:
+      gradient: >
+        {{ state_attr('sensor.bedroom_temperature_trend', 'gradient') | float(0) }}
+      value: >
+        {{ states('sensor.combined_temperature_bedroom') | float(20) }}
+      description: "Detects falling temperature trends in the bedroom using rolling gradient analysis with temporal decay."
+      unit_of_measurement: "°C"
+      icon: "mdi:thermometer-chevron-down"
+      canonical_id: "sensor_bedroom_temperature_falling_δ"
+      tier: "δ"
+      subsystem: "aether"
+      module: "Climate Monitoring"
+      type: "trend"
+      role: "detector"
+      config_filepath: "/config/hestia/sensors/delta/climate/temperature_trends.yaml"
+      Tags: "bedroom,temperature,falling,δ,aether"
+
+  - name: bedroom_temperature_rising
+    unique_id: bedroom_temperature_rising
+    device_class: heat
+    state: "{{ is_state('sensor.bedroom_temperature_trend', 'rising') }}"
+    attributes:
+      gradient: >
+        {{ state_attr('sensor.bedroom_temperature_trend', 'gradient') | float(0) }}
+      value: >
+        {{ states('sensor.combined_temperature_bedroom') | float(20) }}
+      description: "Detects rising temperature trends in the bedroom using rolling gradient analysis with temporal decay."
+      unit_of_measurement: "°C"
+      icon: "mdi:thermometer-chevron-up"
+      canonical_id: "sensor_bedroom_temperature_rising_δ"
+      tier: "δ"
+      subsystem: "aether"
+      module: "Climate Monitoring"
+      type: "trend"
+      role: "detector"
+      config_filepath: "/config/hestia/sensors/delta/climate/temperature_trends.yaml"
+      Tags: "bedroom,temperature,rising,δ,aether"
+
+  - name: living_room_temperature_falling
+    unique_id: living_room_temperature_falling
+    device_class: cold
+    state: "{{ is_state('sensor.living_room_temperature_trend', 'falling') }}"
+    attributes:
+      gradient: >
+        {{ state_attr('sensor.living_room_temperature_trend', 'gradient') | float(0) }}
+      value: >
+        {{ states('sensor.combined_temperature_living_room') | float(20) }}
+      description: "Detects falling temperature trends in the living room using rolling gradient analysis with temporal decay."
+      unit_of_measurement: "°C"
+      icon: "mdi:thermometer-chevron-down"
+      canonical_id: "sensor_living_room_temperature_falling_δ"
+      tier: "δ"
+      subsystem: "aether"
+      module: "Climate Monitoring"
+      type: "trend"
+      role: "detector"
+      config_filepath: "/config/hestia/sensors/delta/climate/temperature_trends.yaml"
+      Tags: "living_room,temperature,falling,δ,aether"

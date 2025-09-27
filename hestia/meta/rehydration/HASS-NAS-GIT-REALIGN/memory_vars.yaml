@@ -1,0 +1,21 @@
+memory_vars:
+  last_valid_patch: "push main -> origin (6361248) with local snapshot merged"
+  last_decision_checkpoint: "ADR-0016 enforced; origin push primary; tailnet fetch-only"
+  entities_cluster:
+    devices:
+      - macbook
+      - ds220plus (NAS)
+      - homeassistant (Samba export: //homeassistant.local/config)
+    networks:
+      - LAN: 192.168.0.0/24
+      - Tailnet: 100.93.61.53 (ds220plus)
+  aliases:
+    origin_repo: "ssh://gituser@192.168.0.104/volume1/git-mirrors/ha-config.git"
+    tailnet_repo: "ssh://gituser@100.93.61.53/volume1/git-mirrors/ha-config.git (fetch-only)"
+  inclusion_coverage:
+    ha-config: "guards active"
+    bb8-addon: "no hard-coded paths; guard ready to add"
+    omega-registry: "docs-only links to .storage; guard ready to add"
+  open_validation_loops: []
+  semantic_summary: >
+    Workspace and NAS flows normalized; code parameterized; docs authoritative; network remotes disciplined.

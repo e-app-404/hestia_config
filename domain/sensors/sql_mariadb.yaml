@@ -1,0 +1,48 @@
+
+#═══════════════════════════════════════════════════════════════
+# ▶ SQL SENSORS: MariaDB version ◀
+# Loader: !include_dir_merge_list domain/sensor
+# Schema: sql
+# Info: https: //www.home-assistant.io/components/sensor.sql/
+#═══════════════════════════════════════════════════════════════
+##  - name: MariaDB Database Size (MiB)
+##    db_url: !secret mariadb_url
+##    query: >
+##      SELECT ROUND(SUM(data_length + index_length) / POWER(1024,2), 1) AS value
+##      FROM information_schema.tables
+##      WHERE table_schema = 'homeassistant';
+##    column: "value"
+##    unit_of_measurement: MiB
+##    device_class: data_size
+##    state_class: measurement
+##    unique_id: mariadb_db_size_mib
+##
+##  - name: MariaDB Status
+##    db_url: !secret mariadb_url
+##    query: >
+##      SELECT CASE WHEN CAST(VARIABLE_VALUE AS UNSIGNED) > 0
+##                  THEN 'running' ELSE 'stopped' END AS running
+##      FROM information_schema.GLOBAL_STATUS
+##      WHERE VARIABLE_NAME = 'Uptime'
+##      LIMIT 1;
+##    column: "running"
+##    unique_id: mariadb_status
+##
+##  - name: MariaDB Buffer Pool (GiB)
+##    db_url: !secret mariadb_url
+##    query: "SELECT ROUND(@@innodb_buffer_pool_size/1024/1024/1024, 1) AS value;"
+##    column: "value"
+##    unit_of_measurement: GiB
+##    state_class: measurement
+##    unique_id: mariadb_buffer_pool_gib
+##
+##  - name: MariaDB Connections
+##    db_url: !secret mariadb_url
+##    query: >
+##      SELECT VARIABLE_VALUE AS connections
+##      FROM information_schema.GLOBAL_STATUS
+##      WHERE VARIABLE_NAME = 'Threads_connected'
+##      LIMIT 1;
+##    column: "connections"
+##    state_class: measurement
+##    unique_id: mariadb_connections

@@ -1,0 +1,55 @@
+xplab_portal_manifest:
+  version: 1
+  root: /volume1/web
+  deliverables:
+    - path: /volume1/web/public/index.html
+      type: text/html
+      visibility: public
+      purpose: Public landing & public service catalog
+      depends_on:
+        [/_assets/app.css, /_assets/app.js, /_assets/portal.config.json]
+
+    - path: /volume1/web/portal/index.html
+      type: text/html
+      visibility: private
+      purpose: Authenticated ops console with tiles, status, Grafana embed, app slot
+      depends_on:
+        [/_assets/app.css, /_assets/app.js, /_assets/portal.config.json]
+      guarded_by: [DSM reverse proxy auth, IP allowlist]
+
+    - path: /volume1/web/_assets/app.css
+      type: text/css
+      purpose: Theme, layout, tiles, badges, dark/light & HA-driven theme
+
+    - path: /volume1/web/_assets/app.js
+      type: application/javascript
+      purpose: Config loader, tile renderer, status badge fetcher, theme logic
+
+    - path: /volume1/web/_assets/portal.config.json
+      type: application/json
+      purpose: Declarative configuration (tiles, widgets, grafana URL, theme/presence entities)
+
+    - path: /volume1/web/portal/apps/README.txt
+      type: text/plain
+      purpose: Guidance for client-side utilities
+
+    - path: /volume1/web/README-portal-setup.md
+      type: text/markdown
+      purpose: DSM Reverse Proxy setup, Cloudflare cache hints, testing checklist
+
+  expected_reverse_proxy_rules:
+    - location: "/portal" # Protect with DSM login + Tailscale/IP allowlist
+      upstream: "http://127.0.0.1:80/portal"
+    - location: "/ha" # Restrict to portal users only; strip prefix
+      upstream: "http://192.168.0.129:8123"
+    - location: "/grafana" # Read-only dashboard or DSM-authenticated session
+      upstream: "http://<grafana-host>:3000"
+
+  acceptance_criteria:
+    - public_landing_reachable: true
+    - portal_auth_enforced: true
+    - tiles_render_from_config: true
+    - status_badges_update_within_seconds: 5
+    - grafana_panel_embeds_successfully: true
+    - theme_auto_and_toggle_work: true
+    - private_tiles_hidden_on_public: true

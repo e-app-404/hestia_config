@@ -1,0 +1,31 @@
+# ════════════════════════════════════════════════════════════════════════
+# ▶ VARIABLE  •  VAR  •  Home Assistant Variables (HACS) ◀
+# Declare generic variable entities using the var.set service
+# Loader: !include_dir_merge_named  •  merge all files as a dictionary
+# Tier: δ  •  Domain: recorder  •  Created: 2025-08-12
+# ════════════════════════════════════════════════════════════════════════
+
+plex_tv_index:
+  friendly_name: "Plex TV Index"
+  unique_id: "variable_plex_tv_index"
+  initial_value: 0
+  restore: true
+  unit_of_measurement: "episodes"
+  attributes:
+    shows: "{}" # JSON string: { "Title": "ratingKey", ... }
+    seasons: "{}" # JSON string: { "Title": <season_count>, ... }
+    episodes: "{}" # JSON string: { "Title": <episode_count>, ... }
+    updated: ""
+  icon: mdi:television-box
+
+plex_movie_index:
+  friendly_name: "Plex Movie Index"
+  unique_id: "variable_plex_movie_index"
+  initial_value: 0
+  restore: true
+  unit_of_measurement: "movies"
+  attributes:
+    movies: "{}" # JSON string: { "Title": "ratingKey", ... }
+    year_released: "{}" # JSON string: { "Title": <year>, ... }
+    updated: ""
+  icon: mdi:movie

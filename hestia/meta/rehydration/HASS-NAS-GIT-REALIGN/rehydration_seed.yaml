@@ -1,0 +1,46 @@
+rehydration_seed:
+  version: 1.0
+  handoff_tag: "handoff-HA-GIT-2025-09-24T22:30Z"
+  governance_traits:
+    allow_docs_reference_canonical_mount: true
+    forbid_hardcoded_mounts_in_code: true
+    require_ack_tokens_for_destructive_ops:
+      - ACK_DISABLE_SYSTEM_DAEMON
+      - ACK_AUTOMOUNT_CHANGES
+      - ACK_REPO_CLEAN
+    guards:
+      - hardcoded_path_validator
+      - precommit_local
+      - github_actions_guard
+      - symlink_nestedgit_bigfile_checks
+  strategic_context:
+    objective: "Stable HA config workflow with NAS mirror + Tailnet fetch-only"
+    success_criteria:
+      - "git ls-remote origin works"
+      - "CI guard passes on PRs"
+      - "No new hard-coded /n/ha in code"
+  inputs:
+    repo_root: "$HOME/hass"
+    env_template: ".env.sample"
+    vscode_sample: ".vscode-configs/config-lean.sample.code-workspace"
+    adr_ref: "hestia/docs/ADR/ADR-0016-canonical-ha-smb-mount.md"
+    nas_repo_path: "/volume1/git-mirrors/ha-config.git"
+  remotes:
+    origin: "ssh://gituser@192.168.0.104/volume1/git-mirrors/ha-config.git"
+    tailnet:
+      url: "ssh://gituser@100.93.61.53/volume1/git-mirrors/ha-config.git"
+      push: "disabled"
+  acceptance_tests:
+    - name: "Origin visibility"
+      cmd: "git -C \"$HOME/hass\" ls-remote origin"
+    - name: "Validator"
+      cmd: "bash hestia/tools/validators/scan_hardcoded_ha.sh"
+  resume_instructions:
+    - "If PR not yet opened: create PR from chore/parameterize-ha-mount to main using PR_BODY file."
+    - "If extending guards to other repos: copy validator, CI workflow, .env.sample, workspace sample."
+  outputs:
+    - ".env.sample"
+    - ".vscode-configs/*"
+    - "hestia/tools/validators/scan_hardcoded_ha.sh"
+    - ".github/workflows/hardcoded-ha-guard.yml"
+    - "ADR-0016 updated Implementation note"

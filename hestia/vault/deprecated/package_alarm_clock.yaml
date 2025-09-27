@@ -1,0 +1,304 @@
+---
+################################################################################
+# Alarm Clock
+################################################################################
+
+# A lot of this package has come from the following thread:
+# https://community.home-assistant.io/t/creating-a-alarm-clock/410/315
+
+### Inputs ###
+input_datetime:
+  wakeup_time:
+    name: Wakeup Time
+    has_date: false
+    has_time: true
+    # initial: 05:00
+
+  sonos_alarm_time:
+    name: "Alarm Time"
+    has_date: false
+    has_time: true
+
+input_number:
+  wakeup_duration:
+    name: Wakeup Duration
+    icon: mdi:clock-in
+    # initial: 30
+    min: 0
+    max: 60
+    step: 5
+    unit_of_measurement: Minutes
+
+input_select:
+  alarm_type:
+    name: Alarm Type
+    options:
+      - Music
+      - Plex
+      - News
+      - Off
+    # initial: Music
+    icon: mdi:alarm
+
+  sonos_alarm_days:
+    name: "Alarm Recurrence"
+    options:
+      - "DAILY"
+      - "WEEKDAYS"
+      - "WEEKENDS"
+      - "ON_4"
+
+  sonos_alarm_target:
+    name: "SONOS Speakers to play alarm"
+    options:
+      - "bedroom - SONOS Surround"
+      - "bedroom - SONOS Soundbar"
+      - "ensuite - SONOS Roam"
+
+input_boolean:
+  sonos_alarm_active:
+    name: "Enable Sonos Alarm"
+    icon: mdi:alarm-check
+    initial: off
+
+
+  dynamic_alarm_enable:
+    name: "Enable Alarm"
+
+input_datetime:
+  dynamic_alarm_time:
+    name: "Alarm Time"
+    has_time: true
+    has_date: false
+
+input_select:
+  dynamic_alarm_zone:
+    name: "Target Sonos Zone"
+    options:
+      - "media_player.bedroom_sonos_surround"
+      - "media_player.bedroom_sonos_ray"
+
+input_number:
+  dynamic_alarm_volume:
+    name: "Alarm Volume"
+    min: 0.0
+    max: 1.0
+    step: 0.05
+
+input_boolean:
+  dynamic_alarm_include_group:
+    name: "Include Linked Zones"
+
+
+### Sensors ###
+sensor:
+  - platform: template
+    sensors:
+      wakeup_time:
+        friendly_name: Wakeup Time
+        # entity_id: input_datetime.wakeup_time
+        value_template: >
+          {{ (states.input_datetime.wakeup_time.attributes.timestamp |
+              int | timestamp_custom("%H:%M",False)) }}
+      wakeup_alarm_start_time:
+        # entity_id: input_datetime.wakeup_time, input_number.wakeup_duration
+        friendly_name: Alarm Clock Start
+        value_template: >
+          {{ (((states.input_datetime.wakeup_time.attributes.timestamp |
+              int) - (states.input_number.wakeup_duration.state | int * 60)) |
+              timestamp_custom("%H:%M",False)) }}
+      wakeup_alarm_midpoint:
+        # entity_id: input_datetime.wakeup_time, input_number.wakeup_duration
+        friendly_name: Alarm Clock Midpoint
+        value_template: >
+          {{ (((states.input_datetime.wakeup_time.attributes.timestamp |
+              int) - ((states.input_number.wakeup_duration.state |
+              int * 60)/2 )) | timestamp_custom("%H:%M",False)) }}
+
+automation:
+  ################################################################################
+  - id: 'function_wakeup_lights_001'
+    alias: 'Function - Wakeup - Lights'
+    trigger:
+      - platform: template
+        value_template: >
+          {{ (states.sensor.time.state ==
+              states.sensor.wakeup_alarm_start_time.state) }}
+      - platform: time
+        at: input_datetime.wakeup_time
+    condition:
+      condition: and
+      conditions:
+        - condition: state
+          entity_id: input_boolean.alarm_clock_enabled
+          state: 'on'
+        - condition: state
+          entity_id: sun.sun
+          state: below_horizon
+        - condition: state
+          entity_id: person.evert
+          state: home
+    action:
+      - alias: 'Turn on bedroom main light'
+        service: light.turn_on
+        data:
+          entity_id: light.bedroom_main_alpha_matter
+          profile: energize
+          brightness_pct: 100
+      - alias: 'Transition master bedroom table lamps'
+        service: script.light_transition
+        data:
+          entity_id: group.bedroom_lights_all
+          starting_brightness_pct: 10
+          ending_brightness_pct: 100
+          interval_pct: 10
+          transition_time: >
+            {{ states.input_number.wakeup_duration.state | multiply(60) | int - 1 }}
+      - alias: 'Turn on the ensuite lightstrip'
+        service: light.turn_on
+        data:
+          entity_id: light.ensuite_lightstrip_alpha
+          effect_list: Sunrise
+          brightness_pct: 100
+      - alias: 'Turn on morning lights'
+        service: light.turn_on
+        data:
+          entity_id: group.bedroom_lights_desk_area
+          brightness_pct: 50
+      - alias: 'Set bedroom entrance lamp to 100% brightness'
+        service: light.turn_on
+        data:
+          entity_id: light.light.bedroom_entrance_alpha_matter
+          kelvin: 3000
+          brightness_pct: 100
+  ################################################################################
+  - id: 'function_wakeup_apple_tv_001'
+    alias: 'Function - Wakeup - Apple TV'
+    trigger:
+      - platform: template
+        value_template: >
+          {{ (states.sensor.time.state ==
+              states.sensor.wakeup_alarm_midpoint.state) }}
+    condition:
+      condition: and
+      conditions:
+        - condition: state
+          entity_id: binary_sensor.workday
+          state: 'on'
+    action:
+      service: script.function_wakeup_apple_tv
+  ################################################################################
+  - id: 'function_wakeup_vacuum_001'
+    alias: 'Function - Wakeup - Vacuum'
+    trigger:
+      - platform: time
+        at: input_datetime.wakeup_time
+    condition:
+      condition: and
+      conditions:
+        - condition: state
+          entity_id: binary_sensor.workday
+          state: 'on'
+    action:
+      - service: vacuum.start
+        data:
+          entity_id:
+            - vacuum.valetudo_roborocks5
+################################################################################
+
+script:
+  ################################################################################
+  function_wakeup_apple_tv:
+    alias: 'Function - Wakeup - Apple TV'
+    sequence:
+      # Device wakeup
+      - service: remote.send_command
+        data:
+          entity_id: remote.master_bedroom_apple_tv
+          command:
+            - menu
+      - delay:
+          seconds: 15
+      # Go to the home menu
+      - service: remote.send_command
+        data:
+          entity_id: media_player.bedroom_apple_tv_omega
+          command:
+            - top_menu
+      - delay:
+          seconds: 1
+      - service: remote.send_command
+        data:
+          entity_id: remote.bedroom_apple_tv_omega
+          command:
+            - top_menu
+      - delay:
+          seconds: 1
+      # Now figure out what we're doing
+      - choose:
+          ############
+          ### Plex ###
+          ############
+          - conditions:
+              - condition: state
+                entity_id: input_select.alarm_type
+                state: 'Plex'
+            sequence:
+              # Open Plex
+              - service: media_player.select_source
+                data:
+                  source: Plex
+                target:
+                  entity_id: media_player.bedroom_apple_tv_omega
+              - delay:
+                  seconds: 15
+              # Go to alarm clock playlist and shuffle
+              - service: remote.send_command
+                data:
+                  entity_id: remote.bedroom_apple_tv_omega
+                  delay_secs: 1
+                  command:
+                    - left
+                    - down
+                    - down
+                    - down
+                    - down
+                    - down
+                    - down
+                    - select
+                    - select
+                    - up
+                    - right
+                    - select
+          ############
+          ### News ###
+          ############
+          - conditions:
+              - condition: state
+                entity_id: input_select.alarm_type
+                state: 'News'
+            sequence:
+              # TODO
+              - delay: 00:00:00
+          #############
+          ### Music ###
+          #############
+          - conditions:
+              - condition: state
+                entity_id: input_select.alarm_type
+                state: 'Music'
+            sequence:
+              - action: media_player.volume_set
+                data:
+                  volume_level: 0.35
+                target:
+                  entity_id: media_player.bedroom_sonos_surround
+              - action: media_player.play_media
+                target:
+                  entity_id: media_player.bedroom_sonos_surround
+                data:
+                  media_content_type: playlist
+                  media_content_id: !secret spotify_morning_playlist_url
+                  enqueue: true
+
+################################################################################

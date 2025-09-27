@@ -1,0 +1,14 @@
+---
+# ═════════════════════════════════════════════════════════════════════════════
+# ⟫⟫ Home Assistant Logger  •  Defines the level of HA logging activity ◀
+# ⟫⟫ packages/integrations/logger.yaml  •  packages: !include_dir_named packages
+# ⟫⟫ Tier: σ  •  Domain: diagnostics  •  Updated: 2025-07-19
+# ═════════════════════════════════════════════════════════════════════════════
+
+# Logger configuration for troubleshooting integrations
+logger:
+  default: info
+  logs:
+    homeassistant.components.influxdb: debug
+    influxdb_client.client.write: debug
+    influxdb_client.client.influxdb_client: debug

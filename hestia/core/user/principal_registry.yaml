@@ -1,0 +1,310 @@
+_meta:
+  title: "Principal registry"
+  description: "Canonical registry of principals used by Hestia for operations, automation, and governance. Contains non-secret metadata and references to credential artifacts stored elsewhere (secrets.yaml, OS keychain)."
+  date_created: 2025-09-22
+  date_updated: 2025-09-23
+  file_path: "hestia/core/user/principal_registry.yaml"
+  references:
+    - path: "hestia/core/user/principal_registry.template.yaml"
+    - path: "hestia/deploy/ha_mount_helper"
+    - path: "hestia/deploy/com.local.ha.mount.real.plist"
+    - path: "hestia/deploy/strategos_takeover_kit_ha_influx.md"
+  maintainer: "evertappels"
+  contact: "!secret user_email"
+  version: "1.0"
+  notes: "This file SHOULD NOT contain private key material or plaintext secrets. Use !secret references to `secrets.yaml` or OS keychain references in credentials blocks."
+
+principals:
+  - urn: "urn:principal:macos:evertappels"
+    alias: evertappels
+    role_type: "Human operator"
+    system_scope: "macOS developer workstation and local repo workspace"
+    auth_domain: "macOS local"
+    credential_artifacts: "Local account; uses sudo when needed; SSH keys live under ~/.ssh (do NOT store private key contents in this file)"
+    permissions: "User-level + sudo; can create venvs, run scripts, and push to branches permitted to their Git account"
+    notes: "Primary interactive developer/operator on the Mac."
+    credentials:
+      keys:
+        - path: "~/.ssh/ha_ssh_key"
+          public: "~/.ssh/ha_ssh_key.pub"
+        - path: "~/.ssh/id_ed25519"
+          public: "~/.ssh/id_ed25519.pub"
+        - path: "~/.ssh/id_rsa"
+          public: "~/.ssh/id_rsa.pub"
+      files:
+        - path: "~/.gitconfig"
+        - path: "~/.ssh/config"
+        - path: "~/.ssh/known_hosts"
+        - path: "~/.ssh/authorized_keys"
+      registry:
+        - path: "/Users/evertappels/.ssh/registry/omega_registry_master.audit.json"
+      # Home Assistant UI login (username/password stored in secrets.yaml)
+      passwords:
+        - username: !secret homeassistant_user
+          password: !secret homeassistant_pass
+    # Consolidated HA-BB8 workspace metadata merged here (2025-09-23)
+    primary_resources:
+      - path: "/private/var/ha_real"
+      - path: "/Users/evertappels/Projects/omega_registry"
+      - path: "/Users/evertappels/Projects/omega_registry_ha_storage"
+      - path: "/Users/evertappels/.ssh"
+      - path: "/Users/evertappels/Projects/HA-BB8"
+      - repo: "e-app-404/HA-BB8 (GitHub backing HA-BB8)"
+      - env: "Local Python environment (.venv)"
+      - tool: "Terminal"
+      - tool: "VSCode"
+      - tool: "python3"
+      - tool: "git"
+      - tool: "docker (when used)"
+    acceptance_operational_requirements: "Can create branches, run ops/guardrails/generate_index.py, run tests, and push branches when server-side hooks allow. Follow ADRs and guardrail scripts."
+    constraints: "Do not commit secrets or private keys; avoid checking in generated caches; follow ADRs and guardrail scripts."
+    provenance: "Hydration seed + Copilot merge (2025-09-23)"
+
+  - urn: "urn:principal:macos:root"
+    alias: root
+    role_type: "Privileged (elevated)"
+    system_scope: "macOS system"
+    auth_domain: "macOS (system)"
+    credential_artifacts: "System.keychain SMB item (ptcl='smb ', label 'ha_nas_system')"
+    permissions: "Full system; LaunchDaemons; mount_smbfs"
+    primary_resources:
+      - path: "/usr/local/sbin/ha_mount_helper"
+      - path: "/Library/LaunchDaemons/com.local.ha.mount.real.plist"
+      - path: "/var/log/ha-mount.log"
+    acceptance_operational_requirements: "Must mount with -N using System key; helper & daemon ownership root:wheel"
+    constraints: "No autofs changes without explicit approval"
+    provenance: "Session ops (2025-09-23)"
+    notes: "Used for persistent, non-interactive mount"
+    credentials:
+      keys:
+        - system_keychain_label: "ha_nas_system"
+        
+  - urn: "urn:principal:nas:babylonrobot"
+    alias: babylonrobot
+    role_type: "Service / account"
+    system_scope: "Synology NAS (SMB)"
+    auth_domain: "SMB / WORKGROUP"
+    credential_artifacts: "Keychain entries: ha_nas_login (Login), ha_nas_system (System)"
+    permissions: "RW on target share(s)"
+    primary_resources:
+      - share: "home"
+      - share: "HA_MIRROR"
+      - share: "git"
+      - share: "hestia"
+    acceptance_operational_requirements: "Must allow dotfiles; ensure RW ACL on chosen share"
+    constraints: "No plaintext password in CLI; use Keychain"
+    provenance: "Seed + session (2025-09-23)"
+    notes: "If 'home' blocks writes/dotfiles, switch to 'HA_MIRROR' or fix ACL/veto"
+    credentials:
+      keys:
+        - keychain_label: "ha_nas_login"
+          keychain: "~/Library/Keychains/login.keychain-db"
+          account: "babylonrobot"
+          protocol: "smb"
+          server: "192.168.0.104"
+          created: "2025-09-23T18:39:20Z"
+          modified: "2025-09-23T18:39:20Z"
+          verified:
+            when: "2025-09-23"
+            by: "local-security-check"
+            note: "Present in login keychain; class=inet; acct=babylonrobot; server matches NAS"
+        - keychain_label: "ha_nas_system"
+          keychain: "/Library/Keychains/System.keychain"
+          account: "babylonrobot"
+          protocol: "smb"
+          server: "192.168.0.104"
+          created: "2025-09-23T21:51:40Z"
+          modified: "2025-09-23T21:51:40Z"
+          verified:
+            when: "2025-09-23"
+            by: "local-security-check"
+            note: "Present in System keychain; class=inet; acct=babylonrobot; server matches NAS"
+        - keychain_srvr: "192.168.0.104"
+      tokens:
+        - name: "nas_admin"
+          secret: !secret nas_admin_pass
+
+
+  - urn: "urn:principal:influx:homeassistant"
+    alias: homeassistant
+    role_type: "Service principal"
+    system_scope: "InfluxDB v2 (NAS @ 192.168.0.104:8086)"
+    auth_domain: "InfluxDB"
+    credential_artifacts: "Token stored in HA secrets: influxdb_token"
+    permissions: "RW on bucket 'homeassistant'"
+    primary_resources:
+      - org: "Hestia"
+      - bucket: "homeassistant"
+    acceptance_operational_requirements: "HA config uses v2 minimal: api_version:2, host:192.168.0.104, token: !secret influxdb_token"
+    constraints: "Never echo tokens; validate via health/write/query"
+    provenance: "Hydration seed (2025-09-22) + session"
+    notes: "Used by HA integration for telemetry"
+    credentials:
+      tokens:
+        - name: "influxdb_token"
+          secret: !secret influxdb_token
+
+  - urn: "urn:principal:agent:strategos"
+    alias: Strategos
+    role_type: "Orchestration agent"
+    system_scope: "Governance / delivery"
+    auth_domain: "ChatGPT"
+    credential_artifacts: "N/A"
+    permissions: "Orchestration authority (contracts, plans)"
+    primary_resources:
+      - path: "Evidence pack paths"
+      - path: "contracts"
+      - path: "helper/daemon specs"
+    acceptance_operational_requirements: "Binary acceptance; empirical validation; non-destructive-first"
+    constraints: "No secrets; drift scoring requires artifacts"
+    provenance: "Session (2025-09-23)"
+    notes: "Produces mandates & delta contracts"
+    credentials: {}
+
+  - urn: "urn:principal:github:e-app-404"
+    alias: "e-app-404"
+    role_type: "Privileged (repository owner / GitHub account)"
+    system_scope: "GitHub repository hosting and remote for 'omega_registry'"
+    auth_domain: "GitHub authentication (personal access tokens / gh CLI / OAuth)"
+    credential_artifacts: "Git remote URLs (git remote -v), validate-adrs.yml (workflow config). Do NOT store tokens here."
+    permissions: "Repository admin/collaborator capabilities (merge PRs, modify settings, manage workflows) — exact permissions depend on GitHub org settings."
+    primary_resources:
+      - repo: "e-app-404/omega_registry"
+      - branches: "chore/restructure-to-addon, main"
+      - path: ".github/workflows/"
+    acceptance_operational_requirements: "Can receive pushed branches, accept PRs, run Actions workflows, and access repo-level settings; gh pr create should succeed when authenticated and host matches."
+    constraints: "Do not leak GitHub tokens; CI secrets only available to Actions; some remotes may have server hooks restricting certain operations."
+    provenance: "Observed in session: branch chore/restructure-to-addon pushed but PR creation via gh CLI failed (host/sha mismatch) — recorded 2025-09-22/23"
+    notes: "Earlier PR creation failed due to a host/branch/permission mismatch; manual PR body was saved in PR_DESCRIPTION.md as a fallback."
+    credentials: {}
+
+  # New principals merged from Copilot/HA-BB8 workspace (2025-09-23)
+  # (ha-bb8:evertappels consolidated into urn:principal:macos:evertappels)
+
+  - urn: "urn:principal:ha-bb8:ops_guardrails"
+    alias: "ops_guardrails"
+    role_type: "Team / Orchestration agent"
+    system_scope: "Tools and scripts under ops/guardrails/ and the docs/architecture indexing/guardrails artifacts"
+    auth_domain: "Repository-maintainer domain; CI can invoke these scripts"
+    credential_artifacts: "Script files in repo (ops/guardrails/*), CI job tokens (labels only), workflow definitions (.github/workflows/*.yml)"
+    permissions: "Can add and modify guardrail scripts, propose workflows and CI changes via PRs; typically requires repo maintainer approval to change CI enforcement"
+    primary_resources:
+      - path: "ops/guardrails/"
+      - path: "docs/architecture/"
+      - path: ".github/workflows/"
+    acceptance_operational_requirements: "Scripts run successfully in local and CI environments; index generation and relationship builder produce consistent artifacts; CI job must be able to run and validate outputs"
+    constraints: "Must not bypass ADRs; guardrail scripts should not commit secrets; prefer non-destructive checks"
+    provenance: "Merged from Copilot workspace content (2025-09-23)"
+    credentials: {}
+
+  - urn: "urn:principal:github:actions_runner"
+    alias: "github_actions_runner"
+    role_type: "Orchestration agent"
+    system_scope: "GitHub Actions runner executing workflows for this repository"
+    auth_domain: "GitHub Actions OIDC / GITHUB_TOKEN"
+    credential_artifacts: "GITHUB_TOKEN (provided to runners), optionally third-party action tokens (labels only)"
+    permissions: "Checkout code, run configured commands, upload artifacts, and report job status to PRs"
+    primary_resources:
+      - path: ".github/workflows/regenerate_indexes.yml"
+      - path: "runner workspace ephemeral files"
+      - path: "artifact store (Actions artifacts)"
+    acceptance_operational_requirements: "Workflows complete successfully; job can checkout the repo and run the generator scripts; artifacts uploaded if configured"
+    constraints: "Does not expose secrets to logs; limited to the runner's allowed scopes; should not be used to store long-term credentials"
+    provenance: "Merged from Copilot workspace content (2025-09-23)"
+    credentials: {}
+
+  - urn: "urn:principal:ha-bb8:pre_receive_hook"
+    alias: "pre_receive_hook"
+    role_type: "Service principal"
+    system_scope: "Server-side Git hosting pre-receive hooks"
+    auth_domain: "Git server enforcement context"
+    credential_artifacts: "Hook scripts installed on git host (labels / paths only)"
+    permissions: "Reject inbound pushes that violate repository governance"
+    primary_resources:
+      - path: "Remote Git repository for HA-BB8"
+      - path: "Server-side hook scripts and policy rules"
+    acceptance_operational_requirements: "Blocks push operations that violate rules; returns non-zero exit code to client push when a rule is violated"
+    constraints: "Enforces ADRs; pushes should be adjusted locally to satisfy hooks before retrying"
+    provenance: "Merged from Copilot workspace content (2025-09-23)"
+    credentials: {}
+
+  - urn: "urn:principal:homeassistant:supervisor"
+    alias: "ha_supervisor"
+    role_type: "Service principal"
+    system_scope: "Home Assistant Supervisor environment and addon runtime where the BB8 addon is deployed"
+    auth_domain: "Supervisor API, Home Assistant add-on configuration, MQTT broker credentials (labels only)"
+    credential_artifacts: "Addon config.yaml, runtime env vars, MQTT credentials (do NOT store secrets here)"
+    permissions: "Manage addon lifecycle (install/start/stop), interact with MQTT broker and Supervisor APIs"
+    primary_resources:
+      - path: "Home Assistant instance / Supervisor"
+      - path: "MQTT broker used by the add-on"
+      - path: "Addon runtime files under addon/"
+    acceptance_operational_requirements: "Add-on deploys cleanly, MQTT topics are available, Supervisor APIs respond; smoke-tested via ops/release/deploy_ha_over_ssh.sh when applicable"
+    constraints: "Do not expose Supervisor secrets; follow discovery and discovery_retain semantics and ADR-driven protocol rules"
+    provenance: "Merged from Copilot workspace content (2025-09-23)"
+    notes: "Runtime environment for the add-on; changes to addon code may affect live behavior and must respect onboarding/discovery guardrails."
+    credentials: {}
+
+  - urn: "urn:principal:service:github_actions"
+    alias: "github_actions"
+    role_type: "Service principal"
+    system_scope: "GitHub Actions runner executing CI workflows for the repo"
+    auth_domain: "GitHub Actions runner token and workflow permissions"
+    credential_artifacts: ".github/workflows/validate-adrs.yml (workflow), Actions runtime environment."
+    permissions: "Run workflows, checkout code, run scripts, and access secrets scoped to Actions (per repo/org policy)."
+    primary_resources:
+      - path: ".github/workflows/validate-adrs.yml"
+      - path: "Workflow run logs and artifacts"
+    acceptance_operational_requirements: "Successful execution of validate-adrs workflow with pinned yq (v4.30.8) and validator script producing expected status messages."
+    constraints: "Limited by Actions token and repository settings; cannot bypass branch protection or external host auth; avoid writing secrets to logs."
+    provenance: "CI workflow added to repo during session; validated ADR check behavior in conversation on 2025-09-22"
+    notes: "Used as an automated validation mechanism for ADRs; uses pinned yq binary for consistent parsing."
+    credentials: {}
+
+  - urn: "urn:principal:orchestration:copilot_agent"
+    alias: "copilot_agent"
+    role_type: "Orchestration agent"
+    system_scope: "Local workspace automation (file edits, patch preparation, running local checks)"
+    auth_domain: "Local editor/IDE and workspace; uses apply_patch/manage_todo_list tools in-session (no external secrets)"
+    credential_artifacts: "Patch files under phase-1, generated scripts under scripts, and todo list entries. No secret credentials are stored."
+    permissions: "Can read and modify workspace files, create patch artifacts, run validation scripts via terminal (as the local user), and prepare PR descriptions."
+    primary_resources:
+      - path: "Workspace file tree (e.g., ops/ADR/, addon/docs/ADR/, scripts/)"
+      - path: "copilot_patches/phase-1/"
+      - path: "ops/ADR/validate_adrs.sh"
+    acceptance_operational_requirements: "Produces patches, validates ADRs locally (downloads pinned yq if needed), performs dry-run checks, and leaves non-destructive artifacts (backups, .bak) when applying changes."
+    constraints: "Must not exfiltrate secrets or credentials; default to dry-run; create per-file backups; require explicit --apply to perform destructive actions; follow user instructions for apply vs prepare-only."
+    provenance: "Actions performed during this conversation (patch creation, validator hardening, CI workflow addition) on 2025-09-22 / 2025-09-23"
+    notes: "Represents the assistant's automation role and its safeguards (dry-run by default, per-file backups, pinned-binary fallbacks)."
+    credentials: {}
+
+  - urn: "urn:principal:script:adr_validator"
+    alias: "adr_validator"
+    role_type: "Service/automation script"
+    system_scope: "Repository ADR validation (ops/ADR/validate_adrs.sh)"
+    auth_domain: "Local shell execution; may download pinned binaries (mikefarah/yq) for parsing"
+    credential_artifacts: "Script located at validate_adrs.sh and CI workflow validate-adrs.yml."
+    permissions: "Read ADR files under ADR or docs/ADR, perform YAML front-matter checks, and emit structured diagnostics."
+    primary_resources:
+      - path: "addon/docs/ADR/*.md"
+      - path: "ops/ADR/validate_adrs.sh"
+    acceptance_operational_requirements: "Exits successfully with message ADR validation OK. when ADRs conform to schema; will download a pinned yq binary if system yq is not the expected build."
+    constraints: "Must not modify ADR files by default; avoid executing arbitrary code extracted from ADRs; normalizes front-matter to reduce parsing errors."
+    provenance: "Script was updated and used in-session; validator logs and behavior observed on 2025-09-22"
+    notes: "Includes pinned-binary fallback (yq v4.30.8) and token-block gating for governance ADRs."
+    credentials: {}
+
+  - urn: "urn:principal:script:ruff"
+    alias: "ruff_linter"
+    role_type: "Service (linter)"
+    system_scope: "Local code quality checks (ruff)"
+    auth_domain: "Local Python/CLI environment"
+    credential_artifacts: "Project tooling references (pyproject.toml may include ruff configuration)."
+    permissions: "Read-only analysis of Python source code; can produce fix suggestions or format changes when run with apply options."
+    primary_resources:
+      - path: "Python source files under repository"
+    acceptance_operational_requirements: "Runs locally, produces reports; used in earlier conversation as part of remediation flow."
+    constraints: "Does not change files unless invoked with explicit fix/apply options; avoid running heavy/full test suites in interactive sessions without user consent."
+    provenance: "Referenced in conversation as part of staged remediation (ruff first-batch applied earlier); mentioned in session 2025-09-22"
+    notes: "Included for completeness as a tooling principal referenced by the session."
+    credentials: {}

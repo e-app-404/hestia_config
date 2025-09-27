@@ -1,0 +1,10 @@
+# input_text.yaml
+last_opened:
+  name: "Text helper for last opened"
+  initial: "Last opened"
+  max: 100
+
+last_motion:
+  name: "Text helper for last motion"
+  initial: "Last motion"
+  max: 100

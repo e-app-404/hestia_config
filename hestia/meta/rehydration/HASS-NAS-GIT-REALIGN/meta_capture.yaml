@@ -1,0 +1,52 @@
+extracted_config:
+  hosts:
+    macbook:
+      workspace_root: "$HOME/hass"
+    ds220plus:
+      hostname: "ds220plus.reverse-beta.ts.net"
+      tailscale_ip: "100.93.61.53"
+      lan_ip: "192.168.0.104"
+      git_repo: "/volume1/git-mirrors/ha-config.git"
+    homeassistant:
+      smb_export: "//homeassistant.local/config"
+  git:
+    origin: "ssh://gituser@192.168.0.104/volume1/git-mirrors/ha-config.git"
+    tailnet:
+      url: "ssh://gituser@100.93.61.53/volume1/git-mirrors/ha-config.git"
+      push: "disabled"
+    branches:
+      main: "6361248"
+      chore_parameterize: "exists (workspace+ADR updates)"
+  workspace:
+    env_template: ".env.sample"
+    vscode_sample: ".vscode-configs/config-lean.sample.code-workspace"
+    validator: "hestia/tools/validators/scan_hardcoded_ha.sh"
+    ci_guard: ".github/workflows/hardcoded-ha-guard.yml"
+  governance:
+    adr_canonical_mount: "ADR-0016"
+    path_policy: "no hard-coded /n/ha in code; allowed in docs"
+    ack_tokens:
+      - "ACK_DISABLE_SYSTEM_DAEMON"
+      - "ACK_AUTOMOUNT_CHANGES"
+      - "ACK_REPO_CLEAN"
+
+transient_state:
+  repo_status: "main pushed to origin; tailnet fetch-only"
+  ci_status: "guard present (branch); pending PR"
+  acl_state:
+    volume1: "g+rx ensured; repo owned by gituser:users; setgid applied"
+
+relationships:
+  macbook -> origin (LAN ssh) -> ds220plus:/volume1/git-mirrors/ha-config.git
+  macbook -> tailnet (fetch) -> ds220plus (Tailscale)
+  docs (ADR-0016) -> policy -> validator & CI guard
+
+suggested_commands:
+  - "git -C \"$HOME/hass\" ls-remote origin"
+  - "bash hestia/tools/validators/scan_hardcoded_ha.sh"
+  - "git remote set-url --push tailnet no_push://disabled"
+  - "chmod g+rx /volume1 /volume1/git-mirrors && chown -R gituser:users /volume1/git-mirrors/ha-config.git && chmod -R g+ws /volume1/git-mirrors/ha-config.git"
+
+notes: |
+  BB-8 Addon: container paths (/config, /data) remain literal; only host helpers get parameterized.
+  Omega Registry: mostly docs; add guard + .env.sample for consistency.
