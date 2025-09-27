@@ -3,8 +3,11 @@ __pycache__/
 *.pyc
 *.pyo
 *.pyd
-# ADR-0024 (BB-8)
+# ADR-0024 (BB-8) — Backups: ignore all, re-include inventory + snapshot marker
+# (Git needs the directory itself un-ignored so negations below work)
 _backups/**
+!_backups/
+!_backups/inventory/
 !_backups/inventory/**
 !_backups/.snapshot_state.json
 tarballs/**
@@ -35,3 +38,7 @@ htmlcov/**
 *.code-workspace
 coverage.json
 pytest-report.xml
+
+# common caches you may bump into locally
+.mypy_cache/
+.idea/
