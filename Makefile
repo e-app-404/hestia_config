@@ -20,9 +20,9 @@ venv:
 	@test -x "$(PYTHON)" || (python3 -m venv "$(VENV)" && "$(PIP)" install -U pip)
 
 testcov: venv
-	@mkdir -p reports/qa_$(STAMP)
-	PYTHONPATH=$(PYTHONPATH) "$(PYTHON)" -m pytest -q --maxfail=1 --disable-warnings \
-	--cov=bb8_core --cov-report=term-missing | tee reports/qa_$(STAMP)/pytest.log
+	@mkdir -p $(REPORTS_DIR)/qa_$(STAMP)
+	PYTHONPATH=. "$(PYTHON)" -m pytest -q --maxfail=1 --disable-warnings \
+		--cov=bb8_core --cov-report=term-missing | tee $(REPORTS_DIR)/qa_$(STAMP)/pytest.log
 
 STAMP ?= $(shell date +"%Y%m%d_%H%M%S")
 # Consolidated reports directory (root-level); override via env if needed
@@ -79,10 +79,6 @@ types:
 	@mkdir -p $(REPORTS_DIR)/qa_$(STAMP)
 	mypy --install-types --non-interactive . | tee $(REPORTS_DIR)/qa_$(STAMP)/mypy.log
 
-testcov:
-	@mkdir -p $(REPORTS_DIR)/qa_$(STAMP)
-	PYTHONPATH=. pytest -q --maxfail=1 --disable-warnings --cov=bb8_core --cov-report=term-missing | tee $(REPORTS_DIR)/qa_$(STAMP)/pytest.log
-
 security:
 	@mkdir -p $(REPORTS_DIR)/qa_$(STAMP)
 	bandit -q -r bb8_core | tee $(REPORTS_DIR)/qa_$(STAMP)/bandit.log || true
@@ -119,3 +115,6 @@ deploy-ssh:
 
 publish:
 	REMOTE_HOST_ALIAS=home-assistant ops/release/publish_and_deploy.sh
+
+quiet:
+	sh ops/check_workspace_quiet.sh .

@@ -1,0 +1,3 @@
+receipt_ts=20250927T145858Z
+stage_dir=_backups/restore_report/restore_staging/20250926T173930Z
+applier=rsync --backup --suffix=.from_backup_<UTC>
