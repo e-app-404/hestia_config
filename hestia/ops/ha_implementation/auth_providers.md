@@ -11,8 +11,7 @@ url: "https://www.home-assistant.io/docs/authentication/providers/"
 
 # Authentication providers
 
-  Caution: this is an advanced feature. When you log in, an auth provider checks
-  your credentials to make sure you are an authorized user.
+> **Caution**: This is an advanced feature. When you log in, an auth provider checks your credentials to make sure you are an authorized user.
 
 Home Assistant configures sensible default authentication providers. You only
 need to specify `auth_providers` in `configuration.yaml` if you are configuring
@@ -65,9 +64,7 @@ users accessing from those addresses won't be prompted for a password. When
 accessing from a trusted network, the login form will prompt the user to
 select which account to use and will not require a password.
 
-Important: Do not list networks that are also used as `trusted_proxies` — the
-trusted_networks provider will fail with "Your computer is not allowed" if
-you do.
+> **Important**: Do not list networks that are also used as `trusted_proxies` — the trusted_networks provider will fail with "Your computer is not allowed" if you do.
 
 Example:
 
@@ -106,9 +103,9 @@ homeassistant:
           - group: system-users
 ```
 
-Notes:
-- Use user IDs (not usernames) for `trusted_users`. To find a user ID open `/config/users/` in the UI and copy the ID for a user.
-- IPv6 addresses in keys must be quoted.
+> **Notes**:
+> - Use user IDs (not usernames) for `trusted_users`. To find a user ID open `/config/users/` in the UI and copy the ID for a user
+> - IPv6 addresses in keys must be quoted
 
 ## Skip login page (allow bypass)
 
@@ -170,7 +167,8 @@ given user; subsequent logins reuse the previously created user object.
 
 ## Security notes
 
-- Do not expose `trusted_networks` entries to untrusted networks.
-- Do not commit any secrets or credentials to your repository.
+> **Security considerations**:
+> - Do not expose `trusted_networks` entries to untrusted networks
+> - Do not commit any secrets or credentials to your repository
 
 ---
