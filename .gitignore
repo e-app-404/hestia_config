@@ -42,3 +42,5 @@ pytest-report.xml
 # common caches you may bump into locally
 .mypy_cache/
 .idea/
+
+.git.DISABLED/
