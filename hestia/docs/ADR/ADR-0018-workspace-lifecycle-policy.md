@@ -118,13 +118,13 @@ Times use compact UTC format `YYYYMMDDTHHMMSSZ`. Avoid spaces/colons.
 # 9) Folder standardization quick map
 
 ```
-.trash/                # temp deletes, auto-swept
-.quarantine/           # blocked from merge; manual review
-artifacts/             # reproducible bundles + MANIFEST + checksums
-archive/               # curated snapshots + README/provenance
-hestia/reports/        # all generated outputs (batched)
-hestia/vault/backups/  # long-lived backups (kept)
-hestia/vault/bundles/  # manually stored bundles (optional)
+.trash/                   # temp deletes, auto-swept
+.quarantine/              # blocked from merge; manual review
+artifacts/                # reproducible bundles + MANIFEST + checksums
+archive/                  # curated snapshots + README/provenance
+hestia/reports/           # all generated outputs (batched)
+hestia/vault/backups/     # long-lived backups (kept)
+hestia/vault/bundles/     # manually stored bundles (optional)
 hestia/vault/deprecated/  # human-curated deprecated materials
 ```
 

@@ -1,6 +1,6 @@
 ---
 id: ADR-0017
-title: "ADR-0017: Fallback local logging path for HA tooling (non-repo, cross-platform)"
+title: "Fallback local logging path for HA tooling (non-repo, cross-platform)"
 date: 2025-09-25
 author: "Evert Appels"
 status: Proposed

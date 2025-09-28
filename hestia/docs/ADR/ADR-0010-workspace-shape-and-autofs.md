@@ -1,6 +1,6 @@
 ---
 id: ADR-0010
-title: "ADR-0010: Workspace Shape (amended by ADR-0016)"
+title: "Workspace Shape (amended by ADR-0016)"
 date: 2025-09-11
 status: Accepted
 author:

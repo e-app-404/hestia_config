@@ -1,6 +1,6 @@
 ---
 id: ADR-0009
-title: "ADR-0009: ADR Governance, Redaction, and Formatting Policy"
+title: "ADR Governance, Redaction, and Formatting Policy"
 date: 2025-09-13
 status: Accepted
 author: "Evert Appels"

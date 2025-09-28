@@ -23,7 +23,6 @@ decision_note:
 
 > Use a per‑user, non‑interactive SMB mount of the Home Assistant Pi share `//<user>@homeassistant.local/config` at `~/hass` (no system daemons, no symlinks). Make `~/hass` the single canonical edit root and normalize HA→NAS→Git and HA→Influx around this root.
 
-
 ## Context
 	- HA runtime is on a Raspberry Pi 5. The NAS (DS220+) hosts mirrors and Git bare repos, and optionally exposes additional SMB shares.
 	- Historical paths `/n/ha` (autofs) and `/private/var/ha_real` (system LaunchDaemon) caused ownership conflicts, mount races, and editor write failures.

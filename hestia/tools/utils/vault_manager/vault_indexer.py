@@ -2,14 +2,13 @@
 """Vault indexer and daily janitor
 - Indexes files in hestia/vault and assigns them to categories
 - Enforces deletion windows for tarballs and deprecated
-- Emits a small log entry and writes a 'deletion_receipt' file when items are removed
-- Optionally integrates with Home Assistant notifier via a webhook or an MQTT publish (placeholder)
+- Emits a  log entry and writes a 'deletion_receipt' file when items are removed
+- (Opt.) Home Assistant notifier integration via webhook or MQTT publish (TBD)
 
 This is a tiny, local script intended to be run by cron/daily scheduler.
 """
 import json
 import sys
-import time
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
@@ -42,7 +41,6 @@ def categorize(p: Path):
 
 def scan_and_index():
     idx = {'generated_at': datetime.now(timezone.utc).isoformat(), 'items': []}
-    now = time.time()
     for p in VAULT_ROOT.rglob('*'):
         if p.is_dir():
             continue
@@ -52,11 +50,20 @@ def scan_and_index():
             'path': str(p),
             'category': cat,
             'size': st.st_size,
-            'mtime': datetime.fromtimestamp(st.st_mtime, timezone.utc).isoformat(),
+            'mtime': datetime.fromtimestamp(
+                st.st_mtime, timezone.utc
+            ).isoformat(),
         }
         idx['items'].append(item)
-    INDEX_FILE.write_text(json.dumps(idx, indent=2), encoding='utf-8')
-    LOG_FILE.write_text(f"{datetime.now(timezone.utc).isoformat()} - indexed {len(idx['items'])} items\n", encoding='utf-8')
+    INDEX_FILE.write_text(
+        json.dumps(idx, indent=2),
+        encoding='utf-8'
+    )
+    LOG_FILE.write_text(
+        f"{datetime.now(timezone.utc).isoformat()} - indexed "
+        f"{len(idx['items'])} items\n",
+        encoding='utf-8'
+    )
     return idx
 
 
@@ -66,7 +73,6 @@ def enforce_policy(idx=None, dry_run=True):
         if not idx_path.exists():
             idx = scan_and_index()
         else:
-            import json
             idx = json.loads(idx_path.read_text(encoding='utf-8'))
     now = datetime.now(timezone.utc)
     removed = []
@@ -86,7 +92,13 @@ def enforce_policy(idx=None, dry_run=True):
                 # move to a tombstone area (just remove here)
                 receipt = p.parent / (p.name + '.deleted.json')
                 p.unlink()
-                receipt.write_text(json.dumps({'deleted_at': now.isoformat(), 'path': str(p)}), encoding='utf-8')
+                receipt.write_text(
+                    json.dumps({
+                        'deleted_at': now.isoformat(),
+                        'path': str(p)
+                    }),
+                    encoding='utf-8'
+                )
                 removed.append({'path': str(p), 'action': 'removed'})
                 # TODO: emit HA notification / logbook event (placeholder)
     return removed
