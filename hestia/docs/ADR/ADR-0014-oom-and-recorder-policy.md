@@ -3,11 +3,6 @@ id: ADR-0014
 title: "OOM Mitigation & Recorder Policy"
 version: v2 (canonical-path + guardrails)
 date: 2025-09-18
-authors:
-  - Strategos (governance)
-  - Home-Ops
-  - GitHub Copilot (assisted)
-  - Evert Appels
 status: Accepted
 tags: ["performance", "memory", "oom", "recorder", "database", "policy", "automation", "guardrails", "ci", "hestia", "configuration", "sql"]
 related:

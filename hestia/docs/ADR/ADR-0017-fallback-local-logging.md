@@ -2,6 +2,7 @@
 id: ADR-0017
 title: "ADR-0017: Fallback local logging path for HA tooling (non-repo, cross-platform)"
 date: 2025-09-25
+author: "Evert Appels"
 status: Proposed
 deciders: [platform, ops]
 supersedes: []
@@ -30,12 +31,6 @@ Commands to move into repo once mount is healthy:
 
 sudo mkdir -p /n/ha/path/to/repo/docs/adr
 sudo mv /tmp/adr_fallback_logpath.md /n/ha/path/to/repo/docs/adr/XXX-fallback-logpath.md
-
----
-
-Title: ADR XXX — Fallback local log path for Home Assistant tooling
-Date: 2025-09-22
-Status: Proposed
 
 ## Context
 

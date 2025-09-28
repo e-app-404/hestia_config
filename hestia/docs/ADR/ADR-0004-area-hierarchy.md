@@ -4,7 +4,7 @@ title: "Canonical Area Hierarchy & Spatial Relationship Contract"
 date: 2025-09-11
 related: []
 supersedes: []
-status: Approved
+status: Accepted
 tags: ["architecture", "area", "hierarchy", "spatial", "relationship", "contract", "adr"]
 last_updated: 2025-07-22
 author: "Evert Appels"

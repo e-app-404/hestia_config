@@ -3,9 +3,6 @@ id: ADR-0016
 title: "Canonical HA edit root & non-interactive SMB mount"
 date: 2025-09-24
 author: Strategos GPT
-authors:
-  - Strategos GPT
-  - Evert Appels
 status: Accepted
 last_updated: 2025-09-26
 supersedes:

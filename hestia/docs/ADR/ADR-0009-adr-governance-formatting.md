@@ -3,9 +3,7 @@ id: ADR-0009
 title: "ADR-0009: ADR Governance, Redaction, and Formatting Policy"
 date: 2025-09-13
 status: Accepted
-author:
-  - "Evert Appels"
-  - "Github Copilot"
+author: "Evert Appels"
 related:
   - ADR-0001
   - ADR-0004
