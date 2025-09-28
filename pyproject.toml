@@ -9,6 +9,11 @@ description = "ADR linter for Hestia (ADR-0009 & ADR-0015 enforcement)"
 requires-python = ">=3.10"
 dependencies = ["python-frontmatter>=1.0.0"]
 
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["hestia*"]
+exclude = ["tests*", "docs*", "www*", "tts*", "deps*", "themes*", "tmp*", "staging*", "archive*", "artifacts*"]
+
 [project.optional-dependencies]
 test = ["pytest>=7.4", "pytest-cov>=4.1"]
 

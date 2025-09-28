@@ -1,0 +1,39 @@
+---
+extends: default
+
+rules:
+  line-length:
+    max: 120  # More reasonable for HA configs
+    level: warning  # Don't fail on long lines
+  document-start: disable  # HA configs don't need document start
+  comments:
+    min-spaces-from-content: 2
+  truthy:
+    allowed-values: ['true', 'false', 'on', 'off']  # HA uses on/off
+
+ignore: |
+  secrets.yaml
+  secrets.*.yaml
+  known_devices.yaml
+  *.log
+  .storage/
+  deps/
+  www/
+  tts/
+  themes/
+  custom_components/
+  blueprints/
+  appdaemon/
+  zigbee2mqtt/
+  glances/
+  tmp/
+  tmpt/
+  staging/
+  reports/
+  archive/
+  artifacts/
+  ps5-mqtt/
+  domain/
+  .venv*/
+  *.cookie
+  *.json
