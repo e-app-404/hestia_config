@@ -1,3 +1,4 @@
+# topology: see workspace_ops_export.yaml
 name: Guardrails - REST command
 
 on:
