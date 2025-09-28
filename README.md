@@ -161,5 +161,9 @@ logger.info("your message")
 - The log file path can be customized via the `log_path` option in `config.yaml`.
 - All logs are structured and redact sensitive fields automatically.
 
+## Operational Topology
+
+**Operational topology:** see `./workspace_ops_export.yaml`
+
 ---
 
