@@ -13,6 +13,19 @@ Home Assistant add-on for controlling Sphero BB-8 via BLE and MQTT.
   - RSSI sensor (`bb8/rssi`)
   - Power switch (`bb8/command/power`, `bb8/state/power`)
 
+## Architecture & Governance
+
+This repository follows a comprehensive ADR (Architectural Decision Record) governance system documented in [`docs/ADR/`](docs/ADR/). 
+
+**Cross-Repository Alignment**: This project coordinates architectural decisions with other repositories in the ecosystem using the standards defined in [ADR-0030: Cross-Repository ADR Alignment and Linking Standard](docs/ADR/ADR-0030-cross-repository-adr-alignment.md).
+
+**Key ADRs:**
+- [ADR-0024](docs/ADR/ADR-0024-workspace-hygiene-bb8-addon.md): Workspace hygiene (adopts standards from main HA config repo)
+- [ADR-0025](docs/ADR/ADR-0025-canonical-repo-layout-bb8-addon.md): Canonical repository layout
+- [ADR-0030](docs/ADR/ADR-0030-cross-repository-adr-alignment.md): Cross-repository alignment system
+
+See the [complete ADR index](docs/ADR/INDEX.md) for all architectural decisions.
+
 ## Release Automation & Workspace Commands
 
 ### Automated Release Workflow
