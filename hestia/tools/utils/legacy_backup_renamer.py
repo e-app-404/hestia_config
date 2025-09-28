@@ -1,5 +1,12 @@
 #!/usr/bin/env python3
-import argparse, os, re, sys, shutil, datetime, pathlib
+import argparse
+import datetime
+import os
+import pathlib
+import re
+import shutil
+import sys
+
 ROOT = pathlib.Path(".").resolve()
 
 SKIP_DIRS = {".git", ".storage", "_backups/inventory", ".venv", "node_modules", "__pycache__", ".mypy_cache", ".ruff_cache"}
@@ -12,12 +19,15 @@ def is_skipped(path: pathlib.Path) -> bool:
     return any(s in parts for s in SKIP_DIRS)
 
 def to_canonical(p: pathlib.Path) -> pathlib.Path:
-    utc = datetime.datetime.utcnow().strftime("%Y%m%dT%H%M%SZ")
+    utc = datetime.datetime.now(datetime.timezone.utc).strftime("%Y%m%dT%H%M%SZ")
     stem, ext = p.stem, p.suffix
     # collapse multiple legacy tokens into one .bk.<UTC> before extension
     base = re.sub(LEGACY_RX, "", p.name)
     if ext:
-        name = f"{p.stem}.bk.{utc}{ext}" if not LEGACY_RX.search(p.name) else f"{re.sub(LEGACY_RX,'',p.stem)}.bk.{utc}{ext}"
+        if not LEGACY_RX.search(p.name):
+            name = f"{p.stem}.bk.{utc}{ext}"
+        else:
+            name = f"{re.sub(LEGACY_RX,'',p.stem)}.bk.{utc}{ext}"
     else:
         name = f"{re.sub(LEGACY_RX,'',p.name)}.bk.{utc}"
     name = name.replace("..", ".").strip(".")
@@ -60,7 +70,8 @@ def main():
                 src.unlink()
                 print(f"DEDUP\t{src}")
             else:
-                with_suffix = dst.with_name(dst.stem + ".dup." + datetime.datetime.utcnow().strftime("%Y%m%dT%H%M%SZ") + dst.suffix)
+                dup_time = datetime.datetime.now(datetime.timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+                with_suffix = dst.with_name(dst.stem + ".dup." + dup_time + dst.suffix)
                 shutil.move(str(src), str(with_suffix))
                 print(f"RENAMED_DUP\t{src} -> {with_suffix}")
         else:
