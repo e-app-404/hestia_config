@@ -24,8 +24,8 @@ deployment-bundle/
 │   ├── post_deploy_validation.sh         # Deployment verification
 │   └── copy_validation_script.sh         # Helper script
 └── examples/
-    ├── example-adr-with-cross-refs.md     # Sample ADR with cross-repo references
-    └── ci-workflow-addition.yml           # GitHub Actions workflow examples
+    ├── example-adr-with-cross-refs.md     # Sample ADR showing cross-repo references
+    └── ci-workflow-addition.yml.sample    # GitHub Actions workflow examples
 ```
 
 ## File Descriptions
@@ -50,7 +50,7 @@ deployment-bundle/
 
 ### Examples
 - **example-adr-with-cross-refs.md**: Complete example showing cross-repository references
-- **ci-workflow-addition.yml**: GitHub Actions workflow snippets for CI integration
+- **ci-workflow-addition.yml.sample**: GitHub Actions workflow snippets for CI integration
 
 ## Deployment Methods
 

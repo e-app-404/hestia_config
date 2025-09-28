@@ -20,8 +20,8 @@ deployment-bundle/
 │   ├── check_alignment_drift.sh       # Drift detection script
 │   └── post_deploy_validation.sh      # Verify deployment success
 └── examples/
-    ├── example-adr-with-cross-refs.md # Sample ADR showing cross-repo references
-    └── ci-workflow-addition.yml       # GitHub Actions workflow snippet
+    ├── example-adr-with-cross-refs.md     # Sample ADR showing cross-repo references
+    └── ci-workflow-addition.yml.sample    # GitHub Actions workflow snippet
 ```
 
 ## 🚀 Quick Start
@@ -53,7 +53,7 @@ If you prefer manual control or need to customize the deployment:
 2. **Update ADR Template**: Replace or enhance your existing `docs/ADR/ADR-template.md`
 3. **Add Configuration**: Copy and customize `repository-mapping.yaml.template` 
 4. **Add Scripts**: Copy validation scripts to `ops/ADR/` (create directory if needed)
-5. **Update CI**: Add workflow snippets from `examples/ci-workflow-addition.yml`
+5. **Update CI**: Add workflow snippets from `examples/ci-workflow-addition.yml.sample`
 
 ## 📋 Repository-Specific Customization
 
@@ -131,6 +131,7 @@ chmod +x ops/ADR/*.sh
 ### Step 3: CI Integration
 
 Add to your `.github/workflows/` (create workflow or add to existing):
+See `examples/ci-workflow-addition.yml.sample` for complete examples.
 
 ```yaml
 # Add this job to your workflow
