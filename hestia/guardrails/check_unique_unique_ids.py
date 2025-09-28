@@ -11,7 +11,10 @@ def main():
     duplicates = []
     
     # Check all YAML files for unique_id entries
-    yaml_files = list(Path('.').glob('**/*.yaml')) + list(Path('.').glob('**/*.yml'))
+    yaml_files = (
+        list(Path('.').glob('**/*.yaml')) +
+        list(Path('.').glob('**/*.yml'))
+    )
     
     # Skip problematic directories
     skip_dirs = {'.venv', '.storage', 'deps', 'www', '.git', '__pycache__'}
@@ -28,7 +31,12 @@ def main():
             if 'unique_id:' in content:
                 data = yaml.safe_load(content)
                 if data:
-                    _check_unique_ids_recursive(data, filepath, unique_ids, duplicates)
+                    _check_unique_ids_recursive(
+                        data,
+                        filepath,
+                        unique_ids,
+                        duplicates
+                    )
                         
         except Exception as e:
             print(f"WARNING: Could not parse {filepath}: {e}")

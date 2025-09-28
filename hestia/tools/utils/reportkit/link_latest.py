@@ -10,7 +10,8 @@ if not root.exists():
 candidates=[]
 for day in sorted(root.glob("[0-9]"*8)):
     for batch in day.glob("*__*"):
-        if batch.is_dir(): candidates.append(batch)
+        if batch.is_dir():
+            candidates.append(batch)
 if not candidates:
     print("NO_BATCHES")
     sys.exit(0)

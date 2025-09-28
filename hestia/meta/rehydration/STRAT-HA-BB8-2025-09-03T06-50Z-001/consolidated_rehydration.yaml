@@ -6,7 +6,7 @@
 ---
 
 session_recap:
-  session_label: STRATEGOS::HA-BB8::SupervisorOnly-Hardening
+  session_label: default
   trace_id: STRAT-HA-BB8-2025-09-03T06:50Z-001
   active_personas:
     - name: Strategos
@@ -24,7 +24,7 @@ session_recap:
     trigger: container not visible via docker ps; diagnostics must avoid docker exec
     mitigation: DIAG-to-stdout, HEALTH_SUMMARY, file→stdout forwarder, Supervisor CLI runbooks
   last_validated_checkpoint:
-    label: "Supervisor-only verification PASS"
+    label: "default"
     version: "2025.8.21.28"
     evidence: HEALTH_SUMMARY ticks, DIAG start/respawn lines, MQTT subscribe/connected lines
   governance_traits:
@@ -92,38 +92,38 @@ artifacts:
 
 phases:
   - id: P1
-    label: Root-cause analysis (restart loops)
+    label: validated
     outputs: ["diagnostic hypotheses", "initial DIAG plan"]
     status: completed
   - id: P2
-    label: Supervised runloop + DIAG (run.sh)
+    label: validated
     outputs: ["RUNLOOP attempt", "child start/exit logs", "restart cap"]
     status: completed
   - id: P3
-    label: Health checks + heartbeats
+    label: validated
     outputs: ["/tmp/bb8_heartbeat_main", "/tmp/bb8_heartbeat_echo", "HEALTH_SUMMARY lines"]
     status: completed
   - id: P4
-    label: S6 wiring (single control-plane)
+    label: validated
     outputs: ["services.d/ble_bridge/run → run.sh", "services.d/echo_responder/down"]
     status: completed
   - id: P5
-    label: Log-path normalization + resilience
+    label: validated
     outputs: ["normalize_log_path()", "best-effort file append + stdout"]
     status: completed
   - id: P6
-    label: Supervisor-only operations adoption
+    label: validated
     outputs: ["stdout DIAG", "file→stdout forwarder", "15s HEALTH_SUMMARY"]
     status: completed
   - id: P7
-    label: Documentation + governance
+    label: validated
     outputs:
       - "docs/OPERATIONS_OVERVIEW.md (Supervisor-only)"
       - "docs/SANITY_CHECKS.md"
       - "docs/TROUBLESHOOTING_RECIPES.md"
       - "docs/ADR/ADR-0011-supervisor-only-ops.md"
     status: completed
-  pending_copilot_instructions: []
+  pending_copilot_instructions: none
 
 memory_vars:
   last_valid_patch:
@@ -135,7 +135,7 @@ memory_vars:
       - addon/services.d/ble_bridge/run
       - addon/services.d/echo_responder/down
   last_decision_checkpoint:
-    label: "Supervisor-only verification PASS"
+    label: "default"
     evidence:
       - DIAG lines present (entry, attempt, start, exit)
       - HEALTH_SUMMARY ticks over time
@@ -158,7 +158,7 @@ memory_vars:
   open_validation_loops: []
 
 rehydration_seed:
-  session_label: STRATEGOS::HA-BB8::SupervisorOnly-Hardening
+  session_label: default
   trace_id: STRAT-HA-BB8-2025-09-03T06:50Z-001
   governance:
     adr:

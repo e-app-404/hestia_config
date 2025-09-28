@@ -11,7 +11,8 @@ def main():
     duplicates = []
     
     # Check automations.yaml and automation files
-    yaml_files = [Path('automations.yaml')] + list(Path('.').glob('**/automations/*.yaml'))
+    yaml_files = [Path('automations.yaml')] + \
+        list(Path('.').glob('**/automations/*.yaml'))
     
     for filepath in yaml_files:
         if not filepath.exists():

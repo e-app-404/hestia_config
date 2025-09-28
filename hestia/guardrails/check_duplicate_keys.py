@@ -4,7 +4,7 @@ import sys
 from pathlib import Path
 
 from ruamel.yaml import YAML
-from ruamel.yaml.error import DuplicateKeyError
+from ruamel.yaml.constructor import DuplicateKeyError
 
 
 def check_file(filepath):
@@ -23,7 +23,10 @@ def check_file(filepath):
 
 def main():
     success = True
-    yaml_files = list(Path('.').glob('**/*.yaml')) + list(Path('.').glob('**/*.yml'))
+    yaml_files = (
+        list(Path('.').glob('**/*.yaml')) +
+        list(Path('.').glob('**/*.yml'))
+    )
     
     # Skip problematic directories
     skip_dirs = {'.venv', '.storage', 'deps', 'www', '.git', '__pycache__'}
