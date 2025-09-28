@@ -44,3 +44,4 @@ pytest-report.xml
 .idea/
 
 .git.DISABLED/
+.env
