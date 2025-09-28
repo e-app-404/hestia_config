@@ -1,0 +1,48 @@
+name: ADR-0018 Extra Guards
+on:
+  pull_request: { branches: [ main ] }
+  push: { branches: [ main ] }
+  workflow_dispatch:
+
+jobs:
+  guards:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: ".storage hard-fail"
+        run: |
+          if git ls-files -z | tr '\0' '\n' | grep -E '^\.\storage/'; then
+            echo "::error::.storage/* is runtime state; refuse per ADR-0018"
+            exit 1
+          fi
+          echo "OK: no .storage tracked"
+
+      - name: "Ban tracked archives (tar.gz/tgz/zip/bundle)"
+        run: |
+          if git ls-files -z | tr '\0' '\n' | grep -Ei '\.(tar\.gz|tgz|zip|bundle)$'; then
+            echo "::error::Archive blobs must not be tracked (use _backups/ + manifests)"
+            exit 1
+          fi
+          echo "OK: no tracked archives"
+
+      - name: "Legacy backup allowlist (grace -> warn, post-expiry -> fail)"
+        run: |
+          FILE=".github/adr0018_allowlist.txt"
+          [ -f "$FILE" ] || { echo "no allowlist (skip)"; exit 0; }
+          EXPIRES=$(grep -i '^expires:' "$FILE" | awk '{print $2}' | tr -d '\r')
+          NOW=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+          echo "Allowlist expires: $EXPIRES (now=$NOW)"
+          PAT=$(grep -v -i '^expires:' "$FILE" | sed '/^\s*$/d')
+          if [ -z "$PAT" ]; then echo "empty allowlist"; exit 0; fi
+          # find tracked matches
+          MATCHES=$(git ls-files -z | tr '\0' '\n' | grep -E "$(printf '%s\n' "$PAT" | paste -sd'|' -)")
+          if [ -z "$MATCHES" ]; then echo "no legacy matches"; exit 0; fi
+          echo "$MATCHES" | sed 's/^/LEGACY: /'
+          # compare timestamps lexicographically (ISO8601 UTC)
+          if [ "$NOW" \> "$EXPIRES" ]; then
+            echo "::error::Legacy backup shapes found after grace expiry"
+            exit 1
+          else
+            echo "::warning::Legacy backup shapes allowed until $EXPIRES"
+          fi
