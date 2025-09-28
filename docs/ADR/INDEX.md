@@ -33,6 +33,7 @@ This directory contains all architectural decision records for the HA-BB8 Home A
 - [ADR-0027] Hygiene gate CI and required status checks
 - [ADR-0028] Remote triad, backups, and mirror cutover policy
 - [ADR-0029] Restore staging protocol and receipts
+- [ADR-0030] Cross-Repository ADR Alignment and Linking Standard
 
 ## Status Legend
 
@@ -76,3 +77,4 @@ Use [ADR-template.md](ADR-template.md) for new ADRs.
 [ADR-0027]: ADR-0027-hygiene-gate-and-status-checks.md
 [ADR-0028]: ADR-0028-remotes-and-mirror-cutover-policy.md
 [ADR-0029]: ADR-0029-restore-staging-and-receipts.md
+[ADR-0030]: ADR-0030-cross-repository-adr-alignment.md

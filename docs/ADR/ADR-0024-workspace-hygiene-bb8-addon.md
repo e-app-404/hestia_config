@@ -10,13 +10,33 @@ related:
   - ADR-0023
   - ADR-0026
   - ADR-0027
+external_related:
+  - repo: "ha-config"
+    adr: "ADR-0024"
+    url: "https://github.com/e-app-404/ha-config/blob/main/docs/ADR/ADR-0024-workspace-hygiene.md"
+    relationship: "adopts"
+    last_checked: "2025-09-28"
+alignment_dependencies:
+  - "ha-config:ADR-0024"
 supersedes: []
-last_updated: 2025-09-27
+last_updated: 2025-09-28
 ---
 
 ## Context
 
-The BB-8 add-on repo accumulated editor backup files (`*.bak`, `*.perlbak`, temp/swap), ad-hoc tarballs/bundles, and restore artifacts at the repo root. This obscured important sources and risked large, noisy commits. The main HA config repo’s **ADR-0024: Workspace Hygiene** already defines a strong policy for ignoring, retaining and gating such artifacts.
+The BB-8 add-on repo accumulated editor backup files (`*.bak`, `*.perlbak`, temp/swap), ad-hoc tarballs/bundles, and restore artifacts at the repo root. This obscured important sources and risked large, noisy commits. The main HA config repo's **ADR-0024: Workspace Hygiene** already defines a strong policy for ignoring, retaining and gating such artifacts.
+
+## Cross-Repository References
+
+This ADR adopts [@ha-config:ADR-0024](https://github.com/e-app-404/ha-config/blob/main/docs/ADR/ADR-0024-workspace-hygiene.md) as the baseline workspace hygiene policy.
+
+### Alignment Status
+- **Last Verified**: 2025-09-28
+- **Upstream Version**: ADR-0024 (last_updated: 2025-09-15) 
+- **Local Adaptations**: See "BB-8-specific overrides" section below
+
+### Change Monitoring
+Monitor [@ha-config:ADR-0024](https://github.com/e-app-404/ha-config/blob/main/docs/ADR/ADR-0024-workspace-hygiene.md) for changes that may require updates to this ADR.
 
 ## Decision
 
