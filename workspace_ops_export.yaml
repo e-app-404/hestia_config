@@ -2,6 +2,13 @@
 # Access patterns: prefer ./workspace_ops_export.yaml; fallback to /config/hestia/core/config/workspace_ops_export.yaml
 # Discovery: `git ls-files workspace_ops_export.yaml` or see README.md reference
 # Versioning: update via PR; includes last_updated field for staleness detection
+# ADR References: See docs/ADR/ for architectural decisions governing this topology
+#   - ADR-0024: Workspace hygiene policy
+#   - ADR-0025: Canonical repo layout (addon/ structure)
+#   - ADR-0026: Backup and retention policy  
+#   - ADR-0027: Hygiene gate CI and status checks
+#   - ADR-0028: Remote triad, backups, and mirror cutover policy
+#   - ADR-0029: Restore staging protocol and receipts
 last_updated: "2025-09-28T09:00:00Z"
 
 workspaces:
@@ -110,6 +117,9 @@ workspaces:
     ci_cd:
       platform: "github-actions"
       workflows:
+        - name: "hygiene-gate"
+          path: ".github/workflows/hygiene-gate.yml"
+          adr_ref: "ADR-0027"
         - name: "guard-size-symlinks"
           path: ".github/workflows/guard-size-symlinks.yml"
     hooks:
@@ -120,6 +130,7 @@ workspaces:
       nas_path: "/volume1/git-mirrors/ha-config.git"
       push_refs: ["main", "tags"]
       runner: "-"
+      adr_ref: "ADR-0028"
     env_template:
       path: "-"
       vars: {}
@@ -130,8 +141,18 @@ workspaces:
       list:
         - desc: "Validate size/symlink guard locally"
           cmd: "bash ops/validators/guard_size_symlinks.sh"
+          adr_ref: "ADR-0027"
         - desc: "Add GitHub remote (optional)"
           cmd: "git remote add github https://github.com/e-app-404/ha-bb8-addon 2>/dev/null || git remote set-url github https://github.com/e-app-404/ha-bb8-addon"
+        - desc: "Verify remote triad (local/GitHub/mirror SHAs match)"
+          cmd: "git rev-parse HEAD && git ls-remote --heads github main | awk '{print $1}' && git ls-remote --heads origin main | awk '{print $1}'"
+          adr_ref: "ADR-0028"
+        - desc: "Run workspace hygiene check"
+          cmd: "sh ops/check_workspace_quiet.sh ."
+          adr_ref: "ADR-0027"
+        - desc: "Verify canonical addon structure"
+          cmd: "ls -la addon/{bb8_core,services.d,tests,tools,app,config.yaml,Dockerfile,run.sh}"
+          adr_ref: "ADR-0025"
     troubleshooting:
       entries:
         - symptom: "Commit blocked: tracked symlink detected"
@@ -140,7 +161,7 @@ workspaces:
         - symptom: "PR not created via gh"
           cause: "GitHub CLI not authenticated or remote not pointing to GitHub"
           fix: "Run `gh auth login` and ensure a `github` remote exists"
-    notes: "`origin` points to HA Config NAS mirror for backup only; PRs should target a GitHub remote when added. Guard blocks tracked symlinks and >50MB files."
+    notes: "`origin` points to NAS mirror for backup (ADR-0028 remote triad policy); PRs target GitHub remote when added. Workspace structure per ADR-0025 (canonical addon/ layout), ADR-0027 (hygiene-gate CI), ADR-0024 (workspace hygiene). Guard blocks tracked symlinks and >50MB files."
 
   - name: "Omega Registry"
     purpose: "addon+registry"
