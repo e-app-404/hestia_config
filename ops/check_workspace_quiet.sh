@@ -93,6 +93,18 @@ if [ -d "$ROOT" ]; then
   done
 fi
 
+# Legacy root directories enforcement (ADR-0025/0019)
+# These should not exist or be non-empty after migration to addon/
+for legacy_dir in bb8_core services.d tests app tools; do
+  legacy_path="$ROOT/$legacy_dir"
+  if [ -d "$legacy_path" ]; then
+    # Check if directory has content (not just empty or containing only .gitkeep)
+    if [ -n "$(find "$legacy_path" -mindepth 1 -maxdepth 1 ! -name '.gitkeep' -print | head -1)" ]; then
+      emit "legacy_root_content" "$legacy_path" "migrate content to addon/$legacy_dir/ per ADR-0025"
+    fi
+  fi
+done
+
 # Optional Git-index check: if in a Git repo, flag *tracked* junk
 if [ -d "$ROOT/.git" ] && command -v git >/dev/null 2>&1; then
   # List tracked files; flag those that match forbidden shapes
