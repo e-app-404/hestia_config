@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
-import pathlib, re, sys
+import pathlib
+import sys
+
 root = pathlib.Path("hestia/reports")
 if not root.exists():
     print("NOREPORTS")

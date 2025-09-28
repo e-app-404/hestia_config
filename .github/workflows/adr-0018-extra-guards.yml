@@ -1,3 +1,4 @@
+# topology: see workspace_ops_export.yaml
 name: ADR-0018 Extra Guards
 on:
   pull_request: { branches: [ main ] }

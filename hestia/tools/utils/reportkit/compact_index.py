@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
-import argparse, datetime as dt, hashlib, os, pathlib, sys
+import argparse
+import datetime as dt
+import hashlib
+import pathlib
+import sys
+
 
 def sha(s: bytes) -> str: return hashlib.sha256(s).hexdigest()
 

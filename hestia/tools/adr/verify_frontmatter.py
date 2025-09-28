@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
-import pathlib, sys, re, yaml
+import pathlib
+import sys
+
+import yaml
 
 REQ = {"id","title","status","date"}
 ROOT = pathlib.Path("hestia/docs/ADR")
