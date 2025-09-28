@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 """Check for unique 'unique_id' values across the repository"""
 import sys
-import yaml
 from pathlib import Path
+
+import yaml
+
 
 def main():
     unique_ids = {}

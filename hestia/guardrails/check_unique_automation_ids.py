@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 """Check for unique automation IDs"""
 import sys
-import yaml
 from pathlib import Path
+
+import yaml
+
 
 def main():
     automation_ids = set()

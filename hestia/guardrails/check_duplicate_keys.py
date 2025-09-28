@@ -2,8 +2,10 @@
 """Check for duplicate keys in YAML files using ruamel.yaml"""
 import sys
 from pathlib import Path
+
 from ruamel.yaml import YAML
 from ruamel.yaml.error import DuplicateKeyError
+
 
 def check_file(filepath):
     yaml = YAML()
