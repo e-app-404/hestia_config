@@ -1,22 +1,19 @@
 ---
-title: "ADR-0015: Symlink Policy for Hestia Config Workspace"
+id: ADR-0015
+title: "Symlink Policy for Hestia Config Workspace"
 date: 2025-09-21
-status: Proposed
+status: Accepted
 author:
-
- - "Evert Appels"
- - "GPT-5 Thinking"
-  related:
- - ADR-0001
- - ADR-0004
- - ADR-0008
- - ADR-0009
- - ADR-0010
- - ADR-0012
- - ADR-0013
- - ADR-0014
-  supersedes: \[]
-  last\_updated: 2025-09-21
+  - "Evert Appels"
+  - "GPT-5 Strategos"
+related: ["ADR-0001", "ADR-0004", "ADR-0008", "ADR-0009", "ADR-0010", "ADR-0012", "ADR-0013", "ADR-0014"]
+supersedes: []
+last_updated: 2025-09-25
+policy:
+  tracked_symlinks_in_repo: "forbidden"
+  symlinks_outside_repo_root: "allowed, local-only, not tracked"
+validation_hooks:
+  - "ADR-0016 repo hygiene checks (no tracked symlinks, no nested .git)"
 ---
 
 # ADR-0015: Symlink Policy for Hestia Config Workspace

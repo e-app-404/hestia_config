@@ -1,0 +1,47 @@
+# topology: see workspace_ops_export.yaml
+name: HA Governance
+on:
+  pull_request:
+    paths:
+      - "packages/**"
+      - "configuration.yaml"
+      - "scripts/**"
+      - ".github/workflows/ha-governance.yml"
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install deps
+        run: |
+          python -m pip install --upgrade pip ruamel.yaml PyYAML yamllint
+
+      - name: Duplicate-key scan (ruamel)
+        run: python hestia/guardrails/check_duplicate_keys.py
+
+      - name: YAML lint (duplicates too)
+        run: 'yamllint -d "{\"extends\": \"default\", \"rules\": {\"key-duplicates\": {\"level\": \"error\"}}}" .'
+
+      - name: Single-recorder invariant
+        run: bash hestia/guardrails/check_recorder_uniqueness.sh
+
+      - name: No symlinks in HA-loaded trees
+        run: bash hestia/guardrails/check_no_symlinks.sh
+
+      - name: Unique automation ids
+        run: python hestia/guardrails/check_unique_automation_ids.py
+
+      - name: Unique 'unique_id' across repo
+        run: python hestia/guardrails/check_unique_unique_ids.py
+
+      - name: Containerized Home Assistant check_config
+        run: |
+          docker run --rm -v "${{ github.workspace }}":/config ghcr.io/home-assistant/home-assistant:stable \
+            python -m homeassistant --script check_config -c /config

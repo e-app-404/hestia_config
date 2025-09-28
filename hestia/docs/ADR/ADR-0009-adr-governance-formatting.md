@@ -1,10 +1,9 @@
 ---
-title: "ADR-0009: ADR Governance, Redaction, and Formatting Policy"
+id: ADR-0009
+title: "ADR Governance, Redaction, and Formatting Policy"
 date: 2025-09-13
-status: Draft
-author:
-  - "Evert Appels"
-  - "Github Copilot"
+status: Accepted
+author: "Evert Appels"
 related:
   - ADR-0001
   - ADR-0004
@@ -14,6 +13,13 @@ related:
 supersedes: []
 last_updated: 2025-09-13
 tags: ["governance", "formatting", "redaction", "tokens", "automation", "adr", "policy", "metadata"]
+rollout:
+  include_scan:
+    phase_A: {mode: report, start: "2025-09-25T00:00:00+01:00", end: "2025-09-27T00:00:00+01:00"}
+    phase_B: {mode: fail,   start: "2025-09-27T00:00:01+01:00"}
+ci_policy:
+  include_scan: {mode: fail, start: "2025-09-27T00:00:01+01:00"}
+  packaging: {deterministic: true, manifest: sha256}
 ---
 
 # ADR-0009: ADR Governance, Redaction, and Formatting Policy

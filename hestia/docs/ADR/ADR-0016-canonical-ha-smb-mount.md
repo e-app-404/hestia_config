@@ -1,16 +1,22 @@
 ---
-title: "ADR-0016: Canonical HA edit root & non-interactive SMB mount"
-date: 2025‑09‑24
-authors: 
-  - "Strategos GPT"
-  - "Evert Appels"
-status: Proposed → Accepted (on merge)
-supersedes: Any prior docs or scripts that designate `/n/ha` or `/private/var/ha_real` as the canonical edit root
+id: ADR-0016
+title: "Canonical HA edit root & non-interactive SMB mount"
+date: 2025-09-24
+author: Strategos GPT
+status: Accepted
+last_updated: 2025-09-26
+supersedes:
+  - ADR-0010 (path naming only)
+  - Any prior docs/scripts that designate `/n/ha` or `/private/var/ha_real` as canonical
 related:
-  - "ADR‑0009 ADR governance & formatting (conformance), HA→Influx telemetry decision, HA→NAS→Git pipeline"
+  - ADR-0009 ADR governance & formatting (conformance), HA→Influx telemetry decision, HA→NAS→Git pipeline
+  - ADR-0017 for OS-specific fallback log root outside repo
 references:
-  - "hestia/tools/one_shots/hass_mount_once.sh - idempotent mount helper (LaunchAgent-friendly)"
-  - "hestia/tools/one_shots/com.local.hass.mount.plist - sample LaunchAgent plist using KeepAlive.NetworkState"
+  - hestia/tools/one_shots/hass_mount_once.sh - idempotent mount helper (LaunchAgent-friendly)
+  - hestia/tools/one_shots/com.local.hass.mount.plist - sample LaunchAgent plist using KeepAlive.NetworkState
+decision_note: 
+  - Canonical workstation edit root is $HOME/hass; all tooling must respect ${HA_MOUNT:-$HOME/hass}.
+  - When ${HA_MOUNT} is unavailable, logs MUST follow ADR-0017; never write under ${HA_MOUNT} or repo root.
 ---
 
 # ADR-0016 — Canonical HA edit root & non‑interactive SMB mount
@@ -30,36 +36,38 @@ references:
 
 ## Decision details
 
-	- Canonical edit root (Mac): `~/hass` (absolute `/Users/<user>/hass`).
-	- Mount mechanism: LaunchAgent `com.local.hass.mount` (GUI domain) calls an idempotent helper (`hass_mount_once.sh`) that:
-		- Checks if the correct share is already mounted at `~/hass` and exits 0 if so.
-		- Uses `mount_smbfs` to perform a non-interactive mount (examples below).
-		- Logs to `$HOME/Library/Logs/hass-mount.log`.
+- Canonical edit root (Mac): `~/hass` (absolute `/Users/<user>/hass`).
+- Mount mechanism: LaunchAgent `com.local.hass.mount` (GUI domain) calls an idempotent helper (`hass_mount_once.sh`) that:
+	- Checks if the correct share is already mounted at `~/hass` and exits 0 if so.
+	- Uses `mount_smbfs` to perform a non-interactive mount (examples below).
+	- Logs to `$HOME/Library/Logs/hass-mount.log`.
 
-	Canonical mount example (preferred, tested):
+### Canonical mount example (preferred, tested):
 
-	```bash
-	mount_smbfs -N "//${USER}@homeassistant.local/config" "$HOME/hass"
-	```
+```bash
+mount_smbfs -N "//${USER}@homeassistant.local/config" "$HOME/hass"
+```
 
-	Optional (tested) extras — use only if verified on your machine:
+### Optional Extras (tested)
 
-	```bash
-	mount_smbfs -N -d 0777 -f 0777 "//${USER}@homeassistant.local/config" "$HOME/hass"
-	```
+Use only if verified on your machine:
 
-	Keychain / non-interactive auth (preferred: create interactively; example below shows non-interactive commands and keeps the four-byte SMB protocol code `smb ` with trailing space):
+```bash
+mount_smbfs -N -d 0777 -f 0777 "//${USER}@homeassistant.local/config" "$HOME/hass"
+```
 
-	```bash
-	# Delete any existing entry (ignore errors)
-	security delete-internet-password -s homeassistant.local -a '<user>' -r 'smb ' >/dev/null 2>&1 || true
-	# Add login keychain Internet-password for SMB and allow /sbin/mount_smbfs to access it
-	security add-internet-password -s homeassistant.local -a '<user>' -r 'smb ' -T /sbin/mount_smbfs -l ha_haos_login
-	# Optional non-interactive (stores secret in history—use with extreme caution):
-	# security add-internet-password -s homeassistant.local -a '<user>' -r 'smb ' -w '<password>' -U -T /sbin/mount_smbfs
-	```
+**Keychain** / non-interactive auth (preferred: create interactively; example below shows non-interactive commands and keeps the four-byte SMB protocol code `smb ` with trailing space):
 
-LaunchAgent plist (example)
+```bash
+# Delete any existing entry (ignore errors)
+security delete-internet-password -s homeassistant.local -a '<user>' -r 'smb ' >/dev/null 2>&1 || true
+# Add login keychain Internet-password for SMB and allow /sbin/mount_smbfs to access it
+security add-internet-password -s homeassistant.local -a '<user>' -r 'smb ' -T /sbin/mount_smbfs -l ha_haos_login
+# Optional non-interactive (stores secret in history—use with extreme caution):
+# security add-internet-password -s homeassistant.local -a '<user>' -r 'smb ' -w '<password>' -U -T /sbin/mount_smbfs
+```
+
+**LaunchAgent plist** (example)
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -285,3 +293,92 @@ sudo chmod g+rx /volume1 /volume1/git-mirrors
 
 ### Changelog
 	•	2025‑09‑24: Initial decision drafted; defines ~/hass as canonical edit root; adds guardrails & validation.
+
+## Implementation (safe, minimal — recommended now)
+
+To make developer experience portable while preserving ADR intent (docs keep `/n/ha` as the canonical architecture reference), follow this conservative three-step rollout. These changes are intentionally low-risk and reversible.
+
+1) Parameterize `HA_MOUNT` in the repo `.env` so operators can still override but developers default to `~/hass`:
+
+```bash
+# in repo root
+git switch -c chore/parameterize-ha-mount
+sed -E -i '' 's#^(export[[:space:]]+HA_MOUNT=).*#\1"${HA_MOUNT:-$HOME/hass}"#' .env || true
+```
+
+2) Replace absolute `/n/ha` occurrences in local VS Code workspace files with `${workspaceFolder}` so editor settings are workspace-relative and portable:
+
+```bash
+for f in .vscode/config-lean.code-workspace config.code-workspace config-no-git.code-workspace; do
+	[ -f "$f" ] || continue
+	sed -E -i '' 's#"/n/ha([^\"]*)"#"${workspaceFolder}\1"#g' "$f"
+	sed -E -i '' 's#"python.defaultInterpreterPath":[[:space:]]*"(?:\$\{workspaceFolder\}|/n/ha)/\.venv/bin/python"#"python.defaultInterpreterPath": "${workspaceFolder}/.venv/bin/python"#' "$f"
+done
+```
+
+3) Add a lightweight validator that fails if new hard-coded `/n/ha` references are introduced outside the documentation/ADR tree. Keep ADR/docs references to `/n/ha` intact.
+
+Create `hestia/tools/validators/scan_hardcoded_ha.sh` with the following contents:
+
+```bash
+#!/usr/bin/env bash
+set -euo pipefail
+# Search the repo for literal /n/ha outside docs and skip common binary/image file types
+rg -n --hidden --glob '!.git' --glob '!hestia/docs/**' --glob '!**/*.png' --glob '!**/*.jpg' --glob '!**/*.jpeg' --glob '!**/*.gif' --glob '!**/*.svg' '/n/ha' . && { echo "ERROR: hard-coded /n/ha found outside docs"; exit 1; } || { echo "OK: no hard-coded /n/ha outside docs"; }
+
+```
+
+Make the script executable and run it as part of the change to validate there are no accidental regressions:
+
+```bash
+mkdir -p hestia/tools/validators
+cat > hestia/tools/validators/scan_hardcoded_ha.sh <<'SH'
+#!/usr/bin/env bash
+set -euo pipefail
+rg -n --hidden --glob '!.git' --glob '!hestia/docs/**' --glob '!**/*.png' --glob '!**/*.jpg' --glob '!**/*.jpeg' --glob '!**/*.gif' --glob '!**/*.svg' '/n/ha' . && { echo "ERROR: hard-coded /n/ha found outside docs"; exit 1; } || { echo "OK: no hard-coded /n/ha outside docs"; }
+SH
+chmod +x hestia/tools/validators/scan_hardcoded_ha.sh
+
+Run and verify the diff, then commit:
+
+```bash
+hestia/tools/validators/scan_hardcoded_ha.sh
+git add -A
+git commit -m "chore(workspace): parametrize HA_MOUNT and VS Code paths; keep /n/ha canonical in docs"
+```
+
+Optional: install a local pre-commit hook to prevent accidental commits that reintroduce hard-coded `/n/ha`:
+
+```bash
+mkdir -p .git/hooks
+cat > .git/hooks/pre-commit <<'H'
+#!/usr/bin/env bash
+set -e
+hestia/tools/validators/scan_hardcoded_ha.sh
+H
+chmod +x .git/hooks/pre-commit
+```
+
+Notes and rationale:
+- ADR documentation and architecture guidance continue to reference `/n/ha` as the canonical neutral autofs path (for CI, cross-host scripts, and historical context). Those references are intentionally excluded from the validator.
+- Runtime scripts that must operate on the live edit tree should be updated later in a controlled sweep (see optional param-sweep below). Use `${HA_MOUNT:-/n/ha}` or `source .env` in scripts to prefer the parameterized mount.
+- This approach preserves ADR intent while making local development and editors stable and portable.
+
+### Optional follow-up: semi-automatic param sweep
+
+When you are ready to update shell scripts to use `${HA_MOUNT:-/n/ha}` instead of literal `/n/ha`, run the safe preview below (it prints suggested sed commands without applying them):
+
+```bash
+rg -l --hidden --glob '!.git' --glob '!hestia/docs/**' '/n/ha' | grep -E '\.sh$' | while read -r f; do
+	echo sed -E -i '' 's#(/n/ha)([^[:alnum:]_]|$)#${HA_MOUNT:-/n/ha}\2#g' "$f"
+done
+```
+
+If the preview looks good, remove the `echo` to apply changes and validate with the `scan_hardcoded_ha.sh` validator and your normal CI checks.
+
+### Minimal rules to enforce in scripts
+
+- Prefer `source "$REPO_ROOT/.env"` (or an explicit `: "${HA_MOUNT:-$HOME/hass}"`) at the top of scripts that interact with the edit tree.
+- When testing, export `HA_MOUNT` in your shell to temporarily override the default without changing the repo: `export HA_MOUNT=$HOME/hass`.
+
+- Workspace: use `.vscode-configs/config-lean.sample.code-workspace` (keep personal `.vscode/` untracked).

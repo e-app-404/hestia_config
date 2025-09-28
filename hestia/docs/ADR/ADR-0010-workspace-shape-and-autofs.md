@@ -1,5 +1,6 @@
 ---
-title: "ADR-0010: Workspace Shape & Neutral Autofs Mount (/n/ha)"
+id: ADR-0010
+title: "Workspace Shape (amended by ADR-0016)"
 date: 2025-09-11
 status: Accepted
 author:
@@ -12,12 +13,17 @@ related:
   - ADR-0012
   - ADR-0013
   - ADR-0015
+  - ADR-0016
 supersedes: []
-last_updated: 2025-09-21
+last_updated: 2025-09-25
+author: 
+  - "Evert Appels"
 tags: ["/n/ha", "autofs", "workspace", "mount", "smb", "macos", "pathing", "folder-structure"]
+amended_by: [ADR-0016]
+notes: "Historical '/n/ha' reference retained in context; canonical path is ${HA_MOUNT:-$HOME/hass}."
 ---
 
-# ADR-0010 — Workspace Shape & Neutral Autofs Mount (/n/ha)
+# ADR-0010: Workspace Shape (amended by ADR-0016)
 
 ## Status
 Accepted
@@ -190,3 +196,9 @@ TOKEN_BLOCK:
     - DRIFT: missing_root_parameters
     - DRIFT: canonical_template_path_incorrect
 ```
+
+## Changelog
+
+- 2025-09-11: Initial draft.
+- 2025-09-12: Accepted draft; added enforcement and script details.
+- 2025-09-25: De-emphasized “/n/ha” in ADR-0010’s title/summary.

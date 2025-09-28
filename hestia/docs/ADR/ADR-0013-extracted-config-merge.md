@@ -1,18 +1,22 @@
 ---
-title: "ADR-0013: Source→Core Config Merge via extracted_config (Meta-Capture Pipeline)"
+id: ADR-0013
+title: "Source→Core Config Merge via extracted_config (Meta-Capture Pipeline)"
 date: 2025-09-20
 status: Proposed
 author:
   - "Platform / Home-Ops"
   - "GitHub Copilot (assisted)"
   - "Strategos"
-related:
-  - ADR-0007
-  - ADR-0009
-  - ADR-0010
+related: ["ADR-0007", "ADR-0008", "ADR-0009", "ADR-0010"]
 supersedes: []
-last_updated: 2025-09-20
+last_updated: 2025-09-25
 tags: ["meta-capture", "configuration", "merge", "governance", "secrets"]
+acceptance_criteria:
+  - "Idempotent merge: same inputs ⇒ byte-identical outputs"
+  - "Stable ordering: maps sorted consistently; lists deterministic"
+  - "Artifacts: human-readable diff + rollback bundle emitted"
+conformance:
+  - "Must comply with ADR-0008 determinism & manifest rules"
 ---
 
 # ADR-0013 — Source→Core Config Merge via `extracted_config` (Meta-Capture Pipeline)

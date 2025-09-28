@@ -1,5 +1,5 @@
 # topology: see workspace_ops_export.yaml
-name: workspace-enforcer
+name: Workspace Enforcer
 on: [pull_request]
 jobs:
   enforce:

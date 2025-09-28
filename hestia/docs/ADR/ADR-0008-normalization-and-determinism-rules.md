@@ -1,12 +1,14 @@
 ---
-title: "ADR-0008: Syntax-Aware Normalization & Determinism Rules for Config Artifacts"
+id: ADR-0008
+title: "Syntax-Aware Normalization & Determinism Rules for Config Artifacts"
 date: 2025-09-12
 author: 
   - "Evert Appels"
 status: Approved
-related: []
-supersedes: 
-  - ADR-0001
+related: ["ADR-0013"]
+supersedes: ["ADR-0001"]
+last_updated: 2025-09-12
+tags: ["architecture", "adr", "normalization", "determinism", "yaml", "json", "ini", "xml", "csv", "packaging"]
 ---
 
 # ADR-0008: Syntax-Aware Normalization & Determinism Rules for Config Artifacts
