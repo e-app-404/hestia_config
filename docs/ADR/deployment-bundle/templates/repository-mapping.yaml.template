@@ -1,0 +1,123 @@
+# Cross-Repository ADR Mapping Configuration Template
+# Copy this file to docs/ADR/repository-mapping.yaml and customize for your ecosystem
+# See your Cross-Repository ADR Standard for detailed specification
+
+repositories:
+  # CUSTOMIZE: Add your repositories here
+  main-repo:
+    name: "Your Main Repository Name"
+    owner: "your-github-org"           # CHANGE: Your GitHub organization/username
+    repo: "your-main-repo-name"        # CHANGE: Repository name
+    base_url: "https://github.com/your-github-org/your-main-repo-name"
+    adr_path: "docs/ADR"
+    description: "Primary infrastructure and shared standards repository"
+    primary_contact: "your-email@example.com"  # CHANGE: Your contact
+    update_frequency: "monthly"
+    priority: "high"  # Changes here may impact multiple repositories
+  
+  other-repo:
+    name: "Another Repository"
+    owner: "your-github-org"           # CHANGE: Your GitHub organization/username
+    repo: "other-repo-name"            # CHANGE: Repository name
+    base_url: "https://github.com/your-github-org/other-repo-name"
+    adr_path: "docs/ADR"
+    description: "Specific service or component repository"
+    primary_contact: "your-email@example.com"  # CHANGE: Your contact
+    update_frequency: "quarterly"
+    priority: "medium"
+
+  current-repo:
+    name: "This Repository"            # CHANGE: Name of current repository
+    owner: "your-github-org"           # CHANGE: Your GitHub organization/username
+    repo: "current-repo-name"          # CHANGE: This repository's name
+    base_url: "https://github.com/your-github-org/current-repo-name"
+    adr_path: "docs/ADR"
+    description: "CHANGE: Description of this repository"
+    primary_contact: "your-email@example.com"  # CHANGE: Your contact
+    update_frequency: "as-needed"
+    priority: "medium"
+
+# Shorthand notation for convenient referencing
+# CUSTOMIZE: Choose meaningful shorthand for your repositories
+shorthand:
+  "@main": "main-repo"               # CHANGE: Shorthand for main repository
+  "@other": "other-repo"             # CHANGE: Shorthand for other repository
+  "@current": "current-repo"         # CHANGE: Shorthand for this repository
+
+# Cross-repository alignment policies
+# CUSTOMIZE: Define which ADRs should be aligned across repositories
+alignment_policies:
+  workspace_hygiene:
+    description: "Common workspace cleanliness and organization standards"
+    upstream: "main-repo:ADR-0024"   # CHANGE: Reference to your workspace hygiene ADR
+    downstream:
+      - "current-repo:ADR-0024"      # CHANGE: Local implementation ADR number
+    local_overrides_allowed: true
+    coordination_required: false
+    review_frequency: "quarterly"
+    criticality: "medium"
+  
+  dependency_management:
+    description: "Package and runtime dependency standards"
+    upstream: "main-repo:ADR-0002"   # CHANGE: Reference to your dependency policy ADR
+    downstream:
+      - "current-repo:ADR-0002"      # CHANGE: Local implementation ADR number
+    local_overrides_allowed: false
+    coordination_required: true
+    review_frequency: "monthly"
+    criticality: "high"
+
+  ci_cd_standards:
+    description: "Continuous integration and deployment patterns"
+    upstream: "main-repo:ADR-0027"   # CHANGE: Reference to your CI/CD standards ADR
+    downstream:
+      - "current-repo:ADR-0027"      # CHANGE: Local implementation ADR number
+    local_overrides_allowed: true
+    coordination_required: false
+    review_frequency: "quarterly"
+    criticality: "medium"
+
+# Notification preferences for alignment drift
+notifications:
+  slack:
+    enabled: false
+    webhook_url: ""
+    channels: ["#architecture"]
+  
+  email:
+    enabled: true
+    recipients: ["your-email@example.com"]  # CHANGE: Your email
+    frequency: "weekly"  # daily|weekly|monthly
+    
+  github:
+    enabled: true
+    create_issues: true
+    label: "adr-alignment"
+    assignee: "your-github-username"        # CHANGE: Your GitHub username
+
+# Validation settings
+validation:
+  link_check_frequency: "daily"
+  alignment_check_frequency: "weekly"
+  broken_link_tolerance: 24  # hours before alerting
+  drift_tolerance: 7  # days before alerting on upstream changes
+  
+  # URLs to exclude from validation (e.g., private repos, work-in-progress)
+  exclude_patterns:
+    - "https://github.com/*/private-*"
+    - "*/draft/*"
+    - "*/wip/*"
+
+# Repository-specific configuration overrides
+repository_overrides:
+  current-repo:  # CHANGE: Name of this repository
+    # CUSTOMIZE: Standards this repository inherits
+    inherited_standards:
+      - "workspace_hygiene"
+      - "dependency_management" 
+      - "ci_cd_standards"
+    
+    # CUSTOMIZE: Custom validation rules for this repository
+    custom_validation:
+      - "repo_specific_compliance_check"      # CHANGE: Add your specific checks
+      - "technology_specific_compatibility"   # CHANGE: Add technology-specific checks
