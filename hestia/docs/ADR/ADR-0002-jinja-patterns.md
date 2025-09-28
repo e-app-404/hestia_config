@@ -2,7 +2,7 @@
 id: ADR-0002
 title: "Home Assistant Jinja Pattern Normalization"
 date: 2025-09-11
-status: Approved
+status: Accepted
 tags: ["jinja", "patterns", "normalization", "templates", "automation", "adr", "error-handling", "datetime", "state", "comparison"]
 related: []
 supersedes: []
@@ -20,7 +20,6 @@ author: Evert Appels
 4. Tokens
 5. Last updated
 
-author: "Evert Appels"
 ## 1. Context
 Home Assistant automations and templates often use Jinja2 for logic, but raw state values and datetime handling can lead to errors and edge cases. This ADR documents normalization patterns and rules for robust, error-free Jinja logic in Home Assistant YAML.
 

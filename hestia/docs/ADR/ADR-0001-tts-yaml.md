@@ -3,7 +3,7 @@ id: ADR-0001
 title: "Templated TTS YAML Snippet"
 date: 2025-09-11
 author: "Evert Appels"
-status: Approved
+status: Accepted
 last_updated: 2025-09-15
 tags: ["architecture", "tts", "yaml", "template", "adr", "text-to-speech", "media_player", "automation", "jinja"]
 supersedes: []

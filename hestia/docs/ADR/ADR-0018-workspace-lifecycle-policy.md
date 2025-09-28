@@ -5,9 +5,7 @@ status: Proposed (Ready to adopt)
 owners: [hestia-core]
 references:
   - ".github/workflows/adr-0018-include-scan.yml"
-author: 
-  - "Evert Appels"
-  - "Strategos"
+author: "Evert Appels"
 related: ["ADR-0008", "ADR-0009", "ADR-0012"]
 date: 2025-09-26
 last_updated: 2025-09-26
