@@ -209,7 +209,7 @@ echo "[janitor] done"
 * Default: `hestia/reports/**` ignored, **but** keep `_index.jsonl` tracked via negative rule if desired.
 
   * Example `.gitignore` in `hestia/reports`: `*` then `!_index.jsonl`
-* Alternative: ignore `_index.jsonl` too if you want zero churn in Git.
+* Alternative: ignore `_index.jsonl` too for zero churn in Git.
 
 ---
 
@@ -255,7 +255,7 @@ PYTHONPATH=$(pwd) python3 -m hestia.tools.utils.reportkit.retention \
 
 1. **Ambiguity: tracking `_index.jsonl` in Git.**
    *Risk:* churn on every run if tracked; invisibility if ignored.
-   **Harden:** default to **ignored** in Git; add a separate `hestia/reports/_rollup.json` (manually refreshed) if you need a stable, committed snapshot. Update §7.3 accordingly when you choose.
+   **Harden:** default to **ignored** in Git; add a separate `hestia/reports/_rollup.json` (manually refreshed) for a stable, committed snapshot. Update §7.3 accordingly when choosing.
 
 2. **Janitor safety on large trees.**
    *Risk:* unintended traversal into vendor dirs or symlinks.

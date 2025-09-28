@@ -107,7 +107,7 @@ validation_status:
   * Define properties, `type`, `enum`, `format`, and `required` keys (`canonical_id`, `file`, `area_id`).
   * For enums: `module`, `role`, `type`, `tier`, `subsystem`.
   * Add **conditional**: if `state_class` ∈ {`measurement`, `total`, `total_increasing`} then `unit_of_measurement` is **required**.
-  * Add **pattern** for `area_id`/`subarea_id`/`container_id` if you have canonical naming rules (e.g., `^[a-z0-9_]+$`).
+  * Add **pattern** for `area_id`/`subarea_id`/`container_id` for canonical naming rules (e.g., `^[a-z0-9_]+$`).
 
 ### 3.2 Validator script
 

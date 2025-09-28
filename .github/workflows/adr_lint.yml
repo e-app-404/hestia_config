@@ -4,9 +4,11 @@ on:
   push:
     paths:
       - 'hestia/docs/ADR/**'
+      - '!hestia/docs/ADR/archive/**'
   pull_request:
     paths:
       - 'hestia/docs/ADR/**'
+      - '!hestia/docs/ADR/archive/**'
 
 jobs:
   test-and-lint:
@@ -29,4 +31,4 @@ jobs:
         run: pytest -q || true
       - name: Run ADR validator
         run: |
-          python hestia/tools/utils/validators/adr_validator.py hestia/docs/ADR/ADR-*.md || exit 1
+          find hestia/docs/ADR -name 'ADR-*.md' -not -path '*/archive/*' -exec python hestia/tools/utils/validators/adr_validator.py {} + || exit 1

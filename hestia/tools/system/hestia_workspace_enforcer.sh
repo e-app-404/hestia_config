@@ -11,7 +11,9 @@ echo "Workspace enforcer: OK"
 
 #!/usr/bin/env bash
 set -Eeuo pipefail
-REPO="/n/ha"; cd "$REPO"
+# Detect repo root dynamically (works in GitHub Actions and local environments)
+REPO="${GITHUB_WORKSPACE:-$(git rev-parse --show-toplevel 2>/dev/null || pwd)}"
+cd "$REPO"
 
 [ -f configuration.yaml ] || { echo "BLOCKED: missing configuration.yaml at $REPO"; exit 1; }
 
