@@ -1,21 +1,22 @@
 #!/usr/bin/env bash
 set -euo pipefail
+: "${HA_MOUNT:=$HOME/hass}"
 
 # ---- Job & Paths -----------------------------------------------------------
 
 : "${LOCKED_UTC:=2025-09-12T00:00:00Z}"   # override for reproducibility if desired
 JOB_ID="${JOB_ID_OVERRIDE:-$(date -u +%Y%m%dT%H%M%SZ)}"
-OUT_BASE="/n/ha/hestia/work/out"
+OUT_BASE="${HA_MOUNT:-$HOME/hass}/hestia/work/out"
 OUT_DIR="${OUT_BASE}/${JOB_ID}"
 TMP_DIR="${OUT_DIR}/.work"
 mkdir -p "${OUT_DIR}" "${TMP_DIR}"
 
 # ---- Path Resolver ---------------------------------------------------------
 
-# Prefer actual tree under /n/ha/hestia; fallback to short aliases (/core, /work, /packages)
+# Prefer actual tree under ${HA_MOUNT}/hestia; fallback to short aliases (/core, /work, /packages)
 
-CORE_ROOT="/n/ha/hestia/core"
-WORK_ROOT="/n/ha/hestia/work"
+CORE_ROOT="${HA_MOUNT:-$HOME/hass}/hestia/core"
+WORK_ROOT="${HA_MOUNT:-$HOME/hass}/hestia/work"
 PKG_ROOT="/packages"
 
 
@@ -28,7 +29,7 @@ SCRATCH_TGZ="${WORK_ROOT}/scratch.tar.gz"
 ALT_SCRATCH_TGZ="/work/scratch.tar.gz"
 SCRATCH_DIR="${WORK_ROOT}/scratch"   # directory form per tree
 
-PKG_NETGEAR="/n/ha/packages/package_netgear_gs724t.yaml"
+PKG_NETGEAR="${HA_MOUNT:-$HOME/hass}/packages/package_netgear_gs724t.yaml"
 ALT_PKG_NETGEAR="/packages/package_netgear_gs724t.yaml"
 
 ADR8="${CORE_ROOT}/architecture/ADR-0008-normalization-and-determinism-rules.md.md"

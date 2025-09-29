@@ -1,4 +1,5 @@
 # Home Assistant runtime / noisy files
+home-assistant_v2.db*
 .storage/
 .cloud/
 deps/
@@ -260,3 +261,10 @@ artifacts/**
 # ADR-0018 canonical ignores
 archive/**
 !hestia/reports/*/
+
+# Repo janitor: prevent symlink commits and ensure volatile data ignored
+hestia/core/meta/gitdir-visible
+hestia/reports/latest
+tts/
+www/
+reports/

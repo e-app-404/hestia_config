@@ -1,0 +1,18 @@
+name: ha-canonical-guard
+on: [push, pull_request]
+jobs:
+  guard:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: No legacy paths outside docs
+        run: |
+          set -e
+          rg -n --hidden --glob '!.git' --glob '!hestia/docs/**' '/n/ha|/Volumes/config' . \
+            && { echo "Legacy paths found"; exit 1; } || echo "OK"
+      - name: No tracked symlinks or nested .git
+        run: |
+          BAD_SYM=$(find . -type l -print | while read -r f; do git check-ignore -q "$f" || echo "$f"; done)
+          [ -z "$BAD_SYM" ] || { echo "Tracked symlinks:"; echo "$BAD_SYM"; exit 1; }
+          NEST=$(find . -type d -name .git -not -path './.git')
+          [ -z "$NEST" ] || { echo "Nested .git:"; echo "$NEST"; exit 1; }

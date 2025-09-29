@@ -29,8 +29,10 @@ The ADR proposing `/Users/evertappels/Projects/HomeAssistant/logs` as a last-res
 
 Commands to move into repo once mount is healthy:
 
+```bash
 sudo mkdir -p /n/ha/path/to/repo/docs/adr
 sudo mv /tmp/adr_fallback_logpath.md /n/ha/path/to/repo/docs/adr/XXX-fallback-logpath.md
+```
 
 ## Context
 
@@ -71,7 +73,7 @@ This location is to be used only as a last-resort fallback when the canonical lo
 
 ## Token Blocks
 
-```
+```bash
 # mount readiness probe (example)
 test -w "${HA_MOUNT:-$HOME/hass}" || echo "mount not writable"
 

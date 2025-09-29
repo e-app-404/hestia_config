@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 LC_ALL=C
+: "${HA_MOUNT:=$HOME/hass}"
 
 # Hardened retry script to ensure Cloudflare Worker + route and validate headers
 # Writes no secrets to disk beyond using provided token values.
@@ -9,7 +10,7 @@ CF_ACCOUNT_ID="e37605142353eb163ea86636c4027134"
 CF_ZONE_ID="0855d7797c8126d39b6653952f1fed61"
 CF_API_TOKEN="x2B2rB_ZZvxSAjJbZeP6EaayZ9_Udo0RjlhVOobz"
 SCRIPT_NAME="portal-no-store"
-UPDATED_WORKER_FILE="/n/ha/tmp/worker-portal-no-store-updated.js"
+UPDATED_WORKER_FILE="${HA_MOUNT:-$HOME/hass}/tmp/worker-portal-no-store-updated.js"
 ACCT_SCRIPTS_URL="https://api.cloudflare.com/client/v4/accounts/${CF_ACCOUNT_ID}/workers/scripts/${SCRIPT_NAME}"
 ROUTES_URL="https://api.cloudflare.com/client/v4/zones/${CF_ZONE_ID}/workers/routes"
 
@@ -71,7 +72,7 @@ curl -sSI https://nas.xplab.io/ | egrep -i "Cache-Control|Content-Security-Polic
 
 # Run acceptance tests
 echo "[6] Run acceptance tests"
-/n/ha/hestia/deploy/dsm/acceptance_tests.sh nas.xplab.io
+${HA_MOUNT:-$HOME/hass}/hestia/deploy/dsm/acceptance_tests.sh nas.xplab.io
 
 echo "Hardened worker retry completed"
 exit 0

@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
+: "${HA_MOUNT:=$HOME/hass}"
 HOST="192.168.0.104"
 USER="babylonrobot"
 SSH_PORT=22
-LOCAL_SNIPPET="/n/ha/hestia/deploy/dsm/snippets/nginx_portal_headers.inc"
+LOCAL_SNIPPET="${HA_MOUNT:-$HOME/hass}/hestia/deploy/dsm/snippets/nginx_portal_headers.inc"
 REMOTE_INCLUDE_DIR="/usr/local/nginx/includes"
 TIMESTAMP="$(date -u +%Y%m%dT%H%M%SZ)"
 REMOTE_TMP_SNIPPET="/tmp/portal_headers.inc"

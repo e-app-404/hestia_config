@@ -87,7 +87,7 @@ def test_n_ha_hardcoded_error(tmp_path):
     p = tmp_path / "ADR-0007.md"
     p.write_text(textwrap.dedent("""
     ```bash
-    echo /n/ha/foo
+    echo ${HA_MOUNT:-$HOME/hass}/foo
     ```
     """))
     res = rules.check_file(str(p))

@@ -1390,9 +1390,9 @@ system_instruction.yaml:
         config_root: /config/
         realpath_equivalent: /homeassistant/
         symlink_equivalent: /config/
-        macos_smb_share_equivalent: /n/ha/
+        macos_smb_share_equivalent: /~/hass
     doctrine_path_reference:
-      canonical_path: "/mnt/data/final_snapshot_*/apollo_knowledge/n/ha/share/APOLLO/core/governance/ARCHITECTURE_DOCTRINE.md"
+      canonical_path: "/mnt/data/final_snapshot_*/apollo_knowledge/~/hassshare/APOLLO/core/governance/ARCHITECTURE_DOCTRINE.md"
       usage: |
         This file is the governing schema and must not be overwritten.
         It forms the source-of-truth for:
