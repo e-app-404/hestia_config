@@ -1,4 +1,4 @@
-VENV=.venv
+VENV=.venv_ha_governance
 PY=$(VENV)/bin/python
 PIP=$(VENV)/bin/pip
 

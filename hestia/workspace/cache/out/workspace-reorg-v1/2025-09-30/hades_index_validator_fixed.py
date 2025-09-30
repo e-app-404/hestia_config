@@ -3,7 +3,8 @@
 Checks configured ci_checks:
 - yaml_load: try to parse target files with a safe YAML loader (naive fallback 
 to text check if PyYAML not present)
-- path_exists: ensure the path exists (maps /config/ to ~/hass where appropriate)
+- path_exists: ensure the path exists (maps /config/ to ~/hass where
+  appropriate)
 - tag_policy: ensure tags are subset of allowed set
 
 FIXES APPLIED:
@@ -13,8 +14,8 @@ FIXES APPLIED:
 - Support for actual manifest.yaml format
 - Path normalization for old -> new structure transition
 """
-import sys
 import os
+import sys
 from pathlib import Path
 
 # FIXED: Updated paths for four-pillar architecture with proper expansion
@@ -33,20 +34,23 @@ def get_fallback_paths():
 
 def locate_index():
     """Locate the hades config index file"""
+    checked = []
     # Try preferred locations first
     for p in PREFERRED_INDEXS:
+        checked.append(p)
         if p.exists():
             return p
-    
+
     # Try fallback locations (ADR-0016 compliant)
     for p in get_fallback_paths():
+        checked.append(p)
         if p.exists():
             return p
-    
+
     # If none found, raise with helpful message
-    all_checked = PREFERRED_INDEXS + get_fallback_paths()
     raise FileNotFoundError(
-        'No hades index found; checked: ' + ', '.join([str(x) for x in all_checked])
+        'No hades index found; checked: ' +
+        ', '.join([str(x) for x in checked])
     )
 
 # ENHANCED: Updated tag policy for four-pillar architecture
@@ -67,27 +71,28 @@ def normalize_artifact_path(path_str: str):
     if '/hestia/core/config/' in path_str:
         return path_str.replace('/hestia/core/config/', '/hestia/config/')
     
-    return path_str
-
 def load_index(path: Path):
     """Load index file supporting both YAML and legacy conf formats"""
     try:
         import yaml
         content = yaml.safe_load(path.read_text(encoding='utf-8'))
-        
+
         # Handle current manifest.yaml structure
         if 'hades_config_index' in content:
             return content
-            
-        # Handle legacy structure (if needed for compatibility)
-        if isinstance(content, dict) and 'artifacts' in content and 'hades_config_index' not in content:
-            return {'hades_config_index': content}
-            
+        if (
+            isinstance(content, dict)
+            and 'artifacts' in content
+            and 'hades_config_index' not in content
+        ):
+            # Wrap legacy structure
+            return {'hades_config_index': {'artifacts': content['artifacts']}}
         return content
-        
-    except yaml.YAMLError as e:
-        raise ValueError(f"YAML parsing error in {path}: {e}")
     except ImportError:
+        # Fallback parser for environments without PyYAML
+        return _parse_legacy_format(path)
+    except Exception as e:
+        raise ValueError(f"YAML parsing error in {path}: {e}")
         # Fallback parser for environments without PyYAML
         return _parse_legacy_format(path)
 
@@ -103,91 +108,44 @@ def _parse_legacy_format(path: Path):
         idx = {'hades_config_index': {'artifacts': {}}}
         cur_category = None
         cur_item = None
-        
+
         for line_num, line in enumerate(lines, 1):
             stripped = line.lstrip()
-            
-            if stripped.startswith('hades_config_index:'):
-                continue
-            if stripped.startswith('artifacts:'):
-                continue
-                
-            # category lines: e.g., 'network:' at two-space indent
-            if (line.startswith('    ') and stripped.endswith(':') and not stripped.startswith('-')):
+            if (
+                line.startswith('    ')
+                and stripped.endswith(':')
+                and not stripped.startswith('-')
+            ):
                 cur_category = stripped[:-1]
                 idx['hades_config_index']['artifacts'][cur_category] = []
+                cur_item = None
                 continue
-                
-            # item start (dash)
-            if stripped.startswith('- '):
-                if cur_category is None:
-                    raise ValueError(f"Item found without category context at line {line_num}: {line}")
-                cur_item = {}
-                idx['hades_config_index']['artifacts'][cur_category].append(cur_item)
-                # line may contain key: value after '- '
-                after = stripped[2:]
-                if ':' in after:
-                    k, v = after.split(':', 1)
-                    cur_item[k.strip()] = v.strip().strip('"')
-                continue
-                
-            # continuation line under current item (further indented)
-            if (line.startswith('      ') and ':' in stripped and cur_item is not None):
+
+            if (
+                line.startswith('      ')
+                and ':' in stripped
+                and cur_category is not None
+            ):
                 k, v = stripped.split(':', 1)
                 val = v.strip()
+                if cur_item is None:
+                    cur_item = {}
+                    idx['hades_config_index']['artifacts'][cur_category].append(cur_item)
                 if val.startswith('[') and val.endswith(']'):
                     # simple inline list
                     raw_items = val[1:-1].split(',')
-                    items = [x.strip().strip('"') for x in raw_items if x.strip()]
+                    items = [
+                        x.strip().strip('"')
+                        for x in raw_items
+                        if x.strip()
+                    ]
                     cur_item[k.strip()] = items
                 else:
                     cur_item[k.strip()] = val.strip('"')
                 continue
-                
         return idx
-        
     except Exception as e:
-        raise ValueError(f"Failed to parse legacy format {path}: {e}")
-
-def map_path(p: str):
-    """Map /config/ paths to local filesystem with proper expansion and ADR-0016 compliance"""
-    if not p:
-        return None
-        
-    if p.startswith('/config/'):
-        # Use environment variable per ADR-0016
-        ha_mount = os.getenv('HA_MOUNT', os.path.expanduser('~/hass'))
-        return Path(ha_mount) / p[len('/config/'):]
-    
-    return Path(p).expanduser()
-
-def check_yaml_load(p: Path):
-    """Check if file can be loaded as valid YAML with enhanced error reporting"""
-    try:
-        import yaml
-        yaml.safe_load(p.read_text(encoding='utf-8'))
-        return True, None
-    except yaml.YAMLError as e:
-        return False, f'yaml_error: {e}'
-    except FileNotFoundError:
-        return False, 'file_not_found'
-    except PermissionError:
-        return False, 'permission_denied'
-    except ImportError:
-        # Fallback heuristic when PyYAML is not available
-        try:
-            txt = p.read_text(encoding='utf-8')
-            if not txt.strip():
-                return False, 'empty_file'
-            if ':' in txt:
-                return True, None
-            return False, 'no_yaml_backend_and_no_colon'
-        except Exception as e:
-            return False, f'fallback_check_failed: {e}'
-    except Exception as e:
-        return False, f'unexpected_error: {e}'
-
-def check():
+        raise ValueError(f"Legacy format parsing error in {path}: {e}")
     """Main validation function with enhanced error reporting"""
     try:
         idx_path = locate_index()

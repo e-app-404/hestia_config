@@ -13,8 +13,8 @@ FIXES APPLIED:
 - Support for actual manifest.yaml format
 - Path normalization for old -> new structure transition
 """
-import sys
 import os
+import sys
 from pathlib import Path
 
 # FIXED: Updated paths for four-pillar architecture with proper expansion
