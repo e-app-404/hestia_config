@@ -1,24 +1,41 @@
 VENV=.venv_ha_governance
+ACTIVATE=. $(VENV)/bin/activate
 PY=$(VENV)/bin/python
 PIP=$(VENV)/bin/pip
 
-.PHONY: venv install lint validate autofix ci hygiene bundle reports-latest hooks
+.PHONY: activate venv shell install lint validate autofix ci hygiene bundle reports-latest hooks
+
+activate:
+	@echo "Run this command to activate the virtual environment:"
+	@echo "source $(VENV)/bin/activate"
 
 venv:
-	@test -d $(VENV) || python3 -m venv $(VENV)
-	@$(PIP) install --upgrade pip
+	@if [ ! -d $(VENV) ]; then \
+		echo "Creating virtual environment..."; \
+		python3 -m venv $(VENV); \
+	fi
+	@if [ -f $(PIP) ]; then \
+		$(PIP) install --upgrade pip; \
+	fi
+	@echo "✅ Virtual environment ready at $(VENV)"
+	@$(MAKE) activate
+
+shell: venv
+	@echo "Starting shell with virtual environment activated..."
+	@$(ACTIVATE) && exec $(SHELL)
 
 install: venv
+	@$(PIP) install --upgrade pip
 	@$(PIP) install -r requirements-dev.txt
 
-lint:
+lint: venv
 	@$(VENV)/bin/yamllint -f colored -s .
 
-validate:
-	@$(VENV)/bin/python hestia/tools/validate_metadata.py
+validate: venv
+	@$(PY) hestia/tools/validate_metadata.py
 
-autofix:
-	@$(VENV)/bin/python hestia/tools/autofix_metadata.py --apply || true
+autofix: venv
+	@$(PY) hestia/tools/autofix_metadata.py --apply || true
 
 ci: install lint validate
 
@@ -29,7 +46,7 @@ bundle:
 	bash scripts/make_bundle.sh dist/bundle.tar.gz
 
 reports-latest:
-	python3 hestia/tools/utils/reportkit/link_latest.py
+	@test -f $(PY) && $(PY) hestia/tools/utils/reportkit/link_latest.py || python3 hestia/tools/utils/reportkit/link_latest.py
 
 hooks:
 	git config core.hooksPath .githooks

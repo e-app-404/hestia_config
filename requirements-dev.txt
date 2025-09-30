@@ -5,12 +5,12 @@ pandas==2.*
 click==8.*
 pre-commit==3.*
 tabulate==0.9.*
-monkeytype==0.3.*
-pytest==7.**
+monkeytype==23.3.*
+pytest==7.*
 coverage==7.*
 flake8==6.*
 pydocstyle==6.*
 mccabe==0.7.*
 isort==5.*
-black==23.***
-autoflake==2.***    
+black==23.*
+autoflake==2.*    
