@@ -1,0 +1,344 @@
+# File /config/hestia/sensors/delta/hermes/decay/occupancy_decay.yaml
+- sensor:
+    - name: Metadata - Hermes Occupancy Decay (Delta)
+      unique_id: metadata_hermes_occupancy_decay_delta
+      state: active
+      attributes:
+        description: "Delta-tier occupancy decay implementation for the Hermes presence system"
+        file: /config/hestia/sensors/delta/hermes/decay/occupancy_decay.yaml
+        version: "1.0"
+        last_updated: "2025-04-30"
+        tier: "μ"
+        subsystem: "hermes"
+        canonical_id: "metadata_hermes_occupancy_decay_delta_μ"
+        origin_file: "/config/hestia/config/hermes/templates/hermes_decay.yaml"
+
+    - name: bedroom_occupancy_decay
+      unique_id: bedroom_occupancy_decay_delta
+      icon: mdi:account-off-outline
+      state: >
+        {% set is_cold_start = states('sensor.bedroom_occupancy_decay') in ['unavailable', 'unknown', 'none', ''] %}
+        {% set occupancy_entity = 'binary_sensor.bedroom_occupancy_β' %}
+        {% set occupancy_valid = states(occupancy_entity) not in ['unavailable', 'unknown', 'none', ''] %}
+
+        {% set current_occupancy = is_state(occupancy_entity, 'on') if occupancy_valid else false %}
+
+        {% if is_cold_start %}
+          {% set previous = 0 %}
+        {% else %}
+          {% set previous = states('sensor.bedroom_occupancy_decay') | float(
+            state_attr('sensor.bedroom_occupancy_decay', 'stored_state') | default(0)
+          ) %}
+        {% endif %}
+
+        {% set decay_rate = 0.2 %}  # Slower decay for occupancy
+        {% set reset_value = 10 %}
+        {% set floor = 0 %}
+
+        {% if current_occupancy %}
+          {% set result = reset_value %}
+        {% else %}
+          {% set result = max(previous - decay_rate, floor) %}
+        {% endif %}
+
+        {{ result }}
+      attributes:
+        stored_state: "{{ states('sensor.bedroom_occupancy_decay') | float(0) }}"
+        occupancy_state: "{{ is_state('binary_sensor.bedroom_occupancy_β', 'on') }}"
+        occupancy_valid: "{{ states('binary_sensor.bedroom_occupancy_β') not in ['unavailable', 'unknown', 'none', ''] }}"
+        decay_rate: "0.2"
+        reset_value: "10"
+        floor_value: "0"
+        expected_duration: "{{ 10 / 0.2 * 30 }} seconds"
+        is_cold_start: "{{ states('sensor.bedroom_occupancy_decay') in ['unavailable', 'unknown', 'none', ''] }}"
+        last_update_timestamp: "{{ now().timestamp() }}"
+        update_sequence: >
+          {% set current_seq = state_attr('sensor.bedroom_occupancy_decay', 'update_sequence') | int(0) %}
+          {{ current_seq + 1 }}
+        canonical_id: "bedroom_occupancy_decay_δ"
+        tier: "δ"
+        subsystem: "hermes"
+        module: "Presence Decay"
+        type: "decay"
+        role: "occupancy_persistence"
+        description: "Implements a robust linear decay pattern for bedroom occupancy with comprehensive edge case handling"
+        upstream_source: "binary_sensor.bedroom_occupancy_β"
+        downstream_consumers: >
+          {{ ["binary_sensor.bedroom_presence_validated_ε"] | tojson }}
+        retention: "Persists across restarts via attribute storage"
+        update_frequency: "30 seconds"
+
+    - name: living_room_occupancy_decay
+      unique_id: living_room_occupancy_decay_delta
+      icon: mdi:account-off-outline
+      state: >
+        {% set is_cold_start = states('sensor.living_room_occupancy_decay') in ['unavailable', 'unknown', 'none', ''] %}
+        {% set occupancy_entity = 'binary_sensor.living_room_occupancy_β' %}
+        {% set occupancy_valid = states(occupancy_entity) not in ['unavailable', 'unknown', 'none', ''] %}
+
+        {% set current_occupancy = is_state(occupancy_entity, 'on') if occupancy_valid else false %}
+
+        {% if is_cold_start %}
+          {% set previous = 0 %}
+        {% else %}
+          {% set previous = states('sensor.living_room_occupancy_decay') | float(
+            state_attr('sensor.living_room_occupancy_decay', 'stored_state') | default(0)
+          ) %}
+        {% endif %}
+
+        {% set decay_rate = 0.2 %}
+        {% set reset_value = 10 %}
+        {% set floor = 0 %}
+
+        {% if current_occupancy %}
+          {% set result = reset_value %}
+        {% else %}
+          {% set result = max(previous - decay_rate, floor) %}
+        {% endif %}
+
+        {{ result }}
+      attributes:
+        stored_state: "{{ states('sensor.living_room_occupancy_decay') | float(0) }}"
+        occupancy_state: "{{ is_state('binary_sensor.living_room_occupancy_β', 'on') }}"
+        occupancy_valid: "{{ states('binary_sensor.living_room_occupancy_β') not in ['unavailable', 'unknown', 'none', ''] }}"
+        decay_rate: "0.2"
+        reset_value: "10"
+        floor_value: "0"
+        expected_duration: "{{ 10 / 0.2 * 30 }} seconds"
+        is_cold_start: "{{ states('sensor.living_room_occupancy_decay') in ['unavailable', 'unknown', 'none', ''] }}"
+        last_update_timestamp: "{{ now().timestamp() }}"
+        update_sequence: >
+          {% set current_seq = state_attr('sensor.living_room_occupancy_decay', 'update_sequence') | int(0) %}
+          {{ current_seq + 1 }}
+        canonical_id: "living_room_occupancy_decay_δ"
+        tier: "δ"
+        subsystem: "hermes"
+        module: "Presence Decay"
+        type: "decay"
+        role: "occupancy_persistence"
+        description: "Implements a robust linear decay pattern for living room occupancy with comprehensive edge case handling"
+        upstream_source: "binary_sensor.living_room_occupancy_β"
+        downstream_consumers: >
+          {{ ["binary_sensor.living_room_presence_validated_ε"] | tojson }}
+        retention: "Persists across restarts via attribute storage"
+        update_frequency: "30 seconds"
+
+    - name: kitchen_occupancy_decay
+      unique_id: kitchen_occupancy_decay_delta
+      icon: mdi:account-off-outline
+      state: >
+        {% set is_cold_start = states('sensor.kitchen_occupancy_decay') in ['unavailable', 'unknown', 'none', ''] %}
+        {% set occupancy_entity = 'binary_sensor.kitchen_occupancy_β' %}
+        {% set occupancy_valid = states(occupancy_entity) not in ['unavailable', 'unknown', 'none', ''] %}
+
+        {% set current_occupancy = is_state(occupancy_entity, 'on') if occupancy_valid else false %}
+
+        {% if is_cold_start %}
+          {% set previous = 0 %}
+        {% else %}
+          {% set previous = states('sensor.kitchen_occupancy_decay') | float(
+            state_attr('sensor.kitchen_occupancy_decay', 'stored_state') | default(0)
+          ) %}
+        {% endif %}
+
+        {% set decay_rate = 0.2 %}
+        {% set reset_value = 10 %}
+        {% set floor = 0 %}
+
+        {% if current_occupancy %}
+          {% set result = reset_value %}
+        {% else %}
+          {% set result = max(previous - decay_rate, floor) %}
+        {% endif %}
+
+        {{ result }}
+      attributes:
+        stored_state: "{{ states('sensor.kitchen_occupancy_decay') | float(0) }}"
+        occupancy_state: "{{ is_state('binary_sensor.kitchen_occupancy_β', 'on') }}"
+        occupancy_valid: "{{ states('binary_sensor.kitchen_occupancy_β') not in ['unavailable', 'unknown', 'none', ''] }}"
+        decay_rate: "0.2"
+        reset_value: "10"
+        floor_value: "0"
+        expected_duration: "{{ 10 / 0.2 * 30 }} seconds"
+        is_cold_start: "{{ states('sensor.kitchen_occupancy_decay') in ['unavailable', 'unknown', 'none', ''] }}"
+        last_update_timestamp: "{{ now().timestamp() }}"
+        update_sequence: >
+          {% set current_seq = state_attr('sensor.kitchen_occupancy_decay', 'update_sequence') | int(0) %}
+          {{ current_seq + 1 }}
+        canonical_id: "kitchen_occupancy_decay_δ"
+        tier: "δ"
+        subsystem: "hermes"
+        module: "Presence Decay"
+        type: "decay"
+        role: "occupancy_persistence"
+        description: "Implements a robust linear decay pattern for kitchen occupancy with comprehensive edge case handling"
+        upstream_source: "binary_sensor.kitchen_occupancy_β"
+        downstream_consumers: >
+          {{ ["binary_sensor.kitchen_presence_validated_ε"] | tojson }}
+        retention: "Persists across restarts via attribute storage"
+        update_frequency: "30 seconds"
+
+    - name: ensuite_occupancy_decay
+      unique_id: ensuite_occupancy_decay_delta
+      icon: mdi:account-off-outline
+      state: >
+        {% set is_cold_start = states('sensor.ensuite_occupancy_decay') in ['unavailable', 'unknown', 'none', ''] %}
+        {% set occupancy_entity = 'binary_sensor.ensuite_occupancy_β' %}
+        {% set occupancy_valid = states(occupancy_entity) not in ['unavailable', 'unknown', 'none', ''] %}
+
+        {% set current_occupancy = is_state(occupancy_entity, 'on') if occupancy_valid else false %}
+
+        {% if is_cold_start %}
+          {% set previous = 0 %}
+        {% else %}
+          {% set previous = states('sensor.ensuite_occupancy_decay') | float(
+            state_attr('sensor.ensuite_occupancy_decay', 'stored_state') | default(0)
+          ) %}
+        {% endif %}
+
+        {% set decay_rate = 0.2 %}
+        {% set reset_value = 10 %}
+        {% set floor = 0 %}
+
+        {% if current_occupancy %}
+          {% set result = reset_value %}
+        {% else %}
+          {% set result = max(previous - decay_rate, floor) %}
+        {% endif %}
+
+        {{ result }}
+      attributes:
+        stored_state: "{{ states('sensor.ensuite_occupancy_decay') | float(0) }}"
+        occupancy_state: "{{ is_state('binary_sensor.ensuite_occupancy_β', 'on') }}"
+        occupancy_valid: "{{ states('binary_sensor.ensuite_occupancy_β') not in ['unavailable', 'unknown', 'none', ''] }}"
+        decay_rate: "0.2"
+        reset_value: "10"
+        floor_value: "0"
+        expected_duration: "{{ 10 / 0.2 * 30 }} seconds"
+        is_cold_start: "{{ states('sensor.ensuite_occupancy_decay') in ['unavailable', 'unknown', 'none', ''] }}"
+        last_update_timestamp: "{{ now().timestamp() }}"
+        update_sequence: >
+          {% set current_seq = state_attr('sensor.ensuite_occupancy_decay', 'update_sequence') | int(0) %}
+          {{ current_seq + 1 }}
+        canonical_id: "ensuite_occupancy_decay_δ"
+        tier: "δ"
+        subsystem: "hermes"
+        module: "Presence Decay"
+        type: "decay"
+        role: "occupancy_persistence"
+        description: "Implements a robust linear decay pattern for ensuite occupancy with comprehensive edge case handling"
+        upstream_source: "binary_sensor.ensuite_occupancy_β"
+        downstream_consumers: >
+          {{ ["binary_sensor.ensuite_presence_validated_ε"] | tojson }}
+        retention: "Persists across restarts via attribute storage"
+        update_frequency: "30 seconds"
+
+    - name: hallway_downstairs_occupancy_decay
+      unique_id: hallway_downstairs_occupancy_decay_delta
+      icon: mdi:account-off-outline
+      state: >
+        {% set is_cold_start = states('sensor.hallway_downstairs_occupancy_decay') in ['unavailable', 'unknown', 'none', ''] %}
+        {% set occupancy_entity = 'binary_sensor.hallway_downstairs_occupancy_β' %}
+        {% set occupancy_valid = states(occupancy_entity) not in ['unavailable', 'unknown', 'none', ''] %}
+
+        {% set current_occupancy = is_state(occupancy_entity, 'on') if occupancy_valid else false %}
+
+        {% if is_cold_start %}
+          {% set previous = 0 %}
+        {% else %}
+          {% set previous = states('sensor.hallway_downstairs_occupancy_decay') | float(
+            state_attr('sensor.hallway_downstairs_occupancy_decay', 'stored_state') | default(0)
+          ) %}
+        {% endif %}
+
+        {% set decay_rate = 0.2 %}
+        {% set reset_value = 10 %}
+        {% set floor = 0 %}
+
+        {% if current_occupancy %}
+          {% set result = reset_value %}
+        {% else %}
+          {% set result = max(previous - decay_rate, floor) %}
+        {% endif %}
+
+        {{ result }}
+      attributes:
+        stored_state: "{{ states('sensor.hallway_downstairs_occupancy_decay') | float(0) }}"
+        occupancy_state: "{{ is_state('binary_sensor.hallway_downstairs_occupancy_β', 'on') }}"
+        occupancy_valid: "{{ states('binary_sensor.hallway_downstairs_occupancy_β') not in ['unavailable', 'unknown', 'none', ''] }}"
+        decay_rate: "0.2"
+        reset_value: "10"
+        floor_value: "0"
+        expected_duration: "{{ 10 / 0.2 * 30 }} seconds"
+        is_cold_start: "{{ states('sensor.hallway_downstairs_occupancy_decay') in ['unavailable', 'unknown', 'none', ''] }}"
+        last_update_timestamp: "{{ now().timestamp() }}"
+        update_sequence: >
+          {% set current_seq = state_attr('sensor.hallway_downstairs_occupancy_decay', 'update_sequence') | int(0) %}
+          {{ current_seq + 1 }}
+        canonical_id: "hallway_downstairs_occupancy_decay_δ"
+        tier: "δ"
+        subsystem: "hermes"
+        module: "Presence Decay"
+        type: "decay"
+        role: "occupancy_persistence"
+        description: "Implements a robust linear decay pattern for hallway downstairs occupancy with comprehensive edge case handling"
+        upstream_source: "binary_sensor.hallway_downstairs_occupancy_β"
+        downstream_consumers: >
+          {{ ["binary_sensor.hallway_downstairs_presence_validated_ε"] | tojson }}
+        retention: "Persists across restarts via attribute storage"
+        update_frequency: "30 seconds"
+
+    - name: hallway_upstairs_occupancy_decay
+      unique_id: hallway_upstairs_occupancy_decay_delta
+      icon: mdi:account-off-outline
+      state: >
+        {% set is_cold_start = states('sensor.hallway_upstairs_occupancy_decay') in ['unavailable', 'unknown', 'none', ''] %}
+        {% set occupancy_entity = 'binary_sensor.hallway_upstairs_occupancy_β' %}
+        {% set occupancy_valid = states(occupancy_entity) not in ['unavailable', 'unknown', 'none', ''] %}
+
+        {% set current_occupancy = is_state(occupancy_entity, 'on') if occupancy_valid else false %}
+
+        {% if is_cold_start %}
+          {% set previous = 0 %}
+        {% else %}
+          {% set previous = states('sensor.hallway_upstairs_occupancy_decay') | float(
+            state_attr('sensor.hallway_upstairs_occupancy_decay', 'stored_state') | default(0)
+          ) %}
+        {% endif %}
+
+        {% set decay_rate = 0.2 %}
+        {% set reset_value = 10 %}
+        {% set floor = 0 %}
+
+        {% if current_occupancy %}
+          {% set result = reset_value %}
+        {% else %}
+          {% set result = max(previous - decay_rate, floor) %}
+        {% endif %}
+
+        {{ result }}
+      attributes:
+        stored_state: "{{ states('sensor.hallway_upstairs_occupancy_decay') | float(0) }}"
+        occupancy_state: "{{ is_state('binary_sensor.hallway_upstairs_occupancy_β', 'on') }}"
+        occupancy_valid: "{{ states('binary_sensor.hallway_upstairs_occupancy_β') not in ['unavailable', 'unknown', 'none', ''] }}"
+        decay_rate: "0.2"
+        reset_value: "10"
+        floor_value: "0"
+        expected_duration: "{{ 10 / 0.2 * 30 }} seconds"
+        is_cold_start: "{{ states('sensor.hallway_upstairs_occupancy_decay') in ['unavailable', 'unknown', 'none', ''] }}"
+        last_update_timestamp: "{{ now().timestamp() }}"
+        update_sequence: >
+          {% set current_seq = state_attr('sensor.hallway_upstairs_occupancy_decay', 'update_sequence') | int(0) %}
+          {{ current_seq + 1 }}
+        canonical_id: "hallway_upstairs_occupancy_decay_δ"
+        tier: "δ"
+        subsystem: "hermes"
+        module: "Presence Decay"
+        type: "decay"
+        role: "occupancy_persistence"
+        description: "Implements a robust linear decay pattern for hallway upstairs occupancy with comprehensive edge case handling"
+        upstream_source: "binary_sensor.hallway_upstairs_occupancy_β"
+        downstream_consumers: >
+          {{ ["binary_sensor.hallway_upstairs_presence_validated_ε"] | tojson }}
+        retention: "Persists across restarts via attribute storage"
+        update_frequency: "30 seconds"

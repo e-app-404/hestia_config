@@ -10,10 +10,10 @@ homeassistant:
     - "/config"
     - "/config/hestia/diagnostics/logs"
     - "/config/hestia/diagnostics/notifications"
-    - "/config/hestia/work/scratch"
+    - "/config/hestia/workspace/cache/scratch"
     - "/config/hestia/tools/utils"
     - "/config/hestia/work"
-    - "/config/hestia/core/governance/system_instruction"
+    - "/config/hestia/library/docs/governance/system_instruction"
 
 # 🔧 UI-based automations (editable via GUI)
 automation ui: !include automations.yaml

@@ -55,7 +55,7 @@ ALLOWED_TAGS = set([
     'layer3', 'healthcheck', 'home_assistant', 'synology_dsm',
     # New tags for four-pillar architecture
     'config', 'library', 'tools', 'workspace',
-    'devices', 'network', 'storage', 'diagnostics', 'preferences', 'registry',
+    'devices', 'network', 'storage', 'diagnostics', 'preferences',
 ])
 
 def normalize_artifact_path(path_str: str):
@@ -85,16 +85,11 @@ def load_index(path: Path):
             
         return content
         
-    except Exception as e:
-        if 'yaml' in str(type(e)) or 'YAML' in str(e):
-            raise ValueError(f"YAML parsing error in {path}: {e}")
-        # If yaml module not available, try fallback
-        try:
-            import yaml  # Test if yaml is available
-        except ImportError:
-            return _parse_legacy_format(path)
-        # Re-raise other exceptions
-        raise
+    except yaml.YAMLError as e:
+        raise ValueError(f"YAML parsing error in {path}: {e}")
+    except ImportError:
+        # Fallback parser for environments without PyYAML
+        return _parse_legacy_format(path)
 
 def _parse_legacy_format(path: Path):
     """Targeted parser for the hades_index.conf file format (legacy support)"""
@@ -172,6 +167,12 @@ def check_yaml_load(p: Path):
         import yaml
         yaml.safe_load(p.read_text(encoding='utf-8'))
         return True, None
+    except yaml.YAMLError as e:
+        return False, f'yaml_error: {e}'
+    except FileNotFoundError:
+        return False, 'file_not_found'
+    except PermissionError:
+        return False, 'permission_denied'
     except ImportError:
         # Fallback heuristic when PyYAML is not available
         try:
@@ -183,14 +184,7 @@ def check_yaml_load(p: Path):
             return False, 'no_yaml_backend_and_no_colon'
         except Exception as e:
             return False, f'fallback_check_failed: {e}'
-    except FileNotFoundError:
-        return False, 'file_not_found'
-    except PermissionError:
-        return False, 'permission_denied'
     except Exception as e:
-        # Check if it's a YAML error
-        if 'yaml' in str(type(e)).lower() or 'yaml' in str(e).lower():
-            return False, f'yaml_error: {e}'
         return False, f'unexpected_error: {e}'
 
 def check():
@@ -207,12 +201,7 @@ def check():
     if not art:
         return [('INDEX_STRUCTURE', 'no_artifacts_found', 'Index contains no artifacts to validate')]
     
-    # Only validate artifact categories (skip metadata sections)
-    artifact_categories = ['network', 'storage', 'diagnostics', 'registry', 'preferences', 'devices', 'topology', 'generic']
-    
     for cat, items in art.items():
-        if cat not in artifact_categories:
-            continue  # Skip non-artifact sections like metadata
         if not isinstance(items, list):
             failures.append((f'CATEGORY_{cat}', 'invalid_structure', 'Category items must be a list'))
             continue

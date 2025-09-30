@@ -4,6 +4,9 @@ from hestia.tools.utils.validators.adr_lint.src.hestia.tools.adr_lint import (
     config,
     rules,
 )
+from hestia.tools.utils.validators.adr_lint.src.hestia.tools.adr_lint.config import (
+    CANONICAL_TEMPLATE,
+)
 
 
 def test_happy_adr(tmp_path):
@@ -96,11 +99,25 @@ def test_n_ha_hardcoded_error(tmp_path):
     assert any(v['rule'] == 'path.n_ha' for v in res['violations'])
 
 
+def test_n_ha_alternative_hardcoded_error(tmp_path):
+    """Test case from workspace root tests - alternative hardcoded /n/ha pattern"""
+    p = tmp_path / "ADR-0007b.md"
+    p.write_text(textwrap.dedent("""
+    ```bash
+    echo ${HA_MOUNT:-$HOME/hass}/foo
+    ```
+    """))
+    res = rules.check_file(str(p), walker_cfg=config.WalkerConfig())
+    # This should be OK since it uses parameterized path
+    assert not any(v['rule'] == 'path.n_ha' for v in res['violations'])
+
+
 def test_canonical_template_ok(tmp_path):
     p = tmp_path / "ADR-0008.md"
     p.write_text(textwrap.dedent(f"""
     ```yaml
     - path: {config.CANONICAL_TEMPLATE}
+    - path: {CANONICAL_TEMPLATE}
     ```
     """))
     res = rules.check_file(str(p), walker_cfg=config.WalkerConfig())
@@ -111,4 +128,7 @@ def test_symlink_mention_error(tmp_path):
     p = tmp_path / "ADR-0009.md"
     p.write_text("ln -s /somewhere /config/template.library.jinja\n")
     res = rules.check_file(str(p), walker_cfg=config.WalkerConfig())
-    assert any(v['rule'] == 'symlink.mention' or v['rule'] == 'token_block.missing' for v in res['violations'])
+    assert any(
+        v['rule'] == 'symlink.mention' or v['rule'] == 'token_block.missing'
+        for v in res['violations']
+    )
