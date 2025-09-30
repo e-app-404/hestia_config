@@ -46,7 +46,7 @@ workspaces:
     hooks:
       pre_commit:
         enabled: true
-        runs: ["hestia/tools/validators/scan_hardcoded_ha.sh"]
+        runs: ["hestia/tools/utils/validators/scan_hardcoded_ha.sh"]
     mirror_policy:
       nas_path: "/volume1/git-mirrors/ha-config.git"
       push_refs: ["main", "tags"]
@@ -63,7 +63,7 @@ workspaces:
     common_commands:
       list:
         - desc: "Validate no hard-coded /n/ha outside docs"
-          cmd: "bash hestia/tools/validators/scan_hardcoded_ha.sh"
+          cmd: "bash hestia/tools/utils/validators/scan_hardcoded_ha.sh"
         - desc: "Push main + tags to NAS mirror"
           cmd: "git push origin main --tags"
     troubleshooting:
@@ -340,7 +340,7 @@ embed_files:
       # ----- END LFS DEFAULTS -----
 
   # --- HA Config only: hard-coded /n/ha guard + template env ---
-  - path: "hestia/tools/validators/scan_hardcoded_ha.sh"
+  - path: "hestia/tools/utils/validators/scan_hardcoded_ha.sh"
     mode: "755"
     content: |
       #!/usr/bin/env bash
@@ -373,7 +373,7 @@ embed_files:
               with:
                 fetch-depth: 0
             - name: Run validator
-              run: bash hestia/tools/validators/scan_hardcoded_ha.sh
+              run: bash hestia/tools/utils/validators/scan_hardcoded_ha.sh
 
   - path: ".env.sample"
     content: |
@@ -407,9 +407,9 @@ idempotent_setup:
       git rev-parse --is-inside-work-tree >/dev/null
       cd "$(git rev-parse --show-toplevel)"
       git switch -c chore/parameterize-ha-mount || git switch chore/parameterize-ha-mount
-      mkdir -p hestia/tools/validators .github/workflows .vscode-configs
-      # Write/update files explicitly for HA Config
-      cat > hestia/tools/validators/scan_hardcoded_ha.sh <<'SH'
+      mkdir -p hestia/tools/utils/validators .github/workflows .vscode-configs
+      # Create validator script
+      cat > hestia/tools/utils/validators/scan_hardcoded_ha.sh <<'SH'
       #!/usr/bin/env bash
       set -euo pipefail
       have_rg() { command -v rg >/dev/null 2>&1; }
@@ -423,7 +423,7 @@ idempotent_setup:
         echo "OK: no hard-coded /n/ha outside docs"
       fi
       SH
-      chmod +x hestia/tools/validators/scan_hardcoded_ha.sh
+      chmod +x hestia/tools/utils/validators/scan_hardcoded_ha.sh
       cat > .github/workflows/hardcoded-ha-guard.yml <<'YML'
       name: Hardcoded /n/ha guard
       on: [push, pull_request]
@@ -433,7 +433,7 @@ idempotent_setup:
           steps:
             - uses: actions/checkout@v4
               with: { fetch-depth: 0 }
-            - run: bash hestia/tools/validators/scan_hardcoded_ha.sh
+            - run: bash hestia/tools/utils/validators/scan_hardcoded_ha.sh
       YML
       cat > .env.sample <<'ENV'
       export HA_MOUNT="${HA_MOUNT:-$HOME/hass}"
@@ -443,7 +443,7 @@ idempotent_setup:
       export DIR_PACKAGES="$CONFIG_MOUNT/packages"
       export DIR_DOMAINS="$CONFIG_MOUNT/domain"
       ENV
-      git add hestia/tools/validators/scan_hardcoded_ha.sh .github/workflows/hardcoded-ha-guard.yml .env.sample || true
+      git add hestia/tools/utils/validators/scan_hardcoded_ha.sh .github/workflows/hardcoded-ha-guard.yml .env.sample || true
       git commit -m "chore(guard): add hard-coded /n/ha validator + CI" || true
       # Ensure tailnet remote is fetch-only
       git remote add tailnet ssh://gituser@100.93.61.53/volume1/git-mirrors/ha-config.git 2>/dev/null || true
@@ -555,7 +555,7 @@ acceptance_checklist:
   - workspace: "HA Config"
     checks:
       - "git rev-parse --abbrev-ref HEAD"
-      - "git ls-files .env.sample hestia/tools/validators/scan_hardcoded_ha.sh .github/workflows/hardcoded-ha-guard.yml"
+      - \"git ls-files .env.sample hestia/tools/utils/validators/scan_hardcoded_ha.sh .github/workflows/hardcoded-ha-guard.yml\"
       - "bash hestia/tools/validators/scan_hardcoded_ha.sh"
       - "git remote -v | sed -n '1,50p'"
   - workspace: "HA BB-8 Add-on"

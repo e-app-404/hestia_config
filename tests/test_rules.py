@@ -1,7 +1,12 @@
 import textwrap
 
-from hestia.tools.utils.validators.adr_lint import config, rules
-from hestia.tools.utils.validators.adr_lint.config import CANONICAL_TEMPLATE
+from hestia.tools.utils.validators.adr_lint.src.hestia.tools.adr_lint import (
+    config,
+    rules,
+)
+from hestia.tools.utils.validators.adr_lint.src.hestia.tools.adr_lint.config import (
+    CANONICAL_TEMPLATE,
+)
 
 
 def test_happy_adr(tmp_path):

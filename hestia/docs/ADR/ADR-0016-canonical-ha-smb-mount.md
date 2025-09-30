@@ -468,7 +468,7 @@ chmod +x hestia/tools/utils/validators/scan_hardcoded_ha.sh
 Run and verify the diff, then commit:
 
 ```bash
-hestia/tools/validators/scan_hardcoded_ha.sh
+hestia/tools/utils/validators/scan_hardcoded_ha.sh
 git add -A
 git commit -m "chore(workspace): parametrize HA_MOUNT and VS Code paths; deprecate /n/ha references"
 ```
@@ -480,7 +480,7 @@ mkdir -p .git/hooks
 cat > .git/hooks/pre-commit <<'H'
 #!/usr/bin/env bash
 set -e
-hestia/tools/validators/scan_hardcoded_ha.sh
+hestia/tools/utils/validators/scan_hardcoded_ha.sh
 H
 chmod +x .git/hooks/pre-commit
 ```
