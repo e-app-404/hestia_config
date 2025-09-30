@@ -1,0 +1,240 @@
+{#- Render all LIGHT entities grouped by area (id and name) -#}
+
+{%- set domain_states = states.light | list -%}
+
+{# Entities to exclude (so they don't affect area discovery or output) #}
+{%- set EXCLUDES = [
+  'light.wall_panel_right_switch_matter_alpha',
+  'light.wall_panel_left_switch_matter_alpha',
+  'light.bb_8_bb_8_led',
+  'light.bb_8_bb_8_led_2'
+] -%}
+
+{%- macro q(v) -%}
+{%- if v is none or v == '' or v == 'unavailable' -%}"—"
+{%- elif v == 'unknown' -%}"unknown"
+{%- else -%}{{ v }}{%- endif -%}
+{%- endmacro -%}
+
+{# ---- Integration / protocol helpers ---- #}
+{%- set likely_integrations = [
+  'matter','mqtt','tplink','localtuya','tuya','esphome','homekit_controller',
+  'wiz','wled','zha','deconz','zwave_js','lifx','yeelight','hue'
+] -%}
+
+{%- macro detect_integration(eid) -%}
+  {%- set hit = namespace(name='') -%}
+  {%- for i in likely_integrations if not hit.name -%}
+    {%- set ents = integration_entities(i) | list -%}
+    {%- if eid in ents -%}{%- set hit.name = i -%}{%- endif -%}
+  {%- endfor -%}
+  {{ hit.name or 'unknown' }}
+{%- endmacro -%}
+
+{%- macro connection_types(dev_id) -%}
+  {%- set conns = dev_id and device_attr(dev_id,'connections') -%}
+  {%- if conns and (conns | count > 0) -%}
+    {%- set types = conns | map(attribute=0) | unique | list -%}
+    {{ types | join(',') }}
+  {%- else -%}{{ '' }}{%- endif -%}
+{%- endmacro -%}
+
+{%- macro protocol_guess(integration, types, via_id) -%}
+  {%- set t = (types and types.split(',')) or [] -%}
+  {%- if 'bluetooth' in t -%}bluetooth
+  {%- elif 'ieee' in t -%}zigbee
+  {%- elif 'zwave' in t -%}zwave
+  {%- elif 'mac' in t -%}lan
+  {%- elif integration in ['mqtt'] -%}mqtt
+  {%- elif integration in ['matter'] -%}
+    {%- set via = via_id and (device_attr(via_id,'name_by_user') or device_attr(via_id,'name')) | lower -%}
+    {%- if via and ('thread' in via or 'border' in via) -%}thread{%- else -%}matter{%- endif -%}
+  {%- elif integration in ['localtuya','tuya'] -%}lan
+  {%- elif integration in ['wiz','lifx','yeelight','wled','esphome'] -%}wifi
+  {%- elif integration in ['hue','zha','deconz'] -%}zigbee
+  {%- elif integration in ['zwave_js'] -%}zwave
+  {%- else -%}unknown{%- endif -%}
+{%- endmacro -%}
+
+{# Build sorted list of unique area_ids present among lights (excluding EXCLUDES) #}
+{%- set ns = namespace(assigned_ids=[], has_unassigned=false) -%}
+{%- for s in domain_states | sort(attribute='entity_id') -%}
+  {%- if s.entity_id in EXCLUDES -%}{% continue %}{%- endif -%}
+  {%- set aid = area_id(s.entity_id) -%}
+  {%- if aid -%}
+    {%- if aid not in ns.assigned_ids -%}
+      {%- set ns.assigned_ids = ns.assigned_ids + [aid] -%}
+    {%- endif -%}
+  {%- else -%}
+    {%- set ns.has_unassigned = true -%}
+  {%- endif -%}
+{%- endfor -%}
+{%- set area_ids = ns.assigned_ids | sort -%}
+
+{# Build sorted list of unique area_names present among lights (excluding EXCLUDES) #}
+{%- set nsn = namespace(assigned_names=[], has_unassigned=false) -%}
+{%- for s in domain_states | sort(attribute='entity_id') -%}
+  {%- if s.entity_id in EXCLUDES -%}{% continue %}{%- endif -%}
+  {%- set aname = area_name(s.entity_id) -%}
+  {%- if aname -%}
+    {%- if aname not in nsn.assigned_names -%}
+      {%- set nsn.assigned_names = nsn.assigned_names + [aname] -%}
+    {%- endif -%}
+  {%- else -%}
+    {%- set nsn.has_unassigned = true -%}
+  {%- endif -%}
+{%- endfor -%}
+{%- set area_names = nsn.assigned_names | sort -%}
+
+areas:
+  by_id:
+{%- if (area_ids | length == 0) and (not ns.has_unassigned) -%}
+    []
+{%- else -%}
+{%- for aid in area_ids -%}
+    - area_id: {{ q(aid) }}
+      area_name: {%- set rep = namespace(name='') -%}
+                 {%- for s in domain_states -%}
+                   {%- if s.entity_id in EXCLUDES -%}{% continue %}{%- endif -%}
+                   {%- if area_id(s.entity_id) == aid and rep.name == '' -%}
+                     {%- set rep.name = area_name(s.entity_id) -%}
+                   {%- endif -%}
+                 {%- endfor -%}
+                 {{ q(rep.name) }}
+      entities:
+{%- for s in domain_states -%}
+  {%- if s.entity_id in EXCLUDES -%}{% continue %}{%- endif -%}
+  {%- if area_id(s.entity_id) == aid -%}
+    {%- set did = device_id(s.entity_id) -%}
+    {%- set via_id = did and device_attr(did,'via_device_id') -%}
+    {%- set integ = detect_integration(s.entity_id) -%}
+    {%- set conn = connection_types(did) -%}
+    {%- set proto = protocol_guess(integ, conn, via_id) -%}
+        - entity_id: {{ s.entity_id }}
+          friendly_name: {{ q(s.name) }}
+          state: {{ q(s.state) }}
+          entity_area_id: {{ q(aid) }}
+          entity_area_name: {{ q(area_name(s.entity_id)) }}
+          device_id: {{ q(did) }}
+          device_name: {{ q(did and (device_attr(did, 'name_by_user') or device_attr(did, 'name'))) }}
+          device_area_id: {{ q(did and area_id(did)) }}
+          device_area_name: {{ q(did and area_name(did)) }}
+          integration: {{ q(integ) }}
+          connections: {{ q(conn) }}
+          via_device_id: {{ q(via_id) }}
+          via_device_name: {{ q(via_id and (device_attr(via_id,'name_by_user') or device_attr(via_id,'name'))) }}
+          protocol_guess: {{ q(proto) }}
+  {%- endif -%}
+{%- endfor -%}
+{%- endfor -%}
+{%- if ns.has_unassigned -%}
+    - area_id: "—"
+      area_name: "—"
+      entities:
+{%- set unassigned_any = false -%}
+{%- for s in domain_states -%}
+  {%- if s.entity_id in EXCLUDES -%}{% continue %}{%- endif -%}
+  {%- if not area_id(s.entity_id) -%}
+    {%- set unassigned_any = true -%}
+    {%- set did = device_id(s.entity_id) -%}
+    {%- set via_id = did and device_attr(did,'via_device_id') -%}
+    {%- set integ = detect_integration(s.entity_id) -%}
+    {%- set conn = connection_types(did) -%}
+    {%- set proto = protocol_guess(integ, conn, via_id) -%}
+        - entity_id: {{ s.entity_id }}
+          friendly_name: {{ q(s.name) }}
+          state: {{ q(s.state) }}
+          entity_area_id: "—"
+          entity_area_name: "—"
+          device_id: {{ q(did) }}
+          device_name: {{ q(did and (device_attr(did, 'name_by_user') or device_attr(did, 'name'))) }}
+          device_area_id: {{ q(did and area_id(did)) }}
+          device_area_name: {{ q(did and area_name(did)) }}
+          integration: {{ q(integ) }}
+          connections: {{ q(conn) }}
+          via_device_id: {{ q(via_id) }}
+          via_device_name: {{ q(via_id and (device_attr(via_id,'name_by_user') or device_attr(via_id,'name'))) }}
+          protocol_guess: {{ q(proto) }}
+  {%- endif -%}
+{%- endfor -%}
+{%- if not unassigned_any -%}
+      []
+{%- endif -%}
+{%- endif -%}
+{%- endif -%}
+
+  by_name:
+{%- if (area_names | length == 0) and (not nsn.has_unassigned) -%}
+    []
+{%- else -%}
+{%- for aname in area_names -%}
+    - area_name: {{ q(aname) }}
+      area_id: {%- set rep = namespace(id='') -%}
+               {%- for s in domain_states -%}
+                 {%- if s.entity_id in EXCLUDES -%}{% continue %}{%- endif -%}
+                 {%- if area_name(s.entity_id) == aname and rep.id == '' -%}
+                   {%- set rep.id = area_id(s.entity_id) -%}
+                 {%- endif -%}
+               {%- endfor -%}
+               {{ q(rep.id) }}
+      entities:
+{%- for s in domain_states -%}
+  {%- if s.entity_id in EXCLUDES -%}{% continue %}{%- endif -%}
+  {%- if area_name(s.entity_id) == aname -%}
+    {%- set did = device_id(s.entity_id) -%}
+    {%- set via_id = did and device_attr(did,'via_device_id') -%}
+    {%- set integ = detect_integration(s.entity_id) -%}
+    {%- set conn = connection_types(did) -%}
+    {%- set proto = protocol_guess(integ, conn, via_id) -%}
+        - entity_id: {{ s.entity_id }}
+          friendly_name: {{ q(s.name) }}
+          state: {{ q(s.state) }}
+          entity_area_id: {{ q(area_id(s.entity_id)) }}
+          entity_area_name: {{ q(aname) }}
+          device_id: {{ q(did) }}
+          device_name: {{ q(did and (device_attr(did, 'name_by_user') or device_attr(did, 'name'))) }}
+          device_area_id: {{ q(did and area_id(did)) }}
+          device_area_name: {{ q(did and area_name(did)) }}
+          integration: {{ q(integ) }}
+          connections: {{ q(conn) }}
+          via_device_id: {{ q(via_id) }}
+          via_device_name: {{ q(via_id and (device_attr(via_id,'name_by_user') or device_attr(via_id,'name'))) }}
+          protocol_guess: {{ q(proto) }}
+  {%- endif -%}
+{%- endfor -%}
+{%- endfor -%}
+{%- if nsn.has_unassigned -%}
+    - area_name: "—"
+      area_id: "—"
+      entities:
+{%- set unassigned_any2 = false -%}
+{%- for s in domain_states -%}
+  {%- if s.entity_id in EXCLUDES -%}{% continue %}{%- endif -%}
+  {%- if not area_name(s.entity_id) -%}
+    {%- set unassigned_any2 = true -%}
+    {%- set did = device_id(s.entity_id) -%}
+    {%- set via_id = did and device_attr(did,'via_device_id') -%}
+    {%- set integ = detect_integration(s.entity_id) -%}
+    {%- set conn = connection_types(did) -%}
+    {%- set proto = protocol_guess(integ, conn, via_id) -%}
+        - entity_id: {{ s.entity_id }}
+          friendly_name: {{ q(s.name) }}
+          state: {{ q(s.state) }}
+          entity_area_id: {{ q(area_id(s.entity_id)) }}
+          entity_area_name: "—"
+          device_id: {{ q(did) }}
+          device_name: {{ q(did and (device_attr(did, 'name_by_user') or device_attr(did, 'name'))) }}
+          device_area_id: {{ q(did and area_id(did)) }}
+          device_area_name: {{ q(did and area_name(did)) }}
+          integration: {{ q(integ) }}
+          connections: {{ q(conn) }}
+          via_device_id: {{ q(via_id) }}
+          via_device_name: {{ q(via_id and (device_attr(via_id,'name_by_user') or device_attr(via_id,'name'))) }}
+          protocol_guess: {{ q(proto) }}
+  {%- endif -%}
+{%- endfor -%}
+{%- if not unassigned_any2 -%}
+      []
+{%- endif -%}
+{%- endif -%}
+{%- endif -%}

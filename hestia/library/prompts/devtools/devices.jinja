@@ -1,0 +1,35 @@
+{# --- Takes a manually curated list of device_ids to output associated entity_ids --- #}
+
+{% set device_ids = [
+'e61ea46daf834eb56ac76a565b440cc4',
+'df518f38c39bce5be2bb69aaf192ef6f',
+'ddc2fc5b6971621f316b38d6d194fbc3',
+'9ed135979a4cdc695ec6d8659da30cb9',
+'1f008cdc788867084787f12d88af1025',
+'d517bef2c84c7367172701803603825d',
+'a74560ac264b7aac3ac04ff5c4218e2c',
+'aadd8eb73db3d07f17e24518f4133e2f',
+'1408d32b99265f6396f7c5a838b7b4cf',
+'df67ffc2e83ad13b1f3fec4361e33184',
+'2f434d7f46d9fe722536a18b94f6c264',
+'172f8dfb0470aeee96ac2d01e0c41b03',
+'37843c682bbd431a7cac2aa10c3a44cc',
+'b70ae3d6a1221e061d956e5bd5d02b09',
+'afa7cee9708f8ba1b6f659926ec1c305',
+'01d8884e165ca8e78530fb52b0757526',
+'a779b0eeb4f8d673fc84dd904c68bd34'
+] %}
+
+{# --- output --- #}
+{%- for did in device_ids | sort %}
+{{ device_attr(did, 'name') or 'Unnamed device' }} ({{ did }})
+{%- set ents = device_entities(did) | sort %}
+{%- if ents | count %}
+{%- for e in ents %}
+- {{ e }}
+{%- endfor %}
+{%- else %}
+- — none —
+{%- endif %}
+
+{%- endfor %}

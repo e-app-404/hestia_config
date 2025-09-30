@@ -1,0 +1,16 @@
+---
+# Archived copy of netgear-update.conf (moved contents consolidated into core/config and core/devices)
+transcribed_from: /n/ha/hestia/core/devices/netgear-update.conf
+
+---
+extracted_config:
+  device: netgear_gs724t_v3
+  role: managed_switch
+  mgmt_ip: 192.168.0.254
+  mac: 20:E5:2A:68:55:78
+  subnet_mask: 255.255.255.0
+  default_gateway: 192.168.0.1
+  dns_servers:
+    - 192.168.0.1
+    - 8.8.8.8
+    - 1.1.1.1

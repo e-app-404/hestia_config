@@ -1,0 +1,194 @@
+# HESTIA Registry Operations & Analytics Engine
+# Consolidated dependency mapping, usage analytics, metrics dashboard, and version control
+
+registry_operations:
+  dependency_mapping:
+    dependency_types:
+      direct_references:
+        - prompt_to_prompt: "One prompt explicitly references another"
+        - prompt_to_artifact: "Prompt requires specific configuration files or schemas"
+        - prompt_to_tool: "Prompt depends on external tools or scripts"
+
+      semantic_dependencies:
+        - shared_domain: "Prompts operating in the same functional domain"
+        - tier_hierarchy: "Lower tier prompts building on higher tier foundations"
+        - workflow_sequence: "Prompts designed to work in operational sequence"
+
+    dependency_analysis:
+      orphan_detection: "Identify prompts with no incoming or outgoing dependencies"
+      circular_dependency_check: "Detect and flag circular reference chains"
+      critical_path_mapping: "Identify prompts that many others depend on"
+      impact_analysis: "Calculate cascade effects of prompt modifications"
+
+    dependency_health_metrics:
+      - total_dependency_count
+      - orphaned_prompts_percentage
+      - circular_dependencies_detected
+      - average_dependency_depth
+      - critical_dependency_nodes
+
+  usage_analytics:
+    tracking_dimensions:
+      temporal_usage:
+        - daily_invocations
+        - weekly_patterns
+        - monthly_trends
+        - seasonal_variations
+
+      operational_metrics:
+        - success_rate: "Percentage of successful prompt executions"
+        - failure_modes: "Common failure patterns and error types"
+        - performance_latency: "Average execution time and resource usage"
+        - user_satisfaction: "Feedback scores and improvement requests"
+
+      adoption_metrics:
+        - first_use_date: "When prompt was first deployed operationally"
+        - adoption_velocity: "Speed of user adoption and integration"
+        - retirement_candidates: "Prompts with declining usage patterns"
+        - replacement_tracking: "New prompts superseding old ones"
+
+    analytics_reports:
+      prompt_performance_dashboard:
+        - top_performing_prompts: "Highest success rates and user satisfaction"
+        - underperforming_prompts: "Low success rates or frequent failures"
+        - usage_trends: "Growing vs declining prompt adoption"
+        - domain_utilization: "Which domains see most/least activity"
+
+      operational_health_summary:
+        - registry_growth_rate: "New prompts added per month"
+        - quality_trend_analysis: "Average confidence scores over time"
+        - governance_compliance: "Approval workflow adherence rates"
+        - maintenance_burden: "Prompts requiring frequent updates"
+
+  quality_metrics_dashboard:
+    real_time_metrics:
+      registry_overview:
+        - total_prompts_count
+        - average_confidence_score
+        - tier_distribution_percentages
+        - domain_coverage_map
+        - status_distribution
+
+      quality_indicators:
+        - schema_compliance_rate: "Percentage passing all validation rules"
+        - metadata_completeness: "Average percentage of optional fields populated"
+        - deviation_flags_active: "Count of prompts requiring attention"
+        - approval_pipeline_backlog: "Prompts awaiting review"
+
+      trend_analysis:
+        - confidence_score_trends: "Quality improvement/degradation over time"
+        - batch_processing_efficiency: "Processing time and error rates"
+        - reviewer_workload: "Prompts requiring human intervention"
+        - automation_success_rate: "Percentage handled without manual review"
+
+    health_scoring:
+      registry_health_score:
+        calculation: "Weighted average of all quality indicators"
+        thresholds:
+          excellent: ">= 90"
+          good: "80-89"
+          acceptable: "70-79"
+          needs_attention: "< 70"
+
+      alerting_conditions:
+        critical_alerts:
+          - average_confidence_below_75
+          - schema_violations_above_5_percent
+          - approval_backlog_above_20_prompts
+          - circular_dependencies_detected
+
+        warning_alerts:
+          - confidence_trending_downward
+          - domain_coverage_gaps
+          - high_deviation_flag_ratio
+          - batch_processing_delays
+
+  version_control_integration:
+    git_workflow_automation:
+      pre_commit_hooks:
+        - validate_schema_compliance
+        - run_confidence_scoring
+        - check_dependency_integrity
+        - update_registry_index
+        - generate_change_summary
+
+      post_commit_actions:
+        - update_metrics_dashboard
+        - notify_stakeholders
+        - trigger_integration_tests
+        - archive_previous_versions
+        - generate_changelog_entries
+
+    change_management:
+      changelog_automation:
+        - track_prompt_additions
+        - document_modification_history
+        - record_approval_state_changes
+        - log_dependency_updates
+        - capture_quality_score_changes
+
+      rollback_capabilities:
+        - maintain_version_snapshots
+        - enable_selective_rollback
+        - preserve_dependency_chains
+        - validate_rollback_safety
+        - generate_rollback_reports
+
+    branch_strategy:
+      main_branch: "Production-ready prompts only"
+      development_branch: "New prompts under development"
+      feature_branches: "Individual prompt development and testing"
+      hotfix_branches: "Emergency fixes for production issues"
+
+      merge_requirements:
+        - passing_validation_tests
+        - peer_review_approval
+        - confidence_threshold_met
+        - dependency_verification_complete
+        - documentation_updated
+
+  automation_capabilities:
+    batch_processing_automation:
+      scheduled_operations:
+        - daily_health_checks
+        - weekly_analytics_reports
+        - monthly_quality_reviews
+        - quarterly_governance_audits
+
+      trigger_based_actions:
+        - new_batch_auto_processing
+        - quality_threshold_violations
+        - dependency_break_notifications
+        - approval_workflow_escalations
+
+    integration_apis:
+      external_system_hooks:
+        - chatgpt_project_sync
+        - hestia_system_notifications
+        - quality_metric_exports
+        - dependency_graph_updates
+
+      webhook_endpoints:
+        - batch_upload_notifications
+        - validation_completion_events
+        - quality_threshold_breaches
+        - governance_approval_updates
+
+operational_procedures:
+  daily_operations:
+    - process_new_batches
+    - update_quality_metrics
+    - check_dependency_health
+    - review_alert_conditions
+
+  weekly_operations:
+    - generate_analytics_reports
+    - review_governance_compliance
+    - update_usage_statistics
+    - maintenance_task_execution
+
+  monthly_operations:
+    - comprehensive_quality_audit
+    - dependency_graph_optimization
+    - retirement_candidate_review
+    - strategic_planning_inputs

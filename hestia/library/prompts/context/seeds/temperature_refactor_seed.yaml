@@ -1,0 +1,18 @@
+sensor:
+- name: temperature_bedroom_main
+  state_class: measurement
+  device_class: temperature
+  unit_of_measurement: "\xB0C"
+  platform: template
+  state: '{{ states(''sensor.bedroom_temp_probe_raw'') }}'
+template:
+- name: temperature_bedroom_avg
+  state: '{{ (states(''sensor.bedroom_temp_probe_raw'') | float + states(''sensor.bedroom_temp_proxy'')
+    | float) / 2 }}'
+  unit_of_measurement: "\xB0C"
+  device_class: temperature
+binary_sensor:
+- name: comfort_temp_zone_bedroom
+  state: '{{ states(''sensor.temperature_bedroom_avg'') | float < 25 and states(''sensor.temperature_bedroom_avg'')
+    | float > 19 }}'
+  device_class: cold

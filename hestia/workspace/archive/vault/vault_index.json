@@ -1,0 +1,275 @@
+{
+  "generated_at": "2025-09-19T08:39:27.830780+00:00",
+  "items": [
+    {
+      "path": "/n/ha/hestia/vault/deprecated/http.yaml",
+      "category": "deprecated",
+      "size": 387,
+      "mtime": "2025-08-09T17:37:05.832767+00:00"
+    },
+    {
+      "path": "/n/ha/hestia/vault/deprecated/tts_gate_throttle.yaml",
+      "category": "deprecated",
+      "size": 5141,
+      "mtime": "2025-08-18T21:40:51.107758+00:00"
+    },
+    {
+      "path": "/n/ha/hestia/vault/deprecated/presence_logic.yaml",
+      "category": "deprecated",
+      "size": 26345,
+      "mtime": "2025-08-09T17:37:06.061797+00:00"
+    },
+    {
+      "path": "/n/ha/hestia/vault/deprecated/motion_logic.bak.yaml",
+      "category": "deprecated",
+      "size": 23762,
+      "mtime": "2025-09-04T14:51:32.684304+00:00"
+    },
+    {
+      "path": "/n/ha/hestia/vault/deprecated/package_alarm_clock.yaml",
+      "category": "deprecated",
+      "size": 8884,
+      "mtime": "2025-09-04T14:52:46.480014+00:00"
+    },
+    {
+      "path": "/n/ha/hestia/vault/deprecated/temperature_trends.yaml",
+      "category": "deprecated",
+      "size": 3281,
+      "mtime": "2025-08-09T17:37:06.165250+00:00"
+    },
+    {
+      "path": "/n/ha/hestia/vault/deprecated/sensor.yaml",
+      "category": "deprecated",
+      "size": 248,
+      "mtime": "2025-08-09T17:37:06.093374+00:00"
+    },
+    {
+      "path": "/n/ha/hestia/vault/deprecated/climate_logic.yaml",
+      "category": "deprecated",
+      "size": 58020,
+      "mtime": "2025-08-09T17:37:05.750426+00:00"
+    },
+    {
+      "path": "/n/ha/hestia/vault/deprecated/var_helpers.yaml",
+      "category": "deprecated",
+      "size": 736,
+      "mtime": "2025-08-18T21:42:08.998471+00:00"
+    },
+    {
+      "path": "/n/ha/hestia/vault/deprecated/meteoalarm.yaml",
+      "category": "deprecated",
+      "size": 369,
+      "mtime": "2025-08-09T17:37:05.993529+00:00"
+    },
+    {
+      "path": "/n/ha/hestia/vault/deprecated/retired_style_guide.md",
+      "category": "deprecated",
+      "size": 11198,
+      "mtime": "2025-09-13T16:20:22.906247+00:00"
+    },
+    {
+      "path": "/n/ha/hestia/vault/deprecated/binary_sensor.yaml",
+      "category": "deprecated",
+      "size": 224,
+      "mtime": "2025-08-09T17:37:05.728441+00:00"
+    },
+    {
+      "path": "/n/ha/hestia/vault/deprecated/backup_vacuum_control.yaml",
+      "category": "deprecated",
+      "size": 18591,
+      "mtime": "2025-09-03T07:06:53.290617+00:00"
+    },
+    {
+      "path": "/n/ha/hestia/vault/deprecated/git_push_logger.yaml",
+      "category": "deprecated",
+      "size": 2252,
+      "mtime": "2025-08-09T17:37:05.783537+00:00"
+    },
+    {
+      "path": "/n/ha/hestia/vault/deprecated/system_log.yaml",
+      "category": "deprecated",
+      "size": 160,
+      "mtime": "2025-08-09T17:37:06.151307+00:00"
+    },
+    {
+      "path": "/n/ha/hestia/vault/deprecated/mqtt_native.yaml",
+      "category": "deprecated",
+      "size": 920,
+      "mtime": "2025-09-03T03:16:49.999369+00:00"
+    },
+    {
+      "path": "/n/ha/hestia/vault/deprecated/notify_engine_deprecated.yaml",
+      "category": "deprecated",
+      "size": 4772,
+      "mtime": "2025-08-05T13:26:09.179101+00:00"
+    },
+    {
+      "path": "/n/ha/hestia/vault/deprecated/delijn.yaml",
+      "category": "deprecated",
+      "size": 319,
+      "mtime": "2025-08-09T17:37:05.768443+00:00"
+    },
+    {
+      "path": "/n/ha/hestia/vault/deprecated/sysadmin_automations.yaml",
+      "category": "deprecated",
+      "size": 1741,
+      "mtime": "2025-08-09T17:37:06.123079+00:00"
+    },
+    {
+      "path": "/n/ha/hestia/vault/deprecated/plant.yaml",
+      "category": "deprecated",
+      "size": 592,
+      "mtime": "2025-08-09T17:37:06.028439+00:00"
+    },
+    {
+      "path": "/n/ha/hestia/vault/deprecated/package_netgear_switch.yaml",
+      "category": "deprecated",
+      "size": 5956,
+      "mtime": "2025-08-16T11:41:21.078079+00:00"
+    },
+    {
+      "path": "/n/ha/hestia/vault/deprecated/ha_start_notifications.yaml",
+      "category": "deprecated",
+      "size": 695,
+      "mtime": "2025-08-09T17:37:05.801644+00:00"
+    },
+    {
+      "path": "/n/ha/hestia/vault/deprecated/package_hifi.yaml",
+      "category": "deprecated",
+      "size": 16590,
+      "mtime": "2025-09-04T14:52:47.263073+00:00"
+    },
+    {
+      "path": "/n/ha/hestia/vault/deprecated/upnp.yaml",
+      "category": "deprecated",
+      "size": 771,
+      "mtime": "2025-08-09T17:37:06.187065+00:00"
+    },
+    {
+      "path": "/n/ha/hestia/vault/deprecated/bedroom_universal_media_player.yaml",
+      "category": "deprecated",
+      "size": 8461,
+      "mtime": "2025-08-14T20:44:53.663653+00:00"
+    },
+    {
+      "path": "/n/ha/hestia/vault/backups/influxdb_20250918.bak",
+      "category": "backups",
+      "size": 2032,
+      "mtime": "2025-09-18T14:52:50.285450+00:00"
+    },
+    {
+      "path": "/n/ha/hestia/vault/receipts/hestia_setup.json",
+      "category": "receipts",
+      "size": 2,
+      "mtime": "2025-09-15T14:38:16.426262+00:00"
+    },
+    {
+      "path": "/n/ha/hestia/vault/receipts/hestia_setup.log",
+      "category": "receipts",
+      "size": 31,
+      "mtime": "2025-09-15T14:38:16.424919+00:00"
+    },
+    {
+      "path": "/n/ha/hestia/vault/tarballs/ha_hestia_snapshot_20250808_214335.tar.gz",
+      "category": "tarballs",
+      "size": 2956922,
+      "mtime": "2025-08-08T20:43:52.510278+00:00"
+    },
+    {
+      "path": "/n/ha/hestia/vault/tarballs/hestia_snapshot_20250802_002708.tar.gz",
+      "category": "tarballs",
+      "size": 1242141,
+      "mtime": "2025-08-01T23:27:19.928067+00:00"
+    },
+    {
+      "path": "/n/ha/hestia/vault/tarballs/hestia_snapshot_20250802_022700.tar.gz",
+      "category": "tarballs",
+      "size": 1246781,
+      "mtime": "2025-08-02T01:27:12.059046+00:00"
+    },
+    {
+      "path": "/n/ha/hestia/vault/tarballs/hestia_snapshot_20250804_031401.tar.gz",
+      "category": "tarballs",
+      "size": 1238294,
+      "mtime": "2025-08-04T02:14:11.215564+00:00"
+    },
+    {
+      "path": "/n/ha/hestia/vault/tarballs/ha_hestia_snapshot_20250813_234857.tar.gz",
+      "category": "tarballs",
+      "size": 3414327,
+      "mtime": "2025-08-13T22:49:16.071917+00:00"
+    },
+    {
+      "path": "/n/ha/hestia/vault/tarballs/hestia_snapshot_20250806_152719.tar.gz",
+      "category": "tarballs",
+      "size": 1221862,
+      "mtime": "2025-08-06T14:27:19.961780+00:00"
+    },
+    {
+      "path": "/n/ha/hestia/vault/tarballs/ha_hestia_snapshot_20250814_210240.tar.gz",
+      "category": "tarballs",
+      "size": 3417877,
+      "mtime": "2025-08-14T20:02:58.904909+00:00"
+    },
+    {
+      "path": "/n/ha/hestia/vault/duplicates/network_extract-update.conf.archived",
+      "category": "duplicates",
+      "size": 683,
+      "mtime": "2025-09-19T08:28:57.025721+00:00"
+    },
+    {
+      "path": "/n/ha/hestia/vault/duplicates/netgear-update.conf.archived",
+      "category": "duplicates",
+      "size": 416,
+      "mtime": "2025-09-19T08:28:57.019513+00:00"
+    },
+    {
+      "path": "/n/ha/hestia/vault/duplicates/network.topology.json.archived",
+      "category": "duplicates",
+      "size": 187,
+      "mtime": "2025-09-19T08:28:57.028296+00:00"
+    },
+    {
+      "path": "/n/ha/hestia/vault/deprecated/group_obsolete/groups.yaml",
+      "category": "deprecated",
+      "size": 5228,
+      "mtime": "2025-09-05T06:50:29.837798+00:00"
+    },
+    {
+      "path": "/n/ha/hestia/vault/deprecated/inference-migrated/beta_motion_recent.yaml",
+      "category": "deprecated",
+      "size": 9142,
+      "mtime": "2025-08-09T17:37:05.863434+00:00"
+    },
+    {
+      "path": "/n/ha/hestia/vault/deprecated/inference-migrated/playstation_activity--migrated.yaml",
+      "category": "deprecated",
+      "size": 979,
+      "mtime": "2025-08-09T17:37:05.927627+00:00"
+    },
+    {
+      "path": "/n/ha/hestia/vault/deprecated/inference-migrated/beta_occupancy_fusion--migrated.yaml",
+      "category": "deprecated",
+      "size": 14999,
+      "mtime": "2025-08-09T17:37:05.879616+00:00"
+    },
+    {
+      "path": "/n/ha/hestia/vault/deprecated/logic--migrated/presence_logic--migrated.yaml",
+      "category": "deprecated",
+      "size": 13351,
+      "mtime": "2025-08-09T17:37:05.981819+00:00"
+    },
+    {
+      "path": "/n/ha/hestia/vault/deprecated/logic--migrated/climate_zone-- migrated.yaml",
+      "category": "deprecated",
+      "size": 11585,
+      "mtime": "2025-08-09T17:37:05.961345+00:00"
+    },
+    {
+      "path": "/n/ha/hestia/vault/deprecated/logic--migrated/bedroom_media_engaged--migrated.yaml",
+      "category": "deprecated",
+      "size": 1148,
+      "mtime": "2025-08-09T17:37:05.947743+00:00"
+    }
+  ]
+}

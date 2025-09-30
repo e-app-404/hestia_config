@@ -1,0 +1,18 @@
+{#- media_players with attributes -#}
+
+{%- for s in states.media_player | sort(attribute='entity_id') %}
+- entity_id: {{ s.entity_id }}
+  state: {{ s.state }}
+  attributes:
+{%- for k in s.attributes | list | sort %}
+    {{ k }}: {{ s.attributes[k] }}
+{%- endfor %}
+
+{%- endfor %}
+
+
+{#- media_players with device_id and device_name -#}
+
+{%- for s in states.media_player | sort(attribute='entity_id') -%}
+- {{ s.entity_id }} : {{ device_id(s.entity_id) or "—" }} ({{ device_name(s.entity_id) or "no device" }})
+{%- endfor -%}

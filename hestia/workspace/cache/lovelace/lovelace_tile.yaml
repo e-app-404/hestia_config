@@ -1,0 +1,71 @@
+# lovelace_tile.yaml
+# Canonical machine-friendly YAML for Home Assistant Tile Card
+
+- type: tile
+  entity: cover.kitchen_sonos_speaker
+  name: "Kitchen Window"
+  icon: mdi:window-open
+  color: blue
+  show_entity_picture: false
+  vertical: false
+  hide_state: false
+  state_content: state
+  tap_action:
+    action: more-info
+  hold_action:
+    action: none
+  double_tap_action:
+    action: none
+  icon_tap_action:
+    action: toggle
+  icon_hold_action:
+    action: none
+  icon_double_tap_action:
+    action: none
+  features:
+    - type: none
+  features_position: bottom
+
+- type: tile
+  entity: light.bedroom_sonos_surround
+  name: "Bedroom Lamp"
+  icon: mdi:lamp
+  color: yellow
+  show_entity_picture: false
+  vertical: false
+  hide_state: false
+  state_content: state
+  tap_action:
+    action: more-info
+  icon_tap_action:
+    action: toggle
+
+- type: tile
+  entity: person.living_room_google_mini_omega
+  name: "Anne Therese"
+  show_entity_picture: true
+  vertical: false
+  hide_state: false
+
+- type: tile
+  entity: person.living_room_google_mini_omega
+  name: "Anne Therese"
+  vertical: true
+  hide_state: true
+
+- type: tile
+  entity: light.living_room_sonos_soundbar
+  name: "Living Room Light"
+  state_content:
+    - state
+    - brightness
+    - last-changed
+
+- type: tile
+  entity: vacuum.kitchen_sonos_speaker
+  name: "Ground Floor Vacuum"
+  features:
+    - type: vacuum-commands
+      commands:
+        - start_pause
+        - return_home

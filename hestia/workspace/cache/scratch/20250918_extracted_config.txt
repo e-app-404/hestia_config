@@ -1,0 +1,236 @@
+extracted_config:
+  repo:
+    base: /config/hestia/core/config
+    default_subdir: prompts
+    promptset_file: meta_capture.promptset.v1.yaml
+    retrieval_tags: [meta-capture, network, tailscale, devices, repository, automation]
+    operational_modes: [meta_capture_mode, enrichment_mode, governance_overlay_mode]
+
+  home_assistant:
+    os_kernel: 6.12.34-haos-raspi
+    storage:
+      data_mount: /mnt/data
+      config_dir: /config
+    hardware:
+      cpu_arch: arm64  # inferred from haos-raspi
+      board: raspberry-pi  # inferred
+      serial_ttys:
+        - /dev/ttyAMA10
+        - /dev/ttyUSB0
+      usb:
+        - vid: "10c4"
+          pid: "ea60"
+          name: "ITead Sonoff Zigbee 3.0 USB Dongle Plus"
+          bus_device: "Bus 003 Device 003"
+        - vid: "046d"
+          pid: "c534"
+          name: "Logitech USB Receiver"
+          bus_device: "Bus 001 Device 002"
+        - vid: "2357"
+          pid: "0604"
+          name: "TP-Link Bluetooth USB Adapter"
+          bus_device: "Bus 003 Device 002"
+      serial_symlinks:
+        by_id: /dev/serial/by-id/usb-ITead_Sonoff_Zigbee_3.0_USB_Dongle_Plus_dceb7d67ec6aef11a2e599adc169b110-if00-port0
+        by_path:
+          - /dev/serial/by-path/platform-xhci-hcd.1-usb-0:2:1.0-port0
+          - /dev/serial/by-path/platform-xhci-hcd.1-usbv2-0:2:1.0-port0
+
+  addons:
+    - slug: core_mosquitto
+      name: Mosquitto broker
+      version: 6.5.2
+      state: started
+      ports:
+        - 1883/tcp
+        - 1884/tcp
+      logs_indicate:
+        version: "2.0.22"
+    - slug: 45df7312_zigbee2mqtt
+      name: Zigbee2MQTT
+      version: 2.6.1-1
+      state: configured  # previously "error", being corrected
+      config_file: /config/zigbee2mqtt/configuration.yaml
+      frontend:
+        enabled: true
+        port: 8099
+      zigbee2mqtt_runtime:
+        z2m_version: "2.6.1"
+        zigbee_herdsman: "6.0.4"
+    - slug: a0d7b954_ssh
+      name: Advanced SSH & Web Terminal
+      version: 21.0.3
+      state: started
+    - slug: core_matter_server
+      name: Matter Server
+      version: 8.1.0
+      state: started
+    - slug: core_mariadb
+      name: MariaDB
+      version: 2.7.2
+      state: started
+    - slug: core_samba
+      name: Samba share
+      version: 12.5.2
+      state: started
+    - slug: a0d7b954_glances
+      name: Glances
+      version: 0.21.1
+      state: started
+    - slug: a0d7b954_tailscale
+      name: Tailscale
+      version: 0.26.1
+      state: started
+    - slug: core_configurator
+      name: File editor
+      version: 5.8.0
+      state: started
+    # others present but not fully inspected: core_piper(started), core_whisper(error), etc.
+
+  mqtt:
+    broker: core_mosquitto
+    server: mqtt://192.168.0.129:1883
+    users_seen:
+      - homeassistant
+      - valetudo
+      - addons
+    clients_seen:
+      - name: valetudo_MistyProfitableBadger
+        ip: 192.168.0.82
+      - name: homeassistant
+        ip: 172.30.32.1
+      - name: mqttjs_6a4306c8
+        ip: 172.30.32.1
+
+  zigbee2mqtt:
+    config_path: /config/zigbee2mqtt/configuration.yaml
+    version: 2.6.1
+    mqtt:
+      base_topic: zigbee2mqtt
+      server: mqtt://192.168.0.129:1883
+      user: zigbee2mqtt
+      password: zigbee2mqtt  # consider secret management
+    advanced:
+      log_level: debug
+      channel: 25
+      pan_id: 60923
+      ext_pan_id: [110, 96, 244, 33, 108, 180, 7, 134]
+      network_key:
+        value: [62, 190, 76, 110, 38, 60, 133, 35, 57, 182, 19, 77, 194, 147, 130, 22]
+        secret: true
+    homeassistant:
+      enabled: true
+    serial:
+      # final desired settings:
+      port: /dev/serial/by-id/usb-ITead_Sonoff_Zigbee_3.0_USB_Dongle_Plus_dceb7d67ec6aef11a2e599adc169b110-if00-port0
+      adapter: zstack   # switch to ezsp only if this is actually a ZBDongle-E
+      baudrate: 115200
+      rtscts: false
+      previous_port_attempts:
+        - /dev/ttyUSB0
+        - /dev/ttyAMA10
+    devices:
+      # (friendly-name map captured)
+      "0x282c02bfffef334c": bedroom_monstera_soil_alpha
+      "0x0ceff6fffe59baff": "bedroom_ambient_climate_ alpha"
+      "0x842712fffe741dc5": bedroom_climate_trv_left_alpha
+      "0x842712fffe389d8c": bedroom_climate_trv_right_alpha
+      "0x8c65a3fffee9fdc1":
+        friendly_name: ensuite_occupancy_alpha
+        no_occupancy_since: [10, 60]
+      "0x0ceff6fffe6b5cd8":
+        friendly_name: bedroom_occupancy_alpha
+        no_occupancy_since: [10, 60]
+      "0x842712fffe3898fe": living_room_climate_trv_alpha
+      "0x286d970001152304": living_room_smartbutton_alpha
+      "0x842712fffe186fa1": kitchen_climate_trv_alpha
+      "0x0ceff6fffe5b7da3": kitchen_ambient_climate_alpha
+      "0x842712fffe17583d":
+        friendly_name: kitchen_occupancy_alpha
+        no_occupancy_since: [10, 60]
+      "0x286d9700011522e4": bedroom_smart_button_alpha
+      "0x842712fffe1b2f10":
+        friendly_name: living_room_occupancy_alpha
+        no_occupancy_since: [10, 60]
+      "0x54ef44100093f78f": home_magic_cube_alpha
+      "0xa4c13896b42c43fa": ensuite_motion_alpha
+      "0xa4c138a1a7965ae3": bedroom_bed_alpha
+
+transient_state:
+  timestamps_utcish:
+    mosquitto_start: "2025-09-18T17:12:59"
+    z2m_fail_serial_missing: "2025-09-15T20:52:17"
+    z2m_fail_yaml_invalid: "2025-09-18T19:23:52"
+    z2m_fail_ping_timeout_on_ttyAMA10: "2025-09-18T19:36:55"
+  addons_status_snapshot:
+    core_mosquitto: started
+    45df7312_zigbee2mqtt: error -> correcting (expected to start after serial fix)
+  serial_detection:
+    by_id_symlink_present: true
+    stable_device: /dev/serial/by-id/usb-ITead_Sonoff_Zigbee_3.0_USB_Dongle_Plus_dceb7d67ec6aef11a2e599adc169b110-if00-port0
+    maps_to: /dev/ttyUSB0
+  network_runtime:
+    mqtt_clients_active:
+      - valetudo@192.168.0.82
+      - homeassistant@172.30.32.1
+  risk_flags:
+    - z2m_version_old_vs_docs: true  # 2.6.1 is an older Z2M; consider upgrade path later
+    - secrets_in_plaintext: true
+    - possible_adapter_mismatch_if_ZBDongle-E: true
+
+relationships:
+  device_to_service:
+    sonoff_zigbee_dongle_plus:
+      dev_path: /dev/ttyUSB0
+      stable_path: /dev/serial/by-id/usb-ITead_Sonoff_Zigbee_3.0_USB_Dongle_Plus_dceb7d67ec6aef11a2e599adc169b110-if00-port0
+      consumed_by:
+        - addon: 45df7312_zigbee2mqtt
+          component: zigbee-herdsman
+          adapter: zstack
+          baud: 115200
+  services:
+    zigbee2mqtt:
+      depends_on:
+        - mosquitto@tcp:1883
+      publishes_topic_root: zigbee2mqtt
+      exposes_web_ui: http://<ha-host>:8099/
+      reads_config: /config/zigbee2mqtt/configuration.yaml
+    mosquitto:
+      listens:
+        - 1883/tcp
+        - 1884/tcp (websockets)
+      clients_seen:
+        - homeassistant@172.30.32.1
+        - valetudo@192.168.0.82
+        - addons@172.30.32.1
+
+suggested_commands:
+  # Run on Home Assistant Advanced SSH terminal
+  - name: backup_z2m_config
+    cmd: 'cp -a /config/zigbee2mqtt/configuration.yaml /config/zigbee2mqtt/configuration.yaml.$(date +%F_%H%M%S).bak'
+  - name: stop_z2m
+    cmd: 'ha addons stop 45df7312_zigbee2mqtt'
+  - name: set_stable_serial_port
+    cmd: >
+      yq -Yi '.serial.port="/dev/serial/by-id/usb-ITead_Sonoff_Zigbee_3.0_USB_Dongle_Plus_dceb7d67ec6aef11a2e599adc169b110-if00-port0"' /config/zigbee2mqtt/configuration.yaml
+  - name: set_adapter_zstack_for_cc2652p
+    cmd: 'yq -Yi ''.serial.adapter="zstack"'' /config/zigbee2mqtt/configuration.yaml'
+  - name: start_z2m
+    cmd: 'ha addons start 45df7312_zigbee2mqtt'
+  - name: tail_z2m_logs
+    cmd: 'ha addons logs -f 45df7312_zigbee2mqtt'
+  - name: verify_symlinks
+    cmd: 'ls -l /dev/serial/by-id /dev/serial/by-path'
+  - name: validate_yaml
+    cmd: 'python3 -c "import yaml,sys;yaml.safe_load(open(\"/config/zigbee2mqtt/configuration.yaml\"));print(\"OK\")"'
+  - name: optional_switch_to_ezsp_if_dongle_E
+    cmd: 'yq -Yi ''.serial.adapter="ezsp"'' /config/zigbee2mqtt/configuration.yaml'
+
+notes:
+  - The Sonoff “USB Dongle Plus” has two variants:
+      ZBDongle-P (TI CC2652P → adapter: zstack) and ZBDongle-E (Silabs EFR32 → adapter: ezsp).
+      Your USB VID:PID 10c4:ea60 points to a CP210x bridge commonly used on TI-based sticks; zstack is likely correct.
+  - Earlier failures were due to pointing Z2M at /dev/ttyAMA10 and /dev/ttyUSB0 without a stable by-id path.
+  - Keep the dongle on a short USB 2.0 extension and away from USB3 ports/cables to reduce RF noise.
+  - Consider moving Zigbee network_key and MQTT credentials to secrets handling (e.g., HA secrets.yaml or Z2M env).
+  - After confirming stable operation, consider upgrading Z2M to a newer release for security and device support.

@@ -1,0 +1,51 @@
+# Patch Plan: Custom Integration Import Error (device control lost)
+
+## Patch Identifier: patch_20250916_custom_import
+
+
+### Symptoms
+- Log errors such as ImportError, ModuleNotFoundError, or missing module/dependency messages.
+- Devices/entities from custom integrations are missing or unavailable in the UI.
+- Automations relying on custom integrations fail to trigger or show errors.
+- Home Assistant startup warnings about custom_components not loading.
+
+### Problem Statement
+- Custom integrations fail to import, causing device control loss and missing entities.
+- Symptoms: Log errors for import failures, missing modules, or dependency issues.
+- Impact: Devices controlled by custom components are unavailable, automations break.
+
+### Auditable Steps
+1. **Log Analysis**
+   - Review `home-assistant.log` and `home-assistant.log.1` for custom integration import errors.
+   - Index error types: ImportError, ModuleNotFoundError, dependency issues.
+2. **Config Inspection**
+   - Check `custom_components/` for affected integrations.
+   - Validate `__init__.py`, manifest.json, and dependencies.
+3. **Dependency Verification**
+   - Inspect `requirements-dev.txt` and `pyproject.toml` for required Python packages.
+   - Ensure all dependencies are installed in the environment.
+4. **Patch Proposal**
+   - Fix import paths, update manifest.json, install missing dependencies.
+   - Harden integration: Add error handling, document requirements, test with Home Assistant.
+5. **Validation**
+   - Restart Home Assistant, confirm custom integrations load and devices/entities are restored.
+   - Document all changes in dedicated patch log.
+
+### Files to Consult
+- home-assistant.log, home-assistant.log.1
+- custom_components/*
+- requirements-dev.txt
+- pyproject.toml
+
+### Files to Change
+- custom_components/* (as needed)
+- requirements-dev.txt, pyproject.toml (if dependencies updated)
+- Patch log: hestia/core/registry/patch_20250916_custom_import.log
+
+### Indexation Reference
+- Issue: Custom Integration Import Error (device control lost)
+- Patch Plan Reference: See hestia/patches/ha_config_implement_copilot.md for full audit and patch plan index.
+
+---
+
+Next step: Begin log analysis for custom integration import errors in home-assistant.log and home-assistant.log.1

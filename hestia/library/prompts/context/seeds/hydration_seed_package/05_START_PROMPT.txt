@@ -1,0 +1,10 @@
+assertions:
+  - id: area_authority_propagates
+    description: "Entities with entity-registry area_id must carry same value to omega output with proper meta"
+    check: "no entity with registry area_id has _meta.inferred_fields.area_id.join_origin != core.entity_registry"
+  - id: exemption_only_if_missing
+    description: "No logic/template/virtual entity with present area_id is exempted"
+    check: "no exempted area_id where entity.area_id is non-null"
+  - id: tier_token_priority
+    description: "unique_id/entity_id tier suffix drives tier with confidence 1.0"
+    check: "no entity with *_epsilon unique_id has tier != epsilon"

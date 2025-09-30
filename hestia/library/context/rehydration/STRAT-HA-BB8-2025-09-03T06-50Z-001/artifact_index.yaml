@@ -1,0 +1,48 @@
+artifacts:
+  - path: addon/run.sh
+    role: control_plane + diagnostics
+    status: hardened
+  - path: addon/config.yaml
+    role: schema + UI options
+    sha256: f0793e55fc81afc08ec50bfd7d03c7b932e1a5132a916917b735d93b149f9e8a
+  - path: addon/services.d/ble_bridge/run
+    role: s6 → run.sh delegate
+  - path: addon/services.d/echo_responder/down
+    role: guard (disable s6 echo longrun)
+  - path: addon/bb8_core/main.py
+    role: child process (bridge controller entry)
+  - path: addon/bb8_core/echo_responder.py
+    role: child process (MQTT echo loop)
+  - path: addon/bb8_core/logging_setup.py
+    role: centralized logging
+  - path: docs/OPERATIONS_OVERVIEW.md
+    role: ops runbook (Supervisor-only)
+  - path: docs/SANITY_CHECKS.md
+    role: verification checklist (Supervisor-only)
+  - path: docs/TROUBLESHOOTING_RECIPES.md
+    role: troubleshooting playbooks (Supervisor-only)
+  - path: docs/ADR/ADR-0011-supervisor-only-ops.md
+    role: decision record (governance)
+  - path: /data/options.json
+    role: runtime materialized options
+  - path: /data/reports/ha_bb8_addon.log
+    role: file log (best-effort append)
+  - path: /tmp/bb8_heartbeat_main
+    role: liveness (main)
+  - path: /tmp/bb8_heartbeat_echo
+    role: liveness (echo)
+  - path: /tmp/bb8_restart_disabled
+    role: manual halt flag (not used in Supervisor-only mode)
+  # Host-provided reference packs (for broader context)
+  - path: /mnt/data/architecture_doctrine.yaml
+    role: governance/doctrine (reference)
+  - path: /mnt/data/system_instruction.yaml
+    role: orchestration baseline (reference)
+  - path: /mnt/data/promachos_expansion_v3.yaml
+    role: strategy pack (reference)
+  - path: /mnt/data/dual_mode_xp_v1_250615.yaml
+    role: ops profile (reference)
+  - path: /mnt/data/prompt_tests.yaml
+    role: validation scaffolding (reference)
+  - path: /mnt/data/*_hass_config_backup.tar.gz
+    role: HA backup archives (reference)

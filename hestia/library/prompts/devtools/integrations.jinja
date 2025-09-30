@@ -1,0 +1,44 @@
+{#- Here's a template for Home Assistant's Developer Tools > Template editor that returns a structured list of all motion, 
+presence, and occupancy sensors from MQTT, SmartThings, and Matter integrations, grouped by integration name -#}
+
+{% set integrations = ['mqtt', 'smartthings', 'matter'] %}
+{% set device_classes = ['motion', 'occupancy', 'presence'] %}
+
+{% for integration in integrations %}
+### {{ integration | capitalize }} Integration
+
+{% set entities = integration_entities(integration) %}
+{% set filtered = entities | select('in', states.binary_sensor | map(attribute='entity_id') | list) | list %}
+
+{% set matching = namespace(results=[]) %}
+{% for entity in filtered %}
+  {% set device_class = state_attr(entity, 'device_class') %}
+  {% if device_class in device_classes %}
+    {% set area = area_name(entity) %}
+    {% set label = entity ~ " (" ~ device_class ~ ", " ~ (area if area else "No Area") ~ ")" %}
+    {% set matching.results = matching.results + [label] %}
+  {% endif %}
+{% endfor %}
+
+{% if matching.results | length > 0 %}
+{{ matching.results | sort | join('\n') }}
+{% else %}
+_No matching sensors found._
+{% endif %}
+
+---
+{% endfor %}
+
+
+{#- Here’s a template that returns all entities from the SmartThings integration, sorted by entity ID with a leading dash -#}
+
+{% set entities = integration_entities('smartthings') -%}
+{% for e in entities | sort -%}
+- {{ e }}
+{% endfor %}
+
+{#- If you want a slightly richer readout (entity ID + friendly name + area), use this -#}
+{% set entities = integration_entities('smartthings') | sort %}
+{% for e in entities %}
+{{ "%-48s" | format(e) }} | {{ state_attr(e, 'friendly_name') | default('') }} | {{ area_name(e) | default('No Area') }}
+{% endfor %}

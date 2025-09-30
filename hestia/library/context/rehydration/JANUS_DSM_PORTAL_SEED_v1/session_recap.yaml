@@ -1,0 +1,39 @@
+session_recap:
+  label: "DSM Web Station Portal Setup • nas.xplab.io"
+  trace_id: "janus-dsm-webstation-2025-09-19T11:00Z"
+
+personas:
+  - Promachos: "protocol governance, output discipline, confidence scoring"
+  - Strategos: "planning, phase control, rehydration seed author"
+  - Kybernetes: "artifact indexing, file/role mapping"
+  - Hestia: "configuration doctrine alignment and acceptance gates"
+
+operational_mode:
+  scope: "Configure DSM 7.2+ Web Station with dual-surface web front"
+  escalation_context:
+    - "DSM 7.2 terminology shift: Web Service → Web Portal (virtual host replacement)"
+    - "Reverse Proxy rules applied via DSM Login Portal → Advanced"
+
+last_validated_checkpoint:
+  id: "WS-PORTAL-SETUP-v1"
+  decision: "Create two Web Services (public/portal) and one name-based Web Portal bound to xplab-public; protect /portal via DSM Reverse Proxy"
+  evidence:
+    - "User screenshots: Web Service confirm (portal), Web Portal wizard, File Station tree"
+    - "Local assets uploaded for /volume1/web/{public,portal,_assets}"
+  governance_refs:
+    - "/mnt/data/system_instruction.yaml"
+    - "confidence_scoring: always_on"
+
+governance_traits:
+  doctrine: "HESTIA tiering + Promachos protocol locks"
+  signoff_mode: "auto_affirm_with_prompt"
+  confidence_policy: "structural/operational/semantic required each reply"
+  artifact_traceability: "paths + roles; hashes optional (compute later in runner)"
+
+unresolved_blockers: []
+strategic_posture:
+  intent: "Finalize DSM Web Station + Reverse Proxy wiring; publish dual-surface portal with minimal moving parts"
+  next_focus:
+    - "Enforce /portal protection (DSM auth + Tailscale IP allowlist)"
+    - "Map /ha and /grafana proxy paths"
+    - "Run smoke tests from manifest acceptance criteria"

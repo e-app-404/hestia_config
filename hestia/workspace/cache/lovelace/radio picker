@@ -1,0 +1,23 @@
+type: vertical-stack
+cards:
+  - type: entities
+    title: Radio Control
+    entities:
+      - entity: input_select.radio_station
+      - entity: input_select.radio_player
+
+  - type: button
+    name: Play Selected
+    icon: mdi:play-circle
+    tap_action:
+      action: call-service
+      service: script.play_selected_radio
+
+  - type: media-control
+    entity: media_player.ensuite_sonos_roam
+
+  - type: media-control
+    entity: media_player.bedroom_sonos_surround_speakers
+
+  - type: media-control
+    entity: media_player.bedroom_sonos_ray

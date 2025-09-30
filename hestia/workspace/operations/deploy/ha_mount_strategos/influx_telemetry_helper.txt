@@ -1,0 +1,12 @@
+# write
+TOKEN="$(security find-generic-password -l 'influxdb_token (Home Assistant writer)' -w 2>/dev/null || printf "%s" "$TOKEN")"
+curl -s -i -X POST \
+ "http://192.168.0.104:8086/api/v2/write?org=Hestia&bucket=homeassistant&precision=ns" \
+ -H "Authorization: Token $TOKEN" \
+ --data-binary "ha_smoketest,host=mac value=1i $(date +%s%N)" | sed -n "1,1p"
+
+# query
+curl -s "http://192.168.0.104:8086/api/v2/query?org=Hestia" \
+ -H "Authorization: Token $TOKEN" -H "Content-Type: application/json" \
+ -d "{\"query\":\"from(bucket:\\\"homeassistant\\\") |> range(start:-5m) |> filter(fn:(r)=>r._measurement==\\\"ha_smoketest\\\") |> last()\"}" \
+ | jq . | sed -n "1,40p"
