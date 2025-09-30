@@ -444,7 +444,7 @@ done
 
 3) Add a lightweight validator that fails if new hard-coded `/n/ha` references are introduced outside the documentation/ADR tree. Keep ADR/docs references to `/n/ha` intact.
 
-Create `hestia/tools/validators/scan_hardcoded_ha.sh` with the following contents:
+Create `hestia/tools/utils/validators/scan_hardcoded_ha.sh` with the following contents:
 
 ```bash
 #!/usr/bin/env bash
@@ -457,13 +457,13 @@ rg -n --hidden --glob '!.git' --glob '!hestia/docs/**' --glob '!**/*.png' --glob
 Make the script executable and run it as part of the change to validate there are no accidental regressions:
 
 ```bash
-mkdir -p hestia/tools/validators
-cat > hestia/tools/validators/scan_hardcoded_ha.sh <<'SH'
+mkdir -p hestia/tools/utils/validators
+cat > hestia/tools/utils/validators/scan_hardcoded_ha.sh <<'SH'
 #!/usr/bin/env bash
 set -euo pipefail
 rg -n --hidden --glob '!.git' --glob '!hestia/docs/**' --glob '!**/*.png' --glob '!**/*.jpg' --glob '!**/*.jpeg' --glob '!**/*.gif' --glob '!**/*.svg' '/n/ha' . && { echo "ERROR: hard-coded /n/ha found outside docs"; exit 1; } || { echo "OK: no hard-coded /n/ha outside docs"; }
 SH
-chmod +x hestia/tools/validators/scan_hardcoded_ha.sh
+chmod +x hestia/tools/utils/validators/scan_hardcoded_ha.sh
 
 Run and verify the diff, then commit:
 
