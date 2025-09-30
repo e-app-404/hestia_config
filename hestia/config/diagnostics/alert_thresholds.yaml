@@ -1,0 +1,21 @@
+---
+# Diagnostics: Alert thresholds
+# Purpose: Centralized thresholds for alerts referenced by diagnostics probes.
+name: alert_thresholds
+description: |
+  Placeholder for alert thresholds used by diagnostics. Define severity levels,
+  thresholds for latency, packet loss, and service availability.
+tags:
+  - diagnostics
+  - alerts
+  - placeholder
+thresholds:
+  latency_ms:
+    warning: 100
+    critical: 250
+  packet_loss_percent:
+    warning: 1
+    critical: 5
+todo: |
+  - Review and tune thresholds based on historical probe data.
+  - Connect thresholds to notification channels defined elsewhere.
