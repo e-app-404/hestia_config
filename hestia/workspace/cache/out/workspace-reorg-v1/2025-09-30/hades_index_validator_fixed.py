@@ -109,7 +109,7 @@ def _parse_legacy_format(path: Path):
         cur_category = None
         cur_item = None
 
-        for line_num, line in enumerate(lines, 1):
+        for line in lines:
             stripped = line.lstrip()
             if (
                 line.startswith('    ')
@@ -146,61 +146,147 @@ def _parse_legacy_format(path: Path):
         return idx
     except Exception as e:
         raise ValueError(f"Legacy format parsing error in {path}: {e}")
-    """Main validation function with enhanced error reporting"""
+
+def map_path(path_str):
+    """Map artifact path to local filesystem, expanding ~ and normalizing."""
+    if not path_str:
+        return None
+    # Expand user and normalize path
+    p = Path(path_str).expanduser()
+    return p
+
+def check_yaml_load(path: Path):
+    """Try to safely load YAML file, fallback to text check if PyYAML not present."""
+    try:
+        import yaml
+        with path.open('r', encoding='utf-8') as f:
+            yaml.safe_load(f)
+        return True, None
+    except ImportError:
+        # Fallback: check if file is non-empty text
+        try:
+            text = path.read_text(encoding='utf-8')
+            if text.strip():
+                return True, None
+            else:
+                return False, "File is empty"
+        except Exception as e:
+            return False, str(e)
+    except Exception as e:
+        return False, str(e)
+
+def check():
+    """Main validation function with enhanced error reporting."""
     try:
         idx_path = locate_index()
         idx = load_index(idx_path)
     except Exception as e:
-        return [('INDEX_FILE', 'locate_or_load_failed', str(e))]
-    
+        return [
+            ('INDEX_FILE', 'locate_or_load_failed', str(e))
+        ]
+
     failures = []
     art = idx.get('hades_config_index', {}).get('artifacts', {})
-    
+
     if not art:
-        return [('INDEX_STRUCTURE', 'no_artifacts_found', 'Index contains no artifacts to validate')]
-    
+        return [
+            (
+                'INDEX_STRUCTURE',
+                'no_artifacts_found',
+                'Index contains no artifacts to validate'
+            )
+        ]
+
     for cat, items in art.items():
         if not isinstance(items, list):
-            failures.append((f'CATEGORY_{cat}', 'invalid_structure', 'Category items must be a list'))
+            failures.append(
+                (
+                    f'CATEGORY_{cat}',
+                    'invalid_structure',
+                    'Category items must be a list'
+                )
+            )
             continue
-            
+
         for item_idx, it in enumerate(items):
             if not isinstance(it, dict):
-                failures.append((f'{cat}[{item_idx}]', 'invalid_item', 'Item must be a dictionary'))
+                failures.append(
+                    (
+                        f'{cat}[{item_idx}]',
+                        'invalid_item',
+                        'Item must be a dictionary'
+                    )
+                )
                 continue
-                
+
             raw = it.get('path')
             if not raw:
-                failures.append((f'{cat}[{item_idx}]', 'missing_path', 'Item missing path field'))
+                failures.append(
+                    (
+                        f'{cat}[{item_idx}]',
+                        'missing_path',
+                        'Item missing path field'
+                    )
+                )
                 continue
-                
+
             # Normalize path for transition period
             normalized_path = normalize_artifact_path(raw)
             p = map_path(normalized_path)
-            
+
             if p is None:
-                failures.append((raw, 'path_mapping_failed', 'Could not map path'))
+                failures.append(
+                    (
+                        raw,
+                        'path_mapping_failed',
+                        'Could not map path'
+                    )
+                )
                 continue
-            
+
             # path_exists check
             if not p.exists():
-                failures.append((raw, 'path_missing', f'Resolved to: {p}'))
-            
+                failures.append(
+                    (
+                        raw,
+                        'path_missing',
+                        f'Resolved to: {p}'
+                    )
+                )
+
             # tag_policy check
             tags = it.get('tags', []) or []
             if not isinstance(tags, list):
-                failures.append((raw, 'invalid_tags', 'Tags must be a list'))
+                failures.append(
+                    (
+                        raw,
+                        'invalid_tags',
+                        'Tags must be a list'
+                    )
+                )
             else:
                 bad_tags = [t for t in tags if t not in ALLOWED_TAGS]
                 if bad_tags:
-                    failures.append((raw, 'bad_tags', bad_tags))
-            
+                    failures.append(
+                        (
+                            raw,
+                            'bad_tags',
+                            bad_tags
+                        )
+                    )
+
             # yaml_load check (only if file exists)
             if p.exists():
                 ok, err = check_yaml_load(p)
                 if not ok:
-                    failures.append((raw, 'yaml_load_fail', err))
-    
+                    failures.append(
+                        (
+                            raw,
+                            'yaml_load_fail',
+                            err
+                        )
+                    )
+
     return failures
 
 if __name__ == '__main__':
@@ -209,12 +295,12 @@ if __name__ == '__main__':
         if not failures:
             print('✅ OK: hades index checks passed')
             sys.exit(0)
-        
+
         print('❌ FAILURES:')
         for f in failures:
             print(f'  {f[0]} | {f[1]} | {f[2]}')
         sys.exit(1)
-        
+
     except Exception as e:
         print(f'💥 CRITICAL ERROR: {e}')
         sys.exit(2)

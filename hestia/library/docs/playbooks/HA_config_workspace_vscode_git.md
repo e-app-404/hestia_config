@@ -177,8 +177,8 @@ Key settings (abbrev.):
       "www/**": true,
       "tts/**": true,
       "reports/**": true,
-      "hestia/diagnostics/**": true,
-      "hestia/work/**": true,
+      "hestia/config/diagnostics/**": true,
+      "hestia/workspace/**": true,
       "tmp/**": true
     },
     "search.exclude": {
@@ -187,8 +187,8 @@ Key settings (abbrev.):
       "www/**": true,
       "tts/**": true,
       "reports/**": true,
-      "hestia/diagnostics/**": true,
-      "hestia/work/**": true,
+      "hestia/config/diagnostics/**": true,
+      "hestia/workspace/**": true,
       "tmp/**": true
     }
   }

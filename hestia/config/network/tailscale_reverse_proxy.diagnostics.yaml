@@ -76,7 +76,7 @@ git_mirror_sync_diagnostic:
       expect_output: |
         executable by user (e.g., -rwxr-xr-x)
     - run: |
-        tail -n 5 /config/hestia/diagnostics/logs/git_sync_push_events.json
+        tail -n 5 /config/hestia/config/diagnostics/logs/git_sync_push_events.json
       expect_output: |
         valid JSON line containing `_meta.contract: ha_config_sync`
   notes: |

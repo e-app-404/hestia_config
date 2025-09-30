@@ -6,6 +6,5 @@
 # ⟫⟫ https://www.home-assistant.io/integrations/shell_command/
 # ═════════════════════════════════════════════════════════════════════════════
 
-#shell_command:
-#  git_push_config: "git -C /config push dsm-git main"
-# moved to packages/package_git.yaml
+shell_command:
+  dump_auth_list: "ha auth list --raw-json > /config/hestia/workspace/operations/diagnostics/logs/ha_cli_dump.log"

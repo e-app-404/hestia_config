@@ -13,7 +13,7 @@
       unique_id: "bedroom_motion_beta"
       device_class: motion
       state: |
-        {% from 'custom_templates/template.library.jinja' import preference_select %}
+        {% from 'template.library.jinja' import preference_select %}
         {% set sources = [
           {'entity': 'binary_sensor.sanctum_motion_alpha',                 'protocol': 'tplink',      'preference': 1, 'type': 'motion'},
           {'entity': 'binary_sensor.bedroom_wardrobe_motion_tplink_alpha', 'protocol': 'tplink',      'preference': 2, 'type': 'motion'},
@@ -38,7 +38,7 @@
           ] | tojson }}
         aggregation_strategy: "preference-based selection (motion-only)"
         active_source: >
-          {% from 'custom_templates/template.library.jinja' import get_active_source %}
+          {% from 'template.library.jinja' import get_active_source %}
           {% set sources = [
             {'entity': 'binary_sensor.sanctum_motion_alpha','preference': 1},
             {'entity': 'binary_sensor.bedroom_wardrobe_motion_tplink_alpha','preference': 2},
@@ -55,7 +55,7 @@
       unique_id: "ensuite_motion_beta"
       device_class: motion
       state: |
-        {% from 'custom_templates/template.library.jinja' import preference_select %}
+        {% from 'template.library.jinja' import preference_select %}
         {% set sources = [
           {'entity': 'binary_sensor.ensuite_motion_real_time',        'protocol': 'mqtt', 'preference': 1, 'type': 'motion'},
           {'entity': 'binary_sensor.ensuite_motion_alpha_occupancy', 'protocol': 'mqtt', 'preference': 2, 'type': 'occupancy'}
@@ -71,10 +71,10 @@
         file: "/config/domain/templates/motion_logic"
         protocols: "MQTT(1,2)"
         upstream_sources: >
-          {{ ['custom_templates/template.library.jinja','binary_sensor.ensuite_motion_real_time','binary_sensor.ensuite_motion_alpha_occupancy'] | tojson }}
+          {{ ['template.library.jinja','binary_sensor.ensuite_motion_real_time','binary_sensor.ensuite_motion_alpha_occupancy'] | tojson }}
         aggregation_strategy: "preference-based selection (motion-only)"
         active_source: >
-          {% from 'custom_templates/template.library.jinja' import get_active_source %}
+          {% from 'template.library.jinja' import get_active_source %}
           {% set sources = [
             {'entity': 'binary_sensor.ensuite_motion_real_time','preference': 1},
             {'entity': 'binary_sensor.ensuite_motion_alpha_occupancy','preference': 2}
@@ -90,7 +90,7 @@
       unique_id: "hallway_downstairs_motion_beta"
       device_class: motion
       state: |
-        {% from 'custom_templates/template.library.jinja' import preference_select %}
+        {% from 'template.library.jinja' import preference_select %}
         {% set sources = [
           {'entity': 'binary_sensor.downstairs_presence_alpha_motion', 'protocol': 'tplink', 'preference': 1, 'type': 'motion'}
         ] %}
@@ -105,7 +105,7 @@
         file: "/config/domain/templates/motion_logic"
         protocols: "TP-Link(1)"
         upstream_sources: >
-          {{ ['custom_templates/template.library.jinja','binary_sensor.downstairs_presence_alpha_motion'] | tojson }}
+          {{ ['template.library.jinja','binary_sensor.downstairs_presence_alpha_motion'] | tojson }}
         aggregation_strategy: "preference-based selection (motion-only)"
         active_source: "binary_sensor.downstairs_presence_alpha_motion"
         source_count: "1"
@@ -118,7 +118,7 @@
       unique_id: "hallway_upstairs_motion_beta"
       device_class: motion
       state: |
-        {% from 'custom_templates/template.library.jinja' import preference_select %}
+        {% from 'template.library.jinja' import preference_select %}
         {% set sources = [
           {'entity': 'binary_sensor.upstairs_presence_alpha_motion', 'protocol': 'tplink', 'preference': 1, 'type': 'motion'}
         ] %}
@@ -133,7 +133,7 @@
         file: "/config/domain/templates/motion_logic"
         protocols: "TP-Link(1)"
         upstream_sources: >
-          {{ ['custom_templates/template.library.jinja','binary_sensor.upstairs_presence_alpha_motion'] | tojson }}
+          {{ ['template.library.jinja','binary_sensor.upstairs_presence_alpha_motion'] | tojson }}
         aggregation_strategy: "preference-based selection (motion-only)"
         active_source: "binary_sensor.upstairs_presence_alpha_motion"
         source_count: "1"
@@ -146,7 +146,7 @@
       unique_id: "kitchen_motion_beta"
       device_class: motion
       state: |
-        {% from 'custom_templates/template.library.jinja' import preference_select %}
+        {% from 'template.library.jinja' import preference_select %}
         {% set sources = [
           {'entity': 'binary_sensor.kitchen_presence_alpha_motion', 'protocol': 'tplink', 'preference': 1, 'type': 'motion'}
         ] %}
@@ -161,7 +161,7 @@
         file: "/config/domain/templates/motion_logic"
         protocols: "TP-Link(1)"
         upstream_sources: >
-          {{ ['custom_templates/template.library.jinja','binary_sensor.kitchen_presence_alpha_motion'] | tojson }}
+          {{ ['template.library.jinja','binary_sensor.kitchen_presence_alpha_motion'] | tojson }}
         aggregation_strategy: "preference-based selection (motion-only)"
         active_source: "binary_sensor.kitchen_presence_alpha_motion"
         source_count: "1"
@@ -173,7 +173,7 @@
       unique_id: "living_room_motion_beta"
       device_class: motion
       state: |
-        {% from 'custom_templates/template.library.jinja' import preference_select %}
+        {% from 'template.library.jinja' import preference_select %}
         {% set sources = [
           {'entity': 'binary_sensor.living_room_multipurpose_alpha_motion', 'protocol': 'smartthings', 'preference': 1, 'type': 'motion'}
         ] %}
@@ -188,7 +188,7 @@
         file: "/config/domain/templates/motion_logic"
         protocols: "SmartThings(1)"
         upstream_sources: >
-          {{ ['custom_templates/template.library.jinja','binary_sensor.living_room_multipurpose_alpha_motion'] | tojson }}
+          {{ ['template.library.jinja','binary_sensor.living_room_multipurpose_alpha_motion'] | tojson }}
         aggregation_strategy: "preference-based selection (motion-only)"
         active_source: "binary_sensor.living_room_multipurpose_alpha_motion"
         source_count: "1"
@@ -200,7 +200,7 @@
       unique_id: "wardrobe_motion_beta"
       device_class: motion
       state: |
-        {% from 'custom_templates/template.library.jinja' import preference_select %}
+        {% from 'template.library.jinja' import preference_select %}
         {% set sources = [
           {'entity': 'binary_sensor.bedroom_wardrobe_motion_tplink_alpha', 'protocol': 'tplink', 'preference': 1, 'type': 'motion'}
         ] %}
@@ -215,7 +215,7 @@
         file: "/config/domain/templates/motion_logic"
         protocols: "TP-Link(1)"
         upstream_sources: >
-          {{ ['custom_templates/template.library.jinja','binary_sensor.bedroom_wardrobe_motion_tplink_alpha'] | tojson }}
+          {{ ['template.library.jinja','binary_sensor.bedroom_wardrobe_motion_tplink_alpha'] | tojson }}
         aggregation_strategy: "preference-based selection (motion-only)"
         active_source: "binary_sensor.bedroom_wardrobe_motion_tplink_alpha"
         source_count: "1"
@@ -229,7 +229,7 @@
       unique_id: "sanctum_motion_beta"
       device_class: motion
       state: |
-        {% from 'custom_templates/template.library.jinja' import preference_select %}
+        {% from 'template.library.jinja' import preference_select %}
         {% set sources = [
           {'entity': 'binary_sensor.sanctum_motion_alpha', 'protocol': 'tplink', 'preference': 1, 'type': 'motion'}
         ] %}
@@ -244,7 +244,7 @@
         file: "/config/domain/templates/motion_logic"
         protocols: "TP-Link(1)"
         upstream_sources: >
-          {{ ['custom_templates/template.library.jinja','binary_sensor.sanctum_motion_alpha'] | tojson }}
+          {{ ['template.library.jinja','binary_sensor.sanctum_motion_alpha'] | tojson }}
         aggregation_strategy: "preference-based selection (motion-only)"
         active_source: "binary_sensor.sanctum_motion_alpha"
         source_count: "1"

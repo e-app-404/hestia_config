@@ -21,7 +21,7 @@
         data_quality: "{{ state_attr('sensor.merged_bedroom_temperature_eta', 'data_quality') }}"
         sources: "{{ state_attr('sensor.merged_bedroom_temperature_eta', 'sources') }}"
         subsystem: "aether"
-        is_multi_source: false
+        is_multi_source: "false"
         is_validated: true
         version: "1.1"
         last_updated: "2025-07-17"
@@ -47,7 +47,7 @@
         data_quality: "{{ state_attr('sensor.merged_living_room_temperature_eta', 'data_quality') }}"
         sources: "{{ state_attr('sensor.merged_living_room_temperature_eta', 'sources') }}"
         subsystem: "aether"
-        is_multi_source: true
+        is_multi_source: "true"
         is_validated: true
         version: "1.1"
         last_updated: "2025-07-17"
@@ -73,7 +73,7 @@
         data_quality: "{{ state_attr('sensor.merged_kitchen_temperature_eta', 'data_quality') }}"
         sources: "{{ state_attr('sensor.merged_kitchen_temperature_eta', 'sources') }}"
         subsystem: "aether"
-        is_multi_source: false
+        is_multi_source: "false"
         is_validated: true
         version: "1.1"
         last_updated: "2025-07-17"
@@ -99,7 +99,7 @@
         data_quality: "{{ state_attr('sensor.merged_ensuite_temperature_eta', 'data_quality') }}"
         sources: "{{ state_attr('sensor.merged_ensuite_temperature_eta', 'sources') }}"
         subsystem: "aether"
-        is_multi_source: false
+        is_multi_source: "false"
         is_validated: true
         version: "1.1"
         last_updated: "2025-07-17"
@@ -144,7 +144,7 @@
         file: "/config/domain/templates/temperature_logic.yaml"
         date_created: "2025-04-26"
         last_updated: "2025-07-17"
-        is_multi_source: true
+        is_multi_source: "true"
         source_count: "4"
         data_quality: "excellent"
         subsystem: "hestia"
@@ -191,7 +191,7 @@
         file: "/config/domain/templates/temperature_logic.yaml"
         date_created: "2025-04-26"
         last_updated: "2025-07-17"
-        is_multi_source: true
+        is_multi_source: "true"
         source_count: "5"
         data_quality: "excellent"
         subsystem: "aether"
@@ -233,7 +233,7 @@
         file: "/config/domain/templates/temperature_logic.yaml"
         date_created: "2025-04-26"
         last_updated: "2025-07-17"
-        is_multi_source: true
+        is_multi_source: "true"
         source_count: "3"
         data_quality: "excellent"
         subsystem: "aether"
@@ -273,7 +273,7 @@
         file: "/config/domain/templates/temperature_logic.yaml"
         date_created: "2025-04-26"
         last_updated: "2025-07-17"
-        is_multi_source: false
+        is_multi_source: "false"
         source_count: "2"
         data_quality: "good"
         subsystem: "aether"
@@ -311,7 +311,7 @@
         file: "/config/domain/templates/temperature_logic.yaml"
         date_created: "2025-04-26"
         last_updated: "2025-07-17"
-        is_multi_source: true
+        is_multi_source: "true"
         source_count: "2"
         data_quality: "excellent"
         subsystem: "aether"

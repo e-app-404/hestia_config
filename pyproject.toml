@@ -25,3 +25,23 @@ target-version = "py311"
 extend-exclude = ["www", "tts", ".storage", "reports", "hestia/diagnostics", "hestia/work"]
 [tool.ruff.lint]
 select = ["E","F","I"]         # basic pyflakes/pycodestyle + isort
+
+[tool.isort]
+profile = "black"
+line_length = 100
+# Exclude directories that should not be modified
+skip_glob = [
+    "custom_components/**",
+    "deps/**", 
+    "www/**",
+    "tts/**",
+    ".storage/**",
+    ".venv*/**",
+    "zigbee2mqtt/**",
+    "reports/**",
+    "tmp/**"
+]
+# Only process Hestia-related Python files and core config
+include_trailing_comma = true
+multi_line_output = 3
+known_first_party = ["hestia"]

@@ -40,7 +40,7 @@ git_push_logger_pipeline:
       - entity_id: input_datetime.git_last_push_timestamp
 
     log:
-      - path: "/config/hestia/diagnostics/logs/git_sync_push_events.json"
+      - path: "/config/hestia/config/diagnostics/logs/git_sync_push_events.json"
 
     template_sensor:
       - entity_id: sensor.last_git_config_push
@@ -56,7 +56,7 @@ git_push_logger_pipeline:
   success_criteria:
     - SSH connection to DSM resolves using key-based auth (no password prompt)
     - Git push to remote 'dsm-git' succeeds or returns "Everything up-to-date"
-    - JSON log event is written to /config/hestia/diagnostics/logs/git_sync_push_events.json
+    - JSON log event is written to /config/hestia/config/diagnostics/logs/git_sync_push_events.json
     - input_datetime.git_last_push_timestamp is updated to current ISO8601 time
     - sensor.last_git_config_push reflects the correct updated timestamp
     - binary_sensor.git_repo_synced_with_dsm is `on`
@@ -127,7 +127,7 @@ git_push_logger_pipeline:
 #     git --git-dir=/volume1/HA_MIRROR show -s --format=%s refs/heads/main
 #     # Local HEAD:
 #     git -C /config rev-parse --short HEAD
-# - JSON log /config/hestia/diagnostics/logs/git_sync_push_events.json logs against dsm-git-host + refs/heads/main
+# - JSON log /config/hestia/config/diagnostics/logs/git_sync_push_events.json logs against dsm-git-host + refs/heads/main
 #
 # Home Assistant config elements:
 # - .ssh/config is the single source of truth for host alias, key, known_hosts

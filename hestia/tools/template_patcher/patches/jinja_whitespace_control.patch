@@ -1,0 +1,37 @@
+# Jinja Macro Whitespace Control Patch
+# ADR-0020: Home Assistant Configuration Error Canonicalization
+# Fixes macros that return empty strings due to missing whitespace control
+
+# Problem: Macro definitions without {%- and -%} generate unwanted whitespace
+# Solution: Add whitespace control to all macro definitions and endings
+
+# Pattern 1: Macro opening tags
+--- a/custom_templates/template.library.jinja
++++ b/custom_templates/template.library.jinja
+@@ -XX,X +XX,X @@
+-{% macro macro_name(params) %}
++{% macro macro_name(params) -%}
+
+# Pattern 2: Macro closing tags  
+@@ -XX,X +XX,X @@
+-{% endmacro %}
++{%- endmacro %}
+
+# Pattern 3: Template blocks within macros
+@@ -XX,X +XX,X @@
+-  {% set variable = value %}
+-  {{ output }}
++  {%- set variable = value -%}
++  {{- output -}}
+
+# Detection Method:
+# grep -r "{% macro.*[^-]%}" custom_templates/
+# grep -r "{% endmacro %}" custom_templates/
+
+# Validation:
+# Template developer tools should show clean output without quoted whitespace
+# Example test: "{{ macro_name() }}" should return "off" not " \n  \n  off\n"
+
+# Automated Fix:
+# sed -i 's/{% macro \([^}]*\) %}/{% macro \1 -%}/g' file
+# sed -i 's/{% endmacro %}/{%- endmacro %}/g' file

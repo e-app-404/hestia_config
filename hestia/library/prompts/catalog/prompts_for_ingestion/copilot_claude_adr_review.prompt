@@ -32,7 +32,7 @@ CHECKS TO RUN (per ADR file)
    - Flag ADRs missing actionability or only descriptive content.
 
 4. External references & cross-checks
-   - Extract references to workspace artifacts (examples): `.github/workflows/adr-0018-include-scan.yml`, `hestia/tools/utils/reportkit/retention.py`, `hestia/reports/`, `hestia/vault/registry/`.
+   - Extract references to workspace artifacts (examples): `.github/workflows/adr-0018-include-scan.yml`, `hestia/tools/utils/reportkit/retention.py`, `hestia/reports/`, `hestia/workspace/archive/vault/registry/`.
    - Verify referenced paths exist in the workspace; if not accessible, mark unchecked and explain.
    - For CI workflow references, check file presence and that the referenced workflow name/filename matches actual workflow file.
 

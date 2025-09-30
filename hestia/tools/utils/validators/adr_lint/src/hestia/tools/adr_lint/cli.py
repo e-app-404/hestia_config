@@ -5,7 +5,7 @@ import argparse
 import sys
 from typing import List
 
-from . import rules, report, config
+from . import config, report, rules
 
 
 def parse_args(argv: List[str] | None = None) -> argparse.Namespace:

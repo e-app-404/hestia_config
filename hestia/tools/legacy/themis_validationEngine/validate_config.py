@@ -1,12 +1,12 @@
 """Custom loader."""
 from __future__ import annotations
 
-from collections import OrderedDict
-from collections.abc import Iterator
 import fnmatch
-from io import StringIO, TextIOWrapper
 import logging
 import os
+from collections import OrderedDict
+from collections.abc import Iterator
+from io import StringIO, TextIOWrapper
 from pathlib import Path
 from typing import Any, TextIO, TypeVar, Union, overload
 

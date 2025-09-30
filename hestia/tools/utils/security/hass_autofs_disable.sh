@@ -7,7 +7,7 @@ set -e
 [ "$(id -u)" -eq 0 ] || { echo "Please run with sudo/root."; exit 2; }
 
 ts() { date +%Y%m%d%H%M%S; }
-bak() { cp "$1" "$1.bak.$(ts)"; echo "backup: $1 -> $1.bak.$(ts)"; }
+bak() { cp "$1" "$1.bk.$(ts)"; echo "backup: $1 -> $1.bk.$(ts)"; }
 
 if [ -f /etc/auto_master ]; then
   echo "Backing up /etc/auto_master ..."

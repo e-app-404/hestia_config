@@ -52,7 +52,7 @@ You are an expert in **Home Assistant**, **HESTIA system architecture**, **YAML 
 You will work with a full production-like configuration structure including:
 
 - `configuration.yaml`, `automations.yaml`, `scripts.yaml`
-- Subdirectories like `hestia/core/`, `hestia/packages/`, `hestia/diagnostics/`, `template.library.yaml`
+- Subdirectories like `hestia/core/`, `hestia/packages/`, `hestia/config/diagnostics/`, `template.library.yaml`
 - Historical config archives for diff comparison (`BUZIP.zip`, `OVZIP.zip`, `Archive.zip`)
 - Custom scripts and template sensors
 - ESPHome files (if any)

@@ -32,7 +32,7 @@ Covers *all* non-source artifacts in the repo: backups, temporary files, reports
 - `artifacts/` — reproducible release bundles/tarballs **with** manifest & checksums (gitignored).
 - `archive/` — curated, long-lived reference snapshots (kept; not auto-packaged). Must include README (+ provenance).
 - `hestia/reports/` — all tool/script output batches (gitignored). Structured by date/batch.
-- `hestia/vault/` — long-term human-curated materials (kept). Subfolders: `backups/`, `bundles/` (manual), `deprecated/`.
+- `hestia/workspace/archive/vault/` — long-term human-curated materials (kept). Subfolders: `backups/`, `bundles/` (manual), `deprecated/`.
 
 > Git policy: `.storage/`, `.venv*/`, `deps/`, caches, token stores and any runtime state are **never** tracked by Git.
 
@@ -48,7 +48,7 @@ Times use compact UTC format `YYYYMMDDTHHMMSSZ`. Avoid spaces/colons.
 
 **Backups (vault, long-lived)**
 
-- Location: `hestia/vault/backups/`.
+- Location: `hestia/workspace/archive/vault/backups/`.
 - Pattern: `<name>.<UTC>.bk` or `<name>.bk.<UTC>` (both acceptable here; prefer the former for lexicographic sort).
 - Retention: keep N latest per base-name (default N=5) + any manually pinned ones.
 
@@ -123,16 +123,16 @@ Times use compact UTC format `YYYYMMDDTHHMMSSZ`. Avoid spaces/colons.
 artifacts/                # reproducible bundles + MANIFEST + checksums
 archive/                  # curated snapshots + README/provenance
 hestia/reports/           # all generated outputs (batched)
-hestia/vault/backups/     # long-lived backups (kept)
-hestia/vault/bundles/     # manually stored bundles (optional)
-hestia/vault/deprecated/  # human-curated deprecated materials
+hestia/workspace/archive/vault/backups/     # long-lived backups (kept)
+hestia/workspace/archive/vault/bundles/     # manually stored bundles (optional)
+hestia/workspace/archive/vault/deprecated/  # human-curated deprecated materials
 ```
 
 # 10) Migration plan (one-time, scripted)
 
 1. **Ignore**: extend `.gitignore` for banned paths (`.storage/**`, `.venv*/`, `deps/`, caches, `hestia/reports/**`, `.trash/**`, `.quarantine/**`, `artifacts/**`, `*.bk.*`).
 2. **Untrack**: `git rm -r --cached` the banned directories/files while keeping them on disk.
-3. **Backups**: rename existing `*.bak*` to the canonical `.bk.<UTC>` (or move to `hestia/vault/backups/`).
+3. **Backups**: rename existing `*.bak*` to the canonical `.bk.<UTC>` (or move to `hestia/workspace/archive/vault/backups/`).
 4. **Reports**: relocate ad-hoc outputs into `hestia/reports/<date>/<batch>/` (or delete if superseded).
 5. **CI**: enable include-scan + determinism checks; block merges on violations.
 

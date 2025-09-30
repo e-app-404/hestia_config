@@ -1,0 +1,9 @@
+person:
+  - name: Evert Appels
+    id: evert123
+    device_trackers:
+      - device_tracker.ephone
+      - device_tracker.ephone_uk
+      - device_tracker.keys
+      - device_tracker.wallet
+      - device_tracker.backpack

@@ -33,8 +33,7 @@ if command -v sha256sum >/dev/null 2>&1; then
   sha256sum -- "$BACKUP_FILE" > "$BACKUP_FILE.sha256" || true
 fi
 
-# Apply bounded macro replacement using a portable shell loop to avoid awk regex/quoting issues
-# We replace from a line that contains 'macro any_child_active' until the next line that contains 'endmacro'.
+# Apply macro replacement and whitespace control fixes
 > "$TMP_FILE"
 in_replace=0
 while IFS= read -r line || [ -n "$line" ]; do
@@ -58,8 +57,20 @@ JINJA
         in_replace=1
         ;;
       *)
+        # Apply whitespace control fixes to macro definitions
+        fixed_line="$line"
+        case "$line" in
+          *"{% macro "*" %}"*)
+            # Fix macro opening without whitespace control
+            fixed_line=$(echo "$line" | sed 's/{% macro \([^}]*\) %}/{% macro \1 -%}/g')
+            ;;
+          *"{% endmacro %}"*)
+            # Fix macro closing without whitespace control  
+            fixed_line=$(echo "$line" | sed 's/{% endmacro %}/{%- endmacro %}/g')
+            ;;
+        esac
         printf '%s
-' "$line" >> "$TMP_FILE"
+' "$fixed_line" >> "$TMP_FILE"
         ;;
     esac
   else
@@ -127,6 +138,24 @@ if grep -En "\{%-?[[:space:]]*(return|break)" "$LIB_FILE" >/dev/null 2>&1; then
   FAIL=1
 else
   echo "PASS: no loop-control tags in $LIB_FILE"
+fi
+
+# Check for macros without whitespace control (ADR-0020)
+if grep -En "{% macro.*[^-]%}" "$LIB_FILE" >/dev/null 2>&1; then
+  echo "FAIL: macros without whitespace control remain in $LIB_FILE" >&2
+  grep -En "{% macro.*[^-]%}" "$LIB_FILE" || true
+  FAIL=1
+else
+  echo "PASS: all macros use whitespace control"
+fi
+
+# Check for endmacro without whitespace control
+if grep -En "{% endmacro %}" "$LIB_FILE" >/dev/null 2>&1; then
+  echo "FAIL: endmacro tags without whitespace control remain in $LIB_FILE" >&2
+  grep -En "{% endmacro %}" "$LIB_FILE" || true
+  FAIL=1
+else
+  echo "PASS: all endmacro tags use whitespace control"
 fi
 
 # Check if legacy import strings remain

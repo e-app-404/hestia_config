@@ -6,7 +6,7 @@ set -euo pipefail
 
 : "${LOCKED_UTC:=2025-09-12T00:00:00Z}"   # override for reproducibility if desired
 JOB_ID="${JOB_ID_OVERRIDE:-$(date -u +%Y%m%dT%H%M%SZ)}"
-OUT_BASE="${HA_MOUNT:-$HOME/hass}/hestia/work/out"
+OUT_BASE="${HA_MOUNT:-$HOME/hass}/hestia/workspace/out"
 OUT_DIR="${OUT_BASE}/${JOB_ID}"
 TMP_DIR="${OUT_DIR}/.work"
 mkdir -p "${OUT_DIR}" "${TMP_DIR}"

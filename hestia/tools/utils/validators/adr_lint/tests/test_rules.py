@@ -1,9 +1,6 @@
 import textwrap
 
-from hestia.tools.utils.validators.adr_lint.src.hestia.tools.adr_lint import (
-    config,
-    rules,
-)
+from hestia.tools.utils.validators.adr_lint.src.hestia.tools.adr_lint import config, rules
 from hestia.tools.utils.validators.adr_lint.src.hestia.tools.adr_lint.config import (
     CANONICAL_TEMPLATE,
 )

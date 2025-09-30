@@ -32,6 +32,12 @@ secrets.yaml
 secrets.yml
 secrets.*.yaml
 
+# Zone files contain geographical coordinates and personal location data
+domain/zones/key_zones.yaml
+domain/zones/*_zones.yaml
+# Allow template files
+!domain/zones/*.yaml.template
+
 # Configuration files containing PII (IP addresses, MAC addresses, network topology)
 # Device configurations - contain IP addresses, MAC addresses, device identifiers
 hestia/config/devices/*.conf
@@ -209,7 +215,7 @@ hestia/**/prompt_registry/**
 home-assistant_v2.db*
 # Optional: ignore entire hestia cache/work areas if they exist
 hestia/cache/**
-hestia/vault/**
+hestia/workspace/archive/vault/**
 # -------------------------------------------------------
 # --- Strategos HA cleanup (2025-09-04) --------------------------------
 # Secrets and credentials
@@ -227,7 +233,7 @@ tts/
 .kyb_minmerge/
 # Reports/diagnostics and work areas
 reports/
-hestia/diagnostics/
+hestia/config/diagnostics/
 hestia/work/
 # Zigbee2MQTT runtime (keep config only)
 zigbee2mqtt/database.db

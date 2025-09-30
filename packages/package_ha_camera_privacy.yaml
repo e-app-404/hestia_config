@@ -1,5 +1,5 @@
 # ============================================================================
-# Home Assistant Package: Bedroom Camera Privacy — Evert
+# Home Assistant Package: Bedroom Camera Privacy
 # ----------------------------------------------------------------------------
 # Purpose
 #   Deactivate ("private mode") the bedroom security camera when Evert is home
@@ -13,7 +13,7 @@
 #   • Occupancy decisions use occupancy-only sensors (no motion in decision path).
 #
 # How to use
-#   1) Save as /config/packages/ha_camera_privacy_evert.yaml (or merge).
+#   1) Save as /config/packages/package_ha_camera_privacy.yaml (or merge).
 #   2) Reload Automations or restart Home Assistant.
 #   3) Set input_select.camera_privacy_mode:
 #        - home  → private whenever Evert is in the Home zone
@@ -56,7 +56,6 @@ script:
 # ---------------------------------------------------------------------------
 template:
   - binary_sensor:
-      # Trusted = Occupancy + (Evert is home) + a trusted device/token is present
       - name: "Bedroom Privacy Trusted Occupied"
         unique_id: bedroom_privacy_trusted_occupied
         device_class: occupancy
@@ -110,7 +109,6 @@ template:
           module: "privacy"
           type: "trusted_privacy_gate"
 
-      # Unknown intrusion = Sanctum aggregate is occupied (β)
       - name: "Bedroom Privacy Unknown Intrusion"
         unique_id: bedroom_privacy_unknown_intrusion
         device_class: occupancy
@@ -129,10 +127,10 @@ template:
 # ---------------------------------------------------------------------------
 automation:
   # --------------------------------------------------------------------------
-  # MODE A — HOME: PRIVATE when Evert enters Home; ENABLE when he leaves.
+  # MODE A — HOME: PRIVATE when you enter Home; ENABLE when you leave.
   # --------------------------------------------------------------------------
   - id: cam_privacy_when_evert_home
-    alias: "Bedroom Cam · Private when Evert ENTERS Home (Home mode)"
+    alias: "Bedroom Cam · Private when operator ENTERS Home (Home mode)"
     initial_state: "on"
     mode: restart
     trigger:
@@ -148,7 +146,7 @@ automation:
         entity_id: input_select.camera_privacy_mode
         state: "home"
     action:
-      - delay: "00:02:00" # arrival stabilization
+      - delay: "00:02:00"
       - condition: state
         entity_id: person.evert
         state: "home"
@@ -184,7 +182,7 @@ automation:
         entity_id: input_select.camera_privacy_mode
         state: "home"
     action:
-      - delay: "00:05:00" # departure stabilization
+      - delay: "00:05:00"
       - condition: template
         value_template: "{{ states('person.evert') != 'home' }}"
       - choose:
@@ -246,7 +244,7 @@ automation:
       - platform: state
         entity_id: binary_sensor.bedroom_privacy_trusted_occupied
         to: "off"
-        for: "00:10:00" # linger to avoid rapid re-enable
+        for: "00:10:00"
     condition:
       - condition: state
         entity_id: input_boolean.presence_detection_enabled
@@ -326,7 +324,6 @@ automation:
       - condition: state
         entity_id: person.evert
         state: "home"
-      # Only alert if trusted occupied is NOT active
       - condition: state
         entity_id: binary_sensor.bedroom_privacy_trusted_occupied
         state: "off"
@@ -360,7 +357,6 @@ automation:
         state: "on"
     action:
       - choose:
-          # Home mode: private if Evert is home; otherwise enable
           - conditions:
               - condition: state
                 entity_id: input_select.camera_privacy_mode
@@ -377,7 +373,6 @@ automation:
                           entity_id: switch.bedroom_security_cam_alpha
                 default:
                   - service: script.camera_bedroom_enable_full
-          # Room mode: private if Evert home AND trusted occupied; else enable
           - conditions:
               - condition: state
                 entity_id: input_select.camera_privacy_mode
@@ -397,7 +392,7 @@ automation:
                           entity_id: switch.bedroom_security_cam_alpha
                 default:
                   - service: script.camera_bedroom_enable_full
-        default: [] # mode == off → do nothing
+        default: []
 
   # --------------------------------------------------------------------------
   # SAFETY: Re-evaluate immediately when the mode selector changes

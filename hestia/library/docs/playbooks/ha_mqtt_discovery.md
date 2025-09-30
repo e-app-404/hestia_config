@@ -22,9 +22,7 @@ Expose a single **Device** in Home Assistant that contains multiple entities (e.
 
 Publish one retained JSON to:
 
-```
-<discovery_prefix>/device/<object_id>/config
-```
+`<discovery_prefix>/device/<object_id>/config`
 
 This defines the device and *all* its components via a `cmps` map. Requires root `device` and `origin` blocks. Supported by current HA and preferred when a device exposes many entities. ([Home Assistant][1])
 
@@ -32,9 +30,7 @@ This defines the device and *all* its components via a `cmps` map. Requires root
 
 Publish one payload per entity to:
 
-```
-<discovery_prefix>/<component>/<object_id>/config
-```
+`<discovery_prefix>/<component>/<object_id>/config`
 
 Still fully supported; if your HA build is older or you prefer simple, use this. ([Home Assistant][1])
 
@@ -48,9 +44,7 @@ Still fully supported; if your HA build is older or you prefer simple, use this.
 
 **Topic**
 
-```
-homeassistant/device/bedroom_hdmi_matrix/config
-```
+`homeassistant/device/bedroom_hdmi_matrix/config`
 
 **Payload**
 
@@ -85,9 +79,7 @@ You should now see a **Bedroom HDMI Matrix** device with two MQTT **button** ent
 
 **Topic**
 
-```
-homeassistant/button/bedroom_hdmi_matrix/power/config
-```
+`homeassistant/button/bedroom_hdmi_matrix/power/config`
 
 **Payload**
 

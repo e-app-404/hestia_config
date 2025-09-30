@@ -13,4 +13,9 @@ pydocstyle==6.*
 mccabe==0.7.*
 isort==5.*
 black==23.*
-autoflake==2.*    
+autoflake==2.*
+tinytuya==1.17.*
+cryptography==46.*
+colorama==0.4.*
+pyyaml==6.*
+requests==2.*

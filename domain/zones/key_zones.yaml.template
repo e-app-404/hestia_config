@@ -1,0 +1,57 @@
+# ══════════════════════════════════════════════════════════════════
+# ⟫⟫ KEY ZONES TEMPLATE  •  User-generated zones of importance ◀
+# ⟫⟫ Loader: !include domain/zones/key_zones.yaml•  
+# ⟫⟫ Tier: sigma  •  Domain: config  • last_updated: 2025-09-30
+# ⟫⟫ TEMPLATE - Copy to key_zones.yaml and customize with your coordinates
+# ══════════════════════════════════════════════════════════════════
+
+# INSTRUCTIONS:
+# 1. Copy this file to: domain/zones/key_zones.yaml
+# 2. Replace the placeholder coordinates with your actual locations
+# 3. The key_zones.yaml file is automatically ignored by git (.gitignore)
+
+- name: Home
+  latitude: __REPLACE_WITH_YOUR_HOME_LATITUDE__    # e.g., 51.4633425
+  longitude: __REPLACE_WITH_YOUR_HOME_LONGITUDE__  # e.g., -0.1331845
+  radius: 75
+  icon: mdi:home
+
+- name: Local_Area
+  latitude: __REPLACE_WITH_LOCAL_AREA_LAT__        # e.g., 51.4608524
+  longitude: __REPLACE_WITH_LOCAL_AREA_LON__       # e.g., -0.1443672
+  radius: 1000
+  icon: mdi:map-marker
+
+- name: Transport_Hub
+  latitude: __REPLACE_WITH_TRANSPORT_LAT__         # e.g., 51.4655113
+  longitude: __REPLACE_WITH_TRANSPORT_LON__        # e.g., -0.1290464
+  radius: 50
+  icon: mdi:subway
+
+- name: City_Center
+  # Major city center reference point
+  latitude: __REPLACE_WITH_CITY_CENTER_LAT__       # e.g., 51.5074
+  longitude: __REPLACE_WITH_CITY_CENTER_LON__      # e.g., -0.1278
+  radius: 5000
+  icon: mdi:city
+
+- name: Country
+  # Country-scale zone; set passive to avoid affecting "home/not_home"
+  latitude: __REPLACE_WITH_COUNTRY_CENTER_LAT__    # e.g., 54.0
+  longitude: __REPLACE_WITH_COUNTRY_CENTER_LON__   # e.g., -2.0
+  radius: 450000
+  passive: true
+  icon: mdi:flag
+
+# Add additional zones as needed:
+# - name: Work
+#   latitude: __REPLACE_WITH_WORK_LAT__
+#   longitude: __REPLACE_WITH_WORK_LON__
+#   radius: 100
+#   icon: mdi:briefcase
+#
+# - name: Family_Location
+#   latitude: __REPLACE_WITH_FAMILY_LAT__
+#   longitude: __REPLACE_WITH_FAMILY_LON__
+#   radius: 200
+#   icon: mdi:account-multiple

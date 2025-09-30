@@ -1,6 +1,6 @@
 #!/bin/bash
 # Home Assistant BLE/DBus/log audit - run on HA host (SSH/Terminal)
-# Run with: evertappels@macbook config % bash hestia/work/utils/ha_ble_audit.sh
+# Run with: evertappels@macbook config % bash hestia/workspace/utils/ha_ble_audit.sh
 
 # Ensure SSH access to HA host using password from secrets.yaml
 SSH_HOST="babylon-babes@192.168.0.129"
@@ -10,8 +10,8 @@ if ! command -v sshpass >/dev/null 2>&1; then
   exit 1
 fi
 
-OUT="hestia/diagnostics/logs/ble_audit_$(date +%Y%m%d_%H%M%S).log"
-mkdir -p hestia/diagnostics/logs/
+OUT="hestia/config/diagnostics/logs/ble_audit_$(date +%Y%m%d_%H%M%S).log"
+mkdir -p hestia/config/diagnostics/logs/
 touch "$OUT"
 echo "=== BB-8/HA BLE & DBus Audit $(date) ===" | tee "$OUT"
 
@@ -29,7 +29,7 @@ run_remote "4. Bluetooth/DBus Service Status" "sudo systemctl status bluetooth; 
 run_remote "5. DBus Socket Info" "ls -l /run/dbus/system_bus_socket"
 run_remote "6. bluetoothctl Adapters/List" "bluetoothctl list; bluetoothctl show"
 run_remote "7. BLE Scan Test" "echo 'Starting bluetoothctl scan for 10 seconds...'; bluetoothctl scan on & SCAN_PID=\$!; sleep 10; kill \$SCAN_PID; bluetoothctl devices"
-run_remote "8. Log File Check" "ls -l /config/hestia/diagnostics/logs/; tail -20 /config/hestia/diagnostics/logs/ha_bb8_addon.log"
+run_remote "8. Log File Check" "ls -l /config/hestia/config/diagnostics/logs/; tail -20 /config/hestia/config/diagnostics/logs/ha_bb8_addon.log"
 run_remote "9. Add-on Docker BLE Mapping" "CONTAINER_ID=\$(docker ps | grep beep_boop_bb8 | awk '{print \$1}'); if [ -n \"\$CONTAINER_ID\" ]; then echo 'Container ID: '\$CONTAINER_ID; docker exec -it \$CONTAINER_ID ls -l /dev | grep hci; else echo 'No running beep_boop_bb8 container found.'; fi"
 
 echo -e "\n=== AUDIT COMPLETE: Log written to $OUT ===" | tee -a "$OUT"

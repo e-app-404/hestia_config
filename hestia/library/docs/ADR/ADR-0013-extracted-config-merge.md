@@ -7,9 +7,9 @@ author:
   - "Platform / Home-Ops"
   - "GitHub Copilot (assisted)"
   - "Strategos"
-related: ["ADR-0007", "ADR-0008", "ADR-0009", "ADR-0010"]
+related: ["ADR-0007", "ADR-0008", "ADR-0009", "ADR-0010", "ADR-0016"]
 supersedes: []
-last_updated: 2025-09-25
+last_updated: 2025-09-30
 tags: ["meta-capture", "configuration", "merge", "governance", "secrets"]
 acceptance_criteria:
   - "Idempotent merge: same inputs ⇒ byte-identical outputs"
@@ -50,12 +50,12 @@ Past merges were ad-hoc, risking drift, clobbering, or ephemeral state leaking i
 
 Adopt a **deterministic, token-guided merge pipeline**:
 
-- Stage incoming snippets in `/config/hestia/staging/`.
-- Validate schema; **route by domain**; perform **keyed upsert** into `/config/hestia/core/config/`.
+- Stage incoming snippets in `${HA_MOUNT}/hestia/workspace/staging/`.
+- Validate schema; **route by domain**; perform **keyed upsert** into `${HA_MOUNT}/hestia/config/core/`.
 - Enforce **non-clobber** rules and governance annotations (tokens).
 - Extract secrets to `secrets.yaml`; rewrite references via `!secret`.
 - Prefer stable device paths (`/dev/serial/by-id/...`) over ephemeral (`/dev/ttyUSB*`).
-- Emit diffs + human summaries to `/config/hestia/audits/`.
+- Emit diffs + human summaries to `${HA_MOUNT}/hestia/workspace/operations/audits/`.
 - Gate write-backs via CI with lint/schema/secret guards.
 - This ADR defines methodology, requirements, emitted tokens, expected I/O, and permitted GitHub Copilot influence.
 
@@ -70,18 +70,18 @@ Adopt a **deterministic, token-guided merge pipeline**:
 ### 4.1 Repository Layout
 
 ```text
-/config/hestia/
-core/config/          # canonical merged configs (per-domain YAML)
-staging/              # intake of captured snippets
-procedures/           # human SOPs (markdown)
-tools/                # merge routers, validators, guards
-audits/               # before/after snapshots, diffs, changelogs
+${HA_MOUNT}/hestia/
+config/core/          # canonical merged configs (per-domain YAML)
+workspace/staging/    # intake of captured snippets
+library/docs/procedures/ # human SOPs (markdown)
+tools/pipelines/      # merge routers, validators, guards
+workspace/operations/audits/ # before/after snapshots, diffs, changelogs
 ```
 
 ### 4.2 Pipeline Phases
 
 1) **Intake & Sanity**
-- Drop `*.yaml` in `staging/` as `{ISO8601}-{source}.yaml`.
+- Drop `*.yaml` in `workspace/staging/` as `{ISO8601}-{source}.yaml`.
 - Validate minimal schema:
   - MUST contain `.extracted_config` (map).
   - `.transient_state`, `.relationships`, `.suggested_commands`, `.notes` optional.
@@ -89,12 +89,12 @@ audits/               # before/after snapshots, diffs, changelogs
 
 2) **Routing**
 - Split `extracted_config` into **domain files**:
-  - `.home_assistant` → `core/config/homeassistant.yaml`
-  - `.mqtt` → `core/config/mqtt.yaml`
-  - `.zigbee2mqtt` → `core/config/zigbee2mqtt.yaml`
-  - `.addons[]` (keyed by `slug`) → `core/config/addons.yaml`
-  - `.devices` → `core/config/devices.yaml`
-  - `.repo` → `core/config/repo.yaml`
+  - `.home_assistant` → `config/core/homeassistant.yaml`
+  - `.mqtt` → `config/core/mqtt.yaml`
+  - `.zigbee2mqtt` → `config/core/zigbee2mqtt.yaml`
+  - `.addons[]` (keyed by `slug`) → `config/core/addons.yaml`
+  - `.devices` → `config/core/devices.yaml`
+  - `.repo` → `config/core/repo.yaml`
 
 3) **Merge (Keyed Upsert)**
 - **Maps:** Shallow merge; incoming **non-empty** wins unless target key is **pinned**.
@@ -107,7 +107,7 @@ audits/               # before/after snapshots, diffs, changelogs
 - Respect governance tokens (see §6).
 
 5) **Audit & Gate**
-- Emit unified diff + human summary into `audits/`.
+- Emit unified diff + human summary into `workspace/operations/audits/`.
 - CI checks: YAML validity, schema, secrets leakage, pinned-key integrity, shellcheck for scripts.
 
 6) **Write-Back (Optional)**
@@ -163,8 +163,8 @@ audits/               # before/after snapshots, diffs, changelogs
 
 ### Outputs
 
-* Updated canonical domain files under `core/config/` (e.g., `zigbee2mqtt.yaml`, `mqtt.yaml`, `devices.yaml`).
-* `audits/{timestamp}-changes.diff` and human summary.
+* Updated canonical domain files under `config/core/` (e.g., `zigbee2mqtt.yaml`, `mqtt.yaml`, `devices.yaml`).
+* `workspace/operations/audits/{timestamp}-changes.diff` and human summary.
 * Optional: updated `secrets.yaml` with newly extracted entries.
 * CI logs for validation, lints, guard results.
 * (When enabled) write-backs to runtime paths and service restart logs.
@@ -197,10 +197,10 @@ audits/               # before/after snapshots, diffs, changelogs
 
 **Scripts:**
 
-* `tools/route.sh` — domain splitting
-* `tools/merge_*.yq` — domain merges
-* `tools/validate.sh` — schema + yaml + guards
-* `tools/secrets_guard.sh` — extraction + references
+* `tools/pipelines/route.sh` — domain splitting
+* `tools/pipelines/merge_*.yq` — domain merges
+* `tools/pipelines/validate.sh` — schema + yaml + guards
+* `tools/pipelines/secrets_guard.sh` — extraction + references
 
 **CI:**
 
@@ -223,7 +223,7 @@ audits/               # before/after snapshots, diffs, changelogs
 ## 11) Rollout Plan
 
 1. Land `tools/` scripts and baseline domain files.
-2. Enable CI dry-run on PRs touching `staging/` or `core/config/`.
+2. Enable CI dry-run on PRs touching `workspace/staging/` or `config/core/`.
 3. Migrate existing configs by running pipeline once; review diffs; tag pins where needed.
 4. Enable optional write-backs behind `DEPLOY_WRITEBACK=1`.
 

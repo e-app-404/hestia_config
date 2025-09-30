@@ -17,7 +17,7 @@ promptset:
     optional:
       - path: /Volumes/HA/config/domain/templates/**/*.yaml
       - path: /Volumes/HA/config/custom_components/**/*.py
-      - path: /Volumes/HA/config/hestia/work/prompt_registry/catalog/draft_template.promptset
+      - path: /Volumes/HA/config/hestia/workspace/prompt_registry/catalog/draft_template.promptset
     # Use glob patterns for extensibility
 
   bindings:

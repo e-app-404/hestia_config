@@ -9,7 +9,6 @@ IFS=$'\n\t'
 
 _candidates=(
   "$HESTIA_CONFIG_OVERRIDE"
-  "$HOME/hestia-config"        # symlink (optional)
   "/n/ha"                      # autofs neutral path (optional)
   "/n/ha"
   "/n/ha"

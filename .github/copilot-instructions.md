@@ -50,3 +50,4 @@ notes below to be productive quickly and avoid unsafe changes.
 If anything here is unclear or you need more detail on a subcomponent, say which
 area (e.g. `vault templates`, `adr linter`, `deploy/dsm`) and I will expand the
 instructions with file-level examples.
+

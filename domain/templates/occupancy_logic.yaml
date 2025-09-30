@@ -13,7 +13,7 @@
       unique_id: "bedroom_occupancy_beta"
       device_class: occupancy
       state: |
-        {% from 'custom_templates/template.library.jinja' import preference_select %}
+        {% from 'template.library.jinja' import preference_select %}
         {% set sources = [
           {'entity': 'binary_sensor.bedroom_occupancy_alpha_occupancy',      'protocol': 'mqtt',   'preference': 1, 'type': 'occupancy'},
           {'entity': 'binary_sensor.bedroom_wardrobe_occupancy_matter_alpha','protocol': 'matter', 'preference': 2, 'type': 'occupancy'},
@@ -32,7 +32,7 @@
         protocols: "MQTT(1), Matter(2), Logic(3), WiFi(4)"
         upstream_sources: >
           {{ [
-            'custom_templates/template.library.jinja',
+            'template.library.jinja',
             'binary_sensor.bedroom_occupancy_alpha_occupancy',
             'binary_sensor.bedroom_wardrobe_occupancy_matter_alpha',
             'binary_sensor.wardrobe_occupancy_beta',
@@ -40,7 +40,7 @@
           ] | tojson }}
         aggregation_strategy: "preference-based selection (occupancy-only)"
         active_source: >
-          {% from 'custom_templates/template.library.jinja' import get_active_source %}
+          {% from 'template.library.jinja' import get_active_source %}
           {% set sources = [
             {'entity': 'binary_sensor.bedroom_occupancy_alpha_occupancy','preference': 1},
             {'entity': 'binary_sensor.bedroom_wardrobe_occupancy_matter_alpha','preference': 2},
@@ -61,7 +61,7 @@
       unique_id: kitchen_occupancy_beta
       device_class: occupancy
       state: |
-        {% from 'custom_templates/template.library.jinja' import preference_select %}
+        {% from 'template.library.jinja' import preference_select %}
         {% set sources = [
           {'entity': 'binary_sensor.kitchen_occupancy_alpha_occupancy',         'protocol': 'mqtt',   'preference': 1, 'type': 'occupancy'},
           {'entity': 'binary_sensor.kitchen_occupancy_matter_alpha_occupancy',  'protocol': 'matter', 'preference': 2, 'type': 'occupancy'}
@@ -78,10 +78,10 @@
         protocols: "MQTT(1), Matter(2)"
         refactor_note: "Occupancy-only, preference-based"
         upstream_sources: >
-          {{ ['custom_templates/template.library.jinja','binary_sensor.kitchen_occupancy_alpha_occupancy','binary_sensor.kitchen_occupancy_matter_alpha_occupancy'] | tojson }}
+          {{ ['template.library.jinja','binary_sensor.kitchen_occupancy_alpha_occupancy','binary_sensor.kitchen_occupancy_matter_alpha_occupancy'] | tojson }}
         aggregation_strategy: "preference-based occupancy (no motion)"
         active_source: >
-          {% from 'custom_templates/template.library.jinja' import get_active_source %}
+          {% from 'template.library.jinja' import get_active_source %}
           {% set sources = [
             {'entity': 'binary_sensor.kitchen_occupancy_alpha_occupancy', 'preference': 1},
             {'entity': 'binary_sensor.kitchen_occupancy_matter_alpha_occupancy', 'preference': 2}
@@ -99,7 +99,7 @@
       unique_id: living_room_occupancy_beta
       device_class: occupancy
       state: |
-        {% from 'custom_templates/template.library.jinja' import preference_select %}
+        {% from 'template.library.jinja' import preference_select %}
         {% set sources = [
           {'entity': 'binary_sensor.living_room_occupancy_alpha_occupancy', 'protocol': 'mqtt', 'preference': 1, 'type': 'occupancy'}
         ] %}
@@ -114,10 +114,10 @@
         file: "/config/domain/templates/occupancy_logic"
         protocols: "MQTT(1)"
         upstream_sources: >
-          {{ ['custom_templates/template.library.jinja','binary_sensor.living_room_occupancy_alpha_occupancy'] | tojson }}
+          {{ ['template.library.jinja','binary_sensor.living_room_occupancy_alpha_occupancy'] | tojson }}
         aggregation_strategy: "single-source zigbee occupancy"
         active_source: >
-          {% from 'custom_templates/template.library.jinja' import get_active_source %}
+          {% from 'template.library.jinja' import get_active_source %}
           {% set sources = [
             {'entity': 'binary_sensor.living_room_occupancy_alpha_occupancy', 'preference': 1}
           ] %}
@@ -134,7 +134,7 @@
       unique_id: ensuite_occupancy_beta
       device_class: occupancy
       state: |
-        {% from 'custom_templates/template.library.jinja' import preference_select %}
+        {% from 'template.library.jinja' import preference_select %}
         {% set sources = [
           {'entity': 'binary_sensor.ensuite_occupancy_alpha_occupancy', 'protocol': 'mqtt', 'preference': 1, 'type': 'occupancy'},
           {'entity': 'binary_sensor.ensuite_shower_occupancy_epsilon', 'protocol': 'logic','preference': 2, 'type': 'occupancy'}
@@ -151,10 +151,10 @@
         protocols: "MQTT(1)"
         refactor_note: "Single-source zigbee occupancy"
         upstream_sources: >
-          {{ ['custom_templates/template.library.jinja','binary_sensor.ensuite_occupancy_alpha_occupancy', 'binary_sensor.ensuite_shower_occupancy_epsilon'] | tojson }}
+          {{ ['template.library.jinja','binary_sensor.ensuite_occupancy_alpha_occupancy', 'binary_sensor.ensuite_shower_occupancy_epsilon'] | tojson }}
         aggregation_strategy: "single-source zigbee occupancy"
         active_source: >
-          {% from 'custom_templates/template.library.jinja' import get_active_source %}
+          {% from 'template.library.jinja' import get_active_source %}
           {% set sources = [
             {'entity': 'binary_sensor.ensuite_occupancy_alpha_occupancy', 'preference': 1},
             {'entity': 'binary_sensor.ensuite_shower_occupancy_epsilon', 'preference': 2}
@@ -172,7 +172,7 @@
       unique_id: hallway_downstairs_occupancy_beta
       device_class: occupancy
       state: |
-        {% from 'custom_templates/template.library.jinja' import preference_select %}
+        {% from 'template.library.jinja' import preference_select %}
         {% set sources = [
           {'entity': 'binary_sensor.downstairs_occupancy_alpha_matter', 'protocol': 'matter', 'preference': 1, 'type': 'occupancy'}
         ] %}
@@ -188,14 +188,14 @@
         protocols: "Matter(1)"
         refactor_note: "Single-source occupancy for transition zone"
         active_source: >
-          {% from 'custom_templates/template.library.jinja' import get_active_source %}
+          {% from 'template.library.jinja' import get_active_source %}
           {% set sources = [
             {'entity': 'binary_sensor.downstairs_occupancy_alpha_matter', 'preference': 1}
           ] %}
           {{ get_active_source(sources) or 'unknown' }}
         aggregation_strategy: "single-source matter occupancy"
         upstream_sources: >
-          {{ ['custom_templates/template.library.jinja','binary_sensor.downstairs_occupancy_alpha_matter'] | tojson }}
+          {{ ['template.library.jinja','binary_sensor.downstairs_occupancy_alpha_matter'] | tojson }}
         source_count: "1"
         downstream_consumers: >
           {{ 'sensor.hallway_downstairs_last_activity' | tojson }}
@@ -206,7 +206,7 @@
       unique_id: hallway_upstairs_occupancy_beta
       device_class: occupancy
       state: |
-        {% from 'custom_templates/template.library.jinja' import preference_select %}
+        {% from 'template.library.jinja' import preference_select %}
         {% set sources = [
           {'entity': 'binary_sensor.upstairs_occupancy_matter_alpha_occupancy', 'protocol': 'matter', 'preference': 1, 'type': 'occupancy'}
         ] %}
@@ -221,10 +221,10 @@
         file: "/config/domain/templates/occupancy_logic"
         protocols: "Matter(1)"
         upstream_sources: >
-          {{ ['custom_templates/template.library.jinja','binary_sensor.upstairs_occupancy_matter_alpha_occupancy'] | tojson }}
+          {{ ['template.library.jinja','binary_sensor.upstairs_occupancy_matter_alpha_occupancy'] | tojson }}
         aggregation_strategy: "single-source matter occupancy"
         active_source: >
-          {% from 'custom_templates/template.library.jinja' import get_active_source %}
+          {% from 'template.library.jinja' import get_active_source %}
           {% set sources = [
             {'entity': 'binary_sensor.upstairs_occupancy_matter_alpha_occupancy', 'preference': 1}
           ] %}
@@ -267,7 +267,7 @@
         file: "/config/domain/templates/occupancy_logic"
         date_created: "2025-04-26"
         last_updated: "2025-09-20"
-        is_multi_source: true
+        is_multi_source: "true"
         source_count: 6
         data_quality: "excellent"
         subsystem: "hermes"
@@ -298,7 +298,7 @@
         file: "/config/domain/templates/occupancy_logic"
         date_created: "2025-08-05"
         last_updated: "2025-09-20"
-        is_multi_source: true
+        is_multi_source: "true"
         source_count: "2"
         data_quality: "excellent"
         subsystem: "hermes"
@@ -326,7 +326,7 @@
         canonical_id: "zone_downstairs_occupancy_η"
         area_id: "downstairs"
         file: "/config/domain/templates/occupancy_logic"
-        is_multi_source: true
+        is_multi_source: "true"
         source_count: "3"
         upstream_sources: >
           {{ ['binary_sensor.kitchen_occupancy_beta','binary_sensor.hallway_downstairs_occupancy_beta','binary_sensor.living_room_occupancy_beta'] | tojson }}
@@ -360,7 +360,7 @@
         canonical_id: "zone_upstairs_occupancy_η"
         area_id: "upstairs"
         file: "/config/domain/templates/occupancy_logic"
-        is_multi_source: true
+        is_multi_source: "true"
         source_count: "5"
         upstream_sources: >
           {{ ['binary_sensor.hallway_upstairs_occupancy_beta','binary_sensor.bedroom_occupancy_beta','binary_sensor.desk_presence_inferred','binary_sensor.wardrobe_occupancy_beta','binary_sensor.ensuite_occupancy_beta'] | tojson }}
@@ -375,7 +375,7 @@
       unique_id: "sanctum_occupancy_beta"
       device_class: occupancy
       state: |
-        {% from 'custom_templates/template.library.jinja' import preference_select %}
+        {% from 'template.library.jinja' import preference_select %}
         {% set sources = [
           {'entity': 'binary_sensor.sanctum_occupancy_matter_alpha', 'protocol': 'matter', 'preference': 1, 'type': 'occupancy'},
           {'entity': 'binary_sensor.bedroom_occupancy_beta',         'protocol': 'logic',  'preference': 2, 'type': 'occupancy'},
@@ -392,10 +392,10 @@
         file: "/config/domain/templates/occupancy_logic"
         protocols: "Matter(1), Logic(2,3)"
         upstream_sources: >
-          {{ ['custom_templates/template.library.jinja','binary_sensor.sanctum_occupancy_matter_alpha','binary_sensor.bedroom_occupancy_beta','binary_sensor.ensuite_occupancy_beta'] | tojson }}
+          {{ ['template.library.jinja','binary_sensor.sanctum_occupancy_matter_alpha','binary_sensor.bedroom_occupancy_beta','binary_sensor.ensuite_occupancy_beta'] | tojson }}
         aggregation_strategy: "preference-based selection (occupancy-only)"
         active_source: >
-          {% from 'custom_templates/template.library.jinja' import get_active_source %}
+          {% from 'template.library.jinja' import get_active_source %}
           {% set sources = [
             {'entity': 'binary_sensor.sanctum_occupancy_matter_alpha','preference': 1},
             {'entity': 'binary_sensor.bedroom_occupancy_beta','preference': 2},
@@ -418,7 +418,7 @@
       unique_id: desk_occupancy_beta
       device_class: occupancy
       state: |
-        {% from 'custom_templates/template.library.jinja' import preference_select %}
+        {% from 'template.library.jinja' import preference_select %}
         {% set sources = [
           {'entity': 'binary_sensor.desk_presence_inferred', 'protocol': 'wifi', 'preference': 1, 'type': 'occupancy'}
         ] %}
@@ -443,7 +443,7 @@
       unique_id: wardrobe_occupancy_beta
       device_class: occupancy
       state: |
-        {% from 'custom_templates/template.library.jinja' import preference_select %}
+        {% from 'template.library.jinja' import preference_select %}
         {% set sources = [
           {'entity': 'binary_sensor.bedroom_wardrobe_occupancy_matter_alpha', 'protocol': 'matter', 'preference': 1, 'type': 'occupancy'}
         ] %}
@@ -468,7 +468,7 @@
       unique_id: bed_occupancy_beta
       device_class: occupancy
       state: |
-        {% from 'custom_templates/template.library.jinja' import preference_select %}
+        {% from 'template.library.jinja' import preference_select %}
         {% set sources = [
           {'entity': 'binary_sensor.bedroom_bed_alpha_vibration', 'protocol': 'mqtt', 'preference': 1, 'type': 'vibration'}
         ] %}

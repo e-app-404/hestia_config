@@ -16,7 +16,7 @@
 ```json
 // BEFORE (OBSOLETE):
 "hestia/diagnostics/**": true,  // Excluded diagnostic configs
-"hestia/work/**": false,        // Old workspace name
+"hestia/workspace/**": false,        // Old workspace name
 
 // AFTER (CORRECT):
 "hestia/workspace/cache/**": true,     // Exclude temporary cache files  
@@ -43,7 +43,7 @@
 // BEFORE (OBSOLETE):
 "hestia/core/meta/.git/**": true,  // Path no longer exists
 "hestia/diagnostics/**": true,     // Important configs were hidden
-"hestia/work/**": true,           // Overly broad exclusion
+"hestia/workspace/**": true,           // Overly broad exclusion
 
 // AFTER (CORRECT):
 "hestia/workspace/cache/**": true,     // Exclude temporary files from search

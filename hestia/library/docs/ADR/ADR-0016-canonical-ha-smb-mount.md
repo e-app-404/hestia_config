@@ -186,9 +186,30 @@ These rules are authoritative for all editors, scripts, tooling, and documentati
 
 2. All VS Code workspaces, scripts, and external tooling that currently point at `/n/ha` MUST be updated to use the canonical edit root `~/hass`. For clarity and reproducibility, `~/hass` resolves to `/Users/evertappels/hass` in examples and automated replacements.
 
-3. Path style guidance:
+3. **Path style guidance**:
 	- When working outside the config workspace (for example, tools run from your $HOME or system scripts), prefer absolute paths: `/Users/evertappels/hass/...`.
 	- When working inside the config workspace (for example, the VS Code workspace saved under `~/hass`), prefer relative paths such as `.` or `./packages/my_package` so the workspace is portable and `~/hass` is effectively resolved by using the workspace root.
+
+4. **Python Path Expansion Requirements (MANDATORY):**
+	- All Python code using `pathlib.Path()` with tilde (`~`) paths **MUST** call `.expanduser()`:
+	
+	```python
+	# ✅ CORRECT
+	vault_root = Path('~/hass/hestia/workspace/archive/vault').expanduser()
+	ha_mount = Path('~/hass').expanduser() 
+	config_path = Path('~/hass/configuration.yaml').expanduser()
+	
+	# ❌ INCORRECT - tilde remains literal
+	vault_root = Path('~/hass/hestia/workspace/archive/vault')  # becomes ./~/hass/...
+	```
+	
+	- **Rationale:** Without `.expanduser()`, `Path('~/...')` treats tilde as literal text, creating paths like `./~/hass/...` instead of `/Users/username/hass/...`.
+	
+	- **Alternative:** Use `os.path.expanduser('~/hass')` with `Path()` constructor:
+	```python
+	# Also acceptable
+	vault_root = Path(os.path.expanduser('~/hass/hestia/workspace/archive/vault'))
+	```
 
 #### Canonicalization Examples
 
@@ -304,6 +325,17 @@ chmod g+rx /volume1 /volume1/git-mirrors
 
 Note: Some Synology Git packages expose repositories only from package-managed roots. If arbitrary paths under `/volume1` fail, create the bare repo under the package's managed repo directory or ensure the package is configured to include `/volume1/git-mirrors`.
 
+#### G. Python Path Expansion Compliance
+
+```bash
+# Check Python files for non-expanded tilde paths (should return no results)
+find hestia -name "*.py" -exec grep -H "Path('~" {} \; | grep -v ".expanduser()"
+find hestia -name "*.py" -exec grep -H 'Path("~' {} \; | grep -v ".expanduser()"
+
+# Use Make target for comprehensive check
+make adr-0016-validate
+```
+
 ### Migration plan
 	1.	Install LaunchAgent helper into user home; ensure Keychain entry exists.
 	2.	Unload/disable any system daemon mounts for this share (require ACK_DISABLE_SYSTEM_DAEMON).
@@ -358,6 +390,7 @@ sudo chmod g+rx /volume1 /volume1/git-mirrors
 ### Changelog
 	•	2025‑09‑24: Initial decision drafted; defines ~/hass as canonical edit root; adds guardrails & validation.
 	•	2025‑09‑29: Added addendums A1-A4 for operator workstation details, authentication, race hardening, symlink bridges, and legacy mount decommissioning.
+	•	2025‑09‑30: Added addendum A5 for Python path expansion compliance; added canonicalization rule 4 for mandatory `.expanduser()` with tilde paths; added validation section G.
 
 ## Addendums
 
@@ -419,6 +452,21 @@ sudo chmod g+rx /volume1 /volume1/git-mirrors
 **Rationale:** Avoid duplicate mounts and nondeterminism.
 
 **Acceptance:** `mount` shows no HA shares except `~/hass`. `automount -vc` shows no `ha` maps.
+
+### ADR-0016-A5: Python Path Expansion Compliance
+
+**Decision:** All Python code using `pathlib.Path()` with tilde (`~`) paths **MUST** call `.expanduser()` to ensure proper path resolution.
+
+**Rationale:** Without `.expanduser()`, `Path('~/hass/...')` treats the tilde as literal text, creating incorrect paths like `./~/hass/...` instead of the intended `/Users/username/hass/...`.
+
+**Implementation:**
+- **Validator script:** `hestia/tools/utils/validators/adr_0016_path_expansion.sh`
+- **Make target:** `make adr-0016-validate`
+- **Pre-commit hook:** `.githooks/pre-commit-adr-0016` (integrated into main pre-commit)
+
+**Enforcement:** Pre-commit hook automatically prevents commits with non-expanded tilde paths in Python files.
+
+**Acceptance:** `make adr-0016-validate` returns PASS; manual checks show no `Path('~...)` without `.expanduser()`.
 
 ## Implementation (safe, minimal — recommended now)
 

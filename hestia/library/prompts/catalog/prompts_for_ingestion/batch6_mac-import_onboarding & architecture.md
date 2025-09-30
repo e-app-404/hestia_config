@@ -142,7 +142,7 @@ An often overlooked but critical layer for maintainability.
   Performs audits, exposes missing entities, and tracks consistency and operational health.
 
 - **Examples**:
-  - `/hestia/diagnostics/light_hestia_abstraction_audit.yaml`
+  - `/hestia/config/diagnostics/light_hestia_abstraction_audit.yaml`
   - `sensor.missing_registry_entities`
   - `sensor.unavailable_entities_counter`
 

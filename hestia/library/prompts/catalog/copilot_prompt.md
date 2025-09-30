@@ -13,8 +13,8 @@ Then execute them **in sequence** to produce a deterministic, idempotent build u
 - If a validation gate fails, STOP with:
 `BLOCKED: VALIDATION -> <gate>: <reason>`
 
-- **Leeway:** If a step would fail (e.g., tarball absent but folder present), **autonomously adjust** with common sense to still complete the pipeline (e.g., read `/Volumes/HA/config/hestia/work/scratch/` directly when `scratch.tar.gz` is absent).
-- **Output root (strict):** `/Volumes/HA/config/hestia/work/out/<JOB_ID>` where `<JOB_ID>` is a UTC timestamp with optional suffix.
+- **Leeway:** If a step would fail (e.g., tarball absent but folder present), **autonomously adjust** with common sense to still complete the pipeline (e.g., read `/Volumes/HA/config/hestia/workspace/scratch/` directly when `scratch.tar.gz` is absent).
+- **Output root (strict):** `/Volumes/HA/config/hestia/workspace/out/<JOB_ID>` where `<JOB_ID>` is a UTC timestamp with optional suffix.
 - **Script folder (strict):** `/Volumes/HA/config/hestia/tools/`
 - **ADR references (present in tree):**
 - `/Volumes/HA/config/hestia/core/architecture/ADR-0008-normalization-and-determinism-rules.md.md`
@@ -32,7 +32,7 @@ Then execute them **in sequence** to produce a deterministic, idempotent build u
 - **XML:** canonical attribute order; collapse whitespace; strip volatile timestamps; booleans `true|false`.
 - **CSV:** fixed header; comma; LF; newline at EOF; UTF-8 no BOM.
 
-## Deliverables (under `/Volumes/HA/config/hestia/work/out/<JOB_ID>`):
+## Deliverables (under `/Volumes/HA/config/hestia/workspace/out/<JOB_ID>`):
 - `merged/config/hestia/core/**` (devices, index, networking, ops, state, notes as present)
 - `merged/switch/**` (`switch.conf`, `vlans.conf`, `ports.csv`, `acls.conf?`)
 - `preview/smb.conf` (lint-only)
@@ -45,7 +45,7 @@ Then execute them **in sequence** to produce a deterministic, idempotent build u
 ## Final Binary Acceptance (stdout format, **only** on success):
 ```
 COMPLETED: <JOB_ID>
-PUBLISHED: /Volumes/HA/config/hestia/work/out/<JOB_ID>
+PUBLISHED: /Volumes/HA/config/hestia/workspace/out/<JOB_ID>
 Property-Hash: <property-hash>
 release.json: <pretty JSON>
 SUMMARY:
@@ -74,7 +74,7 @@ set -euo pipefail
 
 : "${LOCKED_UTC:=2025-09-12T00:00:00Z}"   # override for reproducibility if desired
 JOB_ID="${JOB_ID_OVERRIDE:-$(date -u +%Y%m%dT%H%M%SZ)}"
-OUT_BASE="/Volumes/HA/config/hestia/work/out"
+OUT_BASE="/Volumes/HA/config/hestia/workspace/out"
 OUT_DIR="${OUT_BASE}/${JOB_ID}"
 TMP_DIR="${OUT_DIR}/.work"
 mkdir -p "${OUT_DIR}" "${TMP_DIR}"
@@ -684,7 +684,7 @@ set -euo pipefail
 
 # 5) Samba preview
 
-OUT_DIR="$(. /Volumes/HA/config/hestia/tools/apply_strategos_00_env.sh >/dev/null 2>&1; source ${OUT_DIR}/.env.meta 2>/dev/null || true; echo ${OUT_DIR:-/Volumes/HA/config/hestia/work/out/UNKNOWN})"
+OUT_DIR="$(. /Volumes/HA/config/hestia/tools/apply_strategos_00_env.sh >/dev/null 2>&1; source ${OUT_DIR}/.env.meta 2>/dev/null || true; echo ${OUT_DIR:-/Volumes/HA/config/hestia/workspace/out/UNKNOWN})"
 /Volumes/HA/config/hestia/tools/apply_strategos_05_samba_preview.py
 
 # 6) Graph + Normalize + Property-Hash
@@ -737,7 +737,7 @@ JOB_ID_OVERRIDE="2025-09-12T000000Z" /Volumes/HA/config/hestia/tools/apply_strat
 
 ## ✅ Notes for Copilot
 
-- If `/Volumes/HA/config/hestia/work/scratch.tar.gz` is missing but `/Volumes/HA/config/hestia/work/scratch/` exists with the three required files, proceed using the directory.
+- If `/Volumes/HA/config/hestia/workspace/scratch.tar.gz` is missing but `/Volumes/HA/config/hestia/workspace/scratch/` exists with the three required files, proceed using the directory.
 - If `compilation_config.zip` contains a nested `config/` folder, prefer it and merge `devices/index/networking` from there.
 - If ADR-0008 has a double `.md.md` extension (as in the tree), keep it as is; just reference it in `REPORT.md`.
 - Do **not** introduce Samba hardening or CIDR changes. Any such key in the overlay should trigger lint FAIL (and the orchestrator will surface it in SUMMARY).
