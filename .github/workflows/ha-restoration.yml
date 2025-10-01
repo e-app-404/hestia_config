@@ -112,9 +112,8 @@ jobs:
           fi
           
           echo "🚀 Running deployment dry-run..."
-          ssh "${{ inputs.ha_host }}" "cd /tmp/${BUNDLE_DIR} && chmod +x ./deploy_complete_restoration.sh && ./deploy_complete_restoration.sh --dry-run --backup-source ${HA_DST} --skip-matter || echo 'Note: Script exit expected if no current .storage found - this is normal for complete recovery scenarios'"
-            [ '${{ inputs.matter_mode }}' = 'skip' ] && echo '--skip-matter' || echo '--enable-matter-from-backup'
-          )"
+          MATTER_FLAG=$([ '${{ inputs.matter_mode }}' = 'skip' ] && echo '--skip-matter' || echo '--enable-matter-from-backup')
+          ssh "${{ inputs.ha_host }}" "cd /tmp/${BUNDLE_DIR} && chmod +x ./deploy_complete_restoration.sh && ./deploy_complete_restoration.sh --dry-run --backup-source ${HA_DST} ${MATTER_FLAG} || echo 'Note: Script exit expected if no current .storage found - this is normal for complete recovery scenarios'"
 
   deploy:
     name: Deploy to Production
