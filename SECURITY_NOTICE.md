@@ -8,11 +8,13 @@ On October 1, 2025, an automated security scan identified exposed Cloudflare API
 - `hestia/workspace/operations/deploy/dsm/scripts/hardened_worker_check.sh`
 - `hestia/workspace/operations/deploy/dsm/scripts/hardened_worker_retry2.sh`
 - `hestia/workspace/operations/deploy/dsm/scripts/add_root_route_and_check.sh`
+- `hestia/workspace/operations/deploy/dsm/scripts/install_portal_include_synology.sh`
 
 **Exposed Credentials:**
 - Cloudflare API Token (redacted: `x2************************************bz`)
 - Cloudflare Account ID: `e37605142353eb163ea86636c4027134`
 - Cloudflare Zone ID: `0855d7797c8126d39b6653952f1fed61`
+- Network Information: Internal IP address (192.168.0.104) and username (babylonrobot)
 
 ## Immediate Actions Taken
 
@@ -37,12 +39,13 @@ hestia/workspace/operations/deploy/dsm/scripts/*.sh
 
 ### 3. Files Removed from Git Tracking ✅
 
-The three affected files have been removed from git tracking (but preserved on disk with placeholders):
+All four affected files have been removed from git tracking (but preserved on disk with placeholders):
 
 ```bash
 git rm --cached hestia/workspace/operations/deploy/dsm/scripts/hardened_worker_check.sh
 git rm --cached hestia/workspace/operations/deploy/dsm/scripts/hardened_worker_retry2.sh
 git rm --cached hestia/workspace/operations/deploy/dsm/scripts/add_root_route_and_check.sh
+git rm --cached hestia/workspace/operations/deploy/dsm/scripts/install_portal_include_synology.sh
 ```
 
 ### 4. Documentation Created ✅

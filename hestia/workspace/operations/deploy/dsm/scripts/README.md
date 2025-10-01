@@ -11,7 +11,7 @@ hestia/workspace/operations/deploy/dsm/scripts/
 ├── hardened_worker_check.sh       🔒 Contains Cloudflare API credentials
 ├── hardened_worker_retry2.sh      🔒 Contains Cloudflare API credentials  
 ├── add_root_route_and_check.sh    🔒 Contains Cloudflare API credentials
-├── install_portal_include_synology.sh  ✅ No credentials
+├── install_portal_include_synology.sh  🔒 Contains network info (IP/username)
 └── README.md                      📝 This documentation
 ```
 
@@ -36,6 +36,8 @@ The scripts use placeholder values that **must be replaced** before use:
    - `CF_ACCOUNT_ID` - Your Cloudflare account ID
    - `CF_ZONE_ID` - Your Cloudflare zone ID
    - `CF_API_TOKEN` - Your Cloudflare API token with Workers permissions
+   - `HOST` - Your Synology DSM IP address or hostname (in install_portal script)
+   - `USER` - Your Synology DSM admin username (in install_portal script)
 
 ### **Example Configuration**
 
