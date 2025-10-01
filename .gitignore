@@ -27,6 +27,8 @@ backups/
 backup*/
 *.tar.gz
 *.zip
+# Exception: allow critical deployment bundles
+!home_assistant_complete_restoration_v2.0_FINAL_APPROVED.tar.gz
 # Secrets (do NOT commit)
 secrets.yaml
 secrets.yml

@@ -1,0 +1,265 @@
+{
+  "version": 1,
+  "minor_version": 7,
+  "key": "core.area_registry",
+  "data": {
+    "areas": [
+      {
+        "aliases": [],
+        "area_id": "bedroom",
+        "floor_id": "sanctum",
+        "icon": "mdi:bed",
+        "name": "Bedroom main",
+        "picture": null
+      },
+      {
+        "aliases": [],
+        "area_id": "kitchen",
+        "floor_id": "ground_floor",
+        "icon": "mdi:countertop-outline",
+        "name": "Kitchen",
+        "picture": null
+      },
+      {
+        "aliases": [],
+        "area_id": "living_room",
+        "floor_id": "ground_floor",
+        "icon": "mdi:sofa-outline",
+        "name": "Living room",
+        "picture": null
+      },
+      {
+        "aliases": [],
+        "area_id": "hallway",
+        "floor_id": "ground_floor",
+        "icon": null,
+        "name": "Hallway",
+        "picture": null
+      },
+      {
+        "aliases": [],
+        "area_id": "network_connectivity",
+        "floor_id": "network",
+        "icon": "mdi:home-automation",
+        "name": "Hubs & Routers",
+        "picture": null
+      },
+      {
+        "aliases": [],
+        "area_id": "ensuite",
+        "floor_id": "sanctum",
+        "icon": "mdi:shower-head",
+        "name": "Ensuite",
+        "picture": null
+      },
+      {
+        "aliases": [
+          "second_floor",
+          "Upstairs"
+        ],
+        "area_id": "upstairs",
+        "floor_id": "upstairs",
+        "icon": "mdi:stairs-down",
+        "name": "upstairs",
+        "picture": null
+      },
+      {
+        "aliases": [
+          "Hallway Downstairs"
+        ],
+        "area_id": "downstairs",
+        "floor_id": "downstairs",
+        "icon": "mdi:stairs-up",
+        "name": "Downstairs",
+        "picture": null
+      },
+      {
+        "aliases": [],
+        "area_id": "desk",
+        "floor_id": "bedroom",
+        "icon": "mdi:desk",
+        "name": "Desk",
+        "picture": null
+      },
+      {
+        "aliases": [
+          "closet"
+        ],
+        "area_id": "wardrobe",
+        "floor_id": "bedroom",
+        "icon": "mdi:wardrobe",
+        "name": "Wardrobe",
+        "picture": null
+      },
+      {
+        "aliases": [],
+        "area_id": "hifi_configuration",
+        "floor_id": "bedroom",
+        "icon": null,
+        "name": "HiFi Configuration",
+        "picture": null
+      },
+      {
+        "aliases": [],
+        "area_id": "home",
+        "floor_id": "home",
+        "icon": null,
+        "name": "General",
+        "picture": null
+      },
+      {
+        "aliases": [],
+        "area_id": "diag",
+        "floor_id": "diag",
+        "icon": null,
+        "name": "Diag",
+        "picture": null
+      },
+      {
+        "aliases": [],
+        "area_id": "config",
+        "floor_id": "diag",
+        "icon": null,
+        "name": "Config",
+        "picture": null
+      },
+      {
+        "aliases": [
+          "Entry",
+          "Front door"
+        ],
+        "area_id": "entrance",
+        "floor_id": "downstairs",
+        "icon": "mdi:door",
+        "name": "Entrance",
+        "picture": null
+      },
+      {
+        "aliases": [
+          "toilet",
+          "guest bathroom"
+        ],
+        "area_id": "powder_room",
+        "floor_id": "downstairs",
+        "icon": "mdi:toilet",
+        "name": "powder room",
+        "picture": null
+      },
+      {
+        "aliases": [],
+        "area_id": "calendar",
+        "floor_id": "services",
+        "icon": "mdi:calendar",
+        "name": "Calendar",
+        "picture": null
+      },
+      {
+        "aliases": [],
+        "area_id": "alarm",
+        "floor_id": "services",
+        "icon": "mdi:alarm",
+        "name": "Alarm",
+        "picture": null
+      },
+      {
+        "aliases": [],
+        "area_id": "notifications",
+        "floor_id": "services",
+        "icon": "mdi:bell",
+        "name": "Notifications",
+        "picture": null
+      },
+      {
+        "aliases": [],
+        "area_id": "cleaning",
+        "floor_id": "services",
+        "icon": "mdi:vacuum",
+        "name": "Cleaning",
+        "picture": null
+      },
+      {
+        "aliases": [],
+        "area_id": "warnings",
+        "floor_id": "services",
+        "icon": "mdi:alert",
+        "name": "Warnings",
+        "picture": null
+      },
+      {
+        "aliases": [],
+        "area_id": "home_assistant",
+        "floor_id": "network",
+        "icon": "mdi:home-assistant",
+        "name": "Home Assistant",
+        "picture": null
+      },
+      {
+        "aliases": [
+          "Synology",
+          "Server"
+        ],
+        "area_id": "nas",
+        "floor_id": "network",
+        "icon": "mdi:server",
+        "name": "NAS",
+        "picture": null
+      },
+      {
+        "aliases": [],
+        "area_id": "media_server",
+        "floor_id": "network",
+        "icon": "mdi:plex",
+        "name": "Media Server",
+        "picture": null
+      },
+      {
+        "aliases": [],
+        "area_id": "system_admin",
+        "floor_id": "hestia",
+        "icon": "mdi:shield-account",
+        "name": "System Admin",
+        "picture": null
+      },
+      {
+        "aliases": [],
+        "area_id": "ha_addons",
+        "floor_id": "hestia",
+        "icon": "mdi:puzzle",
+        "name": "HA Addons",
+        "picture": null
+      },
+      {
+        "aliases": [],
+        "area_id": "virtual",
+        "floor_id": "hestia",
+        "icon": "mdi:ghost",
+        "name": "Virtual",
+        "picture": null
+      },
+      {
+        "aliases": [],
+        "area_id": "ha_system",
+        "floor_id": "hestia",
+        "icon": "mdi:cog",
+        "name": "HA System",
+        "picture": null
+      },
+      {
+        "aliases": [],
+        "area_id": "configuration_toggles",
+        "floor_id": "hestia",
+        "icon": "mdi:toggle-switch",
+        "name": "Configuration Toggles",
+        "picture": null
+      },
+      {
+        "aliases": [],
+        "area_id": "london",
+        "floor_id": "outside",
+        "icon": "mdi:city",
+        "name": "London",
+        "picture": null
+      }
+    ]
+  }
+}
