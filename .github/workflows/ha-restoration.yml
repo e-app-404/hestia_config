@@ -20,10 +20,14 @@ on:
         description: "Run deployment in dry-run mode (no changes)"
         type: boolean
         default: true
+      skip_registry:
+        description: "Skip entity registry restoration (recommended for safety)"
+        type: boolean
+        default: true
 
 env:
   HA_DST: /tmp/_backup_source/.storage  # Use /tmp for better permissions
-  BUNDLE_TGZ: home_assistant_complete_restoration_v2.0_FINAL_APPROVED.tar.gz
+  BUNDLE_TGZ: home_assistant_complete_restoration_v2.1_SAFE.tar.gz
   BUNDLE_DIR: restoration_bundle_v2.0
 
 jobs:
@@ -113,8 +117,9 @@ jobs:
           
           echo "🚀 Running deployment dry-run..."
           MATTER_FLAG=$([ '${{ inputs.matter_mode }}' = 'skip' ] && echo '--skip-matter' || echo '--enable-matter-from-backup')
-          echo "🚀 Executing dry-run with parameters: --dry-run --backup-source ${HA_DST} ${MATTER_FLAG}"
-          ssh "${{ inputs.ha_host }}" "cd /tmp/${BUNDLE_DIR} && chmod +x ./deploy_complete_restoration.sh && timeout 60 ./deploy_complete_restoration.sh --dry-run --backup-source ${HA_DST} ${MATTER_FLAG}; EXIT_CODE=\$?; if [ \$EXIT_CODE -eq 124 ]; then echo '⏱️ Dry-run completed (timeout reached showing full restoration plan)'; elif [ \$EXIT_CODE -eq 0 ]; then echo '✅ Dry-run completed successfully'; else echo '⚠️ Dry-run exit code: \$EXIT_CODE - Normal for missing .storage scenarios'; fi"
+          REGISTRY_FLAG=$([ '${{ inputs.skip_registry }}' = 'true' ] && echo '--skip-registry' || echo '')
+          echo "🚀 Executing dry-run with parameters: --dry-run --backup-source ${HA_DST} ${MATTER_FLAG} ${REGISTRY_FLAG}"
+          ssh "${{ inputs.ha_host }}" "cd /tmp/${BUNDLE_DIR} && chmod +x ./deploy_complete_restoration.sh && timeout 60 ./deploy_complete_restoration.sh --dry-run --backup-source ${HA_DST} ${MATTER_FLAG} ${REGISTRY_FLAG}; EXIT_CODE=\$?; if [ \$EXIT_CODE -eq 124 ]; then echo '⏱️ Dry-run completed (timeout reached showing full restoration plan)'; elif [ \$EXIT_CODE -eq 0 ]; then echo '✅ Dry-run completed successfully'; else echo '⚠️ Dry-run exit code: \$EXIT_CODE - Normal for missing .storage scenarios'; fi"
 
   deploy:
     name: Deploy to Production
@@ -133,9 +138,10 @@ jobs:
 
       - name: Execute restoration (conservative Matter default)
         run: |
+          REGISTRY_FLAG=$([ '${{ inputs.skip_registry }}' = 'true' ] && echo '--skip-registry' || echo '')
           ssh "${{ inputs.ha_host }}" "cd /config/${BUNDLE_DIR} && ./deploy_complete_restoration.sh --backup-source ${HA_DST} $(
             [ '${{ inputs.matter_mode }}' = 'skip' ] && echo '--skip-matter' || echo '--enable-matter-from-backup'
-          )"
+          ) ${REGISTRY_FLAG}"
 
       - name: Start HA Core and verify
         run: |
