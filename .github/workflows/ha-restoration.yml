@@ -142,10 +142,9 @@ jobs:
 
       - name: Execute restoration (conservative Matter default)
         run: |
-          REGISTRY_FLAG=$([ '${{ inputs.skip_registry }}' = 'true' ] && echo '--skip-registry' || echo '')
           ssh "${{ inputs.ha_host }}" "cd /tmp/${BUNDLE_DIR} && ./deploy_complete_restoration.sh --backup-source ${HA_DST} $(
             [ '${{ inputs.matter_mode }}' = 'skip' ] && echo '--skip-matter' || echo '--enable-matter-from-backup'
-          ) ${REGISTRY_FLAG}"
+          )"
 
       - name: Start HA Core and verify (best-effort)
         run: |
