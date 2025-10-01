@@ -1,0 +1,6 @@
+# ADR system entries (auto-generated)
+docs/ADR/alignment-status.yaml
+
+# Deployment bundle (remove after deployment)
+docs/ADR/deployment-bundle/
+deployment-bundle/

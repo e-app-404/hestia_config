@@ -1,0 +1,5 @@
+receipt_ts: 20250927T154715Z
+stage_dir: _backups/restore_report/restore_staging/20250926T173930Z
+action: noop (no files copied; staging identical to workspace)
+branch: restore/20250927-staged-apply
+notes: sha256 comparison found zero NEW/DIFF files
