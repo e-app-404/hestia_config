@@ -340,7 +340,7 @@ automation:
           sequence:
             - service: light.turn_on
               target:
-                entity_id: group.bedroom_lights_bed_area # ensure this group exists
+                entity_id: group.bedroom_lights_bed_area
               data:
                 brightness: "{{ start_b + (b_step * repeat.index) }}"
                 color_temp_kelvin: "{{ start_k + (k_step * repeat.index) }}"

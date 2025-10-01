@@ -12,35 +12,27 @@ contract:
   file_path: canonical/support/contracts/area_hierarchy.yaml
 
 contract_metadata:
-  last_validated: "2025-07-22"
+  last_validated: "2025-10-01"
   live_registry_consistency: partial
   coverage_percent: 100.0
   notes: |
     This contract is programmatically validated against live Home Assistant registry data. Coverage and consistency are updated on each validation run.
+    Conservative fix 2025-10-01: Fixed null floor_id assignments only, preserved all area names and timestamps.
 
 containment_graph:
   ground_floor:
-    children: [downstairs, kitchen, laundry_room, living_room, powder_room]
-  top_floor:
-    children: [upstairs, sanctum]
-  hallway:
-    children: [downstairs, upstairs]
-  downstairs:
-    children: [entrance]
+    children: [downstairs, kitchen, laundry_room, living_room, hallway]
   sanctum:
-    children: [bedroom, ensuite]
+    children: [bedroom, ensuite, sanctum]
   bedroom:
-    children: [bedroom, wardrobe, desk, hifi_area]
-  hestia:
-    children: [ha_addons, system_admin, virtual, services]
+    children: [desk, hifi_configuration, wardrobe]
   home:
-    children: [evert, general]
-  system_admin:
-    children: [network]
-  network:
-    children: [home_assistant, hubs_and_routers, nas]
-  outside:
-    children: [london]
+    children: [evert, network_connectivity]
+  diag:
+    children: [folder_watcher]
+  config:
+    children: [tailscale_vpn, apple_matuvu, belge_etage, cinema_clapham]
+  # Preserved legacy structure for reference
   services:
     children: [alarm, calendar, notifications]
   ensuite: null

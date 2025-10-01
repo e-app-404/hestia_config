@@ -4,29 +4,4 @@
 # Schema: input_select
 #═══════════════════════════════════════════════════════════════
 
-# ═══ Sonos Alarm Configuration ═══
-sonos_alarm_zone:
-  name: "Sonos Alarm Zone"
-  options:
-    - "media_player.bedroom_sonos_ray"
-    - "media_player.bedroom_sonos_surround"
-    - "media_player.ensuite_sonos_roam"
-  initial: "media_player.bedroom_sonos_ray"
-  icon: "mdi:speaker"
-
-sonos_alarm_recurrence:
-  name: "Sonos Alarm Recurrence"
-  options:
-    - "DAILY"
-    - "WEEKDAYS" 
-    - "WEEKENDS"
-    - "MONDAY"
-    - "TUESDAY"
-    - "WEDNESDAY"
-    - "THURSDAY"
-    - "FRIDAY"
-    - "SATURDAY"
-    - "SUNDAY"
-    - "ONCE"
-  initial: "WEEKDAYS"
-  icon: "mdi:calendar-clock"
+#input_select:

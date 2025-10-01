@@ -49,6 +49,7 @@ hestia/config/system/*.conf
 !hestia/config/system/hestia_workspace.conf
 # Preview configurations may contain generated credentials
 hestia/config/preview/*.conf
+
 # Guard against nested vendor repos/objects
 **/.git/
 # Allowlist: ensure canonical config stays tracked

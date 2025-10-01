@@ -15,26 +15,25 @@
     - light.bedroom_accent_alpha
     - light.bedroom_hifi_accent_alpha
     - light.bedroom_main_alpha
-    - light.bedroom_main_alpha_matter
+  #  - light.bedroom_main_alpha_matter
     - light.bedroom_entrance_alpha
-    - light.bedroom_entrance_alpha_matter
+  #  - light.bedroom_entrance_alpha_matter
     - light.bedroom_mirror_lightstrip_alpha
     - light.bedroom_wall_alpha
     - light.bedroom_nightstand_left_alpha
-    - light.bedroom_nightstand_left_alpha_matter
+  #  - light.bedroom_nightstand_left_alpha_matter
     - light.bedroom_nightstand_right_alpha
-    - light.bedroom_nightstand_right_alpha_matter
+  #  - light.bedroom_nightstand_right_alpha_matter
     - light.bedroom_ottoman_lightstrip_alpha
-    - light.bedroom_ottoman_lightstrip_alpha_matter
-
+  #  - light.bedroom_ottoman_lightstrip_alpha_matter
     - light.bedroom_desk_alpha
-    - light.bedroom_desk_alpha_matter
+  #  - light.bedroom_desk_alpha_matter
     - light.bedroom_desk_corner_alpha
     - light.bedroom_desk_lightstrip_alpha
-    - light.bedroom_desk_lightstrip_alpha_matter
+  #  - light.bedroom_desk_lightstrip_alpha_matter
     - light.bedroom_desk_wall_alpha
-    - light.bedroom_desk_wall_alpha_matter
-    - light.monitor_backlight_alpha # grouped device; segments omitted intentionally
+  #  - light.bedroom_desk_wall_alpha_matter
+    - light.monitor_backlight_alpha
 
 - platform: group
   name: "Group - Main Bedroom Lights"
@@ -43,9 +42,9 @@
     - light.bedroom_accent_alpha
     - light.bedroom_hifi_accent_alpha
     - light.bedroom_main_alpha
-    - light.bedroom_main_alpha_matter
+  #  - light.bedroom_main_alpha_matter
     - light.bedroom_entrance_alpha
-    - light.bedroom_entrance_alpha_matter
+  #  - light.bedroom_entrance_alpha_matter
     - light.bedroom_mirror_lightstrip_alpha
     - light.bedroom_wall_alpha
 
@@ -54,21 +53,21 @@
   unique_id: "5D1F9A3B7C2E8G4H"
   entities:
     - light.bedroom_nightstand_left_alpha
-    - light.bedroom_nightstand_left_alpha_matter
+  #  - light.bedroom_nightstand_left_alpha_matter
     - light.bedroom_nightstand_right_alpha
-    - light.bedroom_nightstand_right_alpha_matter
+  #  - light.bedroom_nightstand_right_alpha_matter
 
 - platform: group
   name: "Group - Desk Lights"
   unique_id: "9C3E7A1B5D2F8G4H"
   entities:
     - light.bedroom_desk_alpha
-    - light.bedroom_desk_alpha_matter
+  #  - light.bedroom_desk_alpha_matter
     - light.bedroom_desk_corner_alpha
     - light.bedroom_desk_lightstrip_alpha
-    - light.bedroom_desk_lightstrip_alpha_matter
+  #  - light.bedroom_desk_lightstrip_alpha_matter
     - light.bedroom_desk_wall_alpha
-    - light.bedroom_desk_wall_alpha_matter
+  #  - light.bedroom_desk_wall_alpha_matter
     - light.monitor_backlight_alpha
 
 - platform: group
@@ -82,5 +81,5 @@
   unique_id: "8F2C7A1B3D5E9G4H"
   entities:
     - light.bedroom_ottoman_lightstrip_alpha
-    - light.bedroom_ottoman_lightstrip_alpha_matter
+  #  - light.bedroom_ottoman_lightstrip_alpha_matter
     - light.bedroom_wardrobe_lightstrip_alpha
