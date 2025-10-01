@@ -1,11 +1,13 @@
 ---
-title: "ADR-0006: Decay and Propagation Logic Contract"
+id: ADR-0006
+title: "Decay and Propagation Logic Contract"
 date: 2025-09-11
 status: Pending Validation
 related: []
 supersedes: []
 last_updated: 2025-09-11
-tags: [architecture, adr, decay, propagation, contract]
+tags: ["architecture", "adr", "decay", "propagation", "contract"]
+author: "Evert Appels"
 ---
 
 # ADR-0006: Decay and Propagation Logic Contract

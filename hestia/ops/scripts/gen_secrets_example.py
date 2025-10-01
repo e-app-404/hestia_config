@@ -93,7 +93,7 @@ def redacted_from_text(text: str) -> str:
     return '\n'.join(out_lines) + '\n'
 
 def main():
-    repo_root = Path(__file__).resolve().parents[3]  # /n/ha
+    repo_root = Path(__file__).resolve().parents[3]  # ${HA_MOUNT}
     src = repo_root / "secrets.yaml"
     dst = repo_root / "secrets.example.yaml"
 

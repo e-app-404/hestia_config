@@ -1,5 +1,6 @@
 ---
-title: ADR-0011: Switch Modeling & Validation (Netgear GS724T v3 and Similar)
+id: ADR-0011
+title: "Switch Modeling & Validation (Netgear GS724T v3 and Similar)"
 date: 2025-09-12
 status: Approved
 tags: ["networking", "switch", "modeling", "validation", "netgear", "vlan", "lag", "stp", "acl", "snmp"]
@@ -7,8 +8,10 @@ author:
   - "Platform / Home-Ops"
   - "GitHub Copilot (assisted)"
 related: []
+supersedes: []
 last_updated: 2025-09-12
 ---
+
 
 # ADR-0011: Switch Modeling & Validation (Netgear GS724T v3 and Similar)
 
@@ -18,7 +21,7 @@ We intake Netgear managed switch configs (XML/CFG) and must emit a canonical, hu
 ## Decision
 Adopt a canonical **Switch Model** with deterministic artifacts and strict validation. Treat the Netgear backup as the source of truth, transformed into normalized outputs:
 
-### Canonical Artifacts (under `/out/merged/switch/`)
+
 1) `switch.conf` — human-readable summary (sections: management, vlans, ports, lags, stp, acls).
 2) `vlans.conf` — VLAN table:
     ```yaml

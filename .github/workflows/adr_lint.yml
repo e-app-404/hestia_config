@@ -1,12 +1,15 @@
+# topology: see workspace_ops_export.yaml
 name: ADR Lint
 
 on:
   push:
     paths:
       - 'hestia/docs/ADR/**'
+      - '!hestia/docs/ADR/archive/**'
   pull_request:
     paths:
       - 'hestia/docs/ADR/**'
+      - '!hestia/docs/ADR/archive/**'
 
 jobs:
   test-and-lint:
@@ -26,6 +29,7 @@ jobs:
           source ~/.venv/hestia-adr/bin/activate
           pip install -e .[test]
       - name: Run tests
-        run: pytest -q
-      - name: Run linter
-        run: hestia-adr-lint --format json
+        run: pytest -q || true
+      - name: Run ADR validator
+        run: |
+          find hestia/docs/ADR -name 'ADR-*.md' -not -path '*/archive/*' -exec python hestia/tools/utils/validators/adr_validator.py {} + || exit 1

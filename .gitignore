@@ -1,4 +1,5 @@
 # Home Assistant runtime / noisy files
+home-assistant_v2.db*
 .storage/
 .cloud/
 deps/
@@ -16,27 +17,22 @@ icloud3.log
 # Python artifacts
 __pycache__/
 *.pyc
-
 # Editor / IDE
 .vscode/
 .idea/
 .DS_Store
 ._*
-
 # Backups / archives
 backups/
 backup*/
 *.tar.gz
 *.zip
-
 # Secrets (do NOT commit)
 secrets.yaml
 secrets.yml
 secrets.*.yaml
-
 # Guard against nested vendor repos/objects
 **/.git/
-
 # Allowlist: ensure canonical config stays tracked
 !configuration.yaml
 !automations.yaml
@@ -47,58 +43,38 @@ secrets.*.yaml
 !blueprints/
 !themes/
 !www/
-.venv/
-__pycache__/
 *.py[cod]
 /.venv/
 # Dev tooling ignores
-.venv/
 .pytest_cache/
 .mypy_cache/
-__pycache__/
-.DS_Store
-
 /config
 config2/*
-
 tests/testing_config/deps
 tests/testing_config/home-assistant.log*
-
 # hass-release
 data/
 .token
-
 # Translations
 homeassistant/components/*/translations
-
 # Hide sublime text stuff
 *.sublime-project
 *.sublime-workspace
-
 # Hide some OS X stuff
-.DS_Store
 .AppleDouble
 .LSOverride
 Icon
-
 # Thumbnails
-._*
-
 # IntelliJ IDEA
 .idea
 *.iml
-
 # pytest
 .pytest_cache
 .cache
-
 # GITHUB Proposed Python stuff:
-*.py[cod]
 __pycache__
-
 # C extensions
 *.so
-
 # Packages
 *.egg
 *.egg-info
@@ -115,11 +91,9 @@ develop-eggs
 lib
 lib64
 pip-wheel-metadata
-
 # Logs
 *.log
 pip-log.txt
-
 # Unit test / coverage reports
 .coverage
 coverage.xml
@@ -130,23 +104,17 @@ test-results.xml
 test-output.xml
 pytest-*.txt
 junit.xml
-
-# Translations
 *.mo
-
 # Mr Developer
 .mr.developer.cfg
 .project
 .pydevproject
-
 .python-version
 .tool-versions
-
 # emacs auto backups
 *~
 *#
 *.orig
-
 # venv stuff
 pyvenv.cfg
 pip-selfcheck.json
@@ -155,167 +123,148 @@ venv
 Pipfile*
 share/*
 /Scripts/
-
 # vimmy stuff
 *.swp
 *.swo
 tags
 ctags.tmp
-
 # vagrant stuff
 virtualization/vagrant/setup_done
 virtualization/vagrant/.vagrant
 virtualization/vagrant/config
-
 # Visual Studio Code
 .vscode/*
 !.vscode/cSpell.json
 !.vscode/extensions.json
 !.vscode/tasks.json
 .env
-
 # Template patcher: ignore tools but keep scripts/patches
 hestia/tools/template_patcher/tools/*
 !hestia/tools/template_patcher/patch_ha_templates.sh
 !hestia/tools/template_patcher/rollback_ha_templates.sh
 !hestia/tools/template_patcher/patches/
 !hestia/tools/template_patcher/scratch/
-
 # Windows Explorer
 desktop.ini
 /home-assistant.pyproj
 /home-assistant.sln
 /.vs/*
-
 # mypy
 /.mypy_cache/*
 /.dmypy.json
-
 # Secrets
 .lokalise_token
-
 # monkeytype
 monkeytype.sqlite3
-
 # This is left behind by Azure Restore Cache
 tmp_cache
-
 # python-language-server / Rope
 .ropeproject
-
 # Will be created from script/split_tests.py
 pytest_buckets.txt
-
 # AI tooling
 .claude
-
 # Exclude logs and diagnostics
 /logs/
 *.err.log
 *.out.log
-
 # Shell tooling
 /scripts/*.sh
 /domain/shell_commands/*.sh
-
 # Auto-generated Git sync logs
 /config/hestia/diagnosticslogs/*.json
-
 # Avoid committing sensitive config backups or archives
-*.tar.gz
 *.backup
-
 # Custom components and WWW
 /custom_components/
 /www/
-
 # Home Assistant .storage
 /.storage/*
 .storage/*
-
 # --- Strategos cleanup • 2025-09-04 --------------------
-
 # Fix: ignore Kyber/continuity artifacts at ANY depth
 **/.kyb/
 **/continuity/
-
 # Fix: correct bad absolute path rule (repo-relative instead of /config/…)
 # was: /config/hestia/diagnosticslogs/*.json
 **/hestia/**/diagnosticslogs/*.json
-
 # Quiet down Hestia prompt registry & transient diffs/hashes
 hestia/**/prompt_registry/**
 **/system_instruction_v2.2*.diff
 **/diff.diff
 **/hash
-
 # Home Assistant runtime state & deps
 home-assistant_v2.db*
-*.db-shm
-*.db-wal
-deps/
-
 # Optional: ignore entire hestia cache/work areas if they exist
 hestia/cache/**
 hestia/vault/**
 # -------------------------------------------------------
 # --- Strategos HA cleanup (2025-09-04) --------------------------------
-
 # Secrets and credentials
-secrets.yaml
 .git-credentials
 .ssh/
-
 # HA runtime/state (never track)
-.HA_VERSION
-.storage/
 .homeassistant/
-.cloud/
-deps/
-tmp/
 logs/
-home-assistant.log*
-*.log
-*.err.log
-*.out.log
-
 # HACS-managed content (never track)
 custom_components/
 www/
-
 # TTS cache (large & volatile)
 tts/
-
 # Kyber/continuity artifacts anywhere
-**/.kyb/
-**/continuity/
 .kyb_minmerge/
-
 # Reports/diagnostics and work areas
 reports/
 hestia/diagnostics/
 hestia/work/
-
 # Zigbee2MQTT runtime (keep config only)
 zigbee2mqtt/database.db
 zigbee2mqtt/state.json
 zigbee2mqtt/coordinator_backup.json
-
 # Misc local caches
 .ps4-games.*
-
 # Shell scripts — fix shallow rule to include subdirs
 domain/shell_commands/**/*.sh
-
 # Optional: ignore diffs/hashes you showed in status
 **/*.diff
-**/hash
-
+# Re-include lowercase 'scripts/' directory (override earlier /Scripts/ rule)
+# Some systems (macOS) are case-insensitive so '/Scripts/' was matching 'scripts'.
+!scripts/
+!scripts/**
 # ----------------------------------------------------------------------
+/# Allow hestia/reports/ to be tracked while still ignoring top-level reports/
+!hestia/reports/
+!hestia/reports/**
+# Ignore generic reports/ at repo root (keep prior behavior)
 reports/**
+# Ignore any path segments containing legacy, deprecated, or obsolete
+**/*legacy*/**
+**/*deprecated*/**
+**/*obsolete*/**
 /.strategos/
 /.git.DISABLED/
 /.git.DISABLED.bak*/
 /hestia/core/meta/.git.BAD*/
 /.vscode
 /.trash/
+.git.backup-*
+.storage/**
+.cloud/**
+.venv*/
+deps/**
+hestia/reports/**
+.trash/**
+.quarantine/**
+artifacts/**
+*.bk.*
+*.tmp
+# ADR-0018 canonical ignores
+archive/**
+!hestia/reports/*/
+
+# Repo janitor: prevent symlink commits and ensure volatile data ignored
+hestia/core/meta/gitdir-visible
+hestia/reports/latest
+tts/
+www/
+reports/

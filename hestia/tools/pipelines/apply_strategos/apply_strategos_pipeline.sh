@@ -3,42 +3,43 @@
 # Orchestrator: runs the smaller scripts in sequence, with binary acceptance output.
 
 set -euo pipefail
+: "${HA_MOUNT:=$HOME/hass}"
 
 # 0) Env
 
-/n/ha/hestia/tools/apply_strategos_00_env.sh
+${HA_MOUNT:-$HOME/hass}/hestia/tools/apply_strategos_00_env.sh
 
 # 1) Inputs
 
-/n/ha/hestia/tools/apply_strategos_01_verify_inputs.sh
+${HA_MOUNT:-$HOME/hass}/hestia/tools/apply_strategos_01_verify_inputs.sh
 
 # 2) Base extract
 
-/n/ha/hestia/tools/apply_strategos_02_extract_base.sh
+${HA_MOUNT:-$HOME/hass}/hestia/tools/apply_strategos_02_extract_base.sh
 
 # 3) Apply diffs
 
-/n/ha/hestia/tools/apply_strategos_03_apply_patches.sh
+${HA_MOUNT:-$HOME/hass}/hestia/tools/apply_strategos_03_apply_patches.sh
 
 # 4) Switch model
 
-/n/ha/hestia/tools/apply_strategos_04_switch_model.sh
+${HA_MOUNT:-$HOME/hass}/hestia/tools/apply_strategos_04_switch_model.sh
 
 # 5) Samba preview
 
-OUT_DIR="$(. /n/ha/hestia/tools/apply_strategos_00_env.sh >/dev/null 2>&1; source ${OUT_DIR}/.env.meta 2>/dev/null || true; echo ${OUT_DIR:-/n/ha/hestia/work/out/UNKNOWN})"
-/n/ha/hestia/tools/apply_strategos_05_samba_preview.py
+OUT_DIR="$(. ${HA_MOUNT:-$HOME/hass}/hestia/tools/apply_strategos_00_env.sh >/dev/null 2>&1; source ${OUT_DIR}/.env.meta 2>/dev/null || true; echo ${OUT_DIR:-${HA_MOUNT:-$HOME/hass}/hestia/work/out/UNKNOWN})"
+${HA_MOUNT:-$HOME/hass}/hestia/tools/apply_strategos_05_samba_preview.py
 
 # 6) Graph + Normalize + Property-Hash
 
-STATUS_JSON="$(/n/ha/hestia/tools/apply_strategos_06_graph_and_normalize.py)"
+STATUS_JSON="$(${HA_MOUNT:-$HOME/hass}/hestia/tools/apply_strategos_06_graph_and_normalize.py)"
 YAML_AUDIT="$(echo "$STATUS_JSON" | python3 -c 'import sys,json; print(json.load(sys.stdin)["yaml_audit_cidrs"])')"
 OPS_FIX="$(echo "$STATUS_JSON" | python3 -c 'import sys,json; print(json.load(sys.stdin)["ops_idempotency"])')"
 MANIFEST_COUNT="$(echo "$STATUS_JSON" | python3 -c 'import sys,json; print(json.load(sys.stdin)["manifest_entries"])')"
 
 # 7) Reports + release.json
 
-REL_JSON="$(/n/ha/hestia/tools/apply_strategos_07_reports.py)"
+REL_JSON="$(${HA_MOUNT:-$HOME/hass}/hestia/tools/apply_strategos_07_reports.py)"
 PROP_HASH="$(echo "$REL_JSON" | python3 -c 'import sys,json; print(json.load(sys.stdin)["property_hash"])')"
 JOB_ID="$(echo "$REL_JSON" | python3 -c 'import sys,json; print(json.load(sys.stdin)["job_id"])')"
 OUT_DIR="$(echo "$REL_JSON" | python3 -c 'import sys,json; print(json.load(sys.stdin)["out_dir"])')"

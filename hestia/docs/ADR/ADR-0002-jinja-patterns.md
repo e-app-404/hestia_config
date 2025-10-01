@@ -1,10 +1,15 @@
 ---
-title: "ADR-0002: Home Assistant Jinja Pattern Normalization"
+id: ADR-0002
+title: "Home Assistant Jinja Pattern Normalization"
 date: 2025-09-11
-authors: 
-  - "Evert Appels"
-status: Approved
+status: Accepted
+tags: ["jinja", "patterns", "normalization", "templates", "automation", "adr", "error-handling", "datetime", "state", "comparison"]
+related: []
+supersedes: []
+last_updated: 2025-09-11
+author: Evert Appels
 ---
+
 
 # ADR-0002: Home Assistant Jinja Pattern Normalization
 

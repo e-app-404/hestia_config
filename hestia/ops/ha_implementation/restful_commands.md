@@ -25,18 +25,18 @@ rest_command:
 
 ## Configuration variables
 
-- service_name (map) — Required: the name used to expose the action, e.g. `rest_command.example_request`.
-- url — The URL (supports templates) for the request.
-- method (string, optional, default: `get`) — HTTP method to use: `get`, `patch`, `post`, `put`, or `delete`.
-- headers (map, optional) — Headers for the request.
-- payload (string/template, optional) — Body to send with the request.
-- authentication (string, optional, default: `basic`) — `basic` or `digest`.
-- username (string, optional) — Username for HTTP auth.
-- password (string, optional) — Password for HTTP auth.
-- timeout (string, optional, default: `10`) — Timeout in seconds.
-- content_type (string, optional) — Content type for the request.
-- verify_ssl (boolean, optional, default: `true`) — Verify SSL certificate.
-- insecure_cipher (boolean, optional, default: `false`) — Allow insecure ciphers for legacy servers.
+- **`service_name` (map, required)**: The name used to expose the action, e.g. `rest_command.example_request`
+- **`url` (string/template, required)**: The URL (supports templates) for the request
+- **`method` (string, optional, default: `get`)**: HTTP method to use: `get`, `patch`, `post`, `put`, or `delete`
+- **`headers` (map, optional)**: Headers for the request
+- **`payload` (string/template, optional)**: Body to send with the request
+- **`authentication` (string, optional, default: `basic`)**: `basic` or `digest`
+- **`username` (string, optional)**: Username for HTTP auth
+- **`password` (string, optional)**: Password for HTTP auth
+- **`timeout` (string, optional, default: `10`)**: Timeout in seconds
+- **`content_type` (string, optional)**: Content type for the request
+- **`verify_ssl` (boolean, optional, default: `true`)**: Verify SSL certificate
+- **`insecure_cipher` (boolean, optional, default: `false`)**: Allow insecure ciphers for legacy servers
 
 ## Examples
 
@@ -54,7 +54,7 @@ rest_command:
     content_type: "application/json"
 ```
 
-### Simple GET command (used in automations)
+### Simple GET command
 
 ```yaml
 rest_command:
@@ -103,6 +103,8 @@ If the REST command fails to reach the endpoint, fallback notifications may be u
 
 Commands can use Jinja templates. Variables passed to the action are available for templating.
 
+**Example with dynamic variables:**
+
 ```yaml
 rest_command:
   my_request:
@@ -119,7 +121,7 @@ rest_command:
 
 ## How to test your new REST command
 
-Call the action from Developer Tools → Services with JSON data, for example:
+Call the action from **Developer Tools → Services** with JSON data, for example:
 
 ```json
 {

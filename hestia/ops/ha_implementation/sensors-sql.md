@@ -1,6 +1,11 @@
 ---
 title: "SQL sensor integration"
+authors: "Home Assistant"
 source: "Home Assistant Docs"
+slug: "sql-sensor-integration"
+tags: ["home-assistant","sql","sensor","database","recorder","ops"]
+original_date: "2022-04-05"
+last_updated: "2025-09-28"
 url: "https://www.home-assistant.io/integrations/sql/"
 ---
 
@@ -48,19 +53,19 @@ sql:
 
 ## Configuration variables
 
-- `sql` (map, required): integration block
-- `db_url` (string, optional): database URL (defaults to recorder db_url if omitted)
-- `name` (template, required): sensor name
-- `query` (string, required): SQL query (should return at most one row)
-- `column` (string, required): column name to use for the sensor state
-- `unit_of_measurement` (string, optional)
-- `value_template` (template, optional)
-- `unique_id` (string, optional)
-- `device_class` (string, optional)
-- `state_class` (string, optional)
-- `icon` (template, optional)
-- `picture` (template, optional)
-- `availability` (template, optional)
+- **`sql` (map, required)**: integration block
+- **`db_url` (string, optional)**: database URL (defaults to recorder db_url if omitted)
+- **`name` (template, required)**: sensor name
+- **`query` (string, required)**: SQL query (should return at most one row)
+- **`column` (string, required)**: column name to use for the sensor state
+- **`unit_of_measurement` (string, optional)**
+- **`value_template` (template, optional)**
+- **`unique_id` (string, optional)**
+- **`device_class` (string, optional)**
+- **`state_class` (string, optional)**
+- **`icon` (template, optional)**
+- **`picture` (template, optional)**
+- **`availability` (template, optional)**
 
 ## Data updates and custom polling
 
@@ -219,29 +224,36 @@ device class accordingly for UI unit conversion.
 
 ## Notes
 
-- If `db_url` is not provided the integration connects to the Recorder database.
-- Only the first row returned by the query is used.
-- The integration sets all returned columns as attributes on the entity.
+> **Important considerations:**
+> 
+> - If `db_url` is not provided the integration connects to the Recorder database
+> - Only the first row returned by the query is used
+> - The integration sets all returned columns as attributes on the entity
 
 ## Good vs bad patterns
 
 When authoring YAML for SQL sensors you may encounter two styles. Prefer the top-level `sql:` list form shown below — it's clearer when included from `domain/sensor` and aligns with Home Assistant's documentation.
 
-- ❌ old/deprecated style (avoid):
+❌ **Old/deprecated style (avoid)**:
 
+```yaml
+sensor:
   - platform: sql
     db_url: ...
     queries:
       - name: "Some sensor"
         query: "..."
         column: "value"
+```
 
-- ✅ recommended style (use this):
+✅ **Recommended style (use this)**:
 
+```yaml
 sql:
   - name: "Some sensor"
     db_url: ...
     query: "..."
     column: "value"
+```
 
 The recommended `sql:` style makes it easy to include these files via `!include_dir_merge_list` for `domain/sensor` and avoids confusion when multiple sensor files are merged.

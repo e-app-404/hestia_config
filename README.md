@@ -14,4 +14,6 @@ Run:
 hestia-adr-lint hestia/docs/ADR --format human
 ```
 
-Note: do not create venvs or caches under /n/ha or /config. The workflow and README instruct to create the venv under the user home.
+Note: do not create venvs or caches under ${HA_MOUNT} or /config. The workflow and README instruct to create the venv under the user home.
+
+**Operational topology:** see `./workspace_ops_export.yaml`

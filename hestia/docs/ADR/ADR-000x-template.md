@@ -1,7 +1,12 @@
 ---
-title: ADR-000x: Example Policy
+id: ADR-000x
+title: "Example Policy"
 date: 2025-08-27
 status: Draft
+author: "Evert Appels"
+tags: ["architecture", "adr", "example", "template", "policy"]
+related: []
+supersedes: []
 last_updated: 2025-09-05
 ---
 

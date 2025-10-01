@@ -380,13 +380,13 @@ On failure, propose a one-liner fix.
 
 ## Manifest of Files
 ```
-/n/ha/hestia/tools/ha_path.sh
-/n/ha/hestia/tools/install/hestia_one_time_install.sh
-/n/ha/hestia/templates/autofs/auto_master.hestia.snippet
-/n/ha/hestia/templates/autofs/auto_ha.smb
-/n/ha/hestia/tools/doctor/hestia_doctor.sh
-/n/ha/hestia/core/governance/output_contracts/copilot_automation_contract.md
-/n/ha/hestia/tools/system/hestia_autofs_uninstall.sh
-/n/ha/hestia/vault/receipts/hestia_setup.json
-/n/ha/hestia/vault/receipts/hestia_setup.log
+/~/hass/hestia/tools/ha_path.sh
+~/hass/hestia/tools/install/hestia_one_time_install.sh
+~/hass/hestia/templates/autofs/auto_master.hestia.snippet
+~/hass/hestia/templates/autofs/auto_ha.smb
+~/hass/hestia/tools/doctor/hestia_doctor.sh
+~/hass/hestia/core/governance/output_contracts/copilot_automation_contract.md
+~/hass/hestia/tools/system/hestia_autofs_uninstall.sh
+~/hass/hestia/vault/receipts/hestia_setup.json
+~/hass/hestia/vault/receipts/hestia_setup.log
 ```

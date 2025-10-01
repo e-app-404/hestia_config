@@ -1,7 +1,12 @@
 import textwrap
 
-from hestia.tools.adr_lint import config, rules
-from hestia.tools.adr_lint.config import CANONICAL_TEMPLATE
+from hestia.tools.utils.validators.adr_lint.src.hestia.tools.adr_lint import (
+    config,
+    rules,
+)
+from hestia.tools.utils.validators.adr_lint.src.hestia.tools.adr_lint.config import (
+    CANONICAL_TEMPLATE,
+)
 
 
 def test_happy_adr(tmp_path):
@@ -87,7 +92,7 @@ def test_n_ha_hardcoded_error(tmp_path):
     p = tmp_path / "ADR-0007.md"
     p.write_text(textwrap.dedent("""
     ```bash
-    echo /n/ha/foo
+    echo ${HA_MOUNT:-$HOME/hass}/foo
     ```
     """))
     res = rules.check_file(str(p))

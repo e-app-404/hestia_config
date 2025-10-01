@@ -25,8 +25,8 @@ We mount the Home Assistant Pi's Samba `/config` share to `~/hass` using a user 
 ```bash
 # install helper + agent (user context)
 install -d "$HOME/bin" "$HOME/Library/LaunchAgents" "$HOME/Library/Logs"
-install -m 0755 /n/ha/hestia/tools/one_shots/hass_mount_once.sh "$HOME/bin/hass_mount_once.sh"
-install -m 0644 /n/ha/hestia/tools/one_shots/com.local.hass.mount.plist "$HOME/Library/LaunchAgents/com.local.hass.mount.plist"
+install -m 0755 ${HA_MOUNT:-$HOME/hass}/hestia/tools/one_shots/hass_mount_once.sh "$HOME/bin/hass_mount_once.sh"
+install -m 0644 ${HA_MOUNT:-$HOME/hass}/hestia/tools/one_shots/com.local.hass.mount.plist "$HOME/Library/LaunchAgents/com.local.hass.mount.plist"
 
 # load agent
 launchctl unload -w  "$HOME/Library/LaunchAgents/com.local.hass.mount.plist" 2>/dev/null || true

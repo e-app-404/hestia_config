@@ -1,215 +1,195 @@
 ---
-title: "ADR-0012: Workspace Folder Taxonomy & ADR Methodology"
+id: ADR-0012
+title: "Workspace Folder Taxonomy & ADR Methodology"
 date: 2025-09-19
-status: Draft
-author:
-  - "Evert Appels"
-last_updated: 2025-09-19
-related:
-  - ADR-0009
-  - ADR-0008
-tags: ["meta-capture", "configuration", "governance", "secrets"]
----
-
-# ADR-0012: Workspace Folder Taxonomy & ADR Methodology
-
-This ADR formalizes the methodology used to consolidate and normalize configuration artifacts (extracted snapshots, runtime configs, authoritative as-built records), defines expected I/O shapes, file/folder mappings, hard requirements, and validation tokens. It also documents TODOs for undefined items.
-
-## Summary of methodology applied
-
-- Discover artifacts (manual capture or automated discovery).
-- Canonicalize machine-discovered artifacts into `hestia/core/config/` as `*.extract.yaml`, `*.runtime.yaml`, or `*.topology.json`.
-- Keep authoritative human-curated `as_built` records in `hestia/core/devices/` as `*.conf` (YAML-like).
-- Archive duplicates or historical snapshots into `hestia/vault/duplicates/` or `hestia/vault/backups/` before deleting to avoid accidental data loss.
-- Normalize ADRs and governance docs into `hestia/docs/ADR/` following ADR-0009 front-matter schema and ensuring `TOKEN_BLOCK` exists.
-
-## Expected I/O (contract)
-
-- Inputs:
-  - discovery artifacts (raw): JSON/YAML snippets from devices or network scans.
-  - user-supplied ADRs (Markdown with front-matter).
-
-- Outputs:
-  - canonical artifacts under `hestia/core/config/` (YAML/JSON) for machine consumption.
-  - authoritative device records under `hestia/core/devices/` (YAML with `as_built`).
-  - ADRs under `hestia/docs/ADR/` with validated front-matter and `TOKEN_BLOCK`.
-
-## Shape of deliverable files (examples)
-
-- Extracted device snapshot (YAML): `hestia/core/config/<device>.extract.cfg`
-  - root: `extracted_config` (mapping)
-  - keys: `device`, `role`, `mgmt_ip`, `mac`, `dns_servers` (list), `ntp_servers` (list), `snmp` (mapping)
-
-- Runtime network config (YAML): `hestia/core/config/network.runtime.yaml`
-  - root: mapping with `modem`, `router`, `tailnet_routing`, `local_gateway_domain`
-
-- Topology JSON: `hestia/core/config/network.topology.json`
-  - mirror of runtime network config in JSON; consumed by topology tools.
-
-- Authoritative device record (YAML): `hestia/core/devices/<device>.conf`
-  - root: `as_built` (mapping)
-  - other allowed blocks: `validation`, `notes`, `ha_integration`, `moved_note`, `transient_state`, `relationships`, `group`
-
-- ADRs: `hestia/docs/ADR/ADR-XXXX-<slug>.md`
-  - front-matter keys (in order): `title`, `date`, `status`, `author`, `related`, `supersedes`, `last_updated`
-  - must include a fenced YAML `TOKEN_BLOCK:` with `accepted`, `requires`, and `drift` lists.
-
-## Folder -> Content categorization mapping
-
-- `hestia/core/config/` → machine-discovered artifacts (extracts, runtime configs, topology), indexed by `hades_config_index.yaml`.
-- `hestia/core/devices/` → authoritative `as_built` records and curated device notes.
-- `hestia/docs/ADR/` → ADRs and governance docs (machine-parseable front-matter + tokens).
-- `hestia/vault/` → archives, backups, duplicates (never consumed directly by runtime).
-
-## Hard requirements (enforced by CI)
-
-- All ADR front-matter must match Schema v1 and keys must be in the canonical order.
-- ADRs must include a `TOKEN_BLOCK` YAML fenced block at the end.
-- `hestia/core/config/` artifacts must parse with `yaml.safe_load` or `json.load`.
-- No tabs in YAML front-matter; spaces-only indentation.
-- Files in `core/config/` should be referenced in `hestia/core/config/index/hades_config_index.yaml`.
-
-## Validation tokens
-
-- TOKEN_BLOCK schema (v1):
-  - `accepted`: list of UPPER_SNAKE tokens describing what the ADR/file complies with.
-  - `requires`: list of prerequisite schema tokens.
-  - `drift`: list of DRIFT codes for issues to surface.
-
-Example token block (append to ADR files):
-
-```yaml
-TOKEN_BLOCK:
-  accepted:
-    - ADR_FORMAT_OK
-    - ADR_REDACTION_OK
-    - ADR_GENERATION_OK
-    - TOKEN_BLOCK_OK
-  requires:
-    - ADR_SCHEMA_V1
-  drift:
-    - DRIFT: adr_format_invalid
-    - DRIFT: missing_token_block
-```
-
-## Normalization performed for ADR-0009 and ADR-0012
-
-- Normalized ADR-0009 front-matter key order per Schema v1 and normalized workspace references from the other project into the local layout (`/n/ha/hestia/...`).
-- Ensured ADR-0009 includes a `TOKEN_BLOCK` so automation can consume it.
-
-## TODOs / Open items (needs attention)
-
-- [TODO] Define the retention policy and TTL for `hestia/core/config/*.extract.*` snapshots (e.g., 30 days by default).
-- [TODO] Decide canonical naming conventions for `*.extract.cfg` vs `*.extract.yaml` (consistency currently mixed).
-- [TODO] Formalize the exact JSON Schema / metadata_schema.yaml for `hades_config_index.yaml` tags and enforce the `tag_policy` list.
-- [TODO] Implement CI scripts to run `ci_checks` (yaml_load, path_exists, tag_policy) — currently only manual validation performed.
-- [TODO] Confirm whether `group` HA snippets in device files should be extracted into `hestia/core/devices/ha/` or kept inline.
-
-## Enforcement & automation notes
-
-- CI should run on PRs that touch `hestia/core/*` and `hestia/docs/ADR/*`.
-- Automation should extract `TOKEN_BLOCK` from ADRs and publish governance reports.
-
----
-
-TOKEN_BLOCK:
-  accepted:
-    - ADR_FORMAT_OK
-    - ADR_NORMALIZATION_OK
-    - ADR_INDEXED_OK
-  requires:
-    - ADR_SCHEMA_V1
-  drift:
-    - DRIFT: adr_missing_retention_policy
-    - DRIFT: adr_ambiguous_extract_extension
----
-title: "ADR-0012: Workspace folder taxonomy and assignation rules"
-date: 2025-09-14
-status: Accepted
-author:
-  - Evert Appels
-  - Github Copilot
-related:
-  - HA-BB8.ADR-0001
-  - HA-BB8.ADR-0004
-  - HA-BB8.ADR-0008
-  - HA-BB8.ADR-0009
-  - HA-BB8.ADR-0017
-  - HA-BB8.ADR-0018
-last_updated: 2025-09-14
+last_updated: 2025-09-25
+status: Pending validation
+related: ["ADR-0009", "ADR-0008", "ADR-0010", "ADR-0016"]
+path_convention: "${HA_MOUNT:-$HOME/hass}"
+tags: ["meta-capture", "configuration", "governance", "secrets", "taxonomy"]
+author: "Evert Appels"
 supersedes: []
+notes: |
+  This ADR consolidates and normalizes the earlier "hestia_structure" notes into a single, machine-enforceable policy.
+  Source notes are retained under docs/source_notes/structure-notes.md for historical context.
 ---
 
 # ADR-0012: Workspace folder taxonomy and assignation rules
 
-## Table of Contents
-1. Context
-2. Decision
-3. Canonical roots
-4. Assignation Rules (programmatic)
-5. Enforcement
-6. Consequences
-7. Token Block
+> **Decision summary*- — Define a canonical workspace taxonomy with programmatic file assignation rules so that runtime code, operational tooling, documentation, machine-discovered artifacts, and authoritative records are cleanly separated. Provide binary acceptance checks and CI enforcement hooks to prevent drift.
 
 ## 1. Context
-This project maintains a canonical add-on code root at `addon/`. Prior drift produced duplicate or misplaced content at the repository root (e.g., `bb8_core/`, `services.d/`, and `tools/`). This ADR defines categorical purposes and programmatic assignation rules per folder to prevent drift.
+
+Historical drift produced duplicate or misplaced trees (e.g., `bb8_core/`, `services.d/`, and `tools/` at repo root). This ADR introduces a strict taxonomy and programmatic rules so automation can keep the workspace deterministic.
 
 ## 2. Decision
 
-### Canonical roots
-- `addon/`: **Runtime code for the Home Assistant add-on**
-  - `addon/bb8_core/` — Python package for runtime code only.
+### 2.1 Canonical roots (repository pillars)
+
+- `addon/` — **Runtime code for the Home Assistant add-on**
+
+  - `addon/bb8_core/` — Python package used exclusively at runtime inside the add-on.
   - `addon/services.d/` — s6-overlay services shipped in the container (`<service>/run`, optional `<service>/log/run`).
-  - `addon/tests/` — tests for the runtime package.
-  - `addon/tools/` — runtime utilities bundled into the container (may be invoked by services or operators).
-- `ops/`: **Operations, QA, audits, release tooling**
-  - Subfolders: `ops/audit`, `ops/diagnostics`, `ops/qa`, `ops/release`, `ops/evidence`, `ops/guardrails`, etc.
-  - `ops/tools/` — operator-facing tools (docker, git, CI helpers, data audits); **never imported at runtime**.
-- `scripts/`: **Repo developer scripts** (small glue, bootstrap, repo maintenance; no runtime semantics).
-- `reports/`: **Generated artifacts only** (logs, coverage, audits, evidence). No source files.
-- `docs/`: **Documentation** (ADR, guides, prompts, patches, legacy).
-- `services.d/` at repo root: **FORBIDDEN**. All services must live under `addon/services.d/`.
-- `tools/` at repo root: **Discouraged**. Code tools must be rehomed:
-  - add-on utilities → `addon/tools/`
-  - ops tooling → `ops/tools/`
-  - otherwise → `scripts/`
+  - `addon/tests/` — tests for `bb8_core` and services.
+  - `addon/tools/` — runtime utilities bundled into the add-on image.
+- `ops/` — **Operations, QA, audits, release tooling (never imported at runtime)**
 
-## 3. Assignation Rules (programmatic)
-- Python files importing `addon.bb8_core` → **`addon/`** (runtime or add-on bundled tools).
-- Python files importing docker, paho, git, HA CLI, cloud SDKs, or performing audits/releases → **`ops/`**.
-- Python files with CLI `if __name__ == "__main__"` but no runtime imports:
-  - operational CLIs → `ops/tools/`
-  - developer convenience → `scripts/`
-- s6 services (`<name>/run` [+ `log/run`]) → **`addon/services.d/`** (executable).
-- Generated outputs, logs, coverage, dumps → **`reports/`** only.
+  - Suggested subfolders: `ops/audit/`, `ops/diagnostics/`, `ops/qa/`, `ops/release/`, `ops/evidence/`, `ops/guardrails/`, `ops/tools/`.
+- `scripts/` — **Developer scripts*- (bootstrap, repo maintenance; short, gluey). Not imported by runtime.
+- `docs/` — **Documentation*- (ADRs, guides, prompts, patches, legacy). ADRs for this project live under `hestia/docs/ADR/` (see 2.2).
+- `reports/` — **Generated artifacts only*- (logs, coverage, audits, evidence exports produced by CI or local runs). No source files.
+- **Forbidden at repo root**:
 
-## 4. Enforcement
-- Pre-commit hook rejects:
-  - root `services.d/`
-  - bare `bb8_core` imports (must be `addon.bb8_core`)
-  - Python under `tools/` at repo root (must be rehomed)
-- CI job runs repo-shape audit and fails on violations.
+  - `services.d/` (must live under `addon/services.d/`).
+  - `tools/` (rehomed under `addon/tools/` or `ops/tools/`).
+
+> **Path convention*- — All scripts and tools must honor `${HA_MOUNT:-$HOME/hass}` per ADR-0016. Hard-coding `/n/ha` is prohibited.
+
+### 2.2 Knowledge & configuration tree ("hestia" space)
+
+- `hestia/core/config/` — **Machine-discovered artifacts*- (extracts, runtime configs, topology) destined for machine consumption.
+
+  - Naming:
+
+    - `*.extract.yaml` — point-in-time extracted snapshots (from discovery/import).
+    - `*.runtime.yaml` — intended/observed runtime configuration.
+    - `*.topology.json` — network/device topology for tooling.
+  - Indexing: each artifact **must** be referenced from `hestia/core/config/index/hades_config_index.yaml`.
+- `hestia/core/devices/` — **Authoritative records** (`as_built` YAML). Allowed top-level keys:
+
+  - `as_built` (required), `validation`, `notes`, `ha_integration`, `moved_note`, `transient_state`, `relationships`, `group`.
+- `hestia/docs/ADR/` — **ADRs and governance docs** (Markdown with machine-parseable front-matter and a `TOKEN_BLOCK`).
+- `hestia/vault/` — **Archives & backups**. Never consumed directly by runtime; excluded from packaging.
+
+### 2.3 Programmatic assignation rules
+
+- Python importing `addon.bb8_core` ⇒ **`addon/`**.
+- Python performing audits/releases or using docker, paho, git, HA CLI, cloud SDKs ⇒ **`ops/`**.
+- Python with CLI entrypoint and **no** runtime imports:
+
+  - operational tooling ⇒ `ops/tools/`
+  - developer convenience ⇒ `scripts/`
+- s6 service trees (`<name>/run`, optional `log/run`) ⇒ **`addon/services.d/`**.
+- Generated outputs (logs, coverage, dumps) ⇒ **`reports/`** - only.
+
+### 2.4 Front-matter schema (ADR files)
+
+- Canonical key order: `title`, `date`, `last_updated`, `status`, `author`, `related`, `requires`, `path_convention`, `tags`, `notes`.
+- Indentation: spaces only; YAML must parse with `yaml.safe_load`.
+- Each ADR ends with a fenced YAML `TOKEN_BLOCK` (see §6).
+
+### 2.5 Index schema (hades_config_index.yaml, v1 minimal)
+
+```yaml
+version: 1
+artifacts:
+  - path: "hestia/core/config/network.runtime.yaml"
+    type: "runtime_config"
+    owner: "platform"
+    tags: ["network", "routing"]
+```
+
+## 3. Enforcement
+
+### 3.1 Pre-commit (local)
+
+Reject commits that contain:
+
+- `services.d/` at the repo root.
+- Python modules importing `bb8_core` without the `addon.` prefix.
+- Python under root `tools/` (must be rehomed to `addon/tools/` or `ops/tools/`).
+- ADR files with tabs in front-matter or missing `TOKEN_BLOCK`.
+
+### 3.2 CI gates (per ADR-0009 schedule)
+
+- **Repo shape audit**: ensures taxonomy compliance and assignation rules.
+- **ADR schema check**: validates front-matter order + required keys + `TOKEN_BLOCK` presence.
+- **Config parsing**: `yaml.safe_load/json.load` for all files under `hestia/core/config/`.
+- **Index completeness**: every `hestia/core/config/*` file has an entry in `hades_config_index.yaml`.
+- **Include-scan**: deny root `tools/`, root `services.d/`, misplaced generated files, and logs under repo/hestia trees.
+- **Deterministic packaging** (per ADR-0008): manifests + stable sha256 across reruns.
+
+## 4. Binary acceptance criteria (must all pass)
+
+1. **Taxonomy pass** — No files violate the folder policy (root `services.d/`, root `tools/`, incorrect imports).
+2. **ADR compliance** — All ADRs parse; keys in canonical order; exactly one `TOKEN_BLOCK` per ADR.
+3. **Config validity** — All artifacts in `hestia/core/config/` parse and are **indexed**.
+4. **Determinism** — Two consecutive packaging runs produce identical sha256 for the release bundle.
+5. **Path convention** — No scripts contain hard-coded `/n/ha`; all respect `${HA_MOUNT:-$HOME/hass}`.
+
+### 4.1 Suggested CI snippets
+
+```bash
+# 1) root services.d/ forbidden
+[ -d services.d ] && { echo "forbidden: root services.d"; exit 1; } || :
+
+# 2) bare bb8_core import detector
+rg -n "^\s*from\s+bb8_core|^\s*import\s+bb8_core" -g '!addon/**' && {
+  echo "forbidden: bare bb8_core import outside addon/"; exit 1; } || :
+
+# 3) ADR front-matter + TOKEN_BLOCK
+./tools/adr_validate.py --path hestia/docs/ADR --require-token-block --order title,date,last_updated,status,author,related,requires,path_convention,tags,notes
+
+# 4) Config parse + index completeness
+python - <<'PY'
+import sys, yaml, json, pathlib
+root=pathlib.Path('hestia/core/config')
+idx=yaml.safe_load(open('hestia/core/config/index/hades_config_index.yaml'))
+indexed={a['path'] for a in idx.get('artifacts', [])}
+for p in root.rglob('*'):
+  if p.is_dir():
+    continue
+  if p.suffix in ('.yaml', '.yml'):
+    yaml.safe_load(open(p))
+  elif p.suffix == '.json':
+    json.load(open(p))
+  else:
+    print(f"unsupported extension: {p}"); sys.exit(1)
+  if str(p) not in indexed:
+    print(f"unindexed artifact: {p}"); sys.exit(1)
+print("OK")
+PY
+
+# 5) Deterministic packaging probe
+old=$(sha256sum artifacts/release.tar.gz | awk '{print $1}')
+# ... rerun the packager ...
+new=$(sha256sum artifacts/release.tar.gz | awk '{print $1}')
+[ "$old" = "$new" ] || { echo "non-deterministic packaging"; exit 1; }
+
+# 6) Path convention guard
+rg -n "/n/ha" --hidden --glob '!*vendor/*' && { echo "hard-coded /n/ha found"; exit 1; } || :
+```
 
 ## 5. Consequences
-- No duplicate code trees.
-- Clear separation of runtime vs ops/dev artifacts.
-- Automated guardrails prevent regression.
 
-## 6. Token Block
+- **Positive**: deterministic structure, clearer ownership, easier reviews, lower CI noise, and safer packaging.
+- **Trade-offs**: some churn to rehome legacy folders and add indexing; minimal maintenance of index and ADR tokens.
+
+## 6. TOKEN_BLOCK (for this ADR)
+
 ```yaml
 TOKEN_BLOCK:
   accepted:
-    - WORKSPACE_TAXONOMY_OK
-    - FOLDER_ASSIGNATION_OK
+    - WORKSPACE_TAXONOMY_DEFINED
+    - ASSIGNATION_RULES_DEFINED
     - TOKEN_BLOCK_OK
   requires:
     - ADR_SCHEMA_V1
-    - ADR_FORMAT_OK
-    - ADR_GENERATION_OK
-    - ADR_REDACTION_OK
+    - DETERMINISTIC_PACKAGING
+    - INCLUDE_SCAN_ENFORCED
   drift:
     - DRIFT: root_services_d_present
     - DRIFT: bare_bb8_core_import
     - DRIFT: python_tools_root
     - DRIFT: folder_taxonomy_violation
+    - DRIFT: unindexed_config_artifact
 ```
+
+## 7. Rollout & relationships
+
+- Rollout schedule and gate states are governed by **ADR-0009**. This ADR supplies the taxonomy and checks those gates enforce.
+- This ADR depends on **ADR-0016** (path convention) and amends **ADR-0010** (workspace shape) by clarifying forbidden roots and hestia subtrees.
+
+## 8. Changelog
+
+- 2025-09-25 — Reassembled ADR for clarity; unified naming conventions; added binary acceptance criteria and CI snippets; formalized index schema; merged "hestia_structure" content; retained source notes under `docs/source_notes/structure-notes.md`.

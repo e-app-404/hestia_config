@@ -1,10 +1,10 @@
 ---
-title: "ADR-0005: Entity Registry, Sensor Matrix, Logic Path Index, and Signal Emitters Contract"
+id: ADR-0005
+title: "Entity Registry, Sensor Matrix, Logic Path Index, and Signal Emitters Contract"
 date: 2025-09-11
 related: []
 supersedes: []
-author: 
-  - "Strategos"
+author: "Strategos"
 status: Pending Validation
 last_updated: 2025-09-11
 ---

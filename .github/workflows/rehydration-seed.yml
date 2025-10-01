@@ -1,9 +1,10 @@
+# topology: see workspace_ops_export.yaml
 name: Rehydration seed validation
 
 on:
   pull_request:
     paths:
-      - 'meta/rehydration/**'
+      - 'hestia/meta/rehydration/**'
       - '.github/PULL_REQUEST_TEMPLATE/**'
       - '.github/workflows/rehydration-seed.yml'
 
@@ -15,7 +16,7 @@ jobs:
 
       - name: Validate consolidated YAML exists
         run: |
-          if ! ls meta/rehydration/**/consolidated_rehydration.yaml >/dev/null 2>&1; then
+          if ! ls hestia/meta/rehydration/**/consolidated_rehydration.yaml >/dev/null 2>&1; then
             echo "consolidated_rehydration.yaml missing"; exit 1
           fi
 
@@ -23,7 +24,7 @@ jobs:
         run: |
           python3 - <<'PY'
           import sys, glob, yaml
-          files = glob.glob('meta/rehydration/**/consolidated_rehydration.yaml', recursive=True)
+          files = glob.glob('hestia/meta/rehydration/**/consolidated_rehydration.yaml', recursive=True)
           if not files:
               print('no consolidated file found')
               sys.exit(2)
@@ -37,11 +38,11 @@ jobs:
                       sys.exit(3)
           PY
 
-                - name: Lint seeds (structure)
-                  run: |
-                    python3 - <<'PY'
+      - name: Lint seeds (structure)
+        run: |
+          python3 - <<'PY'
           import glob, yaml, sys
-          files = glob.glob('meta/rehydration/**/consolidated_rehydration.yaml', recursive=True)
+          files = glob.glob('hestia/meta/rehydration/**/consolidated_rehydration.yaml', recursive=True)
           if not files:
               sys.exit(0)
           c = yaml.safe_load(open(files[0]))

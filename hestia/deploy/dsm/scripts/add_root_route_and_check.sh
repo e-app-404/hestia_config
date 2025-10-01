@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 LC_ALL=C
+: "${HA_MOUNT:=$HOME/hass}"
 
 CF_ZONE_ID="0855d7797c8126d39b6653952f1fed61"
 CF_API_TOKEN="x2B2rB_ZZvxSAjJbZeP6EaayZ9_Udo0RjlhVOobz"
@@ -43,6 +44,6 @@ curl -sSI https://nas.xplab.io/portal/index.html | egrep -i "Cache-Control|Conte
 
 
 echo "\nRunning acceptance tests"
-/n/ha/hestia/deploy/dsm/acceptance_tests.sh nas.xplab.io
+${HA_MOUNT:-$HOME/hass}/hestia/deploy/dsm/acceptance_tests.sh nas.xplab.io
 
 exit 0

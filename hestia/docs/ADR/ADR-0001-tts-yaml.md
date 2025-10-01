@@ -1,11 +1,13 @@
 ---
-title: "ADR-0001: Templated TTS YAML Snippet"
+id: ADR-0001
+title: "Templated TTS YAML Snippet"
 date: 2025-09-11
-authors: 
-  - "Evert Appels"
-status: Approved
-last_updated: 2025-09-11
-tags: [architecture, tts, yaml, template, adr]
+author: "Evert Appels"
+status: Accepted
+last_updated: 2025-09-15
+tags: ["architecture", "tts", "yaml", "template", "adr", "text-to-speech", "media_player", "automation", "jinja"]
+supersedes: []
+related: []
 ---
 
 # ADR-0001: Templated TTS YAML Snippet
@@ -48,3 +50,8 @@ This ADR provides a machine-friendly, implementation-agnostic template for Home 
 
 ---
 _Last updated: 2025-09-11_
+
+<!-- TOKEN_BLOCK
+title: ADR-0001
+purpose: tts-template
+--> 
