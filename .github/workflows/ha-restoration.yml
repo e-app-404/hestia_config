@@ -85,9 +85,12 @@ jobs:
       - name: Upload bundle to HA (if not already extracted)
         run: |
           echo "📦 Uploading restoration bundle to HA..."
-          scp "$BUNDLE_TGZ" "${{ inputs.ha_host }}:/tmp/"
+          echo "Using rsync as fallback for reliable file transfer..."
+          rsync -av --progress "$BUNDLE_TGZ" "${{ inputs.ha_host }}:/tmp/"
+          echo "📂 Extracting bundle on HA system..."
           ssh "${{ inputs.ha_host }}" "cd /tmp && test -d $BUNDLE_DIR || tar -xzf ${BUNDLE_TGZ}"
           echo "✅ Bundle extracted to /tmp/${BUNDLE_DIR}"
+          echo "📋 Bundle contents:"
           ssh "${{ inputs.ha_host }}" "ls -la /tmp/${BUNDLE_DIR}" | head -10
 
       - name: Validate bundle on HA (no changes)
