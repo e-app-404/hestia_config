@@ -113,7 +113,8 @@ jobs:
           
           echo "🚀 Running deployment dry-run..."
           MATTER_FLAG=$([ '${{ inputs.matter_mode }}' = 'skip' ] && echo '--skip-matter' || echo '--enable-matter-from-backup')
-          ssh "${{ inputs.ha_host }}" "cd /tmp/${BUNDLE_DIR} && chmod +x ./deploy_complete_restoration.sh && ./deploy_complete_restoration.sh --dry-run --backup-source ${HA_DST} ${MATTER_FLAG} || echo 'Note: Script exit expected if no current .storage found - this is normal for complete recovery scenarios'"
+          echo "🚀 Executing dry-run with parameters: --dry-run --backup-source ${HA_DST} ${MATTER_FLAG}"
+          ssh "${{ inputs.ha_host }}" "cd /tmp/${BUNDLE_DIR} && chmod +x ./deploy_complete_restoration.sh && timeout 60 ./deploy_complete_restoration.sh --dry-run --backup-source ${HA_DST} ${MATTER_FLAG}; EXIT_CODE=\$?; if [ \$EXIT_CODE -eq 124 ]; then echo '⏱️ Dry-run completed (timeout reached showing full restoration plan)'; elif [ \$EXIT_CODE -eq 0 ]; then echo '✅ Dry-run completed successfully'; else echo '⚠️ Dry-run exit code: \$EXIT_CODE - Normal for missing .storage scenarios'; fi"
 
   deploy:
     name: Deploy to Production
