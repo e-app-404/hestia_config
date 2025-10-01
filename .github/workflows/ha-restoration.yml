@@ -36,12 +36,26 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 1
 
       - name: Verify tools on runner
         run: |
           command -v ssh && ssh -V
           command -v rsync
-          test -f "$BUNDLE_TGZ" || { echo "❌ $BUNDLE_TGZ not found in repo root"; exit 1; }
+          echo "🔍 Checking for restoration bundle..."
+          echo "Working directory: $(pwd)"
+          echo "Current commit: $(git rev-parse HEAD)"
+          echo "Files in repo root:"
+          ls -la | head -20
+          if [[ ! -f "$BUNDLE_TGZ" ]]; then
+            echo "❌ $BUNDLE_TGZ not found in repo root"
+            echo "💡 This usually means the workflow checked out an older commit."
+            echo "🔧 Try re-running the workflow or check that main branch has the bundle."
+            exit 1
+          fi
+          echo "✅ Bundle found: $(ls -lh $BUNDLE_TGZ)"
 
       - name: Create destination on HA
         run: |
