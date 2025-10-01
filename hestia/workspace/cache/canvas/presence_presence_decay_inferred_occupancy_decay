@@ -1,0 +1,107 @@
+# File: /config/hestia/sensors/delta/hermes/decay/inferred_occupancy_decay.yaml
+# Description: Delta-tier occupancy decay for inferred presence signals
+- sensor:
+    - name: "Hermes Presence Fusion Metadata"
+      unique_id: "metadata_hermes_presence_fusion_beta"
+      state: "ok"
+      attributes:
+        tier: "μ"
+        canonical_id: "metadata_hermes_presence_fusion_μ"
+        subsystem: "hermes"
+        module: "presence"
+        type: "metadata"
+        role: "tier_mapping"
+        version: "1.0.0"
+        last_updated: "2025-05-09"
+        origin_file: "/config/hestia/sensors/beta/hermes/presence/metadata_presence_fusion.yaml"
+        description: >
+          Defines tier delineations and derivation logic for Hermes presence scoring and truth outputs.
+          Delta-tier calculations synthesize multi-signal confidence values, while beta-tier sensors
+          fuse decay values into localized occupancy indicators.
+        structure: >
+          {{
+            {
+              "delta_sensors": "sensor.presence_confidence_delta",
+              "beta_sensors": "sensor.hermes_fused_presence_score_beta",
+              "zeta_outputs": "binary_sensor.presence_confidence_sufficient_zeta"
+            } | tojson
+          }}
+        traceability: >
+          {{
+            [
+              {"bed_presence_decay": "δ"},
+              {"desk_presence_decay": "δ"},
+              {"fused_score_zone": "β"},
+              {"full_confidence_model": "δ"},
+              {"confidence_threshold_gate": "ζ"}
+            ] | tojson
+          }}
+        governance: >
+          {{
+            [
+              {"enforced_by": "iris"},
+              {"derivation_locked": true}
+            ] | tojson
+          }}
+        changelog: >
+          - 2025-05-09: Created tier-stratified metadata for Hermes presence subsystem fusion stack
+
+    - name: "Desk Presence Decay (Delta)"
+      unique_id: "desk_presence_decay_delta"
+      icon: mdi:account-off-outline
+      state: >
+        {% set entity = 'binary_sensor.desk_presence_macbook_inference' %}
+        {% set valid = states(entity) not in ['unavailable', 'unknown', 'none'] %}
+        {% set current = is_state(entity, 'on') if valid else false %}
+        {% set prev = states('sensor.desk_presence_decay_delta') | float(0) %}
+        {% set result = 10 if current else max(prev - 0.2, 0) %}
+        {{ result }}
+      attributes:
+        stored_state: "{{ states('sensor.desk_presence_decay_delta') | float(0) }}"
+        occupancy_state: "{{ is_state('binary_sensor.desk_presence_macbook_inference', 'on') }}"
+        decay_rate: 0.2
+        reset_value: 10
+        floor_value: 0
+        canonical_id: "desk_presence_decay_δ"
+        tier: "δ"
+        subsystem: "hermes"
+        module: "Presence Decay"
+        type: "decay"
+        role: "occupancy_persistence"
+        upstream_source: "binary_sensor.desk_presence_macbook_inference"
+        downstream_consumers: "null"
+        last_updated: "{{ now().timestamp() }}"
+        changelog: >
+          - {{ timestamp }}: Created decay tracker for desk-based presence
+        area_id: "bedroom"
+        room_area: "desk"
+
+    - name: "Bed Presence Decay (Delta)"
+      unique_id: "bed_presence_decay_delta"
+      icon: mdi:account-off-outline
+      state: >
+        {% set entity = 'binary_sensor.in_bed_withings_inference' %}
+        {% set valid = states(entity) not in ['unavailable', 'unknown', 'none'] %}
+        {% set current = is_state(entity, 'on') if valid else false %}
+        {% set prev = states('sensor.bed_presence_decay_delta') | float(0) %}
+        {% set result = 10 if current else max(prev - 0.2, 0) %}
+        {{ result }}
+      attributes:
+        stored_state: "{{ states('sensor.bed_presence_decay_delta') | float(0) }}"
+        occupancy_state: "{{ is_state('binary_sensor.in_bed_withings_inference', 'on') }}"
+        decay_rate: 0.2
+        reset_value: 10
+        floor_value: 0
+        canonical_id: "bed_presence_decay_δ"
+        tier: "δ"
+        subsystem: "hermes"
+        module: "Presence Decay"
+        type: "decay"
+        role: "occupancy_persistence"
+        upstream_source: "binary_sensor.in_bed_withings_inference"
+        downstream_consumers: "null"
+        last_updated: "{{ now().timestamp() }}"
+        changelog: >
+          - {{ timestamp }}: Created decay tracker for bed presence via Withings
+        area_id: "bedroom"
+        room_area: "bed"

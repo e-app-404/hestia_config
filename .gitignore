@@ -27,10 +27,31 @@ backups/
 backup*/
 *.tar.gz
 *.zip
+# Exception: allow critical deployment bundles
+!home_assistant_complete_restoration_v2.0_FINAL_APPROVED.tar.gz
 # Secrets (do NOT commit)
 secrets.yaml
 secrets.yml
 secrets.*.yaml
+
+# Zone files contain geographical coordinates and personal location data
+domain/zones/key_zones.yaml
+domain/zones/*_zones.yaml
+# Allow template files
+!domain/zones/*.yaml.template
+
+# Configuration files containing PII (IP addresses, MAC addresses, network topology)
+# Device configurations - contain IP addresses, MAC addresses, device identifiers
+hestia/config/devices/*.conf
+# Network configurations - contain network topology, IP ranges, DNS info
+hestia/config/network/*.conf  
+# System configurations - contain relationships, credentials references, topology
+hestia/config/system/*.conf
+# Allow workspace configuration (no PII)
+!hestia/config/system/hestia_workspace.conf
+# Preview configurations may contain generated credentials
+hestia/config/preview/*.conf
+
 # Guard against nested vendor repos/objects
 **/.git/
 # Allowlist: ensure canonical config stays tracked
@@ -197,7 +218,7 @@ hestia/**/prompt_registry/**
 home-assistant_v2.db*
 # Optional: ignore entire hestia cache/work areas if they exist
 hestia/cache/**
-hestia/vault/**
+hestia/workspace/archive/vault/**
 # -------------------------------------------------------
 # --- Strategos HA cleanup (2025-09-04) --------------------------------
 # Secrets and credentials
@@ -215,7 +236,7 @@ tts/
 .kyb_minmerge/
 # Reports/diagnostics and work areas
 reports/
-hestia/diagnostics/
+hestia/config/diagnostics/
 hestia/work/
 # Zigbee2MQTT runtime (keep config only)
 zigbee2mqtt/database.db

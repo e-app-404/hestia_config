@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Vault indexer and daily janitor
-- Indexes files in hestia/vault and assigns them to categories
+- Indexes files in hestia/workspace/archive/vault and assigns them to categories
 - Enforces deletion windows for tarballs and deprecated
 - Emits a small log entry and writes a 'deletion_receipt' file when items are removed
 - Optionally integrates with Home Assistant notifier via a webhook or an MQTT publish (placeholder)
@@ -13,7 +13,7 @@ import time
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
-VAULT_ROOT = Path('/n/ha/hestia/vault')
+VAULT_ROOT = Path('~/hass/hestia/workspace/archive/vault').expanduser()
 INDEX_FILE = VAULT_ROOT / 'vault_index.json'
 LOG_FILE = VAULT_ROOT / 'vault_index.log'
 
@@ -56,7 +56,10 @@ def scan_and_index():
         }
         idx['items'].append(item)
     INDEX_FILE.write_text(json.dumps(idx, indent=2), encoding='utf-8')
-    LOG_FILE.write_text(f"{datetime.now(timezone.utc).isoformat()} - indexed {len(idx['items'])} items\n", encoding='utf-8')
+    LOG_FILE.write_text(
+        f"{datetime.now(timezone.utc).isoformat()} - indexed {len(idx['items'])} items\n",
+        encoding='utf-8'
+    )
     return idx
 
 
@@ -66,7 +69,6 @@ def enforce_policy(idx=None, dry_run=True):
         if not idx_path.exists():
             idx = scan_and_index()
         else:
-            import json
             idx = json.loads(idx_path.read_text(encoding='utf-8'))
     now = datetime.now(timezone.utc)
     removed = []
@@ -86,7 +88,10 @@ def enforce_policy(idx=None, dry_run=True):
                 # move to a tombstone area (just remove here)
                 receipt = p.parent / (p.name + '.deleted.json')
                 p.unlink()
-                receipt.write_text(json.dumps({'deleted_at': now.isoformat(), 'path': str(p)}), encoding='utf-8')
+                receipt.write_text(
+                    json.dumps({'deleted_at': now.isoformat(), 'path': str(p)}),
+                    encoding='utf-8'
+                )
                 removed.append({'path': str(p), 'action': 'removed'})
                 # TODO: emit HA notification / logbook event (placeholder)
     return removed

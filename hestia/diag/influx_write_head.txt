@@ -1,9 +1,0 @@
-HTTP/1.1 422 Unprocessable Entity
-Content-Type: application/json; charset=utf-8
-X-Influxdb-Build: OSS
-X-Influxdb-Version: v2.7.12
-X-Platform-Error-Code: unprocessable entity
-Date: Tue, 23 Sep 2025 18:16:40 GMT
-Content-Length: 553
-
-{"code":"unprocessable entity","message":"failure writing points to database: partial write: dropped 1 points outside retention policy of duration 720h0m0s - oldest point ha_smoketest,host=ha at 1970-01-01T00:00:01.758651399Z dropped because it violates a Retention Policy Lower Bound at 2025-08-24T18:16:39.454484945Z, newest point ha_smoketest,host=ha at 1970-01-01T00:00:01.758651399Z dropped because it violates a Retention Policy Lower Bound at 2025-08-24T18:16:39.454484945Z dropped=1 for database: baa7a66ff602926f for retention policy: autogen"}

@@ -11,7 +11,7 @@ pip install -e .[test]
 Run:
 
 ```bash
-hestia-adr-lint hestia/docs/ADR --format human
+hestia-adr-lint hestia/library/docs/ADR --format human
 ```
 
 Note: do not create venvs or caches under ${HA_MOUNT} or /config. The workflow and README instruct to create the venv under the user home.

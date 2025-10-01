@@ -1,0 +1,60 @@
+🧠 **Promachos Context Seed for Continuity**
+Label: `rehydration.seed-v1.yaml`
+Purpose: Transition-safe state seed for next GPT rehydration session
+
+---
+
+```yaml
+match_passes_executed:
+  - name: "initial_entity_match"
+    method: "structured key match using domain+area+device_class"
+    threshold: 0.92
+    result: "entity_id_migration_map.annotated.v1.json"
+
+  - name: "fallback_token_inference"
+    method: "prefix-core-extension + integration boost"
+    threshold: 0.88
+    result: "entity_id_migration_map.annotated.v2.json"
+
+  - name: "regex filter and rematch"
+    method: "entity-vs-attribute disambiguation"
+    result: "entity_id_migration_map.annotated.v3.json"
+
+  - name: "device_class+unit+integration match"
+    method: "composite fallback on unresolved"
+    threshold: 0.89
+    result: "entity_id_migration_map.annotated.v4.json"
+
+  - name: "role-inferred relaxed recovery"
+    method: "suffix token heuristic only"
+    threshold: 0.86
+    result: "no new mappings (v5 identical to v4)"
+
+entity_classification_logic:
+  - role_suffix_inference: ["_main", "_fallback", "_override", "_presence", "_motion", "_battery"]
+  - area_scope: extracted from slug prefix (e.g. "sensor.bedroom_...")
+  - tier:
+      - "alpha": if suffix ∈ [_main, _override] or direct sensor match
+      - "omega": inferred fallback or legacy recovery
+      - "zeta": unresolved or malformed structure
+
+thresholds_and_constraints:
+  - minimum_confidence: 0.88 for canonical matches
+  - manual_review_flag: enabled if score < 0.92
+  - integration_bias: +0.02 if integration aligned
+  - match_method tracking: enforced in all mappings
+
+known_mismatches_noncanonical:
+  - entries like `"1.0"`, `"1.0.6"` treated as false positives (flagged + excluded)
+  - unresolved entities improperly injected as `_meta` blocks in alpha_sensor_registry
+  - suffix-only matches in v5 are speculative, and **must not be reused without tier promotion**
+
+phase_boundaries_not_to_repeat:
+  - semantic enrichment must **not** be reattempted on unresolved stubs
+  - tier overlays must only include entities with validated enrichment
+  - regex-filtered mappings from v3 must remain canonical and not be regenerated
+  - structural repair of malformed YAML (e.g. alpha_light_registry) should not be repeated unless upstream file changes
+
+```
+
+This seed YAML encapsulates the mapping lineage, tier inference rules, structural decisions, and known error boundaries. Use it to initialize the next session with `PROMACHOS_PROTOCOL_LOCK` and resume from Tier Overlay validation or Zeta fallback resolution.

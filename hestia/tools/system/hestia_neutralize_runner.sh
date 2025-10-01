@@ -14,7 +14,7 @@ set -euo pipefail
 export LC_ALL=C
 REPO="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
 cd "$REPO"
-ALLOW_RE='^(hestia/core/architecture/|hestia/vault/|hestia/work/|\.git/|\.venv/)'
+ALLOW_RE='^(hestia/core/architecture/|hestia/workspace/archive/vault/|hestia/workspace/|\.git/|\.venv/)'
 HITS_FILE="$REPO/tmp/hestia_path_hits.txt"
 : > "$HITS_FILE"
 hits=0
@@ -44,11 +44,11 @@ chmod +x "$ENF"
   if ! git -C "$REPO" checkout stability/workspace-autofs-v1 >/dev/null 2>&1; then echo "BLOCKED: unable to checkout branch stability/workspace-autofs-v1" >> "$LOG"; exit 2; fi
   echo "BRANCH_OK" >> "$LOG"
   # scan
-  PRE_HITS=$(git -C "$REPO" grep -nI -E "/Volumes/(HA|ha)" -- . ':(exclude)hestia/core/architecture/**' ':(exclude)hestia/vault/**' ':(exclude)hestia/work/**' ':(exclude).git/**' ':(exclude).venv/**' | wc -l | tr -d '[:space:]' || true)
+  PRE_HITS=$(git -C "$REPO" grep -nI -E "/Volumes/(HA|ha)" -- . ':(exclude)hestia/core/architecture/**' ':(exclude)hestia/workspace/archive/vault/**' ':(exclude)hestia/workspace/**' ':(exclude).git/**' ':(exclude).venv/**' | wc -l | tr -d '[:space:]' || true)
   PRE_HITS=${PRE_HITS:-0}
   echo "PRE_HITS=$PRE_HITS" >> "$LOG"
   # candidates
-  git -C "$REPO" ls-files -z -- . ':(exclude)hestia/core/architecture/**' ':(exclude)hestia/vault/**' ':(exclude)hestia/work/**' ':(exclude).git/**' ':(exclude).venv/**' > "$REPO/tmp/hestia_candidates.z"
+  git -C "$REPO" ls-files -z -- . ':(exclude)hestia/core/architecture/**' ':(exclude)hestia/workspace/archive/vault/**' ':(exclude)hestia/workspace/**' ':(exclude).git/**' ':(exclude).venv/**' > "$REPO/tmp/hestia_candidates.z"
   CHANGED=0
   while IFS= read -r -d '' rel; do
     f="$REPO/$rel"

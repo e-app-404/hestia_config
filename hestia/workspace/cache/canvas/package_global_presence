@@ -1,0 +1,63 @@
+# ═══════════════════════════════════════════════════════════════════════════
+# ⟫⟫ GLOBAL PRESENCE LOGIC •  Home & Away configuration and components ◀
+# ⟫⟫ configuration.yaml  •  packages: !include_dir_named packages
+# ⟫⟫ Tier:   •  Domain: inference  •  Created: 2025-08-05
+# ⟫⟫ Last Updated: 2025-08-05
+# ══════════════════════════════════════════════════════════════════
+
+input_select:
+  global_presence_mode:
+    name: "Global Presence Mode"
+    options:
+      - Home
+      - Away
+      - Out of town
+      - Guest
+      - Grindr
+    initial: Home
+    icon: mdi:home-account
+
+  # ----------------------------------------------------
+  # Automated Home/Away State Management
+  # ----------------------------------------------------
+automation:
+  - id: "update_global_presence_mode"
+    alias: "Update Global Presence Mode"
+    description: "Sets the global presence mode based on multiple possible input_select."
+    trigger:
+      - platform: state
+        entity_id: input_select.global_presence_mode
+    action:
+      - choose:
+          - conditions:
+              # ══ Condition 1  •  Zone tracking══
+              - condition: state
+                entity_id: sensor.evert_home_status
+                state: "Home"
+              - condition: state
+                entity_id: sensor.evert_current_location
+                state: "Home"
+            sequence:
+              - action: input_select.select_option
+                data:
+                  entity_id: input_select.global_presence_mode
+                  option: "Home"
+              - action: system_log.write
+                data:
+                  message: "Presence detection set home mode to 'Home'"
+                  level: "info"
+          - conditions:
+              - condition: state
+                entity_id: binary_sensor.home_presence_msf
+                state: "off"
+              - condition: template
+                value_template: "{{ (as_timestamp(now()) - as_timestamp(states.binary_sensor.home_presence_msf.last_changed)) | int(0) > 900 }}"
+            sequence:
+              - service: input_select.select_option
+                data:
+                  entity_id: input_select.home_mode
+                  option: "Away"
+              - service: system_log.write
+                data:
+                  message: "Presence detection set home mode to 'Away'"
+                  level: "info"

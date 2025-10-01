@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import os
 import re
-from typing import List, Dict, Any, Iterable, Optional
+from typing import Any, Dict, Iterable, List, Optional
 
 import frontmatter
 

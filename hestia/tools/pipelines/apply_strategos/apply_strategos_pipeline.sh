@@ -27,7 +27,7 @@ ${HA_MOUNT:-$HOME/hass}/hestia/tools/apply_strategos_04_switch_model.sh
 
 # 5) Samba preview
 
-OUT_DIR="$(. ${HA_MOUNT:-$HOME/hass}/hestia/tools/apply_strategos_00_env.sh >/dev/null 2>&1; source ${OUT_DIR}/.env.meta 2>/dev/null || true; echo ${OUT_DIR:-${HA_MOUNT:-$HOME/hass}/hestia/work/out/UNKNOWN})"
+OUT_DIR="$(. ${HA_MOUNT:-$HOME/hass}/hestia/tools/apply_strategos_00_env.sh >/dev/null 2>&1; source ${OUT_DIR}/.env.meta 2>/dev/null || true; echo ${OUT_DIR:-${HA_MOUNT:-$HOME/hass}/hestia/workspace/out/UNKNOWN})"
 ${HA_MOUNT:-$HOME/hass}/hestia/tools/apply_strategos_05_samba_preview.py
 
 # 6) Graph + Normalize + Property-Hash

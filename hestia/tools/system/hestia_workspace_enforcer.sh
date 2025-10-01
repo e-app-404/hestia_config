@@ -20,7 +20,7 @@ cd "$REPO"
 
 # Fail on forbidden volume paths within config/code text files only
 if git grep -nI -E '/Volumes/(HA|ha)' -- \
-  ':!hestia/core/architecture/**' ':!hestia/vault/**' ':!hestia/work/**' \
+  ':!hestia/core/architecture/**' ':!hestia/workspace/archive/vault/**' ':!hestia/workspace/**' \
   '*.sh' '*.py' '*.md' '*.yaml' '*.yml' '*.json' '*.ini' '*.conf' '*.env' '*.code-workspace' '*.txt' >/dev/null; then
   echo "BLOCKED: forbidden /Volumes/(HA|ha) path in tracked config/code."
   echo "Remedy: neutralize to /n/ha or $HESTIA_CONFIG and re-run."

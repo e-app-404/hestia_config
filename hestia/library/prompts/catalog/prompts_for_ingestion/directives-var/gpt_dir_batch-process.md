@@ -1,0 +1,1 @@
+You have full permission to proceed through all files in the current config. Batch process them in a smart, logical order. I’ll jump in only if something looks off.

@@ -1,0 +1,105 @@
+{
+  "device": {
+    "identifiers": ["bedroom_hdmi_matrix"],
+    "name": "Bedroom HDMI Matrix",
+    "model": "HDMI 4x2 Matrix Switch",
+    "manufacturer": "Generic",
+    "sw_version": "1.0"
+  },
+  "origin": {
+    "name": "hestia-mqtt-bridge",
+    "sw_version": "1.1.0",
+    "support_url": "https://github.com/home-assistant/core"
+  },
+  "cmps": {
+    "power": {
+      "p": "button",
+      "unique_id": "bedroom_hdmi_matrix_power",
+      "name": "Power",
+      "command_topic": "ha/bedroom_hdmi_matrix/cmd",
+      "payload_press": "power",
+      "availability_topic": "ha/bedroom_hdmi_matrix/status",
+      "device_class": "restart"
+    },
+    "arc": {
+      "p": "button", 
+      "unique_id": "bedroom_hdmi_matrix_arc",
+      "name": "ARC Toggle",
+      "command_topic": "ha/bedroom_hdmi_matrix/cmd",
+      "payload_press": "arc",
+      "availability_topic": "ha/bedroom_hdmi_matrix/status"
+    },
+    "a_1": {
+      "p": "button",
+      "unique_id": "bedroom_hdmi_matrix_a_1", 
+      "name": "A1 - Apple TV",
+      "command_topic": "ha/bedroom_hdmi_matrix/cmd",
+      "payload_press": "a_1",
+      "availability_topic": "ha/bedroom_hdmi_matrix/status",
+      "icon": "mdi:apple"
+    },
+    "a_2": {
+      "p": "button",
+      "unique_id": "bedroom_hdmi_matrix_a_2",
+      "name": "A2 - Nintendo Switch", 
+      "command_topic": "ha/bedroom_hdmi_matrix/cmd",
+      "payload_press": "a_2",
+      "availability_topic": "ha/bedroom_hdmi_matrix/status",
+      "icon": "mdi:nintendo-switch"
+    },
+    "a_3": {
+      "p": "button",
+      "unique_id": "bedroom_hdmi_matrix_a_3",
+      "name": "A3 - PlayStation 4",
+      "command_topic": "ha/bedroom_hdmi_matrix/cmd", 
+      "payload_press": "a_3",
+      "availability_topic": "ha/bedroom_hdmi_matrix/status",
+      "icon": "mdi:sony-playstation"
+    },
+    "a_4": {
+      "p": "button",
+      "unique_id": "bedroom_hdmi_matrix_a_4",
+      "name": "A4 - Nintendo Wii",
+      "command_topic": "ha/bedroom_hdmi_matrix/cmd",
+      "payload_press": "a_4", 
+      "availability_topic": "ha/bedroom_hdmi_matrix/status",
+      "icon": "mdi:nintendo-wii"
+    },
+    "b_1": {
+      "p": "button",
+      "unique_id": "bedroom_hdmi_matrix_b_1",
+      "name": "B1 - Apple TV Audio",
+      "command_topic": "ha/bedroom_hdmi_matrix/cmd",
+      "payload_press": "b_1",
+      "availability_topic": "ha/bedroom_hdmi_matrix/status",
+      "icon": "mdi:apple"
+    },
+    "b_2": {
+      "p": "button", 
+      "unique_id": "bedroom_hdmi_matrix_b_2",
+      "name": "B2 - Nintendo Switch Audio",
+      "command_topic": "ha/bedroom_hdmi_matrix/cmd",
+      "payload_press": "b_2",
+      "availability_topic": "ha/bedroom_hdmi_matrix/status",
+      "icon": "mdi:nintendo-switch"
+    },
+    "b_3": {
+      "p": "button",
+      "unique_id": "bedroom_hdmi_matrix_b_3", 
+      "name": "B3 - PlayStation 4 Audio",
+      "command_topic": "ha/bedroom_hdmi_matrix/cmd",
+      "payload_press": "b_3",
+      "availability_topic": "ha/bedroom_hdmi_matrix/status", 
+      "icon": "mdi:sony-playstation"
+    },
+    "b_4": {
+      "p": "button",
+      "unique_id": "bedroom_hdmi_matrix_b_4",
+      "name": "B4 - Nintendo Wii Audio",
+      "command_topic": "ha/bedroom_hdmi_matrix/cmd",
+      "payload_press": "b_4",
+      "availability_topic": "ha/bedroom_hdmi_matrix/status",
+      "icon": "mdi:nintendo-wii"
+    }
+  }
+}

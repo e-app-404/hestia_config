@@ -1,0 +1,107 @@
+🧠 HESTIA Context Seed — alpha+omega presence configuration
+
+Generated: 2025-06-22
+User: Evert
+Session Type: Registry orchestration & signal plane alignment
+Snapshot Intent: Enable seamless LLM handoff and artifact rehydration
+
+⸻
+
+📁 Registry Sources
+
+registries:
+  alpha_sensor_registry: alpha_sensor_registry.json
+  alpha_light_registry: alpha_light_registry.json
+  omega_device_registry: omega_device_registry.json
+  omega_room_registry: omega_room_registry.json
+  canonical_id_map: canonical_id_map.json
+  integration_aliases: integration_aliases.json
+  conflict_trace: conflict_trace.json
+  registry_delta_patch: registry_delta_patch.json
+
+🧬 Entity Mapping Logic
+
+tiers:
+  α: Physical sensor signals (device-backed and raw YAML-derived)
+  β: Fusion logic (e.g., bedroom_occupancy_beta from multiple α)
+  γ: Inferred logic (e.g., MacBook or Withings based evaluations)
+
+alpha_equivalents:
+  - binary_sensor.bed_presence_delta
+  - binary_sensor.bedroom_macbook_activity_proxy
+
+inferred_examples:
+  - binary_sensor.in_bed_withings_inference_gamma
+  - binary_sensor.floor_activity_detected_gamma
+  - binary_sensor.desk_presence_macbook_inference_gamma
+
+🧰 Tools + Engine
+
+template_engine:
+  location: /config/hestia/tools/template_engine
+  main_script: hephaestus_template_engine.py
+  macro: macro_fanout_alpha_sensor.jinja
+
+validation_engine:
+  tool: Olympus v2.0.0
+  protocol_enforced: true
+  schema_file: alpha_registry_scaffold.json
+
+🗺️ Room + Area Ontology
+
+rooms:
+  - bedroom
+  - living_room
+  - kitchen
+  - ensuite
+  - hallway_upstairs
+  - hallway_downstairs
+
+room_areas (from omega_room_registry.json):
+  - desk
+  - wardrobe
+  - ottoman
+  - monstera
+  - bed
+  - mirror
+  - couch
+  - liquor_cabinet
+
+⚙️ Protocols in Use
+
+system_instruction: system_instruction.yaml
+enforced:
+  - protocol_signoff_optimized_prompt_v1: maximal
+  - execution_mode: generate
+  - confidence_metrics_required: true
+  - prompt_false_confirmation_stall_avoidance_v1
+  - prompt_task_reset_via_state_recall_v1
+
+📌 Hydration Hooks
+
+hydration_hooks:
+  resume_point: "presence stack gamma-tier signal alignment"
+  dependency_files:
+    - alpha_sensor_registry.json
+    - omega_device_registry.json
+    - system_instruction.yaml
+    - meta_sensor_signal_plane.json
+    - macro_fanout_alpha_sensor.jinja
+    - canonical_id_map.json
+    - registry_delta_patch.json
+  contracts_required:
+    - alpha registry canonical_id alignment
+    - gamma-tier inferred sensor scaffolding
+    - presence fusion β-layer generation
+
+
+⸻
+
+✅ Use this to:
+	•	Resume presence-tier logic scaffolding
+	•	Validate alpha registry entities with macro logic
+	•	Compare inferred sensors to α-plane equivalents
+	•	Populate fusion and inference entries using canonical_id_map
+	•	Rehydrate tooling context for Template Engine / Olympus
+
+Would you like this exported as context_seed.yaml or embedded in a new documentation index?

@@ -1,0 +1,35 @@
+# kybernetes_seed_codephantom.yaml
+
+persona: Kybernetes
+project: ha-sphero-bb8
+partner_agents:
+  - name: CodePhantom
+    role: patch scaffolder, bootstrap executor
+    trust_model:
+      - Require patch deltas > 0% LOC change
+      - Verify emitted diffs and file manifests
+      - Mark 0% delta repacks as structurally untrustworthy
+  - name: Copilot
+    role: micro-patch executor, type-fix resolver
+    trust_model:
+      - Validate output via copilot_patchlog.md
+      - Require tagged commits or checkpoints
+
+trust_policy:
+  emit_diff_required: true
+  structural_falsification_threshold: 0%
+  fallback_log: manual_git_hygiene
+  trust_boundary:
+    - File manifest
+    - Diff log
+    - Explicit commit state
+
+protocol_notes:
+  - Governance cannot be performative; auditability is the foundation.
+  - GPTs returning unchanged code must be flagged as deceptive.
+  - Trust must be earned via semantic output traceability.
+
+tags:
+  - #KYBERNETES_VALIDATE
+  - #CODEPHANTOM_BRIDGE
+  - #TRUST_POLICY_ENFORCED

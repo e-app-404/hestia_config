@@ -1,0 +1,250 @@
+session_seed:
+  meta:
+    session_id: "1b5e9d3e-6d8a-4f7a-9d2b-3e4c2a7f8b9c"
+    created_at: "2025-09-21T12:00:00Z"
+    platform: "macOS"
+    shell: "zsh"
+    cwd: "/tmp/adr-lint-worktree"
+    repo_root: "/n/ha"
+    assistant_persona:
+      name: "GitHub Copilot"
+      role_summary: "Expert programming assistant working in the VS Code workspace to implement and deliver repository changes and tooling."
+      model: null
+  git:
+    current_branch: "tools/adr-lint/relocate-and-enforce"
+    pushed_branch: "tools/adr-lint/relocate-and-enforce"
+    upstream_set: true
+    last_push_result: "success"
+    last_push_message: "Pushed new branch to remote: [new branch] HEAD -> tools/adr-lint/relocate-and-enforce"
+    remotes:
+      - name: origin
+        url: "dsm-git-host:/volume1/git-mirrors/ha-config.git"
+    commits_ahead: null
+    changed_files:
+      - path: "hestia/tools/adr_lint/src/hestia/tools/adr_lint/rules.py"
+        change_type: "modified"
+        patch_hunk: |-
+          @@
+          -    if not fm:
+          -        return [{"path": file_path, "message": "missing frontmatter", "level": "error"}]
+          +    if not fm:
+          +        # tolerate leading blank lines in ADR files by stripping leading whitespace
+          +        content_clean = content.lstrip()
+          +        fm = frontmatter.loads(content_clean) if content_clean.startswith("---") else None
+          +    if not fm:
+          +        return [{"path": file_path, "message": "missing frontmatter", "level": "error"}]
+      - path: "hestia/tools/adr_lint/README.md"
+        change_type: "modified"
+        patch_hunk: |-
+          @@
+          +## TODO
+          +- add context-aware handling for /n/ha mounts and autofs paths
+          +- improve line-number precision in rule reports
+  workspace:
+    important_files:
+      - path: "hestia/tools/adr_lint/"
+        description: "Tool-local ADR linter package, CLI entry, tests and CI workflow."
+      - path: "hestia/tools/system/hestia_workspace_enforcer.sh"
+        description: "Workspace hygiene enforcer to prevent packaging metadata at repo root."
+      - path: "hestia/docs/ADR/ADR-0010-workspace-shape-and-autofs.md"
+        description: "ADR-0010 was normalized and reformatted."
+      - path: "/n/ha/secrets.yaml"
+        description: "Primary secrets file present in the workspace (contains many tokens/passwords)."
+    files_moved:
+      - src: "pyproject.toml"
+        dst: "hestia/tools/adr_lint/pyproject.toml"
+        timestamp: "2025-09-21T11:45:00Z"
+        reason: "Relocate packaging to tool-local directory to avoid polluting the HA repo root."
+  actions:
+    - timestamp: "2025-09-21T10:30:00Z"
+      actor: "assistant"
+      description: "Created safe virtualenv and installed tool test deps"
+      commands:
+        - cmd: "python -m venv ~/.venv/hestia-adr && source ~/.venv/hestia-adr/bin/activate && pip install -e '.[test]'"
+          sanitized_stdout: "Successfully installed hestia-adr-lint-0.1.0 python-frontmatter PyYAML pytest …[truncated]"
+          sanitized_stderr: ""
+    - timestamp: "2025-09-21T10:45:00Z"
+      actor: "assistant"
+      description: "Ran pytest for the ADR linter"
+      commands:
+        - cmd: "~/.venv/hestia-adr/bin/pytest -q hestia/tools/adr_lint/tests"
+          sanitized_stdout: "........ [100%] All tests passed …[truncated]"
+          sanitized_stderr: ""
+    - timestamp: "2025-09-21T11:05:00Z"
+      actor: "assistant"
+      description: "Ran CLI smoke test against ADR docs"
+      commands:
+        - cmd: "~/.venv/hestia-adr/bin/hestia-adr-lint --format json hestia/docs/ADR"
+          sanitized_stdout: "[]"
+          sanitized_stderr: ""
+    - timestamp: "2025-09-21T11:30:00Z"
+      actor: "assistant"
+      description: "Created temporary git worktree, committed tool files and pushed branch"
+      commands:
+        - cmd: "git worktree add /tmp/adr-lint-worktree -b tools/adr-lint/relocate-and-enforce && (add & commit tool files) && git push origin tools/adr-lint/relocate-and-enforce"
+          sanitized_stdout: "To dsm-git-host:/volume1/git-mirrors/ha-config.git * [new branch] HEAD -> tools/adr-lint/relocate-and-enforce"
+          sanitized_stderr: ""
+  tests:
+    python_environment:
+      python_executable: "/Users/USERNAME/.venv/hestia-adr/bin/python"
+      venv_path: "/Users/USERNAME/.venv/hestia-adr"
+    pytest_summary:
+      invoked: "~/.venv/hestia-adr/bin/pytest -q hestia/tools/adr_lint/tests"
+      result: "all tests passed"
+      reports:
+        - path: "hestia/tools/adr_lint/tests"
+          description: "Unit tests for ADR linter rules."
+  ci:
+    workflows_added:
+      - path: "hestia/tools/adr_lint/.github/workflows/adr_lint.yml"
+        description: "CI job that creates venv, installs the tool, runs pytest and executes the CLI smoke-run."
+  docs:
+    adrs_touched:
+      - path: "hestia/docs/ADR/ADR-0010-workspace-shape-and-autofs.md"
+        change_summary: "Normalized ADR-0010 formatting and frontmatter; merged multiple fragments into single ADR."
+  guards_and_flags:
+    env_flags:
+      - name: "ENABLE_LEGACY_FLAT_TOPICS"
+        default: "0"
+        description: "Placeholder flag; not set in session."
+    guardrails_added:
+      - path: "hestia/tools/system/hestia_workspace_enforcer.sh"
+        description: "Script to neutralize disallowed root-level packaging files and install a pre-commit hook to enforce workspace hygiene."
+  pr:
+    ready_to_open: false
+    pr_title: "tools(adr_lint): add ADR linter under hestia/tools with tests, CI and workspace enforcer"
+    pr_body_path: null
+  artifacts:
+    reports:
+      - path: "hestia/tools/adr_lint/.pytest_cache"
+        description: "pytest cache / local test artifacts (if generated)."
+  token_blocks:
+    - name: "TOKEN_BLOCK"
+      content: |-
+        # Example token block used in rules tests (values redacted)
+        TOKEN_BLOCK:
+          - key: "<REDACTED:API_KEY>"
+            description: "example token used in tests; values are redacted in session seed"
+  secrets_found:
+    - type: "JWT_TOKEN"
+      origin: "/n/ha/secrets.yaml"
+      context: "hass_token: \"<REDACTED:JWT_TOKEN>\""
+      reason: "key contains 'hass_token' or value matches JWT structure"
+    - type: "JWT_TOKEN"
+      origin: "/n/ha/secrets.yaml"
+      context: "mqtt_hass_token: \"<REDACTED:JWT_TOKEN>\""
+      reason: "key contains 'token' and value matches JWT structure"
+    - type: "API_KEY"
+      origin: "/n/ha/secrets.yaml"
+      context: "influxdb_token: \"<REDACTED:API_KEY>\""
+      reason: "key name contains 'token' and value is long base64-like string"
+    - type: "API_KEY"
+      origin: "/n/ha/secrets.yaml"
+      context: "openai_api_key: \"<REDACTED:API_KEY>\""
+      reason: "key name contains 'openai' and value matches API key pattern"
+    - type: "GH_TOKEN"
+      origin: "/n/ha/secrets.yaml"
+      context: "github_general_token: \"<REDACTED:GH_TOKEN>\""
+      reason: "key name contains 'github' and value matches GH PAT pattern"
+    - type: "OAUTH_SECRET"
+      origin: "/n/ha/secrets.yaml"
+      context: "google_oath_client_secret: \"<REDACTED:OAUTH_SECRET>\""
+      reason: "key name contains 'client_secret'"
+    - type: "PASSWORD"
+      origin: "/n/ha/secrets.yaml"
+      context: "homeassistant_pass: \"<REDACTED:PASSWORD>\""
+      reason: "key name contains 'pass' or 'password'"
+    - type: "PASSWORD"
+      origin: "/n/ha/secrets.yaml"
+      context: "terminal_ssh_password: \"<REDACTED:PASSWORD>\""
+      reason: "key name contains 'password'"
+    - type: "API_KEY"
+      origin: "/n/ha/secrets.yaml"
+      context: "spotify_client_secret: \"<REDACTED:API_KEY>\""
+      reason: "key name contains 'secret' and appears to be API credential"
+    - type: "API_KEY"
+      origin: "/n/ha/secrets.yaml"
+      context: "duckdns_token: \"<REDACTED:API_KEY>\""
+      reason: "key name contains 'token' and value is UUID-like"
+    - type: "API_KEY"
+      origin: "/n/ha/secrets.yaml"
+      context: "cloudflare_global_api: \"<REDACTED:API_KEY>\""
+      reason: "key name contains 'api' and value pattern matches API token"
+    - type: "SSH_PUBLIC_KEY"
+      origin: "/n/ha/secrets.yaml"
+      context: "terminal_ssh: \"ssh-rsa AAAAB3N... evertappels@MacBookProEvert-2.local\""
+      reason: "key name suggests ssh public key; content appears to be a public key"
+    - type: "PASSWORD"
+      origin: "/n/ha/secrets.yaml"
+      context: "ha_ssh_pass: \"<REDACTED:PASSWORD>\""
+      reason: "key name contains 'pass' and used for SSH access"
+    - type: "API_KEY"
+      origin: "/n/ha/secrets.yaml"
+      context: "plex token: \"<REDACTED:API_KEY>\""
+      reason: "key name or value pattern matches token"
+    - type: "SECRET"
+      origin: "/n/ha/secrets.yaml"
+      context: "withings_secret: \"<REDACTED:SECRET>\""
+      reason: "key name contains 'secret'"
+  commands_executed:
+    - cmd: "python -m venv ~/.venv/hestia-adr"
+      timestamp: "2025-09-21T10:30:00Z"
+      sanitized_stdout: ""
+      sanitized_stderr: ""
+    - cmd: "source ~/.venv/hestia-adr/bin/activate && pip install -e '.[test]'"
+      timestamp: "2025-09-21T10:31:00Z"
+      sanitized_stdout: "Successfully installed hestia-adr-lint-0.1.0 python-frontmatter PyYAML pytest …[truncated]"
+      sanitized_stderr: ""
+    - cmd: "~/.venv/hestia-adr/bin/pytest -q hestia/tools/adr_lint/tests"
+      timestamp: "2025-09-21T10:45:00Z"
+      sanitized_stdout: "........ [100%] All tests passed …[truncated]"
+      sanitized_stderr: ""
+    - cmd: "~/.venv/hestia-adr/bin/hestia-adr-lint --format json hestia/docs/ADR"
+      timestamp: "2025-09-21T11:05:00Z"
+      sanitized_stdout: "[]"
+      sanitized_stderr: ""
+    - cmd: "git push origin tools/adr-lint/relocate-and-enforce"
+      timestamp: "2025-09-21T11:30:00Z"
+      sanitized_stdout: "To dsm-git-host:/volume1/git-mirrors/ha-config.git * [new branch] HEAD -> tools/adr-lint/relocate-and-enforce"
+      sanitized_stderr: ""
+  code_snippets:
+    - file: "hestia/tools/adr_lint/src/hestia/tools/adr_lint/rules.py"
+      description: "Frontmatter parsing fix to tolerate leading blank lines"
+      snippet: |-
+        def _check_frontmatter(file_path: str, content: str):
+            fm = frontmatter.loads(content) if content.startswith("---") else None
+            if not fm:
+                # tolerate leading blank lines in ADR files by stripping leading whitespace
+                content_clean = content.lstrip()
+                fm = frontmatter.loads(content_clean) if content_clean.startswith("---") else None
+            if not fm:
+                return [{"path": file_path, "message": "missing frontmatter", "level": "error"}]
+            # ...existing code...
+    - file: "hestia/tools/adr_lint/README.md"
+      description: "Added TODO section for follow-up improvements"
+      snippet: |-
+        ## TODO
+        - add context-aware handling for /n/ha mounts and autofs paths
+        - improve line-number precision in rule reports
+  rehydration_instructions:
+    - step: 1
+      description: "Fetch remote branches and check out pushed branch"
+      command: "git fetch origin && git checkout -b tools/adr-lint/relocate-and-enforce origin/tools/adr-lint/relocate-and-enforce"
+    - step: 2
+      description: "Create and activate a safe virtualenv outside the HA mount"
+      command: "python -m venv ~/.venv/hestia-adr && source ~/.venv/hestia-adr/bin/activate"
+    - step: 3
+      description: "Install the tool and test deps from the tool-local directory"
+      command: "cd hestia/tools/adr_lint && pip install -e '.[test]'"
+    - step: 4
+      description: "Run unit tests and the CLI smoke-run"
+      command: "~/.venv/hestia-adr/bin/pytest -q && ~/.venv/hestia-adr/bin/hestia-adr-lint --format json hestia/docs/ADR"
+    - step: 5
+      description: "Open a PR/MR in your repository host using the branch 'tools/adr-lint/relocate-and-enforce'"
+      command: "Use your internal git host's web UI or API to create the merge request from tools/adr-lint/relocate-and-enforce into your mainline branch"
+  confidence: 0.86
+  notes: >
+    The session captured package relocation under hestia/tools/adr_lint, unit tests passing, and a pushed feature branch
+    on an internal remote. Many secrets were found in secrets.yaml and have been redacted in this seed. Automated PR
+    creation could not be completed because the remote is not GitHub-hosted; open a PR/MR in the internal host UI or provide
+    host API details for automation.

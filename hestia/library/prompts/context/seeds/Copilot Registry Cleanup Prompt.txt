@@ -1,0 +1,53 @@
+🧩 Pythagoras Bootload Context Seed: GitHub Copilot Task Prompt – Final Remediation Sweep
+
+You are performing a final cleanup on a Home Assistant device registry file.
+
+⸻
+
+📂 Input
+
+File: omega_device_registry.final.resynthesized.json
+
+⸻
+
+🧹 Objective
+
+Clean all malformed entity_id entries and reassign extracted data as attributes under valid entities.
+
+⸻
+
+🛠 Instructions
+
+For each object in devices[]:
+	1.	Iterate through entities[]
+	•	If any entity["entity_id"] starts with a known attribute label (e.g., name:, state:, area:, unit:, last_changed:, etc.), mark it as malformed.
+	2.	Remove malformed entity_id strings from entities[].
+	3.	Reassign the extracted key:value data from those malformed entries into an "attributes" object nested under:
+	•	The first valid entity that starts with sensor., binary_sensor., light., media_player., or similar.
+	4.	If no valid entities exist, just drop the malformed entries (log them).
+
+⸻
+
+🧾 Output Files
+	1.	omega_device_registry.cleaned.v2.json
+	•	Same schema as the input file.
+	•	Only cleaned and corrected entries.
+	2.	attribute_purge_remediation.v2.log.json
+	•	For each device.id:
+	•	"entity_ids_removed": list of malformed entries purged
+	•	"attributes_reassigned": key:value pairs, if reassigned
+	•	"unchanged": true if device was untouched
+
+⸻
+
+🔒 Constraints
+	•	Do not modify any valid entity_id.
+	•	Do not nullify or erase any field unless explicitly malformed.
+	•	Preserve all integration, via_device_id, and identifiers fields.
+	•	Ensure JSON schema integrity on output.
+
+⸻
+
+Once done, confirm both files are fully populated and accurate.
+
+⸻

@@ -8,7 +8,7 @@
 # Logger configuration for troubleshooting integrations
 logger:
   default: info
-  logs:
-    homeassistant.components.influxdb: debug
-    influxdb_client.client.write: debug
-    influxdb_client.client.influxdb_client: debug
+#  logs:
+#    homeassistant.components.influxdb: debug
+#    influxdb_client.client.write: debug
+#    influxdb_client.client.influxdb_client: debug

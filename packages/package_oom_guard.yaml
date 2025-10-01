@@ -2,13 +2,13 @@
 # ▶ OOM GUARD • Persistent notice when memory is high for 5 minutes
 # File: packages/oom_guard.yaml
 # Tier: γ  •  Domain: automation  •  Created: 2025-09-19
+# Updated: 2025-09-30 - Canonical merged version
 # Notes:
 # - Do NOT configure `platform: systemmonitor` here. Add the integration via UI.
 # - This automation watches `sensor.system_monitor_memory_usage` provided by System Monitor.
+# - Includes automatic clearing notification when usage returns to normal.
+# - Uses numeric_state triggers for better performance than template triggers.
 # ══════════════════════════════════════════════════════════════════
-
-homeassistant:
-  customize: {}
 
 template:
   - sensor:
@@ -35,18 +35,35 @@ automation:
     alias: "OOM: persistent notice when memory high for 5m"
     mode: restart
     trigger:
-      # Trigger only when HA's memory percent stays ABOVE the threshold for 5 minutes
+      # Use numeric_state for better performance than template trigger
       - platform: numeric_state
         entity_id: sensor.system_monitor_memory_usage
         above: input_number.oom_threshold_percent
         for: "00:05:00"
     condition: []
     action:
-      - service: persistent_notification.create
+      - alias: "Notify of high memory"
+        service: persistent_notification.create
         data:
+          notification_id: "oom_memory_alert"
           title: "High Memory Use"
           message: >-
             Memory has been above {{ states('input_number.oom_threshold_percent') | int }}%
             for 5 minutes.
             Current: {{ (states('sensor.system_monitor_memory_usage') | float(0)) | round(1) }}%.
             Check add-ons/integrations (DB size, media indexers, diagnostics).
+
+  - id: oom_clear_notice_when_memory_normal
+    alias: "OOM: clear persistent notice when memory normal"
+    mode: single
+    trigger:
+      # Clear notification when memory drops below threshold
+      - platform: numeric_state
+        entity_id: sensor.system_monitor_memory_usage
+        below: input_number.oom_threshold_percent
+    condition: []
+    action:
+      - alias: "Clear OOM notification"
+        service: persistent_notification.dismiss
+        data:
+          notification_id: "oom_memory_alert"

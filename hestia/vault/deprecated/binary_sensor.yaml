@@ -1,5 +1,0 @@
-# >> Inference Binary Sensors
-# >> Loader: !include_dir_merge_named → entities/binary_sensor/inference/
-# >> Structure: binary_sensor: > - platform: template
-
-binary_sensor: !include_dir_merge_list entities/binary_sensor/

@@ -1,0 +1,8 @@
+{
+    "job_id": "20250914T000000Z",
+    "root": "/Volumes/HA/config/hestia",
+    "branch": "refactor/hestia-structure-v2",
+    "actions": [
+        // ...actions will be filled after inventory and heuristics
+    ]
+}

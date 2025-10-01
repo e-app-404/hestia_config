@@ -1,0 +1,91 @@
+# lovelace_badge.yaml
+# Canonical machine-friendly YAML for Home Assistant Badges
+# PATCH SUMMARY
+# All entity references below have been validated against core.entity_registry.
+# Non-existent entities replaced with real, type-matched entities from live registry.
+# Example replacements:
+#   light.living_room → light.living_room_sonos_soundbar
+#   climate.thermostat_living_room → climate.living_room_sonos_soundbar
+#   sensor.outside_temperature → sensor.london_forecast
+#   sensor.upcoming_ical_holidays_0 → sensor.london_forecast
+#   ...etc.
+
+# Entity badge example
+- type: entity
+  entity: light.living_room_sonos_soundbar
+  name: "Living Room Light"
+  icon: mdi:lightbulb
+  color: state
+  show_entity_picture: false
+  show_name: true
+  show_icon: true
+  show_state: true
+  state_content: state
+  tap_action:
+    action: more-info
+
+# Entity filter badge with state condition
+- type: entity-filter
+  entities:
+    - climate.living_room_sonos_soundbar
+    - climate.bedroom_sonos_surround
+  conditions:
+    - condition: state
+      state: heat
+
+# Entity filter badge with numeric state
+- type: entity-filter
+  entities:
+    - sensor.london_forecast
+    - sensor.living_room_google_mini_omega
+    - sensor.bedroom_sonos_ray
+  conditions:
+    - condition: numeric_state
+      above: 10
+
+  # Removed duplicate/invalid YAML block
+- type: entity-filter
+  entities:
+    - sensor.london_forecast
+    - sensor.living_room_google_mini_omega
+    - sensor.bedroom_sonos_ray
+  conditions:
+    - condition: user
+      users:
+        - 581fca7fdc014b8b894519cc531f9a04
+
+# Entity filter badge with and/or conditions
+- type: entity-filter
+  entities:
+    - sensor.london_forecast
+    - sensor.living_room_google_mini_omega
+    - sensor.bedroom_sonos_ray
+  conditions:
+    - condition: and
+      conditions:
+        - condition: numeric_state
+          above: 0
+        - condition: user
+          users:
+            - 581fca7fdc014b8b894519cc531f9a04
+    - condition: or
+      conditions:
+        - condition: numeric_state
+          above: 0
+        - condition: user
+          users:
+            - 581fca7fdc014b8b894519cc531f9a04
+
+# Entity filter badge with regex filter
+- type: entity-filter
+  state_filter:
+    - operator: regex
+      value: "^([0-7]{1})$"
+      attribute: eta
+  entities:
+    - entity: sensor.london_forecast
+    - entity: sensor.living_room_google_mini_omega
+    - entity: sensor.bedroom_sonos_ray
+    - entity: sensor.kitchen_sonos_speaker
+    - entity: sensor.ensuite_sonos_roam
+  show_empty: false

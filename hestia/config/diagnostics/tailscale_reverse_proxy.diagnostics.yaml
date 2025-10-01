@@ -1,0 +1,88 @@
+tailscale_reverse_proxy_diagnostic:
+  description:
+    Ensure Tailscale's reverse proxy works by verifying Home Assistant
+    listens on port 8123 and Tailscale's proxy config is active.
+  steps:
+    - run: netstat -tuln | grep 8123
+      expect_output: 0.0.0.0:8123 or :::8123
+    - restart: tailscale_addon
+    - run: docker logs addon_a0d7b954_tailscale --tail 100
+      expect_log: Reverse proxy to Home Assistant active
+  notes: |
+    Required for Tailscale Funnel or proxy functionality to work correctly.
+    Ensure frontend is explicitly declared in configuration.yaml:
+      frontend:
+
+tailscale_serve_proxy_check:
+  description: >
+    Validate that Tailscale's `serve` proxy is functioning correctly inside
+    the DSM Docker container. Intended for users running Tailscale in
+    userspace mode without tailscale0. This enables reverse-proxied access
+    to DSM services like HTTPS UI or SSH over tailnet.
+  preconditions:
+    - Tailscale must be authenticated via `tailscale up` inside container
+    - Container must be running with `--tun=userspace-networking`
+    - Version must be 1.32 or higher for `tailscale serve` support
+  steps:
+    - run: docker exec tailscale tailscale version
+      expect_output: contains "1.8" or higher
+
+    - run: docker exec tailscale tailscale status
+      expect_output: contains "100." # Tailscale IPv4 should be assigned
+
+    - run: docker exec tailscale tailscale serve status
+      expect_output: contains "https://localhost:5001"
+
+    - run: docker exec tailscale tailscale serve --https=5001
+      notes: |
+        If serve status was empty, this activates the HTTPS reverse proxy to DSM UI.
+        You can also replace 5001 with 5000 for HTTP.
+
+    - run: docker exec tailscale tailscale ip -4
+      capture: tailscale_ipv4
+
+    - run: curl -k https://<tailscale_ipv4>:5001
+      notes: |
+        Replace `<tailscale_ipv4>` with the actual output above to confirm DSM is reachable inside container.
+
+    - run: curl -k https://ds220plus.ts.net
+      notes: |
+        Run this from another Tailscale-enabled client to verify the reverse proxy is exposed externally.
+
+  notes: |
+    - To make the `serve` config persistent, include it in your docker-compose `command:`:
+        command: tailscaled --tun=userspace-networking --socks5-server=localhost:1055 --outbound-http-proxy-listen=localhost:1056
+    - You can expose more services with:
+        tailscale serve --https=5001 --tcp=22 --https=3000 ...
+    - Verify DSM firewall rules allow traffic to 5001 from localhost inside container.
+
+git_mirror_sync_diagnostic:
+  description: Validate Git-based config sync from Home Assistant to Synology DSM.
+  steps:
+    - run: |
+        git remote -v
+      expect_output: |
+        dsm.*git@100\.71\.87\.40.*
+    - run: |
+        ssh -i ~/.ssh/id_rsa_gitmirror dsm-git 'echo $USER'
+      expect_output: |
+        babylonrobot
+    - run: |
+        git push dsm master
+      expect_output: |
+        Everything up-to-date or remote: Resolving deltas
+    - run: |
+        ls -l /config/domain/shell_commands/git_push_logger.sh
+      expect_output: |
+        executable by user (e.g., -rwxr-xr-x)
+    - run: |
+        tail -n 5 /config/hestia/config/diagnostics/logs/git_sync_push_events.json
+      expect_output: |
+        valid JSON line containing `_meta.contract: ha_config_sync`
+  notes: |
+    This diagnostic confirms Home Assistant is able to auto-push to DSM Git mirror without password prompt.
+    Ensure the following are correctly declared and loadable:
+      shell_command: !include domain/system/shell_commands.yaml
+      automation manual: !include_dir_merge_list domain/automations/
+    Also ensure authorized_keys on DSM uses:
+      command="/usr/bin/git-receive-pack /volume1/homes/babylonrobot/git/config.git",no-agent-forwarding,no-port-forwarding,no-pty,no-user-rc,no-X11-forwarding ssh-rsa AAAA...

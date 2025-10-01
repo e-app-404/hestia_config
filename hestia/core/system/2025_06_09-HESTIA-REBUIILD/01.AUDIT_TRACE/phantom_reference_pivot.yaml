@@ -1,9 +1,0 @@
-- signal_class: unknown
-  areas:
-    unassigned: 5
-- signal_class: temperature
-  areas:
-    unassigned: 1
-- signal_class: light
-  areas:
-    unassigned: 1

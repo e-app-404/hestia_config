@@ -1,5 +1,5 @@
 - sensor:
-  {% import 'custom_templates/template.library.jinja' as macros with context %}
+  {% import 'template.library.jinja' as macros with context %}
   {%- for area_id, room_data in circadian_rooms.items() %}
   {%- if room_data.configuration and room_data.configuration.lighting and 'circadian' in room_data.configuration.lighting %}
   {%- set default_brightness = 60 %}

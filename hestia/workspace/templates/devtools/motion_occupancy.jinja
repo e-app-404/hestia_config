@@ -1,0 +1,58 @@
+{#- Loads TP-Link, Smartthings and MQTT motion and occupancy sensors in correct YAML -#}
+
+{%- set integrations = ['smartthings', 'tplink', 'mqtt'] -%}
+{%- set device_classes = ['motion', 'occupancy'] -%}
+{%- set domain_states = (states.sensor | list) + (states.binary_sensor | list) -%}
+
+{%- macro q(v) -%}
+{%- if v is none or v == '' or v == 'unavailable' -%}"—"
+{%- elif v == 'unknown' -%}"unknown"
+{%- else -%}{{ v }}{%- endif -%}
+{%- endmacro -%}
+
+integrations:
+{% for integ in integrations -%}
+  {{ integ }}:
+    entities:
+{% set integ_entities = integration_entities(integ) | list -%}
+{% set items = domain_states
+      | selectattr('entity_id', 'in', integ_entities)
+      | selectattr('attributes.device_class', 'in', device_classes)
+      | sort(attribute='entity_id') | list -%}
+{% if items | length == 0 -%}
+      []
+{% else -%}
+{% for s in items -%}
+{% set dev_id = device_id(s.entity_id) -%}
+{% set via_id = dev_id and device_attr(dev_id, 'via_device_id') -%}
+{% set dev_name = dev_id and (device_attr(dev_id, 'name_by_user') or device_attr(dev_id, 'name')) -%}
+{% set dev_mfr = dev_id and device_attr(dev_id, 'manufacturer') -%}
+{% set dev_model = dev_id and (device_attr(dev_id, 'model') or device_attr(dev_id, 'model_id')) -%}
+{% set dev_sw = dev_id and device_attr(dev_id, 'sw_version') -%}
+{% set dev_hw = dev_id and device_attr(dev_id, 'hw_version') -%}
+{% set dev_cfg = dev_id and device_attr(dev_id, 'configuration_url') -%}
+{% set via_name = via_id and (device_attr(via_id, 'name_by_user') or device_attr(via_id, 'name')) -%}
+{% set ent_area_id = area_id(s.entity_id) -%}
+{% set ent_area_name = area_name(s.entity_id) -%}
+{% set dev_area_id = dev_id and area_id(dev_id) -%}
+{% set dev_area_name = dev_id and area_name(dev_id) -%}
+      - entity_id: {{ s.entity_id }}
+        device_class: {{ s.attributes.device_class }}
+        integration: {{ integ }}
+        friendly_name: {{ q(s.name) }}
+        entity_area_id: {{ q(ent_area_id) }}
+        entity_area_name: {{ q(ent_area_name) }}
+        device_area_id: {{ q(dev_area_id) }}
+        device_area_name: {{ q(dev_area_name) }}
+        device_name: {{ q(dev_name) }}
+        manufacturer: {{ q(dev_mfr) }}
+        model: {{ q(dev_model) }}
+        sw_version: {{ q(dev_sw) }}
+        hw_version: {{ q(dev_hw) }}
+        configuration_url: {{ q(dev_cfg) }}
+        via_device_name: {{ q(via_name) }}
+        via_device_id: {{ q(via_id) }}
+        device_id: {{ q(dev_id) }}
+{% endfor -%}
+{% endif -%}
+{% endfor -%}

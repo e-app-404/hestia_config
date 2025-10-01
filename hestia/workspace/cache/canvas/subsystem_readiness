@@ -1,0 +1,130 @@
+sensor:
+  - name: "Aether System Readiness Delta"
+    unique_id: aether_system_readiness_delta
+    icon: mdi:checkbox-marked-circle-outline
+    state: >
+      {% set error_count = states('sensor.aether_error_count') | int(0) %}
+      {% set sensor_quality = states('sensor.aether_sensor_quality_assessment_delta') %}
+      {% set climate_enabled = is_state('input_boolean.climate_automation_enabled', 'on') %}
+      
+      {% set previous_state = states('sensor.aether_system_readiness_delta') %}
+      {% set state_transition_time = state_attr('sensor.aether_system_readiness_delta', 'state_transition_time') | default(0) | int %}
+      {% set current_time = now().timestamp() | int %}
+      
+      {% set new_state = "" %}
+      {% if not climate_enabled %}
+        {% set new_state = "disabled" %}
+      {% elif error_count > 3 %}
+        {% set new_state = "critical" %}
+      {% elif error_count > 0 or sensor_quality == 'poor' %}
+        {% set new_state = "degraded" %}
+      {% elif sensor_quality == 'limited' %}
+        {% set new_state = "partial" %}
+      {% else %}
+        {% set new_state = "ready" %}
+      {% endif %}
+      
+      {% if new_state != previous_state %}
+        {% set state_transition_time = current_time %}
+      {% endif %}
+      
+      {{ new_state }}
+    attributes:
+      description: "System readiness assessment with time-weighted errors and quality metrics"
+      automation_enabled: "{{ is_state('input_boolean.climate_automation_enabled', 'on') }}"
+      error_count: "{{ states('sensor.aether_error_count') | int(0) }}"
+      sensor_quality: "{{ states('sensor.aether_sensor_quality_assessment_delta') }}"
+      mode: "{{ states('input_select.climate_mode') }}"
+      override_active: "{{ is_state('input_boolean.climate_override_active', 'on') }}"
+      state_transition_time: >
+        {% set previous_state = states('sensor.aether_system_readiness_delta') %}
+        {% set transition_time = state_attr('sensor.aether_system_readiness_delta', 'state_transition_time') | default(0) | int %}
+        {% set current_time = now().timestamp() | int %}
+        
+        {% set new_state = "" %}
+        {% if not is_state('input_boolean.climate_automation_enabled', 'on') %}
+          {% set new_state = "disabled" %}
+        {% elif states('sensor.aether_error_count') | int(0) > 3 %}
+          {% set new_state = "critical" %}
+        {% elif states('sensor.aether_error_count') | int(0) > 0 or states('sensor.aether_sensor_quality_assessment_delta') == 'poor' %}
+          {% set new_state = "degraded" %}
+        {% elif states('sensor.aether_sensor_quality_assessment_delta') == 'limited' %}
+          {% set new_state = "partial" %}
+        {% else %}
+          {% set new_state = "ready" %}
+        {% endif %}
+        
+        {% if new_state != previous_state %}
+          {{ current_time }}
+        {% else %}
+          {{ transition_time }}
+        {% endif %}
+      time_in_current_state: >
+        {% set transition_time = state_attr('sensor.aether_system_readiness_delta', 'state_transition_time') | default(0) | int %}
+        {% set current_time = now().timestamp() | int %}
+        {{ (current_time - transition_time) | int }}
+      canonical_id: "sensor_aether_system_readiness_δ"
+      tier: "δ"
+      subsystem: "aether"
+      module: "System Diagnostics"
+      type: "readiness"
+      role: "assessment"
+      config_filepath: "/config/hestia/sensors/delta/aether/quality/system_readiness.yaml"
+      upstream_source: ["sensor.aether_sensor_quality_assessment_delta", "sensor.aether_error_count"]
+      downstream_consumers: ["automation.aether_system_health_notification"]
+      retention: "State transition time persists across restarts"
+      update_frequency: "1 minute"
+      tags: "aether,system,readiness,δ"
+  
+  - name: "Aether Error Count Delta"
+    unique_id: aether_error_count_delta
+    icon: mdi:alert
+    state: >
+      {% set subsystem = 'aether' %}
+      {% set current_errors = states
+        | selectattr('attributes.subsystem', 'equalto', subsystem)
+        | selectattr('state', 'in', ['unavailable', 'unknown', 'none', '', none])
+        | list | count %}
+      
+      {% set previous_count = states('sensor.aether_error_count_delta') | int(0) %}
+      {% set decay_factor = 0.95 %}
+      
+      {% if current_errors > previous_count %}
+        {{ current_errors }}
+      {% else %}
+        {% set decayed_count = (previous_count * decay_factor) | round(0) %}
+        {% if decayed_count < current_errors %}
+          {{ current_errors }}
+        {% else %}
+          {{ decayed_count }}
+        {% endif %}
+      {% endif %}
+    attributes:
+      error_sources: >
+        {% set subsystem = 'aether' %}
+        {% set problem_entities = states
+          | selectattr('attributes.subsystem', 'equalto', subsystem)
+          | selectattr('state', 'in', ['unavailable', 'unknown', 'none', '', none])
+          | map(attribute='entity_id')
+          | list %}
+        {{ problem_entities | join(', ') if problem_entities else 'None' }}
+      raw_error_count: >
+        {% set subsystem = 'aether' %}
+        {{ states
+          | selectattr('attributes.subsystem', 'equalto', subsystem)
+          | selectattr('state', 'in', ['unavailable', 'unknown', 'none', '', none])
+          | list | count }}
+      decay_factor: 0.95
+      canonical_id: "sensor_aether_error_count_δ"
+      tier: "δ"
+      subsystem: "aether"
+      module: "System Diagnostics"
+      type: "decay"
+      role: "error_counter"
+      config_filepath: "/config/hestia/sensors/delta/aether/quality/system_readiness.yaml"
+      description: "Counts errors in Aether subsystem with gradual decay to prevent flapping"
+      upstream_source: ["group.aether_entities"]
+      downstream_consumers: ["sensor.aether_system_readiness_delta"] 
+      retention: "Error count decays over time"
+      update_frequency: "1 minute"
+      tags: "aether,errors,decay,δ"

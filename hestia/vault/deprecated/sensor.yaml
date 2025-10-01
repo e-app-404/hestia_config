@@ -1,7 +1,0 @@
-# >> Sensors
-# >> Loader: !include_dir_merge_list → entities/sensor/inference/
-# >> Structure: binary_sensor: > - platform: template
-
-sensor:
-  - !include_dir_merge_list entities/sensor/system/
-  - !include_dir_merge_list entities/sensor/trends/

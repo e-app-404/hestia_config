@@ -1,14 +1,15 @@
 #!/usr/bin/env python3
-import sys
-import os
-import json
-import re
-import csv
 import argparse
+import csv
+import json
+import os
+import re
+import sys
+from collections import Counter, defaultdict
 from pathlib import Path
+
+from jsonschema import validate
 from ruamel.yaml import YAML
-from jsonschema import validate, ValidationError
-from collections import defaultdict, Counter
 from tabulate import tabulate
 
 # --- CONSTANTS & NORMALIZATION MAPS ---
@@ -360,8 +361,9 @@ def phase_b1(args, schema, tier_rules):
     print(f"Phase B.1 proposals written to {Path(args.reports) / 'b1_proposals.csv'} and {Path(args.reports) / 'b1_proposals.md'}")
 
 def phase_c(args, schema, tier_rules):
-    import pandas as pd
     from collections import defaultdict
+
+    import pandas as pd
     reports_dir = Path(args.reports)
     # Load prior artifacts
     inv_path = reports_dir / "inventory.csv"
@@ -473,10 +475,9 @@ def phase_c(args, schema, tier_rules):
     write_report(reports_dir / "phase_c_naming_violations.md", "\n".join(naming_md))
 
 def phase_dprime(args, schema, tier_rules):
-    import pandas as pd
-    from io import StringIO
-    from difflib import unified_diff
     import copy
+    from io import StringIO
+
     reports_dir = Path(args.reports)
     diffs_dir = reports_dir / "phase_dprime_diffs"
     diffs_dir.mkdir(parents=True, exist_ok=True)
@@ -578,7 +579,6 @@ def phase_dprime(args, schema, tier_rules):
             if not (add_canonical_id or add_file):
                 skips.append({"file_path": str(file_path), "reason": "[already-has-canonical_id-and-file]"})
                 continue
-            import copy
             def leaf_paths_and_values(obj, prefix=()):
                 if isinstance(obj, dict):
                     for k, v in obj.items():
@@ -640,7 +640,6 @@ def phase_dprime(args, schema, tier_rules):
                 if k not in sim_surface or not isinstance(sim_surface[k], (str, int, float)):
                     touched_ok = False
             # Diff (must be only additions)
-            from io import StringIO
             orig_buf = StringIO(); yaml.dump(orig, orig_buf); orig_text = orig_buf.getvalue().splitlines(keepends=True)
             new_buf  = StringIO(); yaml.dump(sim,  new_buf ); new_text  = new_buf.getvalue().splitlines(keepends=True)
             import difflib
@@ -690,8 +689,8 @@ def phase_dprime(args, schema, tier_rules):
 
 def phase_d_apply(args, schema, tier_rules):
     import copy
-    from io import StringIO
     import difflib
+    from io import StringIO
     reports_dir = Path(args.reports)
     patch_root = reports_dir / "phase_d_patches"
     patch_root.mkdir(parents=True, exist_ok=True)
@@ -897,13 +896,13 @@ def phase_d_apply(args, schema, tier_rules):
         print("[Phase D] No qualifying entities or unexpected deletions detected. No files written.")
     else:
         print(f"[Phase D] Files changed: {len(changed)} | Entities updated: {sum(1 for _ in changed)}")
-        print(f"[Phase D] Head of phase_d_apply_summary.md:")
+        print("[Phase D] Head of phase_d_apply_summary.md:")
         with open(reports_dir / "phase_d_apply_summary.md", "r", encoding="utf-8") as f:
             for _ in range(10):
                 line = f.readline()
                 if not line: break
                 print(line.rstrip())
-        print("\nReview all diffs in /config/hestia/diagnostics/reports/phase_d_patches/ and run:")
+        print("\nReview all diffs in /config/hestia/config/diagnostics/reports/phase_d_patches/ and run:")
         print("  pre-commit run --all-files\n  make validate\n  git show --stat\n")
 
 # --- MAIN ---

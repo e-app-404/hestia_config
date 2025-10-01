@@ -14,7 +14,7 @@ cleanup() {
 trap cleanup EXIT INT TERM
 
 # generate candidate list safely (limit and avoid shell history expansion issues)
-git -C "$REPO" ls-files -z -- . ":!hestia/core/architecture/**" ":!hestia/vault/**" ":!hestia/work/**" ":!.git/**" | tr '\0' '\n' > /tmp/hestia_candidates.list
+git -C "$REPO" ls-files -z -- . ":!hestia/core/architecture/**" ":!hestia/workspace/archive/vault/**" ":!hestia/workspace/**" ":!.git/**" | tr '\0' '\n' > /tmp/hestia_candidates.list
 
 # enforce an upper bound on list size to avoid pathological repos
 CAND_COUNT=$(wc -l < /tmp/hestia_candidates.list | tr -d '[:space:]' || echo 0)
@@ -25,9 +25,9 @@ fi
 
 # Count pre-hits with timeout to avoid long-running grep
 if command -v timeout >/dev/null 2>&1; then
-  PRE_HITS=$(timeout $CMD_TIMEOUT grep -REn --binary-files=without-match "/Volumes/(HA|ha)" -I "$REPO" --exclude-dir=hestia/core/architecture --exclude-dir=hestia/vault --exclude-dir=hestia/work --exclude-dir=.git 2>/dev/null | wc -l | tr -d '[:space:]' || true)
+  PRE_HITS=$(timeout $CMD_TIMEOUT grep -REn --binary-files=without-match "/Volumes/(HA|ha)" -I "$REPO" --exclude-dir=hestia/core/architecture --exclude-dir=hestia/workspace/archive/vault --exclude-dir=hestia/work --exclude-dir=.git 2>/dev/null | wc -l | tr -d '[:space:]' || true)
 else
-  PRE_HITS=$(grep -REn --binary-files=without-match "/Volumes/(HA|ha)" -I "$REPO" --exclude-dir=hestia/core/architecture --exclude-dir=hestia/vault --exclude-dir=hestia/work --exclude-dir=.git 2>/dev/null | wc -l | tr -d '[:space:]' || true)
+  PRE_HITS=$(grep -REn --binary-files=without-match "/Volumes/(HA|ha)" -I "$REPO" --exclude-dir=hestia/core/architecture --exclude-dir=hestia/workspace/archive/vault --exclude-dir=hestia/work --exclude-dir=.git 2>/dev/null | wc -l | tr -d '[:space:]' || true)
 fi
 PRE_HITS=${PRE_HITS:-0}
 echo "EVIDENCE: pre_hits=$PRE_HITS"

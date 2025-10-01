@@ -1,10 +1,10 @@
 #!/bin/bash
 
 # Create a tarball of the workspace, excluding logs, databases, temp, and large media
-# Output: /n/ha/hestia/vault/tarballs/hestia_snapshot_$timestamp.tar.gz
+# Output: ~/hass/hestia/workspace/archive/vault/tarballs/hestia_snapshot_$timestamp.tar.gz
 
 WORKSPACE_DIR="$(cd "$(dirname "$0")/../.." && pwd)"
-TARBALL_DIR="/n/ha/hestia/vault/tarballs"
+TARBALL_DIR="$HOME/hass/hestia/workspace/archive/vault/tarballs"
 TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
 TARBALL_NAME="ha_hestia_snapshot_${TIMESTAMP}.tar.gz"
 
@@ -29,9 +29,9 @@ EXCLUDES=(
   --exclude='zigbee2mqtt/'
   --exclude='home-assistant_v2.db'
   --exclude='home-assistant.log*'
-  --exclude='hestia/tarballs/'
+  --exclude='hestia/workspace/archive/vault/tarballs/'
+  --exclude='hestia/workspace/archive/vault/'
   --exclude='custom_components/'
-  --exclude='hestia/vault/'
   --exclude='hacs/'
 )
 

@@ -1,0 +1,136 @@
+awesome—now that ~/hass is the canonical, working mount, here’s everything you asked for: governance addendums, what to review across your repos, a sanity-checked workspace file, and a Copilot prompt to make the edits fast.
+
+ADR / Governance Addendums
+
+ADR-0016-A1: Canonical HA Mount (Operator Workstation)
+	•	Decision: The only canonical operator path to the HA config share is ~/hass. All tooling must reference it via HA_MOUNT=~/hass. Alternate mounts (e.g., /Volumes/config, autofs paths) are forbidden for day-to-day operations.
+	•	Rationale: Single source of truth eliminates drift and “ghost edit” incidents.
+	•	Implementation:
+	•	Env: append export HA_MOUNT="$HOME/hass" to the user shell init (~/.zshrc).
+	•	LaunchAgent: ~/Library/LaunchAgents/com.local.hass.mount.plist executes $HOME/bin/hass_mount_once.sh.
+	•	Helper: $HOME/bin/hass_mount_once.sh mounts with explicit URL creds, -o nobrowse, and a locked pre-mount directory to avoid .DS_Store races.
+	•	Acceptance:
+	•	mount | egrep -i "on $HOME/hass .*smbfs" shows the share.
+	•	test -w "$HOME/hass" and test -f "$HOME/hass/configuration.yaml" succeed.
+	•	Prohibited: Symlinks into HA-loaded paths (reaffirm ADR-0015); direct edits under /Volumes/config; autofs for HA.
+	•	Rollback: diskutil unmount "$HOME/hass"; remove LaunchAgent; remove HA_MOUNT export.
+
+ADR-0016-A2: Headless Auth & Credential Stores
+	•	Decision: SMB auth uses the Samba account evertappels. Password is stored in Keychain entries with services homeassistant and homeassistant.local. Do not use HA UI users for SMB.
+	•	Rationale: Finder and scripts stay consistent, no prompts.
+	•	Implementation: Maintain both Keychain items for evertappels; if password rotates, update both.
+	•	Acceptance: smbutil view //evertappels@homeassistant </dev/null runs non-interactively.
+	•	Prohibited: Embedding plaintext creds in repos or scripts.
+
+ADR-0016-A3: Mountpoint Race Hardening
+	•	Decision: Before mounting, ~/hass is created and chmod 000 applied to block transient writes (e.g., .DS_Store), mount with -o nobrowse, then validate.
+	•	Rationale: Eliminates kernel EEXIST races.
+	•	Runbook:
+	•	If mount fails with RC=64, normalize flags (chflags nouchg,noschg) and ACLs (chmod -N), then re-run helper.
+	•	If /Volumes/config is mounted, unmount it first.
+	•	Acceptance: helper prints OK; LaunchAgent logs do not show repeated File exists errors.
+
+ADR-0015-A1: No Symlink Bridges Into HA Paths
+	•	Decision: No symlinks to or inside ~/hass that HA will load.
+	•	Rationale: Prevents backup and tooling ambiguity.
+	•	Enforcement: CI check rejects symlinks within the repo (see artifact list below).
+
+ADR-0016-A4: Legacy Mount Decommissioning
+	•	Decision: Remove autofs entries (/etc/auto_ha, auto_master reference) and any LaunchAgents that mount to non-canonical locations.
+	•	Rationale: Avoid duplicate mounts and nondeterminism.
+	•	Acceptance: mount shows no HA shares except ~/hass. automount -vc shows no ha maps.
+
+⸻
+
+Artifacts to review / correct
+
+A) HA config workspace (the live share at ~/hass)
+	•	Shell init: ~/.zshrc must export HA_MOUNT="$HOME/hass".
+	•	LaunchAgent: ~/Library/LaunchAgents/com.local.hass.mount.plist → points to /bin/zsh -lc "$HOME/bin/hass_mount_once.sh".
+	•	Helper script: $HOME/bin/hass_mount_once.sh → present, executable, uses URL-encoded password; contains -o nobrowse -d 0777 -f 0777.
+	•	Autofs: /etc/auto_master (no auto_ha), /etc/auto_ha removed.
+	•	Any scripts in hestia/tools, scripts/, python_scripts/, Makefile, *.sh:
+	•	Replace hardcoded /Volumes/config with $HA_MOUNT.
+	•	Remove assumptions about autofs (/n/ha, /Volumes/ha).
+	•	CI/lint tooling in repo (.github/workflows/, Makefile, pyproject.toml, linters):
+	•	Ensure they do not require Finder mounts; use $HA_MOUNT.
+	•	Symlink audit: no symlinks inside ~/hass pointing outside; fail CI if found.
+	•	Ignore big/volatile files in git:
+	•	home-assistant_v2.db*, home-assistant.log*, .storage/, deps/, tts/, www/, reports/, tmp/, .cloud/, zigbee2mqtt/ data, artifacts/.
+	•	Docs: README/CONTRIBUTING updated to reference ~/hass, not /Volumes/config.
+
+B) Omega registry repo (manifests / ops registry)
+	•	Path references:
+	•	Replace any host-absolute paths (/Volumes/config, /n/ha, /Users/.../config) with $HA_MOUNT.
+	•	Automations & scripts:
+	•	Validators, exporters, release scripts must target $HA_MOUNT.
+	•	Secrets handling:
+	•	Ensure these tools never read from ~/.ssh or other private dirs via workspace folder inclusion; use explicit paths and env vars.
+
+C) HA “bb-8” addon repo
+	•	Dev scripts / Docker compose:
+	•	Ensure bind mounts refer to HA internal /config or host $HA_MOUNT, never /Volumes/config.
+	•	Build pipelines:
+	•	Any fetch/push of config should resolve via $HA_MOUNT.
+	•	Docs & examples:
+	•	Update usage to instruct contributors to mount via ~/hass.
+
+D) Cross-cutting
+	•	VS Code tasks (.vscode/tasks.json) and launch configs (launch.json):
+	•	Use $HA_MOUNT and avoid hardcoded absolute paths.
+	•	.env files:
+	•	Include HA_MOUNT with value ~/hass and reference it in scripts.
+
+⸻
+
+Copilot execution prompt (to apply workspace/repo changes)
+
+Use this exact prompt in a single Copilot chat in the root of ~/hass. It’s optimized to perform concrete changes with diffs.
+
+Role: Senior repo janitor. Operate only in the current repository (the live HA config at ~/hass). No speculative changes; propose a git patch per change.
+
+Objectives:
+1) Enforce canonical path usage.
+   - Replace any hard-coded occurrences of '/Volumes/config' or '/n/ha' with '$HA_MOUNT' or '${HA_MOUNT}' in scripts, Makefiles, and docs.
+   - For zsh/bash scripts, if HA_MOUNT is unset, default it to "$HOME/hass".
+
+2) Remove disallowed symlinks in HA-loaded paths.
+   - Detect symlinks anywhere under the repo (excluding .git) and propose a patch that replaces them with real files or updates references to use relative paths inside the repo.
+   - Fail the run if symlinks remain, except those within .git.
+
+3) Update ignores to prevent accidental commits of volatile data.
+   - Ensure .gitignore contains: 
+     home-assistant_v2.db*
+     .storage/
+     deps/
+     tts/
+     www/
+     reports/
+     tmp/
+     .cloud/
+     artifacts/
+     *.pyc
+     .DS_Store
+   - If any listed items are missing, propose a .gitignore patch.
+
+4) CI/Tasks alignment.
+   - Scan .github/workflows, Makefile, scripts/, hestia/tools/ for hard-coded mount paths and propose patches to use $HA_MOUNT.
+   - Ensure any script that shells out to HA config uses "$HA_MOUNT" consistently.
+
+5) Workspace file.
+   - Create or update a single-folder VS Code workspace file 'HA-Live.code-workspace' at repo root using '/Users/evertappels/hass' as the folder path and the settings provided in the “corrected single-folder workspace” section of the discussion.
+
+Constraints:
+- Produce a single aggregated patch (git apply format) with file-by-file diffs.
+- Do not modify LaunchAgent or home directory files; repo only.
+- No inline comments in scripts you modify.
+- Keep changes idempotent and POSIX/zsh compatible.
+
+Deliverables:
+- A unified diff ready for 'git apply', covering all changes above.
+- A short summary of each change block and the grep queries you used to identify issues.
+
+
+⸻
+
+If you want me to generate a ready-to-apply unified diff for the repo now, say the word and I’ll produce it against the assumptions above.

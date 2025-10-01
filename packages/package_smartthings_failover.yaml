@@ -32,12 +32,11 @@ group:
     name: "SmartThings Entities"
     entities:
       - binary_sensor.bedroom_security_cam_alpha_motion
-      - binary_sensor.bedroom_wardrobe_motion_alpha
-      - binary_sensor.entrance_door_motion_smartthings_alpha
       - binary_sensor.evert_alpha_presence_iphone_presence
-      - binary_sensor.kitchen_motion_wifi_alpha
       - binary_sensor.living_room_multipurpose_alpha_motion
-      - light.kitchen_cupboards_lightstrip_wifi_alpha
+      - light.living_room_floorlamp_beta
+      - light.living_room_foxy_beta
+      - light.living_room_side_beta
       - media_player.bedroom_tv_alpha
       - sensor.bedroom_illuminance_wifi_alpha_brightness_intensity
       - sensor.bedroom_illuminance_wifi_alpha_illuminance
@@ -48,25 +47,15 @@ group:
       - sensor.bedroom_tv_alpha_power_energy
       - sensor.bedroom_tv_alpha_tv_channel
       - sensor.bedroom_tv_alpha_tv_channel_name
-      - sensor.ensuite_ambient_climate_alpha_humidity
-      - sensor.ensuite_ambient_climate_alpha_temperature
       - sensor.home_iot_hub_tapo_alarm
-      - sensor.kitchen_lightstrip_alpha_energy
-      - sensor.kitchen_lightstrip_alpha_energy_difference
       - sensor.living_room_multipurpose_alpha_battery
       - sensor.living_room_multipurpose_alpha_illuminance
       - sensor.living_room_multipurpose_alpha_temperature
-      - sensor.living_room_stringlights_alpha_energy
-      - sensor.living_room_stringlights_alpha_energy_difference
       - switch.bedroom_illuminance_wifi_alpha
       - switch.bedroom_virtual_illuminance_level_1
       - switch.bedroom_virtual_illuminance_level_2
       - switch.bedroom_virtual_illuminance_level_3
       - switch.bedroom_virtual_illuminance_level_4
-      - switch.kitchen_lightstrip_alpha
-      - switch.living_room_stringlights_alpha
-      - switch.power_hub_aeotec_smartthings_plug_1
-      - switch.powerstrip_ha_rpi5_plug_3
 
 # ⟫⟫ ⟫ ⟫⟫ ⟫⟫ ⟫⟫ ⟫⟫ ⟫⟫ ⟫⟫ TEMPLATES
 

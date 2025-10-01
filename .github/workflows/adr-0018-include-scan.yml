@@ -53,7 +53,7 @@ jobs:
           echo "Checking for tracked backup files (*.bk.*)..."
           BK_FILES=$(git ls-files '*.bk.*' 2>/dev/null || true)
           if [ -n "$BK_FILES" ]; then
-            echo "\nWARNING: Tracked backup files detected (must be untracked or moved to hestia/vault/backups). These will fail CI after a 30-day grace period:" >&2
+            echo "\nWARNING: Tracked backup files detected (must be untracked or moved to hestia/workspace/archive/vault/backups). These will fail CI after a 30-day grace period:" >&2
             echo "$BK_FILES" >&2
             WARN=1
           fi

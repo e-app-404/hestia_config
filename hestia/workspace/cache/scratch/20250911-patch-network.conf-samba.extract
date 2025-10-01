@@ -1,0 +1,33 @@
+global:
+  workgroup: WORKGROUP
+  server_string: "Hestia Samba"
+  log_level: 1
+  interfaces: "192.168.0.0/24"
+
+shares:
+  config_share:
+    path: /config
+    browseable: true
+    read_only: false
+    guest_ok: false
+    valid_users:
+      - homeassistant
+    comment: "Home Assistant configuration (read/write for HA user)"
+
+  media:
+    path: /mnt/data/media
+    browseable: true
+    read_only: false
+    guest_ok: false
+    valid_users:
+      - media_user
+    comment: "Media library share (restrict by user/group)"
+
+  backups:
+    path: /mnt/backups
+    browseable: true
+    read_only: false
+    guest_ok: false
+    valid_users:
+      - backup_user
+    comment: "Backup destination for selected systems"

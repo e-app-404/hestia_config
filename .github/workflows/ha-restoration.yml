@@ -1,0 +1,111 @@
+name: HA Restoration — Deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      ha_host:
+        description: "SSH host or alias for HA OS (e.g., hass)"
+        required: true
+        default: "hass"
+      backup_source:
+        description: "Local path on runner to backup .storage"
+        required: true
+        default: "/Users/evertappels/Projects/HomeAssistant/_backups/f050d566/homeassistant/data/.storage"
+      matter_mode:
+        description: "Matter behavior"
+        type: choice
+        options: [skip, enable]
+        default: "skip"
+      dry_run:
+        description: "Run deployment in dry-run mode (no changes)"
+        type: boolean
+        default: true
+
+env:
+  HA_DST: /config/_backup_source/.storage
+  BUNDLE_TGZ: home_assistant_complete_restoration_v2.0_FINAL_APPROVED.tar.gz
+  BUNDLE_DIR: restoration_bundle_v2.0
+
+jobs:
+  preflight:
+    name: Preflight / Dry Run
+    runs-on: self-hosted
+    # Add custom labels so this only runs on your Mac runner, e.g. ["self-hosted","mac-lan"]
+    # runs-on: [self-hosted, mac-lan]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Verify tools on runner
+        run: |
+          command -v ssh && ssh -V
+          command -v rsync
+          test -f "$BUNDLE_TGZ" || { echo "❌ $BUNDLE_TGZ not found in repo root"; exit 1; }
+
+      - name: Create destination on HA
+        run: |
+          ssh "${{ inputs.ha_host }}" 'mkdir -p '"$HA_DST"''
+
+      - name: Rsync backup .storage from runner → HA
+        run: |
+          rsync -av --delete --exclude '._*' --exclude '.DS_Store' \
+            "${{ inputs.backup_source }}/" \
+            "${{ inputs.ha_host }}:${HA_DST}/"
+
+      - name: Upload bundle to HA (if not already extracted)
+        run: |
+          ssh "${{ inputs.ha_host }}" "test -d /config/$BUNDLE_DIR || (cp -f ${BUNDLE_TGZ} /config/ && cd /config && tar -xzf ${BUNDLE_TGZ})"
+          ssh "${{ inputs.ha_host }}" "ls -la /config/${BUNDLE_DIR}"
+
+      - name: Validate bundle on HA (no changes)
+        run: |
+          ssh "${{ inputs.ha_host }}" "cd /config/${BUNDLE_DIR} && ./validate_bundle.sh --backup-source ${HA_DST}"
+
+      - name: Dry run plan (no writes)
+        if: ${{ inputs.dry_run == true }}
+        run: |
+          ssh "${{ inputs.ha_host }}" "cd /config/${BUNDLE_DIR} && ./deploy_complete_restoration.sh --dry-run --backup-source ${HA_DST} $(
+            [ '${{ inputs.matter_mode }}' = 'skip' ] && echo '--skip-matter' || echo '--enable-matter-from-backup'
+          )"
+
+  deploy:
+    name: Deploy to Production
+    needs: preflight
+    runs-on: self-hosted
+    # runs-on: [self-hosted, mac-lan]
+    environment:
+      name: production
+      # Optional: add required reviewers in repo settings → Environments → production
+    if: ${{ inputs.dry_run == false }}
+
+    steps:
+      - name: Stop HA Core (SSH session stays up)
+        run: |
+          ssh "${{ inputs.ha_host }}" "ha core stop && ha core info | grep 'state'"
+
+      - name: Execute restoration (conservative Matter default)
+        run: |
+          ssh "${{ inputs.ha_host }}" "cd /config/${BUNDLE_DIR} && ./deploy_complete_restoration.sh --backup-source ${HA_DST} $(
+            [ '${{ inputs.matter_mode }}' = 'skip' ] && echo '--skip-matter' || echo '--enable-matter-from-backup'
+          )"
+
+      - name: Start HA Core and verify
+        run: |
+          ssh "${{ inputs.ha_host }}" "ha core start && sleep 5 && ha core info | grep 'state'"
+
+      - name: Post-check logs and counts (binary acceptance)
+        run: |
+          ssh "${{ inputs.ha_host }}" "tail -n 200 /config/home-assistant.log | egrep -i 'error|critical|traceback|registry' || echo 'log looks clean'"
+          ssh "${{ inputs.ha_host }}" "python3 - <<'PY'\nimport json;print('areas:',len(json.load(open('/config/.storage/core.area_registry'))['data']['areas']))\nPY"
+          ssh "${{ inputs.ha_host }}" "python3 - <<'PY'\nimport json;print('floors:',len(json.load(open('/config/.storage/core.floor_registry'))['data']['floors']))\nPY"
+
+  rollback:
+    name: Rollback (Manual)
+    runs-on: self-hosted
+    # runs-on: [self-hosted, mac-lan]
+    if: ${{ false }} # enable by editing to true or make another workflow_dispatch
+    steps:
+      - name: Invoke global rollback helper (from your deploy script)
+        run: |
+          ssh "${{ inputs.ha_host }}" "cd /config/${{ env.BUNDLE_DIR }} && ./deploy_complete_restoration.sh --rollback-latest"

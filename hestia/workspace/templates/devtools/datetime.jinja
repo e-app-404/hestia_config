@@ -1,0 +1,12 @@
+{# --- hardened pattern to reuse everywhere --- #}
+
+{% set raw = states('input_datetime.smartthings_first_failure_time') %}
+{% set t = as_datetime(raw) if raw not in ['unknown','unavailable',''] else None %}
+{{ t is not none and now() > t }}
+
+{# --- arithmetic --- #}
+
+{% set raw = states('input_datetime.last_ha_restart') %}
+{% set t = as_datetime(raw) if raw not in ['unknown','unavailable',''] else None %}
+{% set minutes = 90 %}
+{{ t is not none and ( now() - t ).total_seconds() > minutes * 60 }}

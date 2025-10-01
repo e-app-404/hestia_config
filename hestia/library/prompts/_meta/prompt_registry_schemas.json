@@ -1,0 +1,366 @@
+{
+  "prompt_registry_schema": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "HESTIA Prompt Registry Schema",
+    "description": "Schema for prompt definition, evaluation, and governance tracking",
+    "type": "array",
+    "items": {
+      "type": "object",
+      "required": ["id", "file", "title", "description", "type", "status", "tier", "domain", "applied_by", "derived_from"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^prompt_\\d{8}_\\d{3}$",
+          "description": "Unique prompt identifier in format prompt_YYYYMMDD_XXX"
+        },
+        "file": {
+          "type": "string",
+          "pattern": "\\.md$",
+          "description": "Source file containing the prompt definition"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 10,
+          "maxLength": 100,
+          "description": "Human-readable prompt title"
+        },
+        "description": {
+          "type": "string",
+          "minLength": 50,
+          "maxLength": 500,
+          "description": "Detailed purpose and context description"
+        },
+        "type": {
+          "type": "string",
+          "enum": ["structured", "freeform", "recursive_structural", "validation_trigger", "fallback", "instructional", "operational", "extractor"],
+          "description": "Primary prompt classification type"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["unreviewed", "candidate", "approved", "deprecated", "validated", "provisional", "rejected"],
+          "description": "Current review and approval status"
+        },
+        "tier": {
+          "type": "string",
+          "pattern": "^[αβγδεζημΩ]$",
+          "description": "HESTIA tier classification for the prompt"
+        },
+        "domain": {
+          "type": "string",
+          "enum": ["agents", "validation", "extraction", "transformation", "governance", "diagnostic", "instructional", "operational", "fallback"],
+          "description": "Functional domain of the prompt"
+        },
+        "applied_by": {
+          "type": "string",
+          "description": "Entity that created or last modified the prompt"
+        },
+        "derived_from": {
+          "type": "string",
+          "description": "Source or inspiration for the prompt definition"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-zA-Z][a-zA-Z0-9_]*$"
+          },
+          "uniqueItems": true,
+          "description": "Categorization tags for discovery and grouping"
+        },
+        "linked_personas": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-zA-Z][a-zA-Z0-9_]*$"
+          },
+          "uniqueItems": true,
+          "description": "Personas that use or reference this prompt"
+        },
+        "confidence_score": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100,
+          "description": "Reliability score based on testing and evaluation"
+        },
+        "deviation_flag": {
+          "type": "boolean",
+          "description": "Indicates if prompt behavior deviates from expected patterns"
+        },
+        "evaluations": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["date", "evaluator", "score", "notes"],
+            "properties": {
+              "date": {
+                "type": "string",
+                "format": "date"
+              },
+              "evaluator": {
+                "type": "string"
+              },
+              "score": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 100
+              },
+              "notes": {
+                "type": "string"
+              },
+              "test_scenarios": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "description": "Historical evaluation records"
+        },
+        "version": {
+          "type": "string",
+          "pattern": "^\\d+\\.\\d+(\\.\\d+)?$",
+          "description": "Semantic version of the prompt"
+        },
+        "changelog": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["version", "date", "changes"],
+            "properties": {
+              "version": {
+                "type": "string"
+              },
+              "date": {
+                "type": "string",
+                "format": "date"
+              },
+              "changes": {
+                "type": "string"
+              },
+              "applied_by": {
+                "type": "string"
+              }
+            }
+          },
+          "description": "Version history and modification tracking"
+        },
+        "dependencies": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Other prompts or artifacts this prompt depends on"
+        },
+        "usage_frequency": {
+          "type": "object",
+          "properties": {
+            "daily": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "monthly": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "last_used": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          "description": "Usage analytics for prompt optimization"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "prompt_registry_index_schema": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "HESTIA Prompt Registry Index Schema",
+    "description": "Schema for prompt registry indexing and aggregation",
+    "type": "object",
+    "required": ["metadata", "indices", "summaries"],
+    "properties": {
+      "metadata": {
+        "type": "object",
+        "required": ["version", "generated_on", "total_prompts"],
+        "properties": {
+          "version": {
+            "type": "string",
+            "pattern": "^\\d+\\.\\d+$"
+          },
+          "generated_on": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "total_prompts": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "last_modified": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "indices": {
+        "type": "object",
+        "required": ["tag_to_prompt_ids", "persona_to_prompt_ids", "domain_to_prompt_ids", "tier_to_prompt_ids"],
+        "properties": {
+          "tag_to_prompt_ids": {
+            "type": "object",
+            "patternProperties": {
+              "^[a-zA-Z][a-zA-Z0-9_]*$": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "pattern": "^prompt_\\d{8}_\\d{3}$"
+                }
+              }
+            }
+          },
+          "persona_to_prompt_ids": {
+            "type": "object",
+            "patternProperties": {
+              "^[a-zA-Z][a-zA-Z0-9_]*$": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "pattern": "^prompt_\\d{8}_\\d{3}$"
+                }
+              }
+            }
+          },
+          "domain_to_prompt_ids": {
+            "type": "object",
+            "patternProperties": {
+              "^[a-zA-Z][a-zA-Z0-9_]*$": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "pattern": "^prompt_\\d{8}_\\d{3}$"
+                }
+              }
+            }
+          },
+          "tier_to_prompt_ids": {
+            "type": "object",
+            "patternProperties": {
+              "^[αβγδεζημΩ]$": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "pattern": "^prompt_\\d{8}_\\d{3}$"
+                }
+              }
+            }
+          },
+          "status_to_prompt_ids": {
+            "type": "object",
+            "patternProperties": {
+              "^(unreviewed|candidate|approved|deprecated|validated|provisional|rejected)$": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "pattern": "^prompt_\\d{8}_\\d{3}$"
+                }
+              }
+            }
+          }
+        }
+      },
+      "summaries": {
+        "type": "object",
+        "required": ["status_summary", "type_summary", "tier_summary", "domain_summary"],
+        "properties": {
+          "status_summary": {
+            "type": "object",
+            "patternProperties": {
+              "^(unreviewed|candidate|approved|deprecated|validated|provisional|rejected)$": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
+          },
+          "type_summary": {
+            "type": "object",
+            "patternProperties": {
+              "^(structured|freeform|recursive_structural|validation_trigger|fallback|instructional|operational|extractor)$": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
+          },
+          "tier_summary": {
+            "type": "object",
+            "patternProperties": {
+              "^[αβγδεζημΩ]$": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
+          },
+          "domain_summary": {
+            "type": "object",
+            "patternProperties": {
+              "^[a-zA-Z][a-zA-Z0-9_]*$": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
+          },
+          "confidence_metrics": {
+            "type": "object",
+            "properties": {
+              "average_confidence": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 100
+              },
+              "confidence_distribution": {
+                "type": "object",
+                "properties": {
+                  "high": {
+                    "type": "integer",
+                    "description": "Count of prompts with confidence >= 80"
+                  },
+                  "medium": {
+                    "type": "integer",
+                    "description": "Count of prompts with confidence 50-79"
+                  },
+                  "low": {
+                    "type": "integer",
+                    "description": "Count of prompts with confidence < 50"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "health_indicators": {
+        "type": "object",
+        "properties": {
+          "deprecated_ratio": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "description": "Ratio of deprecated prompts to total prompts"
+          },
+          "evaluation_coverage": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "description": "Ratio of evaluated prompts to total prompts"
+          },
+          "deviation_alerts": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Count of prompts with deviation flags"
+          }
+        }
+      }
+    },
+    "additionalProperties": false
+  }
+}

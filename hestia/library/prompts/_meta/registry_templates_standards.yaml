@@ -1,0 +1,254 @@
+# HESTIA Prompt Templates & Standards Library
+# Consolidated templates, examples, formatting standards, and quality patterns
+
+prompt_templates:
+  universal_structure:
+    yaml_frontmatter:
+      required_fields:
+        id: "prompt_YYYYMMDD_XXX or established naming convention"
+        tier: "Greek letter (α, β, γ, δ, ε, ζ, η, Ω)"
+        domain: "Functional classification from domain taxonomy"
+        type: "Prompt classification type"
+        status: "Lifecycle status (active, approved, candidate, etc.)"
+        applied_by: "Entity responsible for creation/modification"
+        derived_from: "Source or inspiration for the prompt"
+
+      recommended_fields:
+        tags: "Array of categorization keywords"
+        linked_personas: "Array of personas that utilize this prompt"
+        confidence_score: "Integer 0-100 based on quality assessment"
+        deviation_flag: "Boolean indicating behavioral anomalies"
+        version: "Semantic version string"
+        dependencies: "Array of required artifacts or prompts"
+
+    instruction_structure:
+      role: "Clear identity and operational context"
+      task: "Specific objective and expected behavior"
+      behavior: "Detailed operational parameters and constraints"
+      validation: "Success criteria and quality gates"
+      output: "Expected format and deliverable specifications"
+
+  tier_specific_templates:
+    alpha_tier_template:
+      purpose: "Core system control and emergency protocols"
+      structure:
+        ```yaml
+        id: prompt_YYYYMMDD_XXX
+        tier: α
+        domain: [governance|behavior_governance|emergency_response]
+        type: [behavioral|emergency_takeover|activation]
+        status: [approved|active]
+        applied_by: chief_ai_officer
+        derived_from: [system_instruction.yaml|emergency_protocol]
+
+        instruction:
+          role: [System Controller|Emergency Responder|Behavioral Governor]
+          tone: [authoritative|surgical|unfuckwithable]
+          behavior: >
+            Detailed behavioral specification with clear authority boundaries
+            and emergency response protocols. Must include fail-safe conditions.
+
+        validation:
+          mode: [strict|absolute]
+          criteria:
+            - System integrity preservation
+            - Emergency response effectiveness
+            - Governance compliance validation
+
+        trigger_phrase: "activate emergency protocol [name]"
+        ```
+
+    beta_tier_template:
+      purpose: "Integration and operational workflow management"
+      structure:
+        ```yaml
+        id: prompt_YYYYMMDD_XXX
+        tier: β
+        domain: [operational|extraction|tooling_analysis]
+        type: [structured|operational|extractor]
+        status: [active|candidate]
+        applied_by: chief_ai_officer
+        derived_from: [workflow_specification|tool_requirements]
+
+        instruction:
+          role: [System Integrator|Workflow Orchestrator|Data Processor]
+          task: >
+            Clear operational objective with defined inputs, processing steps,
+            and expected outputs. Include error handling and edge cases.
+
+          phases:
+            - phase: Input Validation
+              actions: [validate_inputs, check_dependencies, confirm_readiness]
+            - phase: Processing
+              actions: [execute_primary_workflow, monitor_progress, handle_exceptions]
+            - phase: Output Generation
+              actions: [format_results, validate_outputs, deliver_artifacts]
+
+        output:
+          format: [yaml|json|markdown|structured_text]
+          schema: "Reference to expected output structure"
+
+        validation:
+          mode: strict
+          criteria:
+            - Input validation completeness
+            - Processing workflow adherence
+            - Output format compliance
+        ```
+
+    gamma_tier_template:
+      purpose: "Instructions and behavioral guidance"
+      structure:
+        ```yaml
+        id: prompt_YYYYMMDD_XXX
+        tier: γ
+        domain: [instructional|debugging|doc_ingestion]
+        type: [instructional|behavioral]
+        status: [approved|proposed]
+        applied_by: chief_ai_officer
+        derived_from: [user_requirements|best_practices]
+
+        instruction:
+          role: [Instructor|Guide|Documentation Specialist]
+          guidance: >
+            Clear instructional content with step-by-step procedures,
+            examples, and common pitfall avoidance strategies.
+
+          priorities:
+            1. Fix critical issues first
+            2. Provide clear explanations
+            3. Offer optimization suggestions only after validation
+            4. Include concrete examples
+
+        examples:
+          - scenario: "Common use case description"
+            input: "Example input format"
+            expected_output: "Example successful result"
+
+        validation:
+          mode: permissive
+          criteria:
+            - Instructional clarity
+            - Example completeness
+            - User experience optimization
+        ```
+
+  domain_specific_patterns:
+    extraction_prompts:
+      common_elements:
+        - source_specification: "Clear definition of input sources"
+        - extraction_criteria: "Specific rules for data identification"
+        - output_format: "Structured format for extracted data"
+        - quality_thresholds: "Confidence and completeness requirements"
+        - error_handling: "Procedures for malformed or missing data"
+
+      example_structure:
+        ```yaml
+        extraction_guidelines:
+          source_types: [yaml_files, json_documents, markdown_content]
+          identification_rules:
+            - pattern_matching: "Regex or keyword patterns"
+            - structural_analysis: "Schema or format requirements"
+            - semantic_filtering: "Content relevance criteria"
+
+        output_specification:
+          format: json
+          schema:
+            required_fields: [id, type, content, metadata]
+            optional_fields: [confidence, source_location, extraction_notes]
+        ```
+
+    operational_prompts:
+      common_elements:
+        - prerequisite_checks: "System state and dependency validation"
+        - execution_steps: "Ordered workflow with decision points"
+        - safety_measures: "Backup and rollback procedures"
+        - monitoring_hooks: "Progress tracking and health checks"
+        - completion_criteria: "Success validation and reporting"
+
+      workflow_patterns:
+        sequential_processing: "Linear step-by-step execution"
+        parallel_processing: "Concurrent operation coordination"
+        conditional_branching: "Decision-based workflow routing"
+        iterative_refinement: "Continuous improvement cycles"
+
+  quality_examples:
+    excellent_prompt_example:
+      characteristics:
+        - comprehensive_instruction_with_clear_role_definition
+        - detailed_behavioral_specifications_and_constraints
+        - concrete_examples_and_expected_outputs
+        - robust_validation_criteria_and_error_handling
+        - complete_metadata_with_proper_traceability
+
+    common_antipatterns:
+      avoid_these_issues:
+        - vague_role_definitions: "Use specific, actionable roles"
+        - missing_examples: "Always include concrete usage examples"
+        - unclear_success_criteria: "Define measurable validation criteria"
+        - incomplete_metadata: "Populate all required fields"
+        - circular_dependencies: "Ensure clean dependency chains"
+
+  formatting_standards:
+    yaml_style_guide:
+      indentation: "2 spaces, no tabs"
+      line_length: "Maximum 120 characters"
+      string_quoting: "Use quotes for values containing special characters"
+      array_format: "Inline for short arrays, block for complex structures"
+      comment_style: "Use # for explanatory comments, keep concise"
+
+    markdown_conventions:
+      headers: "Use ## for major sections, ### for subsections"
+      code_blocks: "Specify language for syntax highlighting"
+      emphasis: "Use **bold** for important terms, *italic* for emphasis"
+      lists: "Use - for unordered, 1. for ordered lists"
+      links: "Use descriptive text, avoid bare URLs"
+
+  validation_patterns:
+    instruction_quality_checklist:
+      role_clarity:
+        - "Is the role clearly defined and actionable?"
+        - "Does the role align with the prompt's tier and domain?"
+        - "Are authority boundaries and limitations specified?"
+
+      task_specification:
+        - "Is the objective clearly stated and measurable?"
+        - "Are success criteria explicitly defined?"
+        - "Are edge cases and error conditions addressed?"
+
+      behavioral_guidance:
+        - "Are behavioral constraints clearly specified?"
+        - "Is the interaction pattern well-defined?"
+        - "Are communication protocols established?"
+
+    metadata_quality_checklist:
+      completeness:
+        - "Are all required fields populated?"
+        - "Is the derivation source clearly traceable?"
+        - "Are dependencies accurately specified?"
+
+      accuracy:
+        - "Does the tier classification match the prompt's purpose?"
+        - "Is the domain assignment appropriate?"
+        - "Are tags relevant and standardized?"
+
+best_practices:
+  prompt_development:
+    design_principles:
+      - clarity_over_cleverness: "Prioritize clear, understandable instructions"
+      - modularity: "Design for reuse and composition with other prompts"
+      - fail_safely: "Include graceful degradation and error recovery"
+      - measurable_outcomes: "Define success criteria that can be validated"
+      - continuous_improvement: "Include mechanisms for refinement and optimization"
+
+  maintenance_guidelines:
+    regular_review_schedule:
+      - monthly_usage_analysis: "Review adoption and effectiveness metrics"
+      - quarterly_quality_audit: "Assess confidence scores and user feedback"
+      - annual_architectural_review: "Evaluate alignment with evolving standards"
+
+    update_procedures:
+      - version_increment: "Follow semantic versioning for significant changes"
+      - changelog_maintenance: "Document all modifications with rationale"
+      - dependency_validation: "Verify that changes don't break dependent prompts"
+      - approval_workflow: "Follow tier-appropriate review processes"

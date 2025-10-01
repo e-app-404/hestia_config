@@ -46,7 +46,7 @@ secret stored at `secret/hestia/samba/config_share`.
 
 ## Templates and examples
 
-Example templates live under `hestia/vault/templates/` and look like:
+Example templates live under `hestia/workspace/archive/vault/templates/` and look like:
 
 ```yaml
 username: homeassistant
@@ -59,7 +59,7 @@ consumers.
 
 ## Import helper (dry-run)
 
-`hestia/vault/import_templates/import_samba_and_tailscale.sh` prints
+`hestia/workspace/archive/vault/import_templates/import_samba_and_tailscale.sh` prints
 example vault CLI commands. It is a dry-run and will not modify any
 secret backend unless you replace the `echo` lines with your vault CLI
 commands (for example `vault kv put` for HashiCorp Vault).

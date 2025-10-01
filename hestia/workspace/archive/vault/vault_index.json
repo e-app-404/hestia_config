@@ -1,0 +1,575 @@
+{
+  "generated_at": "2025-09-30T05:02:57.337364+00:00",
+  "items": [
+    {
+      "path": "/Users/evertappels/hass/hestia/workspace/archive/vault/vault_index.json",
+      "category": "vault_index.json",
+      "size": 8602,
+      "mtime": "2025-09-30T02:37:44.129739+00:00"
+    },
+    {
+      "path": "/Users/evertappels/hass/hestia/workspace/archive/vault/vault_index.log",
+      "category": "vault_index.log",
+      "size": 52,
+      "mtime": "2025-09-30T02:37:44.217739+00:00"
+    },
+    {
+      "path": "/Users/evertappels/hass/hestia/workspace/archive/vault/import_templates/import_samba_and_tailscale.sh",
+      "category": "import_templates",
+      "size": 833,
+      "mtime": "2025-09-30T02:37:39.977725+00:00"
+    },
+    {
+      "path": "/Users/evertappels/hass/hestia/workspace/archive/vault/import_templates/README.md",
+      "category": "import_templates",
+      "size": 758,
+      "mtime": "2025-09-30T02:37:40.125725+00:00"
+    },
+    {
+      "path": "/Users/evertappels/hass/hestia/workspace/archive/vault/import_templates/import_to_vault.sh",
+      "category": "import_templates",
+      "size": 1819,
+      "mtime": "2025-09-30T02:37:40.237725+00:00"
+    },
+    {
+      "path": "/Users/evertappels/hass/hestia/workspace/archive/vault/registry/core.entity_registry.final_candidate.json",
+      "category": "registry",
+      "size": 2193306,
+      "mtime": "2025-09-30T02:37:40.929728+00:00"
+    },
+    {
+      "path": "/Users/evertappels/hass/hestia/workspace/archive/vault/deprecated/http.yaml",
+      "category": "deprecated",
+      "size": 387,
+      "mtime": "2025-09-30T02:37:33.661703+00:00"
+    },
+    {
+      "path": "/Users/evertappels/hass/hestia/workspace/archive/vault/deprecated/tts_gate_throttle.yaml",
+      "category": "deprecated",
+      "size": 5141,
+      "mtime": "2025-09-30T02:37:33.781703+00:00"
+    },
+    {
+      "path": "/Users/evertappels/hass/hestia/workspace/archive/vault/deprecated/rest_glances_deprecated.yaml",
+      "category": "deprecated",
+      "size": 2282,
+      "mtime": "2025-09-30T02:37:33.893704+00:00"
+    },
+    {
+      "path": "/Users/evertappels/hass/hestia/workspace/archive/vault/deprecated/hades_config_index.yaml",
+      "category": "deprecated",
+      "size": 2294,
+      "mtime": "2025-09-30T02:37:34.021704+00:00"
+    },
+    {
+      "path": "/Users/evertappels/hass/hestia/workspace/archive/vault/deprecated/presence_logic.yaml",
+      "category": "deprecated",
+      "size": 26345,
+      "mtime": "2025-09-30T02:37:34.161705+00:00"
+    },
+    {
+      "path": "/Users/evertappels/hass/hestia/workspace/archive/vault/deprecated/architecture_doctrine.yaml",
+      "category": "deprecated",
+      "size": 96773,
+      "mtime": "2025-09-30T02:37:34.253705+00:00"
+    },
+    {
+      "path": "/Users/evertappels/hass/hestia/workspace/archive/vault/deprecated/entity_map.json",
+      "category": "deprecated",
+      "size": 20745,
+      "mtime": "2025-09-30T02:37:34.361705+00:00"
+    },
+    {
+      "path": "/Users/evertappels/hass/hestia/workspace/archive/vault/deprecated/influxdb.yaml",
+      "category": "deprecated",
+      "size": 2035,
+      "mtime": "2025-09-30T02:37:34.449706+00:00"
+    },
+    {
+      "path": "/Users/evertappels/hass/hestia/workspace/archive/vault/deprecated/prompt_tests.yaml",
+      "category": "deprecated",
+      "size": 2440,
+      "mtime": "2025-09-30T02:37:34.537706+00:00"
+    },
+    {
+      "path": "/Users/evertappels/hass/hestia/workspace/archive/vault/deprecated/package_alarm_clock.yaml",
+      "category": "deprecated",
+      "size": 8884,
+      "mtime": "2025-09-30T02:37:34.641706+00:00"
+    },
+    {
+      "path": "/Users/evertappels/hass/hestia/workspace/archive/vault/deprecated/temperature_trends.yaml",
+      "category": "deprecated",
+      "size": 3281,
+      "mtime": "2025-09-30T02:37:34.725707+00:00"
+    },
+    {
+      "path": "/Users/evertappels/hass/hestia/workspace/archive/vault/deprecated/sensor.yaml",
+      "category": "deprecated",
+      "size": 248,
+      "mtime": "2025-09-30T02:37:34.809707+00:00"
+    },
+    {
+      "path": "/Users/evertappels/hass/hestia/workspace/archive/vault/deprecated/climate_logic.yaml",
+      "category": "deprecated",
+      "size": 58020,
+      "mtime": "2025-09-30T02:37:34.893707+00:00"
+    },
+    {
+      "path": "/Users/evertappels/hass/hestia/workspace/archive/vault/deprecated/var_helpers.yaml",
+      "category": "deprecated",
+      "size": 736,
+      "mtime": "2025-09-30T02:37:34.981708+00:00"
+    },
+    {
+      "path": "/Users/evertappels/hass/hestia/workspace/archive/vault/deprecated/meteoalarm.yaml",
+      "category": "deprecated",
+      "size": 369,
+      "mtime": "2025-09-30T02:37:35.065708+00:00"
+    },
+    {
+      "path": "/Users/evertappels/hass/hestia/workspace/archive/vault/deprecated/retired_style_guide.md",
+      "category": "deprecated",
+      "size": 11198,
+      "mtime": "2025-09-30T02:37:35.161708+00:00"
+    },
+    {
+      "path": "/Users/evertappels/hass/hestia/workspace/archive/vault/deprecated/binary_sensor.yaml",
+      "category": "deprecated",
+      "size": 224,
+      "mtime": "2025-09-30T02:37:35.249708+00:00"
+    },
+    {
+      "path": "/Users/evertappels/hass/hestia/workspace/archive/vault/deprecated/backup_vacuum_control.yaml",
+      "category": "deprecated",
+      "size": 18591,
+      "mtime": "2025-09-30T02:37:35.329709+00:00"
+    },
+    {
+      "path": "/Users/evertappels/hass/hestia/workspace/archive/vault/deprecated/git_push_logger.yaml",
+      "category": "deprecated",
+      "size": 2252,
+      "mtime": "2025-09-30T02:37:35.417709+00:00"
+    },
+    {
+      "path": "/Users/evertappels/hass/hestia/workspace/archive/vault/deprecated/system_log.yaml",
+      "category": "deprecated",
+      "size": 160,
+      "mtime": "2025-09-30T02:37:35.497709+00:00"
+    },
+    {
+      "path": "/Users/evertappels/hass/hestia/workspace/archive/vault/deprecated/mqtt_native.yaml",
+      "category": "deprecated",
+      "size": 920,
+      "mtime": "2025-09-30T02:37:35.577710+00:00"
+    },
+    {
+      "path": "/Users/evertappels/hass/hestia/workspace/archive/vault/deprecated/motion_logic.bk.20250926T234222Z",
+      "category": "deprecated",
+      "size": 23762,
+      "mtime": "2025-09-30T02:37:35.657710+00:00"
+    },
+    {
+      "path": "/Users/evertappels/hass/hestia/workspace/archive/vault/deprecated/tool_manifest.json",
+      "category": "deprecated",
+      "size": 10478,
+      "mtime": "2025-09-30T02:37:35.757710+00:00"
+    },
+    {
+      "path": "/Users/evertappels/hass/hestia/workspace/archive/vault/deprecated/notify_engine_deprecated.yaml",
+      "category": "deprecated",
+      "size": 4772,
+      "mtime": "2025-09-30T02:37:35.833710+00:00"
+    },
+    {
+      "path": "/Users/evertappels/hass/hestia/workspace/archive/vault/deprecated/delijn.yaml",
+      "category": "deprecated",
+      "size": 319,
+      "mtime": "2025-09-30T02:37:35.925711+00:00"
+    },
+    {
+      "path": "/Users/evertappels/hass/hestia/workspace/archive/vault/deprecated/sysadmin_automations.yaml",
+      "category": "deprecated",
+      "size": 1741,
+      "mtime": "2025-09-30T02:37:36.005711+00:00"
+    },
+    {
+      "path": "/Users/evertappels/hass/hestia/workspace/archive/vault/deprecated/plant.yaml",
+      "category": "deprecated",
+      "size": 592,
+      "mtime": "2025-09-30T02:37:36.105711+00:00"
+    },
+    {
+      "path": "/Users/evertappels/hass/hestia/workspace/archive/vault/deprecated/package_netgear_switch.yaml",
+      "category": "deprecated",
+      "size": 5956,
+      "mtime": "2025-09-30T02:37:36.189712+00:00"
+    },
+    {
+      "path": "/Users/evertappels/hass/hestia/workspace/archive/vault/deprecated/ha_start_notifications.yaml",
+      "category": "deprecated",
+      "size": 695,
+      "mtime": "2025-09-30T02:37:36.273712+00:00"
+    },
+    {
+      "path": "/Users/evertappels/hass/hestia/workspace/archive/vault/deprecated/package_hifi.yaml",
+      "category": "deprecated",
+      "size": 16590,
+      "mtime": "2025-09-30T02:37:36.841714+00:00"
+    },
+    {
+      "path": "/Users/evertappels/hass/hestia/workspace/archive/vault/deprecated/upnp.yaml",
+      "category": "deprecated",
+      "size": 771,
+      "mtime": "2025-09-30T02:37:36.933714+00:00"
+    },
+    {
+      "path": "/Users/evertappels/hass/hestia/workspace/archive/vault/deprecated/design_patterns.md",
+      "category": "deprecated",
+      "size": 7840,
+      "mtime": "2025-09-30T02:37:37.413716+00:00"
+    },
+    {
+      "path": "/Users/evertappels/hass/hestia/workspace/archive/vault/deprecated/bedroom_universal_media_player.yaml",
+      "category": "deprecated",
+      "size": 8461,
+      "mtime": "2025-09-30T02:37:37.509716+00:00"
+    },
+    {
+      "path": "/Users/evertappels/hass/hestia/workspace/archive/vault/backups/influxdb_20250918.bk.20250926T234222Z",
+      "category": "backups",
+      "size": 2032,
+      "mtime": "2025-09-30T02:37:05.705607+00:00"
+    },
+    {
+      "path": "/Users/evertappels/hass/hestia/workspace/archive/vault/backups/decay_automation.yaml.bk.20250926T234222Z",
+      "category": "backups",
+      "size": 2165,
+      "mtime": "2025-09-30T02:37:05.805608+00:00"
+    },
+    {
+      "path": "/Users/evertappels/hass/hestia/workspace/archive/vault/backups/config-lean.code-workspace.bak.20250929162532",
+      "category": "backups",
+      "size": 2216,
+      "mtime": "2025-09-30T02:37:05.897608+00:00"
+    },
+    {
+      "path": "/Users/evertappels/hass/hestia/workspace/archive/vault/backups/configuration.yaml.2025-09-18_192348.bk.20250926T234222Z",
+      "category": "backups",
+      "size": 1985,
+      "mtime": "2025-09-30T02:37:05.985608+00:00"
+    },
+    {
+      "path": "/Users/evertappels/hass/hestia/workspace/archive/vault/backups/recorder.yaml.bk.20250926T234222Z",
+      "category": "backups",
+      "size": 1755,
+      "mtime": "2025-09-30T02:37:06.085608+00:00"
+    },
+    {
+      "path": "/Users/evertappels/hass/hestia/workspace/archive/vault/backups/config.code-workspace.bak.20250909160532",
+      "category": "backups",
+      "size": 2001,
+      "mtime": "2025-09-30T02:37:06.197609+00:00"
+    },
+    {
+      "path": "/Users/evertappels/hass/hestia/workspace/archive/vault/backups/recorder.yaml.bak2",
+      "category": "backups",
+      "size": 1755,
+      "mtime": "2025-09-30T02:37:06.277609+00:00"
+    },
+    {
+      "path": "/Users/evertappels/hass/hestia/workspace/archive/vault/backups/recorder.yaml.bak3",
+      "category": "backups",
+      "size": 1562,
+      "mtime": "2025-09-30T02:37:06.381610+00:00"
+    },
+    {
+      "path": "/Users/evertappels/hass/hestia/workspace/archive/vault/backups/compact_registry.py.bk.20250926T234222Z",
+      "category": "backups",
+      "size": 4164,
+      "mtime": "2025-09-30T02:37:06.465610+00:00"
+    },
+    {
+      "path": "/Users/evertappels/hass/hestia/workspace/archive/vault/backups/configuration.yaml.2025-09-19_071713.bk.20250926T234222Z",
+      "category": "backups",
+      "size": 1822,
+      "mtime": "2025-09-30T02:37:06.557610+00:00"
+    },
+    {
+      "path": "/Users/evertappels/hass/hestia/workspace/archive/vault/backups/configuration.yaml.bk.20250926T234222Z",
+      "category": "backups",
+      "size": 1985,
+      "mtime": "2025-09-30T02:37:06.653610+00:00"
+    },
+    {
+      "path": "/Users/evertappels/hass/hestia/workspace/archive/vault/backups/core.entity_registry.precompact.json.bk.20250926T234222Z",
+      "category": "backups",
+      "size": 310824165,
+      "mtime": "2025-09-30T02:37:33.164592+00:00"
+    },
+    {
+      "path": "/Users/evertappels/hass/hestia/workspace/archive/vault/backups/config.code-workspace.bk.20250926T234222Z",
+      "category": "backups",
+      "size": 2001,
+      "mtime": "2025-09-30T02:37:33.173701+00:00"
+    },
+    {
+      "path": "/Users/evertappels/hass/hestia/workspace/archive/vault/backups/config-lean.code-workspace.bak.20250929160532",
+      "category": "backups",
+      "size": 3410,
+      "mtime": "2025-09-30T02:37:33.261702+00:00"
+    },
+    {
+      "path": "/Users/evertappels/hass/hestia/workspace/archive/vault/backups/config.code-workspace.bak.20250929160532",
+      "category": "backups",
+      "size": 3366,
+      "mtime": "2025-09-30T02:37:33.349702+00:00"
+    },
+    {
+      "path": "/Users/evertappels/hass/hestia/workspace/archive/vault/backups/configuration.yaml.2025-09-18_193556.bk.20250926T234222Z",
+      "category": "backups",
+      "size": 1985,
+      "mtime": "2025-09-30T02:37:33.433702+00:00"
+    },
+    {
+      "path": "/Users/evertappels/hass/hestia/workspace/archive/vault/patch_archive/template.library.jinja.patch",
+      "category": "patch_archive",
+      "size": 1070,
+      "mtime": "2025-09-30T02:37:40.425726+00:00"
+    },
+    {
+      "path": "/Users/evertappels/hass/hestia/workspace/archive/vault/templates/samba_media.yaml",
+      "category": "templates",
+      "size": 46,
+      "mtime": "2025-09-30T02:37:43.797738+00:00"
+    },
+    {
+      "path": "/Users/evertappels/hass/hestia/workspace/archive/vault/templates/samba_config_share.yaml",
+      "category": "templates",
+      "size": 49,
+      "mtime": "2025-09-30T02:37:43.889738+00:00"
+    },
+    {
+      "path": "/Users/evertappels/hass/hestia/workspace/archive/vault/templates/samba_backups.yaml",
+      "category": "templates",
+      "size": 47,
+      "mtime": "2025-09-30T02:37:44.037739+00:00"
+    },
+    {
+      "path": "/Users/evertappels/hass/hestia/workspace/archive/vault/receipts/hestia_setup.json",
+      "category": "receipts",
+      "size": 2,
+      "mtime": "2025-09-30T02:37:40.597727+00:00"
+    },
+    {
+      "path": "/Users/evertappels/hass/hestia/workspace/archive/vault/receipts/hestia_setup.log",
+      "category": "receipts",
+      "size": 31,
+      "mtime": "2025-09-30T02:37:40.733727+00:00"
+    },
+    {
+      "path": "/Users/evertappels/hass/hestia/workspace/archive/vault/tarballs/ADR_20250928T181643Z.tar.gz",
+      "category": "tarballs",
+      "size": 57924,
+      "mtime": "2025-09-30T02:37:41.361729+00:00"
+    },
+    {
+      "path": "/Users/evertappels/hass/hestia/workspace/archive/vault/tarballs/ha_hestia_snapshot_20250808_214335.tar.gz",
+      "category": "tarballs",
+      "size": 2956922,
+      "mtime": "2025-09-30T02:37:41.497730+00:00"
+    },
+    {
+      "path": "/Users/evertappels/hass/hestia/workspace/archive/vault/tarballs/hestia_snapshot_20250802_002708.tar.gz",
+      "category": "tarballs",
+      "size": 1242141,
+      "mtime": "2025-09-30T02:37:41.885731+00:00"
+    },
+    {
+      "path": "/Users/evertappels/hass/hestia/workspace/archive/vault/tarballs/hestia_snapshot_20250802_022700.tar.gz",
+      "category": "tarballs",
+      "size": 1246781,
+      "mtime": "2025-09-30T02:37:42.053732+00:00"
+    },
+    {
+      "path": "/Users/evertappels/hass/hestia/workspace/archive/vault/tarballs/hestia_snapshot_20250804_031401.tar.gz",
+      "category": "tarballs",
+      "size": 1238294,
+      "mtime": "2025-09-30T02:37:42.313733+00:00"
+    },
+    {
+      "path": "/Users/evertappels/hass/hestia/workspace/archive/vault/tarballs/ha_hestia_snapshot_20250813_234857.tar.gz",
+      "category": "tarballs",
+      "size": 3414327,
+      "mtime": "2025-09-30T02:37:42.597733+00:00"
+    },
+    {
+      "path": "/Users/evertappels/hass/hestia/workspace/archive/vault/tarballs/hestia_snapshot_20250806_152719.tar.gz",
+      "category": "tarballs",
+      "size": 1221862,
+      "mtime": "2025-09-30T02:37:43.281736+00:00"
+    },
+    {
+      "path": "/Users/evertappels/hass/hestia/workspace/archive/vault/tarballs/ha_hestia_snapshot_20250814_210240.tar.gz",
+      "category": "tarballs",
+      "size": 3417877,
+      "mtime": "2025-09-30T02:37:43.413736+00:00"
+    },
+    {
+      "path": "/Users/evertappels/hass/hestia/workspace/archive/vault/tarballs/xplab_portal.tar.gz",
+      "category": "tarballs",
+      "size": 6836,
+      "mtime": "2025-09-30T02:37:43.649737+00:00"
+    },
+    {
+      "path": "/Users/evertappels/hass/hestia/workspace/archive/vault/duplicates/network_extract-update.conf.archived",
+      "category": "duplicates",
+      "size": 683,
+      "mtime": "2025-09-30T02:37:39.469723+00:00"
+    },
+    {
+      "path": "/Users/evertappels/hass/hestia/workspace/archive/vault/duplicates/netgear-update.conf.archived",
+      "category": "duplicates",
+      "size": 416,
+      "mtime": "2025-09-30T02:37:39.609723+00:00"
+    },
+    {
+      "path": "/Users/evertappels/hass/hestia/workspace/archive/vault/duplicates/network.topology.json.archived",
+      "category": "duplicates",
+      "size": 187,
+      "mtime": "2025-09-30T02:37:39.749724+00:00"
+    },
+    {
+      "path": "/Users/evertappels/hass/hestia/workspace/archive/vault/deprecated/group_obsolete/groups.yaml",
+      "category": "deprecated",
+      "size": 5228,
+      "mtime": "2025-09-30T02:37:36.421712+00:00"
+    },
+    {
+      "path": "/Users/evertappels/hass/hestia/workspace/archive/vault/deprecated/inference-migrated/beta_motion_recent.yaml",
+      "category": "deprecated",
+      "size": 9142,
+      "mtime": "2025-09-30T02:37:36.569713+00:00"
+    },
+    {
+      "path": "/Users/evertappels/hass/hestia/workspace/archive/vault/deprecated/inference-migrated/playstation_activity--migrated.yaml",
+      "category": "deprecated",
+      "size": 979,
+      "mtime": "2025-09-30T02:37:36.669713+00:00"
+    },
+    {
+      "path": "/Users/evertappels/hass/hestia/workspace/archive/vault/deprecated/inference-migrated/beta_occupancy_fusion--migrated.yaml",
+      "category": "deprecated",
+      "size": 14999,
+      "mtime": "2025-09-30T02:37:36.753714+00:00"
+    },
+    {
+      "path": "/Users/evertappels/hass/hestia/workspace/archive/vault/deprecated/logic--migrated/presence_logic--migrated.yaml",
+      "category": "deprecated",
+      "size": 13351,
+      "mtime": "2025-09-30T02:37:37.089715+00:00"
+    },
+    {
+      "path": "/Users/evertappels/hass/hestia/workspace/archive/vault/deprecated/logic--migrated/climate_zone-- migrated.yaml",
+      "category": "deprecated",
+      "size": 11585,
+      "mtime": "2025-09-30T02:37:37.205715+00:00"
+    },
+    {
+      "path": "/Users/evertappels/hass/hestia/workspace/archive/vault/deprecated/logic--migrated/bedroom_media_engaged--migrated.yaml",
+      "category": "deprecated",
+      "size": 1148,
+      "mtime": "2025-09-30T02:37:37.317716+00:00"
+    },
+    {
+      "path": "/Users/evertappels/hass/hestia/workspace/archive/vault/deprecated/architecture_deprecated-2025-09-24/ADR-0001-tts-yaml.md",
+      "category": "deprecated",
+      "size": 1625,
+      "mtime": "2025-09-30T02:37:37.701717+00:00"
+    },
+    {
+      "path": "/Users/evertappels/hass/hestia/workspace/archive/vault/deprecated/architecture_deprecated-2025-09-24/architecture_POA.md",
+      "category": "deprecated",
+      "size": 10604,
+      "mtime": "2025-09-30T02:37:37.805717+00:00"
+    },
+    {
+      "path": "/Users/evertappels/hass/hestia/workspace/archive/vault/deprecated/architecture_deprecated-2025-09-24/tier_definitions.yaml",
+      "category": "deprecated",
+      "size": 7058,
+      "mtime": "2025-09-30T02:37:37.913718+00:00"
+    },
+    {
+      "path": "/Users/evertappels/hass/hestia/workspace/archive/vault/deprecated/architecture_deprecated-2025-09-24/ADR-0009-switch-modeling-and-validation.md",
+      "category": "deprecated",
+      "size": 5543,
+      "mtime": "2025-09-30T02:37:38.017718+00:00"
+    },
+    {
+      "path": "/Users/evertappels/hass/hestia/workspace/archive/vault/deprecated/architecture_deprecated-2025-09-24/ADR-0002-jinja-patterns.md",
+      "category": "deprecated",
+      "size": 2260,
+      "mtime": "2025-09-30T02:37:38.125718+00:00"
+    },
+    {
+      "path": "/Users/evertappels/hass/hestia/workspace/archive/vault/deprecated/architecture_deprecated-2025-09-24/area_hierarchy.yaml",
+      "category": "deprecated",
+      "size": 6116,
+      "mtime": "2025-09-30T02:37:38.229719+00:00"
+    },
+    {
+      "path": "/Users/evertappels/hass/hestia/workspace/archive/vault/deprecated/architecture_deprecated-2025-09-24/ADR-0003-tier-definitions.md",
+      "category": "deprecated",
+      "size": 7916,
+      "mtime": "2025-09-30T02:37:38.333719+00:00"
+    },
+    {
+      "path": "/Users/evertappels/hass/hestia/workspace/archive/vault/deprecated/architecture_deprecated-2025-09-24/ADR-0006-decay-propagation.md",
+      "category": "deprecated",
+      "size": 1540,
+      "mtime": "2025-09-30T02:37:38.433719+00:00"
+    },
+    {
+      "path": "/Users/evertappels/hass/hestia/workspace/archive/vault/deprecated/architecture_deprecated-2025-09-24/ADR-0011-oom-and-recorder-policy.md",
+      "category": "deprecated",
+      "size": 702,
+      "mtime": "2025-09-30T02:37:38.553720+00:00"
+    },
+    {
+      "path": "/Users/evertappels/hass/hestia/workspace/archive/vault/deprecated/architecture_deprecated-2025-09-24/ADR-0007-meta-governance-schema.md",
+      "category": "deprecated",
+      "size": 1657,
+      "mtime": "2025-09-30T02:37:38.681720+00:00"
+    },
+    {
+      "path": "/Users/evertappels/hass/hestia/workspace/archive/vault/deprecated/architecture_deprecated-2025-09-24/ADR-0005-entity-sensor-logic-signal.md",
+      "category": "deprecated",
+      "size": 4485,
+      "mtime": "2025-09-30T02:37:38.793720+00:00"
+    },
+    {
+      "path": "/Users/evertappels/hass/hestia/workspace/archive/vault/deprecated/architecture_deprecated-2025-09-24/ADR-000x-template.md",
+      "category": "deprecated",
+      "size": 301,
+      "mtime": "2025-09-30T02:37:38.909721+00:00"
+    },
+    {
+      "path": "/Users/evertappels/hass/hestia/workspace/archive/vault/deprecated/architecture_deprecated-2025-09-24/ADR-0010-workspace-shape-and-autofs.md",
+      "category": "deprecated",
+      "size": 1667,
+      "mtime": "2025-09-30T02:37:39.037721+00:00"
+    },
+    {
+      "path": "/Users/evertappels/hass/hestia/workspace/archive/vault/deprecated/architecture_deprecated-2025-09-24/ADR-0008-normalization-and-determinism-rules.md.md",
+      "category": "deprecated",
+      "size": 4435,
+      "mtime": "2025-09-30T02:37:39.161722+00:00"
+    },
+    {
+      "path": "/Users/evertappels/hass/hestia/workspace/archive/vault/deprecated/architecture_deprecated-2025-09-24/ADR-0004-area-hierarchy.md",
+      "category": "deprecated",
+      "size": 2855,
+      "mtime": "2025-09-30T02:37:39.281722+00:00"
+    }
+  ]
+}

@@ -37,7 +37,7 @@
         file: "/config/domain/templates/humidity_logic.yaml"
         date_created: "2025-04-26"
         last_updated: "2025-07-20"
-        is_multi_source: true
+        is_multi_source: "true"
         source_count: "4"
         data_quality: "excellent"
         subsystem: "aether"
@@ -51,7 +51,7 @@
       state: >
         {% set humidity_sensors = [
           'sensor.bedroom_ambient_climate_alpha_humidity',
-          'sensor.bedroom_dehumidifier_probreeze_humidity'
+          'sensor.bedroom_dehumidifier_alpha_humidity'
         ] %}
         {% set values = namespace(valid=[]) %}
         {% for sensor in humidity_sensors %}
@@ -67,14 +67,14 @@
         {% endif %}
       attributes:
         upstream_sources: >
-          {{ ['sensor.bedroom_ambient_climate_alpha_humidity','sensor.bedroom_dehumidifier_probreeze_humidity','sensor.bedroom_monstera_soil_alpha_humidity'] | tojson }}
+          {{ ['sensor.bedroom_ambient_climate_alpha_humidity','sensor.bedroom_dehumidifier_alpha_humidity','sensor.bedroom_monstera_soil_alpha_humidity'] | tojson }}
         area_id: "bedroom"
         tier: "η"
         canonical_id: "merged_bedroom_humidity_η"
         file: "/config/domain/templates/humidity_logic.yaml"
         date_created: "2025-04-26"
         last_updated: "2025-07-17"
-        is_multi_source: true
+        is_multi_source: "true"
         source_count: "2"
         data_quality: "excellent"
         subsystem: "aether"
@@ -111,7 +111,7 @@
         file: "/config/domain/templates/humidity_logic.yaml"
         date_created: "2025-05-09"
         last_updated: "2025-07-17"
-        is_multi_source: false
+        is_multi_source: "false"
         source_count: "1"
         data_quality: "good"
         subsystem: "aether"
@@ -148,7 +148,7 @@
         file: "/config/domain/templates/humidity_logic.yaml"
         date_created: "2025-04-26"
         last_updated: "2025-07-17"
-        is_multi_source: true
+        is_multi_source: "true"
         source_count: "1"
         data_quality: "good"
         subsystem: "aether"
@@ -189,7 +189,7 @@
         file: "/config/domain/templates/humidity_logic.yaml"
         date_created: "2025-06-03"
         last_updated: "2025-07-17"
-        is_multi_source: true
+        is_multi_source: "true"
         source_count: "2"
         data_quality: "excellent"
         subsystem: "aether"

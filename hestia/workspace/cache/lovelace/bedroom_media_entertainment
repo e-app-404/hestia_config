@@ -1,0 +1,704 @@
+# ----------------------------- Bedroom Media & Entertainment (Bubble UX) -----------------------------
+# Custom cards used (HACS):
+# - custom:grid-layout  (HACS: layout-card)
+# - custom:bubble-card  (HACS: bubble-card)
+# - card-mod            (HACS: card-mod)
+# - custom:expander-card (HACS: expander-card)   # for collapsible advanced matrix routing
+# - custom:apexcharts-card (HACS: apexcharts-card) # radial "Watching now" gauge
+#
+# Notes:
+# - Home Assistant ≥ 2024.8: all service calls use perform-action.
+# - Primary actions use Bubble cards; advanced routing is collapsed by default.
+# - Responsive layout: 1 col (mobile), 2–3 cols (tablet), 4 cols (desktop).
+# - If a custom card is missing, see the fallback YAML at the end of this file (commented section).
+#
+title: Bedroom Media & Entertainment
+path: bedroom-media-entertainment
+icon: mdi:television-speaker
+type: custom:grid-layout
+theme: Retro Dusk
+layout:
+  grid-template-columns: repeat(12, 1fr)
+  grid-auto-rows: minmax(56px, auto)
+  grid-gap: 16px
+  mediaquery:
+    "(max-width: 600px)":
+      grid-template-columns: 1fr
+    "(min-width: 601px) and (max-width: 1100px)":
+      grid-template-columns: repeat(6, 1fr)
+
+cards:
+  # ───────────────────────────── 1) NOW PLAYING (Hero, left) ─────────────────────────────
+  - type: grid
+    view_layout: { grid-area: "1 / 1 / 2 / 9" }
+    square: false
+    cards:
+      - type: markdown
+        content: >
+          ## Now Playing
+          Big, at-a-glance status for TV + SONOS. Artwork if available; quick volume and transport below.
+        card_mod:
+          style: |
+            ha-card { border-radius: 16px; border: 1px solid rgba(255,43,214,0.35); backdrop-filter: blur(10px) saturate(120%); }
+
+      # TV hero with artwork
+      - type: media-control
+        entity: media_player.bedroom_tv_alpha
+        card_mod:
+          style: |
+            ha-card {
+              border-radius: 16px;
+              border: 1px solid rgba(255,43,214,0.35);
+              box-shadow: 0 8px 28px rgba(0,0,0,0.45), 0 0 18px rgba(0,229,255,0.25) inset;
+              overflow: hidden;
+            }
+
+      # SONOS Ray - media with inline bubble slider + mute/play controls
+      - type: grid
+        columns: 2
+        square: false
+        cards:
+          - type: media-control
+            entity: media_player.bedroom_sonos_ray
+            card_mod:
+              style: |
+                ha-card { border-radius: 16px; border: 1px solid rgba(0,229,255,0.28); }
+          - type: custom:bubble-card
+            card_type: slider
+            entity: media_player.bedroom_sonos_ray
+            name: SONOS Volume
+            icon: mdi:volume-high
+            show_state: true
+            slider:
+              min: 0
+              max: 1
+              step: 0.01
+            slider_action:
+              tap_action:
+                action: perform-action
+                perform_action: media_player.volume_set
+                data:
+                  entity_id: media_player.bedroom_sonos_ray
+                  # Bubble-card supplies [[value]] at runtime
+                  volume_level: '[[value]]'
+            sub_button:
+              - icon: mdi:volume-minus
+                name: -
+                tap_action:
+                  action: perform-action
+                  perform_action: media_player.volume_down
+                  data:
+                    entity_id: media_player.bedroom_sonos_ray
+              - icon: mdi:volume-plus
+                name: +
+                tap_action:
+                  action: perform-action
+                  perform_action: media_player.volume_up
+                  data:
+                    entity_id: media_player.bedroom_sonos_ray
+              - icon: mdi:volume-mute
+                name: Mute
+                tap_action:
+                  action: perform-action
+                  perform_action: media_player.volume_mute
+                  data:
+                    entity_id: media_player.bedroom_sonos_ray
+                    is_volume_muted: true
+                hold_action:
+                  action: perform-action
+                  perform_action: media_player.volume_mute
+                  data:
+                    entity_id: media_player.bedroom_sonos_ray
+                    is_volume_muted: false
+            styles:
+              card:
+                - background: "linear-gradient(180deg, rgba(0,229,255,0.14), rgba(255,43,214,0.12))"
+                - box-shadow: 0 0 24px rgba(0,229,255,0.30)
+
+      # Secondary row (Apple TV + PS4) only when active/idle
+      - type: grid
+        columns: 2
+        square: false
+        cards:
+          - type: conditional
+            conditions:
+              - entity: media_player.bedroom_apple_tv_alpha
+                state_not: 'off'
+            card:
+              type: media-control
+              entity: media_player.bedroom_apple_tv_alpha
+              card_mod:
+                style: |
+                  ha-card { border-radius: 14px; border: 1px solid rgba(255,43,214,0.25); }
+          - type: conditional
+            conditions:
+              - entity: media_player.playstation_4
+                state_not: 'off'
+            card:
+              type: media-control
+              entity: media_player.playstation_4
+              card_mod:
+                style: |
+                  ha-card { border-radius: 14px; border: 1px solid rgba(124,77,255,0.25); }
+
+  # ───────────────────────────── 2) WATCH / LISTEN (Primary sources, right) ─────────────────────────────
+  - type: grid
+    view_layout: { grid-area: "1 / 9 / 2 / 13" }
+    square: false
+    cards:
+      - type: markdown
+        content: >
+          ### Watch / Listen
+          **Tap** routes **Video (A)** + **Audio (B)** to the source (turns TV on if off).
+          **Hold** Switch/Wii = power **ON** • **Double-tap** = power **OFF**.
+        card_mod:
+          style: |
+            ha-card { border-radius: 16px; border: 1px solid rgba(255,43,214,0.35); }
+
+      - type: grid
+        columns: 2
+        square: false
+        cards:
+          # Apple TV
+          - type: custom:bubble-card
+            card_type: button
+            name: Apple TV
+            icon: mdi:apple
+            button_action:
+              tap_action:
+                action: perform-action
+                perform_action: script.matrix_control
+                data:
+                  source: "Apple TV"
+                  remote: remote.bedroom_broadlink_rm3_alpha
+                  device: bedroom_hdmi_matrix
+                  tv: media_player.bedroom_tv_alpha
+            styles:
+              card:
+                - background: "linear-gradient(180deg, rgba(255,43,214,0.18), rgba(0,229,255,0.12))"
+                - box-shadow: 0 0 24px rgba(255,43,214,0.35)
+
+          # PS4
+          - type: custom:bubble-card
+            card_type: button
+            name: PS4
+            icon: mdi:sony-playstation
+            button_action:
+              tap_action:
+                action: perform-action
+                perform_action: script.matrix_control
+                data:
+                  source: "PlayStation 4"
+                  remote: remote.bedroom_broadlink_rm3_alpha
+                  device: bedroom_hdmi_matrix
+                  tv: media_player.bedroom_tv_alpha
+
+          # Switch
+          - type: custom:bubble-card
+            card_type: button
+            name: Switch
+            icon: mdi:nintendo-switch
+            entity: switch.bedroom_tv_nintendo_switch_tplink_power
+            show_state: true
+            button_action:
+              tap_action:
+                action: perform-action
+                perform_action: script.matrix_control
+                data:
+                  source: "Nintendo Switch"
+                  remote: remote.bedroom_broadlink_rm3_alpha
+                  device: bedroom_hdmi_matrix
+                  tv: media_player.bedroom_tv_alpha
+              hold_action:
+                action: perform-action
+                perform_action: switch.turn_on
+                data:
+                  entity_id: switch.bedroom_tv_nintendo_switch_tplink_power
+              double_tap_action:
+                action: perform-action
+                perform_action: switch.turn_off
+                data:
+                  entity_id: switch.bedroom_tv_nintendo_switch_tplink_power
+
+          # Wii
+          - type: custom:bubble-card
+            card_type: button
+            name: Wii
+            icon: mdi:gamepad-variant
+            entity: switch.bedroom_tv_nintendo_wii_tplink_power
+            show_state: true
+            button_action:
+              tap_action:
+                action: perform-action
+                perform_action: script.matrix_control
+                data:
+                  source: "Nintendo Wii"
+                  remote: remote.bedroom_broadlink_rm3_alpha
+                  device: bedroom_hdmi_matrix
+                  tv: media_player.bedroom_tv_alpha
+              hold_action:
+                action: perform-action
+                perform_action: switch.turn_on
+                data:
+                  entity_id: switch.bedroom_tv_nintendo_wii_tplink_power
+              double_tap_action:
+                action: perform-action
+                perform_action: switch.turn_off
+                data:
+                  entity_id: switch.bedroom_tv_nintendo_wii_tplink_power
+
+  # ───────────────────────────── 3) MATRIX & ADVANCED ROUTING (Collapsible, left) ───────────────────────
+  - type: custom:expander-card
+    view_layout: { grid-area: "2 / 1 / 3 / 6" }
+    title: Matrix & Advanced Routing
+    icon: mdi:source-branch
+    expanded: false
+    cards:
+      - type: markdown
+        content: >
+          **Matrix Power/ARC** send Broadlink commands. **Video A1–A4** = HDMI video (A), **Audio B1–B4** = optical audio (B).
+          Use for split routes (e.g., **A1 + B2**).
+      - type: grid
+        columns: 4
+        square: false
+        cards:
+          # Matrix Power / ARC (compact bubbles)
+          - type: custom:bubble-card
+            card_type: button
+            name: Matrix Power
+            icon: mdi:power
+            button_action:
+              tap_action:
+                action: perform-action
+                perform_action: script.matrix_control
+                data:
+                  command: power
+                  remote: remote.bedroom_broadlink_rm3_alpha
+                  device: bedroom_hdmi_matrix
+          - type: custom:bubble-card
+            card_type: button
+            name: ARC
+            icon: mdi:audio-input-rca
+            button_action:
+              tap_action:
+                action: perform-action
+                perform_action: script.matrix_control
+                data:
+                  command: arc
+                  remote: remote.bedroom_broadlink_rm3_alpha
+                  device: bedroom_hdmi_matrix
+
+          # A1..A4
+          - type: custom:bubble-card
+            card_type: button
+            name: Video A1
+            icon: mdi:video-input-hdmi
+            button_action:
+              tap_action:
+                action: perform-action
+                perform_action: script.matrix_control
+                data:
+                  command: a_1
+                  remote: remote.bedroom_broadlink_rm3_alpha
+                  device: bedroom_hdmi_matrix
+          - type: custom:bubble-card
+            card_type: button
+            name: Video A2
+            icon: mdi:video-input-hdmi
+            button_action:
+              tap_action:
+                action: perform-action
+                perform_action: script.matrix_control
+                data:
+                  command: a_2
+                  remote: remote.bedroom_broadlink_rm3_alpha
+                  device: bedroom_hdmi_matrix
+          - type: custom:bubble-card
+            card_type: button
+            name: Video A3
+            icon: mdi:video-input-hdmi
+            button_action:
+              tap_action:
+                action: perform-action
+                perform_action: script.matrix_control
+                data:
+                  command: a_3
+                  remote: remote.bedroom_broadlink_rm3_alpha
+                  device: bedroom_hdmi_matrix
+          - type: custom:bubble-card
+            card_type: button
+            name: Video A4
+            icon: mdi:video-input-hdmi
+            button_action:
+              tap_action:
+                action: perform-action
+                perform_action: script.matrix_control
+                data:
+                  command: a_4
+                  remote: remote.bedroom_broadlink_rm3_alpha
+                  device: bedroom_hdmi_matrix
+
+          # B1..B4 (fixing the B2 remote typo from source YAML)
+          - type: custom:bubble-card
+            card_type: button
+            name: Audio B1
+            icon: mdi:music-box
+            button_action:
+              tap_action:
+                action: perform-action
+                perform_action: script.matrix_control
+                data:
+                  command: b_1
+                  remote: remote.bedroom_broadlink_rm3_alpha
+                  device: bedroom_hdmi_matrix
+          - type: custom:bubble-card
+            card_type: button
+            name: Audio B2
+            icon: mdi:music-box
+            button_action:
+              tap_action:
+                action: perform-action
+                perform_action: script.matrix_control
+                data:
+                  command: b_2
+                  remote: remote.bedroom_broadlink_rm3_alpha
+                  device: bedroom_hdmi_matrix
+          - type: custom:bubble-card
+            card_type: button
+            name: Audio B3
+            icon: mdi:music-box
+            button_action:
+              tap_action:
+                action: perform-action
+                perform_action: script.matrix_control
+                data:
+                  command: b_3
+                  remote: remote.bedroom_broadlink_rm3_alpha
+                  device: bedroom_hdmi_matrix
+          - type: custom:bubble-card
+            card_type: button
+            name: Audio B4
+            icon: mdi:music-box
+            button_action:
+              tap_action:
+                action: perform-action
+                perform_action: script.matrix_control
+                data:
+                  command: b_4
+                  remote: remote.bedroom_broadlink_rm3_alpha
+                  device: bedroom_hdmi_matrix
+
+  # ───────────────────────────── 4) PLEX & LIBRARY (Right-wide) ─────────────────────────────
+  - type: grid
+    view_layout: { grid-area: "2 / 6 / 3 / 13" }
+    square: false
+    cards:
+      - type: markdown
+        content: >
+          ## Plex & Library
+          Live Plex activity and library stats. **Watching now** = active streams; tiles show totals.
+          Below: *last added* items with relative time.
+        card_mod:
+          style: |
+            ha-card { border-radius: 16px; border: 1px solid rgba(124,77,255,0.35); }
+
+      - type: grid
+        columns: 3
+        square: false
+        cards:
+          # Radial gauge for watching now
+          - type: custom:apexcharts-card
+            experimental:
+              color_threshold: true
+            chart_type: radialBar
+            header:
+              show: true
+              show_states: false
+              title: Watching now
+            series:
+              - entity: sensor.plex_media_server_dsm220plus_viewers_watching
+                name: Watching
+            apex_config:
+              plotOptions:
+                radialBar:
+                  hollow: { size: "64%" }
+                  track: { background: "rgba(255,255,255,0.08)" }
+              fill:
+                type: gradient
+                gradient:
+                  shade: dark
+                  gradientToColors: ["#00E5FF"]
+                  stops: [0,100]
+              colors: ["#FF2BD6"]
+
+          # Shows (items)
+          - type: custom:bubble-card
+            card_type: button
+            name: Shows (items)
+            icon: mdi:television-classic
+            entity: sensor.ds220plus_library_shows
+            show_state: true
+
+          # Movies (items)
+          - type: custom:bubble-card
+            card_type: button
+            name: Movies (items)
+            icon: mdi:movie-open
+            entity: sensor.ds220plus_library_movies
+            show_state: true
+
+      # Attributes exposure
+      - type: grid
+        columns: 2
+        square: false
+        cards:
+          - type: entities
+            title: Shows
+            entities:
+              - type: attribute
+                entity: sensor.ds220plus_library_shows
+                attribute: shows
+                name: Shows
+              - type: attribute
+                entity: sensor.ds220plus_library_shows
+                attribute: seasons
+                name: Seasons
+              - type: attribute
+                entity: sensor.ds220plus_library_shows
+                attribute: last_added_item
+                name: Newest addition
+              - type: attribute
+                entity: sensor.ds220plus_library_shows
+                attribute: last_added_timestamp
+                name: Date added
+          - type: entities
+            title: Movies
+            entities:
+              - entity: sensor.ds220plus_library_movies
+                name: Total
+              - type: attribute
+                entity: sensor.ds220plus_library_movies
+                attribute: last_added_item
+                name: Newest addition
+              - type: attribute
+                entity: sensor.ds220plus_library_movies
+                attribute: last_added_timestamp
+                name: Date added
+
+      - type: markdown
+        title: Recently added
+        content: >
+          **Shows:** {{
+          state_attr('sensor.ds220plus_library_shows','last_added_item') }} • {{
+          relative_time(as_datetime(state_attr('sensor.ds220plus_library_shows','last_added_timestamp')))
+          }} ago
+
+          **Movies:** {{
+          state_attr('sensor.ds220plus_library_movies','last_added_item') }} • {{
+          relative_time(as_datetime(state_attr('sensor.ds220plus_library_movies','last_added_timestamp')))
+          }} ago
+
+      # Optional selectors + actions (shown only if helpers/scripts exist)
+      - type: conditional
+        conditions:
+          - entity: input_select.plex_show
+            state_not: unavailable
+        card:
+          type: grid
+          columns: 2
+          square: false
+          cards:
+            - type: entities
+              title: Plex – Choose Show
+              entities:
+                - input_select.plex_show
+            - type: entities
+              title: Plex – Choose Movie
+              entities:
+                - input_select.plex_movie
+      - type: conditional
+        conditions:
+          - entity: script.plex_refresh_library_lists
+            state_not: unavailable
+        card:
+          type: grid
+          columns: 2
+          square: false
+          cards:
+            - type: custom:bubble-card
+              card_type: button
+              name: Refresh Lists
+              icon: mdi:refresh
+              button_action:
+                tap_action:
+                  action: perform-action
+                  perform_action: script.plex_refresh_library_lists
+            - type: conditional
+              conditions:
+                - entity: script.plex_route_and_open_app
+                  state_not: unavailable
+              card:
+                type: custom:bubble-card
+                card_type: button
+                name: Route TV & Open Plex
+                icon: mdi:television-play
+                button_action:
+                  tap_action:
+                    action: perform-action
+                    perform_action: script.plex_route_and_open_app
+
+  # ───────────────────────────── 5) CONSOLES & POWER (Full width) ─────────────────────────────
+  - type: grid
+    view_layout: { grid-area: "3 / 1 / 4 / 13" }
+    square: false
+    cards:
+      - type: markdown
+        content: >
+          ## Consoles & Power
+          Toggle TP-Link outlets for **Switch** and **Wii**. “On since …” shows runtime when sensors are available.
+        card_mod:
+          style: |
+            ha-card { border-radius: 16px; border: 1px solid rgba(255,213,79,0.35); }
+
+      - type: grid
+        columns: 4
+        square: false
+        cards:
+          # Switch power bubble
+          - type: custom:bubble-card
+            card_type: button
+            name: Switch Power
+            icon: mdi:nintendo-switch
+            entity: switch.bedroom_tv_nintendo_switch_tplink_power
+            show_state: true
+            button_action:
+              tap_action:
+                action: perform-action
+                perform_action: switch.toggle
+                data:
+                  entity_id: switch.bedroom_tv_nintendo_switch_tplink_power
+            sub_button:
+              - name: ON
+                icon: mdi:power
+                tap_action:
+                  action: perform-action
+                  perform_action: switch.turn_on
+                  data:
+                    entity_id: switch.bedroom_tv_nintendo_switch_tplink_power
+              - name: OFF
+                icon: mdi:power-off
+                tap_action:
+                  action: perform-action
+                  perform_action: switch.turn_off
+                  data:
+                    entity_id: switch.bedroom_tv_nintendo_switch_tplink_power
+
+          # Wii power bubble
+          - type: custom:bubble-card
+            card_type: button
+            name: Wii Power
+            icon: mdi:gamepad-variant
+            entity: switch.bedroom_tv_nintendo_wii_tplink_power
+            show_state: true
+            button_action:
+              tap_action:
+                action: perform-action
+                perform_action: switch.toggle
+                data:
+                  entity_id: switch.bedroom_tv_nintendo_wii_tplink_power
+            sub_button:
+              - name: ON
+                icon: mdi:power
+                tap_action:
+                  action: perform-action
+                  perform_action: switch.turn_on
+                  data:
+                    entity_id: switch.bedroom_tv_nintendo_wii_tplink_power
+              - name: OFF
+                icon: mdi:power-off
+                tap_action:
+                  action: perform-action
+                  perform_action: switch.turn_off
+                  data:
+                    entity_id: switch.bedroom_tv_nintendo_wii_tplink_power
+
+          # "On since" info (shown only if sensors exist)
+          - type: conditional
+            conditions:
+              - entity: sensor.bedroom_tv_nintendo_switch_power_on_since
+                state_not: unavailable
+            card:
+              type: markdown
+              content: >
+                **Switch:** {{ states('sensor.bedroom_tv_nintendo_switch_power_on_since') }}
+          - type: conditional
+            conditions:
+              - entity: sensor.bedroom_tv_nintendo_wii_on_since
+                state_not: unavailable
+            card:
+              type: markdown
+              content: >
+                **Wii:** {{ states('sensor.bedroom_tv_nintendo_wii_on_since') }}
+
+  # ───────────────────────────── 6) EXTRAS (De-emphasized, stacked) ─────────────────────────────
+  - type: grid
+    view_layout: { grid-area: "4 / 1 / 5 / 13" }
+    square: false
+    cards:
+      - type: markdown
+        content: >
+          ### Extras
+          Secondary controls for DLNA, Plex (Apple TV), and SONOS surround tweaks.
+      - type: grid
+        columns: 3
+        square: false
+        cards:
+          - type: media-control
+            entity: media_player.bedroom_tv_alpha_dlna
+            card_mod: { style: "ha-card { opacity: 0.9; }" }
+          - type: media-control
+            entity: media_player.bedroom_apple_tv_plex
+            card_mod: { style: "ha-card { opacity: 0.9; }" }
+          - type: media-control
+            entity: media_player.bedroom_sonos_surround
+            card_mod: { style: "ha-card { opacity: 0.9; }" }
+
+      - type: entities
+        title: Bedroom SONOS Bookshelf Surround
+        entities:
+          - entity: number.bedroom_sonos_surround_balance
+            name: Balance
+          - entity: number.bedroom_sonos_surround_bass
+            name: Bass
+          - entity: switch.bedroom_sonos_surround_crossfade
+            name: Cross-fade
+          - entity: switch.bedroom_sonos_surround_loudness
+            name: Loudness
+          - entity: number.bedroom_sonos_surround_treble
+            name: Treble
+        card_mod:
+          style: |
+            ha-card { border-radius: 14px; border: 1px dashed rgba(255,255,255,0.08); }
+
+      - type: entities
+        title: Bedroom SONOS Ray Soundbar
+        entities:
+          - entity: switch.bedroom_sonos_ray_loudness
+            name: Loudness
+          - entity: switch.bedroom_sonos_ray_crossfade
+            name: Cross-fade
+          - entity: switch.bedroom_sonos_ray_night_sound
+            name: Night sound
+          - entity: switch.bedroom_sonos_ray_speech_enhancement
+            name: Speech enhancement
+          - entity: number.bedroom_sonos_ray_balance
+            name: Balance
+          - entity: number.bedroom_sonos_ray_bass
+            name: Bass
+          - entity: number.bedroom_sonos_ray_treble
+            name: Treble
+        card_mod:
+          style: |
+            ha-card { border-radius: 14px; border: 1px dashed rgba(255,255,255,0.08); }
+
+# ------------------------------------- END VIEW -------------------------------------
