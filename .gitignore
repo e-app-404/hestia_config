@@ -219,6 +219,8 @@ home-assistant_v2.db*
 # Optional: ignore entire hestia cache/work areas if they exist
 hestia/cache/**
 hestia/workspace/archive/vault/**
+# Deployment scripts containing API keys and credentials (use templates with __REPLACE_ME__)
+hestia/workspace/operations/deploy/dsm/scripts/*.sh
 # -------------------------------------------------------
 # --- Strategos HA cleanup (2025-09-04) --------------------------------
 # Secrets and credentials
