@@ -27,7 +27,7 @@ on:
 
 env:
   HA_DST: /tmp/_backup_source/.storage  # Use /tmp for better permissions
-  BUNDLE_TGZ: home_assistant_complete_restoration_v2.3_FINAL.tar.gz
+  BUNDLE_TGZ: home_assistant_complete_restoration_v2.4_PRODUCTION.tar.gz
   BUNDLE_DIR: restoration_bundle_v2.0
 
 jobs:
