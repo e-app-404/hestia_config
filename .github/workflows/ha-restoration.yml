@@ -22,7 +22,7 @@ on:
         default: true
 
 env:
-  HA_DST: /config/_backup_source/.storage
+  HA_DST: /tmp/_backup_source/.storage  # Use /tmp for better permissions
   BUNDLE_TGZ: home_assistant_complete_restoration_v2.0_FINAL_APPROVED.tar.gz
   BUNDLE_DIR: restoration_bundle_v2.0
 
@@ -59,7 +59,22 @@ jobs:
 
       - name: Create destination on HA
         run: |
-          ssh "${{ inputs.ha_host }}" 'mkdir -p '"$HA_DST"''
+          echo "🔍 Testing SSH connection and HA environment..."
+          ssh "${{ inputs.ha_host }}" 'whoami && pwd'
+          echo "🏠 Detecting Home Assistant installation type..."
+          if ssh "${{ inputs.ha_host }}" 'test -d /config'; then
+            echo "✅ Found /config directory (HA OS/Supervised)"
+            HA_CONFIG_PATH="/config"
+          elif ssh "${{ inputs.ha_host }}" 'test -d ~/.homeassistant'; then
+            echo "✅ Found ~/.homeassistant directory (Core installation)"
+            HA_CONFIG_PATH="~/.homeassistant"
+          else
+            echo "⚠️  Standard HA paths not found, using /tmp"
+            HA_CONFIG_PATH="/tmp"
+          fi
+          echo "📁 Creating backup destination directory..."
+          ssh "${{ inputs.ha_host }}" "mkdir -p $HA_DST"
+          echo "✅ Destination created: $HA_DST"
 
       - name: Rsync backup .storage from runner → HA
         run: |
@@ -69,17 +84,22 @@ jobs:
 
       - name: Upload bundle to HA (if not already extracted)
         run: |
-          ssh "${{ inputs.ha_host }}" "test -d /config/$BUNDLE_DIR || (cp -f ${BUNDLE_TGZ} /config/ && cd /config && tar -xzf ${BUNDLE_TGZ})"
-          ssh "${{ inputs.ha_host }}" "ls -la /config/${BUNDLE_DIR}"
+          echo "📦 Uploading restoration bundle to HA..."
+          scp "$BUNDLE_TGZ" "${{ inputs.ha_host }}:/tmp/"
+          ssh "${{ inputs.ha_host }}" "cd /tmp && test -d $BUNDLE_DIR || tar -xzf ${BUNDLE_TGZ}"
+          echo "✅ Bundle extracted to /tmp/${BUNDLE_DIR}"
+          ssh "${{ inputs.ha_host }}" "ls -la /tmp/${BUNDLE_DIR}" | head -10
 
       - name: Validate bundle on HA (no changes)
         run: |
-          ssh "${{ inputs.ha_host }}" "cd /config/${BUNDLE_DIR} && ./validate_bundle.sh --backup-source ${HA_DST}"
+          echo "🔍 Validating restoration bundle on HA..."
+          ssh "${{ inputs.ha_host }}" "cd /tmp/${BUNDLE_DIR} && chmod +x ./validate_bundle.sh && ./validate_bundle.sh --backup-source ${HA_DST}"
 
       - name: Dry run plan (no writes)
         if: ${{ inputs.dry_run == true }}
         run: |
-          ssh "${{ inputs.ha_host }}" "cd /config/${BUNDLE_DIR} && ./deploy_complete_restoration.sh --dry-run --backup-source ${HA_DST} $(
+          echo "🧪 Running dry-run deployment plan..."
+          ssh "${{ inputs.ha_host }}" "cd /tmp/${BUNDLE_DIR} && chmod +x ./deploy_complete_restoration.sh && ./deploy_complete_restoration.sh --dry-run --backup-source ${HA_DST} --skip-matter"
             [ '${{ inputs.matter_mode }}' = 'skip' ] && echo '--skip-matter' || echo '--enable-matter-from-backup'
           )"
 
