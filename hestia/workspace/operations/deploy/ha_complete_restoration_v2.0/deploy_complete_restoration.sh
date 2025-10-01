@@ -341,8 +341,10 @@ if [[ "$DRY_RUN" == "false" ]]; then
 else
     echo -e "🧪 [DRY RUN] Would backup current .storage directory"
     if [[ ! -d "$STORAGE_DIR" ]]; then
-        echo -e "${RED}❌ Current .storage directory not found${NC}"
-        exit 1
+        echo -e "${YELLOW}⚠️  Current .storage directory not found - this is expected in catastrophic recovery scenarios${NC}"
+        echo -e "🔄 Dry run will continue to show what would be restored..."
+    else
+        echo -e "${GREEN}✅ Current .storage directory exists and would be backed up${NC}"
     fi
 fi
 

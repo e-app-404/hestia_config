@@ -7,7 +7,7 @@
       {
         "aliases": [],
         "floor_id": "ground_floor",
-        "icon": null,
+        "icon": mdi:home-floor-g,
         "level": 0,
         "name": "Ground floor"
       },
@@ -16,47 +16,47 @@
         "floor_id": "sanctum",
         "icon": "mdi:chess-king",
         "level": 1,
-        "name": "sanctum_evert"
+        "name": "sanctum"
       },
       {
         "aliases": [],
         "floor_id": "home",
-        "icon": null,
+        "icon": mdi:home,
         "level": 0,
         "name": "Home"
       },
       {
         "aliases": [],
         "floor_id": "bedroom",
-        "icon": null,
+        "icon": mdi:bed-king,
         "level": 1,
         "name": "Bedroom"
       },
       {
         "aliases": [],
         "floor_id": "diag",
-        "icon": null,
+        "icon": mdi:shield-bug,
         "level": 0,
         "name": "Diag"
       },
       {
         "aliases": [],
         "floor_id": "services",
-        "icon": null,
+        "icon": mdi:toolbox,
         "level": 0,
         "name": "Services"
       },
       {
         "aliases": [],
         "floor_id": "network",
-        "icon": null,
+        "icon": mdi:network,
         "level": 0,
         "name": "Network"
       },
       {
         "aliases": [],
         "floor_id": "hestia",
-        "icon": null,
+        "icon": mdi:home-assistant,
         "level": 0,
         "name": "Hestia"
       },
@@ -70,16 +70,23 @@
       {
         "aliases": [],
         "floor_id": "upstairs",
-        "icon": null,
+        "icon": mdi:stairs-up,
         "level": 1,
         "name": "Upstairs"
       },
       {
         "aliases": [],
         "floor_id": "downstairs",
-        "icon": null,
+        "icon": mdi:stairs-down,
         "level": 0,
         "name": "Downstairs"
+      },
+      {
+        "aliases": [],
+        "floor_id": "hallway",
+        "icon": mdi:stairs,
+        "level": 0,
+        "name": "Hallway"
       }
     ]
   }

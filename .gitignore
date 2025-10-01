@@ -289,3 +289,11 @@ hestia/reports/latest
 tts/
 www/
 reports/
+
+# Personal path information that may contain PII
+# Files containing hardcoded user paths, backup locations, or personal identifiers
+**/backup_source_info.txt
+**/validate_bundle.sh
+# Exclude any files that might have been generated with personal paths
+**/*evertappels*
+**/HomeAssistant/_backups/*

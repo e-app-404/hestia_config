@@ -111,7 +111,7 @@
         "aliases": [],
         "area_id": "diag",
         "floor_id": "diag",
-        "icon": null,
+        "icon": mdi:shield-bug,
         "name": "Diag",
         "picture": null
       },
@@ -119,7 +119,7 @@
         "aliases": [],
         "area_id": "config",
         "floor_id": "diag",
-        "icon": null,
+        "icon": mdi:television-speaker,
         "name": "Config",
         "picture": null
       },
