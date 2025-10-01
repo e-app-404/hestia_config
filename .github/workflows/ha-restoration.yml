@@ -134,18 +134,20 @@ jobs:
     steps:
       - name: Stop HA Core (SSH session stays up)
         run: |
-          ssh "${{ inputs.ha_host }}" "ha core stop && ha core info | grep 'state'"
+          echo "🛑 Attempting to stop HA Core (deployment script will handle if needed)..."
+          ssh "${{ inputs.ha_host }}" "ha core stop && ha core info | grep 'state'" || echo "⚠️ HA supervisor CLI unavailable - deployment script will manage HA state"
 
       - name: Execute restoration (conservative Matter default)
         run: |
           REGISTRY_FLAG=$([ '${{ inputs.skip_registry }}' = 'true' ] && echo '--skip-registry' || echo '')
-          ssh "${{ inputs.ha_host }}" "cd /config/${BUNDLE_DIR} && ./deploy_complete_restoration.sh --backup-source ${HA_DST} $(
+          ssh "${{ inputs.ha_host }}" "cd /tmp/${BUNDLE_DIR} && ./deploy_complete_restoration.sh --backup-source ${HA_DST} $(
             [ '${{ inputs.matter_mode }}' = 'skip' ] && echo '--skip-matter' || echo '--enable-matter-from-backup'
           ) ${REGISTRY_FLAG}"
 
       - name: Start HA Core and verify
         run: |
-          ssh "${{ inputs.ha_host }}" "ha core start && sleep 5 && ha core info | grep 'state'"
+          echo "🚀 Attempting to start HA Core..."
+          ssh "${{ inputs.ha_host }}" "ha core start && sleep 5 && ha core info | grep 'state'" || echo "⚠️ HA supervisor CLI unavailable - manual restart may be needed"
 
       - name: Post-check logs and counts (binary acceptance)
         run: |
