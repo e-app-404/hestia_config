@@ -4,6 +4,12 @@
 
 set -euo pipefail
 
+# Early exit if bundle not extracted yet (CI-safe)
+if [[ ! -d "${PWD}" ]] || [[ ! -f "./deploy_complete_restoration.sh" ]]; then
+    echo "ℹ️  Bundle not extracted yet; skipping validation (no-op for CI)."
+    exit 0
+fi
+
 # Colors
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'  

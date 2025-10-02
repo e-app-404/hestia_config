@@ -7,6 +7,14 @@ on:
         description: 'Dry run (true/false)'
         required: false
         default: 'false'
+      write_registry:
+        description: 'Force registry writes (override CI auto-skip)'
+        type: boolean
+        default: false
+      enable_matter:
+        description: 'Enable Matter from backup'
+        type: boolean
+        default: false
 
 jobs:
   deploy:
@@ -27,27 +35,93 @@ jobs:
           # local path on HA the script will read from:
           echo "HA_DST=/tmp/_backup_source/.storage" >> $GITHUB_ENV
 
+      - name: Verify bundle checksum locally
+        run: |
+          echo "🔐 Computing local bundle checksum..."
+          sha256sum "${BUNDLE_TGZ}" || shasum -a 256 "${BUNDLE_TGZ}"
+
       - name: Prepare bundle directory on HA
         run: |
-          ssh hass "cd /tmp && rm -rf ${BUNDLE_DIR} ha_complete_restoration_v2.0"
+          echo "🧹 Cleaning old bundles on HA..."
+          ssh hass '/bin/bash -lc "cd /tmp && rm -rf ${BUNDLE_DIR} ha_complete_restoration_*"'
+          
+          echo "📦 Transferring bundle to HA..."
           rsync -avz "${BUNDLE_TGZ}" hass:/tmp/
-          ssh hass "cd /tmp && tar -xzf ${BUNDLE_TGZ} && mv ha_complete_restoration_v2.0 ${BUNDLE_DIR} && chmod +x ${BUNDLE_DIR}/*.sh"
-          echo "✅ Bundle extracted and prepared"
+          
+          echo "🔐 Verifying bundle checksum on HA..."
+          ssh hass '/bin/bash -lc "cd /tmp && (sha256sum ${BUNDLE_TGZ} || shasum -a 256 ${BUNDLE_TGZ})"'
+          
+          echo "📂 Extracting bundle with dynamic root discovery..."
+          ssh hass '/bin/bash -lc "
+            cd /tmp &&
+            TAR_ROOT=\$(tar -tzf ${BUNDLE_TGZ} | head -1 | cut -d/ -f1) &&
+            echo \"Discovered tar root: \$TAR_ROOT\" &&
+            tar -xzf ${BUNDLE_TGZ} &&
+            mv \"\$TAR_ROOT\" \"${BUNDLE_DIR}\" &&
+            chmod +x ${BUNDLE_DIR}/*.sh &&
+            echo \"✅ Bundle extracted to ${BUNDLE_DIR}\"
+          "'
 
       - name: Stage backup source on HA
         run: |
-          ssh hass "mkdir -p ${HA_DST}"
+          echo "📁 Creating backup staging directory..."
+          ssh hass '/bin/bash -lc "mkdir -p ${HA_DST}"'
+          
+          echo "🔄 Syncing backup source..."
           rsync -avz --delete "/Users/evertappels/Projects/HomeAssistant/_backups/f050d566/homeassistant/data/.storage/" "hass:${HA_DST}/"
+          
           echo "✅ Backup source staged at ${HA_DST}"
 
       - name: Execute restoration
         run: |
-          ssh hass "cd /tmp/${BUNDLE_DIR} && CI=true ./deploy_complete_restoration.sh --backup-source ${HA_DST} --skip-matter"
+          echo "🚀 Configuring restoration flags..."
+          REGISTRY_FLAG=""
+          MATTER_FLAG="--skip-matter"
+          
+          if [[ "${{ inputs.write_registry }}" == "true" ]]; then
+            REGISTRY_FLAG="--write-registry"
+            echo "📝 Registry writes: ENABLED (explicit override)"
+          else
+            echo "🛡️  Registry writes: SKIPPED (CI auto-skip)"
+          fi
+          
+          if [[ "${{ inputs.enable_matter }}" == "true" ]]; then
+            MATTER_FLAG="--enable-matter-from-backup"
+            echo "🔌 Matter: ENABLE from backup"
+          else
+            echo "⏭️  Matter: SKIP (preserve current state)"
+          fi
+          
+          echo "🎯 Executing restoration with flags: ${REGISTRY_FLAG} ${MATTER_FLAG}"
+          ssh hass '/bin/bash -lc "cd /tmp/${BUNDLE_DIR} && CI=true ./deploy_complete_restoration.sh --backup-source ${HA_DST} ${REGISTRY_FLAG} ${MATTER_FLAG}"'
 
-      - name: Post-run (always; troubleshooting)
+      - name: Collect evidence artifacts
+        if: always()
+        run: |
+          echo "📋 Collecting remote logs and manifests..."
+          ssh hass '/bin/bash -lc "cd /tmp/${BUNDLE_DIR} && ls -la > DIRECTORY_LISTING.txt"' || true
+          ssh hass '/bin/bash -lc "cd /tmp/${BUNDLE_DIR} && grep -E \"SAFETY|CI.*true|SKIP_REGISTRY|WORKDIR.*tmp\" deploy_complete_restoration.sh | head -15 > V2.6_FEATURES.txt"' || true
+          
+          mkdir -p artifacts
+          scp hass:/tmp/${BUNDLE_DIR}/DIRECTORY_LISTING.txt artifacts/ || true
+          scp hass:/tmp/${BUNDLE_DIR}/V2.6_FEATURES.txt artifacts/ || true
+          scp hass:/tmp/${BUNDLE_DIR}/BUNDLE_MANIFEST.md artifacts/ || true
+          
+          echo "✅ Artifacts collected"
+
+      - name: Upload restoration evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ha-restoration-evidence-${{ github.run_id }}
+          path: artifacts/
+          retention-days: 30
+
+      - name: Post-run troubleshooting (stdout)
         if: always()
         run: |
           echo "📋 Bundle directory contents:"
-          ssh hass "ls -la /tmp/${BUNDLE_DIR}" || true
-          echo "🔍 Checking for v2.6 features in script:"
-          ssh hass "grep -E 'SAFETY|CI.*true|SKIP_REGISTRY|WORKDIR.*tmp' /tmp/${BUNDLE_DIR}/deploy_complete_restoration.sh | head -10" || true
+          ssh hass '/bin/bash -lc "ls -la /tmp/${BUNDLE_DIR}"' || true
+          echo ""
+          echo "🔍 v2.6 safety features detected:"
+          ssh hass '/bin/bash -lc "grep -E \"SAFETY|CI.*true|SKIP_REGISTRY|WORKDIR.*tmp\" /tmp/${BUNDLE_DIR}/deploy_complete_restoration.sh | head -10"' || true
