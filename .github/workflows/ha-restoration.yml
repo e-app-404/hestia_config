@@ -43,29 +43,21 @@ jobs:
       - name: Prepare bundle directory on HA
         run: |
           echo "🧹 Cleaning old bundles on HA..."
-          ssh hass '/bin/bash -lc "cd /tmp && rm -rf ${BUNDLE_DIR} ha_complete_restoration_*"'
+          ssh hass "/bin/bash -lc 'cd /tmp && rm -rf ${BUNDLE_DIR} ha_complete_restoration_*'"
           
           echo "📦 Transferring bundle to HA..."
           rsync -avz "${BUNDLE_TGZ}" hass:/tmp/
           
           echo "🔐 Verifying bundle checksum on HA..."
-          ssh hass '/bin/bash -lc "cd /tmp && (sha256sum ${BUNDLE_TGZ} || shasum -a 256 ${BUNDLE_TGZ})"'
+          ssh hass "/bin/bash -lc 'cd /tmp && (sha256sum ${BUNDLE_TGZ} || shasum -a 256 ${BUNDLE_TGZ})'"
           
           echo "📂 Extracting bundle with dynamic root discovery..."
-          ssh hass '/bin/bash -lc "
-            cd /tmp &&
-            TAR_ROOT=\$(tar -tzf ${BUNDLE_TGZ} | head -1 | cut -d/ -f1) &&
-            echo \"Discovered tar root: \$TAR_ROOT\" &&
-            tar -xzf ${BUNDLE_TGZ} &&
-            mv \"\$TAR_ROOT\" \"${BUNDLE_DIR}\" &&
-            chmod +x ${BUNDLE_DIR}/*.sh &&
-            echo \"✅ Bundle extracted to ${BUNDLE_DIR}\"
-          "'
+          ssh hass "/bin/bash -lc 'cd /tmp && TAR_ROOT=\$(tar -tzf ${BUNDLE_TGZ} | head -1 | cut -d/ -f1) && echo \"Discovered tar root: \$TAR_ROOT\" && tar -xzf ${BUNDLE_TGZ} && mv \"\$TAR_ROOT\" \"${BUNDLE_DIR}\" && chmod +x ${BUNDLE_DIR}/*.sh && echo \"✅ Bundle extracted to ${BUNDLE_DIR}\"'"
 
       - name: Stage backup source on HA
         run: |
           echo "📁 Creating backup staging directory..."
-          ssh hass '/bin/bash -lc "mkdir -p ${HA_DST}"'
+          ssh hass "/bin/bash -lc 'mkdir -p ${HA_DST}'"
           
           echo "🔄 Syncing backup source..."
           rsync -avz --delete "/Users/evertappels/Projects/HomeAssistant/_backups/f050d566/homeassistant/data/.storage/" "hass:${HA_DST}/"
@@ -93,14 +85,14 @@ jobs:
           fi
           
           echo "🎯 Executing restoration with flags: ${REGISTRY_FLAG} ${MATTER_FLAG}"
-          ssh hass '/bin/bash -lc "cd /tmp/${BUNDLE_DIR} && CI=true ./deploy_complete_restoration.sh --backup-source ${HA_DST} ${REGISTRY_FLAG} ${MATTER_FLAG}"'
+          ssh hass "/bin/bash -lc 'cd /tmp/${BUNDLE_DIR} && CI=true ./deploy_complete_restoration.sh --backup-source ${HA_DST} ${REGISTRY_FLAG} ${MATTER_FLAG}'"
 
       - name: Collect evidence artifacts
         if: always()
         run: |
           echo "📋 Collecting remote logs and manifests..."
-          ssh hass '/bin/bash -lc "cd /tmp/${BUNDLE_DIR} && ls -la > DIRECTORY_LISTING.txt"' || true
-          ssh hass '/bin/bash -lc "cd /tmp/${BUNDLE_DIR} && grep -E \"SAFETY|CI.*true|SKIP_REGISTRY|WORKDIR.*tmp\" deploy_complete_restoration.sh | head -15 > V2.6_FEATURES.txt"' || true
+          ssh hass "/bin/bash -lc 'cd /tmp/${BUNDLE_DIR} && ls -la > DIRECTORY_LISTING.txt'" || true
+          ssh hass "/bin/bash -lc 'cd /tmp/${BUNDLE_DIR} && grep -E \"SAFETY|CI.*true|SKIP_REGISTRY|WORKDIR.*tmp\" deploy_complete_restoration.sh | head -15 > V2.6_FEATURES.txt'" || true
           
           mkdir -p artifacts
           scp hass:/tmp/${BUNDLE_DIR}/DIRECTORY_LISTING.txt artifacts/ || true
@@ -121,7 +113,7 @@ jobs:
         if: always()
         run: |
           echo "📋 Bundle directory contents:"
-          ssh hass '/bin/bash -lc "ls -la /tmp/${BUNDLE_DIR}"' || true
+          ssh hass "/bin/bash -lc 'ls -la /tmp/${BUNDLE_DIR}'" || true
           echo ""
           echo "🔍 v2.6 safety features detected:"
-          ssh hass '/bin/bash -lc "grep -E \"SAFETY|CI.*true|SKIP_REGISTRY|WORKDIR.*tmp\" /tmp/${BUNDLE_DIR}/deploy_complete_restoration.sh | head -10"' || true
+          ssh hass "/bin/bash -lc 'grep -E \"SAFETY|CI.*true|SKIP_REGISTRY|WORKDIR.*tmp\" /tmp/${BUNDLE_DIR}/deploy_complete_restoration.sh | head -10'" || true
