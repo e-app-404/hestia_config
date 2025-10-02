@@ -1,7 +1,7 @@
 {#- Loads TP-Link, Smartthings and MQTT motion and occupancy sensors in correct YAML -#}
 
-{%- set integrations = ['smartthings', 'tplink', 'mqtt'] -%}
-{%- set device_classes = ['motion', 'occupancy'] -%}
+{%- set integrations = ['smartthings', 'tplink', 'mqtt', 'matter'] -%}
+{%- set device_classes = ['motion', 'occupancy', 'vibration', 'presence'] -%}
 {%- set domain_states = (states.sensor | list) + (states.binary_sensor | list) -%}
 
 {%- macro q(v) -%}

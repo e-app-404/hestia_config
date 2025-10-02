@@ -8,19 +8,19 @@
 #motion_sensors_alpha:
 #  name: "Motion Sensors (Alpha Tier)"
 #  entities:
-#    - binary_sensor.bedroom_wardrobe_occupancy_matter_alpha
-#    - binary_sensor.bedroom_occupancy_alpha_occupancy
-#    - binary_sensor.bedroom_wardrobe_motion_tplink_alpha
-#    - binary_sensor.ensuite_occupancy_omega_occupancy
-#    - binary_sensor.downstairs_occupancy_alpha_matter
-#    - binary_sensor.downstairs_presence_alpha_motion
-#    - binary_sensor.upstairs_occupancy_matter_alpha_occupancy
-#    - binary_sensor.upstairs_presence_alpha_motion
-#    - binary_sensor.kitchen_occupancy_matter_alpha_occupancy
-#    - binary_sensor.kitchen_presence_alpha_motion
+#    # SmartThings motion sensors
+#    - binary_sensor.bedroom_security_cam_alpha_motion
 #    - binary_sensor.living_room_multipurpose_alpha_motion
-#    - binary_sensor.living_room_occupancy_alpha_occupancy
+#    # TP-Link motion sensors
+#    - binary_sensor.bedroom_wardrobe_motion_alpha_motion
+#    - binary_sensor.downstairs_motion_alpha_motion
+#    - binary_sensor.kitchen_motion_alpha_motion
 #    - binary_sensor.sanctum_motion_alpha
+#    - binary_sensor.upstairs_motion_alpha_motion
+#    # MQTT motion/occupancy sensors
+#    - binary_sensor.ensuite_motion_alpha_occupancy
+#    # Template motion sensors
+#    - binary_sensor.ensuite_motion_real_time
 
 #motion_sensors_beta:
 #  name: "Motion Sensors (Beta Tier)"

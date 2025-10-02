@@ -8,18 +8,19 @@
 #occupancy_sensors_alpha:
 #  name: "Occupancy Sensors (Alpha Tier)"
 #  entities:
+#    # MQTT occupancy sensors (Zigbee2MQTT)
 #    - binary_sensor.bedroom_occupancy_alpha_occupancy
-#    - binary_sensor.bedroom_wardrobe_occupancy_matter_alpha
-#    - binary_sensor.bedroom_wardrobe_motion_tplink_alpha
+#    - binary_sensor.ensuite_occupancy_alpha_occupancy
 #    - binary_sensor.kitchen_occupancy_alpha_occupancy
-#    - binary_sensor.kitchen_occupancy_matter_alpha_occupancy
 #    - binary_sensor.living_room_occupancy_alpha_occupancy
-#    - binary_sensor.ensuite_occupancy_omega_occupancy
+#    # Matter occupancy sensors (Tapo via Matter)
+#    - binary_sensor.bedroom_wardrobe_occupancy_matter_alpha
 #    - binary_sensor.downstairs_occupancy_alpha_matter
-#    - binary_sensor.sanctum_motion_alpha
-#    - binary_sensor.upstairs_occupancy_matter_alpha_occupancy
-#    - binary_sensor.desk_presence_inference
+#    - binary_sensor.kitchen_occupancy_matter_alpha_occupancy
 #    - binary_sensor.sanctum_occupancy_matter_alpha
+#    - binary_sensor.upstairs_occupancy_matter_alpha_occupancy
+#    # Vibration sensors
+#    - binary_sensor.bedroom_bed_alpha_vibration
 #occupancy_sensors_beta:
 #  name: "Occupancy Sensors (Beta Tier)"
 #  entities:

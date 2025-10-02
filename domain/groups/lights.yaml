@@ -45,25 +45,13 @@
 #   name: "Group Bedroom Lights Desk Area"
 #   entities:
 #     - light.bedroom_desk_alpha
+#     - light.bedroom_desk_alpha_matter
 #     - light.bedroom_desk_corner_alpha
 #     - light.bedroom_desk_lightstrip_alpha
+#     - light.bedroom_desk_lightstrip_alpha_matter
 #     - light.bedroom_desk_wall_alpha
-#     - light.monitor_backlight_alpha
-#       #    - light.monitor_backlight_alpha_segment_001
-#       #    - light.monitor_backlight_alpha_segment_002
-#       #    - light.monitor_backlight_alpha_segment_003
-#       #    - light.monitor_backlight_alpha_segment_004
-#       #    - light.monitor_backlight_alpha_segment_005
-#       #    - light.monitor_backlight_alpha_segment_006
-#       #    - light.monitor_backlight_alpha_segment_007
-#       #    - light.monitor_backlight_alpha_segment_008
-#       #    - light.monitor_backlight_alpha_segment_009
-#       #    - light.monitor_backlight_alpha_segment_010
-#       #    - light.monitor_backlight_alpha_segment_011
-#       #    - light.monitor_backlight_alpha_segment_012
-#       #    - light.monitor_backlight_alpha_segment_013
-#       #    - light.monitor_backlight_alpha_segment_014
-#       #    - light.monitor_backlight_alpha_segment_015
+#     - light.bedroom_desk_wall_alpha_matter
+#     - light.monitor_backlight_alpha  # Simplified - no longer segmented
 #   icon: mdi:lamps-outline
 
 # wardrobe_lights:
@@ -97,7 +85,7 @@
 # laundry_room_lights:
 #   name: "Group Laundry Room Lights"
 #   entities:
-#     - light.laundry_ceiling_tuya_alpha
+#     - light.laundry_ceiling_alpha_retired  # RETIRED - entity unavailable
 #   icon: mdi:lamps-outline
 
 # living_room_lights:

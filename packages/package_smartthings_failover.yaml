@@ -31,12 +31,8 @@ group:
   smartthings_entities:
     name: "SmartThings Entities"
     entities:
-      - binary_sensor.bedroom_security_cam_alpha_motion
-      - binary_sensor.evert_alpha_presence_iphone_presence
+      # Active SmartThings entities verified in live system
       - binary_sensor.living_room_multipurpose_alpha_motion
-      - light.living_room_floorlamp_beta
-      - light.living_room_foxy_beta
-      - light.living_room_side_beta
       - media_player.bedroom_tv_alpha
       - sensor.bedroom_illuminance_wifi_alpha_brightness_intensity
       - sensor.bedroom_illuminance_wifi_alpha_illuminance
@@ -47,15 +43,20 @@ group:
       - sensor.bedroom_tv_alpha_power_energy
       - sensor.bedroom_tv_alpha_tv_channel
       - sensor.bedroom_tv_alpha_tv_channel_name
-      - sensor.home_iot_hub_tapo_alarm
       - sensor.living_room_multipurpose_alpha_battery
       - sensor.living_room_multipurpose_alpha_illuminance
       - sensor.living_room_multipurpose_alpha_temperature
       - switch.bedroom_illuminance_wifi_alpha
-      - switch.bedroom_virtual_illuminance_level_1
-      - switch.bedroom_virtual_illuminance_level_2
-      - switch.bedroom_virtual_illuminance_level_3
-      - switch.bedroom_virtual_illuminance_level_4
+      # Beta entities (disabled by device - likely hardware issues)
+      # - light.living_room_floorlamp_beta
+      # - light.living_room_foxy_beta  
+      # - light.living_room_side_beta
+      # Virtual entities (may not exist in current config)
+      # - sensor.home_iot_hub_tapo_alarm
+      # - switch.bedroom_virtual_illuminance_level_1
+      # - switch.bedroom_virtual_illuminance_level_2
+      # - switch.bedroom_virtual_illuminance_level_3
+      # - switch.bedroom_virtual_illuminance_level_4
 
 # ⟫⟫ ⟫ ⟫⟫ ⟫⟫ ⟫⟫ ⟫⟫ ⟫⟫ ⟫⟫ TEMPLATES
 

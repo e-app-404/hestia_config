@@ -87,7 +87,7 @@
             'sensor.macbook_displays',
             'sensor.macbook_internal_battery_state',
             'device_tracker.macbook',
-            'binary_sensor.macbook_connectivity_recent_desk'
+            'binary_sensor.desk_macbook_recent_connectivity'
           ] | tojson }}
 
     - name: "Desk MacBook Recent Connectivity (Desk)"

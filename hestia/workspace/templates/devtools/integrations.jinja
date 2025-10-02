@@ -1,8 +1,8 @@
 {#- Here's a template for Home Assistant's Developer Tools > Template editor that returns a structured list of all motion, 
 presence, and occupancy sensors from MQTT, SmartThings, and Matter integrations, grouped by integration name -#}
 
-{% set integrations = ['mqtt', 'smartthings', 'matter'] %}
-{% set device_classes = ['motion', 'occupancy', 'presence'] %}
+{% set integrations = ['mqtt', 'smartthings', 'matter', 'tplink'] %}
+{% set device_classes = ['motion', 'occupancy', 'presence', 'vibration'] %}
 
 {% for integration in integrations %}
 ### {{ integration | capitalize }} Integration

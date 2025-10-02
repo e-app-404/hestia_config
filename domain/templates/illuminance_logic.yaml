@@ -38,7 +38,7 @@
       device_class: illuminance
       icon: mdi:lumx
       state: >
-        {% set val = states('sensor.bedroom_illuminance_wifi_alpha_illuminance') %}
+        {% set val = states('sensor.bedroom_illuminance_alpha_illuminance') %}
         {{ val if val not in ['unknown', 'unavailable', 'none', ''] else 0 }}
       attributes:
         tier: "β"
@@ -46,8 +46,8 @@
         area_id: "bedroom"
         floor_id: "sanctum"
         source_count: "1"
-        data_quality: "{{ state_attr('sensor.bedroom_illuminance_wifi_alpha_illuminance', 'data_quality') }}"
-        sources: "{{ state_attr('sensor.bedroom_illuminance_wifi_alpha_illuminance', 'sources') }}"
+        data_quality: "{{ state_attr('sensor.bedroom_illuminance_alpha_illuminance', 'data_quality') }}"
+        sources: "{{ state_attr('sensor.bedroom_illuminance_alpha_illuminance', 'sources') }}"
         subsystem: "aether"
         is_multi_source: "false"
         is_validated: true
@@ -67,7 +67,7 @@
       device_class: illuminance
       state: >
         {% set illuminance_sensors = [
-          'sensor.bedroom_illuminance_wifi_alpha_illuminance',
+          'sensor.bedroom_illuminance_alpha_illuminance',
           'sensor.living_room_occupancy_illuminance_alpha'
         ] %}
         {% set values = namespace(valid=[]) %}
@@ -84,7 +84,7 @@
         {% endif %}
       attributes:
         upstream_sources: >
-          {{ ['sensor.bedroom_illuminance_wifi_alpha_illuminance','sensor.living_room_occupancy_illuminance_alpha'] | tojson }}
+          {{ ['sensor.bedroom_illuminance_alpha_illuminance','sensor.living_room_occupancy_illuminance_alpha'] | tojson }}
         area_id: "home"
         tier: "η"
         canonical_id: "merged_home_illuminance_η"
