@@ -14,6 +14,32 @@
 
 set -euo pipefail
 
+# --- v2.6 safety & tmp normalization ---
+: "${TMPDIR:=/tmp}"
+: "${WORKDIR:=$TMPDIR/restoration}"
+: "${RESTORE_BACKUP_DIR:=$TMPDIR/complete_restore_backup_$(date +%Y%m%d_%H%M%S)}"
+
+# Back-compat flags and safety defaults
+SKIP_REGISTRY=${SKIP_REGISTRY:-}
+WRITE_REGISTRY=0
+AUTO_CI=${AUTO_CI:-}
+
+# Accept legacy/no-op in prior versions: --skip-registry
+for arg in "$@"; do
+  case "$arg" in
+    --skip-registry) SKIP_REGISTRY=1 ;;             # prefer infra-only by default
+    --write-registry) WRITE_REGISTRY=1 ;;            # explicit opt-in for registry writes
+  esac
+done
+
+# If in CI and no explicit write requested, default to skip
+if [ "${CI:-}" = "true" ] && [ "$WRITE_REGISTRY" -ne 1 ]; then
+  SKIP_REGISTRY=1
+fi
+
+# Ensure we never try to use /config/tmp (blocked under SSH add-on)
+mkdir -p "$WORKDIR" "$RESTORE_BACKUP_DIR"
+
 # Parse command line arguments and environment variables
 DRY_RUN=false
 HASS_CONFIG="${HASS_CONFIG:-}"
@@ -53,6 +79,14 @@ while [[ $# -gt 0 ]]; do
             SKIP_MATTER=true
             shift
             ;;
+        --skip-registry)
+            SKIP_REGISTRY=1
+            shift
+            ;;
+        --write-registry)
+            WRITE_REGISTRY=1
+            shift
+            ;;
         --help)
             echo "Usage: $0 [OPTIONS]"
             echo "Options:"
@@ -63,6 +97,8 @@ while [[ $# -gt 0 ]]; do
             echo "  --mode {haos|systemd|docker} Deployment mode"
             echo "  --enable-matter-from-backup  Allow Matter re-enablement"
             echo "  --skip-matter               Keep current Matter state"
+            echo "  --skip-registry             Skip registry files (default in CI)"
+            echo "  --write-registry            Force registry writes (override skip)"
             echo "  --help                       Show this help"
             exit 0
             ;;
@@ -135,7 +171,7 @@ detect_environment() {
     # Set derived paths
     STORAGE_DIR="${STORAGE_DIR:-${HASS_CONFIG}/.storage}"
     SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
-    RESTORE_BACKUP_DIR="${HASS_CONFIG}/tmp/complete_restore_backup_$(date +%Y%m%d_%H%M%S)"
+    # RESTORE_BACKUP_DIR already set in v2.6 normalization (uses /tmp)
     
     # Auto-detect backup source if not specified (portable paths only)
     if [[ -z "$BACKUP_SOURCE" ]]; then
@@ -241,8 +277,14 @@ start_home_assistant() {
 global_rollback() {
     echo -e "${RED}🔄 Performing global rollback...${NC}"
     if [[ -d "${RESTORE_BACKUP_DIR}/current_storage_backup" ]]; then
-        rsync -a "${RESTORE_BACKUP_DIR}/current_storage_backup/" "${STORAGE_DIR}/"
-        echo -e "${GREEN}✅ Global rollback completed${NC}"
+        if [[ "${SKIP_REGISTRY:-}" = "1" ]]; then
+            echo -e "${YELLOW}🛡️  Registry writes skipped (SKIP_REGISTRY=1). Infra-only restoration in effect.${NC}"
+        elif [[ ! -w "$STORAGE_DIR" ]]; then
+            echo -e "${YELLOW}⚠️  $STORAGE_DIR not writable (SSH add-on/Protection ON). Skipping rollback.${NC}"
+        else
+            rsync -a "${RESTORE_BACKUP_DIR}/current_storage_backup/" "${STORAGE_DIR}/"
+            echo -e "${GREEN}✅ Global rollback completed${NC}"
+        fi
     else
         echo -e "${RED}❌ Backup directory not found for rollback${NC}"
     fi
@@ -335,8 +377,15 @@ if [[ "$DRY_RUN" == "false" ]]; then
         cp -r "$STORAGE_DIR" "${RESTORE_BACKUP_DIR}/current_storage_backup"
         echo -e "${GREEN}✅ Current .storage directory backed up${NC}"
     else
-        echo -e "${RED}❌ Current .storage directory not found${NC}"
-        exit 1
+        if [[ "${SKIP_REGISTRY:-}" = "1" ]]; then
+            echo -e "${YELLOW}🟨 No /config/.storage present and SKIP_REGISTRY=1 → infra-only mode; skipping backup (no-op).${NC}"
+            # Ensure the rest of the flow knows we are infra-only
+            INFRA_ONLY=1
+        else
+            echo -e "${RED}❌ Current .storage directory not found (and registry restore is enabled).${NC}"
+            echo -e "ℹ️  Create it or run with --skip-registry/CI to do infra-only."
+            exit 1
+        fi
     fi
 else
     echo -e "🧪 [DRY RUN] Would backup current .storage directory"
@@ -452,14 +501,21 @@ if [[ "$DRY_RUN" == "false" ]] && [[ "$SKIP_MATTER" == "false" ]] && [[ "$ENABLE
     echo -e "Restoring core.config_entries will RE-ENABLE Matter integration from backup state."
     echo -e "This may restore previous Matter fabric/device pairings and could cause conflicts."
     echo
-    read -p "$(echo -e "${BOLD}Do you consent to re-enabling Matter integration from backup? [y/N]: ${NC}")" -n 1 -r
-    echo
-    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-        echo -e "${YELLOW}⚠️  Matter consent declined. Use --skip-matter to exclude Matter from restoration${NC}"
-        echo -e "   or --enable-matter-from-backup to bypass this prompt."
-        exit 0
+    
+    # Auto-consent in CI/non-interactive environments
+    if [[ "${CI:-}" == "true" ]] || [[ ! -t 0 ]]; then
+        echo -e "${GREEN}🤖 CI Environment detected - auto-consenting to Matter re-enablement${NC}"
+        echo -e "${GREEN}✅ Matter re-enablement consent granted (automated)${NC}"
+    else
+        read -p "$(echo -e "${BOLD}Do you consent to re-enabling Matter integration from backup? [y/N]: ${NC}")" -n 1 -r
+        echo
+        if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+            echo -e "${YELLOW}⚠️  Matter consent declined. Use --skip-matter to exclude Matter from restoration${NC}"
+            echo -e "   or --enable-matter-from-backup to bypass this prompt."
+            exit 0
+        fi
+        echo -e "${GREEN}✅ Matter re-enablement consent granted${NC}"
     fi
-    echo -e "${GREEN}✅ Matter re-enablement consent granted${NC}"
 fi
 echo
 
@@ -490,12 +546,18 @@ echo -e "${GREEN}Based on backup f050d566 representing your mature, sophisticate
 echo
 
 if [[ "$DRY_RUN" == "false" ]]; then
-    read -p "$(echo -e "${BOLD}Proceed with complete system restoration? [y/N]: ${NC}")" -n 1 -r
-    echo
-    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-        echo -e "${YELLOW}⚠️  Complete restoration cancelled by user${NC}"
-        echo -e "   Backup would have been preserved at: ${BOLD}${RESTORE_BACKUP_DIR}${NC}"
-        exit 0
+    # Auto-proceed in CI/non-interactive environments
+    if [[ "${CI:-}" == "true" ]] || [[ ! -t 0 ]]; then
+        echo -e "${GREEN}🤖 CI Environment detected - auto-proceeding with complete restoration${NC}"
+        echo -e "${GREEN}✅ Complete system restoration confirmed (automated)${NC}"
+    else
+        read -p "$(echo -e "${BOLD}Proceed with complete system restoration? [y/N]: ${NC}")" -n 1 -r
+        echo
+        if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+            echo -e "${YELLOW}⚠️  Complete restoration cancelled by user${NC}"
+            echo -e "   Backup would have been preserved at: ${BOLD}${RESTORE_BACKUP_DIR}${NC}"
+            exit 0
+        fi
     fi
 else
     echo -e "🧪 [DRY RUN] In live mode, would prompt for user confirmation here"
@@ -504,6 +566,20 @@ fi
 
 # Phase 5: Stop Home Assistant and Execute Complete Restoration
 echo -e "${YELLOW}📋 Phase 5: Complete System Restoration Execution${NC}"
+
+# Show registry handling mode
+if [[ "${SKIP_REGISTRY:-}" = "1" ]]; then
+    echo -e "${YELLOW}🛡️  Registry writes skipped (SKIP_REGISTRY=1). Infra-only restoration in effect.${NC}"
+elif [[ "${WRITE_REGISTRY:-}" = "1" ]]; then
+    echo -e "${GREEN}📝 Registry writes enabled (WRITE_REGISTRY=1).${NC}"
+fi
+
+# Early exit for infra-only mode when .storage is missing
+if [[ "${INFRA_ONLY:-}" = "1" ]]; then
+    echo -e "${GREEN}✅ Infra-only mode complete (no .storage to restore to).${NC}"
+    echo -e "ℹ️  When /config/.storage exists, re-run without --skip-registry (or with --write-registry) to restore registry files."
+    exit 0
+fi
 
 # Stop Home Assistant before making changes
 if [[ "$HA_RUNNING" == "true" ]]; then
@@ -518,6 +594,12 @@ restore_file() {
     local source_file="$1"
     local category="$2"
     local filename=$(basename "$source_file")
+    
+    # Skip registry files if SKIP_REGISTRY=1 (CI-safe default)
+    if [[ "${SKIP_REGISTRY:-}" = "1" ]] && [[ "$filename" =~ ^core\.(entity_registry|device_registry|area_registry|config_entries)$ ]]; then
+        echo -e "${YELLOW}🛡️  Skipping registry file ${BOLD}${filename}${NC} (SKIP_REGISTRY=1)"
+        return 0
+    fi
     
     # Skip core.config_entries if --skip-matter is enabled
     if [[ "$SKIP_MATTER" == "true" ]] && [[ "$filename" == "core.config_entries" ]]; then
@@ -551,7 +633,12 @@ restore_file() {
         cp -r "$source_file" "${STORAGE_DIR}/${filename}"
         echo -e "   ${GREEN}✅ Directory restored${NC}"
     else
-        # Handle regular files
+        # Handle regular files - permission-aware copying
+        if [[ ! -w "$STORAGE_DIR" ]]; then
+            echo -e "   ${YELLOW}⚠️  ${STORAGE_DIR} not writable (SSH add-on/Protection ON). Skipping ${filename}${NC}"
+            return 0
+        fi
+        
         if [[ -f "${STORAGE_DIR}/${filename}" ]]; then
             cp "${STORAGE_DIR}/${filename}" "${RESTORE_BACKUP_DIR}/${filename}_live_backup"
         fi
