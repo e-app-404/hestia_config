@@ -7,7 +7,7 @@ set -e
 echo "🔗 Validating cross-repository ADR links..."
 
 # Configuration
-ADR_DIR="docs/ADR"
+ADR_DIR="hestia/library/docs/ADR"
 TIMEOUT=10
 ERRORS=0
 
