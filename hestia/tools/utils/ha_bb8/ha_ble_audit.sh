@@ -3,7 +3,7 @@
 # Run with: evertappels@macbook config % bash hestia/workspace/utils/ha_ble_audit.sh
 
 # Ensure SSH access to HA host using password from secrets.yaml
-SSH_HOST="babylon-babes@192.168.0.129"
+SSH_HOST=$(grep '^ha_ssh_host:' ./secrets.yaml | awk '{print $2}')
 SSH_PASS=$(grep '^ha_ssh_pass:' ./secrets.yaml | awk '{print $2}')
 if ! command -v sshpass >/dev/null 2>&1; then
   echo "sshpass is required but not installed. Exiting."
