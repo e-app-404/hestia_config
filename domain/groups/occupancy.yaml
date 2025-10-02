@@ -14,11 +14,11 @@
 #    - binary_sensor.kitchen_occupancy_alpha_occupancy
 #    - binary_sensor.living_room_occupancy_alpha_occupancy
 #    # Matter occupancy sensors (Tapo via Matter)
-#    - binary_sensor.bedroom_wardrobe_occupancy_alpha_matter_occupancy
+#    - binary_sensor.bedroom_wardrobe_occupancy_matter_alpha
 #    - binary_sensor.downstairs_occupancy_alpha_matter
-#    - binary_sensor.kitchen_occupancy_alpha_matter_occupancy
-#    - binary_sensor.sanctum_occupancy_alpha_matter_occupancy
-#    - binary_sensor.upstairs_occupancy_alpha_matter_occupancy
+#    - binary_sensor.kitchen_occupancy_matter_alpha_occupancy
+#    - binary_sensor.sanctum_occupancy_matter_alpha
+#    - binary_sensor.upstairs_occupancy_matter_alpha_occupancy
 #    # Vibration sensors
 #    - binary_sensor.bedroom_bed_alpha_vibration
 #occupancy_sensors_beta:
@@ -40,7 +40,7 @@
 #    - binary_sensor.zone_downstairs_occupancy_beta
 #    - binary_sensor.zone_upstairs_occupancy_beta
 
-#    - binary_sensor.sanctum_occupancy_alpha_matter_occupancy
+#    - binary_sensor.sanctum_occupancy_matter_alpha
 
 #    - binary_sensor.bedroom_occupancy_beta
 
