@@ -29,9 +29,9 @@ jobs:
 
       - name: Prepare bundle directory on HA
         run: |
-          ssh hass "cd /tmp && rm -rf ${BUNDLE_DIR} && mkdir -p ${BUNDLE_DIR}"
+          ssh hass "cd /tmp && rm -rf ${BUNDLE_DIR} ha_complete_restoration_v2.0"
           rsync -avz "${BUNDLE_TGZ}" hass:/tmp/
-          ssh hass "cd /tmp && tar -xzf ${BUNDLE_TGZ} && mv ha_complete_restoration_v2.0/* ${BUNDLE_DIR}/ && rmdir ha_complete_restoration_v2.0 && chmod +x ${BUNDLE_DIR}/*.sh"
+          ssh hass "cd /tmp && tar -xzf ${BUNDLE_TGZ} && mv ha_complete_restoration_v2.0 ${BUNDLE_DIR} && chmod +x ${BUNDLE_DIR}/*.sh"
           echo "✅ Bundle extracted and prepared"
 
       - name: Stage backup source on HA
