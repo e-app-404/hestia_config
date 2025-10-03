@@ -158,6 +158,9 @@ virtualization/vagrant/.vagrant
 virtualization/vagrant/config
 # Visual Studio Code
 .vscode/*
+
+# Ignore generated artifacts/bundles (created by release/packaging scripts)
+artifacts/
 !.vscode/cSpell.json
 !.vscode/extensions.json
 !.vscode/tasks.json
