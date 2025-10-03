@@ -52,6 +52,9 @@ hestia/config/system/*.conf
 # Preview configurations may contain generated credentials
 hestia/config/preview/*.conf
 
+# Remove SMB mounting scripts (contain PII)
+hestia/tools/utils/samba/*.sh
+
 # Ignore imported blueprints
 hestia/library/templates/blueprints/*.yaml
 
