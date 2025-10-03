@@ -1,6 +1,0 @@
-#!/usr/bin/with-contenv bash
-set -euo pipefail
-# Always start from canonical app dir
-cd /usr/src/app
-# PATH was set to include /opt/venv/bin; exec the wrapper at its canonical path
-exec /usr/bin/env bash /usr/src/app/run.sh

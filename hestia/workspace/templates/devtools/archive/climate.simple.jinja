@@ -1,0 +1,42 @@
+{#- Ultra simple test to isolate the issue -#}
+
+{%- set alpha_pattern = '_alpha' -%}
+
+STEP BY STEP DEBUG:
+
+1. Total alpha sensors: {{ states.sensor | selectattr('entity_id', 'search', alpha_pattern) | list | length }}
+
+2. First 5 alpha sensors (any):
+{%- for s in states.sensor | selectattr('entity_id', 'search', alpha_pattern) | list | sort(attribute='entity_id') -%}
+  {%- if loop.index <= 5 %}
+{{ loop.index }}. {{ s.entity_id }}
+  {%- endif -%}
+{%- endfor %}
+
+3. Testing climate keyword on one known entity:
+{%- set test_entity = "sensor.bedroom_ambient_climate_alpha_humidity" -%}
+{%- set test_lower = test_entity | lower -%}
+Entity: {{ test_entity }}
+Lowercase: {{ test_lower }}
+Contains 'climate': {{ 'climate' in test_lower }}
+Contains 'humid': {{ 'humid' in test_lower }}
+
+4. Manual loop test:
+{%- set found_count = 0 -%}
+{%- for s in states.sensor | selectattr('entity_id', 'search', alpha_pattern) | list -%}
+  {%- set eid = s.entity_id | lower -%}
+  {%- if 'climate' in eid -%}
+    {%- set found_count = found_count + 1 -%}
+    {%- if found_count <= 3 %}
+Found {{ found_count }}: {{ s.entity_id }}
+    {%- endif -%}
+  {%- endif -%}
+{%- endfor %}
+Total found with 'climate': {{ found_count }}
+
+5. Alternative approach - direct entity check:
+{%- if states('sensor.bedroom_ambient_climate_alpha_humidity') != 'unknown' %}
+Entity exists: sensor.bedroom_ambient_climate_alpha_humidity
+Device class: {{ state_attr('sensor.bedroom_ambient_climate_alpha_humidity', 'device_class') }}
+Unit: {{ state_attr('sensor.bedroom_ambient_climate_alpha_humidity', 'unit_of_measurement') }}
+{%- endif %}

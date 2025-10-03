@@ -1,0 +1,31 @@
+{#- Debug template to check Matter integration entities specifically -#}
+
+MATTER INTEGRATION DEBUG:
+
+1. Matter integration entities found: {{ integration_entities('matter') | list | length }}
+
+2. First 10 Matter entities:
+{%- for eid in integration_entities('matter') | list -%}
+  {%- if loop.index <= 10 %}
+{{ loop.index }}. {{ eid }}
+  {%- endif -%}
+{%- endfor %}
+
+3. Looking for specific entities:
+- ensuite_climate_alpha_matter_humidity in matter entities: {{ 'sensor.ensuite_climate_alpha_matter_humidity' in integration_entities('matter') | list }}
+- ensuite_climate_alpha_matter_temperature in matter entities: {{ 'sensor.ensuite_climate_alpha_matter_temperature' in integration_entities('matter') | list }}
+
+4. Direct entity check:
+- ensuite humidity exists: {{ states('sensor.ensuite_climate_alpha_matter_humidity') != 'unknown' }}
+- ensuite temperature exists: {{ states('sensor.ensuite_climate_alpha_matter_temperature') != 'unknown' }}
+- humidity device_class: {{ state_attr('sensor.ensuite_climate_alpha_matter_humidity', 'device_class') }}
+- temperature device_class: {{ state_attr('sensor.ensuite_climate_alpha_matter_temperature', 'device_class') }}
+
+5. All sensors with 'climate' in name:
+{%- for s in states.sensor | list -%}
+  {%- if 'climate' in s.entity_id | lower -%}
+    {%- if loop.index <= 10 %}
+{{ loop.index }}. {{ s.entity_id }} - {{ s.attributes.get('device_class', 'no_class') }} - {{ s.attributes.get('unit_of_measurement', 'no_unit') }}
+    {%- endif -%}
+  {%- endif -%}
+{%- endfor %}

@@ -162,8 +162,8 @@
       device_class: humidity
       state: >
         {% set humidity_sensors = [
-          'sensor.ensuite_climate_matter_alpha_humidity',
-          'sensor.ensuite_climate_omega_humidity'
+          'sensor.ensuite_climate_alpha_matter_humidity',
+          'sensor.ensuite_climate_alpha_humidity'
         ] %}
         {% set values = namespace(valid=[]) %}
         {% for sensor in humidity_sensors %}
@@ -179,7 +179,7 @@
         {% endif %}
       attributes:
         upstream_sources: >
-          {{ ['sensor.ensuite_climate_matter_alpha_humidity', 'sensor.ensuite_climate_omega_humidity'] | tojson }}
+          {{ ['sensor.ensuite_climate_alpha_matter_humidity', 'sensor.ensuite_climate_alpha_humidity'] | tojson }}
         downstream_consumers: >
           {{ ['binary_sensor.ensuite_shower_detected', 'sensor.binary_sensor.ensuite_shower_end_detected', 'binary_sensor.ensuite_shower_occupancy_epsilon'] | tojson }}
         floor_id: "sanctum"

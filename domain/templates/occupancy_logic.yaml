@@ -64,7 +64,7 @@
         {% from 'template.library.jinja' import preference_select %}
         {% set sources = [
           {'entity': 'binary_sensor.kitchen_occupancy_alpha_occupancy',         'protocol': 'mqtt',   'preference': 1, 'type': 'occupancy'},
-          {'entity': 'binary_sensor.kitchen_occupancy_matter_alpha_occupancy',  'protocol': 'matter', 'preference': 2, 'type': 'occupancy'}
+          {'entity': 'binary_sensor.kitchen_occupancy_alpha_matter_occupancy',  'protocol': 'matter', 'preference': 2, 'type': 'occupancy'}
         ] %}
         {{ preference_select(sources) == 'on' }}
       attributes:
@@ -78,13 +78,13 @@
         protocols: "MQTT(1), Matter(2)"
         refactor_note: "Occupancy-only, preference-based"
         upstream_sources: >
-          {{ ['template.library.jinja','binary_sensor.kitchen_occupancy_alpha_occupancy','binary_sensor.kitchen_occupancy_matter_alpha_occupancy'] | tojson }}
+          {{ ['template.library.jinja','binary_sensor.kitchen_occupancy_alpha_occupancy','binary_sensor.kitchen_occupancy_alpha_matter_occupancy'] | tojson }}
         aggregation_strategy: "preference-based occupancy (no motion)"
         active_source: >
           {% from 'template.library.jinja' import get_active_source %}
           {% set sources = [
             {'entity': 'binary_sensor.kitchen_occupancy_alpha_occupancy', 'preference': 1},
-            {'entity': 'binary_sensor.kitchen_occupancy_matter_alpha_occupancy', 'preference': 2}
+            {'entity': 'binary_sensor.kitchen_occupancy_alpha_matter_occupancy', 'preference': 2}
           ] %}
           {{ get_active_source(sources) or 'unknown' }}
         source_count: "2"
@@ -94,6 +94,7 @@
         last_updated: "2025-09-20"
         timeout: >
           {{ ["number.kitchen_occupancy_alpha_occupancy_timeout"] | tojson }}
+        area_id: "kitchen"
 
     - name: "Living Room Occupancy (Beta)"
       unique_id: living_room_occupancy_beta
@@ -129,6 +130,7 @@
         last_updated: "2025-09-20"
         timeout: >
           {{ ["number.living_room_occupancy_alpha_occupancy_timeout"] | tojson }}
+        area_id: "living_room"
 
     - name: "Ensuite Occupancy (Beta)"
       unique_id: ensuite_occupancy_beta
@@ -167,7 +169,9 @@
         last_updated: "2025-09-20"
         timeout: >
           {{ ["number.ensuite_occupancy_alpha_occupancy_timeout"] | tojson }}
-
+        area_id: "ensuite"
+        floor_id: "sanctum"
+    
     - name: "Hallway Downstairs Occupancy (Beta)"
       unique_id: hallway_downstairs_occupancy_beta
       device_class: occupancy
@@ -201,6 +205,9 @@
           {{ 'sensor.hallway_downstairs_last_activity' | tojson }}
         version: "3.5"
         last_updated: "2025-09-20"
+        area_id: "downstairs"
+        floor_id: "downstairs"
+
 
     - name: "Hallway Upstairs Occupancy (Beta)"
       unique_id: hallway_upstairs_occupancy_beta
@@ -234,7 +241,8 @@
           {{ 'sensor.hallway_upstairs_last_activity' | tojson }}
         version: "3.6"
         last_updated: "2025-09-20"
-
+        area_id: "upstairs"
+        floor_id: "top_floor" 
     #───────────────────────────────────────────────────────────────
     # ▼ GROUP: Aggregated Zone & Home Synthesis
     #───────────────────────────────────────────────────────────────
@@ -273,7 +281,8 @@
         subsystem: "hermes"
         role: "aggregation"
         description: "Aggregated occupancy state for the home"
-
+        floor_id: "home"
+    
     - name: "Merged Hallways Occupancy (Eta)"
       unique_id: merged_hallways_occupancy_eta
       device_class: occupancy
@@ -304,6 +313,9 @@
         subsystem: "hermes"
         role: "aggregation"
         description: "Aggregated occupancy state for hallways"
+        floor_id: "home"
+        area_id: "hallway"
+
 
     - name: "Zone Downstairs Occupancy (Eta)"
       unique_id: zone_downstairs_occupancy_beta
@@ -324,7 +336,7 @@
       attributes:
         tier: "η"
         canonical_id: "zone_downstairs_occupancy_η"
-        area_id: "downstairs"
+        floor_id: "downstairs"
         file: "/config/domain/templates/occupancy_logic"
         is_multi_source: "true"
         source_count: "3"
@@ -358,7 +370,7 @@
       attributes:
         tier: "η"
         canonical_id: "zone_upstairs_occupancy_η"
-        area_id: "upstairs"
+        floor_id: "upstairs"
         file: "/config/domain/templates/occupancy_logic"
         is_multi_source: "true"
         source_count: "5"
@@ -407,7 +419,7 @@
         related_motion_recent_entity: "binary_sensor.sanctum_motion_recent_beta"
         version: "1.1"
         last_updated: "2025-09-20"
-        floor_id: "sanctum"
+        floor_id: "top_floor"
         area_id: "bedroom"
 
     #───────────────────────────────────────────────────────────────
@@ -438,6 +450,8 @@
         source_count: "1"
         version: "1.1"
         last_updated: "2025-09-20"
+        area_id: "desk"
+        floor_id: "bedroom"
 
     - name: "Wardrobe Occupancy (Beta)"
       unique_id: wardrobe_occupancy_beta
@@ -463,6 +477,8 @@
         source_count: "1"
         version: "1.1"
         last_updated: "2025-09-20"
+        area_id: "wardrobe"
+        floor_id: "bedroom"
 
     - name: "Bed Occupancy (Beta)"
       unique_id: bed_occupancy_beta
@@ -488,3 +504,5 @@
         source_count: "1"
         version: "1.1"
         last_updated: "2025-09-20"
+        area_id: "bedroom"
+        floor_id: "bedroom"

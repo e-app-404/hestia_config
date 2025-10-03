@@ -96,7 +96,7 @@ evertappels@macbook registry_rehydration_local % .venv/bin/python run_pipeline.p
 [DEBUG] Found 0 manual confirmations in unmatched_entity_trace.json.
 [DEBUG] All candidate manual_confirmed values:
   pre_entity: binary_sensor.hallway_upstairs_skylight_contact_sensor_mtr_alpha, post_entity: binary_sensor.upstairs_skylight_contact_alpha_door, manual_confirmed: None
-  pre_entity: binary_sensor.hallway_upstairs_skylight_contact_sensor_mtr_alpha, post_entity: binary_sensor.upstairs_skylight_contact_matter_omega, manual_confirmed: None
+  pre_entity: binary_sensor.hallway_upstairs_skylight_contact_sensor_mtr_alpha, post_entity: binary_sensor.upstairs_skylight_contact_alpha_matter_door, manual_confirmed: None
   pre_entity: binary_sensor.living_room_occupancy, post_entity: binary_sensor.living_room_occupancy_alpha_occupancy, manual_confirmed: None
   pre_entity: binary_sensor.living_room_occupancy, post_entity: binary_sensor.living_room_multipurpose_alpha_motion, manual_confirmed: None
   pre_entity: binary_sensor.living_room_occupancy, post_entity: binary_sensor.bedroom_occupance_alpha_occupancy, manual_confirmed: None
@@ -208,7 +208,7 @@ evertappels@macbook registry_rehydration_local % .venv/bin/python run_pipeline.p
 [DEBUG] Found 0 manual confirmations in unmatched_entity_trace.json.
 [DEBUG] All candidate manual_confirmed values:
   pre_entity: binary_sensor.hallway_upstairs_skylight_contact_sensor_mtr_alpha, post_entity: binary_sensor.upstairs_skylight_contact_alpha_door, manual_confirmed: None
-  pre_entity: binary_sensor.hallway_upstairs_skylight_contact_sensor_mtr_alpha, post_entity: binary_sensor.upstairs_skylight_contact_matter_omega, manual_confirmed: None
+  pre_entity: binary_sensor.hallway_upstairs_skylight_contact_sensor_mtr_alpha, post_entity: binary_sensor.upstairs_skylight_contact_alpha_matter_door, manual_confirmed: None
   pre_entity: binary_sensor.living_room_occupancy, post_entity: binary_sensor.living_room_occupancy_alpha_occupancy, manual_confirmed: None
   pre_entity: binary_sensor.living_room_occupancy, post_entity: binary_sensor.living_room_multipurpose_alpha_motion, manual_confirmed: None
   pre_entity: binary_sensor.living_room_occupancy, post_entity: binary_sensor.bedroom_occupance_alpha_occupancy, manual_confirmed: None
@@ -995,7 +995,7 @@ evertappels@macbook registry_rehydration_local % .venv/bin/python run_pipeline.p
 [DEBUG] Found 0 manual confirmations in unmatched_entity_trace.json.
 [DEBUG] All candidate manual_confirmed values:
   pre_entity: binary_sensor.hallway_upstairs_skylight_contact_sensor_mtr_alpha, post_entity: binary_sensor.upstairs_skylight_contact_alpha_door, manual_confirmed: None
-  pre_entity: binary_sensor.hallway_upstairs_skylight_contact_sensor_mtr_alpha, post_entity: binary_sensor.upstairs_skylight_contact_matter_omega, manual_confirmed: None
+  pre_entity: binary_sensor.hallway_upstairs_skylight_contact_sensor_mtr_alpha, post_entity: binary_sensor.upstairs_skylight_contact_alpha_matter_door, manual_confirmed: None
   pre_entity: binary_sensor.living_room_occupancy, post_entity: binary_sensor.living_room_occupancy_alpha_occupancy, manual_confirmed: None
   pre_entity: binary_sensor.living_room_occupancy, post_entity: binary_sensor.living_room_multipurpose_alpha_motion, manual_confirmed: None
   pre_entity: binary_sensor.living_room_occupancy, post_entity: binary_sensor.bedroom_occupance_alpha_occupancy, manual_confirmed: None
@@ -1134,7 +1134,7 @@ evertappels@macbook registry_rehydration_local % source .venv/bin/activate && py
 [DEBUG] Found 0 manual confirmations in unmatched_entity_trace.json.
 [DEBUG] All candidate manual_confirmed values:
   pre_entity: binary_sensor.hallway_upstairs_skylight_contact_sensor_mtr_alpha, post_entity: binary_sensor.upstairs_skylight_contact_alpha_door, manual_confirmed: None
-  pre_entity: binary_sensor.hallway_upstairs_skylight_contact_sensor_mtr_alpha, post_entity: binary_sensor.upstairs_skylight_contact_matter_omega, manual_confirmed: None
+  pre_entity: binary_sensor.hallway_upstairs_skylight_contact_sensor_mtr_alpha, post_entity: binary_sensor.upstairs_skylight_contact_alpha_matter_door, manual_confirmed: None
   pre_entity: binary_sensor.living_room_occupancy, post_entity: binary_sensor.living_room_occupancy_alpha_occupancy, manual_confirmed: None
   pre_entity: binary_sensor.living_room_occupancy, post_entity: binary_sensor.living_room_multipurpose_alpha_motion, manual_confirmed: None
   pre_entity: binary_sensor.living_room_occupancy, post_entity: binary_sensor.bedroom_occupance_alpha_occupancy, manual_confirmed: None
@@ -1284,7 +1284,7 @@ iliation.py
 [DEBUG] Found 0 manual confirmations in unmatched_entity_trace.json.
 [DEBUG] All candidate manual_confirmed values:
   pre_entity: binary_sensor.hallway_upstairs_skylight_contact_sensor_mtr_alpha, post_entity: binary_sensor.upstairs_skylight_contact_alpha_door, manual_confirmed: None
-  pre_entity: binary_sensor.hallway_upstairs_skylight_contact_sensor_mtr_alpha, post_entity: binary_sensor.upstairs_skylight_contact_matter_omega, manual_confirmed: None
+  pre_entity: binary_sensor.hallway_upstairs_skylight_contact_sensor_mtr_alpha, post_entity: binary_sensor.upstairs_skylight_contact_alpha_matter_door, manual_confirmed: None
   pre_entity: binary_sensor.living_room_occupancy, post_entity: binary_sensor.living_room_occupancy_alpha_occupancy, manual_confirmed: None
   pre_entity: binary_sensor.living_room_occupancy, post_entity: binary_sensor.living_room_multipurpose_alpha_motion, manual_confirmed: None
   pre_entity: binary_sensor.living_room_occupancy, post_entity: binary_sensor.bedroom_occupance_alpha_occupancy, manual_confirmed: None

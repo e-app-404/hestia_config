@@ -1,0 +1,93 @@
+{#- Step-by-step filtering diagnostic -#}
+
+STEP-BY-STEP FILTERING DIAGNOSTIC:
+
+Testing with sensor.ensuite_climate_alpha_matter_temperature:
+
+{%- set sensor_obj = states.sensor | selectattr('entity_id', 'equalto', 'sensor.ensuite_climate_alpha_matter_temperature') | first -%}
+{%- if sensor_obj -%}
+
+1. Basic info:
+   - entity_id: {{ sensor_obj.entity_id }}
+   - device_class: {{ sensor_obj.attributes.get('device_class') }}
+   - unit: {{ sensor_obj.attributes.get('unit_of_measurement') }}
+
+2. Step-by-step filter checks:
+   - NOT in excludes: {{ sensor_obj.entity_id not in ['weather.forecast_home', 'sensor.sun_next_dawn', 'sensor.sun_next_dusk'] }}
+
+{%- set dc = sensor_obj.attributes.get('device_class') -%}
+{%- set unit = sensor_obj.attributes.get('unit_of_measurement') -%}
+{%- set eid = sensor_obj.entity_id | lower -%}
+
+   - Has device_class: {{ dc is not none }}
+   - Device class '{{ dc }}' in list: {{ dc and dc in ['climate', 'humidity', 'temperature', 'pm25', 'illuminance', 'moisture', 'gas','pm10', 'tvoc', 'volatile_organic_compounds', 'atmospheric_pressure','pressure', 'aqi', 'co', 'co2', 'pm1'] }}
+   
+   - Has unit: {{ unit is not none }}
+   - Unit '{{ unit }}' in list: {{ unit and (unit in ['°C', '°F', 'K', '%', 'hPa', 'mbar', 'Pa', 'psi', 'inHg', 'ppm', 'ppb', 'µg/m³', 'mg/m³', 'lx', 'lm']) }}
+   
+   - Entity ID lower: {{ eid }}
+   - Has 'temp': {{ 'temp' in eid }}
+   - Has 'humid': {{ 'humid' in eid }}
+   - Has 'climate': {{ 'climate' in eid }}
+   - Keyword check: {{ 'temp' in eid or 'humid' in eid or 'pressure' in eid or 'aqi' in eid or 'air' in eid or 'climate' in eid or 'weather' in eid or 'co2' in eid or 'co_' in eid or 'pm' in eid or 'tvoc' in eid or 'illuminance' in eid or 'moisture' in eid }}
+
+3. Each OR condition separately:
+   - Device class condition: {{ (dc and dc in ['climate', 'humidity', 'temperature', 'pm25', 'illuminance', 'moisture', 'gas','pm10', 'tvoc', 'volatile_organic_compounds', 'atmospheric_pressure','pressure', 'aqi', 'co', 'co2', 'pm1']) }}
+   - Unit condition: {{ (unit and (unit in ['°C', '°F', 'K', '%', 'hPa', 'mbar', 'Pa', 'psi', 'inHg', 'ppm', 'ppb', 'µg/m³', 'mg/m³', 'lx', 'lm'])) }}
+   - Keyword condition: {{ ('temp' in eid or 'humid' in eid or 'pressure' in eid or 'aqi' in eid or 'air' in eid or 'climate' in eid or 'weather' in eid or 'co2' in eid or 'co_' in eid or 'pm' in eid or 'tvoc' in eid or 'illuminance' in eid or 'moisture' in eid) }}
+
+4. Complete condition result:
+{{ ((dc and dc in ['climate', 'humidity', 'temperature', 'pm25', 'illuminance', 'moisture', 'gas','pm10', 'tvoc', 'volatile_organic_compounds', 'atmospheric_pressure','pressure', 'aqi', 'co', 'co2', 'pm1']) or 
+   (unit and (unit in ['°C', '°F', 'K', '%', 'hPa', 'mbar', 'Pa', 'psi', 'inHg', 'ppm', 'ppb', 'µg/m³', 'mg/m³', 'lx', 'lm'])) or
+   ('temp' in eid or 'humid' in eid or 'pressure' in eid or 'aqi' in eid or 'air' in eid or 'climate' in eid or 'weather' in eid or 'co2' in eid or 'co_' in eid or 'pm' in eid or 'tvoc' in eid or 'illuminance' in eid or 'moisture' in eid)) }}
+
+5. Testing simplified condition:
+{%- set simple_test = (dc == 'temperature') -%}
+   - Simple device_class == 'temperature': {{ simple_test }}
+
+6. Testing unit check:
+{%- set unit_test = (unit == '°C') -%}
+   - Simple unit == '°C': {{ unit_test }}
+
+7. Testing keyword check:
+{%- set keyword_test = ('climate' in eid) -%}
+   - Simple 'climate' in entity_id: {{ keyword_test }}
+
+{%- else -%}
+SENSOR NOT FOUND!
+{%- endif %}
+
+---
+
+8. Testing the full loop with just this one sensor:
+{%- set found = [] -%}
+{%- for s in states.sensor | list -%}
+  {%- if s.entity_id == 'sensor.ensuite_climate_alpha_matter_temperature' -%}
+    {%- if s.entity_id not in ['weather.forecast_home', 'sensor.sun_next_dawn', 'sensor.sun_next_dusk'] -%}
+      {%- set dc = s.attributes.get('device_class') -%}
+      {%- set unit = s.attributes.get('unit_of_measurement') -%}
+      {%- set eid = s.entity_id | lower -%}
+      
+      LOOP: Found target sensor
+      - device_class: {{ dc }}
+      - unit: {{ unit }}
+      - eid: {{ eid }}
+      
+      {%- if dc == 'temperature' -%}
+        {%- set found = found + [s.entity_id] -%}
+        LOOP: Added to found (device_class match)
+      {%- endif -%}
+      
+      {%- if unit == '°C' -%}
+        LOOP: Unit matches °C
+      {%- endif -%}
+      
+      {%- if 'climate' in eid -%}
+        LOOP: Has climate keyword
+      {%- endif -%}
+      
+    {%- endif -%}
+  {%- endif -%}
+{%- endfor %}
+
+Loop found {{ found | length }} sensors

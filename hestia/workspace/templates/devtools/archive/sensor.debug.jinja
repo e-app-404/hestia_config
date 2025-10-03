@@ -1,0 +1,50 @@
+{#- Debug sensor filtering logic specifically -#}
+
+SENSOR FILTERING DEBUG:
+
+1. Total sensors: {{ states.sensor | list | length }}
+
+2. Testing specific climate sensors:
+{%- set test_sensors = ['sensor.ensuite_climate_alpha_matter_temperature', 'sensor.ensuite_climate_alpha_matter_humidity'] -%}
+{%- for sensor_id in test_sensors -%}
+{%- set s = states(sensor_id) -%}
+{%- if s != 'unknown' -%}
+{%- set sensor_obj = states.sensor | selectattr('entity_id', 'equalto', sensor_id) | first -%}
+{%- set dc = sensor_obj.attributes.get('device_class') -%}
+{%- set unit = sensor_obj.attributes.get('unit_of_measurement') -%}
+{%- set eid = sensor_obj.entity_id | lower -%}
+
+{{ sensor_id }}:
+  - device_class: {{ dc }}
+  - unit: {{ unit }}
+  - entity_id_lower: {{ eid }}
+  - dc in climate_device_classes: {{ dc and dc in ['climate', 'humidity', 'temperature', 'pm25', 'illuminance', 'moisture', 'gas','pm10', 'tvoc', 'volatile_organic_compounds', 'atmospheric_pressure','pressure', 'aqi', 'co', 'co2', 'pm1'] }}
+  - unit in climate_units: {{ unit and (unit in ['°C', '°F', 'K', '%', 'hPa', 'mbar', 'Pa', 'psi', 'inHg', 'ppm', 'ppb', 'µg/m³', 'mg/m³', 'lx', 'lm']) }}
+  - has climate keyword: {{ 'temp' in eid or 'humid' in eid or 'pressure' in eid or 'aqi' in eid or 'air' in eid or 'climate' in eid or 'weather' in eid or 'co2' in eid or 'co_' in eid or 'pm' in eid or 'tvoc' in eid or 'illuminance' in eid or 'moisture' in eid }}
+  - in EXCLUDES: {{ sensor_obj.entity_id in ['weather.forecast_home', 'sensor.sun_next_dawn', 'sensor.sun_next_dusk'] }}
+  - SHOULD BE INCLUDED: {{ sensor_obj.entity_id not in ['weather.forecast_home', 'sensor.sun_next_dawn', 'sensor.sun_next_dusk'] and ((dc and dc in ['climate', 'humidity', 'temperature', 'pm25', 'illuminance', 'moisture', 'gas','pm10', 'tvoc', 'volatile_organic_compounds', 'atmospheric_pressure','pressure', 'aqi', 'co', 'co2', 'pm1']) or (unit and (unit in ['°C', '°F', 'K', '%', 'hPa', 'mbar', 'Pa', 'psi', 'inHg', 'ppm', 'ppb', 'µg/m³', 'mg/m³', 'lx', 'lm'])) or ('temp' in eid or 'humid' in eid or 'pressure' in eid or 'aqi' in eid or 'air' in eid or 'climate' in eid or 'weather' in eid or 'co2' in eid or 'co_' in eid or 'pm' in eid or 'tvoc' in eid or 'illuminance' in eid or 'moisture' in eid)) }}
+
+{%- endif -%}
+{%- endfor %}
+
+3. Manual sensor filtering test:
+{%- set found_sensors = [] -%}
+{%- for s in states.sensor | list -%}
+  {%- if s.entity_id not in ['weather.forecast_home', 'sensor.sun_next_dawn', 'sensor.sun_next_dusk'] -%}
+    {%- set dc = s.attributes.get('device_class') -%}
+    {%- set unit = s.attributes.get('unit_of_measurement') -%}
+    {%- set eid = s.entity_id | lower -%}
+    {%- if (dc and dc in ['climate', 'humidity', 'temperature', 'pm25', 'illuminance', 'moisture', 'gas','pm10', 'tvoc', 'volatile_organic_compounds', 'atmospheric_pressure','pressure', 'aqi', 'co', 'co2', 'pm1']) or 
+          (unit and (unit in ['°C', '°F', 'K', '%', 'hPa', 'mbar', 'Pa', 'psi', 'inHg', 'ppm', 'ppb', 'µg/m³', 'mg/m³', 'lx', 'lm'])) or
+          ('temp' in eid or 'humid' in eid or 'pressure' in eid or 'aqi' in eid or 'air' in eid or 'climate' in eid or 'weather' in eid or 'co2' in eid or 'co_' in eid or 'pm' in eid or 'tvoc' in eid or 'illuminance' in eid or 'moisture' in eid) -%}
+      {%- if 'climate' in eid -%}
+        {%- set found_sensors = found_sensors + [s.entity_id] -%}
+      {%- endif -%}
+    {%- endif -%}
+  {%- endif -%}
+{%- endfor %}
+
+Found {{ found_sensors | length }} sensors with 'climate' in name:
+{%- for sensor in found_sensors -%}
+{{ loop.index }}. {{ sensor }}
+{%- endfor %}

@@ -1,3 +1,14 @@
+---
+title: "Recorder integration"
+authors: "Home Assistant"
+source: "Home Assistant Docs"
+slug: "integration-recorder"
+tags: ["home-assistant","recorder","database","ops"]
+original_date: "2022-04-05"
+last_updated: "2025-10-03"
+url: "https://www.home-assistant.io/integrations/recorder/"
+---
+
 Recorder
 This integration is by default enabled as dependency of the history integration.
 

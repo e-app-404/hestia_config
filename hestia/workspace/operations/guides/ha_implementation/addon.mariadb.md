@@ -1,20 +1,34 @@
-Home Assistant Add-on: MariaDB
-Installation
+---
+title: "Home Assistant Add-on: MariaDB"
+authors: "Home Assistant"
+source: "Home Assistant Docs"
+slug: "addon-mariadb"
+tags: ["home-assistant","addon","mariadb","database"]
+original_date: "2022-04-05"
+last_updated: "2025-10-03"
+url: "https://www.home-assistant.io/addons/mariadb/"
+---
+
+# Home Assistant Add-on: MariaDB
+
+## Installation
 Follow these steps to get the add-on installed on your system:
 
 Navigate in your Home Assistant frontend to Settings -> Add-ons -> Add-on store.
 Find the "MariaDB" add-on and click it.
 Click on the "INSTALL" button.
-How to use
+
+## How to use
 Set the logins -> password field to something strong and unique.
 Start the add-on.
 Check the add-on log output to see the result.
 Add the recorder integration to your Home Assistant configuration.
-Add-on Configuration
+
+## Add-on Configuration
 The MariaDB server add-on can be tweaked to your likings. This section describes each of the add-on configuration options.
 
-Example add-on configuration:
-
+### Example add-on configuration:
+```yaml
 databases:
   - homeassistant
 logins:
@@ -29,29 +43,32 @@ rights:
     database: homeassistant
     privileges:
       - SELECT
-Option: databases (required)
-Database name, e.g., homeassistant. Multiple are allowed.
+```
 
-Option: logins (required)
-This section defines a create user definition in MariaDB. Create User documentation.
+### Options:
+  - databases (required)
+    Database name, e.g., homeassistant. Multiple are allowed.
 
-Option: logins.username (required)
-Database user login, e.g., homeassistant. User Name documentation.
+  - logins (required)
+    This section defines a create user definition in MariaDB. Create User documentation.
 
-Option: logins.password (required)
-Password for user login. This should be strong and unique.
+  - logins.username (required)
+    Database user login, e.g., homeassistant. User Name documentation.
 
-Option: rights (required)
-This section grant privileges to users in MariaDB. Grant documentation.
+  - logins.password (required)
+    Password for user login. This should be strong and unique.
 
-Option: rights.username (required)
-This should be the same user name defined in logins -> username.
+  - rights (required)
+    This section grant privileges to users in MariaDB. Grant documentation.
 
-Option: rights.database (required)
-This should be the same database defined in databases.
+  - rights.username (required)
+    This should be the same user name defined in logins -> username.
 
-Option: rights.privileges (optional)
-A list of privileges to grant to this user from grant like SELECT and CREATE. If omitted, grants ALL PRIVILEGES to the user. Restricting privileges of the user that Home Assistant uses is not recommended but if you want to allow other applications to view recorder data should create a user limited to read-only access on the database.
+  - rights.database (required)
+    This should be the same database defined in databases.
+
+  - rights.privileges (optional)
+    A list of privileges to grant to this user from grant like SELECT and CREATE. If omitted, grants ALL PRIVILEGES to the user. Restricting privileges of the user that Home Assistant uses is not recommended but if you want to allow other applications to view recorder data should create a user limited to read-only access on the database.
 
 Option: mariadb_server_args (optional)
 Some users have experienced errors during Home Assistant schema updates on large databases. Defining the recommended parameters can help if there is RAM available.

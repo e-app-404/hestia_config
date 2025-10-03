@@ -1,3 +1,14 @@
+---
+title: "Home Assistant Add-on: Samba share"
+authors: "Home Assistant"
+source: "Home Assistant Docs"
+slug: "addon-samba"
+tags: ["home-assistant","addon","samba","ops"]
+original_date: "2022-04-05"
+last_updated: "2025-10-03"
+url: "https://www.home-assistant.io/addons/samba/"
+---
+
 Home Assistant Add-on: Samba share
 Installation
 Follow these steps to get the add-on installed on your system:
