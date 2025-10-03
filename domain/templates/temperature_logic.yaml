@@ -288,7 +288,7 @@
       state: >
         {% set temp_sensors = [
           'sensor.ensuite_climate_matter_alpha_temperature',
-          'sensor.ensuite_climate_omega_temperature'
+          'sensor.ensuite_climate_alpha_temperature'
         ] %}
         {% set values = namespace(valid=[]) %}
         {% for sensor in temp_sensors %}
@@ -304,7 +304,7 @@
         {% endif %}
       attributes:
         upstream_sources: >
-          {{ ['sensor.ensuite_climate_matter_alpha_temperature', 'sensor.ensuite_climate_omega_temperature'] | tojson }}
+          {{ ['sensor.ensuite_climate_matter_alpha_temperature', 'sensor.ensuite_climate_alpha_temperature'] | tojson }}
         area_id: "ensuite"
         tier: "η"
         canonical_id: "merged_ensuite_temperature_η"

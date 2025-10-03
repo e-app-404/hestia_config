@@ -1,3 +1,13 @@
+---
+title: #TODO
+author: #TODO
+tags: #TODO
+date: #TODO
+last_updated: #TODO
+notes: > 
+    #TODO
+---
+
 # macOS ~/hass SMB Mount Setup
 
 This directory contains the idempotent mount helper and LaunchAgent plist for mounting the Home Assistant config share at `~/hass` per ADR-0016.

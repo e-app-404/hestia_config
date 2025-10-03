@@ -5,49 +5,101 @@ This repository (Hestia) is a collection of operator tooling, config artifacts
 and small utilities that live alongside a Home Assistant installation. Use the
 notes below to be productive quickly and avoid unsafe changes.
 
-- Big picture: look under `hestia/` for the main components:
-  - `hestia/config/` — runtime configurations, device configs, and network topology.
-  - `hestia/tools/` — CLI helpers and small utilities (e.g. ADR linter at
-    `hestia/tools/utils/validators/adr_lint`).
-  - `hestia/workspace/archive/vault/` & `hestia/tools/utils/vault_manager/` — secret templates and
-    import helpers; repository stores placeholders only (never real secrets).
+## Canonical Workspace Structure (ADR-0016)
 
-- Workflows and commands:
-  - Python CLIs published in `pyproject.toml` (see `hestia-adr-lint` entry).
-    To run ADR linter locally follow `README.md`: create a venv under ~ (not
-    under the HA mount) and run `hestia-adr-lint hestia/library/docs/ADR --format human`.
-  - Many deploy/scripts are dry-run by default. Check `--help` or README for
-    `--apply` or `--execute` flags before making changes (examples: `deploy/dsm` scripts).
+- **Edit root**: `~/hass` (canonical path for all operations)
+- **NEVER** use `/n/ha` or `/private/var/ha_real` (deprecated legacy paths)
+- **Python paths**: Always use `.expanduser()` with tilde paths: `Path('~/hass/...').expanduser()`
+- **VS Code**: Use workspace-relative paths (`${workspaceFolder}`) in configs
 
-- Project conventions you must preserve:
-  - Never commit real credentials. Vault templates use `__REPLACE_ME__` placeholders.
-  - Preview vs provisioning separation: files under `hestia/config` are
-    machine-friendly previews; actual credential injection/provisioning happens
-    outside this repo. Don’t hardcode secrets into renderers or templates.
-  - Tooling assumes Python >= 3.10 and ruff settings in `pyproject.toml` (line-length 100).
+## Key Workspace Areas (per hestia_structure.md)
 
-- Integration points to watch for:
-  - `vault://` URIs in YAML (e.g. `hestia/config/storage/samba.yaml`) map to
-    vault paths like secret/hestia/.... Code expects the fragment convention such as #credentials.
-  - Tailscale / network artifacts live under `hestia/config/network` and are used by
-    preview and deployment scripts.
+- `hestia/config/` — Runtime YAML only (devices, network, preferences, registry, diagnostics)
+- `hestia/library/docs/ADR/` — Architecture Decision Records (follow ADR-0009 formatting)
+- `hestia/tools/` — Scripts, validators, pipelines (Mac-safe paths)
+- `hestia/workspace/archive/vault/` — Long-term backups and bundles
+- `hestia/workspace/operations/logs/` — Generated outputs and logs (use-case/timestamp structured)
+- `.trash/` — Temporary files (auto-swept, gitignored)
+- `artifacts/` — Reproducible release bundles (gitignored)
 
-- Files to read when making edits:
-  - `pyproject.toml` — packaging and entrypoints
-  - `README.md` at repo root — quick dev/run instructions
-  - `hestia/tools/*` — small CLIs; run unit-level CLI manually in a venv
-  - `hestia/workspace/archive/vault/templates/` and `hestia/tools/utils/vault_manager/README.md` — secret naming
+## File Management & Hygiene (ADR-0018)
 
-- Examples of project patterns:
-  - ADR linter: `hestia/tools/utils/validators/adr_lint` — CLI entry `hestia.tools.adr_lint.cli:main`.
-  - Dry-run deploy script: `hestia/deploy/dsm/apply_portal_changes.sh` uses `--apply` to perform changes.
+- **Backups**: Use pattern `<name>.bk.<YYYYMMDDTHHMMSSZ>` (UTC timestamps)
+- **Never commit**: `.storage/`, `.venv*/`, `deps/`, caches, secrets, runtime state
+- **Reports**: Write to `hestia/workspace/operations/logs/<use-case>/<UTC>__<tool>__<label>.log`
+- **Atomic operations**: Use `os.replace()` for safe file updates
 
-- Safety notes for AI agents:
-  - Prefer edits that add tests, docs, or non-destructive refactors.
-  - Flag any change that would introduce plaintext secrets or modify system services
-    (rely on maintainers to run deployment steps).
+## Code Quality Standards
+
+### YAML/Config Normalization (ADR-0008)
+- **Encoding**: UTF-8 with LF line endings
+- **Indentation**: 2 spaces (no tabs)
+- **YAML**: Sort keys A→Z, use `key: value` format
+- **JSON**: Pretty print with 2-space indent, sort keys recursively
+- **Trailing**: Exactly one newline at EOF, no trailing spaces
+
+### Jinja Templates (ADR-0002, ADR-0020)
+- **Always gate datetime operations**: `{% set t = as_datetime(x) %}{{ t is not none and ... }}`
+- **State normalization**: Check `raw not in ['unknown','unavailable','']`
+- **Whitespace control**: Use `{%-` and `-%}` in macros to prevent empty string returns
+- **Template errors**: Use filter syntax `{{ delta | abs }}` not `{{ abs(delta) }}`
+
+### Python Code
+- **Version**: Python >= 3.10
+- **Style**: Ruff settings in `pyproject.toml` (line-length 100)
+- **Path expansion**: `Path('~/hass/...').expanduser()` for tilde paths
+
+## Workflows and Commands
+
+- **Python CLIs**: Published in `pyproject.toml` (e.g. `hestia-adr-lint`)
+- **Development**: Create venv under `~` (not under HA mount)
+- **Dry-run default**: Check `--help` for `--apply`/`--execute` flags before making changes
+- **Error patterns**: Reference `hestia/tools/error_patterns.yml` for known issues
+
+## Security & Secrets (Critical)
+
+- **Never commit**: Real credentials, tokens, private keys
+- **Placeholders**: Use `__REPLACE_ME__` in vault templates
+- **Vault URIs**: Use vault://secret/hestia/... format with fragment notation
+- **Preview vs provisioning**: Files under `hestia/config` are previews only
+
+## Integration Points
+
+- **Tailscale/Network**: Configs under `hestia/config/network`
+- **ADR compliance**: Follow ADR-0009 formatting (YAML front-matter, TOKEN_BLOCK)
+- **Mount validation**: Scripts should check `${HA_MOUNT:-$HOME/hass}` exists
+- **Git hooks**: Pre-commit validates paths, prevents banned file tracking
+
+## Safety Guidelines for AI Agents
+
+- **Prefer**: Non-destructive refactors, tests, documentation
+- **Atomic updates**: Create backups before modifying critical configs
+- **Validation**: Run config checks after template/automation changes
+- **Flag**: Any changes introducing secrets or system service modifications
+- **ACK tokens**: Scripts may require environment variables (ADR-0016)
+
+## Common Error Patterns (ADR-0020)
+
+- **Template abs()**: Use `{{ value | abs }}` not `{{ abs(value) }}`
+- **Shell script paths**: Use `bash -lc '/config/tools/script.sh'` format
+- **Missing files**: Use `package_*` prefix for package files
+- **Registry errors**: Ensure `deleted_entities` exists in entity registry
+
+## Quick Reference Files
+
+- `pyproject.toml` — Packaging and CLI entrypoints
+- `README.md` — Dev setup and run instructions  
+- `hestia/library/docs/ADR/` — Architecture decisions and patterns
+- `hestia/tools/error_patterns.yml` — Known error patterns and fixes
+
+## Deprecated Paths (DO NOT USE)
+
+- `hestia/reports/` — DEPRECATED, use `hestia/workspace/operations/logs/` instead
+- `/n/ha` — DEPRECATED, use `~/hass` instead
+- `hestia/core/` — DEPRECATED, use `hestia/config/` instead
+- `hestia/docs/ADR/` — DEPRECATED, use `hestia/library/docs/ADR/` instead
 
 If anything here is unclear or you need more detail on a subcomponent, say which
-area (e.g. `vault templates`, `adr linter`, `deploy/dsm`) and I will expand the
-instructions with file-level examples.
+area (e.g. `vault templates`, `jinja patterns`, `workspace structure`) and I will expand
+the instructions with file-level examples.
 

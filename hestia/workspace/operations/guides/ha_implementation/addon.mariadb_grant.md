@@ -1,3 +1,14 @@
+---
+title: "MariaDB GRANT examples and reference"
+authors: "Home Assistant / MariaDB"
+source: "MariaDB Documentation"
+slug: "mariadb-grant-reference"
+tags: ["mariadb","sql","ops","database"]
+original_date: "2019-01-01"
+last_updated: "2025-10-03"
+url: "https://mariadb.com/kb/en/grant/"
+---
+
 GRANT
 Syntax
 Copy

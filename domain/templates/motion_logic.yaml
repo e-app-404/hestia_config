@@ -92,7 +92,7 @@
       state: |
         {% from 'template.library.jinja' import preference_select %}
         {% set sources = [
-          {'entity': 'binary_sensor.downstairs_presence_alpha_motion', 'protocol': 'tplink', 'preference': 1, 'type': 'motion'}
+          {'entity': 'binary_sensor.downstairs_motion_alpha_motion', 'protocol': 'tplink', 'preference': 1, 'type': 'motion'}
         ] %}
         {{ preference_select(sources) == 'on' }}
       attributes:
@@ -105,9 +105,9 @@
         file: "/config/domain/templates/motion_logic"
         protocols: "TP-Link(1)"
         upstream_sources: >
-          {{ ['template.library.jinja','binary_sensor.downstairs_presence_alpha_motion'] | tojson }}
+          {{ ['template.library.jinja','binary_sensor.downstairs_motion_alpha_motion'] | tojson }}
         aggregation_strategy: "preference-based selection (motion-only)"
-        active_source: "binary_sensor.downstairs_presence_alpha_motion"
+        active_source: "binary_sensor.downstairs_motion_alpha_motion"
         source_count: "1"
         version: "2.2"
         last_updated: "2025-09-20"
@@ -120,7 +120,7 @@
       state: |
         {% from 'template.library.jinja' import preference_select %}
         {% set sources = [
-          {'entity': 'binary_sensor.upstairs_presence_alpha_motion', 'protocol': 'tplink', 'preference': 1, 'type': 'motion'}
+          {'entity': 'binary_sensor.upstairs_motion_alpha_motion', 'protocol': 'tplink', 'preference': 1, 'type': 'motion'}
         ] %}
         {{ preference_select(sources) == 'on' }}
       attributes:
@@ -133,9 +133,9 @@
         file: "/config/domain/templates/motion_logic"
         protocols: "TP-Link(1)"
         upstream_sources: >
-          {{ ['template.library.jinja','binary_sensor.upstairs_presence_alpha_motion'] | tojson }}
+          {{ ['template.library.jinja','binary_sensor.upstairs_motion_alpha_motion'] | tojson }}
         aggregation_strategy: "preference-based selection (motion-only)"
-        active_source: "binary_sensor.upstairs_presence_alpha_motion"
+        active_source: "binary_sensor.upstairs_motion_alpha_motion"
         source_count: "1"
         version: "2.2"
         last_updated: "2025-09-20"
@@ -148,7 +148,7 @@
       state: |
         {% from 'template.library.jinja' import preference_select %}
         {% set sources = [
-          {'entity': 'binary_sensor.kitchen_presence_alpha_motion', 'protocol': 'tplink', 'preference': 1, 'type': 'motion'}
+          {'entity': 'binary_sensor.kitchen_motion_alpha_motion', 'protocol': 'tplink', 'preference': 1, 'type': 'motion'}
         ] %}
         {{ preference_select(sources) == 'on' }}
       attributes:
@@ -161,9 +161,9 @@
         file: "/config/domain/templates/motion_logic"
         protocols: "TP-Link(1)"
         upstream_sources: >
-          {{ ['template.library.jinja','binary_sensor.kitchen_presence_alpha_motion'] | tojson }}
+          {{ ['template.library.jinja','binary_sensor.kitchen_motion_alpha_motion'] | tojson }}
         aggregation_strategy: "preference-based selection (motion-only)"
-        active_source: "binary_sensor.kitchen_presence_alpha_motion"
+        active_source: "binary_sensor.kitchen_motion_alpha_motion"
         source_count: "1"
         version: "2.2"
         last_updated: "2025-09-20"
@@ -202,7 +202,7 @@
       state: |
         {% from 'template.library.jinja' import preference_select %}
         {% set sources = [
-          {'entity': 'binary_sensor.bedroom_wardrobe_motion_tplink_alpha', 'protocol': 'tplink', 'preference': 1, 'type': 'motion'}
+          {'entity': 'binary_sensor.bedroom_wardrobe_motion_alpha_motion', 'protocol': 'tplink', 'preference': 1, 'type': 'motion'}
         ] %}
         {{ preference_select(sources) == 'on' }}
       attributes:
@@ -215,9 +215,9 @@
         file: "/config/domain/templates/motion_logic"
         protocols: "TP-Link(1)"
         upstream_sources: >
-          {{ ['template.library.jinja','binary_sensor.bedroom_wardrobe_motion_tplink_alpha'] | tojson }}
+          {{ ['template.library.jinja','binary_sensor.bedroom_wardrobe_motion_alpha_motion'] | tojson }}
         aggregation_strategy: "preference-based selection (motion-only)"
-        active_source: "binary_sensor.bedroom_wardrobe_motion_tplink_alpha"
+        active_source: "binary_sensor.bedroom_wardrobe_motion_alpha_motion"
         source_count: "1"
         version: "2.2"
         last_updated: "2025-09-20"

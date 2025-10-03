@@ -52,6 +52,9 @@ hestia/config/system/*.conf
 # Preview configurations may contain generated credentials
 hestia/config/preview/*.conf
 
+# Ignore imported blueprints
+hestia/library/blueprints/*.yaml
+
 # Guard against nested vendor repos/objects
 **/.git/
 # Allowlist: ensure canonical config stays tracked
@@ -155,6 +158,9 @@ virtualization/vagrant/.vagrant
 virtualization/vagrant/config
 # Visual Studio Code
 .vscode/*
+
+# Ignore generated artifacts/bundles (created by release/packaging scripts)
+artifacts/
 !.vscode/cSpell.json
 !.vscode/extensions.json
 !.vscode/tasks.json

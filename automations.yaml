@@ -547,16 +547,49 @@
       title: Plex HTTPS Down
       message: https://plex.xplab.io unhealthy for over 2 minutes
       notification_id: plex_alert_01
-
 - id: bedroom_matrix_mqtt_online_20250910_a
-  alias: "Bedroom Matrix: availability online at HA start"
+  alias: 'Bedroom Matrix: availability online at HA start'
   trigger:
-    - platform: homeassistant
-      event: start
+  - platform: homeassistant
+    event: start
   action:
-    - service: mqtt.publish
-      data:
-        topic: ha/bedroom_hdmi_matrix/status
-        payload: "online"
-        qos: 1
-        retain: true
+  - service: mqtt.publish
+    data:
+      topic: ha/bedroom_hdmi_matrix/status
+      payload: online
+      qos: 1
+      retain: true
+- id: '1759437294037'
+  alias: Downstairs Hallway Motion Light
+  description: ''
+  use_blueprint:
+    path: homeassistant/motion_light.yaml
+    input:
+      motion_entity: binary_sensor.hallway_downstairs_motion_beta
+      light_target:
+        device_id:
+        - b672a36177d3f7f08d8a141d257ff5fb
+        - 731128ce2f8c944b1147aca944e2ac54
+- id: '1759437332881'
+  alias: Upstairs Hallway Motion Light
+  description: ''
+  use_blueprint:
+    path: homeassistant/motion_light.yaml
+    input:
+      motion_entity: binary_sensor.hallway_upstairs_motion_beta
+      light_target:
+        device_id:
+        - eb48dd1970165ed07588b73dae1122cd
+        - 731128ce2f8c944b1147aca944e2ac54
+- id: '1759437370763'
+  alias: Kitchen Motion-activated Light
+  description: ''
+  use_blueprint:
+    path: homeassistant/motion_light.yaml
+    input:
+      motion_entity: binary_sensor.kitchen_motion_beta
+      light_target:
+        device_id:
+        - 438784bcd85b3be95a17452bc3a5c966
+        - d6c5d8ce01882c8bb93eb5f40ff9d15b
+        - d90e30e2f88b73d9ad58d1fea898837e

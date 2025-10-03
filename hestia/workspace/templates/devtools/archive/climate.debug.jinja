@@ -1,0 +1,58 @@
+{#- Debug why climate filtering is failing -#}
+
+{%- set alpha_pattern = '_alpha' -%}
+
+DEBUG ANALYSIS:
+
+1. FIRST 10 ALPHA SENSORS WITH CLIMATE KEYWORDS:
+{%- for s in states.sensor | selectattr('entity_id', 'search', alpha_pattern) | list | sort(attribute='entity_id') -%}
+  {%- set eid = s.entity_id | lower -%}
+  {%- if 'temp' in eid or 'humid' in eid or 'climate' in eid -%}
+    {%- if loop.index <= 10 %}
+{{ loop.index }}. {{ s.entity_id }}
+   - domain: {{ s.domain }}
+   - device_class: "{{ s.attributes.get('device_class', 'NONE') }}"
+   - unit: "{{ s.attributes.get('unit_of_measurement', 'NONE') }}"
+   - contains temp: {{ 'temp' in eid }}
+   - contains humid: {{ 'humid' in eid }}
+   - contains climate: {{ 'climate' in eid }}
+    {%- endif -%}
+  {%- endif -%}
+{%- endfor %}
+
+2. DEVICE CLASSES IN ALPHA SENSORS:
+{%- set device_classes = [] -%}
+{%- for s in states.sensor | selectattr('entity_id', 'search', alpha_pattern) | list -%}
+  {%- set dc = s.attributes.get('device_class') -%}
+  {%- if dc and dc not in device_classes -%}
+    {%- set device_classes = device_classes + [dc] -%}
+  {%- endif -%}
+{%- endfor %}
+Device classes found: {{ device_classes | sort | join(', ') }}
+
+3. UNITS IN ALPHA SENSORS:
+{%- set units = [] -%}
+{%- for s in states.sensor | selectattr('entity_id', 'search', alpha_pattern) | list -%}
+  {%- set unit = s.attributes.get('unit_of_measurement') -%}
+  {%- if unit and unit not in units -%}
+    {%- set units = units + [unit] -%}
+  {%- endif -%}
+{%- endfor %}
+Units found: {{ units | sort | join(', ') }}
+
+4. SIMPLE KEYWORD TEST:
+{%- set simple_climate_entities = [] -%}
+{%- for s in states.sensor | selectattr('entity_id', 'search', alpha_pattern) | list -%}
+  {%- set eid = s.entity_id | lower -%}
+  {%- if 'temp' in eid or 'humid' in eid or 'climate' in eid or 'weather' in eid -%}
+    {%- set simple_climate_entities = simple_climate_entities + [s] -%}
+  {%- endif -%}
+{%- endfor %}
+Simple keyword match found: {{ simple_climate_entities | length }} sensors
+
+5. FIRST 5 SIMPLE MATCHES:
+{%- for s in simple_climate_entities | sort(attribute='entity_id') -%}
+  {%- if loop.index <= 5 %}
+{{ loop.index }}. {{ s.entity_id }} - {{ s.attributes.get('device_class', 'no_class') }} - {{ s.attributes.get('unit_of_measurement', 'no_unit') }}
+  {%- endif -%}
+{%- endfor %}

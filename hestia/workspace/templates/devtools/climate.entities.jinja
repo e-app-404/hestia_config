@@ -1,8 +1,9 @@
-{#- Loads TP-Link, Smartthings and MQTT motion and occupancy sensors in correct YAML -#}
+{#- Climate/environmental sensor entity discovery for Home Assistant -#}
+{#- Based on motion_occupancy.jinja pattern for reliable filtering -#}
 
-{%- set integrations = ['smartthings', 'tplink', 'mqtt', 'matter'] -%}
-{%- set device_classes = ['motion', 'occupancy', 'vibration', 'presence'] -%}
-{%- set domain_states = (states.sensor | list) + (states.binary_sensor | list) -%}
+{%- set integrations = ['plant', 'smartthings', 'tplink', 'mqtt', 'matter', 'localtuya', 'vesync', 'homekit_controller', 'zha'] -%}
+{%- set climate_device_classes = ['climate', 'humidity', 'temperature', 'pm25', 'illuminance', 'moisture', 'gas', 'pm10', 'tvoc', 'volatile_organic_compounds', 'atmospheric_pressure', 'pressure', 'aqi', 'co', 'co2', 'pm1'] -%}
+{%- set domain_states = (states.climate | list) + (states.sensor | list) + (states.weather | list) + (states.air_quality | list) -%}
 
 {%- macro q(v) -%}
 {%- if v is none or v == '' or v == 'unavailable' -%}"—"
@@ -17,7 +18,7 @@ integrations:
 {% set integ_entities = integration_entities(integ) | list -%}
 {% set items = domain_states
       | selectattr('entity_id', 'in', integ_entities)
-      | selectattr('attributes.device_class', 'in', device_classes)
+      | selectattr('attributes.device_class', 'in', climate_device_classes)
       | sort(attribute='entity_id') | list -%}
 {% if items | length == 0 -%}
       []
@@ -37,7 +38,9 @@ integrations:
 {% set dev_area_id = dev_id and area_id(dev_id) -%}
 {% set dev_area_name = dev_id and area_name(dev_id) -%}
       - entity_id: {{ s.entity_id }}
+        domain: {{ s.entity_id.split('.')[0] }}
         device_class: {{ s.attributes.device_class }}
+        unit_of_measurement: {{ q(s.attributes.unit_of_measurement) }}
         integration: {{ integ }}
         friendly_name: {{ q(s.name) }}
         entity_area_id: {{ q(ent_area_id) }}
@@ -56,3 +59,4 @@ integrations:
 {% endfor -%}
 {% endif -%}
 {% endfor -%}
+

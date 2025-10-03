@@ -40,7 +40,7 @@
           - choose:
               - conditions:
                   - condition: template
-                    value_template: "{{ abs(delta) > epsilon }}"
+                    value_template: "{{ (delta | abs) > epsilon }}"
                 sequence:
                   - service: input_number.set_value
                     target:

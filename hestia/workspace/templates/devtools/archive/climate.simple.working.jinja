@@ -1,0 +1,61 @@
+{#- Simplified climate template that focuses on getting results -#}
+{%- set climate_integrations = ['plant', 'smartthings', 'tplink', 'mqtt', 'matter', 'localtuya', 'vesync', 'homekit_controller', 'zha'] -%}
+{%- set alpha_pattern = '_alpha' -%}
+
+{# Simple gathering of climate entities #}
+{%- set all_climate_entities = [] -%}
+{%- set all_climate_entities = all_climate_entities + (states.climate | list) -%}
+{%- set all_climate_entities = all_climate_entities + (states.weather | list) -%}
+
+{# Add sensors with climate keywords #}
+{%- for s in states.sensor | list -%}
+  {%- set eid = s.entity_id | lower -%}
+  {%- set dc = s.attributes.get('device_class') -%}
+  {%- set unit = s.attributes.get('unit_of_measurement') -%}
+  {%- if ('temp' in eid or 'humid' in eid or 'climate' in eid or 'air' in eid or 'weather' in eid or 'moisture' in eid or 'pressure' in eid) or
+        (dc in ['temperature', 'humidity', 'pressure', 'illuminance', 'moisture', 'gas', 'aqi', 'co', 'co2']) or
+        (unit in ['°C', '°F', '%', 'hPa', 'ppm', 'lx']) -%}
+    {%- set all_climate_entities = all_climate_entities + [s] -%}
+  {%- endif -%}
+{%- endfor -%}
+
+{# Add binary sensors with climate keywords #}
+{%- for s in states.binary_sensor | list -%}
+  {%- set eid = s.entity_id | lower -%}
+  {%- set dc = s.attributes.get('device_class') -%}
+  {%- if ('temp' in eid or 'humid' in eid or 'climate' in eid or 'air' in eid or 'gas' in eid) or
+        (dc in ['gas', 'co', 'smoke']) -%}
+    {%- set all_climate_entities = all_climate_entities + [s] -%}
+  {%- endif -%}
+{%- endfor -%}
+
+{# Filter for alpha entities #}
+{%- set alpha_entities = all_climate_entities | selectattr('entity_id', 'search', alpha_pattern) | list -%}
+
+_meta:
+  version: 1.0
+  title: "Hestia Core: Climate & Environmental Entities"
+  updated: "{{ now().strftime('%Y-%m-%d') }}"
+  entity_filter: "alpha-tier climate entities"
+
+summary:
+  totals:
+    alpha_entities: {{ alpha_entities | length }}
+    total_entities: {{ all_climate_entities | length }}
+  domains:
+    climate: {{ alpha_entities | selectattr('domain', 'equalto', 'climate') | list | length }}
+    sensor: {{ alpha_entities | selectattr('domain', 'equalto', 'sensor') | list | length }}
+    binary_sensor: {{ alpha_entities | selectattr('domain', 'equalto', 'binary_sensor') | list | length }}
+    weather: {{ alpha_entities | selectattr('domain', 'equalto', 'weather') | list | length }}
+
+alpha_entities:
+{%- for s in alpha_entities | sort(attribute='entity_id') -%}
+  - entity_id: {{ s.entity_id }}
+    domain: {{ s.domain }}
+    friendly_name: "{{ s.name }}"
+    state: "{{ s.state }}"
+    device_class: "{{ s.attributes.get('device_class', '') }}"
+    unit_of_measurement: "{{ s.attributes.get('unit_of_measurement', '') }}"
+    area_id: "{{ area_id(s.entity_id) or 'unassigned' }}"
+    area_name: "{{ area_name(s.entity_id) or 'Unassigned' }}"
+{%- endfor %}
