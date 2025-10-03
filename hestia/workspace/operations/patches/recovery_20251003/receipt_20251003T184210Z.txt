@@ -1,0 +1,6 @@
+=== RECOVERY RECEIPT 20251003T184210Z ===
+Branch: wip/merge-recovery/20251003T171034Z
+Policy: ADR-0019 Addendum (FF-only main, mirror pull-only, receipts)
+Conflict rules: docs->github/main; registry->github/main + archive _conflicts; automations->behavior-preserving merge
+Commits applied: c9e1e5e, af5b999 (07dc61b skipped empty)
+Validation: ADR linter found pre-existing issues; YAML errors expected (HA tags)

@@ -1,0 +1,21 @@
+ .gitignore                                         |    3 +
+ domain/groups/occupancy.yaml                       |   10 +-
+ domain/templates/motion_logic.yaml                 |   82 +-
+ hestia/library/blueprints/motion_lights.yaml       | 8632 ++++++++++++++++++++
+ hestia/library/docs/reference/ha_smb_mount.md      |  362 +
+ .../guides/ha_implementation/integration.mqtt.md   | 1084 ---
+ hestia/tools/adr/validate_cross_repo_links.sh      |  102 -
+ hestia/tools/utils/ha_bb8/ha_ble_audit.sh          |    2 +-
+ hestia/tools/utils/legacy_backup_renamer.py        |  109 -
+ .../utils/{mount => samba}/access_config_lean.sh   |    0
+ .../utils/samba/generate_hass_mount_diagnostics.sh |  401 +
+ hestia/tools/{ => utils/samba}/ha-mount-mac.sh     |    0
+ .../utils/{security => samba}/ha_mount_helper.sh   |    0
+ .../{security => samba}/hass_autofs_disable.sh     |    0
+ .../utils/samba/publish_hass_mount_status_mqtt.sh  |   28 +
+ .../core.entity_registry.20251001-170000           |    2 +-
+ .../core.entity_registry.final_candidate.json      |    2 +-
+ .../core.entity_registry.new                       |    2 +-
+ hestia/workspace/todo/0002-ADR-0019-addendum.md    |   87 +
+ .../prompt.library_consolidation.md                |    0
+ 20 files changed, 9539 insertions(+), 1369 deletions(-)
