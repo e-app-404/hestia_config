@@ -1,0 +1,30 @@
+alias: Motion Lights — Bedroom
+description: Motion-driven lighting for Bedroom using eta-tier group; night mode, Variable bypass, sun elevation, restart-safe.
+id: motion_lights_bedroom
+initial_state: "on"
+max_exceeded: silent
+mode: restart
+use_blueprint:
+  path: hestia/library/templates/blueprints/sensor-light.yaml
+  input:
+    ambient_lux_entity: "sensor.monstera_illuminance"
+    ambient_lux_threshold: 10
+    bypass_entity: "{{ states('var.motion_bypass_bedroom') == 'true' }}"
+    inhibit_on_startup_seconds: 10
+    motion_sensors:
+      - binary_sensor.bedroom_motion_beta
+    night_mode_brightness_pct: 12
+    night_mode_color_temp_mired: 420
+    night_mode_enabled: true
+    night_mode_sun_elevation: -6
+    only_if_lights_off: false
+    presence_entity: ""  # TODO
+    require_presence_for_activation: false
+    require_sun_condition: false
+    restore_state_after_restart: true
+    sun_max_elevation: 20
+    sun_min_elevation: -12
+    target_lights:
+      - light.group_all_bedroom_lights
+    timeout_seconds: "{{ states('var.motion_timeout_bedroom') | int(120) }}"
+    transition_seconds: 0.3

@@ -53,7 +53,7 @@ hestia/config/system/*.conf
 hestia/config/preview/*.conf
 
 # Ignore imported blueprints
-hestia/library/blueprints/*.yaml
+hestia/library/templates/blueprints/*.yaml
 
 # Guard against nested vendor repos/objects
 **/.git/

@@ -186,16 +186,16 @@ _meta_schema:
           state:
             type: str?
             description: "Optional: state that the trigger entity must match"
-        holdout:
-          type: dict
-          description: "Holdout configuration for lighting automation (e.g., media player state to block auto-off)"
-          schema:
-            entity_id:
-              type: str
-              description: "Entity id that acts as a holdout/blocker (e.g., media player)"
-            state:
-              type: str
-              description: "State of the holdout entity that blocks automation (e.g., 'playing')"
+      holdout:
+        type: dict
+        description: "Holdout configuration for lighting automation (e.g., media player state to block auto-off)"
+        schema:
+          entity_id:
+            type: str
+            description: "Entity id that acts as a holdout/blocker (e.g., media player)"
+          state:
+            type: str
+            description: "State of the holdout entity that blocks automation (e.g., 'playing')"
 
 _rooms:
   home:
@@ -233,8 +233,11 @@ _rooms:
         sensors:
           motion:
             - entity_id: binary_sensor.living_room_multipurpose_alpha_motion
+            - entity_id: binary_sensor.living_room_motion_beta
+            - entity_id: binary_sensor.living_room_motion_recent_beta
           occupancy:
             - entity_id: binary_sensor.living_room_occupancy_alpha_occupancy
+            - entity_id: binary_sensor.living_room_occupancy_beta
         climate:
           temperature:
             - entity_id: sensor.living_room_multipurpose_alpha_temperature
@@ -247,14 +250,18 @@ _rooms:
             - entity_id: sensor.living_room_multipurpose_alpha_illuminance
               integration: smartthings
               device_name: "living_room_multipurpose_wifi_alpha"
+            - entity_id: sensor.living_room_illuminance_beta
+              integration: template
+              device_name: "living_room_illuminance_beta"
       - kitchen:
         area_id: kitchen
         segment_id: "17"
         last_activity_sensor: sensor.kitchen_last_activity
-        last_cleaned_input: input_datetime.kitchen_last_cleaned
-        needs_cleaning_boolean: input_boolean.kitchen_needs_cleaning
-        days_since_last_cleaned_sensor: sensor.kitchen_days_since_last_cleaned
-        days_threshold: 1
+        cleaning:
+          last_cleaned_input: input_datetime.kitchen_last_cleaned
+          needs_cleaning_boolean: input_boolean.kitchen_needs_cleaning
+          days_since_last_cleaned_sensor: sensor.kitchen_days_since_last_cleaned
+          days_threshold: 1
         lighting:
           mode: "all"
           targets: []
@@ -271,9 +278,12 @@ _rooms:
         sensors:
           motion:
             - entity_id: binary_sensor.kitchen_motion_alpha_motion
+            - entity_id: binary_sensor.kitchen_motion_beta
+            - entity_id: binary_sensor.kitchen_motion_recent_beta
           occupancy:
             - entity_id: binary_sensor.kitchen_occupancy_alpha_occupancy
             - entity_id: binary_sensor.kitchen_occupancy_alpha_matter_occupancy
+            - entity_id: binary_sensor.kitchen_occupancy_beta
         climate:
           temperature:
             - entity_id: sensor.kitchen_ambient_climate_alpha_temperature
@@ -368,9 +378,18 @@ _rooms:
             sensors:
               motion:
                 - entity_id: binary_sensor.sanctum_motion_alpha
+                - entity_id: binary_sensor.bedroom_motion_beta
+                - entity_id: binary_sensor.bedroom_motion_recent_beta
+                - entity_id: binary_sensor.sanctum_motion_beta
+                - entity_id: binary_sensor.sanctum_motion_recent_beta
               occupancy:
                 - entity_id: binary_sensor.bedroom_occupancy_alpha_occupancy
                 - entity_id: binary_sensor.sanctum_occupancy_alpha_matter_occupancy
+                - entity_id: binary_sensor.bedroom_occupancy_beta
+                - entity_id: binary_sensor.bed_occupancy_beta
+                - entity_id: binary_sensor.sanctum_occupancy_beta
+                - entity_id: binary_sensor.macbook_bedroom_tv_airplay_active
+                - entity_id: binary_sensor.macbook_appletv_bedroom_airplay_active
             climate:
               temperature:
                 - entity_id: sensor.monstera_temperature
@@ -379,7 +398,7 @@ _rooms:
                   model: "Monstera deliciosa variegata"
                 - entity_id: sensor.bedroom_ambient_climate_alpha_temperature
                   integration: mqtt
-                  device_name: "bedroom_ambient_climate_ alpha"
+                  device_name: "bedroom_ambient_climate_alpha"
                   manufacturer: "SONOFF"
                   model: "Temperature and humidity sensor with screen"
                 - entity_id: sensor.bedroom_monstera_soil_alpha_temperature
@@ -404,7 +423,7 @@ _rooms:
                   model: "Monstera deliciosa variegata"
                 - entity_id: sensor.bedroom_ambient_climate_alpha_humidity
                   integration: mqtt
-                  device_name: "bedroom_ambient_climate_ alpha"
+                  device_name: "bedroom_ambient_climate_alpha"
                   manufacturer: "SONOFF"
                   model: "Temperature and humidity sensor with screen"
                 - entity_id: sensor.bedroom_monstera_soil_alpha_humidity
@@ -427,6 +446,12 @@ _rooms:
                   device_name: "bedroom_illuminance_alpha"
                   manufacturer: "Samsung Electronics"
                   model: "QE43Q60CAUXXU"
+                - entity_id: sensor.bedroom_illuminance_beta
+                  integration: template
+                  device_name: "bedroom_illuminance_beta"
+                - entity_id: sensor.bedroom_tv_illuminance_decay_delta
+                  integration: template
+                  device_name: "bedroom_tv_illuminance_decay_delta"
               moisture:
                 - entity_id: sensor.monstera_soil_moisture
                   integration: plant
@@ -469,8 +494,11 @@ _rooms:
                 sensors:
                   motion:
                     - entity_id: binary_sensor.bedroom_wardrobe_motion_alpha_motion
+                    - entity_id: binary_sensor.wardrobe_motion_beta
+                    - entity_id: binary_sensor.wardrobe_motion_recent_beta
                   occupancy:
                     - entity_id: binary_sensor.bedroom_wardrobe_occupancy_alpha_matter_occupancy
+                    - entity_id: binary_sensor.wardrobe_occupancy_beta
               - desk:
                 area_id: desk
                 container: bedroom
@@ -499,7 +527,12 @@ _rooms:
                     state: "off"
                 sensors:
                   motion: []
-                  occupancy: []
+                  occupancy:
+                    - entity_id: binary_sensor.desk_occupancy_beta
+                    - entity_id: binary_sensor.macbook_retina_display_active
+                    - entity_id: binary_sensor.macbook_hp32_monitor_active
+                    - entity_id: binary_sensor.desk_presence_inferred
+                    - entity_id: binary_sensor.desk_macbook_recent_connectivity
           - ensuite:
             area_id: ensuite
             segment_id: ""
@@ -522,9 +555,15 @@ _rooms:
                 entity_id: ""
                 state: ""
             sensors:
-              motion: []
+              motion:
+                - entity_id: binary_sensor.ensuite_motion_alpha_occupancy
+                - entity_id: binary_sensor.ensuite_motion_beta
+                - entity_id: binary_sensor.ensuite_motion_recent_beta
+                - entity_id: binary_sensor.ensuite_motion_real_time
               occupancy:
                 - entity_id: binary_sensor.ensuite_occupancy_alpha_occupancy
+                - entity_id: binary_sensor.ensuite_occupancy_beta
+                - entity_id: binary_sensor.ensuite_shower_occupancy_epsilon
             climate:
               temperature:
                 - entity_id: sensor.ensuite_climate_alpha_temperature
@@ -579,8 +618,11 @@ _rooms:
         sensors:
           motion:
             - entity_id: binary_sensor.downstairs_motion_alpha_motion
+            - entity_id: binary_sensor.hallway_downstairs_motion_beta
+            - entity_id: binary_sensor.hallway_downstairs_motion_recent_beta
           occupancy:
             - entity_id: binary_sensor.downstairs_occupancy_alpha_matter
+            - entity_id: binary_sensor.hallway_downstairs_occupancy_beta
       - entrance:
         area_id: entrance
         segment_id: ""
@@ -603,7 +645,8 @@ _rooms:
             entity_id: ""
             state: ""
         sensors:
-          motion: []
+          motion:
+            - entity_id: binary_sensor.entrance_motion_proxy
           occupancy: []
       - hallway_upstairs:
         area_id: upstairs
@@ -629,8 +672,11 @@ _rooms:
         sensors:
           motion:
             - entity_id: binary_sensor.upstairs_motion_alpha_motion
+            - entity_id: binary_sensor.hallway_upstairs_motion_beta
+            - entity_id: binary_sensor.hallway_upstairs_motion_recent_beta
           occupancy:
             - entity_id: binary_sensor.upstairs_occupancy_alpha_matter_occupancy
+            - entity_id: binary_sensor.hallway_upstairs_occupancy_beta
 
   outside: []
   virtual: []

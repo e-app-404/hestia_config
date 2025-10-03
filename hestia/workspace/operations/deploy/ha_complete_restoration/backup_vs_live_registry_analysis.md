@@ -19,7 +19,7 @@
 #### **Backup Floors (Sophisticated Architecture)**
 ```
 Level 1 (Upper):
-├── sanctum (sanctum_evert) - Private suite with king icon
+├── sanctum (sanctum) - Private suite with king icon
 └── upstairs (top_floor) - Upper level areas
 
 Level 0 (Ground + Virtual):

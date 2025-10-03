@@ -1,4 +1,17 @@
+---
+title:
+id:
+authors:
+status:
+date:
+last_updated:
+url:
+notes:
+gitignore: true #TODO 
+---
+
 # DSM-as-origin GitHub mirror
+
 This guide helps you set up a Synology DSM NAS as the authoritative Git repository for your project, with automatic mirroring to GitHub. This setup allows you to push changes to your NAS, which then mirrors them to GitHub using a deploy key.
 
 Below is a single, end-to-end chain of actions. Read the brief descriptions, then copy each fenced block **exactly** into the stated terminal (Mac or NAS). Only the **first** block contains placeholders; edit those once, then reuse.

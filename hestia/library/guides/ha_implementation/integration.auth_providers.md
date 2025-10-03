@@ -150,7 +150,7 @@ When `meta: true` is set the command can print key/value pairs to stdout to
 populate fields in the created user object (only on first authentication). The
 format is:
 
-```
+```yaml
 name = John Doe
 group = system-users
 local_only = true

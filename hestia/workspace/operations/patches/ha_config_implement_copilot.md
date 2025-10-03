@@ -146,13 +146,13 @@ fi
 
 ## 3. One-Time Installer Script
 
-- **Creates:**  
+- **Creates:**
   - Symlink `$HOME/hestia-config` to the resolved config path.
   - Installs `ha_path.sh` in `$HOME`.
   - Optionally auto-sources in `.zshrc`/`.bashrc`.
   - Smoke-tests resolution.
 
-- **Run:**  
+- **Run:**
   ```bash
   bash ~/install_hestia_locator.sh
   source ~/ha_path.sh
@@ -214,12 +214,12 @@ fi
 
 ## 4. autofs Neutral Mount (`/n/ha`)
 
-- **Purpose:**  
+- **Purpose:**
   - Provides a reboot-proof, case-proof mount point for the HA config share.
   - Uses `/etc/auto_master` and `/etc/auto_smb` for mapping.
   - Credentials are managed via Keychain or `~/.nsmbrc`.
 
-- **Setup Steps:**  
+- **Setup Steps:**
   - Append autofs mapping to `/etc/auto_master` (guarded).
   - Write `/etc/auto_smb` with the SMB share mapping.
   - Run `sudo automount -cv` to apply.
@@ -251,16 +251,16 @@ ls -ld /n/ha || true
 
 ## 5. VS Code Workspace Settings
 
-- **Config File:**  
+- **Config File:**
   `$HESTIA_CONFIG/.vscode/settings.json`
 
-- **Key Settings:**  
+- **Key Settings:**
   - `"home-assistant.configFile": "configuration.yaml"`
   - `"python.defaultInterpreterPath": "${workspaceFolder}/.venv/bin/python"`
   - `"yaml.customTags": [...]` (include all HA YAML tags)
   - `"git.enabled": false` (if desired for mono-repo)
 
-- **Open Folder:**  
+- **Open Folder:**
   Always open via the resolved path or symlink:  
   `code "$HESTIA_CONFIG"` or `code "$HOME/hestia-config"`
 
@@ -287,11 +287,11 @@ ls -ld /n/ha || true
 
 ## 6. Doctor Script (`ha_doctor.sh`)
 
-- **Purpose:**  
+- **Purpose:**
   - Diagnostics for config path, mount status, git root, ports, and case presence.
   - Non-destructive, emits clear status and evidence.
 
-- **Usage:**  
+- **Usage:**
   ```bash
   bash ~/ha_doctor.sh
   ```

@@ -1,188 +1,144 @@
 ---
-title: "MariaDB GRANT examples and reference"
-authors: "Home Assistant / MariaDB"
-source: "MariaDB Documentation"
-slug: "mariadb-grant-reference"
-tags: ["mariadb","sql","ops","database"]
+title: "MariaDB GRANT — concise examples for Home Assistant"
+authors: "Hestia / MariaDB (trimmed)"
+source: "MariaDB reference (condensed)"
+slug: "mariadb-grant-hestia"
+tags: ["mariadb","sql","ops","database","ha"]
 original_date: "2019-01-01"
 last_updated: "2025-10-03"
 url: "https://mariadb.com/kb/en/grant/"
 ---
 
-GRANT
-Syntax
-Copy
-GRANT
-    priv_type [(column_list)]
-      [, priv_type [(column_list)]] ...
-    ON [object_type] priv_level
-    TO user_specification [ user_options ...]
+This page is a focused, practical reference of common GRANT examples for Home Assistant users running the MariaDB (or MySQL-compatible) add-on or an external MariaDB/MySQL server.
 
-user_specification:
-  username [authentication_option]
-  | PUBLIC
-authentication_option:
-  IDENTIFIED BY 'password' 
-  | IDENTIFIED BY PASSWORD 'password_hash'
-  | IDENTIFIED {VIA|WITH} authentication_rule [OR authentication_rule  ...]
+Keep this short and actionable: basic privilege levels, least-privilege examples for the Recorder integration, replication/replica user hints, TLS/host restrictions, and quick troubleshooting steps.
 
-authentication_rule:
-    authentication_plugin
-  | authentication_plugin {USING|AS} 'authentication_string'
-  | authentication_plugin {USING|AS} PASSWORD('password')
+### Quick contract
+- Inputs: SQL client with an administrative account (root or equivalent).
+- Outputs: SQL GRANT statements for a least-privilege HA recorder user, optional replication user, and notes for TLS and host-scoped users.
+- Error modes: permission denied, missing user (NO_AUTO_CREATE_USER), connection refused/TLS mismatch.
 
-GRANT PROXY ON username
-    TO user_specification [, user_specification ...]
-    [WITH GRANT OPTION]
+## Recommended: create a dedicated recorder user (least privilege)
 
-GRANT rolename TO grantee [, grantee ...]
-    [WITH ADMIN OPTION]
+Home Assistant's Recorder only needs to INSERT/UPDATE/DELETE and SELECT on the HA database. Create a dedicated user restricted to the database and host:
 
-grantee:
-    rolename
-    username [authentication_option]
+```sql
+-- Replace values in UPPER_CASE
+CREATE DATABASE IF NOT EXISTS homeassistant;
+CREATE USER 'ha_recorder'@'192.168.1.%' IDENTIFIED BY 'REPLACE_WITH_STRONG_PASSWORD';
+GRANT SELECT, INSERT, UPDATE, DELETE, INDEX
+  ON homeassistant.*
+  TO 'ha_recorder'@'192.168.1.%';
+FLUSH PRIVILEGES;
+```
 
-user_options:
-    [REQUIRE {NONE | tls_option [[AND] tls_option] ...}]
-    [WITH with_option [with_option] ...]
+- Use a host restriction (here: `192.168.1.%`) or `localhost` when the DB is local. Avoid using `'%`' unless necessary.
+- For MySQL/MariaDB 10.4+ you can also `CREATE USER` followed by `GRANT` rather than implicit creation.
 
-object_type:
-    TABLE
-  | FUNCTION
-  | PROCEDURE
-  | PACKAGE
-  | PACKAGE BODY
+Notes on host selection
+- `localhost` (or socket) — safest when the DB runs on the same host/container as Home Assistant.
+- `192.168.1.%` (subnet) — useful for LAN-only access; prefer a specific subnet rather than `'%'.
+- `'%'` — allows any host and greatly increases exposure; avoid in production.
 
-priv_level:
-    *
-  | *.*
-  | db_name.*
-  | db_name.tbl_name
-  | tbl_name
-  | db_name.routine_name
+Minimal server privilege caveat
+- Some servers or third-party integrations may require additional privileges (for example, `CREATE TEMPORARY TABLES` for large schema migrations or vendor tooling). If you see schema upgrade errors during a Core update, check the add-on logs and consider temporarily granting the required privilege only for the duration of the upgrade.
 
-with_option:
-    GRANT OPTION
-  | resource_option
+## Optional: readonly user for analytics or reporting
 
-resource_option:
-  MAX_QUERIES_PER_HOUR count
-  | MAX_UPDATES_PER_HOUR count
-  | MAX_CONNECTIONS_PER_HOUR count
-  | MAX_USER_CONNECTIONS count
-  | MAX_STATEMENT_TIME time
+```sql
+CREATE USER 'ha_readonly'@'%' IDENTIFIED BY 'REPLACE_WITH_STRONG_PASSWORD';
+GRANT SELECT ON homeassistant.* TO 'ha_readonly'@'%';
+FLUSH PRIVILEGES;
+```
 
-tls_option:
-  SSL 
-  | X509
-  | CIPHER 'cipher'
-  | ISSUER 'issuer'
-  | SUBJECT 'subject'
-Description
-The GRANT statement allows you to grant privileges or roles to accounts. To use GRANT, you must have the GRANT OPTION privilege, and you must have the privileges that you are granting.
+## Optional: replica/replication user (if you run replicas)
 
-Use the REVOKE statement to revoke privileges granted with the GRANT statement.
+Replication users require specific REPLICATION privileges:
 
-Use the SHOW GRANTS statement to determine what privileges an account has.
+```sql
+CREATE USER 'ha_replica'@'replica-host.example' IDENTIFIED BY 'REPLACE_WITH_STRONG_PASSWORD';
+GRANT REPLICATION SLAVE, REPLICATION CLIENT ON *.* TO 'ha_replica'@'replica-host.example';
+FLUSH PRIVILEGES;
+```
 
-Account Names
-For GRANT statements, account names are specified as the username argument in the same way as they are for CREATE USER statements. See account names from the CREATE USER page for details on how account names are specified.
+## TLS and host restrictions
+- Use `REQUIRE SSL` / `REQUIRE X509` if your server and clients support TLS and you need to protect traffic between Home Assistant and the DB.
+- Prefer host-restricted accounts (`'user'@'host'`) to limit exposure.
 
-Implicit Account Creation
-The GRANT statement also allows you to implicitly create accounts in some cases.
+Example requiring TLS (server must be configured with certificates):
 
-If the account does not yet exist, then GRANT can implicitly create it. To implicitly create an account with GRANT, a user is required to have the same privileges that would be required to explicitly create the account with the CREATE USER statement.
+```sql
+CREATE USER 'ha_secure'@'10.0.0.%' IDENTIFIED BY 'STRONG';
+GRANT SELECT, INSERT, UPDATE, DELETE ON homeassistant.* TO 'ha_secure'@'10.0.0.%' REQUIRE SSL;
+FLUSH PRIVILEGES;
+```
 
-If the NO_AUTO_CREATE_USER SQL_MODE is set, then accounts can only be created if authentication information is specified, or with a CREATE USER statement. If no authentication information is provided, GRANT will produce an error when the specified account does not exist, for example:
+## When you might be tempted to use ALL PRIVILEGES (don't)
+- Avoid `GRANT ALL PRIVILEGES ON *.*` for application users. That creates unnecessary blast radius and is not required for Recorder.
 
-Copy
-SHOW VARIABLES LIKE '%sql_mode%' ;
-Copy
-+---------------+--------------------------------------------+
-| Variable_name | Value                                      |
-+---------------+--------------------------------------------+
-| sql_mode      | NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION |
-+---------------+--------------------------------------------+
-Copy
-GRANT USAGE ON *.* TO 'user123'@'%' IDENTIFIED BY '';
-Copy
-ERROR 1133 (28000): Can't find any matching row in the user table
-Copy
-GRANT USAGE ON *.* TO 'user123'@'%' 
-  IDENTIFIED VIA PAM using 'mariadb' require ssl ;
-Query OK, 0 rows affected (0.00 sec)
-Copy
-SELECT host, user FROM mysql.user WHERE user='user123' ;
-Copy
-+------+----------+
-| host | user     |
-+------+----------+
-| %    | user123 |
-+------+----------+
-Privilege Levels
-Privileges can be set globally, for an entire database, for a table or routine, or for individual columns in a table. Certain privileges can only be set at certain levels.
+## Least-privilege checklist for HA Recorder users
+- Database exists and owned by the DB admin (or created with the CREATE DATABASE statement above).
+- User granted only db-scoped privileges (SELECT, INSERT, UPDATE, DELETE, INDEX) on `homeassistant.*`.
+- Host restriction applied where possible (`localhost` or specific subnet).
+- TLS enforced for cross-network connections.
 
-Global privileges do not take effect immediately and are only applied to connections created after the GRANT statement was executed.
+## Common errors and quick fixes
+- ERROR 1045 (28000): Access denied — verify username/host and password; check `SHOW GRANTS FOR 'user'@'host'`.
+- ERROR 1133 (28000): Can't find any matching row in the user table — happens when NO_AUTO_CREATE_USER is set and you used GRANT to implicitly create a user without authentication info. Use `CREATE USER` first.
+- Connection refused or TLS errors — verify MariaDB TLS config, client certs, and `REQUIRE` options on the account.
 
-Global privileges priv_type are granted using *.* for priv_level. Global privileges include privileges to administer the database and manage user accounts, as well as privileges for all tables, functions, and procedures. Global privileges are stored in mysql.global_priv table.
+### Troubleshooting quick table
 
-Database privileges priv_type are granted using db_name.* for priv_level, or using just * to use default database. Database privileges include privileges to create tables and functions, as well as
-privileges for all tables, functions, and procedures in the database. Database privileges are stored in the mysql.db table.
+| Symptom | Likely cause | Quick action |
+|---|---|---|
+| Access denied (1045) | Wrong credentials or host mismatch | Verify `user@host` in `mysql.user`; run `SHOW GRANTS FOR 'user'@'host'` |
+| Can't find user (1133) | NO_AUTO_CREATE_USER set and GRANT implicit create failed | Use `CREATE USER 'user'@'host' IDENTIFIED BY 'pw'` then `GRANT` |
+| Connection refused / timeout | Server not reachable or port blocked | Check add-on network, container ports, firewall rules, and MariaDB service status |
+| TLS handshake errors | Missing / mismatched certs or REQUIRE options | Ensure server has certs and client supports TLS; remove REQUIRE on account to test briefly |
 
-Table privileges priv_type are granted using db_name.tbl_namefor priv_level, or using just tbl_name to specify a table in the default database. The TABLE keyword is optional. Table privileges include the ability to select and change data in the table. Certain table privileges can be granted for individual columns.
+## Privilege management tips
+- Use `SHOW GRANTS FOR 'ha_recorder'@'host';` to confirm grants.
+- Use `REVOKE` to remove privileges, then `FLUSH PRIVILEGES` if necessary.
+- Avoid `WITH GRANT OPTION` for application users.
 
-Column privileges priv_type are granted by specifying a table for priv_level and providing a column list after the privilege type. They allow you to control exactly which columns in a table users can select and change.
+## Example: configure Home Assistant Recorder to use MariaDB add-on
+In `configuration.yaml` (example):
 
-Function privileges priv_type are granted using FUNCTION db_name.routine_name for priv_level, or using just FUNCTION routine_name to specify a function in the default database.
+```yaml
+recorder:
+  db_url: mysql://ha_recorder:REPLACE_WITH_STRONG_PASSWORD@192.168.1.10/homeassistant?charset=utf8mb4
+  purge_keep_days: 7
+```
 
-Procedure privileges priv_type are granted using PROCEDURE db_name.routine_name for priv_level, or using just PROCEDURE routine_name to specify a procedure in the default database.
+If you run the MariaDB add-on in Home Assistant, use the add-on's exposed port and a host-restricted user (or `localhost` when running in the same host namespace).
 
-The USAGE Privilege
-The USAGE privilege grants no real privileges. The SHOW GRANTS statement will show a global USAGE privilege for a newly-created user. You can use USAGE with the GRANT statement to change options like GRANT OPTIONand MAX_USER_CONNECTIONS without changing any account privileges.
+## Emergency recovery (lost root password)
+-- Start MariaDB with `--skip-grant-tables` to reset root credentials (operator task). This bypasses GRANTS — follow MariaDB docs and secure the server afterwards.
 
-The ALL PRIVILEGES Privilege
-The ALL PRIVILEGES privilege grants all available privileges. Granting all privileges only affects the given privilege level. For example, granting all privileges on a table does not grant any privileges on the database or globally.
+Quick recovery checklist
+1. Stop MariaDB and restart with `--skip-grant-tables` (temporarily, in maintenance window).
+2. Connect locally and reset the root password using `ALTER USER 'root'@'localhost' IDENTIFIED BY 'NEW_STRONG_PASSWORD';` (or follow your distro docs).
+3. Restart MariaDB normally (remove `--skip-grant-tables`).
+4. Verify `SHOW GRANTS FOR 'root'@'localhost';` and test connection from Home Assistant.
+5. Rotate secrets and audit access logs — treat the server as potentially compromised while auth was disabled.
 
-Using ALL PRIVILEGES does not grant the special GRANT OPTION privilege.
+Quick test command
+After creating the user, verify connectivity and privileges from a host that should be allowed:
 
-You can use ALL instead of ALL PRIVILEGES.
+```bash
+# Test connection and a simple query (replace host/user/password)
+mysql -u ha_recorder -p -h 192.168.1.10 -e "SELECT 1;"
 
-The GRANT OPTION Privilege
-Use the WITH GRANT OPTION clause to give users the ability to grant privileges to other users at the given privilege level. Users with the GRANT OPTION privilege can only grant privileges they have. They cannot grant privileges at a higher privilege level than they have the GRANT OPTION privilege.
+# Show grants for the created account
+mysql -u root -p -h 192.168.1.10 -e "SHOW GRANTS FOR 'ha_recorder'@'192.168.1.%';"
+```
 
-The GRANT OPTION privilege cannot be set for individual columns. If you use WITH GRANT OPTION when specifying column privileges, the GRANT OPTION privilege will be granted for the entire table.
+## Further reading
+- Official MariaDB GRANT reference: https://mariadb.com/kb/en/grant/
+- MariaDB user and authentication docs: https://mariadb.com/kb/en/authentication/
 
-Using the WITH GRANT OPTION clause is equivalent to listing GRANT OPTION as a privilege.
-
-Global Privileges
-The following table lists the privileges that can be granted globally. You can also grant all database, table, and function privileges globally. When granted globally, these privileges apply to all databases, tables, or functions, including those created later.
-
-To set a global privilege, use *.* for priv_level.
-
-BINLOG ADMIN
-Current
-< 10.5
-Enables administration of the binary log, including the PURGE BINARY LOGS statement and setting the system variables:
-
-binlog_annotate_row_events
-
-binlog_cache_size
-
-binlog_commit_wait_count
-
-binlog_commit_wait_usec
-
-binlog_direct_non_transactional_updates
-
-binlog_expire_logs_seconds
-
-binlog_file_cache_size
-
-binlog_format
-
-binlog_row_image
-
-binlog_row_metadata
+---
+Notes: This document is intentionally concise. For full privilege tables and plugin-specific auth options, consult the upstream MariaDB documentation linked above.
 
 binlog_stmt_cache_size
 

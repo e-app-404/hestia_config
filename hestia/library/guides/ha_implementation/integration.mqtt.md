@@ -796,6 +796,7 @@ Example state payload: {"state": "ON", "brightness": 255}
 
 Configuration payload:
 
+```json
 {
   "~": "homeassistant/light/kitchen",
   "name": "Kitchen",
@@ -805,9 +806,10 @@ Configuration payload:
   "schema": "json",
   "brightness": true
 }
-JSON
+```
 
 Example with using abbreviated Device and Origin info in discovery messages
+```json
 {
   "~": "homeassistant/light/kitchen",
   "name": null,
@@ -831,26 +833,29 @@ Example with using abbreviated Device and Origin info in discovery messages
     "url": "<https://bla2mqtt.example.com/support>"
   }
 }
-JSON
+```
 
 Use object_id to influence the entity id
 The entity id is automatically generated from the entity’s name. All MQTT integrations optionally support providing an object_id which will be used instead if provided.
 
 Configuration topic: homeassistant/sensor/device1/config
+
 Example configuration payload:
+
+```json
 {
   "name":"My Super Device",
   "object_id":"my_super_device",
   "state_topic": "homeassistant/sensor/device1/state"
  }
-JSON
+```
 
 In the example above, the entity_id will be sensor.my_super_device instead of sensor.device1.
 
 Support by third-party tools
 The following software has built-in support for MQTT discovery:
 
-ArduinoHA
+```Arduino
 Arilux AL-LC0X LED controllers
 ble2mqtt
 diematic_server
@@ -883,6 +888,8 @@ WyzeSense2MQTT
 Xiaomi DaFang Hacks
 Zehnder Comfoair RS232 MQTT
 Zigbee2MQTT
+```
+
 The following software also supports consuming MQTT discovery information that is intended for Home Assistant. Compatibility and features will vary, and not all devices may work.
 
 Domoticz

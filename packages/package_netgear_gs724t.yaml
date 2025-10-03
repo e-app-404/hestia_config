@@ -10,6 +10,7 @@ homeassistant:
   customize_glob:
     sensor.gs724t_*:
       icon: mdi:ethernet
+# TODO: verify correct yaml syntax for customze
 
 sensor:
   - platform: snmp

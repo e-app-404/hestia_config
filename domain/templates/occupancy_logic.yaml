@@ -242,7 +242,7 @@
         version: "3.6"
         last_updated: "2025-09-20"
         area_id: "upstairs"
-        floor_id: "top_floor" 
+        floor_id: "upstairs" 
     #───────────────────────────────────────────────────────────────
     # ▼ GROUP: Aggregated Zone & Home Synthesis
     #───────────────────────────────────────────────────────────────
@@ -314,7 +314,6 @@
         role: "aggregation"
         description: "Aggregated occupancy state for hallways"
         floor_id: "home"
-        area_id: "hallway"
 
 
     - name: "Zone Downstairs Occupancy (Eta)"
@@ -419,7 +418,7 @@
         related_motion_recent_entity: "binary_sensor.sanctum_motion_recent_beta"
         version: "1.1"
         last_updated: "2025-09-20"
-        floor_id: "top_floor"
+        floor_id: "upstairs"
         area_id: "bedroom"
 
     #───────────────────────────────────────────────────────────────

@@ -21,20 +21,24 @@ contract_metadata:
 
 containment_graph:
   ground_floor:
-    children: [downstairs, kitchen, laundry_room, living_room, hallway]
+    children: [downstairs, kitchen, laundry_room, living_room, hallway, powder_room, entrance]
   sanctum:
-    children: [bedroom, ensuite, sanctum]
+    children: [bedroom, ensuite]
   bedroom:
     children: [desk, hifi_configuration, wardrobe]
   home:
-    children: [evert, network_connectivity]
+    children: [evert, home, hallway]
   diag:
-    children: [folder_watcher]
-  config:
-    children: [tailscale_vpn, apple_matuvu, belge_etage, cinema_clapham]
+    children: [folder_watcher, backups, host_system]
+  hestia:
+    children: [tailscale_vpn, config, diag, configuration_toggles, ha_addons, ha_system, system_admin, virtual, device_status]
   # Preserved legacy structure for reference
   services:
-    children: [alarm, calendar, notifications]
+    children: [alarm, calendar, notifications, cleaning, warnings]
+  network:
+    children: [home_assistant, media_server, nas, network_connectivity, network_health]
+  outside:
+    children: [london]
   ensuite: null
   kitchen: null
   laundry_room: null
@@ -103,7 +107,7 @@ nodes:
   - id: bedroom
     type: area
     canonical_name: "Evert's bedroom"
-    parents: [sanctum_evert]
+    parents: [sanctum]
     container: ["area", "bedroom", "Bedroom main"]
     devices: 66
     entities: 7
@@ -135,7 +139,7 @@ nodes:
   - id: ensuite
     type: area
     canonical_name: Ensuite
-    parents: [sanctum_evert]
+    parents: [sanctum]
     container: ["area", "ensuite", "Ensuite"]
     devices: 16
     entities: 4
@@ -172,12 +176,75 @@ nodes:
     devices: 0
     entities: 0
     services: 1
+  - id: cleaning
+    type: service
+    canonical_name: Cleaning
+    parents: [services]
+    container: ["area", "cleaning", "Cleaning"]
+    devices: 1
+    entities: 0
+    services: 0
+    tags: ["valetudo", "robot_vacuum"]
+  - id: network_connectivity
+    type: area
+    canonical_name: Hubs & Routers
+    parents: [home]
+    container: ["area", "network_connectivity", "Hubs & Routers"]
+    devices: 0
+    entities: 0
+    services: 0
+    tags: [network, infrastructure]
+  - id: media_server
+    type: area
+    canonical_name: Media Server
+    parents: [network]
+    container: ["area", "media_server", "Media Server"]
+    devices: 0
+    entities: 0
+    services: 0
+    tags: [media, network]
+  - id: home_assistant
+    type: area
+    canonical_name: Home Assistant
+    parents: [network]
+    container: ["area", "home_assistant", "Home Assistant"]
+    devices: 0
+    entities: 0
+    services: 0
+    tags: [system, network]
+  - id: powder_room
+    type: area
+    canonical_name: powder room
+    parents: [ground_floor]
+    container: ["area", "powder_room", "powder room"]
+    devices: 0
+    entities: 0
+    services: 0
+    tags: ["bathroom", "toilet"]
+  - id: config
+    type: system
+    canonical_name: Config
+    parents: [hestia]
+    container: ["area", "config", "Configuration"]
+    devices: 0
+    entities: 0
+    services: 0
+    tags: [configuration]
+  - id: diag
+    type: system
+    canonical_name: Diagnostics
+    parents: [hestia]
+    container: ["area", "diag", "Diagnostics"]
+    devices: 0
+    entities: 0
+    services: 0
+    tags: [diagnostics, monitoring]
 
 propagation_rules:
   motion:
     from_subarea_to_area: probable # e.g., desk → bedroom
     from_area_to_subarea: improbable # e.g., bedroom → desk
-    from_area_to_container: probable # e.g., bedroom → sanctum_evert
+    from_area_to_container: probable # e.g., bedroom → sanctum
     from_container_to_area: undefined
     transient_decay: true # motion loses confidence across boundaries
     decay_rate: 0.7 # relative confidence reduction per level
