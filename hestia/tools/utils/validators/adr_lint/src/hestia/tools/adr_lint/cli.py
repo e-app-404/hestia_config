@@ -10,7 +10,7 @@ from . import config, report, rules
 
 def parse_args(argv: List[str] | None = None) -> argparse.Namespace:
     p = argparse.ArgumentParser(prog="hestia-adr-lint", description="ADR linter honoring ADR-0009 and ADR-0015")
-    p.add_argument("paths", nargs="*", default=["hestia/docs/ADR"], help="Files or directories to check")
+    p.add_argument("paths", nargs="*", default=["hestia/library/docs/ADR"], help="Files or directories to check")
     p.add_argument("--format", choices=("human", "json"), default="human", help="Output format")
     p.add_argument("--max-bytes", type=int, default=1048576, help="Max file size in bytes to scan (default 1MB)")
     p.add_argument("--no-follow-symlinks", action="store_true", default=True, help="Do not follow symlinks (default)")

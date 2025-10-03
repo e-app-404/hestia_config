@@ -439,7 +439,7 @@ template:
   # ══ Entrance (Contact Sensor) ══
   - trigger:
       - platform: state
-        entity_id: binary_sensor.entrance_door_contact_matter_omega
+        entity_id: binary_sensor.entrance_door_alpha_contact
         to: "on"
     sensor:
       - name: Entrance Last Activity

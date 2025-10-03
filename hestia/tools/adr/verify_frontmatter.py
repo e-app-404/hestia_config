@@ -5,7 +5,7 @@ import sys
 import yaml
 
 REQ = {"id","title","status","date"}
-ROOT = pathlib.Path("hestia/docs/ADR")
+ROOT = pathlib.Path("hestia/library/docs/ADR")
 
 def check(p: pathlib.Path):
     s = p.read_text(errors="ignore")

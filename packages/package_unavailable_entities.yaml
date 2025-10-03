@@ -52,6 +52,7 @@ group:
     entities:
       - number.bedroom_accent_alpha_effect_speed
       - number.bedroom_desk_alpha_effect_speed
+      - number.bedroom_desk_corner_alpha_effect_speed
       - number.bedroom_desk_lightstrip_alpha_effect_speed
       - number.bedroom_desk_wall_alpha_effect_speed
       - number.bedroom_entrance_alpha_effect_speed
@@ -63,6 +64,12 @@ group:
       - number.bedroom_ottoman_lightstrip_alpha_effect_speed
       - number.bedroom_wall_alpha_effect_speed
       - number.bedroom_wardrobe_lightstrip_alpha_effect_speed
+      - number.living_room_desk_alpha_effect_speed
+      - number.living_room_floorlamp_alpha_effect_speed
+      - number.living_room_foxy_alpha_effect_speed
+      - number.living_room_main_alpha_effect_speed
+      - number.living_room_side_alpha_effect_speed
+      - number.ensuite_main_alpha_effect_speed
 
 # ══ REQUIRED - Create the monitored entities group and update once per minute. ══
 

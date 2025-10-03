@@ -1,0 +1,72 @@
+{#- Diagnostic template to debug climate entity discovery -#}
+
+{%- set climate_integrations = ['plant', 'smartthings', 'tplink', 'mqtt', 'matter', 'localtuya', 'vesync', 'homekit_controller', 'zha'] -%}
+{%- set climate_device_classes = ['climate', 'humidity', 'temperature', 'pm25', 'illuminance', 'moisture', 'gas','pm10', 'tvoc', 'volatile_organic_compounds', 'atmospheric_pressure','pressure', 'aqi', 'co', 'co2', 'pm1'] -%}
+{%- set climate_domains = ['climate', 'sensor', 'binary_sensor', 'weather'] -%}
+{%- set alpha_pattern = '_alpha' -%}
+
+DIAGNOSTIC REPORT:
+
+1. TOTAL ENTITIES BY DOMAIN:
+   - climate: {{ states.climate | list | length }}
+   - sensor: {{ states.sensor | list | length }}
+   - binary_sensor: {{ states.binary_sensor | list | length }}
+   - weather: {{ states.weather | list | length }}
+
+2. ALPHA ENTITIES BY DOMAIN:
+   - climate with _alpha: {{ states.climate | selectattr('entity_id', 'search', alpha_pattern) | list | length }}
+   - sensor with _alpha: {{ states.sensor | selectattr('entity_id', 'search', alpha_pattern) | list | length }}
+   - binary_sensor with _alpha: {{ states.binary_sensor | selectattr('entity_id', 'search', alpha_pattern) | list | length }}
+   - weather with _alpha: {{ states.weather | selectattr('entity_id', 'search', alpha_pattern) | list | length }}
+
+3. SAMPLE ALPHA ENTITIES (first 10):
+{%- for s in states | selectattr('entity_id', 'search', alpha_pattern) | list | sort(attribute='entity_id') -%}
+  {%- if loop.index <= 10 %}
+   - {{ s.entity_id }} ({{ s.domain }})
+  {%- endif -%}
+{%- endfor %}
+
+4. CLIMATE-RELATED KEYWORDS IN ENTITY IDs:
+{%- set climate_keywords = ['temp', 'humid', 'climate', 'weather', 'air', 'moisture', 'pressure'] -%}
+{%- for keyword in climate_keywords %}
+   - "{{ keyword }}" in alpha entities: {{ states | selectattr('entity_id', 'search', alpha_pattern) | selectattr('entity_id', 'search', keyword) | list | length }}
+{%- endfor %}
+
+5. SAMPLE ENTITIES WITH CLIMATE KEYWORDS:
+{%- for s in states | selectattr('entity_id', 'search', alpha_pattern) | list -%}
+  {%- set eid = s.entity_id | lower -%}
+  {%- if 'temp' in eid or 'humid' in eid or 'climate' in eid or 'weather' in eid or 'air' in eid or 'moisture' in eid or 'pressure' in eid -%}
+    {%- if loop.index <= 5 %}
+   - {{ s.entity_id }} ({{ s.domain }}) - {{ s.attributes.get('device_class', 'no device_class') }} - {{ s.attributes.get('unit_of_measurement', 'no unit') }}
+    {%- endif -%}
+  {%- endif -%}
+{%- endfor %}
+
+6. INTEGRATION ENTITY COUNTS:
+{%- for integ in climate_integrations %}
+   - {{ integ }}: {{ integration_entities(integ) | list | length }} total entities
+{%- endfor %}
+
+7. DEVICE CLASSES IN SENSOR ENTITIES:
+{%- set device_classes = [] -%}
+{%- for s in states.sensor | selectattr('entity_id', 'search', alpha_pattern) | list -%}
+  {%- set dc = s.attributes.get('device_class') -%}
+  {%- if dc and dc not in device_classes -%}
+    {%- set device_classes = device_classes + [dc] -%}
+  {%- endif -%}
+{%- endfor %}
+{%- for dc in device_classes | sort %}
+   - {{ dc }}
+{%- endfor %}
+
+8. UNITS OF MEASUREMENT IN SENSOR ENTITIES:
+{%- set units = [] -%}
+{%- for s in states.sensor | selectattr('entity_id', 'search', alpha_pattern) | list -%}
+  {%- set unit = s.attributes.get('unit_of_measurement') -%}
+  {%- if unit and unit not in units -%}
+    {%- set units = units + [unit] -%}
+  {%- endif -%}
+{%- endfor %}
+{%- for unit in units | sort %}
+   - "{{ unit }}"
+{%- endfor %}

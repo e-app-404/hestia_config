@@ -16,6 +16,8 @@
         rationale: "True if MacBook built-in display is active"
         last_updated: "{{ now().isoformat() }}"
         tier: "γ"
+        area_id: "desk"
+        floor_id: "sanctum"
 
     - name: "MacBook HP32 Monitor Active"
       unique_id: "macbook_hp32_monitor_active"
@@ -28,6 +30,8 @@
         rationale: "True if HP 32 monitor is active"
         last_updated: "{{ now().isoformat() }}"
         tier: "γ"
+        area_id: "desk"
+        floor_id: "sanctum"
 
     - name: "MacBook Bedroom TV (AirPlay) Active"
       unique_id: "macbook_bedroom_tv_airplay_active"
@@ -40,6 +44,8 @@
         rationale: "True if Bedroom TV is connected via AirPlay"
         last_updated: "{{ now().isoformat() }}"
         tier: "γ"
+        area_id: "bedroom"
+        floor_id: "sanctum"
 
     - name: "MacBook Apple TV Bedroom TV (AirPlay) Active"
       unique_id: "macbook_appletv_bedroom_airplay_active"
@@ -52,6 +58,8 @@
         rationale: "True if Apple TV in Bedroom is connected via AirPlay"
         last_updated: "{{ now().isoformat() }}"
         tier: "γ"
+        area_id: "bedroom"
+        floor_id: "sanctum"
 
     - name: "Desk Presence Inferred"
       unique_id: "desk_presence_inferred"
@@ -87,8 +95,10 @@
             'sensor.macbook_displays',
             'sensor.macbook_internal_battery_state',
             'device_tracker.macbook',
-            'binary_sensor.macbook_connectivity_recent_desk'
+            'binary_sensor.desk_macbook_recent_connectivity'
           ] | tojson }}
+        area_id: "desk"
+        floor_id: "sanctum"
 
     - name: "Desk MacBook Recent Connectivity (Desk)"
       unique_id: "desk_macbook_recent_connectivity"
@@ -120,3 +130,5 @@
         canonical_id: "desk_macbook_recent_connectivity_γ"
         fusion_strategy: >
           {{ ['connection_type_raw','ssid'] | tojson }}
+        area_id: "desk"
+        floor_id: "sanctum"

@@ -17,7 +17,7 @@
     - light.ensuite_accent_alpha
     - light.ensuite_main_alpha
     - light.ensuite_main_alpha_matter
-    - light.ensuite_lightstrip_tplink_alpha
+    - light.ensuite_lightstrip_alpha
     - light.ensuite_lightstrip_alpha_matter
 
 # ── Kitchen ───────────────────────────────────────────────────
@@ -28,12 +28,13 @@
     - light.kitchen_ceiling_alpha
     - light.kitchen_cupboards_lightstrip_alpha
 
-# ── Laundry Room ──────────────────────────────────────────────
-- platform: group
-  name: "Group - Laundry Room Lights"
-  unique_id: "C1D2E3F4A5B60703"
-  entities:
-    - light.laundry_ceiling_alpha
+# ── Laundry Room ──────────────────────────────────────────
+# Note: laundry_ceiling_alpha_retired is retired/unavailable
+# - platform: group
+#   name: "Group - Laundry Room Lights"
+#   unique_id: "C1D2E3F4A5B60703"
+#   entities:
+#     - light.laundry_ceiling_alpha_retired
 
 # ── Living Room (All) ────────────────────────────────────────
 - platform: group

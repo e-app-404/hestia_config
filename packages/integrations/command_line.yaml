@@ -132,7 +132,7 @@ command_line:
       payload_on: "on"
       payload_off: "off"
       scan_interval: 60
-      command_timeout: 20
+      command_timeout: 30
 
   - sensor:
       name: "Plex Tailnet Code"
@@ -143,7 +143,8 @@ command_line:
           curl -s -o /dev/null -w "%{http_code}" http://100.93.61.53:32400/identity | tr -d "\n"
         '
       scan_interval: 60
-      command_timeout: 20
+      command_timeout: 30
+      value_template: "{{ value | default('unknown') | trim }}"
 
   # ── LAN (on-site sanity) ──────────────────────────────────────
 
@@ -160,7 +161,7 @@ command_line:
       payload_on: "on"
       payload_off: "off"
       scan_interval: 120
-      command_timeout: 20
+      command_timeout: 30
 
   - sensor:
       name: "Plex LAN Code"
@@ -170,8 +171,9 @@ command_line:
           set -eo pipefail
           curl -s -o /dev/null -w "%{http_code}" http://192.168.0.104:32400/identity | tr -d "\n"
         '
-      scan_interval: 120
-      command_timeout: 20
+    scan_interval: 120
+    command_timeout: 30
+    value_template: "{{ value | default('unknown') | trim }}"
 
   # ▶ INTEGRATION: Command Line Sensors — Cloudflared/Plex Tunnel ◀
 
@@ -194,7 +196,7 @@ command_line:
       payload_on: "true"
       payload_off: "false"
       scan_interval: 30
-      command_timeout: 20
+      command_timeout: 30
 
   # Cloudflared errors in last 60s
   - sensor:
@@ -272,10 +274,12 @@ command_line:
       payload_on: "200"
       payload_off: "000"
       scan_interval: 300
+      command_timeout: 30
+      value_template: "{{ value | default('000') | trim }}"
 
   - sensor:
       name: "Tailscale IP (Home Assistant)"
       unique_id: "tailscale_ip_ha_alpha"
       command: "hostname -i"
-      value_template: "{{ value }}"
+      value_template: "{{ value | default('') | trim }}"
       scan_interval: 300

@@ -1,0 +1,56 @@
+{#- Quick test of climate entity filtering -#}
+
+{%- set climate_device_classes = ['climate', 'humidity', 'temperature', 'pm25', 'illuminance', 'moisture', 'gas','pm10', 'tvoc', 'volatile_organic_compounds', 'atmospheric_pressure','pressure', 'aqi', 'co', 'co2', 'pm1'] -%}
+{%- set climate_domains = ['climate', 'sensor', 'binary_sensor', 'weather'] -%}
+{%- set alpha_pattern = '_alpha' -%}
+{%- set EXCLUDES = ['weather.forecast_home', 'sensor.sun_next_dawn', 'sensor.sun_next_dusk'] -%}
+
+QUICK TEST:
+
+{# Gather all relevant entities from climate-related domains #}
+{%- set all_climate_entities = [] -%}
+{%- for domain in climate_domains -%}
+  {%- if domain == 'climate' -%}
+    {%- set all_climate_entities = all_climate_entities + (states.climate | list) -%}
+  {%- elif domain == 'sensor' -%}
+    {%- for s in states.sensor | list -%}
+      {%- if s.entity_id not in EXCLUDES -%}
+        {%- set dc = s.attributes.get('device_class') -%}
+        {%- set unit = s.attributes.get('unit_of_measurement') -%}
+        {%- set eid = s.entity_id | lower -%}
+        {%- if (dc and dc in climate_device_classes) or 
+              (unit and (unit in ['°C', '°F', 'K', '%', 'hPa', 'mbar', 'Pa', 'psi', 'inHg', 'ppm', 'ppb', 'µg/m³', 'mg/m³', 'lx', 'lm'])) or
+              ('temp' in eid or 'humid' in eid or 'pressure' in eid or 'aqi' in eid or 'air' in eid or 'climate' in eid or 'weather' in eid or 'co2' in eid or 'co_' in eid or 'pm' in eid or 'tvoc' in eid or 'illuminance' in eid or 'moisture' in eid) -%}
+          {%- set all_climate_entities = all_climate_entities + [s] -%}
+        {%- endif -%}
+      {%- endif -%}
+    {%- endfor -%}
+  {%- elif domain == 'binary_sensor' -%}
+    {%- for s in states.binary_sensor | list -%}
+      {%- if s.entity_id not in EXCLUDES -%}
+        {%- set dc = s.attributes.get('device_class') -%}
+        {%- set eid = s.entity_id | lower -%}
+        {%- if (dc and dc in ['gas', 'co', 'smoke']) or
+              ('climate' in eid or 'temp' in eid or 'humid' in eid or 'air' in eid or 'gas' in eid or 'smoke' in eid or 'co_' in eid) -%}
+          {%- set all_climate_entities = all_climate_entities + [s] -%}
+        {%- endif -%}
+      {%- endif -%}
+    {%- endfor -%}
+  {%- elif domain == 'weather' -%}
+    {%- set all_climate_entities = all_climate_entities + (states.weather | list) -%}
+  {%- endif -%}
+{%- endfor -%}
+
+{# Filter for alpha-tier entities #}
+{%- set alpha_entities = all_climate_entities | selectattr('entity_id', 'search', alpha_pattern) | list -%}
+
+RESULTS:
+- Total climate-related entities found: {{ all_climate_entities | length }}
+- Alpha-tier climate entities found: {{ alpha_entities | length }}
+
+SAMPLE ALPHA CLIMATE ENTITIES (first 20):
+{%- for s in alpha_entities | sort(attribute='entity_id') -%}
+  {%- if loop.index <= 20 %}
+{{ loop.index }}. {{ s.entity_id }} ({{ s.domain }}) - {{ s.attributes.get('device_class', 'no_class') }} - {{ s.attributes.get('unit_of_measurement', 'no_unit') }}
+  {%- endif -%}
+{%- endfor %}

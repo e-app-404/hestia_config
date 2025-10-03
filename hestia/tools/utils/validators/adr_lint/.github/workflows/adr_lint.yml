@@ -3,11 +3,11 @@ name: ADR Lint
 on:
   push:
     paths:
-      - 'hestia/docs/ADR/**.md'
+      - 'hestia/library/docs/ADR/**.md'
       - 'hestia/tools/adr_lint/**'
   pull_request:
     paths:
-      - 'hestia/docs/ADR/**.md'
+      - 'hestia/library/docs/ADR/**.md'
       - 'hestia/tools/adr_lint/**'
 
 jobs:
@@ -23,4 +23,4 @@ jobs:
           python-version: '3.12'
       - run: python -m venv ~/.venv/hestia-adr && ~/.venv/hestia-adr/bin/pip install -e ".[test]"
       - run: ~/.venv/hestia-adr/bin/pytest -q
-      - run: ~/.venv/hestia-adr/bin/hestia-adr-lint ../../docs/ADR --format json
+      - run: ~/.venv/hestia-adr/bin/hestia-adr-lint ../../library/docs/ADR --format json

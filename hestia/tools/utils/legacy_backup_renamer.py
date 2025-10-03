@@ -23,7 +23,7 @@ def is_skipped(path: pathlib.Path) -> bool:
 
 def to_canonical(p: pathlib.Path) -> pathlib.Path:
     utc = (
-        datetime.datetime.now(datetime.timezone.utc)
+        datetime.datetime.now(datetime.UTC)
         .strftime("%Y%m%dT%H%M%SZ")
     )
     ext = p.suffix
@@ -91,7 +91,7 @@ def main():
                 print(f"DEDUP\t{src}")
             else:
                 dup_time = (
-                    datetime.datetime.now(datetime.timezone.utc)
+                    datetime.datetime.now(datetime.UTC)
                     .strftime("%Y%m%dT%H%M%SZ")
                 )
                 with_suffix = dst.with_name(
