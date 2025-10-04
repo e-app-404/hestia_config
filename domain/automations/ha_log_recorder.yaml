@@ -35,8 +35,8 @@
     tmo: >-
       {% set t = state_attr(trigger.entity_id,'timeout') %}
       {{ (t|join(', ') if t is iterable) if t is not none else 'n/a' }}
-  actions:
-    - service: logbook.log
+  action:
+    - action: logbook.log
       data:
         name: "{{ room }} Occupancy (β)"
         entity_id: input_boolean.hermes_presence_log

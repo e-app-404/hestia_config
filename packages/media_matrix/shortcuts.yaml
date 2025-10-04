@@ -19,23 +19,23 @@ automation:
             device: ofa_urc_7935_streamer
             command: spare_n
     action:
-      - service: logbook.log
+      - action: logbook.log
         data:
           name: "URC 7935"
           message: "N key pressed – Routing to Apple TV (a_1 + b_1)"
-      - service: input_text.set_value
+      - action: input_text.set_value
         target:
           entity_id: input_text.urc_7935_last_command
         data:
           value: "N → Apple TV"
-      - service: script.bedroom_matrix_select_source
+      - action: script.bedroom_matrix_select_source
         data:
           source: "Apple TV"
           turn_on_tv: true
 
   - alias: "URC 7935 – Shortcut: Playstation 4 (A)"
     trigger:
-      - platform: event
+      - trigger: event
         event_type: call_service
         event_data:
           domain: remote
@@ -44,23 +44,23 @@ automation:
             device: ofa_urc_7935_streamer
             command: spare_3
     action:
-      - service: logbook.log
+      - action: logbook.log
         data:
           name: "URC 7935"
           message: "A key pressed – Routing to Playstation 4 (a_2 + b_3)"
-      - service: input_text.set_value
+      - action: input_text.set_value
         target:
           entity_id: input_text.urc_7935_last_command
         data:
           value: "A → Playstation 4"
-      - service: script.bedroom_matrix_select_source
+      - action: script.bedroom_matrix_select_source
         data:
           source: "Playstation 4"
           turn_on_tv: true
 
   - alias: "URC 7935 – Shortcut: Nintendo Switch (H)"
     trigger:
-      - platform: event
+      - trigger: event
         event_type: call_service
         event_data:
           domain: remote
@@ -69,23 +69,23 @@ automation:
             device: ofa_urc_7935_streamer
             command: spare_h
     action:
-      - service: logbook.log
+      - action: logbook.log
         data:
           name: "URC 7935"
           message: "H key pressed – Routing to Nintendo Switch (a_2 + b_2)"
-      - service: input_text.set_value
+      - action: input_text.set_value
         target:
           entity_id: input_text.urc_7935_last_command
         data:
           value: "H → Nintendo Switch"
-      - service: script.bedroom_matrix_select_source
+      - action: script.bedroom_matrix_select_source
         data:
           source: "Nintendo Switch"
           turn_on_tv: true
 
   - alias: "URC 7935 – Shortcut: Nintendo Wii (Play)"
     trigger:
-      - platform: event
+      - trigger: event
         event_type: call_service
         event_data:
           domain: remote
@@ -94,16 +94,16 @@ automation:
             device: ofa_urc_7935_streamer
             command: spare_play
     action:
-      - service: logbook.log
+      - action: logbook.log
         data:
           name: "URC 7935"
           message: "Play key pressed – Routing to Nintendo Wii (a_4 + b_4)"
-      - service: input_text.set_value
+      - action: input_text.set_value
         target:
           entity_id: input_text.urc_7935_last_command
         data:
           value: "Play → Nintendo Wii"
-      - service: script.bedroom_matrix_select_source
+      - action: script.bedroom_matrix_select_source
         data:
           source: "Nintendo Wii"
           turn_on_tv: true

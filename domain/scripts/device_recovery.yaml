@@ -20,7 +20,7 @@ device_recovery:
         count: 3
         sequence:
           - alias: Update device state
-            service: homeassistant.update_entity
+            action: homeassistant.update_entity
             target:
               entity_id: "{{ device_entity_id }}"
           - delay: "00:00:05"
@@ -30,12 +30,12 @@ device_recovery:
     - condition: template
       value_template: "{{ states(device_entity_id) == 'unavailable' }}"
     - alias: Log to system log
-      service: system_log.write
+      action: system_log.write
       data:
         message: "⚠️ Recovery failed for {{ device_entity_id }} after 3 attempts."
         level: warning
     - alias: Notify user of persistent failure
-      service: script.notify_engine
+      action: script.notify_engine
       data:
         who: "evert"
         title: "Device Recovery Failed"

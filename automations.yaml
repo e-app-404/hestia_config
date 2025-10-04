@@ -342,7 +342,7 @@
   - condition: template
     value_template: '{{ trigger.from_state.state != trigger.to_state.state }}'
   action:
-  - service: persistent_notification.create
+  - action: persistent_notification.create
     data:
       notification_id: evert_zone_change
       title: 'Zone Change: Evert'
@@ -553,7 +553,7 @@
   - platform: homeassistant
     event: start
   action:
-  - service: mqtt.publish
+  - action: mqtt.publish
     data:
       topic: ha/bedroom_hdmi_matrix/status
       payload: online

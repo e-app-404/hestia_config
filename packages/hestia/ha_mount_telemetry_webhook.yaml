@@ -31,7 +31,7 @@ automation:
 # Template sensors triggered by webhook events
 template:
   - trigger:
-      - platform: event
+      - trigger: event
         event_type: macbook_mount_telemetry_received
     sensor:
       - name: "MacBook HA Mount Status"
@@ -53,7 +53,7 @@ template:
           mount_details: "{{ trigger.event.data.mount_details }}"
 
   - trigger:
-      - platform: event
+      - trigger: event
         event_type: macbook_mount_telemetry_received
     binary_sensor:
       - name: "MacBook HA Mount"
@@ -67,12 +67,12 @@ template:
     id: "macbook_ha_mount_down_alert"
     mode: restart
     trigger:
-      - platform: state
+      - trigger: state
         entity_id: binary_sensor.macbook_ha_mount
         to: "off"
         for: "00:05:00"
     action:
-      - service: persistent_notification.create
+      - action: persistent_notification.create
         data:
           title: "MacBook HA Mount DOWN"
           message: >
@@ -85,7 +85,7 @@ template:
     id: "macbook_ha_mount_recovery"
     mode: restart
     trigger:
-      - platform: state
+      - trigger: state
         entity_id: binary_sensor.macbook_ha_mount
         to: "on"
     condition:
@@ -94,10 +94,10 @@ template:
         state: "off"
         for: "00:01:00"
     action:
-      - service: persistent_notification.dismiss
+      - action: persistent_notification.dismiss
         data:
           notification_id: "macbook_mount_down"
-      - service: persistent_notification.create
+      - action: persistent_notification.create
         data:
           title: "MacBook HA Mount RECOVERED"
           message: >
