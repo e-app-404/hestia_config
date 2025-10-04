@@ -47,7 +47,7 @@ containment_graph:
     children: [london, clapham]
   config:
     children: [config, configuration_toggles, ha_addons, ha_system, system_admin, virtual, device_status]
-  
+
   ensuite: null
   kitchen: null
   laundry_room: null
@@ -81,9 +81,9 @@ nodes:
     entities: 4
     services: 0
   - id: laundry_room
-    type: area
+    type: subarea
     canonical_name: Laundry room
-    parents: [downstairs]
+    parents: [kitchen]
     container: ["area", "laundry_room", "Laundry room"]
     devices: 2
     entities: 0
@@ -372,12 +372,12 @@ propagation_rules:
 output_contract:
   emit_to: canonical/joins/area_room_floor_hierarchy.json
   schema:
-    - area_id: string
-    - parent_room: string | null
-    - floor_id: string
-    - type: enum(area, subarea, floor, service)
-    - inference_weight: float
-    - contributes_to: list[string]
+    - area_id: "string"
+    - parent_room: "string | null"
+    - floor_id: "string"
+    - type: "enum(area, subarea, floor, service)"
+    - inference_weight: "float"
+    - contributes_to: "list[string]"
     - inferred_by: string | null
 
 notes: |

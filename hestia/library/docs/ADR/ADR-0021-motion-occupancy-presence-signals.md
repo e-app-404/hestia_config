@@ -4,10 +4,10 @@ title: "Motion, Occupancy, and Presence Signal Architecture (beta abstractions)"
 authors: 
   - "Strategos Governance"
   - "Evert Appels"
-status: Proposed
+status: Accepted
 date: 2025-10-03
 last_updated: 2025-10-03
-tags: ["home-automation","adr","motion","occupancy","presence","lighting"]
+tags: ["home-automation","adr","motion","occupancy","presence","lighting","architecture","beta-tier","abstractions","blueprints"]
 notes:
 ---
 

@@ -2,7 +2,7 @@
 id: ADR-0006
 title: "Decay and Propagation Logic Contract"
 date: 2025-09-11
-status: Pending Validation
+status: Accepted
 related: []
 supersedes: []
 last_updated: 2025-09-11

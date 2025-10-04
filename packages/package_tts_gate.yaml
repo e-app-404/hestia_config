@@ -76,12 +76,12 @@ script:
       - choose:
           - conditions: "{{ allow }}"
             sequence:
-              - service: media_player.volume_set
+              - action: media_player.volume_set
                 target:
                   entity_id: "{{ media_player }}"
                 data:
                   volume_level: "{{ volume }}"
-              - service: tts.speak
+              - action: tts.speak
                 target:
                   entity_id: "{{ tts_entity }}"
                 data:
@@ -94,7 +94,7 @@ script:
                     {% set r = reg.copy() %}
                     {% set _ = r.update({ key_str: {'last_ts': now_ts, 'count': new_count } }) %}
                     {{ r }}
-              - service: var.set
+              - action: var.set
                 data:
                   entity_id: var.tts_guard
                   attributes:

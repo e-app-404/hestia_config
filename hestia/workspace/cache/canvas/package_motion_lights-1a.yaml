@@ -1,0 +1,486 @@
+# Hestia Motion Lighting — Full Package (ADR-0021, beta-only)
+
+> Self-contained drop-in: variables, helper composites, and deploy-ready packages.
+> Paths and inputs strictly match the supplied bundles. **No alpha fallbacks** unless explicitly wrapped into a beta composite (Ottoman).
+
+---
+
+## configuration.yaml (includes)
+
+```yaml
+# Add once if not present
+var: !include_dir_merge_named domain/variables/
+automation: !include_dir_merge_list packages/motion_lights/
+```
+
+---
+
+## domain/variables/motion_variables.yaml
+
+```yaml
+# Motion control variables using HACS Variable component
+# Two-space indentation; keys A→Z; robust defaults
+
+motion_bypass_bedroom:
+  attributes:
+    area: bedroom
+    last_toggled: ""
+  friendly_name: "Motion Bypass — Bedroom"
+  icon: mdi:motion-sensor-off
+  initial_value: false
+  restore: true
+  unique_id: var_motion_bypass_bedroom
+
+motion_last_triggered_bedroom:
+  attributes:
+    area: bedroom
+    sensor_id: ""
+  friendly_name: "Last Motion — Bedroom"
+  icon: mdi:motion-sensor
+  initial_value: ""
+  restore: true
+  unique_id: var_motion_last_triggered_bedroom
+
+motion_timeout_bedroom:
+  attributes:
+    area: bedroom
+    max: 1800
+    min: 5
+  friendly_name: "Motion Timeout — Bedroom (sec)"
+  icon: mdi:timer-outline
+  initial_value: 120
+  restore: true
+  unique_id: var_motion_timeout_bedroom
+  unit_of_measurement: "seconds"
+
+motion_bypass_desk:
+  attributes:
+    area: desk
+    last_toggled: ""
+  friendly_name: "Motion Bypass — Desk"
+  icon: mdi:motion-sensor-off
+  initial_value: false
+  restore: true
+  unique_id: var_motion_bypass_desk
+
+motion_last_triggered_desk:
+  attributes:
+    area: desk
+    sensor_id: ""
+  friendly_name: "Last Motion — Desk"
+  icon: mdi:motion-sensor
+  initial_value: ""
+  restore: true
+  unique_id: var_motion_last_triggered_desk
+
+motion_timeout_desk:
+  attributes:
+    area: desk
+    max: 3600
+    min: 30
+  friendly_name: "Motion Timeout — Desk (sec)"
+  icon: mdi:timer-outline
+  initial_value: 300
+  restore: true
+  unique_id: var_motion_timeout_desk
+  unit_of_measurement: "seconds"
+
+motion_bypass_ensuite:
+  attributes:
+    area: ensuite
+    last_toggled: ""
+  friendly_name: "Motion Bypass — Ensuite"
+  icon: mdi:motion-sensor-off
+  initial_value: false
+  restore: true
+  unique_id: var_motion_bypass_ensuite
+
+motion_last_triggered_ensuite:
+  attributes:
+    area: ensuite
+    sensor_id: ""
+  friendly_name: "Last Motion — Ensuite"
+  icon: mdi:motion-sensor
+  initial_value: ""
+  restore: true
+  unique_id: var_motion_last_triggered_ensuite
+
+motion_timeout_ensuite:
+  attributes:
+    area: ensuite
+    max: 1800
+    min: 5
+  friendly_name: "Motion Timeout — Ensuite (sec)"
+  icon: mdi:timer-outline
+  initial_value: 240
+  restore: true
+  unique_id: var_motion_timeout_ensuite
+  unit_of_measurement: "seconds"
+
+motion_bypass_kitchen:
+  attributes:
+    area: kitchen
+    last_toggled: ""
+  friendly_name: "Motion Bypass — Kitchen"
+  icon: mdi:motion-sensor-off
+  initial_value: false
+  restore: true
+  unique_id: var_motion_bypass_kitchen
+
+motion_last_triggered_kitchen:
+  attributes:
+    area: kitchen
+    sensor_id: ""
+  friendly_name: "Last Motion — Kitchen"
+  icon: mdi:motion-sensor
+  initial_value: ""
+  restore: true
+  unique_id: var_motion_last_triggered_kitchen
+
+motion_timeout_kitchen:
+  attributes:
+    area: kitchen
+    max: 1800
+    min: 5
+  friendly_name: "Motion Timeout — Kitchen (sec)"
+  icon: mdi:timer-outline
+  initial_value: 300
+  restore: true
+  unique_id: var_motion_timeout_kitchen
+  unit_of_measurement: "seconds"
+
+motion_bypass_hallway_downstairs:
+  attributes:
+    area: hallway_downstairs
+    last_toggled: ""
+  friendly_name: "Motion Bypass — Hallway Downstairs"
+  icon: mdi:motion-sensor-off
+  initial_value: false
+  restore: true
+  unique_id: var_motion_bypass_hallway_downstairs
+
+motion_last_triggered_hallway_downstairs:
+  attributes:
+    area: hallway_downstairs
+    sensor_id: ""
+  friendly_name: "Last Motion — Hallway Downstairs"
+  icon: mdi:motion-sensor
+  initial_value: ""
+  restore: true
+  unique_id: var_motion_last_triggered_hallway_downstairs
+
+motion_timeout_hallway_downstairs:
+  attributes:
+    area: hallway_downstairs
+    max: 900
+    min: 15
+  friendly_name: "Motion Timeout — Hallway Downstairs (sec)"
+  icon: mdi:timer-outline
+  initial_value: 90
+  restore: true
+  unique_id: var_motion_timeout_hallway_downstairs
+  unit_of_measurement: "seconds"
+
+motion_bypass_hallway_upstairs:
+  attributes:
+    area: hallway_upstairs
+    last_toggled: ""
+  friendly_name: "Motion Bypass — Hallway Upstairs"
+  icon: mdi:motion-sensor-off
+  initial_value: false
+  restore: true
+  unique_id: var_motion_bypass_hallway_upstairs
+
+motion_last_triggered_hallway_upstairs:
+  attributes:
+    area: hallway_upstairs
+    sensor_id: ""
+  friendly_name: "Last Motion — Hallway Upstairs"
+  icon: mdi:motion-sensor
+  initial_value: ""
+  restore: true
+  unique_id: var_motion_last_triggered_hallway_upstairs
+
+motion_timeout_hallway_upstairs:
+  attributes:
+    area: hallway_upstairs
+    max: 900
+    min: 15
+  friendly_name: "Motion Timeout — Hallway Upstairs (sec)"
+  icon: mdi:timer-outline
+  initial_value: 90
+  restore: true
+  unique_id: var_motion_timeout_hallway_upstairs
+  unit_of_measurement: "seconds"
+
+motion_bypass_ottoman:
+  attributes:
+    area: ottoman
+    last_toggled: ""
+  friendly_name: "Motion Bypass — Ottoman"
+  icon: mdi:motion-sensor-off
+  initial_value: false
+  restore: true
+  unique_id: var_motion_bypass_ottoman
+
+motion_last_triggered_ottoman:
+  attributes:
+    area: ottoman
+    sensor_id: ""
+  friendly_name: "Last Motion — Ottoman"
+  icon: mdi:motion-sensor
+  initial_value: ""
+  restore: true
+  unique_id: var_motion_last_triggered_ottoman
+
+motion_timeout_ottoman:
+  attributes:
+    area: ottoman
+    max: 1800
+    min: 5
+  friendly_name: "Motion Timeout — Ottoman (sec)"
+  icon: mdi:timer-outline
+  initial_value: 180
+  restore: true
+  unique_id: var_motion_timeout_ottoman
+  unit_of_measurement: "seconds"
+```
+
+---
+
+## hestia/helpers/motion_lights/ottoman_motion_beta.yaml
+
+> Creates a **beta-tier** motion composite for the Ottoman using the existing Bedroom vibration sensor. Includes a hold (`delay_off`) for stability.
+
+```yaml
+# Beta composite for Ottoman based on Bedroom vibration
+# Upgrades alpha vibration → beta motion with debounce
+
+template:
+  - binary_sensor:
+      - name: "Ottoman Motion (beta)"
+        unique_id: motion_beta_ottoman
+        device_class: motion
+        state: >-
+          {{ is_state('binary_sensor.bedroom_bed_alpha_vibration', 'on') }}
+        availability: >-
+          {{ states('binary_sensor.bedroom_bed_alpha_vibration') not in ['unknown','unavailable','none',''] }}
+        delay_off: "00:00:45"
+        attributes:
+          source: binary_sensor.bedroom_bed_alpha_vibration
+          tier: beta
+          area: ottoman
+```
+
+> If your vibration entity id differs, update `source` and `state` references.
+
+---
+
+## packages/motion_lights/motion_lights_bedroom.yaml
+
+```yaml
+alias: Motion Lights — Bedroom
+description: Motion-driven lighting for Bedroom; beta signals; ambient LUX gating; asymmetric presence (never gates).
+id: motion_lights_bedroom
+initial_state: "on"
+max_exceeded: silent
+mode: restart
+use_blueprint:
+  path: hestia/library/blueprints/sensor-light.yaml
+  input:
+    ambient_light_sensor: sensor.bedroom_illuminance_beta
+    ambient_light_value: 10
+    include_ambient: ambient_enabled
+    include_device_tracker: device_tracker_disabled
+    light_switch:
+      entity_id:
+        - light.group_all_bedroom_lights
+    motion_trigger:
+      - binary_sensor.bedroom_motion_beta
+    time_delay: "{{ (states('var.motion_timeout_bedroom') | int(120)) / 60 }}"
+```
+
+---
+
+## packages/motion_lights/motion_lights_desk.yaml
+
+```yaml
+alias: Motion Lights — Desk
+description: Task lighting for Desk; beta occupancy as trigger; asymmetric presence; robust timeout via HACS var.
+id: motion_lights_desk
+initial_state: "on"
+max_exceeded: silent
+mode: restart
+use_blueprint:
+  path: hestia/library/blueprints/sensor-light.yaml
+  input:
+    include_ambient: ambient_disabled
+    include_device_tracker: device_tracker_disabled
+    light_switch:
+      entity_id:
+        - light.group_desk_lights
+    motion_trigger:
+      - binary_sensor.desk_occupancy_beta
+    time_delay: "{{ (states('var.motion_timeout_desk') | int(300)) / 60 }}"
+```
+
+---
+
+## packages/motion_lights/motion_lights_ensuite.yaml
+
+```yaml
+alias: Motion Lights — Ensuite
+description: Privacy-aware lighting for Ensuite; motion + occupancy; ambient disabled by default; robust timeout via HACS var.
+id: motion_lights_ensuite
+initial_state: "on"
+max_exceeded: silent
+mode: restart
+use_blueprint:
+  path: hestia/library/blueprints/sensor-light.yaml
+  input:
+    include_ambient: ambient_disabled
+    include_device_tracker: device_tracker_disabled
+    light_switch:
+      entity_id:
+        - light.group_ensuite_lights
+    motion_trigger:
+      - binary_sensor.ensuite_motion_beta
+      - binary_sensor.ensuite_occupancy_beta
+    time_delay: "{{ (states('var.motion_timeout_ensuite') | int(240)) / 60 }}"
+```
+
+---
+
+## packages/motion_lights/motion_lights_kitchen.yaml
+
+```yaml
+alias: Motion Lights — Kitchen
+description: Kitchen lighting; motion primary; ambient disabled (no beta lux); robust timeout via HACS var.
+id: motion_lights_kitchen
+initial_state: "on"
+max_exceeded: silent
+mode: restart
+use_blueprint:
+  path: hestia/library/blueprints/sensor-light.yaml
+  input:
+    include_ambient: ambient_disabled
+    include_device_tracker: device_tracker_disabled
+    light_switch:
+      entity_id:
+        - light.group_kitchen_lights
+    motion_trigger:
+      - binary_sensor.kitchen_motion_beta
+      - binary_sensor.kitchen_occupancy_beta
+    time_delay: "{{ (states('var.motion_timeout_kitchen') | int(300)) / 60 }}"
+```
+
+---
+
+## packages/motion_lights/motion_lights_hallway_downstairs.yaml
+
+```yaml
+alias: Motion Lights — Hallway Downstairs
+description: Main circulation; beta motion; short timeout via HACS var.
+id: motion_lights_hallway_downstairs
+initial_state: "on"
+max_exceeded: silent
+mode: restart
+use_blueprint:
+  path: hestia/library/blueprints/sensor-light.yaml
+  input:
+    include_ambient: ambient_disabled
+    include_device_tracker: device_tracker_disabled
+    light_switch:
+      entity_id:
+        - light.group_hallway_lights_downstairs
+    motion_trigger:
+      - binary_sensor.hallway_downstairs_motion_beta
+    time_delay: "{{ (states('var.motion_timeout_hallway_downstairs') | int(90)) / 60 }}"
+```
+
+---
+
+## packages/motion_lights/motion_lights_hallway_upstairs.yaml
+
+```yaml
+alias: Motion Lights — Hallway Upstairs
+description: Upper circulation; beta motion; short timeout via HACS var.
+id: motion_lights_hallway_upstairs
+initial_state: "on"
+max_exceeded: silent
+mode: restart
+use_blueprint:
+  path: hestia/library/blueprints/sensor-light.yaml
+  input:
+    include_ambient: ambient_disabled
+    include_device_tracker: device_tracker_disabled
+    light_switch:
+      entity_id:
+        - light.group_hallway_lights_upstairs
+    motion_trigger:
+      - binary_sensor.hallway_upstairs_motion_beta
+    time_delay: "{{ (states('var.motion_timeout_hallway_upstairs') | int(90)) / 60 }}"
+```
+
+---
+
+## packages/motion_lights/motion_lights_ottoman.yaml
+
+```yaml
+alias: Motion Lights — Ottoman
+description: Subarea lighting; vibration-derived motion (beta composite); brief interaction.
+id: motion_lights_ottoman
+initial_state: "on"
+max_exceeded: silent
+mode: restart
+use_blueprint:
+  path: hestia/library/blueprints/sensor-light.yaml
+  input:
+    include_ambient: ambient_disabled
+    include_device_tracker: device_tracker_disabled
+    light_switch:
+      entity_id:
+        - light.group_ottoman_lights  # TODO if group missing
+    motion_trigger:
+      - binary_sensor.ottoman_motion_beta
+    time_delay: "{{ (states('var.motion_timeout_ottoman') | int(180)) / 60 }}"
+```
+
+---
+
+## packages/motion_lights/link_laundry_room_to_kitchen.yaml
+
+> The Laundry Room has **no sensors**; it mirrors Kitchen lighting state as a **Kitchen subarea**.
+
+```yaml
+alias: Linked Entities — Kitchen ↔ Laundry Room
+description: Keep Kitchen and Laundry Room group lights in sync (bidirectional link).
+id: link_kitchen_laundry_room
+initial_state: "on"
+max_exceeded: silent
+mode: single
+use_blueprint:
+  path: hestia/library/blueprints/ha-blueprint-linked-entities.yaml
+  input:
+    linked_entity:
+      - light.group_kitchen_lights
+      - light.group_laundry_room_lights
+```
+
+---
+
+## Validation checklist (binary)
+
+* Files under canonical paths resolve.
+* Blueprints:
+
+  * `hestia/library/blueprints/sensor-light.yaml`
+  * `hestia/library/blueprints/ha-blueprint-linked-entities.yaml`
+* Beta-only signals used for motion/occupancy.
+* Ambient LUX only where `sensor.<area>_illuminance_beta` exists (Bedroom).
+* Presence options **disabled** (asymmetric policy; never gates).
+* Timeouts pull from `var.motion_timeout_*` (converted to minutes) for robustness.
+* Ottoman upgraded from vibration alpha → beta template (no alpha references in packages).
+* Laundry Room linked as Kitchen subarea (no sensors).
+
+> SONOFF SNZB-06 faux illuminance is **not** looped in (future work per request).

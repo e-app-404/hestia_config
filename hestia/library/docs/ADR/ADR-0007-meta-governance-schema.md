@@ -2,7 +2,7 @@
 id: ADR-0007
 title: "Meta/Governance Patterns and Schema Definitions Contract"
 date: 2025-09-11
-status: Pending Validation
+status: Accepted
 related: []
 supersedes: []
 last_updated: 2025-09-11

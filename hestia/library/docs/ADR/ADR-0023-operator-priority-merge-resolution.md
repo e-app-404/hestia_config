@@ -18,7 +18,7 @@ tags: ["merge-strategy", "operator-priority", "workspace-governance", "conflict-
 notes: "Canonicalizes the merge strategy that prioritizes active development workspace over potentially stale main branch content"
 ---
 
-# ADR-0020: Operator Priority Resolution for Workspace Merge Conflicts
+# ADR-0023: Operator Priority Resolution for Workspace Merge Conflicts
 
 ## 1. Status
 **Accepted** (2025-10-04)
@@ -139,7 +139,7 @@ This ADR establishes the canonical merge resolution strategy for workspace confl
 
 ```yaml
 TOKEN_BLOCK:
-  adr_id: "ADR-0020"
+  adr_id: "ADR-0023"
   governance_scope: "merge-resolution"
   operator_authority: "canonical"
   workspace_impact: "high"

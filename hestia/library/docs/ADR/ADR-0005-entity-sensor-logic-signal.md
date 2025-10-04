@@ -5,7 +5,7 @@ date: 2025-09-11
 related: []
 supersedes: []
 author: "Strategos"
-status: Pending Validation
+status: Accepted
 last_updated: 2025-09-11
 ---
 

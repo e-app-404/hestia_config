@@ -2,7 +2,7 @@
 id: ADR-0013
 title: "Source→Core Config Merge via extracted_config (Meta-Capture Pipeline)"
 date: 2025-09-20
-status: Proposed
+status: Accepted
 author:
   - "Platform / Home-Ops"
   - "GitHub Copilot (assisted)"

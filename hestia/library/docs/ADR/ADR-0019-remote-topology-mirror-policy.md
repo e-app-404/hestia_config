@@ -1,14 +1,16 @@
 ---
 id: ADR-0019
-title: Remote Topology & Mirror Policy (GitHub ⇄ NAS ⇄ Local)
-status: proposed
+title: "Remote Topology & Mirror Policy (GitHub ⇄ NAS ⇄ Local)"
+status: Accepted
 date: 2025-09-28
 author: e-app-404
 relates_to:
   - ADR-0015  # Snapshots & inventory policy
   - ADR-0017  # Branch rescue / rollback protocol
   - ADR-0018  # Workspace lifecycle & CI guardrails
-  - ADR-0020  # Operator Priority Resolution for Workspace Merge Conflicts
+  - ADR-0023  # Operator Priority Resolution for Workspace Merge Conflicts
+last_update: 2025-09-28
+tags: ["git", "topology", "policy", "mirror", "backup", "workflow","ci","devops","release","repository"]
 ---
 
 ## Context

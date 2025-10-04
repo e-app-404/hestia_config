@@ -4,7 +4,7 @@ title: "Syntax-Aware Normalization & Determinism Rules for Config Artifacts"
 date: 2025-09-12
 author: 
   - "Evert Appels"
-status: Approved
+status: Accepted
 related: ["ADR-0013"]
 supersedes: ["ADR-0001"]
 last_updated: 2025-09-12
