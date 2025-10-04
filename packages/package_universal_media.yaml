@@ -118,6 +118,50 @@ template:
           domain: "status"
           file: "/config/packages/package_universal_media.yaml"
 
+      - name: "Media Player STANDBY Diagnostic"
+        unique_id: "media_player_standby_diagnostic"
+        state: >
+          {% set children = [
+            'media_player.bedroom_tv_alpha',
+            'media_player.bedroom_tv_alpha_hub', 
+            'media_player.bedroom_tv_alpha_plex',
+            'media_player.bedroom_tv_alpha_dlna',
+            'media_player.bedroom_apple_tv_alpha',
+            'media_player.bedroom_apple_tv_alpha_plex',
+            'media_player.playstation_4',
+            'media_player.bedroom_google_home_mini_speaker',
+            'media_player.bedroom_sonos_ray',
+            'media_player.bedroom_sonos_surround',
+            'media_player.ensuite_sonos_roam'
+          ] %}
+          {% set standby_entities = [] %}
+          {% for entity in children %}
+            {% if states(entity) == 'standby' %}
+              {% set standby_entities = standby_entities + [entity] %}
+            {% endif %}
+          {% endfor %}
+          {{ standby_entities | join(', ') if standby_entities else 'None using STANDBY' }}
+        attributes:
+          entity_states: >
+            {% set children = [
+              'media_player.bedroom_tv_alpha',
+              'media_player.bedroom_tv_alpha_hub',
+              'media_player.bedroom_tv_alpha_plex', 
+              'media_player.bedroom_tv_alpha_dlna',
+              'media_player.bedroom_apple_tv_alpha',
+              'media_player.bedroom_apple_tv_alpha_plex',
+              'media_player.playstation_4',
+              'media_player.bedroom_google_home_mini_speaker',
+              'media_player.bedroom_sonos_ray',
+              'media_player.bedroom_sonos_surround',
+              'media_player.ensuite_sonos_roam'
+            ] %}
+            {% set result = {} %}
+            {% for entity in children %}
+              {% set result = dict(result, **{entity: states(entity)}) %}
+            {% endfor %}
+            {{ result }}
+
   - binary_sensor:
       - name: "Bedroom Matrix: Aligned"
         unique_id: "bedroom_matrix_aligned"
@@ -383,19 +427,19 @@ script:
 
       - if: "{{ turn_on_tv | default(true) }}"
         then:
-          - service: media_player.turn_on
+          - action: media_player.turn_on
             target: { entity_id: "{{ _tv }}" }
 
       - choose:
           - conditions: "{{ _mode == 'raw' }}"
             sequence:
-              - service: remote.send_command
+              - action: remote.send_command
                 target: { entity_id: "{{ _remote }}" }
                 data:
                   device: "{{ _device }}"
                   command: "{{ command }}"
                   num_repeats: "{{ repeats | int(0) }}"
-              - service: script.update_bedroom_matrix_state
+              - action: script.update_bedroom_matrix_state
                 data:
                   mode: raw
                   last_command: "{{ command }}"
@@ -403,7 +447,7 @@ script:
           - conditions: "{{ _mode == 'align' }}"
             sequence:
               - variables: { n: "{{ _map.get(source, '0') }}" }
-              - service: remote.send_command
+              - action: remote.send_command
                 target: { entity_id: "{{ _remote }}" }
                 data:
                   {
@@ -411,7 +455,7 @@ script:
                     command: "a_{{ n }}",
                     num_repeats: "{{ repeats | int(0) }}",
                   }
-              - service: remote.send_command
+              - action: remote.send_command
                 target: { entity_id: "{{ _remote }}" }
                 data:
                   {
@@ -419,7 +463,7 @@ script:
                     command: "b_{{ n }}",
                     num_repeats: "{{ repeats | int(0) }}",
                   }
-              - service: script.update_bedroom_matrix_state
+              - action: script.update_bedroom_matrix_state
                 data:
                   mode: aligned
                   video_source: "{{ source }}"
@@ -431,7 +475,7 @@ script:
               - variables:
                   v: "{{ _map.get(video_source, '0') }}"
                   a: "{{ _map.get(audio_source, '0') }}"
-              - service: remote.send_command
+              - action: remote.send_command
                 target: { entity_id: "{{ _remote }}" }
                 data:
                   {
@@ -439,7 +483,7 @@ script:
                     command: "a_{{ v }}",
                     num_repeats: "{{ repeats | int(0) }}",
                   }
-              - service: remote.send_command
+              - action: remote.send_command
                 target: { entity_id: "{{ _remote }}" }
                 data:
                   {
@@ -447,7 +491,7 @@ script:
                     command: "b_{{ a }}",
                     num_repeats: "{{ repeats | int(0) }}",
                   }
-              - service: script.update_bedroom_matrix_state
+              - action: script.update_bedroom_matrix_state
                 data:
                   mode: split
                   video_source: "{{ video_source }}"
@@ -485,33 +529,33 @@ script:
           _a_safe: "{{ _a_norm if _a_norm in (state_attr('input_select.bedroom_matrix_audio_source', 'options') or []) else 'Unknown' }}"
       - if: "{{ video_source is defined }}"
         then:
-          - service: input_select.select_option
+          - action: input_select.select_option
             target:
               entity_id: input_select.bedroom_matrix_video_source
             data:
               option: "{{ _v_safe }}"
       - if: "{{ audio_source is defined }}"
         then:
-          - service: input_select.select_option
+          - action: input_select.select_option
             target:
               entity_id: input_select.bedroom_matrix_audio_source
             data:
               option: "{{ _a_safe }}"
       - if: "{{ mode is defined }}"
         then:
-          - service: input_select.select_option
+          - action: input_select.select_option
             target:
               entity_id: input_select.bedroom_matrix_mode
             data:
               option: "{{ mode }}"
       - if: "{{ last_command is defined }}"
         then:
-          - service: input_text.set_value
+          - action: input_text.set_value
             target:
               entity_id: input_text.bedroom_matrix_last_command
             data:
               value: "{{ last_command }}"
-      - service: input_datetime.set_datetime
+      - action: input_datetime.set_datetime
         target:
           entity_id: input_datetime.bedroom_matrix_last_updated
         data:
@@ -539,17 +583,17 @@ script:
       - choose:
           - conditions: "{{ turn_on_tv }}"
             sequence:
-              - service: media_player.turn_on
+              - action: media_player.turn_on
                 target: { entity_id: media_player.bedroom_tv_alpha }
               - delay: "00:00:03"
 
       - choose:
           - conditions: "{{ source != 'TV' }}"
             sequence:
-              - service: media_player.select_source
+              - action: media_player.select_source
                 target: { entity_id: media_player.bedroom_tv_alpha_hub }
                 data: { source: HDMI }
-              - service: script.matrix_control
+              - action: script.matrix_control
                 data:
                   source: "{{ source }}"
                   remote: remote.bedroom_broadlink_rm3_alpha
@@ -575,7 +619,7 @@ script:
     sequence:
       - if: "{{ turn_on_tv }}"
         then:
-          - service: media_player.turn_on
+          - action: media_player.turn_on
             target: { entity_id: media_player.bedroom_tv_alpha }
       - variables:
           map:
@@ -586,9 +630,9 @@ script:
               "Nintendo Wii": "4",
             }
           n: "{{ map[source] }}"
-      - service: mqtt.publish
+      - action: mqtt.publish
         data: { topic: ha/bedroom_hdmi_matrix/cmd, payload: "a_{{ n }}" }
-      - service: mqtt.publish
+      - action: mqtt.publish
         data: { topic: ha/bedroom_hdmi_matrix/cmd, payload: "b_{{ n }}" }
 
   bedroom_universal_route_for_source:
@@ -599,7 +643,7 @@ script:
         description: "Canonical source label"
         example: "Playstation 4"
     sequence:
-      - service: script.bedroom_matrix_select_source
+      - action: script.bedroom_matrix_select_source
         data:
           source: "{{ source }}"
           turn_on_tv: true
@@ -630,7 +674,7 @@ script:
     sequence:
       - if: "{{ turn_on_tv }}"
         then:
-          - service: media_player.turn_on
+          - action: media_player.turn_on
             target: { entity_id: media_player.bedroom_tv_alpha }
       - variables:
           map:
@@ -642,9 +686,9 @@ script:
             }
           v: "{{ map[video_source] }}"
           a: "{{ map[audio_source] }}"
-      - service: mqtt.publish
+      - action: mqtt.publish
         data: { topic: ha/bedroom_hdmi_matrix/cmd, payload: "a_{{ v }}" }
-      - service: mqtt.publish
+      - action: mqtt.publish
         data: { topic: ha/bedroom_hdmi_matrix/cmd, payload: "b_{{ a }}" }
 
   # ⟫⟫ MEDIA LOGIC  •  PLEX ROUTING
@@ -652,13 +696,13 @@ script:
     alias: "Plex: Route to Apple TV & Open Plex"
     mode: single
     sequence:
-      - service: script.matrix_control
+      - action: script.matrix_control
         data:
           source: "Apple TV"
           remote: remote.bedroom_broadlink_rm3_alpha
           device: bedroom_hdmi_matrix
           tv: media_player.bedroom_tv_alpha
-      - service: media_player.select_source
+      - action: media_player.select_source
         target:
           entity_id: media_player.bedroom_apple_tv_alpha
         data:
@@ -683,7 +727,7 @@ script:
               - condition: template
                 value_template: "{{ station == 'Studio Brussel' }}"
             sequence:
-              - service: media_player.play_media
+              - action: media_player.play_media
                 target: { entity_id: "{{ player }}" }
                 data:
                   media_content_id: "http://icecast.vrtcdn.be/stubru-high.mp3"
@@ -692,7 +736,7 @@ script:
               - condition: template
                 value_template: "{{ station == 'JOE' }}"
             sequence:
-              - service: media_player.play_media
+              - action: media_player.play_media
                 target: { entity_id: "{{ player }}" }
                 data:
                   media_content_id: "https://icecast-qmusicbe-cdp.triple-it.nl/joe.mp3"
@@ -701,7 +745,7 @@ script:
               - condition: template
                 value_template: "{{ station == 'MNM' }}"
             sequence:
-              - service: media_player.play_media
+              - action: media_player.play_media
                 target: { entity_id: "{{ player }}" }
                 data:
                   media_content_id: "http://icecast.vrtcdn.be/mnm-high.mp3"
@@ -710,7 +754,7 @@ script:
               - condition: template
                 value_template: "{{ station == 'VRT Radio 1' }}"
             sequence:
-              - service: media_player.play_media
+              - action: media_player.play_media
                 target: { entity_id: "{{ player }}" }
                 data:
                   media_content_id: "http://icecast.vrtcdn.be/radio1-high.mp3"
@@ -719,7 +763,7 @@ script:
               - condition: template
                 value_template: "{{ station == 'De Tijdloze' }}"
             sequence:
-              - service: media_player.play_media
+              - action: media_player.play_media
                 target: { entity_id: "{{ player }}" }
                 data:
                   media_content_id: "http://icecast.vrtcdn.be/stubru_tijdloze-high.mp3"
@@ -728,13 +772,13 @@ script:
               - condition: template
                 value_template: "{{ station == 'TOPradio Belgium' }}"
             sequence:
-              - service: media_player.play_media
+              - action: media_player.play_media
                 target: { entity_id: "{{ player }}" }
                 data:
                   media_content_id: "http://str.topradio.be/topradio.mp3"
                   media_content_type: "music"
         default:
-          - service: logbook.log
+          - action: logbook.log
             data:
               name: Radio Script
               message: "Unknown station selected: {{ station }}"
@@ -744,7 +788,7 @@ script:
     alias: "PS4: Prepare AV (A3/B3)"
     mode: single
     sequence:
-      - service: script.matrix_control
+      - action: script.matrix_control
         data:
           source: "Playstation 4" # maps to your A3+B3 routing in matrix_control
           turn_on_tv: true
@@ -758,16 +802,16 @@ script:
         description: "Optional game title to display in the hint"
         example: "STAR WARS Jedi: Survivor™"
     sequence:
-      - service: script.matrix_control
+      - action: script.matrix_control
         data:
           source: "Playstation 4"
           remote: remote.bedroom_broadlink_rm3_alpha
           device: "bedroom_hdmi_matrix"
           tv: media_player.bedroom_tv_alpha
-      - service: media_player.turn_on
+      - action: media_player.turn_on
         target:
           entity_id: media_player.playstation_4
-      - service: persistent_notification.create
+      - action: persistent_notification.create
         data:
           title: "PS4 Ready"
           message: >-
@@ -790,7 +834,7 @@ script:
             {% if game is mapping %}{{ game.title | default('') }}
             {% elif game is string %}{{ game }}
             {% else %}{% endif %}
-      - service: script.ps4_route_and_wake
+      - action: script.ps4_route_and_wake
         data:
           game: "{{ title }}"
 
@@ -799,32 +843,31 @@ automation:
   - alias: "Log every matrix change (hardened)"
     id: "ca1e89cf-cb0a-4cef-9199-2d239517bc37"
     trigger:
-      - platform: state
+      - trigger: state
         entity_id: sensor.bedroom_matrix_last_route
     condition:
       - condition: template
         value_template: >-
           {{ state_attr('sensor.bedroom_matrix_last_route', 'last_command') | default('') | trim != '' }}
     action:
-      - service: logbook.log
+      - action: logbook.log
         data:
           name: "Matrix"
           message: >-
             {{ state_attr('sensor.bedroom_matrix_last_route','last_command') }}
             ({{ state_attr('sensor.bedroom_matrix_last_route','mode') }})
 
-
   - alias: "Bedroom Matrix: MQTT Discovery (one-shot)"
     id: "bedroom_matrix_discovery_once_20250910_a"
     mode: single
     trigger:
-      - platform: homeassistant
+      - trigger: homeassistant
         event: start
     condition:
       - condition: template
         value_template: "{{ true }}"
     action:
-      - service: mqtt.publish
+      - action: mqtt.publish
         data:
           topic: homeassistant/device/bedroom_hdmi_matrix/config
           qos: 1
@@ -850,7 +893,7 @@ automation:
   - alias: "Bedroom Matrix: MQTT → Broadlink"
     id: bedroom_matrix_mqtt_bridge_20250910_a
     trigger:
-      - platform: mqtt
+      - trigger: mqtt
         topic: ha/bedroom_hdmi_matrix/cmd
         qos: 1
     variables:
@@ -860,7 +903,7 @@ automation:
       - condition: template
         value_template: "{{ trigger.payload in allowed }}"
     action:
-      - service: remote.send_command
+      - action: remote.send_command
         target: { entity_id: remote.bedroom_broadlink_rm3_alpha }
         data:
           device: bedroom_hdmi_matrix
@@ -869,7 +912,7 @@ automation:
   - alias: "PS4 Activated → Sync TV Input + Matrix Routing (refactored)"
     id: "1d5c50b2-2d7b-4e4b-bac5-80ad30995055"
     trigger:
-      - platform: state
+      - trigger: state
         entity_id: media_player.playstation_4
         to: "playing"
     action:
@@ -879,13 +922,13 @@ automation:
                 entity_id: media_player.bedroom_tv_alpha
                 state: "off"
             sequence:
-              - service: media_player.turn_on
+              - action: media_player.turn_on
                 target: { entity_id: media_player.bedroom_tv_alpha }
               - delay: "00:00:02"
-              - service: media_player.select_source
+              - action: media_player.select_source
                 target: { entity_id: media_player.bedroom_tv_alpha_hub }
                 data: { source: HDMI }
-              - service: script.matrix_control
+              - action: script.matrix_control
                 data:
                   source: "Playstation 4"
                   remote: remote.bedroom_broadlink_rm3_alpha
@@ -899,10 +942,10 @@ automation:
               - condition: template
                 value_template: "{{ state_attr('media_player.bedroom_tv_alpha_hub', 'source') != 'HDMI' }}"
             sequence:
-              - service: media_player.select_source
+              - action: media_player.select_source
                 target: { entity_id: media_player.bedroom_tv_alpha_hub }
                 data: { source: HDMI }
-              - service: script.matrix_control
+              - action: script.matrix_control
                 data:
                   source: "Playstation 4"
                   remote: remote.bedroom_broadlink_rm3_alpha
@@ -914,10 +957,10 @@ automation:
     id: 3e1f2a4b-5c6d-7e8f-9a0b-112233445567
     mode: single
     trigger:
-      - platform: state
+      - trigger: state
         entity_id: sensor.ps4_recent_games
     action:
-      - service: input_select.set_options
+      - action: input_select.set_options
         target:
           entity_id: input_select.ps4_recent_game
         data:
@@ -927,22 +970,22 @@ automation:
     id: 0c9b8c7d-6e5f-4a3b-2c1d-ffeeddccbbaa
     mode: restart
     trigger:
-      - platform: state
+      - trigger: state
         entity_id: media_player.playstation_4
         to: playing
     action:
-      - service: script.ps4_prepare_av
+      - action: script.ps4_prepare_av
 
   - alias: "PS4: Refresh on file change"
     id: 8b7c6d5e-4f3a-2b1c-0d9e-998877665544
     trigger:
-      - platform: event
+      - trigger: event
         event_type: folder_watcher
         event_data:
           event_type: modified
           path: "/config/.ps4-games.BC60A7454CD9_10e7.json"
     action:
-      - service: homeassistant.update_entity
+      - action: homeassistant.update_entity
         target:
           entity_id: sensor.ps4_recent_games
 
@@ -950,10 +993,10 @@ automation:
     id: plex_route_to_apple_tv_20250904
     mode: restart
     trigger:
-      - platform: event
+      - trigger: event
         event_type: plex_route_and_open_app
     action:
-      - service: script.plex_route_and_open_app
+      - action: script.plex_route_and_open_app
 
 # ═══ INTEGRATION: UNIVERSAL MEDIA PLAYER ═══
 media_player:
@@ -973,8 +1016,9 @@ media_player:
       - media_player.bedroom_sonos_surround
       - media_player.ensuite_sonos_roam
     state_template: >-
-      {% import 'template.library.jinja' as tpl %}
-      {{ tpl.any_child_active([
+      {# Hardened against deprecated STANDBY state - explicitly filter SONOS transitions #}
+      {% set active_states = ['playing','paused','buffering','on','idle'] %}
+      {% set children = [
         'media_player.bedroom_tv_alpha',
         'media_player.bedroom_tv_alpha_hub',
         'media_player.bedroom_tv_alpha_plex',
@@ -986,10 +1030,19 @@ media_player:
         'media_player.bedroom_sonos_ray',
         'media_player.bedroom_sonos_surround',
         'media_player.ensuite_sonos_roam'
-      ]) }}
+      ] %}
+      {% set ns = namespace(found=false) %}
+      {% for entity in children %}
+        {% set entity_state = states(entity) %}
+        {% if entity_state in active_states and entity_state != 'standby' %}
+          {% set ns.found = true %}
+        {% endif %}
+      {% endfor %}
+      {{ 'on' if ns.found else 'off' }}
     active_child_template: >-
-      {% import 'template.library.jinja' as tpl %}
-      {{ tpl.first_active_child([
+      {# Hardened against deprecated STANDBY state - explicitly filter SONOS transitions #}
+      {% set active_states = ['playing','paused','buffering','on','idle'] %}
+      {% set children = [
         'media_player.bedroom_tv_alpha',
         'media_player.bedroom_tv_alpha_hub',
         'media_player.bedroom_tv_alpha_plex',
@@ -1001,7 +1054,16 @@ media_player:
         'media_player.bedroom_sonos_ray',
         'media_player.bedroom_sonos_surround',
         'media_player.ensuite_sonos_roam'
-      ]) }}
+      ] %}
+      {% set ns = namespace(found=false, first=None) %}
+      {% for entity in children %}
+        {% set entity_state = states(entity) %}
+        {% if ns.found == false and entity_state in active_states and entity_state != 'standby' %}
+          {% set ns.first = entity %}
+          {% set ns.found = true %}
+        {% endif %}
+      {% endfor %}
+      {{ ns.first if ns.found else '' }}
     attributes:
       is_volume_muted: media_player.bedroom_sonos_ray|is_volume_muted
       volume_level: media_player.bedroom_sonos_ray|volume_level
@@ -1069,19 +1131,38 @@ media_player:
       - media_player.bedroom_sonos_surround
       - media_player.ensuite_sonos_roam
     state_template: >-
-      {% import 'template.library.jinja' as tpl %}
-      {{ tpl.any_child_active([
+      {# Hardened against deprecated STANDBY state - SONOS-specific filtering #}
+      {% set active_states = ['playing','paused','buffering','on','idle'] %}
+      {% set children = [
         'media_player.bedroom_sonos_ray',
         'media_player.bedroom_sonos_surround',
         'media_player.ensuite_sonos_roam'
-      ]) }}
+      ] %}
+      {% set ns = namespace(found=false) %}
+      {% for entity in children %}
+        {% set entity_state = states(entity) %}
+        {% if entity_state in active_states and entity_state != 'standby' %}
+          {% set ns.found = true %}
+        {% endif %}
+      {% endfor %}
+      {{ 'on' if ns.found else 'off' }}
     active_child_template: >-
-      {% import 'template.library.jinja' as tpl %}
-      {{ tpl.first_active_child([
+      {# Hardened against deprecated STANDBY state - SONOS-specific filtering #}
+      {% set active_states = ['playing','paused','buffering','on','idle'] %}
+      {% set children = [
         'media_player.bedroom_sonos_ray',
         'media_player.bedroom_sonos_surround',
         'media_player.ensuite_sonos_roam'
-      ]) }}
+      ] %}
+      {% set ns = namespace(found=false, first=None) %}
+      {% for entity in children %}
+        {% set entity_state = states(entity) %}
+        {% if ns.found == false and entity_state in active_states and entity_state != 'standby' %}
+          {% set ns.first = entity %}
+          {% set ns.found = true %}
+        {% endif %}
+      {% endfor %}
+      {{ ns.first if ns.found else '' }}
     attributes:
       is_volume_muted: media_player.bedroom_sonos_ray|is_volume_muted
       volume_level: media_player.bedroom_sonos_ray|volume_level

@@ -8,11 +8,11 @@
 automation:
   - alias: "BB-8 Not Available Notification"
     trigger:
-      - platform: state
+      - trigger: state
         entity_id: binary_sensor.bb8_presence
         to: "off"
     action:
-      - service: persistent_notification.create
+      - action: persistent_notification.create
         data:
           title: "BB-8 Not Available"
           message: >
@@ -20,24 +20,24 @@ automation:
             Please ensure the robot is awake (remove from charger, tap to wake).
   - alias: "BB-8 Error Notification"
     trigger:
-      - platform: state
+      - trigger: state
         entity_id: sensor.bb8_error_state
     condition:
       - condition: template
         value_template: "{{ trigger.to_state.state != '' }}"
     action:
-      - service: persistent_notification.create
+      - action: persistent_notification.create
         data:
           title: "BB-8 Error"
           message: "{{ states('sensor.bb8_error_state') }}"
   - alias: "BB-8 Heartbeat Lost"
     trigger:
-      - platform: state
+      - trigger: state
         entity_id: sensor.bb8_heartbeat
         to: "offline"
         for: "00:05:00"
     action:
-      - service: persistent_notification.create
+      - action: persistent_notification.create
         data:
           title: "BB-8 Heartbeat Lost"
           message: "No heartbeat received from BB-8 for 5 minutes."
@@ -46,19 +46,19 @@ script:
   bb8_roll:
     alias: BB8 Roll
     sequence:
-      - service: button.press
+      - action: button.press
         target:
           entity_id: button.bb8_roll
   bb8_stop:
     alias: BB8 Stop
     sequence:
-      - service: button.press
+      - action: button.press
         target:
           entity_id: button.bb8_stop
   bb8_led_red:
     alias: BB8 LED Red
     sequence:
-      - service: light.turn_on
+      - action: light.turn_on
         target:
           entity_id: light.bb8_led
         data:
@@ -66,7 +66,7 @@ script:
   bb8_led_green:
     alias: BB8 LED Green
     sequence:
-      - service: light.turn_on
+      - action: light.turn_on
         target:
           entity_id: light.bb8_led
         data:
@@ -74,7 +74,7 @@ script:
   bb8_led_blue:
     alias: BB8 LED Blue
     sequence:
-      - service: light.turn_on
+      - action: light.turn_on
         target:
           entity_id: light.bb8_led
         data:
@@ -82,7 +82,7 @@ script:
   bb8_led_white:
     alias: BB8 LED White
     sequence:
-      - service: light.turn_on
+      - action: light.turn_on
         target:
           entity_id: light.bb8_led
         data:
@@ -90,19 +90,19 @@ script:
   bb8_power_on:
     alias: BB8 Power On
     sequence:
-      - service: switch.turn_on
+      - action: switch.turn_on
         target:
           entity_id: switch.bb8_power
   bb8_power_off:
     alias: BB8 Power Off
     sequence:
-      - service: switch.turn_off
+      - action: switch.turn_off
         target:
           entity_id: switch.bb8_power
   bb8_diagnostics:
     alias: BB8 Run Diagnostics
     sequence:
-      - service: mqtt.publish
+      - action: mqtt.publish
         data:
           topic: bb8/command
           payload: '{"command":"diagnostics"}'

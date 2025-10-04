@@ -4,7 +4,7 @@
 # TODO: REVIEW AND DEPLOY
 
 promptset:
-  id: template.promptset.draft
+  id: unique-id.promptset.draft
   version: 0.1
   created: "2025-09-05"
   description: |

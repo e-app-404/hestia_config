@@ -171,9 +171,9 @@ command_line:
           set -eo pipefail
           curl -s -o /dev/null -w "%{http_code}" http://192.168.0.104:32400/identity | tr -d "\n"
         '
-    scan_interval: 120
-    command_timeout: 30
-    value_template: "{{ value | default('unknown') | trim }}"
+      scan_interval: 120
+      command_timeout: 30
+      value_template: "{{ value | default('unknown') | trim }}"
 
   # ▶ INTEGRATION: Command Line Sensors — Cloudflared/Plex Tunnel ◀
 

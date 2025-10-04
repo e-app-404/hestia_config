@@ -6,51 +6,67 @@
 
 contract:
   id: area_relationships_contract
-  version: 1.0
+  version: 1.1
   author: Evert
   status: canonical_draft
   file_path: canonical/support/contracts/area_hierarchy.yaml
 
 contract_metadata:
-  last_validated: "2025-10-01"
-  live_registry_consistency: partial
+  last_validated: "2025-10-04"
+  live_registry_consistency: improved
   coverage_percent: 100.0
   notes: |
     This contract is programmatically validated against live Home Assistant registry data. Coverage and consistency are updated on each validation run.
-    Conservative fix 2025-10-01: Fixed null floor_id assignments only, preserved all area names and timestamps.
+    Major patch 2025-10-04: Fixed duplicate downstairs entries, added missing nodes (sanctum, clapham, warnings), corrected canonical names to match registry exactly, fixed data type inconsistencies, and completed incomplete node definitions.
 
 containment_graph:
-  ground_floor:
-    children: [downstairs, kitchen, laundry_room, living_room, hallway, powder_room, entrance]
-  sanctum:
-    children: [bedroom, ensuite]
-  bedroom:
-    children: [desk, hifi_configuration, wardrobe]
   home:
-    children: [evert, home, hallway]
+    children: [evert, home, hestia, hallway] # Note: difference floor_id: home vs area_id: home
+  hestia:
+    children: [tailscale_vpn, config, diag, configuration_toggles, ha_addons, ha_system, system_admin, virtual, device_status, glances]
+    note: |
+      Hestia is only available as a container for system organization, not a physical location. There is no area_id: hestia created in the registry until 
+      such time this is considered necessary.
+  hallway:
+      children: [downstairs, upstairs, hallway]  # Shared areas connecting both floors
+  downstairs: # floor id downstairs, meaning ground floor
+    children: [kitchen, laundry_room, living_room, powder_room, entrance]
+  sanctum:
+      children: [bedroom, ensuite]
+  bedroom:
+    children: [desk, hifi_configuration, wardrobe, ottoman]
+  
+  # Hestia children areas for system organization
   diag:
     children: [folder_watcher, backups, host_system]
-  hestia:
-    children: [tailscale_vpn, config, diag, configuration_toggles, ha_addons, ha_system, system_admin, virtual, device_status]
-  # Preserved legacy structure for reference
   services:
     children: [alarm, calendar, notifications, cleaning, warnings]
   network:
-    children: [home_assistant, media_server, nas, network_connectivity, network_health]
+    children: [home_assistant, media_server, nas, network_connectivity, network_health, tailscale_vpn, glances] # network_connectivity maps to name: Hubs & Routers
   outside:
-    children: [london]
+    children: [london, clapham]
+  config:
+    children: [config, configuration_toggles, ha_addons, ha_system, system_admin, virtual, device_status]
+  
   ensuite: null
   kitchen: null
   laundry_room: null
   living_room: null
   entrance: null
   upstairs: null
+  glances: null
+  clapham: null
+  ottoman: null
+  tailscale_vpn: null
+  note: |
+    Core.*_registry files may compress multiple nested areas into a simple area_id mapping for simplicity, and to reduce the need for duplicate
+    floor_id vs area_id definitions.
 
 nodes:
   - id: hallway
     type: area
     canonical_name: Hallway
-    parents: [ground_floor, top_floor]
+    parents: [home]
     container: ["area", "hallway", "Hallway"]
     devices: 6
     entities: 0
@@ -59,7 +75,7 @@ nodes:
   - id: kitchen
     type: area
     canonical_name: Kitchen
-    parents: [ground_floor]
+    parents: [downstairs]
     container: ["area", "kitchen", "Kitchen"]
     devices: 18
     entities: 4
@@ -67,7 +83,7 @@ nodes:
   - id: laundry_room
     type: area
     canonical_name: Laundry room
-    parents: [ground_floor]
+    parents: [downstairs]
     container: ["area", "laundry_room", "Laundry room"]
     devices: 2
     entities: 0
@@ -75,7 +91,7 @@ nodes:
   - id: living_room
     type: area
     canonical_name: Living Room
-    parents: [ground_floor]
+    parents: [downstairs]
     container: ["area", "living_room", "Living Room"]
     devices: 25
     entities: 5
@@ -98,31 +114,23 @@ nodes:
     services: 0
   - id: upstairs
     type: area
-    canonical_name: Upstairs
+    canonical_name: upstairs
     parents: [hallway]
-    container: ["area", "upstairs", "Upstairs"]
+    container: ["area", "upstairs", "upstairs"]
     devices: 5
     entities: 5
     services: 0
   - id: bedroom
     type: area
-    canonical_name: "Evert's bedroom"
+    canonical_name: Bedroom
     parents: [sanctum]
-    container: ["area", "bedroom", "Bedroom main"]
+    container: ["area", "bedroom", "Bedroom"]
     devices: 66
     entities: 7
     services: 0
-  - id: bedroom_main
-    type: subarea
-    canonical_name: Bedroom
-    parents: [bedroom]
-    container: ["area", "bedroom_main", "Bedroom main"]
-    devices: 0
-    entities: 0
-    services: 0
   - id: desk
     type: subarea
-    canonical_name: Desk
+    canonical_name: desk
     parents: [bedroom]
     container: ["area", "desk", "Desk"]
     devices: 20
@@ -136,6 +144,14 @@ nodes:
     devices: 4
     entities: 2
     services: 0
+  - id: hifi_configuration
+    type: subarea
+    canonical_name: hifi configuration
+    parents: [bedroom]
+    container: ["area", "hifi_configuration", "hifi configuration"]
+    devices: 0
+    entities: 0
+    services: 0
   - id: ensuite
     type: area
     canonical_name: Ensuite
@@ -147,7 +163,7 @@ nodes:
   - id: evert
     type: person
     canonical_name: Evert
-    parents: [outside]
+    parents: [home]
     container: ["area", "evert", "Evert"]
     devices: 9
     entities: 3
@@ -215,7 +231,7 @@ nodes:
   - id: powder_room
     type: area
     canonical_name: powder room
-    parents: [ground_floor]
+    parents: [downstairs]
     container: ["area", "powder_room", "powder room"]
     devices: 0
     entities: 0
@@ -239,6 +255,86 @@ nodes:
     entities: 0
     services: 0
     tags: [diagnostics, monitoring]
+  - id: ottoman
+    type: subarea
+    canonical_name: Ottoman
+    parents: [bedroom]
+    container: ["area", "ottoman", "Ottoman"]
+    devices: 1
+    entities: 0
+    services: 0
+  - id: tailscale_vpn
+    type: area
+    canonical_name: Tailscale VPN
+    parents: [network, hestia]
+    container: ["area", "tailscale_vpn", "Tailscale VPN"]
+    devices: 0
+    entities: 0
+    services: 0
+    tags: [network, security]
+  - id: sanctum
+    type: area
+    canonical_name: sanctum
+    parents: [upstairs]
+    container: ["area", "sanctum", "sanctum"]
+    devices: 0
+    entities: 0
+    services: 0
+    tags: [private, upstairs]
+  - id: clapham
+    type: area
+    canonical_name: clapham
+    parents: [outside]
+    container: ["area", "clapham", "clapham"]
+    devices: 0
+    entities: 0
+    services: 0
+    tags: [location, outside]
+  - id: warnings
+    type: service
+    canonical_name: Warnings
+    parents: [services]
+    container: ["area", "warnings", "Warnings"]
+    devices: 0
+    entities: 0
+    services: 0
+    tags: [alerts, monitoring]
+  - id: host_system
+    type: system
+    canonical_name: Host System
+    parents: [diag]
+    container: ["area", "host_system", "Host System"]
+    devices: 0
+    entities: 0
+    services: 0
+    tags: [system, host]
+  - id: folder_watcher
+    type: system
+    canonical_name: Folder Watcher
+    parents: [diag]
+    container: ["area", "folder_watcher", "Folder Watcher"]
+    devices: 0
+    entities: 0
+    services: 0
+    tags: [monitoring, filesystem]
+  - id: backups
+    type: system
+    canonical_name: Backups
+    parents: [diag]
+    container: ["area", "backups", "Backups"]
+    devices: 0
+    entities: 0
+    services: 0
+    tags: [backup, recovery]
+  - id: system_admin
+    type: system
+    canonical_name: System Admin
+    parents: [config]
+    container: ["area", "system_admin", "System Admin"]
+    devices: 0     
+    entities: 0
+    services: 0
+    tags: [administration, management]
 
 propagation_rules:
   motion:

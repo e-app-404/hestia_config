@@ -21,9 +21,6 @@ input_boolean:
   sonos_sunrise_enable:
     name: "Enable Sunrise Light Prelude"
     initial: off
-  initiate_morning_sequence:
-    name: "Initiate Morning Sequence"
-    initial: off
 
 input_datetime:
   sonos_alarm_time:
@@ -111,7 +108,7 @@ script:
       - choose:
           - conditions: "{{ alarm_id is number }}"
             sequence:
-              - service: sonos.update_alarm
+              - action: sonos.update_alarm
                 data:
                   entity_id: "{{ zone }}"
                   alarm_id: "{{ alarm_id }}"
@@ -119,7 +116,7 @@ script:
                   volume: "{{ volume }}"
                   enabled: "{{ enabled }}"
                   include_linked_zones: "{{ include_linked }}"
-              - service: notify.notify
+              - action: notify.notify
                 data:
                   title: "Sonos Alarm Reapplied"
                   message: >
@@ -129,10 +126,10 @@ script:
                     Group: {{ iif(include_linked, 'Yes', 'No') }},
                     Recurrence: {{ recur }},
                     Status: {{ iif(enabled, 'Enabled', 'Disabled') }}.
-              
+
               - if: "{{ is_state('input_boolean.sonos_alarm_tts_confirm','on') }}"
                 then:
-                  - service: script.tts_gate
+                  - action: script.tts_gate
                     data:
                       key: >-
                         sonos_alarm_reapplied_{{ zone | replace('media_player.','') }}_{{ recur }}_{{ alarm_time | replace(':','') }}
@@ -150,14 +147,14 @@ script:
                       cooldown_sec: 21600
                       max_repeats: 0
         default:
-          - service: persistent_notification.create
+          - action: persistent_notification.create
             data:
               title: "Sonos alarm not found for selected zone/recurrence"
               message: >-
                 Could not locate a Sonos alarm on the same device as {{ zone }}
                 with recurrence {{ recur }}{% if alarm_time %} and time {{ alarm_time }}{% endif %}.
                 Create/adjust an alarm on that speaker in the Sonos app, or change Recurrence/Time.
-          - service: logbook.log
+          - action: logbook.log
             data:
               name: "Sonos Alarm"
               message: "No matching alarm on selected speaker; update skipped."
@@ -170,7 +167,7 @@ automation:
     id: "update_sonos_alarm_automation_001_a"
     mode: restart
     trigger:
-      - platform: state
+      - trigger: state
         entity_id:
           - input_boolean.sonos_alarm_enable
           - input_datetime.sonos_alarm_time
@@ -202,7 +199,7 @@ automation:
       - choose:
           - conditions: "{{ alarm_id is number }}"
             sequence:
-              - service: sonos.update_alarm
+              - action: sonos.update_alarm
                 data:
                   entity_id: "{{ zone }}"
                   alarm_id: "{{ alarm_id }}"
@@ -214,7 +211,7 @@ automation:
   - alias: "Reset One-Off After Alarm Window"
     id: "reset_one_off_after_alarm_window_001_a"
     trigger:
-      - platform: state
+      - trigger: state
         entity_id: binary_sensor.sonos_alarm_30_min_passed
         to: "on"
     condition:
@@ -222,7 +219,7 @@ automation:
         entity_id: input_boolean.sonos_alarm_oneoff
         state: "on"
     action:
-      - service: input_boolean.turn_off
+      - action: input_boolean.turn_off
         target:
           entity_id:
             - input_boolean.sonos_alarm_oneoff
@@ -231,11 +228,11 @@ automation:
   - alias: "Send Sonos Alarm Preview Notification"
     id: "send_sonos_alarm_preview_notification_001_a"
     trigger:
-      - platform: state
+      - trigger: state
         entity_id: input_boolean.sonos_alarm_enable
         to: "on"
     action:
-      - service: notify.notify
+      - action: notify.notify
         data:
           title: "Sonos Alarm Scheduled"
           message: >
@@ -251,7 +248,7 @@ automation:
                 title: "Reconfirm"
       - if: "{{ is_state('input_boolean.sonos_alarm_tts_confirm','on') }}"
         then:
-          - service: script.tts_gate
+          - action: script.tts_gate
             data:
               key: "sonos_alarm_preview"
               message: >-
@@ -263,35 +260,35 @@ automation:
               tts_entity: "{{ 'tts.cloud' if has_value('tts.cloud') else 'tts.google_translate' }}"
               volume: "{{ states('input_number.sonos_alarm_volume') | float(0.3) }}"
               language: "en"
-              cooldown_sec: 10800   # 3h
+              cooldown_sec: 10800 # 3h
               max_repeats: 0
 
   - alias: "Disable Sonos Alarm via Notification"
     id: "disable_sonos_alarm_via_notification_001_a"
     trigger:
-      - platform: event
+      - trigger: event
         event_type: mobile_app_notification_action
         event_data:
           action: disable_alarm
     action:
-      - service: input_boolean.turn_off
+      - action: input_boolean.turn_off
         target:
           entity_id: input_boolean.sonos_alarm_enable
 
   - alias: "Reconfirm Alarm via Notification"
     id: "reconfirm_alarm_via_notification"
     trigger:
-      - platform: event
+      - trigger: event
         event_type: mobile_app_notification_action
         event_data:
           action: resend_alarm
     action:
-      - service: script.reapply_sonos_alarm
+      - action: script.reapply_sonos_alarm
 
   - alias: "Auto Trigger Morning Sequence After Alarm"
     id: "auto_trigger_morning_sequence_after_alarm"
     trigger:
-      - platform: state
+      - trigger: state
         entity_id: binary_sensor.sonos_alarm_30_min_passed
         to: "on"
     condition:
@@ -302,14 +299,14 @@ automation:
         entity_id: input_boolean.initiate_morning_sequence
         state: "off"
     action:
-      - service: input_boolean.turn_on
+      - action: input_boolean.turn_on
         target:
           entity_id: input_boolean.initiate_morning_sequence
 
   - alias: "Sunrise Light Sequence Before Sonos Alarm"
     id: sonos_sunrise_light_rampup
     trigger:
-      - platform: template
+      - trigger: template
         value_template: |
           {% set alarm = states('input_datetime.sonos_alarm_time') %}
           {% if alarm not in ['unknown', 'unavailable', None, ''] %}
@@ -338,7 +335,7 @@ automation:
       - repeat:
           count: 6
           sequence:
-            - service: light.turn_on
+            - action: light.turn_on
               target:
                 entity_id: group.bedroom_lights_bed_area
               data:
@@ -352,12 +349,12 @@ automation:
     id: "validate_sonos_alarm_availability"
     mode: restart
     trigger:
-      - platform: state
+      - trigger: state
         entity_id:
           - input_select.sonos_alarm_zone
           - input_select.sonos_alarm_recurrence
           - input_datetime.sonos_alarm_time
-      - platform: homeassistant
+      - trigger: homeassistant
         event: start
     action:
       - variables:
@@ -379,7 +376,7 @@ automation:
       - choose:
           - conditions: "{{ alarm_id is not number }}"
             sequence:
-              - service: notify.notify
+              - action: notify.notify
                 data:
                   title: "Sonos alarm mapping issue"
                   message: >-

@@ -1,7 +1,7 @@
 blueprint:
-  name: motion_lights
+  name: Sensor Light
   description: >
-    # Motion Lights
+    # Motion sensor-activated lights 
 
     **Version: 8.4**
 

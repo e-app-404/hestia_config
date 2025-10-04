@@ -51,10 +51,10 @@ automation:
   - alias: "Notify on Vacuum State Change"
     id: "vacuum_state_change_notification"
     trigger:
-      - platform: state
+      - trigger: state
         entity_id: vacuum.valetudo_roborocks5
     action:
-      - service: script.notify_engine
+      - action: script.notify_engine
         data:
           who: "evert"
           title: "Vacuum Status Update"
@@ -66,7 +66,7 @@ automation:
   - alias: "Run Downstairs Cleaning Job Daily"
     id: "run_downstairs_cleaning_job_daily"
     trigger:
-      - platform: time
+      - trigger: time
         at: "09:30:00"
     action:
       - action: script.cleaning_job_downstairs
@@ -74,7 +74,7 @@ automation:
   - alias: "Initialize Last Cleaned Helpers on Startup"
     id: initialize_last_cleaned_helpers
     trigger:
-      - platform: homeassistant
+      - trigger: homeassistant
         event: start
     action:
       - repeat:
@@ -99,7 +99,7 @@ automation:
     id: "valetudo_error_notification"
     description: "Notify on any error from Valetudo robot"
     trigger:
-      - platform: state
+      - trigger: state
         entity_id: sensor.valetudo_roborocks5_error
         from: ~
         to: ~
@@ -118,7 +118,7 @@ automation:
     id: downstairs_cleaning_daily_report
     description: "Send a summary notification after daily downstairs cleaning job"
     trigger:
-      - platform: state
+      - trigger: state
         entity_id: input_boolean.downstairs_cleaning_success
         from: "off"
         to: "on"
@@ -141,7 +141,7 @@ automation:
     id: "set_needs_cleaning_after_activity"
     mode: parallel
     trigger:
-      - platform: state
+      - trigger: state
         entity_id:
           - sensor.living_room_last_activity
           - sensor.kitchen_last_activity
@@ -199,7 +199,7 @@ automation:
     id: "flag_rooms_needing_cleaning_after_x_days"
     mode: parallel
     trigger:
-      - platform: numeric_state
+      - trigger: numeric_state
         entity_id:
           - sensor.living_room_days_since_last_cleaned
           - sensor.kitchen_days_since_last_cleaned
@@ -241,7 +241,7 @@ automation:
     id: "notify_when_all_cleaning_flags_raised_opt_out_aware"
     mode: single
     trigger:
-      - platform: state
+      - trigger: state
         entity_id:
           - input_boolean.living_room_needs_cleaning
           - input_boolean.kitchen_needs_cleaning
@@ -297,10 +297,10 @@ script:
           {% else %}
             false
           {% endif %}
-      - service: input_boolean.turn_on
+      - action: input_boolean.turn_on
         target:
           entity_id: "{{ needs_cleaning_boolean }}"
-      - service: system_log.write
+      - action: system_log.write
         data:
           message: "🧹 Cleaning flag raised: {{ needs_cleaning_boolean }} due to {{ activity_sensor }}"
           level: warning
@@ -308,107 +308,107 @@ script:
   clean_living_room:
     alias: Clean Living Room
     sequence:
-      - service: vacuum.send_command
+      - action: vacuum.send_command
         target:
           entity_id: vacuum.valetudo_roborocks5
         data:
           command: segment_clean
           params: [1] # Update segment number as needed
-      - service: input_datetime.set_datetime
+      - action: input_datetime.set_datetime
         target:
           entity_id: input_datetime.living_room_last_cleaned
         data:
           datetime: "{{ now().strftime('%Y-%m-%d %H:%M:%S') }}"
-      - service: input_boolean.turn_off
+      - action: input_boolean.turn_off
         target:
           entity_id: input_boolean.living_room_needs_cleaning
 
   clean_kitchen:
     alias: Clean Kitchen
     sequence:
-      - service: vacuum.send_command
+      - action: vacuum.send_command
         target:
           entity_id: vacuum.valetudo_roborocks5
         data:
           command: segment_clean
           params: [2] # Update segment number as needed
-      - service: input_datetime.set_datetime
+      - action: input_datetime.set_datetime
         target:
           entity_id: input_datetime.kitchen_last_cleaned
         data:
           datetime: "{{ now().strftime('%Y-%m-%d %H:%M:%S') }}"
-      - service: input_boolean.turn_off
+      - action: input_boolean.turn_off
         target:
           entity_id: input_boolean.kitchen_needs_cleaning
 
   clean_powder_room:
     alias: Clean Powder Room
     sequence:
-      - service: vacuum.send_command
+      - action: vacuum.send_command
         target:
           entity_id: vacuum.valetudo_roborocks5
         data:
           command: segment_clean
           params: [3] # Update segment number as needed
-      - service: input_datetime.set_datetime
+      - action: input_datetime.set_datetime
         target:
           entity_id: input_datetime.powder_room_last_cleaned
         data:
           datetime: "{{ now().strftime('%Y-%m-%d %H:%M:%S') }}"
-      - service: input_boolean.turn_off
+      - action: input_boolean.turn_off
         target:
           entity_id: input_boolean.powder_room_needs_cleaning
 
   clean_downstairs_hallway:
     alias: Clean Downstairs Hallway
     sequence:
-      - service: vacuum.send_command
+      - action: vacuum.send_command
         target:
           entity_id: vacuum.valetudo_roborocks5
         data:
           command: segment_clean
           params: [4] # Update segment number as needed
-      - service: input_datetime.set_datetime
+      - action: input_datetime.set_datetime
         target:
           entity_id: input_datetime.downstairs_hallway_last_cleaned
         data:
           datetime: "{{ now().strftime('%Y-%m-%d %H:%M:%S') }}"
-      - service: input_boolean.turn_off
+      - action: input_boolean.turn_off
         target:
           entity_id: input_boolean.downstairs_hallway_needs_cleaning
 
   clean_laundry_room:
     alias: Clean Laundry Room
     sequence:
-      - service: vacuum.send_command
+      - action: vacuum.send_command
         target:
           entity_id: vacuum.valetudo_roborocks5
         data:
           command: segment_clean
           params: [5] # Update segment number as needed
-      - service: input_datetime.set_datetime
+      - action: input_datetime.set_datetime
         target:
           entity_id: input_datetime.laundry_room_last_cleaned
         data:
           datetime: "{{ now().strftime('%Y-%m-%d %H:%M:%S') }}"
-      - service: input_boolean.turn_off
+      - action: input_boolean.turn_off
         target:
           entity_id: input_boolean.laundry_room_needs_cleaning
 
   cleaning_job_downstairs:
     alias: Run Downstairs Cleaning Job
     sequence:
-      - service: script.clean_living_room
-      - service: script.clean_kitchen
-      - service: script.clean_powder_room
-      - service: script.clean_downstairs_hallway
-      - service: script.clean_laundry_room
-      - service: input_datetime.set_datetime
+      - action: script.clean_living_room
+      - action: script.clean_kitchen
+      - action: script.clean_powder_room
+      - action: script.clean_downstairs_hallway
+      - action: script.clean_laundry_room
+      - action: input_datetime.set_datetime
         target:
           entity_id: input_datetime.cleaning_job_last_run
         data:
           datetime: "{{ now().strftime('%Y-%m-%d %H:%M:%S') }}"
-      - service: input_boolean.turn_on
+      - action: input_boolean.turn_on
         target:
           entity_id: input_boolean.downstairs_cleaning_success
 template:
@@ -419,23 +419,23 @@ template:
         state: "{{ states('input_datetime.living_room_last_cleaned') }}"
         device_class: timestamp
 
-      - name: Kitchen Last Cleaned  
+      - name: Kitchen Last Cleaned
         unique_id: kitchen_last_cleaned
         state: "{{ states('input_datetime.kitchen_last_cleaned') }}"
         device_class: timestamp
-        
+
       - name: Powder Room Last Cleaned
-        unique_id: powder_room_last_cleaned  
+        unique_id: powder_room_last_cleaned
         state: "{{ states('input_datetime.powder_room_last_cleaned') }}"
         device_class: timestamp
-        
+
       - name: Downstairs Hallway Last Cleaned
         unique_id: downstairs_hallway_last_cleaned
         state: "{{ states('input_datetime.downstairs_hallway_last_cleaned') }}"
         device_class: timestamp
-        
+
       - name: Laundry Room Last Cleaned
-        unique_id: laundry_room_last_cleaned  
+        unique_id: laundry_room_last_cleaned
         state: "{{ states('input_datetime.laundry_room_last_cleaned') }}"
         device_class: timestamp
 

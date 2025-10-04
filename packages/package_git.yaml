@@ -17,7 +17,7 @@ automation:
   - alias: "Git: push when button pressed"
     id: git_push_button
     trigger:
-      - platform: state
+      - trigger: state
         entity_id: input_button.git_push_now
     action:
-      - service: shell_command.git_push_config
+      - action: shell_command.git_push_config

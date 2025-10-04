@@ -2,11 +2,11 @@
 id: ADR-0004
 title: "Canonical Area Hierarchy & Spatial Relationship Contract"
 date: 2025-09-11
-related: []
+related: ["ADR-0021"]
 supersedes: []
 status: Accepted
 tags: ["architecture", "area", "hierarchy", "spatial", "relationship", "contract", "adr"]
-last_updated: 2025-07-22
+last_updated: 2025-10-04
 author: "Evert Appels"
 ---
 
@@ -25,13 +25,14 @@ Spatial reasoning and containment relationships are essential for Home Assistant
 ## 2. Decision
 ### Contract Metadata
 - **Contract ID:** area_relationships_contract
-- **Version:** 1.0
+- **Version:** 1.1
 - **Author:** Evert
 - **Status:** canonical_draft
 - **File Path:** canonical/support/contracts/area_hierarchy.yaml
-- **Live Registry Consistency:** partial
+- **Live Registry Consistency:** improved
 - **Coverage Percent:** 100.0
-- **Notes:** Programmatically validated against live Home Assistant registry data. Coverage and consistency updated on each validation run.
+- **Last Validated:** 2025-10-04
+- **Notes:** Programmatically validated against live Home Assistant registry data. Major structural improvements applied October 2025 including duplicate removal, missing node additions, and registry alignment.
 
 ### Containment Graph
 Defines parent-child relationships for areas, rooms, floors, and containers. Example:
@@ -79,14 +80,30 @@ Defines the schema for emitting the area hierarchy:
 - `contributes_to`: list[string]
 - `inferred_by`: string | null
 
-## 3. Enforcement
+## 3. Recent Improvements (2025-10-04)
+### Structural Fixes Applied
+- **Duplicate Resolution:** Removed duplicate `downstairs` entries in containment graph
+- **Missing Nodes:** Added `sanctum`, `clapham`, `warnings`, and completed `tailscale_vpn` definitions
+- **Registry Alignment:** Updated canonical names to match Home Assistant registry exactly
+- **Data Consistency:** Fixed format inconsistencies (empty arrays → proper integers)
+- **Containment Logic:** Simplified parent-child relationships and removed circular references
+
+### Registry Synchronization
+- Canonical names now match registry: `bedroom` → "Bedroom", `upstairs` → "upstairs", `hifi_configuration` → "hifi configuration"
+- All 37+ areas from live registry properly represented with complete node definitions
+- Floor/area relationships accurately modeled based on current `core.area_registry` and `core.floor_registry`
+
+## 4. Enforcement
 - All subarea relationships must be explicitly declared to avoid inference ambiguity.
 - Changes to inference propagation require a new contract version.
 - This contract does not govern device placement, but entity logic implication.
+- Registry consistency validation required before major automation deployments.
 
-## 4. Tokens
-- `containment_graph`, `nodes`, `propagation_rules`, `output_contract`, `contract_metadata`
-- `area_id`, `parent_room`, `floor_id`, `type`, `inference_weight`, `contributes_to`, `inferred_by`
+## 5. Tokens
+- **Primary:** `containment_graph`, `nodes`, `propagation_rules`, `output_contract`, `contract_metadata`
+- **Schema:** `area_id`, `parent_room`, `floor_id`, `type`, `inference_weight`, `contributes_to`, `inferred_by`
+- **Registry:** `sanctum`, `clapham`, `tailscale_vpn`, `warnings`, `ottoman`, `hifi_configuration`
+- **Relationships:** `bedroom_subareas`, `network_infrastructure`, `service_organization`
 
 ---
-_Last updated: 2025-09-11_
+_Last updated: 2025-10-04_

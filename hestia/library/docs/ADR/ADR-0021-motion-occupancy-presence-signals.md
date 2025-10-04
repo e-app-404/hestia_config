@@ -11,7 +11,7 @@ tags: ["home-automation","adr","motion","occupancy","presence","lighting"]
 notes:
 ---
 
-# ADR-00XX — Motion, Occupancy, and Presence Signal Architecture (beta abstractions)
+# ADR-0021 — Motion, Occupancy, and Presence Signal Architecture (beta abstractions)
 
 ## 1. Context
 

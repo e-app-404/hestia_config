@@ -145,7 +145,7 @@ automation:
   - id: theia_sunrise_stop_immediately
     alias: "theia_sunrise_stop_immediately"
     trigger:
-      - platform: state
+      - trigger: state
         entity_id: sensor.physical_switch_change
       - platform: event
         event_type: ios.notification_action_fired

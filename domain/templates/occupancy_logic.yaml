@@ -208,7 +208,6 @@
         area_id: "downstairs"
         floor_id: "downstairs"
 
-
     - name: "Hallway Upstairs Occupancy (Beta)"
       unique_id: hallway_upstairs_occupancy_beta
       device_class: occupancy

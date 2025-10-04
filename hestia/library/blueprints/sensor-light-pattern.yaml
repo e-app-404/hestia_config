@@ -1,0 +1,19 @@
+# Trigger/logic comes from the blueprint; these are key inputs
+motion_sensors:
+  - binary_sensor.living_room_motion_beta
+
+# Optional: extend holds if occupancy composite exists
+# (keeps lights on when people sit still)
+# If your blueprint supports multiple sensors, include both:
+# - binary_sensor.living_room_occupancy_beta
+
+# Presence is contextual only (do not block activation)
+presence_entity: ""                  # keep blank unless you really need it
+require_presence_for_activation: false
+timeout_seconds: >-
+  {% set base = states('var.motion_timeout_living_room')|int(120) %}
+  {% if is_state('binary_sensor.living_room_presence_beta','on') %}
+    {{ base + 120 }}                 # enhance when known person is home
+  {% else %}
+    {{ base }}
+  {% endif %}

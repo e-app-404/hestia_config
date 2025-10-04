@@ -9,7 +9,6 @@ homeassistant:
   allowlist_external_dirs:
     - "/config"
     - "/config/hestia/workspace/operations/diagnostics/logs"
-    - "/config/hestia/workspace/operations/diagnostics/notifications"
     - "/config/hestia/workspace/cache/scratch"
     - "/config/hestia/tools/utils"
     - "/config/hestia/workspace"

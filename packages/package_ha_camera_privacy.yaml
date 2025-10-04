@@ -40,10 +40,10 @@ script:
     alias: "Camera Bedroom · Enable (master + features)"
     mode: single
     sequence:
-      - service: switch.turn_on
+      - action: switch.turn_on
         target:
           entity_id: switch.bedroom_security_cam_alpha
-      - service: switch.turn_on
+      - action: switch.turn_on
         target:
           entity_id:
             - switch.bedroom_security_cam_alpha_motion_detection
@@ -131,10 +131,10 @@ automation:
   # --------------------------------------------------------------------------
   - id: cam_privacy_when_evert_home
     alias: "Bedroom Cam · Private when operator ENTERS Home (Home mode)"
-    initial_state: "on"
+    initial_state: true
     mode: restart
     trigger:
-      - platform: zone
+      - trigger: zone
         entity_id: person.evert
         zone: zone.home
         event: enter
@@ -156,21 +156,21 @@ automation:
                 entity_id: input_boolean.presence_detection_logging
                 state: "on"
             sequence:
-              - service: logbook.log
+              - action: logbook.log
                 data:
                   name: "Privacy"
                   message: "Evert entered Home → set Bedroom Cam to PRIVATE"
                   entity_id: person.evert
-      - service: switch.turn_off
+      - action: switch.turn_off
         target:
           entity_id: switch.bedroom_security_cam_alpha
 
   - id: cam_enable_when_evert_away
     alias: "Bedroom Cam · Enable when Evert LEAVES Home (Home mode)"
-    initial_state: "on"
+    initial_state: true
     mode: restart
     trigger:
-      - platform: zone
+      - trigger: zone
         entity_id: person.evert
         zone: zone.home
         event: leave
@@ -191,22 +191,22 @@ automation:
                 entity_id: input_boolean.presence_detection_logging
                 state: "on"
             sequence:
-              - service: logbook.log
+              - action: logbook.log
                 data:
                   name: "Privacy"
                   message: "Evert left Home → re-enable Bedroom Cam"
                   entity_id: person.evert
-      - service: script.camera_bedroom_enable_full
+      - action: script.camera_bedroom_enable_full
 
   # --------------------------------------------------------------------------
   # MODE B — ROOM: PRIVATE while Bedroom/Sanctum is trusted-occupied and Evert is home
   # --------------------------------------------------------------------------
   - id: cam_privacy_when_bedroom_occupied
     alias: "Bedroom Cam · Private when Bedroom Occupied (Room mode)"
-    initial_state: "on"
+    initial_state: true
     mode: restart
     trigger:
-      - platform: state
+      - trigger: state
         entity_id: binary_sensor.bedroom_privacy_trusted_occupied
         to: "on"
         for: "00:01:00"
@@ -227,21 +227,21 @@ automation:
                 entity_id: input_boolean.presence_detection_logging
                 state: "on"
             sequence:
-              - service: logbook.log
+              - action: logbook.log
                 data:
                   name: "Privacy"
                   message: "Bedroom/Sanctum trusted-occupied → set cam to PRIVATE"
                   entity_id: binary_sensor.bedroom_privacy_trusted_occupied
-      - service: switch.turn_off
+      - action: switch.turn_off
         target:
           entity_id: switch.bedroom_security_cam_alpha
 
   - id: cam_enable_when_bedroom_clear
     alias: "Bedroom Cam · Enable when Bedroom Clears (Room mode)"
-    initial_state: "on"
+    initial_state: true
     mode: restart
     trigger:
-      - platform: state
+      - trigger: state
         entity_id: binary_sensor.bedroom_privacy_trusted_occupied
         to: "off"
         for: "00:10:00"
@@ -262,19 +262,19 @@ automation:
                 entity_id: input_boolean.presence_detection_logging
                 state: "on"
             sequence:
-              - service: logbook.log
+              - action: logbook.log
                 data:
                   name: "Privacy"
                   message: "Bedroom/Sanctum trusted-occupied cleared → re-enable Bedroom Cam"
                   entity_id: binary_sensor.bedroom_privacy_trusted_occupied
-      - service: script.camera_bedroom_enable_full
+      - action: script.camera_bedroom_enable_full
 
   - id: cam_enable_when_evert_leaves_home_room_mode
     alias: "Bedroom Cam · Enable when Evert LEAVES Home (Room mode)"
-    initial_state: "on"
+    initial_state: true
     mode: restart
     trigger:
-      - platform: zone
+      - trigger: zone
         entity_id: person.evert
         zone: zone.home
         event: leave
@@ -295,22 +295,22 @@ automation:
                 entity_id: input_boolean.presence_detection_logging
                 state: "on"
             sequence:
-              - service: logbook.log
+              - action: logbook.log
                 data:
                   name: "Privacy"
                   message: "Evert left Home (room mode) → re-enable Bedroom Cam"
                   entity_id: person.evert
-      - service: script.camera_bedroom_enable_full
+      - action: script.camera_bedroom_enable_full
 
   # --------------------------------------------------------------------------
   # ALERT: Unknown occupancy while in Room mode (camera stays ENABLED)
   # --------------------------------------------------------------------------
   - id: cam_alert_on_unknown_intrusion_room_mode
     alias: "Bedroom Cam · ALERT on unknown occupancy (Room mode)"
-    initial_state: "on"
+    initial_state: true
     mode: single
     trigger:
-      - platform: state
+      - trigger: state
         entity_id: binary_sensor.bedroom_privacy_unknown_intrusion
         to: "on"
         for: "00:00:10"
@@ -328,12 +328,12 @@ automation:
         entity_id: binary_sensor.bedroom_privacy_trusted_occupied
         state: "off"
     action:
-      - service: logbook.log
+      - action: logbook.log
         data:
           name: "Privacy Alert"
           message: "Sanctum/Bedroom occupied without trusted presence — camera remains ENABLED."
           entity_id: binary_sensor.bedroom_privacy_unknown_intrusion
-      - service: persistent_notification.create
+      - action: persistent_notification.create
         data:
           title: "Unknown Occupancy Detected"
           message: >
@@ -346,10 +346,10 @@ automation:
   # --------------------------------------------------------------------------
   - id: cam_privacy_rehydrate_on_start
     alias: "Bedroom Cam · Rehydrate on HA Start"
-    initial_state: "on"
+    initial_state: true
     mode: single
     trigger:
-      - platform: homeassistant
+      - trigger: homeassistant
         event: start
     condition:
       - condition: state
@@ -368,11 +368,11 @@ automation:
                         entity_id: person.evert
                         state: "home"
                     sequence:
-                      - service: switch.turn_off
+                      - action: switch.turn_off
                         target:
                           entity_id: switch.bedroom_security_cam_alpha
                 default:
-                  - service: script.camera_bedroom_enable_full
+                  - action: script.camera_bedroom_enable_full
           - conditions:
               - condition: state
                 entity_id: input_select.camera_privacy_mode
@@ -387,11 +387,11 @@ automation:
                         entity_id: binary_sensor.bedroom_privacy_trusted_occupied
                         state: "on"
                     sequence:
-                      - service: switch.turn_off
+                      - action: switch.turn_off
                         target:
                           entity_id: switch.bedroom_security_cam_alpha
                 default:
-                  - service: script.camera_bedroom_enable_full
+                  - action: script.camera_bedroom_enable_full
         default: []
 
   # --------------------------------------------------------------------------
@@ -399,10 +399,10 @@ automation:
   # --------------------------------------------------------------------------
   - id: cam_privacy_apply_on_mode_change
     alias: "Bedroom Cam · Apply immediately on mode change"
-    initial_state: "on"
+    initial_state: true
     mode: restart
     trigger:
-      - platform: state
+      - trigger: state
         entity_id: input_select.camera_privacy_mode
     condition:
       - condition: state
@@ -421,11 +421,11 @@ automation:
                         entity_id: person.evert
                         state: "home"
                     sequence:
-                      - service: switch.turn_off
+                      - action: switch.turn_off
                         target:
                           entity_id: switch.bedroom_security_cam_alpha
                 default:
-                  - service: script.camera_bedroom_enable_full
+                  - action: script.camera_bedroom_enable_full
           - conditions:
               - condition: state
                 entity_id: input_select.camera_privacy_mode
@@ -440,9 +440,9 @@ automation:
                         entity_id: binary_sensor.bedroom_privacy_trusted_occupied
                         state: "on"
                     sequence:
-                      - service: switch.turn_off
+                      - action: switch.turn_off
                         target:
                           entity_id: switch.bedroom_security_cam_alpha
                 default:
-                  - service: script.camera_bedroom_enable_full
+                  - action: script.camera_bedroom_enable_full
         default: []

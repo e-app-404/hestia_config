@@ -1,0 +1,410 @@
+---
+# Enhanced Motion-Lighting Configuration Promptset
+# Comprehensive Home Assistant lighting automation with hierarchical area behavior
+# Supports area-specific behaviors, presence enhancement, and blueprint integration
+
+promptset:
+  id: enhanced-motion-lighting-config.promptset
+  version: 1.0
+  created: "2025-10-04"
+  description: |
+    Comprehensive promptset for implementing area-specific lighting automation that respects spatial relationships and occupancy patterns in Home Assistant. Supports hierarchical behavior, presence enhancement, and blueprint integration with ADR-0021 compliance.
+  persona: home_automation_architect
+  purpose: |
+    Generate working, validated, and intuitive lighting configurations for complex area hierarchies with motion/occupancy/presence integration. Focuses on three key area groups: Sanctum Complex, Kitchen Complex, and Hallway System.
+  legacy_compatibility: false
+  schema_version: 1.0
+
+  # Artifacts & Bindings
+  artifacts:
+    required:
+      - path: library/blueprints/
+        description: "Complete blueprint collection for motion-lighting automation"
+      - path: config/devices/presence.conf
+        description: "Presence & device tracking entities (1 person, 11 trackers)"
+      - path: config/devices/motion.conf
+        description: "Motion/occupancy sensors across all integrations"
+      - path: config/devices/lighting.conf
+        description: "Lighting entities inventory (59 entities, 14 groups)"
+      - path: config/devices/illuminance.conf
+        description: "Light sensors (alpha/beta tier)"
+      - path: library/docs/ADR/area_hierarchy.yaml
+        description: "Area relationship contract (v1.1 with registry alignment)"
+      - path: config/registry/room_registry.yaml
+        description: "Room registry with sensor mappings"
+      - path: config/preferences/motion_timeout.conf
+        description: "Motion timeout configuration matrix"
+      - path: library/docs/ADR/ADR-0021-motion-occupancy-presence-signals.md
+        description: "Motion/occupancy/presence signal standardization ADR"
+    optional:
+      - path: helpers/motion_lights/
+        description: "Motion-lighting blueprint helpers and presence sensors"
+
+  bindings:
+    protocols:
+      - entity_validation_first
+      - hierarchical_behavior_modeling
+      - adr_compliance_enforcement
+      - presence_enhancement_without_blocking
+    hard_guardrails:
+      - "Do not substitute alpha-tier entities when a beta-tier entity is missing; emit blank input with '# TODO'."
+    persona: home_automation_architect
+
+  retrieval_tags:
+    - home_assistant
+    - motion_lighting
+    - area_hierarchy
+    - presence_detection
+    - blueprint_automation
+    - adr_compliance
+
+  operational_modes:
+    - entity_validation_mode
+    - configuration_generation_mode
+    - critical_analysis_mode
+    - deployment_validation_mode
+
+  # Target Areas Configuration
+  target_areas:
+    sanctum_complex:
+      description: "Upstairs private space"
+      container: sanctum
+      main_area: bedroom
+      subareas: [desk, wardrobe, ottoman, hifi_configuration]
+      connected_areas: [ensuite]
+      behaviors:
+        desk: "Extended timeout for work sessions, presence-enhanced brightness, independence from bedroom main lighting (uses occupancy_beta if available)"
+        wardrobe: "Brief interaction lighting, auto-off; OPTIONAL package unless explicitly requested"
+        ensuite: "Privacy-aware timing, shower occupancy detection integration"
+
+    kitchen_complex:
+      description: "Downstairs utility"
+      main_area: kitchen
+      connected_areas: [laundry_room]
+      behaviors:
+        kitchen: "Cooking-mode context awareness, counter vs ambient lighting zones"
+
+    hallway_system:
+      description: "Circulation spaces"
+      main_area: hallway_downstairs
+      proxy_areas: [entrance]  # motion sensor proxy only - no direct lighting
+      connected_areas: [upstairs]
+      behaviors:
+        hallways: "Motion-triggered transit lighting with area-to-area propagation logic (beta-only sensors, per-level groups)"
+      propagation:
+        enabled: true
+        source: hallway_downstairs
+        targets: [upstairs]
+        decay_rate: 0.7
+        window_seconds: 20
+
+  # Blueprint Selection Matrix
+  blueprint_matrix:
+    core_executor: library/blueprints/sensor-light.yaml
+    add_on: library/blueprints/sensor-light-add-on.yaml
+    link_entities: library/blueprints/ha-blueprint-linked-entities.yaml
+    rules:
+      bedroom: [core_executor]
+      desk: [core_executor, link_entities]           # task lighting coherence
+      wardrobe: [core_executor]                      # brief interaction; shorter timeout
+      kitchen: [core_executor, add_on]               # cooking context tweaks
+      ensuite: [core_executor]                       # privacy timing
+      hallway_downstairs: [core_executor]
+      hallway_upstairs: [core_executor]
+
+  # Household Policy
+  household_policy:
+    tracked_persons: 1  # person.evert
+    untracked_housemates: 1
+    presence_policy: "asymmetric"  # Presence enhances, absence never blocks
+    motion_activation: "independent"  # Must work for untracked occupant
+    presence_generation_rules:
+      require_presence_for_activation_default: false
+      presence_entity_pattern: "binary_sensor.*_presence_beta"
+      enhancement_examples:
+        - "timeout_seconds += 120 when presence on"
+        - "brighter scene when presence on; neutral otherwise"
+
+  # Technical Constraints
+  technical_constraints:
+    adr_compliance: "ADR-0021"
+    tier_progression: "alpha → beta → eta"
+    propagation_decay_rate: 0.7
+    entity_patterns:
+      motion_sensors: "binary_sensor.*_motion_beta"
+      occupancy_sensors: "binary_sensor.*_occupancy_beta"
+      illuminance_sensors: "sensor.*_illuminance_beta"
+      presence_entity: "person.evert"
+
+  # Prompts Section
+  prompts:
+    - id: enhanced_lighting.entity_validation.v1
+      persona: home_automation_architect
+      label: "Entity Inventory Validation"
+      mode: entity_validation_mode
+      protocols:
+        - entity_validation_first
+        - hierarchical_behavior_modeling
+      bindings:
+        - config/devices/motion.conf
+        - config/devices/lighting.conf
+        - config/devices/illuminance.conf
+        - config/devices/presence.conf
+      prompt: |
+        version: 1.0
+        
+        ## Context & Prerequisites
+        I'm working with a comprehensive Home Assistant setup that includes motion-lighting blueprints, device configurations, and area hierarchy documentation. I need to implement area-specific lighting automation that respects spatial relationships and occupancy patterns.
+
+        ## Phase 1: Entity Inventory Validation
+        
+        Please validate all required entities exist and are correctly mapped for the target areas:
+        
+        ### Target Areas for Validation:
+        1. **Sanctum Complex** (upstairs private space)
+           - sanctum (container) → bedroom (main area) → desk, wardrobe, ottoman, hifi_configuration (subareas)
+           - ensuite (connected area)
+
+        2. **Kitchen Complex** (downstairs utility)
+           - kitchen (main area) + laundry_room (connected utility space)
+
+        3. **Hallway System** (circulation spaces)
+           - hallway_downstairs (main circulation) + entrance (motion proxy only) + upstairs (upper circulation)
+
+        ### Validation Requirements:
+        - Motion sensors per area (from motion.conf)
+        - Light entities and groups (from lighting.conf)  
+        - Illuminance sensors (from illuminance.conf)
+        - Presence sensors (from presence.conf integration)
+
+        ### Output Required:
+        Generate a comprehensive entity inventory report showing:
+        - ✅ Available entities per area
+        - ❌ Missing entities or gaps
+        - ⚠️ Potential mapping issues
+        - 📋 Entity relationship validation
+
+        Proceed to Phase 2 only after validation is complete.
+
+      phases:
+        - name: entity_inventory
+          persona: home_automation_architect
+          instructions: |
+            Parse all device configuration files and generate comprehensive entity inventory.
+            Cross-reference with target areas and identify any gaps or inconsistencies.
+            Flag entities that don't follow ADR-0021 naming conventions.
+          outputs:
+            - name: entity_validation_report.md
+              required: true
+              content: |
+                # Entity Validation Report
+                
+                ## Beta Compliance Gates (fail if any ❌)
+                - Motion beta present for all targeted areas: [...]
+                - Occupancy beta present where specified in behaviors: [...]
+                - Illuminance beta present for areas with lux gating; others flagged TODO: [...]
+                
+                ## Target Area Coverage Analysis
+                [Detailed entity mapping per area]
+                
+                ## Missing Entities Report
+                [List of required but missing entities]
+                
+                ## ADR-0021 Compliance Check
+                [Entity naming convention validation]
+
+    - id: enhanced_lighting.configuration_generation.v1
+      persona: home_automation_architect
+      label: "Blueprint Configuration Generation"
+      mode: configuration_generation_mode
+      protocols:
+        - hierarchical_behavior_modeling
+        - adr_compliance_enforcement
+        - presence_enhancement_without_blocking
+      bindings:
+        - library/blueprints/
+        - config/preferences/motion_timeout.conf
+        - library/docs/ADR/area_hierarchy.yaml
+      prompt: |
+        version: 1.0
+        
+        ## Phase 2: Blueprint Configuration Generation
+        
+        Based on the validated entity inventory, generate working YAML configurations using appropriate blueprints from the blueprint collection.
+
+        ### Configuration Requirements:
+        
+        #### Area-Specific Behaviors:
+        - **Desk subarea:** Extended timeout for work sessions, presence-enhanced brightness, independence from bedroom main lighting
+        - **Wardrobe subarea:** Brief interaction lighting, automatic off after clothing selection
+        - **Kitchen:** Cooking-mode context awareness, counter vs ambient lighting zones
+        - **Ensuite:** Privacy-aware timing, shower occupancy detection integration
+        - **Hallways:** Motion-triggered transit lighting with area-to-area propagation logic
+
+        #### Hierarchical Constraints:
+        - Floor → Area → Subarea inheritance with override capability
+        - Presence enhancement for tracked person (person.evert) without blocking untracked housemate
+        - Propagation rules following area_hierarchy.yaml contract (decay_rate: 0.7)
+        - Timeout profiles per motion_timeout.conf matrix
+
+        #### Technical Specifications:
+        - Use existing blueprint patterns from library/blueprints/
+        - Integrate with binary_sensor.*_motion_beta and binary_sensor.*_occupancy_beta entities
+        - Respect illuminance thresholds from sensor.*_illuminance_beta
+        - Follow ADR-0021 signal standardization (alpha→beta→eta progression)
+
+        #### Generation Contract:
+        inputs_required:
+          - motion_sensors: ["binary_sensor.<area>_motion_beta"]
+        inputs_optional:
+          - occupancy_sensors: ["binary_sensor.<area>_occupancy_beta"]
+          - ambient_lux_entity: ["sensor.<area>_illuminance_beta"]
+          - presence_entity: ["binary_sensor.<area>_presence_beta"]
+        policy:
+          - "If optional inputs missing, set to '' and add '# TODO'."
+          - "Always use eta-tier group lights as targets."
+
+        ### Output Required:
+        Generate complete, working blueprint configurations for each target area with:
+        - Area-specific parameter tuning
+        - Hierarchical behavior implementation  
+        - Context-aware timeout application
+        - Presence enhancement integration
+
+      phases:
+        - name: blueprint_configuration
+          persona: home_automation_architect
+          instructions: |
+            Generate working YAML configurations using validated entities and appropriate blueprints.
+            Implement hierarchical behavior patterns with proper inheritance and overrides.
+            Ensure ADR-0021 compliance throughout all configurations.
+          outputs:
+            - name: sanctum_complex_config.yaml
+              required: true
+              content: |
+                # Sanctum Complex Lighting Configuration
+                # Generated blueprint configurations for bedroom, desk, wardrobe, ottoman, hifi_configuration, ensuite
+            - name: kitchen_complex_config.yaml
+              required: true
+              content: |
+                # Kitchen Complex Lighting Configuration
+                # Generated blueprint configurations for kitchen and laundry_room
+            - name: hallway_system_config.yaml
+              required: true
+              content: |
+                # Hallway System Lighting Configuration
+                # Generated blueprint configurations for hallway circulation spaces
+
+    - id: enhanced_lighting.critical_analysis.v1
+      persona: home_automation_architect
+      label: "Critical Analysis & Optimization"
+      mode: critical_analysis_mode
+      protocols:
+        - adr_compliance_enforcement
+        - presence_enhancement_without_blocking
+      bindings:
+        - library/docs/ADR/ADR-0021-motion-occupancy-presence-signals.md
+      prompt: |
+        version: 1.0
+        
+        ## Phase 3: Critical Analysis
+        
+        Perform comprehensive analysis of the generated configurations to identify optimization opportunities and potential issues.
+
+        ### Analysis Framework:
+        
+        #### Areas of Opportunity:
+        - Identify automation gaps or optimization potential
+        - Suggest improvements to existing blueprint patterns
+        - Highlight entity relationship improvements
+        - Performance optimization recommendations
+
+        #### Uncertainty/Machine-Friendliness Issues:
+        - Flag ambiguous sensor mappings or missing entities
+        - Identify complex logic that needs template sensors
+        - Point out blueprint limitations requiring custom automation
+        - Highlight potential maintenance challenges
+
+        #### Validation Checklist:
+        - [ ] All target areas have complete sensor coverage
+        - [ ] Hierarchical relationships properly implemented
+        - [ ] Presence enhancement works without blocking untracked housemate
+        - [ ] Timeout profiles match expected usage patterns
+        - [ ] Blueprint parameters align with ADR-0021 standards
+
+        ### Questions for User Validation:
+        1. Do the assumed area-specific behaviors match your actual usage patterns?
+        2. Are there additional context sensors (time of day, activity modes) to consider?
+        3. Should any areas have manual override capabilities or scheduling exceptions?
+        4. Are there specific brightness or color temperature preferences per area?
+        5. Do the timeout profiles in motion_timeout.conf align with your experience?
+
+      phases:
+        - name: critical_analysis
+          persona: home_automation_architect
+          instructions: |
+            Analyze generated configurations for gaps, optimization opportunities, and compliance issues.
+            Generate actionable recommendations and validation questions for user feedback.
+          outputs:
+            - name: critical_analysis_report.md
+              required: true
+              content: |
+                # Critical Analysis Report
+                
+                ## Optimization Opportunities
+                [Detailed recommendations for improvements]
+                
+                ## Uncertainty & Risk Assessment
+                [Potential issues and mitigation strategies]
+                
+                ## Validation Checklist Results
+                [Compliance and functionality verification]
+                
+                ## User Validation Questions
+                [Questions requiring user confirmation]
+
+  # Migration Guidance
+  migration:
+    strategy: |
+      This promptset replaces the previous enhanced-lighting-prompt.md with structured, multi-phase workflow.
+      Legacy single-prompt approach migrated to three-phase validation → generation → analysis pattern.
+      All original requirements preserved with enhanced structure and governance.
+
+  # Extensibility & Documentation
+  extensibility:
+    - Add new target areas by extending target_areas configuration
+    - Implement additional analysis phases for specialized requirements
+    - Extend household_policy for different occupancy patterns
+    - Add custom operational modes for specific use cases
+  
+  documentation:
+    - Reference: ADR-0021 for signal standardization requirements
+    - See library/blueprints/ for available automation patterns
+    - Consult area_hierarchy.yaml for spatial relationship rules
+    - Motion timeout profiles defined in motion_timeout.conf
+
+  # Execution Mandate for Next GPT
+  execution_mandate:
+    target_paths:
+      - "library/blueprints/"
+      - "config/devices/presence.conf"
+      - "config/devices/motion.conf"
+      - "config/devices/lighting.conf"
+      - "config/devices/illuminance.conf"
+      - "library/docs/ADR/area_hierarchy.yaml"
+      - "config/registry/room_registry.yaml"
+      - "config/preferences/motion_timeout.conf"
+      - "helpers/motion_lights/"
+    objective: "Emit deploy-ready motion-lighting packages using beta abstractions for motion/occupancy/illuminance, eta-tier group lights, and asymmetric presence enhancements. Apply hierarchical behaviors for Sanctum Complex, Kitchen Complex, and Hallway System."
+    acceptance:
+      - "All packages reference only *_beta sensors; no alpha entities appear"
+      - "Illuminance uses sensor.<room>_illuminance_beta or is '' with # TODO"
+      - "Desk and both hallways are fully implemented; Wardrobe only if explicitly requested"
+      - "Presence never blocks activation; enhancements implemented where presence betas exist"
+      - "Blueprint selection follows blueprint_matrix and no duplicate logic across add-ons"
+      - "Timeouts follow config/preferences/motion_timeout.conf profiles"
+      - "YAML passes ha core check; two-space indent; A→Z keys"
+    risk:
+      - "Missing beta composites in certain rooms (emit TODO blanks)"
+      - "Propagation tuning could over/under-trigger; use decay_rate 0.7 and 20s window"
+    rollback: "Revert to previous stable packages; disable new packages by setting initial_state: 'off'."

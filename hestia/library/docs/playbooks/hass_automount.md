@@ -311,7 +311,7 @@ automation:
     alias: ALERT • Macbook HASS mount down
     mode: single
     trigger:
-      - platform: state
+      - trigger: state
         entity_id: binary_sensor.macbook_hass_mount_ok
         to: 'off'
         for: "00:05:00"
@@ -329,7 +329,7 @@ automation:
     alias: INFO • Macbook HASS mount recovered
     mode: single
     trigger:
-      - platform: state
+      - trigger: state
         entity_id: binary_sensor.macbook_hass_mount_ok
         to: 'on'
     action:

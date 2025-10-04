@@ -49,7 +49,7 @@ group:
       - switch.bedroom_illuminance_wifi_alpha
       # Beta entities (disabled by device - likely hardware issues)
       # - light.living_room_floorlamp_beta
-      # - light.living_room_foxy_beta  
+      # - light.living_room_foxy_beta
       # - light.living_room_side_beta
       # Virtual entities (may not exist in current config)
       # - sensor.home_iot_hub_tapo_alarm
@@ -182,14 +182,14 @@ template:
           area_id: "virtual"
           created: "2025-08-06"
           last_updated: "2025-08-08T19:10:54.077646+01:00"
-          
+
 automation:
   - alias: "SmartThings Integration Issue Detected"
     id: "automation_smartthings_integration_issue_detected"
     description: "Reload SmartThings integration if entities are unavailable"
     mode: restart
     trigger:
-      - platform: state
+      - trigger: state
         entity_id: sensor.unavailable_smartthings_entities
         for: "00:05:00"
     condition:
@@ -210,7 +210,7 @@ automation:
           - conditions: >
               {{ states('input_datetime.smartthings_first_failure_time') in ['unknown','unavailable',''] }}
             sequence:
-              - service: input_datetime.set_datetime
+              - action: input_datetime.set_datetime
                 data:
                   entity_id: input_datetime.smartthings_first_failure_time
                   timestamp: "{{ now().timestamp() }}"
@@ -223,16 +223,16 @@ automation:
         choose:
           - conditions: "{{ st_entry_id | string | length > 0 }}"
             sequence:
-              - service: homeassistant.reload_config_entry
+              - action: homeassistant.reload_config_entry
                 data:
                   entry_id: "{{ st_entry_id }}"
         default: []
       - alias: Remove old SmartThings notification
-        service: persistent_notification.dismiss
+        action: persistent_notification.dismiss
         data:
           notification_id: smartthings_reload
       - alias: Notify about reload
-        service: persistent_notification.create
+        action: persistent_notification.create
         data:
           title: "SmartThings Reload Triggered"
           message: >
@@ -240,16 +240,16 @@ automation:
               state_attr('sensor.unavailable_smartthings_entities', 'entities') | join(', ') }}
           notification_id: smartthings_reload
       - alias: Increment restart counter
-        service: counter.increment
+        action: counter.increment
         target:
           entity_id: counter.smartthings_restart_counter
       - alias: Record last restart timestamp
-        service: input_datetime.set_datetime
+        action: input_datetime.set_datetime
         data:
           entity_id: input_datetime.smartthings_last_restart
           timestamp: "{{ now().timestamp() }}"
       - alias: Record first failure timestamp
-        service: input_datetime.set_datetime
+        action: input_datetime.set_datetime
         data:
           entity_id: input_datetime.smartthings_first_failure_time
           timestamp: "{{ now().timestamp() }}"

@@ -25,7 +25,7 @@ automation:
     alias: "Update Global Presence Mode"
     description: "Sets the global presence mode based on multiple possible input_select."
     trigger:
-      - platform: state
+      - trigger: state
         entity_id: input_select.global_presence_mode
     action:
       - choose:

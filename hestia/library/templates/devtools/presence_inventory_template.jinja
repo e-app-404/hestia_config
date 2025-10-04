@@ -1,0 +1,132 @@
+{# ═══════════════════════════════════════════════════════════════════════ #}
+{# PRESENCE INVENTORY & POLICY BANNER (for Developer Tools → Template) #}
+{# Single Known Person + Untracked Housemate Configuration #}
+{# ═══════════════════════════════════════════════════════════════════════ #}
+
+## POLICY BANNER ##
+untracked_housemate: true
+policy_summary: |
+  ASYMMETRIC PRESENCE POLICY: 
+  - Known person presence may ENHANCE motion lighting (longer timeout, brighter scenes)
+  - Absence of known person must NEVER block motion activations
+  - An untracked housemate exists - motion sensors must activate independently
+  - Never require more than one person for any activation
+
+═══════════════════════════════════════════════════════════════════════
+
+## PERSON ENTITIES INVENTORY ##
+{% set persons = expand('person') | list %}
+{% if persons | length == 0 %}
+⚠️  NO PERSON ENTITIES FOUND
+{% else %}
+{% for person in persons %}
+{% set person_id = person.entity_id %}
+{% set state = person.state %}
+{% set last_changed = person.last_changed %}
+{% set source = state_attr(person_id, 'source') %}
+{% set gps_accuracy = state_attr(person_id, 'gps_accuracy') | int(0) %}
+{% set battery = state_attr(person_id, 'battery_level') or state_attr(person_id, 'battery') %}
+{% set linked_trackers = [source] if source else [] %}
+
+{# Determine present status using robust rules #}
+{% set present = false %}
+{% set reliable = true %}
+{% if state == 'home' %}
+  {% set present = true %}
+{% elif state == 'not_home' %}
+  {% set present = false %}
+{% else %}
+  {% set reliable = false %}
+{% endif %}
+
+{# Check staleness (>24h) #}
+{% set now_ts = as_timestamp(now()) %}
+{% set last_ts = as_timestamp(last_changed) %}
+{% set stale = (now_ts - last_ts) > 86400 %}
+{% if stale %}
+  {% set reliable = false %}
+{% endif %}
+
+PERSON: {{ person_id }}
+  State: {{ state }}
+  Present?: {{ '✅ YES' if present else '❌ NO' }}
+  Reliable?: {{ '✅ YES' if reliable else '⚠️  NO (stale/unknown)' }}
+  Zone: {{ state if state not in ['home', 'not_home'] else '—' }}
+  Linked Trackers: {{ linked_trackers | join(', ') if linked_trackers else '[]' }}
+  Last Changed: {{ last_changed.strftime('%Y-%m-%d %H:%M:%S') if last_changed else '—' }}
+  Battery: {{ battery ~ '%' if battery else '—' }}
+  GPS Accuracy: {{ gps_accuracy ~ 'm' if gps_accuracy else '—' }}
+
+{% endfor %}
+{% endif %}
+
+═══════════════════════════════════════════════════════════════════════
+
+## DEVICE TRACKER ENTITIES INVENTORY ##
+{% set trackers = expand('device_tracker') | list %}
+{% if trackers | length == 0 %}
+⚠️  NO DEVICE TRACKER ENTITIES FOUND
+{% else %}
+{% for tracker in trackers %}
+{% set entity_id = tracker.entity_id %}
+{% set state = tracker.state %}
+{% set source_type = state_attr(entity_id, 'source_type') %}
+{% set last_changed = tracker.last_changed %}
+{% set battery = state_attr(entity_id, 'battery_level') or state_attr(entity_id, 'battery') %}
+{% set friendly_name = state_attr(entity_id, 'friendly_name') %}
+
+{# Check staleness (>24h) #}
+{% set now_ts = as_timestamp(now()) %}
+{% set last_ts = as_timestamp(last_changed) %}
+{% set stale = (now_ts - last_ts) > 86400 %}
+
+TRACKER: {{ entity_id }}
+  Name: {{ friendly_name or entity_id.split('.')[1] | title }}
+  State: {{ state }}
+  Source Type: {{ source_type or '—' }}
+  Last Changed: {{ last_changed.strftime('%Y-%m-%d %H:%M:%S') if last_changed else '—' }}
+  Stale?: {{ '⚠️  YES (>24h)' if stale else '✅ NO' }}
+  Battery: {{ battery ~ '%' if battery else '—' }}
+  Priority: {{ 'HIGH (phone/GPS)' if source_type in ['gps', 'bluetooth_le', 'bluetooth'] else 'LOW (router)' if source_type == 'router' else 'UNKNOWN' }}
+
+{% endfor %}
+{% endif %}
+
+═══════════════════════════════════════════════════════════════════════
+
+## SUGGESTED AREA PRESENCE MAPPING ##
+{# Extract known person entities for mapping #}
+{% set known_persons = expand('person') | map(attribute='entity_id') | list %}
+
+area_presence_map:
+  bedroom: {{ known_persons if known_persons else '[]' }}
+  desk: {{ known_persons if known_persons else '[]' }}
+  living_room: {{ known_persons if known_persons else '[]' }}
+  kitchen: []  # Untracked housemate uses kitchen - don't require presence
+  ensuite: []  # Untracked housemate uses ensuite - don't require presence  
+  hallway_downstairs: []  # Common area - don't require presence
+  hallway_upstairs: []    # Common area - don't require presence
+
+policy:
+  untracked_housemate: true
+  require_presence_for_activation_default: false
+  presence_enhancement_mode: true  # Use presence to enhance, not gate
+
+═══════════════════════════════════════════════════════════════════════
+
+## ROBUST PRESENCE LOGIC SUMMARY ##
+Person Present Logic:
+1. person.state == "home" ⇒ present = true
+2. If linked trackers exist:
+   - Phone/GPS trackers (gps, bluetooth_le, bluetooth) at 'home' ⇒ present = true  
+   - Router-only 'home' with phone 'not_home' ⇒ prefer phone state (present = false)
+3. All trackers unknown/unavailable or stale (>24h) ⇒ reliable = false
+4. CRITICAL: Never conclude "house empty" from person == not_home
+
+Motion Lighting Rules:
+- ✅ Motion sensors activate independently by default
+- ✅ Presence may extend timeout or brighten scenes  
+- ❌ Never block activation due to absence
+- ❌ Never require multiple people for activation
+
+═══════════════════════════════════════════════════════════════════════

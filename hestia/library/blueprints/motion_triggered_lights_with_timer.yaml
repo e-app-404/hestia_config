@@ -1,0 +1,182 @@
+blueprint:
+  name: Motion-triggered Lights with Timer
+  description: >
+    Automatically turns lights on/off based on motion, light state, timers, and conditions. 
+    Requires a motion sensor entity, a light entity (a light group works for multiple lights), a timer 
+    entity (with the time set in its configuration), and two input_boolean helpers that you must create - 
+    one that controls whether the lights will be turned on automatically when motion is detected 
+    (e.g. input_boolean.deck_lights_auto_on_controller) and one to control whether the lights are 
+    turned off when the timer ends (e.g. input_boolean.deck_lights_auto_off_controller).
+  domain: automation
+  author: Scott Menzer
+  input:
+    motion_sensor:
+      name: Motion Sensor
+      description: "The motion sensor that triggers the lights."
+      selector:
+        entity:
+          filter:
+            domain: binary_sensor
+    light_target:
+      name: Light
+      description: "The light entity to control."
+      selector:
+        entity:
+          filter:
+            domain: light
+    auto_on_controller:
+      name: Auto On Controller Entity
+      description: "Boolean to enable/disable automatic turning on of the lights."
+      selector:
+        entity:
+          filter:
+            domain: input_boolean
+    only_when_sun_is_down:
+      name: Auto On Only When Sun is Down
+      description: "Enable to only turn on lights when motion is detected when the sun is down (according to sun integration). Disable to turn on lights any time motion is detected."
+      selector:
+        boolean:
+      default: true
+    auto_off_controller:
+      name: Auto Off Controller Entity
+      description: "Boolean to enable/disable automatic turning off of the lights."
+      selector:
+        entity:
+          filter:
+            domain: input_boolean
+    auto_off_timer:
+      name: Timer
+      description: "Timer entity to delay turning off the lights."
+      selector:
+        entity:
+          filter:
+            domain: timer
+
+variables:
+  only_when_sun_is_down: !input only_when_sun_is_down
+
+triggers:
+  - trigger: state
+    entity_id: !input motion_sensor
+    to: "on"
+    id: motion
+  - trigger: state
+    entity_id: !input light_target
+    to: "on"
+    id: lighton
+  - trigger: state
+    entity_id: !input light_target
+    to: "off"
+    from: "on"
+    id: lightoff
+  - trigger: state
+    entity_id: !input auto_off_controller
+    to: "on"
+    id: autooffenabled
+  - trigger: state
+    entity_id: !input auto_off_controller
+    to: "off"
+    id: autooffdisabled
+  - trigger: state
+    entity_id: !input auto_off_timer
+    to: idle
+    from: active
+    id: timer
+conditions: []
+actions:
+  - choose:
+      - conditions:
+          - condition: trigger
+            id:
+              - motion
+        sequence:
+          - condition: state
+            entity_id: !input auto_on_controller
+            state: "on"
+          - condition: or
+            conditions:
+              - condition: sun
+                before: sunrise
+                after: sunset
+              - condition: template
+                value_template: >
+                  {{ only_when_sun_is_down == false }}
+          - action: light.turn_on
+            metadata: {}
+            data: {}
+            target:
+              entity_id: !input light_target
+          - action: timer.start
+            metadata: {}
+            data: {}
+            target:
+              entity_id:
+                - !input auto_off_timer
+      - conditions:
+          - condition: trigger
+            id:
+              - lighton
+        sequence:
+          - condition: state
+            entity_id: !input auto_off_controller
+            state: "on"
+          - action: timer.start
+            metadata: {}
+            data: {}
+            target:
+              entity_id:
+                - !input auto_off_timer
+      - conditions:
+          - condition: trigger
+            id:
+              - lightoff
+              - autooffdisabled
+        sequence:
+          - action: timer.cancel
+            metadata: {}
+            data: {}
+            target:
+              entity_id: !input auto_off_timer
+      - conditions:
+          - condition: trigger
+            id:
+              - autooffenabled
+        sequence:
+          - condition: state
+            entity_id: !input light_target
+            state: "on"
+          - action: timer.start
+            metadata: {}
+            data: {}
+            target:
+              entity_id: !input auto_off_timer
+      - conditions:
+          - condition: trigger
+            id:
+              - timer
+        sequence:
+          - condition: state
+            entity_id: !input light_target
+            state: "on"
+          - if:
+              - condition: state
+                entity_id: !input motion_sensor
+                state: "on"
+              - condition: state
+                entity_id: input_boolean.deck_lights_auto_on_controller
+                state: "on"
+            then:
+              - action: timer.start
+                metadata: {}
+                data: {}
+                target:
+                  entity_id: !input auto_off_timer
+            else:
+              - action: light.turn_off
+                metadata: {}
+                data: {}
+                target:
+                  entity_id: !input light_target
+
+mode: restart
+max_exceeded: silent

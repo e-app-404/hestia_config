@@ -65,7 +65,7 @@ automation:
   - id: 'optimized_motion_lighting'
     alias: "Optimized Motion Lighting"
     trigger:
-      - platform: state
+      - trigger: state
         entity_id: binary_sensor.motion_sensor
         to: 'on'
     condition:

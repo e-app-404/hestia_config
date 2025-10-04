@@ -94,12 +94,12 @@ automation:
     mode: single
     max_exceeded: silent
     trigger:
-      - platform: event
+      - trigger: event
         event_type: call_service
         event_data:
           domain: group
           service: reload
-      - platform: time_pattern
+      - trigger: time_pattern
         minutes: "/1"
     action:
       - action: group.set
@@ -136,7 +136,7 @@ automation:
     description: "Create persistent notification if unavailable entities, dismiss if none."
     mode: restart
     trigger:
-      - platform: state
+      - trigger: state
         entity_id: group.unavailable_entities
         attribute: entity_id
         to: ~

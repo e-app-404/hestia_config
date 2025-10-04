@@ -37,7 +37,7 @@ automation:
   - alias: "Sync Bedroom Last Activity Helper"
     id: 1e2d3c4b-5a6f-7e8d-9c0b-112233445566
     trigger:
-      - platform: state
+      - trigger: state
         entity_id: sensor.bedroom_last_activity
     action:
       - choose:
@@ -45,7 +45,7 @@ automation:
               - condition: template
                 value_template: "{{ states('sensor.bedroom_last_activity') not in ['unknown','unavailable','', none] }}"
             sequence:
-              - service: input_datetime.set_datetime
+              - action: input_datetime.set_datetime
                 target:
                   entity_id: input_datetime.bedroom_last_activity
                 data:
@@ -53,7 +53,7 @@ automation:
   - alias: "Sync Kitchen Last Activity Helper"
     id: 2a3b4c5d-6e7f-8a9b-0c1d-223344556677
     trigger:
-      - platform: state
+      - trigger: state
         entity_id: sensor.kitchen_last_activity
     action:
       - choose:
@@ -61,7 +61,7 @@ automation:
               - condition: template
                 value_template: "{{ states('sensor.kitchen_last_activity') not in ['unknown','unavailable','', none] }}"
             sequence:
-              - service: input_datetime.set_datetime
+              - action: input_datetime.set_datetime
                 target:
                   entity_id: input_datetime.kitchen_last_activity
                 data:
@@ -69,7 +69,7 @@ automation:
   - alias: "Sync Living Room Last Activity Helper"
     id: 3b4c5d6e-7f8a-9b0c-1d2e-334455667788
     trigger:
-      - platform: state
+      - trigger: state
         entity_id: sensor.living_room_last_activity
     action:
       - choose:
@@ -77,7 +77,7 @@ automation:
               - condition: template
                 value_template: "{{ states('sensor.living_room_last_activity') not in ['unknown','unavailable','', none] }}"
             sequence:
-              - service: input_datetime.set_datetime
+              - action: input_datetime.set_datetime
                 target:
                   entity_id: input_datetime.living_room_last_activity
                 data:
@@ -85,7 +85,7 @@ automation:
   - alias: "Sync Ensuite Last Activity Helper"
     id: 4c5d6e7f-8a9b-0c1d-2e3f-445566778899
     trigger:
-      - platform: state
+      - trigger: state
         entity_id: sensor.ensuite_last_activity
     action:
       - choose:
@@ -93,7 +93,7 @@ automation:
               - condition: template
                 value_template: "{{ states('sensor.ensuite_last_activity') not in ['unknown','unavailable','', none] }}"
             sequence:
-              - service: input_datetime.set_datetime
+              - action: input_datetime.set_datetime
                 target:
                   entity_id: input_datetime.ensuite_last_activity
                 data:
@@ -101,7 +101,7 @@ automation:
   - alias: "Sync Hallway Downstairs Last Activity Helper"
     id: 5d6e7f8a-9b0c-1d2e-3f4a-556677889900
     trigger:
-      - platform: state
+      - trigger: state
         entity_id: sensor.hallway_downstairs_last_activity
     action:
       - choose:
@@ -109,7 +109,7 @@ automation:
               - condition: template
                 value_template: "{{ states('sensor.hallway_downstairs_last_activity') not in ['unknown','unavailable','', none] }}"
             sequence:
-              - service: input_datetime.set_datetime
+              - action: input_datetime.set_datetime
                 target:
                   entity_id: input_datetime.hallway_downstairs_last_activity
                 data:
@@ -117,7 +117,7 @@ automation:
   - alias: "Sync Hallway Upstairs Last Activity Helper"
     id: 6e7f8a9b-0c1d-2e3f-4a5b-667788990011
     trigger:
-      - platform: state
+      - trigger: state
         entity_id: sensor.hallway_upstairs_last_activity
     action:
       - choose:
@@ -125,7 +125,7 @@ automation:
               - condition: template
                 value_template: "{{ states('sensor.hallway_upstairs_last_activity') not in ['unknown','unavailable','', none] }}"
             sequence:
-              - service: input_datetime.set_datetime
+              - action: input_datetime.set_datetime
                 target:
                   entity_id: input_datetime.hallway_upstairs_last_activity
                 data:
@@ -135,7 +135,7 @@ automation:
 template:
   # ══ Bedroom ══
   - trigger:
-      - platform: state
+      - trigger: state
         entity_id: binary_sensor.bedroom_occupancy_beta
         to: "on"
     sensor:
@@ -188,7 +188,7 @@ template:
 
   # ══ Kitchen ══
   - trigger:
-      - platform: state
+      - trigger: state
         entity_id: binary_sensor.kitchen_occupancy_beta
         to: "on"
     sensor:
@@ -238,7 +238,7 @@ template:
 
   # ══ Living Room ══
   - trigger:
-      - platform: state
+      - trigger: state
         entity_id: binary_sensor.living_room_occupancy_beta
         to: "on"
     sensor:
@@ -288,7 +288,7 @@ template:
 
   # ══ Ensuite ══
   - trigger:
-      - platform: state
+      - trigger: state
         entity_id: binary_sensor.ensuite_occupancy_beta
         to: "on"
     sensor:
@@ -338,7 +338,7 @@ template:
 
   # ══ Hallway Downstairs ══
   - trigger:
-      - platform: state
+      - trigger: state
         entity_id: binary_sensor.hallway_downstairs_occupancy_beta
         to: "on"
     sensor:
@@ -388,7 +388,7 @@ template:
 
   # ══ Hallway Upstairs ══
   - trigger:
-      - platform: state
+      - trigger: state
         entity_id: binary_sensor.hallway_upstairs_occupancy_beta
         to: "on"
     sensor:
@@ -438,7 +438,7 @@ template:
 
   # ══ Entrance (Contact Sensor) ══
   - trigger:
-      - platform: state
+      - trigger: state
         entity_id: binary_sensor.entrance_door_alpha_contact
         to: "on"
     sensor:
@@ -488,7 +488,7 @@ template:
 
   # ══ Zone Downstairs (Aggregate) ══
   - trigger:
-      - platform: state
+      - trigger: state
         entity_id: binary_sensor.zone_downstairs_occupancy_eta
         to: "on"
     sensor:
@@ -538,7 +538,7 @@ template:
 
   # ══ Zone Upstairs (Aggregate) ══
   - trigger:
-      - platform: state
+      - trigger: state
         entity_id: binary_sensor.zone_upstairs_occupancy_eta
         to: "on"
     sensor:
@@ -588,7 +588,7 @@ template:
 
   # ══ Zone Home (Aggregate / Merged) ══
   - trigger:
-      - platform: state
+      - trigger: state
         entity_id: binary_sensor.merged_home_occupancy_eta
         to: "on"
     sensor:
