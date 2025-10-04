@@ -316,7 +316,7 @@ automation:
         to: 'off'
         for: "00:05:00"
     action:
-      - service: persistent_notification.create
+      - action: persistent_notification.create
         data:
           title: "Macbook HASS mount is down"
           message: >
@@ -333,7 +333,7 @@ automation:
         entity_id: binary_sensor.macbook_hass_mount_ok
         to: 'on'
     action:
-      - service: persistent_notification.create
+      - action: persistent_notification.create
         data:
           title: "Macbook HASS mount recovered"
           message: "Mount recovered at {{ now().isoformat() }}"
