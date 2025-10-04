@@ -8,6 +8,7 @@ relates_to:
   - ADR-0015  # Snapshots & inventory policy
   - ADR-0017  # Branch rescue / rollback protocol
   - ADR-0018  # Workspace lifecycle & CI guardrails
+  - ADR-0020  # Operator Priority Resolution for Workspace Merge Conflicts
 ---
 
 ## Context

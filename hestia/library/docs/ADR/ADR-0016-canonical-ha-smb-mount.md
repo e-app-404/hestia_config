@@ -11,6 +11,7 @@ supersedes:
 related:
   - ADR-0009
   - ADR-0017
+  - ADR-0020: Operator Priority Resolution for Workspace Merge Conflicts
 references:
   - hestia/tools/one_shots/hass_mount_once.sh (distribution copy)
   - $HOME/bin/hass_mount_once.sh (installed helper; authoritative)
