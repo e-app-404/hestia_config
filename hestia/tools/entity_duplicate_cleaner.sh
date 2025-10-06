@@ -222,48 +222,43 @@ execute_plan() {
     fi
     
     local n=0
-    # Strategy: keep first non-suffixed or most-enabled; disable others; fix name
+    # TAKEOVER Strategy: newer entities (usually suffixed) take over base names from stale registrations
     jq -c '.[]' "$plan" | while read -r grp; do
       base=$(echo "$grp" | jq -r '.base')
       
-      # Enhanced winner selection with state/restored filtering
-      # Priority: 1) exact base + enabled + not restored + available
-      #          2) exact base + enabled + available 
-      #          3) any enabled + not restored + available
-      #          4) any enabled + available
+      # TAKEOVER LOGIC: Prefer newer entities (typically suffixed) over older base entities
+      # This handles mobile app re-registrations where _2 is the current device
+      # Priority: 1) newest enabled + available + not restored (highest suffix number)
+      #          2) any enabled + available + not restored  
+      #          3) any enabled + available
+      #          4) fallback to base name
       
+      # Sort candidates by suffix number (newer = higher suffix)
       winners=$(echo "$grp" | jq -r '
-        .candidates[] | select(
-          .entity_id == $base and 
+        [.candidates[] | select(
           (.disabled_by == null) and
           (.restored != true) and
           (.state != "unavailable")
-        ) | .entity_id' --arg base "$base")
+        )] | sort_by(.entity_id) | reverse | .[0].entity_id // empty' --arg base "$base")
       
       if [[ -z "$winners" ]]; then
         winners=$(echo "$grp" | jq -r '
-          .candidates[] | select(
-            .entity_id == $base and 
+          [.candidates[] | select(
             (.disabled_by == null) and
             (.state != "unavailable")
-          ) | .entity_id' --arg base "$base")
+          )] | sort_by(.entity_id) | reverse | .[0].entity_id // empty' --arg base "$base")
       fi
       
       if [[ -z "$winners" ]]; then
         winners=$(echo "$grp" | jq -r '
-          .candidates[] | select(
-            (.disabled_by == null) and
-            (.restored != true) and
-            (.state != "unavailable")
-          ) | .entity_id' | head -1)
+          [.candidates[] | select(.disabled_by == null)] | 
+          sort_by(.entity_id) | reverse | .[0].entity_id // empty' --arg base "$base")
       fi
       
+      # Final fallback to base name if available
       if [[ -z "$winners" ]]; then
         winners=$(echo "$grp" | jq -r '
-          .candidates[] | select(
-            (.disabled_by == null) and
-            (.state != "unavailable")
-          ) | .entity_id' | head -1)
+          .candidates[] | select(.entity_id == $base) | .entity_id' --arg base "$base")
       fi
       
       # If still no winners, skip this group entirely
@@ -275,42 +270,56 @@ execute_plan() {
       losers=$(echo "$grp" | jq -r --arg w "$winners" '.candidates[] | select(.entity_id != $w) | .entity_id')
       log_info "Group base=$base winner=${winners:-none}"
       
-      # Collision detection: if base exists but not the winner, park it safely
-      if [[ -n "$winners" && "$winners" != "$base" ]] && entity_exists "$base"; then
-         park="${base}__retired__${TS}"
-         # Ensure parking doesn't create another collision
-         local retries=0
-         while entity_exists "$park" && [[ $retries -lt 5 ]]; do
-           park="${base}__retired__${TS}__${retries}"
-           ((retries++))
-         done
-         if entity_exists "$park"; then
-           log_error "Cannot safely park $base - too many collisions"; continue
-         fi
-         log_info "Parking existing base: $base -> $park"
-         if rename_entity "$base" "$park"; then
-           ((parked++))
-         else
-           ((failures++))
-         fi
-      fi
+      # TAKEOVER OPERATION: Winner takes over base name, old entities are disabled
       
-      # Disable losers
-      for e in $losers; do
-        if disable_entity "$e"; then
-          ((disabled++))
-        else
-          ((failures++))
-        fi
-      done
-      
-      # If winner lacks base name, rename to base
+      # Step 1: If winner is not the base entity, perform takeover
       if [[ -n "$winners" && "$winners" != "$base" ]]; then
+        log_info "TAKEOVER: $winners will take over $base"
+        
+        # Disable the old base entity (stale registration)
+        if entity_exists "$base"; then
+          log_info "Disabling stale base entity: $base"
+          if disable_entity "$base"; then
+            ((disabled++))
+          else
+            ((failures++))
+            log_error "Failed to disable base entity, skipping takeover"
+            continue
+          fi
+        fi
+        
+        # Rename winner to take over base name
+        log_info "Renaming winner to base name: $winners -> $base"
         if rename_entity "$winners" "$base"; then
           ((renamed++))
         else
           ((failures++))
+          log_error "Failed to rename winner to base name"
         fi
+        
+        # Disable all other losers (except the base we already handled)
+        for e in $losers; do
+          if [[ "$e" != "$base" ]]; then
+            log_info "Disabling duplicate entity: $e"
+            if disable_entity "$e"; then
+              ((disabled++))
+            else
+              ((failures++))
+            fi
+          fi
+        done
+        
+      else
+        # Winner is already the base entity, just disable losers
+        log_info "Base entity $base is already the winner, disabling duplicates"
+        for e in $losers; do
+          log_info "Disabling duplicate entity: $e"
+          if disable_entity "$e"; then
+            ((disabled++))
+          else
+            ((failures++))
+          fi
+        done
       fi
       
       ((processed++))
@@ -353,7 +362,7 @@ execute_plan() {
     echo "  scan       - Scan for duplicate entities (default, read-only)"
     echo "  plan       - Generate duplicate_cleanup_plan.json (no changes)"
     echo "  preflight  - Run binary acceptance checklist before execution"
-    echo "  execute    - Execute a plan file safely (requires --plan and --token)"
+    echo "  execute    - Execute a plan file safely (TAKEOVER mode: newer entities take base names)"
     echo "  analyze    - Detailed analysis of duplicate entities"
     echo "  suggest    - Suggest cleanup actions"
     echo "  disable    - Programmatically disable entity (requires entity_id)"
