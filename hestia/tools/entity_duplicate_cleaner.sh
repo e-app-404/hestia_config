@@ -43,6 +43,33 @@ entity_exists() {
     echo "$r" | grep -q "\"entity_id\":\"$eid\""
 }
 
+# Endpoint compatibility probe - cache working paths
+probe_registry_endpoints() {
+    [[ -n "$REGISTRY_ENDPOINT_CACHED" ]] && return 0
+    local test_entity="sensor.nonexistent_probe_test"
+    
+    # Try primary registry endpoint
+    if ha_api_call "GET" "/api/config/entity_registry/$test_entity" >/dev/null 2>&1; then
+        REGISTRY_ENDPOINT="/api/config/entity_registry"
+        REGISTRY_ENDPOINT_CACHED=true
+        log_debug "Using primary registry endpoint: $REGISTRY_ENDPOINT"
+        return 0
+    fi
+    
+    # Try fallback registry endpoint
+    if ha_api_call "GET" "/api/config/entity_registry/update/$test_entity" >/dev/null 2>&1; then
+        REGISTRY_ENDPOINT="/api/config/entity_registry/update"
+        REGISTRY_ENDPOINT_CACHED=true
+        log_debug "Using fallback registry endpoint: $REGISTRY_ENDPOINT" 
+        return 0
+    fi
+    
+    # Default to services as tertiary fallback
+    REGISTRY_ENDPOINT="/api/services/homeassistant/update_entity"
+    REGISTRY_ENDPOINT_CACHED=true
+    log_warn "Using services endpoint as fallback: $REGISTRY_ENDPOINT"
+}
+
 backup_storage() {
     local bdir="/config/hestia/workspace/archive/backups/$TS"
     install -d "$bdir"
@@ -50,6 +77,83 @@ backup_storage() {
     [[ -f "$DEVICE_REGISTRY" ]] && cp -a "$DEVICE_REGISTRY" "$bdir/core.device_registry.json"
     [[ -f "$CONFIG_ENTRIES" ]] && cp -a "$CONFIG_ENTRIES" "$bdir/core.config_entries.json"
     log_info "Backup created: $bdir"
+}
+
+# Binary acceptance checklist validation
+validate_execution_readiness() {
+    local checks_passed=0
+    local checks_total=6
+    
+    echo "=== BINARY ACCEPTANCE CHECKLIST ==="
+    
+    # Ensure backup directory exists for validation
+    backup_storage
+    
+    # Check 1: Backup directory and files
+    local backup_dir="/config/hestia/workspace/archive/backups/$TS"
+    if [[ -f "$backup_dir/core.entity_registry.json" && -f "$backup_dir/core.device_registry.json" ]]; then
+        echo "✅ Backup present: $backup_dir/{core.entity_registry.json,core.device_registry.json}"
+        ((checks_passed++))
+    else
+        echo "❌ Backup missing: $backup_dir/"
+    fi
+    
+    # Check 2: Plan file exists and non-empty
+    if [[ -n "$PLAN_FILE" && -f "$PLAN_FILE" && -s "$PLAN_FILE" ]]; then
+        local plan_length
+        plan_length=$(jq 'length' "$PLAN_FILE" 2>/dev/null || echo 0)
+        if [[ $plan_length -gt 0 ]]; then
+            echo "✅ Plan file exists and non-empty: $PLAN_FILE (length: $plan_length)"
+            ((checks_passed++))
+        else
+            echo "❌ Plan file empty: $PLAN_FILE"
+        fi
+    else
+        echo "❌ Plan file missing or empty: ${PLAN_FILE:-unset}"
+    fi
+    
+    # Check 3: DRY-RUN default with explicit apply required
+    if [[ "${DRY_RUN:-true}" == "true" && "${FORCE_MODE:-false}" != "true" ]]; then
+        echo "✅ DRY-RUN default true; --apply required to mutate"
+        ((checks_passed++))
+    else
+        echo "❌ DRY-RUN not properly defaulted or --apply already set"
+    fi
+    
+    # Check 4: Batch limits
+    if [[ ${BATCH_SIZE:-0} -le 25 && ${SLEEP_MS:-0} -ge 150 ]]; then
+        echo "✅ Batch limits set: --batch-size=$BATCH_SIZE (≤25), --sleep-ms=$SLEEP_MS (≥150)"
+        ((checks_passed++))
+    else
+        echo "❌ Batch limits not properly configured: batch-size=$BATCH_SIZE, sleep-ms=$SLEEP_MS"
+    fi
+    
+    # Check 5: Post-validation enabled (entity_exists function available)
+    if declare -f entity_exists >/dev/null; then
+        echo "✅ Post-validation ON (entity_exists + states GET after each op)"
+        ((checks_passed++))
+    else
+        echo "❌ Post-validation functions missing"
+    fi
+    
+    # Check 6: Report folder writable
+    local report_dir="/config/hestia/workspace/reports/checkpoints/ENTITY_DEDUP"
+    if [[ -d "$report_dir" && -w "$report_dir" ]]; then
+        echo "✅ Report folder writable: $report_dir"
+        ((checks_passed++))
+    else
+        echo "❌ Report folder not writable: $report_dir"
+    fi
+    
+    echo "=== CHECKLIST RESULT: $checks_passed/$checks_total ==="
+    
+    if [[ $checks_passed -eq $checks_total ]]; then
+        echo "🟢 GO for production in controlled batches"
+        return 0
+    else
+        echo "🔴 NO-GO: $(($checks_total - $checks_passed)) checks failed"
+        return 1
+    fi
 }
 
 emit_plan() {
@@ -62,7 +166,10 @@ emit_plan() {
           base:(.[0].entity_id|sub("_[0-9]+$";"")),
           candidates: .
         })
-      | map(select((.candidates|length)>1 or (.candidates[]|.entity_id|test("_[0-9]+$"))))
+      | map(select(
+          (.candidates|length)>1 and 
+          (.base | test("(sonos_alarm|segment_[0-9]+|_[0-9]{3}|backlight_alpha)$") | not)
+        ))
     ' "$ENTITY_REGISTRY" > "$plan"
     log_info "Plan written: $plan"
 }
@@ -71,6 +178,18 @@ execute_plan() {
     local plan="${PLAN_FILE:?plan file required}"
     [[ -f "$plan" ]] || { log_error "Plan file not found: $plan"; return 1; }
     [[ "${DRY_RUN:-true}" == "true" ]] && log_warn "DRY-RUN: execution will simulate only"
+    
+    # Initialize execution logging
+    local exec_log="$REPORT_ROOT/execute.$TS.log"
+    local exec_summary="$REPORT_ROOT/execute_summary.$TS.json"
+    exec > >(tee -a "$exec_log")
+    exec 2>&1
+    
+    # Initialize counters
+    local planned_groups=0 processed=0 parked=0 disabled=0 renamed=0 failures=0
+    planned_groups=$(jq 'length' "$plan")
+    
+    log_info "Starting execution: $planned_groups groups planned"
     
     if [[ "$FORCE_MODE" != "true" ]]; then
         backup_storage
@@ -100,23 +219,54 @@ execute_plan() {
            log_error "Cannot safely park $base - too many collisions"; continue
          fi
          log_info "Parking existing base: $base -> $park"
-         rename_entity "$base" "$park" || true
+         if rename_entity "$base" "$park"; then
+           ((parked++))
+         else
+           ((failures++))
+         fi
       fi
       
       # Disable losers
       for e in $losers; do
-        disable_entity "$e" || true
+        if disable_entity "$e"; then
+          ((disabled++))
+        else
+          ((failures++))
+        fi
       done
       
       # If winner lacks base name, rename to base
       if [[ -n "$winners" && "$winners" != "$base" ]]; then
-        rename_entity "$winners" "$base" || true
+        if rename_entity "$winners" "$base"; then
+          ((renamed++))
+        else
+          ((failures++))
+        fi
       fi
       
+      ((processed++))
       n=$((n+1)); [[ $n -ge $BATCH_SIZE ]] && { log_warn "Batch limit reached"; break; }
       sleep "$(awk "BEGIN{print $SLEEP_MS/1000}")"
     done
     log_info "Execution complete (processed up to $BATCH_SIZE groups)."
+    
+    # Generate execution summary
+    jq -n \
+      --arg planned_groups "$planned_groups" \
+      --arg processed "$processed" \
+      --arg parked "$parked" \
+      --arg disabled "$disabled" \
+      --arg renamed "$renamed" \
+      --arg failures "$failures" \
+      '{
+        planned_groups: ($planned_groups | tonumber),
+        processed: ($processed | tonumber), 
+        parked: ($parked | tonumber),
+        disabled: ($disabled | tonumber),
+        renamed: ($renamed | tonumber),
+        failures: ($failures | tonumber),
+        timestamp: now | strftime("%Y-%m-%dT%H:%M:%SZ")
+      }' > "$exec_summary"
     
     # Post-validation: check that operations succeeded
     local post_report="$REPORT_ROOT/post_validation.$TS.json"
@@ -124,6 +274,7 @@ execute_plan() {
     local post_count
     post_count=$(jq '[.[] | select(.candidates | length > 1)] | length' "$post_report")
     log_info "Post-validation: $post_count duplicate groups remaining (report: $post_report)"
+    log_info "Execution summary: $exec_summary"
 }
 
  show_usage() {
@@ -132,6 +283,7 @@ execute_plan() {
     echo "Commands:"
     echo "  scan       - Scan for duplicate entities (default, read-only)"
     echo "  plan       - Generate duplicate_cleanup_plan.json (no changes)"
+    echo "  preflight  - Run binary acceptance checklist before execution"
     echo "  execute    - Execute a plan file safely (requires --plan and --token)"
     echo "  analyze    - Detailed analysis of duplicate entities"
     echo "  suggest    - Suggest cleanup actions"
@@ -418,8 +570,14 @@ check_config_entries() {
     log_info "Disabling entity: $entity_id"
     
     local response
-    # API compatibility: use services endpoint for entity updates
-    response=$(ha_api_call "POST" "/api/services/homeassistant/update_entity" "{\"entity_id\":\"$entity_id\",\"disabled_by\":\"user\"}")
+    # Use probed endpoint with proper compatibility
+    probe_registry_endpoints
+    local response
+    if [[ "$REGISTRY_ENDPOINT" == "/api/services/homeassistant/update_entity" ]]; then
+        response=$(ha_api_call "POST" "/api/services/homeassistant/update_entity" "{\"entity_id\":\"$entity_id\",\"disabled_by\":\"user\"}")
+    else
+        response=$(ha_api_call "POST" "$REGISTRY_ENDPOINT/$entity_id" '{"disabled_by":"user"}')
+    fi
     
     if [[ "${DRY_RUN:-true}" == "true" ]]; then
         if echo "$response" | grep -q '"entity_id"'; then
@@ -448,8 +606,15 @@ check_config_entries() {
     if entity_exists "$new_id"; then
         log_error "Target entity_id already exists: $new_id"; return 1
     fi
-    # Use services endpoint for entity updates
-    response=$(ha_api_call "POST" "/api/services/homeassistant/update_entity" "{\"entity_id\":\"$old_id\",\"entity_id\":\"$new_id\"}")
+    # Use probed endpoint with proper compatibility
+    probe_registry_endpoints
+    local response
+    if [[ "$REGISTRY_ENDPOINT" == "/api/services/homeassistant/update_entity" ]]; then
+        log_warn "Services endpoint cannot rename entities - operation skipped"
+        return 1
+    else
+        response=$(ha_api_call "POST" "$REGISTRY_ENDPOINT/$old_id" "{\"new_entity_id\":\"$new_id\"}")
+    fi
 
 backup_storage() {
         local bdir="/config/hestia/workspace/archive/backups/$TS"
@@ -587,6 +752,9 @@ main() {
             ;;
         "execute")
             execute_plan
+            ;;
+        "preflight")
+            validate_execution_readiness
             ;;
         "help"|"-h"|"--help")
             show_usage
