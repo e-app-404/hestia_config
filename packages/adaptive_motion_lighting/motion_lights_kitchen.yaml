@@ -6,7 +6,7 @@ automation:
     max_exceeded: silent
     mode: restart
     use_blueprint:
-      path: hestia/library/blueprints/sensor-light.yaml
+      path: Blackshome/sensor-light.yaml
       input:
         bypass_entity: binary_sensor.motion_bypass_kitchen
         inhibit_on_startup_seconds: 10

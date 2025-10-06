@@ -6,7 +6,7 @@ automation:
     max_exceeded: silent
     mode: restart
     use_blueprint:
-      path: hestia/library/blueprints/sensor-light.yaml
+      path: Blackshome/sensor-light.yaml
       input:
         ambient_lux_entity: sensor.bedroom_illuminance_beta
         ambient_lux_threshold: 10

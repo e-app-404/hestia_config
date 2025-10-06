@@ -1,0 +1,190 @@
+playbook:
+  meta:
+    name: "Glances over Tailscale | Ops Playbook"
+    version: "1.0.0"
+    owner: "ops@local"
+    last_reviewed_utc: "2025-10-06T00:00:00Z"
+    summary: >
+      Operate and repair Glances on macbook and expose it to Home Assistant over Tailscale Serve.
+      Canonical HA root is /config. No assumptions—each step has prechecks & acceptance.
+    related_docs:
+      - "hestia/config/network/cloudflare.conf"
+      - "hestia/config/network/network.conf"
+
+  inventory:
+    mac:
+      host: "macbook"
+      tailscale_fqdn: "macbook.reverse-beta.ts.net"
+      glances_loopback: "http://127.0.0.1:61208"
+      glances_api: "http://127.0.0.1:61208/api/4/all"
+      launch_agent_label: "io.glances.web"
+      launch_agent_path: "/Users/<USER>/Library/LaunchAgents/io.glances.web.plist"
+      logs:
+        out: "/Users/<USER>/Library/Logs/glances-web.out"
+        err: "/Users/<USER>/Library/Logs/glances-web.err"
+    ha:
+      dns_host: "172.30.32.3"
+      tailscale_dns: "dns://100.100.100.100"
+      public_fallback_dns: ["dns://1.1.1.1", "dns://8.8.8.8"]
+      test_url: "http://macbook.reverse-beta.ts.net:61208/api/4/all"
+
+  health_checks:
+    mac:
+      - name: "Glances HTTP 200"
+        cmd: "curl -s -o /dev/null -w '%{http_code}\\n' {{mac.glances_api}}"
+        expect: "200"
+      - name: "Listener bound"
+        cmd: "lsof -nP -iTCP:61208 -sTCP:LISTEN || netstat -an | grep 61208"
+        expect_contains: "127.0.0.1:61208"
+      - name: "LaunchAgent state"
+        cmd: "launchctl print gui/$(id -u)/{{mac.launch_agent_label}} | egrep 'state|pid|runs|last exit code'"
+        expect_contains: ["state = running", "last exit code = (never exited)"]
+      - name: "Tailscale serve mapping"
+        cmd: "tailscale serve status"
+        expect_contains:
+          - "http://macbook:61208 (tailnet only)"
+          - "proxy http://127.0.0.1:61208"
+    ha:
+      - name: "MagicDNS resolves Mac"
+        cmd: "nslookup {{inventory.mac.tailscale_fqdn}} {{ha.dns_host}}"
+        expect_contains: "{{inventory.mac.tailscale_fqdn}}"
+      - name: "Reach Glances through tailnet"
+        cmd: "curl -s -o /dev/null -w '%{http_code}\\n' {{ha.test_url}}"
+        expect: "200"
+
+  runbooks:
+
+    - id: "RB-001-start-glances"
+      name: "Start/repair Glances via LaunchAgent (mac)"
+      precheck: ["Glances HTTP 200"]
+      when_failed:
+        steps:
+          - name: "Reload LaunchAgent"
+            cmd: |
+              launchctl unload {{mac.launch_agent_path}} 2>/dev/null || true
+              launchctl load  {{mac.launch_agent_path}}
+          - name: "Verify HTTP"
+            cmd: "curl -s -o /dev/null -w '%{http_code}\\n' {{mac.glances_api}}"
+            expect: "200"
+      acceptance: ["Glances HTTP 200", "LaunchAgent state"]
+
+    - id: "RB-002-ensure-serve"
+      name: "Ensure Tailscale Serve points to local Glances (mac)"
+      precheck:
+        - name: "Serve status"
+          cmd: "tailscale serve status"
+      steps_if_missing:
+        - name: "Activate Serve (tailnet only)"
+          cmd: "sudo tailscale serve --bg --http=61208 {{mac.glances_loopback}}"
+      acceptance:
+        - name: "Serve status"
+          cmd: "tailscale serve status"
+          expect_contains:
+            - "http://macbook:61208 (tailnet only)"
+            - "http://macbook.reverse-beta.ts.net:61208 (tailnet only)"
+            - "proxy http://127.0.0.1:61208"
+
+    - id: "RB-003-ha-dns-baseline"
+      name: "Home Assistant: DNS baseline for MagicDNS + public fallback"
+      steps:
+        - name: "Set HA DNS servers (MagicDNS + public)"
+          cmd: |
+            ha dns options --servers {{ha.tailscale_dns}},{{ha.public_fallback_dns[0]}},{{ha.public_fallback_dns[1]}}
+            ha dns restart
+      acceptance:
+        - name: "HA resolves macbook tsnet name"
+          cmd: "nslookup {{inventory.mac.tailscale_fqdn}} {{ha.dns_host}}"
+          expect_contains: "{{inventory.mac.tailscale_fqdn}}"
+
+    - id: "RB-004-ha-glances-integration-check"
+      name: "Home Assistant Glances integration connectivity"
+      steps:
+        - name: "Direct test from HA shell"
+          cmd: "curl -s -o /dev/null -w '%{http_code}\\n' {{ha.test_url}}"
+          expect: "200"
+      acceptance:
+        - name: "Glances sensor updates"
+          note: "Confirm sensors update without retry/failure in HA logs."
+
+  incidents:
+
+    - id: "INC-TS-001-mac-internet-dead"
+      name: "Mac internet down after Tailscale toggle/reset"
+      diagnosis:
+        - name: "Raw TLS reachability (no DNS)"
+          cmd: "nc -vz 1.1.1.1 443 || nc -vz 9.9.9.9 443"
+      branch:
+        dns_issue:
+          test: "Raw TLS works but named curl fails"
+          actions:
+            - "sudo networksetup -setwebproxystate 'Wi-Fi' off; sudo networksetup -setsecurewebproxystate 'Wi-Fi' off; sudo networksetup -setautoproxystate 'Wi-Fi' off"
+            - "sudo networksetup -setdnsservers 'Wi-Fi' 1.1.1.1 8.8.8.8"
+            - "sudo rm -f /etc/resolver/ts.net /etc/resolver/reverse-beta.ts.net"
+            - "sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder"
+        routing_issue:
+          test: "Raw TLS fails"
+          actions:
+            - "tailscale down 2>/dev/null || true"
+            - "sudo launchctl kickstart -k system/io.tailscale.ipn.macos"
+            - "sudo networksetup -setdhcp 'Wi-Fi'"
+            - "route -n get default"
+      acceptance:
+        - name: "General internet"
+          cmd: "curl -I https://example.com"
+        - name: "Controlplane reachable"
+          cmd: "tailscale netcheck"
+
+  utilities:
+
+    glances_launchagent_plist: |
+      <?xml version="1.0" encoding="UTF-8"?>
+      <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+      <plist version="1.0"><dict>
+        <key>Label</key><string>io.glances.web</string>
+        <key>ProgramArguments</key>
+        <array>
+          <string>/opt/homebrew/bin/glances</string>
+          <string>-w</string>
+          <string>--bind</string><string>127.0.0.1</string>
+          <string>--port</string><string>61208</string>
+        </array>
+        <key>EnvironmentVariables</key>
+        <dict><key>PATH</key><string>/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin</string></dict>
+        <key>RunAtLoad</key><true/>
+        <key>KeepAlive</key><true/>
+        <key>StandardOutPath</key><string>/Users/<USER>/Library/Logs/glances-web.out</string>
+        <key>StandardErrorPath</key><string>/Users/<USER>/Library/Logs/glances-web.err</string>
+      </dict></plist>
+
+    glances_health_helper: |
+      # ~/bin/glances-health.sh
+      # Ensures Glances is healthy; reloads LaunchAgent if not.
+      # Usage: ~/bin/glances-health.sh
+      # Expects: io.glances.web plist installed.
+      # Exit 0 on OK; non-zero on failure to repair.
+      # ---8<---
+      #!/usr/bin/env bash
+      set -euo pipefail
+      URL="http://127.0.0.1:61208/api/4/all"
+      code=$(curl -s -o /dev/null -w '%{http_code}' "$URL" || echo 000)
+      if [[ "$code" == "200" ]]; then
+        echo "OK glances: $code"; exit 0;
+      fi
+      echo "REPAIR: restarting LaunchAgent… (prev=$code)"
+      launchctl unload ~/Library/LaunchAgents/io.glances.web.plist 2>/dev/null || true
+      launchctl load  ~/Library/LaunchAgents/io.glances.web.plist
+      sleep 1
+      post=$(curl -s -o /dev/null -w '%{http_code}' "$URL" || echo 000)
+      echo "POST glances=$post"
+      [[ "$post" == "200" ]]
+
+  acceptance_matrix:
+    mac_ok: ["Glances HTTP 200", "Listener bound", "LaunchAgent state", "Tailscale serve mapping"]
+    ha_ok:  ["MagicDNS resolves Mac", "Reach Glances through tailnet"]
+    end_to_end: "HA Glances integration shows live metrics, no retry/backoff in logs."
+
+  storage:
+    suggested_path: "/config/playbooks/glances_tailnet_playbook.yaml"
+    notes:
+      - "Replace <USER> with your macOS short username in plist/log paths."
+      - "Keep this file under version control alongside HA config."
