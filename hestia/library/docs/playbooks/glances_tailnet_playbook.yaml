@@ -10,6 +10,7 @@ playbook:
     related_docs:
       - "hestia/config/network/cloudflare.conf"
       - "hestia/config/network/network.conf"
+      - "hestia/config/network/tailscale_machines.topology.json"
 
   inventory:
     mac:
