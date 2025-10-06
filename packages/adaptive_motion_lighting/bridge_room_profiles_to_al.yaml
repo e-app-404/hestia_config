@@ -17,9 +17,9 @@ automation:
     variables:
       room_map: >-
         {{ {
-          'bedroom': {'al_main':'switch.adaptive_lighting_bedroom','al_sleep':'switch.adaptive_lighting_sleep_mode_bedroom','group':'light.adaptive_bedroom_light_group'},
-          'wardrobe': {'al_main':'switch.adaptive_lighting_wardrobe','al_sleep':'switch.adaptive_lighting_sleep_mode_wardrobe','group':'light.adaptive_wardrobe_light_group'},
-          'desk': {'al_main':'switch.adaptive_lighting_desk','al_sleep':'switch.adaptive_lighting_sleep_mode_desk','group':'light.adaptive_desk_light_group'},
+          'bedroom': {'al_main':'switch.adaptive_lighting_bedroom','al_sleep':'switch.adaptive_lighting_sleep_mode_bedroom','group':'light.al_adaptive_bedroom_light_group'},
+          'wardrobe': {'al_main':'switch.adaptive_lighting_wardrobe','al_sleep':'switch.adaptive_lighting_sleep_mode_wardrobe','group':'light.al_adaptive_wardrobe_light_group'},
+          'desk': {'al_main':'switch.adaptive_lighting_desk','al_sleep':'switch.adaptive_lighting_sleep_mode_desk','group':'light.al_adaptive_desk_light_group'},
           'ensuite': {'al_main':'switch.adaptive_lighting_ensuite','al_sleep':'switch.adaptive_lighting_sleep_mode_ensuite','group':'light.group_ensuite_lights'},
           'kitchen': {'al_main':'switch.adaptive_lighting_kitchen','al_sleep':'switch.adaptive_lighting_sleep_mode_kitchen','group':'light.group_kitchen_lights'},
           'hallway_downstairs': {'al_main':'switch.adaptive_lighting_hallway_downstairs','al_sleep':'switch.adaptive_lighting_sleep_mode_hallway_downstairs','group':'light.group_hallway_lights_downstairs'},

@@ -7,13 +7,13 @@
 
 adaptive_lighting:
   - name: bedroom
-    lights: [ light.adaptive_bedroom_light_group]
+    lights: [ light.al_adaptive_bedroom_light_group]
     only_once: true
     take_over_control: true
     initial_transition: 0.3
     transition: 2
   - name: desk
-    lights: [ light.adaptive_desk_light_group ]
+    lights: [ light.al_adaptive_desk_light_group ]
     only_once: true
     take_over_control: true
     initial_transition: 0.3

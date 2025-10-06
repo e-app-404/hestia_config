@@ -6,8 +6,8 @@ automation:
     trigger:
       - platform: state
         entity_id:
-          - light.adaptive_bedroom_light_group
-          - light.adaptive_desk_light_group
+          - light.al_adaptive_bedroom_light_group
+          - light.al_adaptive_desk_light_group
           - light.group_ensuite_lights
           - light.group_kitchen_lights
           - light.group_hallway_lights_downstairs
@@ -18,8 +18,8 @@ automation:
     variables:
       map: >-
         {{ {
-          'light.adaptive_bedroom_light_group':'var.motion_profile_bedroom',
-          'light.adaptive_desk_light_group':'var.motion_profile_desk',
+          'light.al_adaptive_bedroom_light_group':'var.motion_profile_bedroom',
+          'light.al_adaptive_desk_light_group':'var.motion_profile_desk',
           'light.group_ensuite_lights':'var.motion_profile_ensuite',
           'light.group_kitchen_lights':'var.motion_profile_kitchen',
           'light.group_hallway_lights_downstairs':'var.motion_profile_hallway_downstairs',
