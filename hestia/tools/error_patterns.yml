@@ -95,6 +95,7 @@ patterns:
       - "Entity restore state conflicts with new registrations"
     solution:
       - "Remove duplicate entities via Developer Tools > Entities"
+      - "For unavailable base + active suffixed: disable base, rename suffixed to take base entity_id"
       - "Clean up orphaned config entries from removed integrations"
       - "Disable old entities before re-registering devices"
       - "Use entity registry cleanup tools to remove suffixed duplicates"
@@ -109,7 +110,10 @@ patterns:
     resolution_steps:
       - "Identify duplicate entities: grep '_2.*entity_id' .storage/core.entity_registry"
       - "Find associated config entries with different device_ids"
-      - "Remove old/unavailable entities via Developer Tools"
+      - "For unavailable base + active suffixed pattern:"
+      - "  1. Disable the unavailable base entity"
+      - "  2. Change suffixed entity_id to take over base entity_id (via Developer Tools)"
+      - "  3. Verify the renamed entity maintains functionality"
       - "Clean up orphaned device registrations"
       - "Restart Home Assistant to refresh entity states"
     tooling:

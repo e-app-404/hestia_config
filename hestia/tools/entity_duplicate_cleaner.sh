@@ -31,18 +31,34 @@ log_debug() {
 }
 
 show_usage() {
-    echo "Usage: $0 [command]"
+    echo "Usage: $0 [command] [options]"
     echo
     echo "Commands:"
-    echo "  scan      - Scan for duplicate entities (default)"
-    echo "  analyze   - Detailed analysis of duplicate entities"
-    echo "  suggest   - Suggest cleanup actions"
-    echo "  help      - Show this help message"
+    echo "  scan       - Scan for duplicate entities (default)"
+    echo "  analyze    - Detailed analysis of duplicate entities"
+    echo "  suggest    - Suggest cleanup actions"
+    echo "  disable    - Programmatically disable entity (requires entity_id)"
+    echo "  rename     - Programmatically rename entity (requires old_id and new_id)"
+    echo "  takeover   - Complete takeover process (requires base_id and suffix_id)"
+    echo "  help       - Show this help message"
+    echo
+    echo "Options:"
+    echo "  --entity-id ID    - Target entity for disable operation"
+    echo "  --old-id ID       - Original entity_id for rename operation"
+    echo "  --new-id ID       - New entity_id for rename operation"
+    echo "  --base-id ID      - Base entity_id for takeover operation"
+    echo "  --suffix-id ID    - Suffixed entity_id for takeover operation"
+    echo "  --token TOKEN     - Home Assistant long-lived access token"
+    echo "  --url URL         - Home Assistant URL (default: http://localhost:8123)"
+    echo "  --dry-run         - Show what would be done without executing"
     echo
     echo "Examples:"
-    echo "  $0 scan                 # Quick scan for duplicates"
-    echo "  $0 analyze             # Detailed analysis"
-    echo "  $0 suggest             # Get cleanup suggestions"
+    echo "  $0 scan                                      # Quick scan for duplicates"
+    echo "  $0 analyze                                   # Detailed analysis"
+    echo "  $0 suggest                                   # Get cleanup suggestions"
+    echo "  $0 disable --entity-id sensor.old_entity    # Disable specific entity"
+    echo "  $0 rename --old-id sensor.old --new-id sensor.new --token TOKEN"
+    echo "  $0 takeover --base-id sensor.activity --suffix-id sensor.activity_2 --token TOKEN"
 }
 
 scan_duplicate_entities() {
@@ -165,9 +181,11 @@ suggest_cleanup() {
     done
     
     echo
-    echo "2. Disable unused entities:"
+    echo "2. Proper entity ID management:"
     echo "   - If base entity is 'unavailable' and suffixed entity is active:"
-    echo "     → Keep the suffixed entity, disable the base entity"
+    echo "     → Step 1: Disable the unavailable base entity"
+    echo "     → Step 2: Change suffixed entity_id to take over base entity_id"
+    echo "     → Step 3: Verify renamed entity maintains functionality"
     echo "   - If base entity is active and suffixed entity is redundant:"
     echo "     → Disable the suffixed entity"
     echo
@@ -201,10 +219,168 @@ check_config_entries() {
     fi
 }
 
-main() {
-    local command="${1:-scan}"
+# Parse command line arguments
+parse_args() {
+    COMMAND="${1:-scan}"
+    shift || true
     
-    case "$command" in
+    while [[ $# -gt 0 ]]; do
+        case $1 in
+            --entity-id)
+                ENTITY_ID="$2"
+                shift 2
+                ;;
+            --old-id)
+                OLD_ID="$2"
+                shift 2
+                ;;
+            --new-id)
+                NEW_ID="$2"
+                shift 2
+                ;;
+            --base-id)
+                BASE_ID="$2"
+                shift 2
+                ;;
+            --suffix-id)
+                SUFFIX_ID="$2"
+                shift 2
+                ;;
+            --token)
+                HA_TOKEN="$2"
+                shift 2
+                ;;
+            --url)
+                HA_URL="$2"
+                shift 2
+                ;;
+            --dry-run)
+                DRY_RUN=true
+                shift
+                ;;
+            *)
+                log_error "Unknown option: $1"
+                show_usage
+                exit 1
+                ;;
+        esac
+    done
+}
+
+# Home Assistant API operations
+ha_api_call() {
+    local method="$1"
+    local endpoint="$2"
+    local data="${3:-}"
+    
+    if [[ -z "$HA_TOKEN" ]]; then
+        log_error "Home Assistant token required for API operations. Use --token option."
+        return 1
+    fi
+    
+    local url="${HA_URL:-http://localhost:8123}$endpoint"
+    local curl_args=("-s" "-X" "$method" "-H" "Authorization: Bearer $HA_TOKEN" "-H" "Content-Type: application/json")
+    
+    if [[ -n "$data" ]]; then
+        curl_args+=("-d" "$data")
+    fi
+    
+    if [[ "$DRY_RUN" == "true" ]]; then
+        log_info "[DRY RUN] Would call: curl ${curl_args[*]} $url"
+        if [[ -n "$data" ]]; then
+            log_debug "[DRY RUN] With data: $data"
+        fi
+        return 0
+    fi
+    
+    curl "${curl_args[@]}" "$url"
+}
+
+disable_entity() {
+    local entity_id="$1"
+    
+    if [[ -z "$entity_id" ]]; then
+        log_error "Entity ID required for disable operation"
+        return 1
+    fi
+    
+    log_info "Disabling entity: $entity_id"
+    
+    local response
+    response=$(ha_api_call "POST" "/api/config/entity_registry/update/$entity_id" '{"disabled_by": "user"}')
+    
+    if [[ "$DRY_RUN" != "true" ]]; then
+        if echo "$response" | grep -q '"entity_id"'; then
+            log_info "✓ Successfully disabled entity: $entity_id"
+        else
+            log_error "✗ Failed to disable entity: $entity_id"
+            log_debug "Response: $response"
+            return 1
+        fi
+    fi
+}
+
+rename_entity() {
+    local old_id="$1"
+    local new_id="$2"
+    
+    if [[ -z "$old_id" || -z "$new_id" ]]; then
+        log_error "Both old and new entity IDs required for rename operation"
+        return 1
+    fi
+    
+    log_info "Renaming entity: $old_id → $new_id"
+    
+    local response
+    response=$(ha_api_call "POST" "/api/config/entity_registry/update/$old_id" "{\"new_entity_id\": \"$new_id\"}")
+    
+    if [[ "$DRY_RUN" != "true" ]]; then
+        if echo "$response" | grep -q "\"entity_id\":\"$new_id\""; then
+            log_info "✓ Successfully renamed entity: $old_id → $new_id"
+        else
+            log_error "✗ Failed to rename entity: $old_id → $new_id"
+            log_debug "Response: $response"
+            return 1
+        fi
+    fi
+}
+
+takeover_entity_id() {
+    local base_id="$1"
+    local suffix_id="$2"
+    
+    if [[ -z "$base_id" || -z "$suffix_id" ]]; then
+        log_error "Both base and suffix entity IDs required for takeover operation"
+        return 1
+    fi
+    
+    log_info "Starting entity ID takeover process:"
+    log_info "  Base entity (to disable): $base_id"
+    log_info "  Suffix entity (to rename): $suffix_id"
+    
+    # Step 1: Disable the base entity
+    log_info "Step 1: Disabling base entity..."
+    if ! disable_entity "$base_id"; then
+        log_error "Failed to disable base entity. Aborting takeover."
+        return 1
+    fi
+    
+    # Step 2: Rename suffix entity to take over base entity_id
+    log_info "Step 2: Renaming suffix entity to take over base entity_id..."
+    if ! rename_entity "$suffix_id" "$base_id"; then
+        log_error "Failed to rename suffix entity. Base entity is disabled but takeover incomplete."
+        return 1
+    fi
+    
+    log_info "✓ Entity ID takeover completed successfully!"
+    log_info "  $suffix_id now operates as $base_id"
+    log_warn "Restart Home Assistant to ensure all references are updated."
+}
+
+main() {
+    parse_args "$@"
+    
+    case "$COMMAND" in
         "scan")
             scan_duplicate_entities
             ;;
@@ -215,12 +391,21 @@ main() {
             suggest_cleanup
             check_config_entries
             ;;
+        "disable")
+            disable_entity "$ENTITY_ID"
+            ;;
+        "rename")
+            rename_entity "$OLD_ID" "$NEW_ID"
+            ;;
+        "takeover")
+            takeover_entity_id "$BASE_ID" "$SUFFIX_ID"
+            ;;
         "help"|"-h"|"--help")
             show_usage
             exit 0
             ;;
         *)
-            log_error "Unknown command: $command"
+            log_error "Unknown command: $COMMAND"
             show_usage
             exit 1
             ;;
