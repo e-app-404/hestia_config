@@ -16,6 +16,7 @@ RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
+GREEN='\033[0;32m'
 NC='\033[0m' # No Color
 
 log_info() {
@@ -32,6 +33,14 @@ log_error() {
 
 log_debug() {
     echo -e "${BLUE}[DEBUG]${NC} $1"
+}
+
+log_success() {
+    echo -e "${GREEN}[SUCCESS]${NC} $1"
+}
+
+log_action() {
+    echo -e "${YELLOW}[ACTION]${NC} $1"
 }
 
 # Safety functions
@@ -80,7 +89,7 @@ backup_storage() {
     # Backup entire .storage directory
     if [[ -d "/config/.storage" ]]; then
         cp -a "/config/.storage" "$bdir/storage_complete"
-        log_success "Complete .storage directory backed up to: $bdir/storage_complete"
+        log_info "Complete .storage directory backed up to: $bdir/storage_complete"
     else
         log_error ".storage directory not found at /config/.storage"
         return 1
@@ -647,6 +656,10 @@ check_config_entries() {
                 ;;
             --dry-run)
                 DRY_RUN=true
+                shift
+                ;;
+            --apply)
+                DRY_RUN=false
                 shift
                 ;;
             *)
