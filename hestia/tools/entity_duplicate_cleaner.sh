@@ -172,7 +172,11 @@ emit_plan() {
     
     # Get current states for all entities to check restored/unavailable status
     local states_file="$REPORT_ROOT/current_states.$TS.json"
-    ha_api_call "GET" "/api/states" > "$states_file"
+    if [[ "${DRY_RUN:-true}" == "true" ]]; then
+        echo "[]" > "$states_file"  # Skip API call in dry-run mode
+    else
+        ha_api_call "GET" "/api/states" > "$states_file"
+    fi
     
     jq -r --slurpfile states "$states_file" '
       .data.entities
