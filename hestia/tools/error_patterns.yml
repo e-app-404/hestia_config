@@ -78,6 +78,44 @@ patterns:
       - "hestia/tools/backup_validator.sh - comprehensive backup agent testing"
       - "jq '.data.backups[] | select(.failed_agent_ids | length > 0)' /config/.storage/backup"
 
+  - name: "entity_registry_duplication"
+    category: "entity_registry"
+    description: "Duplicate entities with _2 suffix from device re-registration"
+    error_format: "Multiple entities with same name but different unique_id patterns"
+    symptoms:
+      - "Entities appearing with _2, _3 suffixes in entity registry"
+      - "Original entities showing as 'unavailable' with 'restored: true'"
+      - "Duplicate mobile app or integration device registrations"
+      - "Entity conflicts after device re-pairing or integration reload"
+    root_causes:
+      - "Mobile app re-registration creating new device with different device_id"
+      - "Integration reload without proper cleanup of old entities"
+      - "Device pairing conflicts with existing entity unique_ids"
+      - "Orphaned entities from removed integrations not cleaned up"
+      - "Entity restore state conflicts with new registrations"
+    solution:
+      - "Remove duplicate entities via Developer Tools > Entities"
+      - "Clean up orphaned config entries from removed integrations"
+      - "Disable old entities before re-registering devices"
+      - "Use entity registry cleanup tools to remove suffixed duplicates"
+    examples:
+      bad: |
+        # Entity registry showing duplicates
+        sensor.ephone_uk_activity (unavailable, restored: true)
+        sensor.ephone_uk_activity_2 (active, new device_id)
+      good: |
+        # Clean entity registry
+        sensor.ephone_uk_activity (active, single registration)
+    resolution_steps:
+      - "Identify duplicate entities: grep '_2.*entity_id' .storage/core.entity_registry"
+      - "Find associated config entries with different device_ids"
+      - "Remove old/unavailable entities via Developer Tools"
+      - "Clean up orphaned device registrations"
+      - "Restart Home Assistant to refresh entity states"
+    tooling:
+      - "Developer Tools > Entities - search for _2, _3 suffixes"
+      - "jq '.data.entities[] | select(.entity_id | contains(\"_2\"))' .storage/core.entity_registry"
+
   - name: "blueprint_path_resolution"
     category: "automation_blueprint"
     description: "Blueprint loading errors due to incorrect path references"
