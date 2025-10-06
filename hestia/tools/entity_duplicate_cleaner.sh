@@ -54,7 +54,7 @@ entity_exists() {
 
 # Endpoint compatibility probe - cache working paths
 probe_registry_endpoints() {
-    [[ -n "$REGISTRY_ENDPOINT_CACHED" ]] && return 0
+    [[ -n "${REGISTRY_ENDPOINT_CACHED:-}" ]] && return 0
     local test_entity="sensor.nonexistent_probe_test"
     
     # Try primary registry endpoint
