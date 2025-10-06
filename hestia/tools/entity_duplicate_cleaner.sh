@@ -34,6 +34,98 @@ log_debug() {
     echo -e "${BLUE}[DEBUG]${NC} $1"
 }
 
+# Safety functions
+entity_exists() {
+    # states endpoint returns 200 if entity is registered and known to HA
+    local eid="$1"
+    local r; r=$(ha_api_call "GET" "/api/states/$eid") || true
+    [[ "${DRY_RUN:-true}" == "true" ]] && return 1
+    echo "$r" | grep -q "\"entity_id\":\"$eid\""
+}
+
+backup_storage() {
+    local bdir="/config/hestia/workspace/archive/backups/$TS"
+    install -d "$bdir"
+    cp -a "$ENTITY_REGISTRY" "$bdir/core.entity_registry.json"
+    [[ -f "$DEVICE_REGISTRY" ]] && cp -a "$DEVICE_REGISTRY" "$bdir/core.device_registry.json"
+    [[ -f "$CONFIG_ENTRIES" ]] && cp -a "$CONFIG_ENTRIES" "$bdir/core.config_entries.json"
+    log_info "Backup created: $bdir"
+}
+
+emit_plan() {
+    local plan="$REPORT_ROOT/duplicate_cleanup_plan.$TS.json"
+    jq -r '
+      .data.entities
+      | map({entity_id,platform,device_id,config_entry_id,unique_id,disabled_by})
+      | group_by(.entity_id|sub("_[0-9]+$";""))
+      | map({
+          base:(.[0].entity_id|sub("_[0-9]+$";"")),
+          candidates: .
+        })
+      | map(select((.candidates|length)>1 or (.candidates[]|.entity_id|test("_[0-9]+$"))))
+    ' "$ENTITY_REGISTRY" > "$plan"
+    log_info "Plan written: $plan"
+}
+
+execute_plan() {
+    local plan="${PLAN_FILE:?plan file required}"
+    [[ -f "$plan" ]] || { log_error "Plan file not found: $plan"; return 1; }
+    [[ "${DRY_RUN:-true}" == "true" ]] && log_warn "DRY-RUN: execution will simulate only"
+    
+    if [[ "$FORCE_MODE" != "true" ]]; then
+        backup_storage
+    fi
+    
+    local n=0
+    # Strategy: keep first non-suffixed or most-enabled; disable others; fix name
+    jq -c '.[]' "$plan" | while read -r grp; do
+      base=$(echo "$grp" | jq -r '.base')
+      winners=$(echo "$grp" | jq -r '.candidates[] | select(.entity_id == $base and (.disabled_by == null)) | .entity_id' --arg base "$base")
+      if [[ -z "$winners" ]]; then
+        winners=$(echo "$grp" | jq -r '.candidates[] | select(.disabled_by == null) | .entity_id' | head -1)
+      fi
+      losers=$(echo "$grp" | jq -r --arg w "$winners" '.candidates[] | select(.entity_id != $w) | .entity_id')
+      log_info "Group base=$base winner=${winners:-none}"
+      
+      # Collision detection: if base exists but not the winner, park it safely
+      if [[ -n "$winners" && "$winners" != "$base" ]] && entity_exists "$base"; then
+         park="${base}__retired__${TS}"
+         # Ensure parking doesn't create another collision
+         local retries=0
+         while entity_exists "$park" && [[ $retries -lt 5 ]]; do
+           park="${base}__retired__${TS}__${retries}"
+           ((retries++))
+         done
+         if entity_exists "$park"; then
+           log_error "Cannot safely park $base - too many collisions"; continue
+         fi
+         log_info "Parking existing base: $base -> $park"
+         rename_entity "$base" "$park" || true
+      fi
+      
+      # Disable losers
+      for e in $losers; do
+        disable_entity "$e" || true
+      done
+      
+      # If winner lacks base name, rename to base
+      if [[ -n "$winners" && "$winners" != "$base" ]]; then
+        rename_entity "$winners" "$base" || true
+      fi
+      
+      n=$((n+1)); [[ $n -ge $BATCH_SIZE ]] && { log_warn "Batch limit reached"; break; }
+      sleep "$(awk "BEGIN{print $SLEEP_MS/1000}")"
+    done
+    log_info "Execution complete (processed up to $BATCH_SIZE groups)."
+    
+    # Post-validation: check that operations succeeded
+    local post_report="$REPORT_ROOT/post_validation.$TS.json"
+    analyze_duplicates > "$post_report"
+    local post_count
+    post_count=$(jq '[.[] | select(.candidates | length > 1)] | length' "$post_report")
+    log_info "Post-validation: $post_count duplicate groups remaining (report: $post_report)"
+}
+
  show_usage() {
     echo "Usage: $0 [command] [options]"
     echo
@@ -59,8 +151,8 @@ log_debug() {
     echo "  --plan FILE       - Plan file to execute"
     echo "  --batch-size N    - Max changes per run (default: 25)"
     echo "  --sleep-ms N      - Sleep between ops (default: 150)"
-    echo "  echo "  --plan FILE       - Plan file to execute"
-    echo "  --batch-size N    - Max changes per run (default: 25)"
+    echo "  --dry-run         - Simulate operations without changes (default: true)"
+    echo "  --apply           - Actually perform operations (overrides dry-run)"
     echo "  --sleep-ms N      - Sleep between ops (default: 150)"
     echo "  --force           - Skip backup requirement for destructive ops"
     echo "  --dry-run         - Show what would be done without executing (default)""
@@ -326,8 +418,8 @@ check_config_entries() {
     log_info "Disabling entity: $entity_id"
     
     local response
-    # API compatibility: some builds expect POST /api/config/entity_registry/<entity_id>
-    response=$(ha_api_call "POST" "/api/config/entity_registry/$entity_id" '{"disabled_by":"user"}')
+    # API compatibility: use services endpoint for entity updates
+    response=$(ha_api_call "POST" "/api/services/homeassistant/update_entity" "{\"entity_id\":\"$entity_id\",\"disabled_by\":\"user\"}")
     
     if [[ "${DRY_RUN:-true}" == "true" ]]; then
         if echo "$response" | grep -q '"entity_id"'; then
@@ -356,14 +448,8 @@ check_config_entries() {
     if entity_exists "$new_id"; then
         log_error "Target entity_id already exists: $new_id"; return 1
     fi
-    response=$(ha_api_call "POST" "/api/config/entity_registry/$old_id" "{\"new_entity_id\":\"$new_id\"}")
-entity_exists() {
-        # states endpoint returns 200 if entity is registered and known to HA
-        local eid="$1"
-        local r; r=$(ha_api_call "GET" "/api/states/$eid") || true
-        [[ "$DRY_RUN" == "true" ]] && return 1
-        echo "$r" | grep -q "\"entity_id\":\"$eid\""
-}
+    # Use services endpoint for entity updates
+    response=$(ha_api_call "POST" "/api/services/homeassistant/update_entity" "{\"entity_id\":\"$old_id\",\"entity_id\":\"$new_id\"}")
 
 backup_storage() {
         local bdir="/config/hestia/workspace/archive/backups/$TS"
@@ -495,6 +581,12 @@ main() {
             ;;
         "takeover")
             takeover_entity_id "$BASE_ID" "$SUFFIX_ID"
+            ;;
+        "plan")
+            emit_plan
+            ;;
+        "execute")
+            execute_plan
             ;;
         "help"|"-h"|"--help")
             show_usage
