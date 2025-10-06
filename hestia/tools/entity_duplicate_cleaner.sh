@@ -82,12 +82,23 @@ backup_storage() {
 # Binary acceptance checklist validation
 validate_execution_readiness() {
     local checks_passed=0
-    local checks_total=6
+    local checks_total=7
     
     echo "=== BINARY ACCEPTANCE CHECKLIST ==="
     
     # Ensure backup directory exists for validation
     backup_storage
+    
+    # Pre-check: validate enhanced filtering logic
+    local test_plan="$REPORT_ROOT/validation_plan.$TS.json"
+    emit_plan
+    if [[ -f "$PLAN_FILE" ]]; then
+        local risky_groups
+        risky_groups=$(jq '[.[] | select(.candidates | map(select(.restored == true or .state == "unavailable")) | length == length)] | length' "$PLAN_FILE")
+        if [[ $risky_groups -gt 0 ]]; then
+            echo "⚠️  WARNING: $risky_groups groups contain only restored/unavailable entities - manual review required"
+        fi
+    fi
     
     # Check 1: Backup directory and files
     local backup_dir="/config/hestia/workspace/archive/backups/$TS"
@@ -158,9 +169,18 @@ validate_execution_readiness() {
 
 emit_plan() {
     local plan="$REPORT_ROOT/duplicate_cleanup_plan.$TS.json"
-    jq -r '
+    
+    # Get current states for all entities to check restored/unavailable status
+    local states_file="$REPORT_ROOT/current_states.$TS.json"
+    ha_api_call "GET" "/api/states" > "$states_file"
+    
+    jq -r --slurpfile states "$states_file" '
       .data.entities
-      | map({entity_id,platform,device_id,config_entry_id,unique_id,disabled_by})
+      | map({
+          entity_id,platform,device_id,config_entry_id,unique_id,disabled_by,
+          state: ($states[0][] | select(.entity_id == .entity_id) | .state // "unknown"),
+          restored: ($states[0][] | select(.entity_id == .entity_id) | .attributes.restored // false)
+        })
       | group_by(.entity_id|sub("_[0-9]+$";""))
       | map({
           base:(.[0].entity_id|sub("_[0-9]+$";"")),
@@ -171,7 +191,9 @@ emit_plan() {
           (.base | test("(sonos_alarm|segment_[0-9]+|_[0-9]{3}|backlight_alpha)$") | not)
         ))
     ' "$ENTITY_REGISTRY" > "$plan"
-    log_info "Plan written: $plan"
+    
+    log_info "Plan written: $plan (with state/restored info)"
+    rm -f "$states_file"
 }
 
 execute_plan() {
@@ -199,10 +221,53 @@ execute_plan() {
     # Strategy: keep first non-suffixed or most-enabled; disable others; fix name
     jq -c '.[]' "$plan" | while read -r grp; do
       base=$(echo "$grp" | jq -r '.base')
-      winners=$(echo "$grp" | jq -r '.candidates[] | select(.entity_id == $base and (.disabled_by == null)) | .entity_id' --arg base "$base")
+      
+      # Enhanced winner selection with state/restored filtering
+      # Priority: 1) exact base + enabled + not restored + available
+      #          2) exact base + enabled + available 
+      #          3) any enabled + not restored + available
+      #          4) any enabled + available
+      
+      winners=$(echo "$grp" | jq -r '
+        .candidates[] | select(
+          .entity_id == $base and 
+          (.disabled_by == null) and
+          (.restored != true) and
+          (.state != "unavailable")
+        ) | .entity_id' --arg base "$base")
+      
       if [[ -z "$winners" ]]; then
-        winners=$(echo "$grp" | jq -r '.candidates[] | select(.disabled_by == null) | .entity_id' | head -1)
+        winners=$(echo "$grp" | jq -r '
+          .candidates[] | select(
+            .entity_id == $base and 
+            (.disabled_by == null) and
+            (.state != "unavailable")
+          ) | .entity_id' --arg base "$base")
       fi
+      
+      if [[ -z "$winners" ]]; then
+        winners=$(echo "$grp" | jq -r '
+          .candidates[] | select(
+            (.disabled_by == null) and
+            (.restored != true) and
+            (.state != "unavailable")
+          ) | .entity_id' | head -1)
+      fi
+      
+      if [[ -z "$winners" ]]; then
+        winners=$(echo "$grp" | jq -r '
+          .candidates[] | select(
+            (.disabled_by == null) and
+            (.state != "unavailable")
+          ) | .entity_id' | head -1)
+      fi
+      
+      # If still no winners, skip this group entirely
+      if [[ -z "$winners" ]]; then
+        log_warn "No suitable winner found in group base=$base - skipping"
+        continue
+      fi
+      
       losers=$(echo "$grp" | jq -r --arg w "$winners" '.candidates[] | select(.entity_id != $w) | .entity_id')
       log_info "Group base=$base winner=${winners:-none}"
       
