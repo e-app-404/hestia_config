@@ -28,8 +28,55 @@ patterns:
           {{ state is not none and state.state not in ['unknown','unavailable',''] 
              and state.state | abs or 0 }}
     references:
-      - "ADR-0002: Jinja Template Standards"
-      - "ADR-0020: Template Error Handling"
+      - "Home Assistant Template Documentation"
+      - "Jinja2 Template Documentation"
+      - "ADR-0020: Template Error Patterns"
+
+  - name: "backup_agent_upload_failure"
+    category: "backup"
+    description: "Backup uploads failing to configured remote locations like Synology NAS"
+    error_format: "backup could not be uploaded to the configured locations [location]"
+    symptoms:
+      - "Automatic backup upload failed notifications"
+      - "Backup agent showing failed uploads in storage"
+      - "Synology NAS backup errors"
+      - "Backup warning notifications in Home Assistant"
+    root_causes:
+      - "Multi-factor authentication enabled on NAS user account"
+      - "Backup target path does not exist or lacks write permissions"
+      - "Network connectivity issues or firewall blocking access"
+      - "Insufficient storage space on backup destination"
+      - "Expired or invalid authentication credentials"
+      - "NAS service disabled or configuration changed"
+    solution:
+      - "Disable MFA for backup service account on NAS"
+      - "Verify backup path exists and has proper permissions"
+      - "Test network connectivity and API access"
+      - "Reconfigure Home Assistant backup integration"
+    examples:
+      bad: |
+        # .storage/backup showing failed uploads
+        {
+          "backup_id": "abc123",
+          "failed_agent_ids": ["synology_dsm.2330RLRDXJ1F8"],
+          "failed_folders": []
+        }
+      good: |
+        # .storage/backup with successful uploads
+        {
+          "backup_id": "abc123",
+          "failed_agent_ids": [],
+          "failed_folders": []
+        }
+    resolution_steps:
+      - "Run backup validation: hestia/tools/backup_validator.sh"
+      - "Check NAS user MFA and privilege settings"
+      - "Verify backup path permissions and disk space"
+      - "Test API connectivity to backup destination"
+      - "Reconfigure integration if authentication fails"
+    tooling:
+      - "hestia/tools/backup_validator.sh - comprehensive backup agent testing"
+      - "jq '.data.backups[] | select(.failed_agent_ids | length > 0)' /config/.storage/backup"
 
   - name: "blueprint_path_resolution"
     category: "automation_blueprint"
