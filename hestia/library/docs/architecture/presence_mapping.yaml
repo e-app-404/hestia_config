@@ -1,0 +1,84 @@
+---
+# ═══════════════════════════════════════════════════════════════════════
+# ▶ MOTION LIGHTS PRESENCE SENSORS ◀
+# Per-area presence sensors for motion-lighting blueprints
+# CRITICAL: There is an untracked housemate - do NOT use these sensors 
+# to *require* presence unless you accept possible false negatives
+# ═══════════════════════════════════════════════════════════════════════
+
+# ═══ AREA PRESENCE MAPPING ═══
+# Copy this configuration into your motion-lighting blueprint inputs:
+area_presence_map:
+  bedroom: [person.evert]           # Known person's private space
+  desk: [person.evert]              # Known person's private space
+  living_room: [person.evert]       # Shared space but trackable person
+  kitchen: []                       # Untracked housemate uses kitchen
+  ensuite: [person.evert]           # Known person's private space
+  hallway_downstairs: []            # Common transit area
+  hallway_upstairs: []              # Common transit area
+  powder_room: []                   # Untracked housemate uses powder room
+  laundry_room: []                  # Untracked housemate uses laundry room
+
+policy:
+  untracked_housemate: true
+  require_presence_for_activation_default: false
+  presence_enhancement_mode: true   # Enhance behavior, never block
+  
+# ═══ TEMPLATE SENSORS ═══
+
+YAML: "/config/hestia/domain/templates/person_presence.yaml"
+
+Each sensor should:
+- Evaluate true when any person in that area’s list is “present?” per the Logic Rules.
+- Read the persons from a YAML list at the top of the file (area_presence_map:). Initialize with the mapping printed by the Dev Tools Template (leave empty lists where unknown).
+
+Logic Rules:
+- A person.* is present when state is "home" (or in a whitelisted home zone if the instance uses a custom home zone name).
+- If a person.* has linked device_trackers, treat any linked tracker at home as present unless its source_type is router and the phone tracker is not_home → prefer phone trackers over router pings.
+- If a person.* has no linked trackers, fall back to its direct state only.
+- Output should be resilient to missing attributes; never error on missing keys.
+
+Derive staleness: if all contributing trackers for a person are unknown or have last_changed > 24h, treat as not reliable and show a ⚠️ flag.
+
+Example state template pattern: |
+  {{ expand(area_presence_map.bedroom | default([]))
+    | selectattr('domain', 'equalto', 'person')
+    | map(attribute='entity_id')
+    | list
+    | select('match', '.*')  # passthrough
+  }}
+
+# ═══ USAGE NOTES FOR MOTION BLUEPRINTS ═══
+#
+# In motion-lighting package inputs, use these patterns:
+#
+# CRITICAL SETTINGS:
+# presence_entity: ""                          # Leave blank by default
+# require_presence_for_activation: false       # NEVER block motion activation
+#
+# OPTIONAL ENHANCEMENTS:
+# timeout_seconds: >-
+#   {% set base = 120 %}
+#   {% set presence_sensor = 'binary_sensor.' ~ area ~ '_presence_beta' %}
+#   {% if is_state(presence_sensor, 'on') %}
+#     {{ base + 180 }}  # Extend timeout when known person present
+#   {% else %}
+#     {{ base }}        # Normal timeout (untracked housemate may still be present)
+#   {% endif %}
+#
+# brightness_enhancement: >-
+#   {% set presence_sensor = 'binary_sensor.' ~ area ~ '_presence_beta' %}
+#   {% if is_state(presence_sensor, 'on') %}
+#     {{ 255 }}         # Full brightness for known person
+#   {% else %}
+#     {{ 128 }}         # Dimmer for untracked housemate (but still activate!)
+#   {% endif %}
+#
+# ═══ VALIDATION CHECKLIST ═══
+# ✅ area_presence_map defines person assignments per area
+# ✅ policy.untracked_housemate = true
+# ✅ policy.require_presence_for_activation_default = false  
+# ✅ All sensors include untracked_housemate_warning attribute
+# ✅ Kitchen/ensuite/hallway sensors always return false (untracked areas)
+# ✅ Bedroom/desk/living_room use robust person presence logic
+# ✅ Motion packages must set require_presence_for_activation = false

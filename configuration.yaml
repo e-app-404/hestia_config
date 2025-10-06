@@ -8,11 +8,10 @@ homeassistant:
   packages: !include_dir_named packages
   allowlist_external_dirs:
     - "/config"
-    - "/config/hestia/workspace/operations/diagnostics/logs"
-    - "/config/hestia/workspace/cache/scratch"
+    - "/config/hestia/workspace/operations/logs"
     - "/config/hestia/tools/utils"
-    - "/config/hestia/workspace"
     - "/config/hestia/library/docs/governance/system_instruction"
+    - "/config/hestia/config/diagnostics"
 
 # 🔧 UI-based automations (editable via GUI)
 automation ui: !include automations.yaml
@@ -43,7 +42,9 @@ input_datetime: !include domain/helpers/input_datetime.yaml
 input_text: !include domain/helpers/input_text.yaml
 counter: !include domain/helpers/counter.yaml
 
-# 👤 person entities
+# 🔧 shell commands (loaded via packages)
+
+# �👤 person entities
 #person: !include domain/persons/key_persons.yaml
 
 

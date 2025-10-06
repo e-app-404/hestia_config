@@ -1,0 +1,33 @@
+{% set rooms = ['bedroom','desk','ensuite','kitchen','hallway_downstairs','hallway_upstairs','ottoman'] %}
+{% set al_main = {
+  'bedroom':'switch.adaptive_lighting_bedroom',
+  'desk':'switch.adaptive_lighting_desk',
+  'ensuite':'switch.adaptive_lighting_ensuite',
+  'kitchen':'switch.adaptive_lighting_kitchen',
+  'hallway_downstairs':'switch.adaptive_lighting_hallway_downstairs',
+  'hallway_upstairs':'switch.adaptive_lighting_hallway_upstairs',
+  'wardrobe':'switch.adaptive_lighting_wardrobe',
+  'ottoman':'switch.adaptive_lighting_ottoman' } %}
+{% set group = {
+  'bedroom':'light.adaptive_bedroom_light_group',
+  'desk':'light.adaptive_desk_light_group',
+  'ensuite':'light.group_ensuite_lights',
+  'kitchen':'light.group_kitchen_lights',
+  'hallway_downstairs':'light.group_hallway_lights_downstairs',
+  'hallway_upstairs':'light.group_hallway_lights_upstairs',
+  'wardrobe':'light.group_wardrobe_light',
+  'ottoman':'light.group_ottoman_light' } %}
+{% set mp = { r:'var.motion_profile_' ~ r for r in rooms } %}
+
+# Adaptive Lighting & Motion Audit
+{% for r in rooms %}
+### {{ r }}
+- **AL switch**: {{ al_main[r] }} → {{ states(al_main[r]) | default('unknown') }}
+- **Motion timeout**: {{ mp[r] }}.attributes.timeout_seconds → {{ state_attr(mp[r],'timeout_seconds') | default('n/a') }} sec
+- **Bypass**: {{ mp[r] }}.attributes.bypass → {{ state_attr(mp[r],'bypass') | default(false) }}
+- **Last triggered**: {{ mp[r] }}.attributes.last_triggered → {{ state_attr(mp[r],'last_triggered') | default('') }}
+- **Group light**: {{ group[r] }} → {{ states(group[r]) | default('unknown') }}
+  {% set scms = state_attr(group[r], 'supported_color_modes') or [] %}
+  - supports_color_temp: {{ 'color_temp' in scms }} (modes: {{ scms }})
+---
+{% endfor %}

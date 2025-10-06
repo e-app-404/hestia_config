@@ -12,7 +12,6 @@ supersedes: []
 last_updated: 2025-09-12
 ---
 
-
 # ADR-0011: Switch Modeling & Validation (Netgear GS724T v3 and Similar)
 
 ## Context

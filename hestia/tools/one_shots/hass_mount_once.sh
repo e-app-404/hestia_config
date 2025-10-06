@@ -1,10 +1,23 @@
+# --- BEGIN HOME STABILIZER ---
+# Resolve the login home from Directory Service so we don't trust a modified $HOME (e.g., actions-runner)
+USER_REAL_HOME="$(/usr/bin/dscl . -read /Users/$USER NFSHomeDirectory 2>/dev/null | awk '{print $2}')"
+[ -n "$USER_REAL_HOME" ] || USER_REAL_HOME="/Users/$USER"
+HOME_SAFE="$USER_REAL_HOME"
+
+# If a process set HOME to actions-runner, override it for this script
+case "$HOME" in
+  */actions-runner/*)
+    echo "[hass] WARNING: overriding HOME ('$HOME') -> '$HOME_SAFE'" >&2
+    HOME="$HOME_SAFE"; export HOME;;
+esac
+# --- END HOME STABILIZER ---
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Idempotent helper to mount the canonical edit root at $HOME/hass using macOS Keychain-backed
+# Idempotent helper to mount the canonical edit root at $HOME_SAFE/hass using macOS Keychain-backed
 # credentials and mount_smbfs -N. Intended for use from a LaunchAgent with KeepAlive.NetworkState.
 
-MOUNT_POINT="${MOUNT_POINT:-$HOME/hass}"
+MOUNT_POINT="${MOUNT_POINT:-$HOME_SAFE/hass}"
 SMB_USER="${SMB_USER:-}"
 SMB_HOST="${SMB_HOST:-}"
 SMB_SHARE="${SMB_SHARE:-}"
@@ -55,9 +68,9 @@ fi
 # - uses login keychain (mount_smbfs -N)
 
 set -e
-MNT="${MNT:-$HOME/hass}"
+MNT="${MNT:-$HOME_SAFE/hass}"
 SRC="${SRC:-//evertappels@homeassistant.local/config}"
-LOG="${LOG:-$HOME/Library/Logs/hass-mount.log}"
+LOG="${LOG:-$HOME_SAFE/Library/Logs/hass-mount.log}"
 
 mkdir -p "$MNT" "$(dirname "$LOG")"
 

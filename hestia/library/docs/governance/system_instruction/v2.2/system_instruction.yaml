@@ -59,7 +59,7 @@ foundation:
     _meta_ref: meta_changelog_reboot
     structure:
       snapshot_root: /mnt/data/final_snapshot_yyyy-mm-dd_hh-mm-ss/
-      apollo_knowledge: apollo_knowledge/n/ha/share/APOLLO/
+      apollo_knowledge: apollo_knowledge/config/share/APOLLO/
       config_snapshot: config_snapshot/
       git_mirrors: Volumes/Share/GIT/
     understanding_snapshot_structure: |-
@@ -85,9 +85,9 @@ foundation:
         config_root: /config/
         realpath_equivalent: /homeassistant/
         symlink_equivalent: /config/
-        macos_smb_share_equivalent: /n/ha/
+        macos_smb_share_equivalent: /config/
     doctrine_path_reference:
-      canonical_path: /mnt/data/final_snapshot_*/apollo_knowledge/n/ha/share/APOLLO/core/governance/ARCHITECTURE_DOCTRINE.md
+      canonical_path: /mnt/data/final_snapshot_*/apollo_knowledge/config/share/APOLLO/core/governance/ARCHITECTURE_DOCTRINE.md
       usage: |-
         This file is the governing schema and must not be overwritten.
         It forms the source-of-truth for:

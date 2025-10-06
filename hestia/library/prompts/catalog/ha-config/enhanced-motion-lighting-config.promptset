@@ -18,27 +18,77 @@ promptset:
   # Artifacts & Bindings
   artifacts:
     required:
-      - path: library/blueprints/
-        description: "Complete blueprint collection for motion-lighting automation"
+      # Input package drafts to be evaluated and migrated
+      - path: hestia/workspace/cache/canvas/package_motion_lights-1a.yaml
+        description: "One of the two generated package drafts to be evaluated and migrated; contains automation aliases, helper declarations and informs safety pass and mapping decisions"
+      - path: hestia/workspace/cache/canvas/package_motion_lights-2a.yaml
+        description: "Second generated package draft to be evaluated; contains additional alias lists and VAR sync automations; used to identify missing helpers and consolidation opportunities"
+      
+      # Core blueprints for instantiation
+      - path: library/blueprints/sensor-light.yaml
+        description: "Chosen core blueprint for motion lighting; execution plan instantiates this blueprint for each area (referenced as the canonical blueprint)"
+      
+      # Entity mapping sources
       - path: config/devices/presence.conf
-        description: "Presence & device tracking entities (1 person, 11 trackers)"
+        description: "Source of person and presence entity ids to map presence-related blueprint inputs in the mapping pass"
       - path: config/devices/motion.conf
-        description: "Motion/occupancy sensors across all integrations"
+        description: "Source of motion/occupancy sensor entity ids — used to populate blueprint inputs for triggers"
       - path: config/devices/lighting.conf
-        description: "Lighting entities inventory (59 entities, 14 groups)"
+        description: "Source of light entity ids and group targets to map blueprint light_target inputs"
+      - path: config/preferences/motion_timeout.conf
+        description: "Provides recommended timeout profiles to centralize into var or input_number entries during helper consolidation"
+      
+      # Target destination
+      - path: packages/motion_lighting/
+        description: "Where the new per-area package files, helpers and VALIDATION.md will live (execution plan step 3 & 4)"
+    
+    consulted:
+      # Source promptsets and generation rules
+      - path: hestia/library/prompts/catalog/ha-config/enhanced-motion-lighting-config.promptset
+        description: "Primary promptset that defines the desired behavior, blueprint selection, household policy, and constraints used to craft optimized prompt2 and the execution plan"
+      - path: hestia/library/prompts/catalog/ha-config/motion_automation_blueprint.promptset
+        description: "Provides constraints and deliverables (variables, packages, blueprint mapping) — used to shape mapping pass in execution plan"
+      
+      # Additional blueprints
+      - path: library/blueprints/sensor-light-add-on.yaml
+        description: "Used for add-on behaviors and advanced features where appropriate; included in plan for potential instantiation"
+      - path: library/blueprints/motion_lights.yaml
+        description: "Blueprint collection that informs trigger/condition patterns and parameter expectations; useful for advanced mapping and avoiding duplicated automations"
+      - path: library/blueprints/ha-blueprint-linked-entities.yaml
+        description: "For linked entities patterns and considerations about not duplicating automations that control the same target"
+      
+      # Optional entity sources
       - path: config/devices/illuminance.conf
-        description: "Light sensors (alpha/beta tier)"
+        description: "Optional — used for dynamic lighting / lux gating inputs where available"
+      
+      # Area and registry mapping
+      - path: config/registry/room_registry.yaml
+        description: "Area -> sensor -> lighting mapping guide; used to ensure entity mapping uses canonical area ids and adheres to ADR naming"
       - path: library/docs/ADR/area_hierarchy.yaml
         description: "Area relationship contract (v1.1 with registry alignment)"
-      - path: config/registry/room_registry.yaml
-        description: "Room registry with sensor mappings"
-      - path: config/preferences/motion_timeout.conf
-        description: "Motion timeout configuration matrix"
+      
+      # Usage guides and policy
+      - path: library/helpers/motion_lights/blueprint_usage_guide.md
+        description: "Operational guidance for presence policy (asymmetric), validation checklist and recommended defaults — used to craft validation steps and default require_presence_for_activation=false"
+      - path: library/helpers/motion_lights/presence_sensors.yaml
+        description: "Template sensors and area_presence_map to inform presence input assignments and # TODO placeholders"
+      
+      # ADR governance and policy
       - path: library/docs/ADR/ADR-0021-motion-occupancy-presence-signals.md
-        description: "Motion/occupancy/presence signal standardization ADR"
-    optional:
-      - path: helpers/motion_lights/
-        description: "Motion-lighting blueprint helpers and presence sensors"
+        description: "ADR requirements for motion/occupancy/presence handling used in both prompt2 and execution steps to avoid violating workspace policies"
+      - path: library/docs/ADR/ADR-0016-canonical-ha-smb-mount.md
+        description: "Minor reference for workspace structure and placement of helpers (ensures consistent package locations)"
+      - path: library/docs/ADR/ADR-0023-operator-priority-merge-resolution.md
+        description: "Informs merge and branching strategy (create backup branch before mass edits) — included in execution plan step 1"
+      
+      # Validation tools
+      - path: .yamllint.yaml
+        description: "Ensures lint rules align with repo standards (2-space indent, etc.) before running Yamllint as validation"
+    
+    rationale: |
+      Files labeled "required" are necessary inputs the execution plan relies on to produce correct blueprint instantiations and helper definitions.
+      Files labeled "consulted" are important for policy, naming, and optional features; they influence defaults, validation steps and hardening decisions.
+      Destination folder packages/motion_lighting/ is listed as required because the execution plan creates per-area YAML files there.
 
   bindings:
     protocols:
@@ -48,6 +98,11 @@ promptset:
       - presence_enhancement_without_blocking
     hard_guardrails:
       - "Do not substitute alpha-tier entities when a beta-tier entity is missing; emit blank input with '# TODO'."
+      - "Map concrete entities from device config files FIRST; only use TODO for genuinely missing beta composites."
+      - "Every automation MUST have complete use_blueprint block; no alias-only entries allowed."
+      - "All helper blocks (input_boolean, var) MUST have concrete initial values, not empty declarations."
+      - "DO NOT gate essential lighting behind unmeasurable helpers (cooking_mode, sleep_mode, etc.); use sensor-driven logic only."
+      - "DO NOT gate essential lighting behind unmeasurable helpers (cooking_mode, sleep_mode, etc.); use sensor-driven logic only."
     persona: home_automation_architect
 
   retrieval_tags:
@@ -72,9 +127,13 @@ promptset:
       main_area: bedroom
       subareas: [desk, wardrobe, ottoman, hifi_configuration]
       connected_areas: [ensuite]
+      cross_area_triggers:
+        wardrobe_to_bedroom: "wardrobe motion/occupancy contributes to bedroom aggregate (unidirectional)"
+        wardrobe_to_ottoman: "wardrobe motion triggers ottoman lightstrip activation"
       behaviors:
         desk: "Extended timeout for work sessions, presence-enhanced brightness, independence from bedroom main lighting (uses occupancy_beta if available)"
-        wardrobe: "Brief interaction lighting, auto-off; OPTIONAL package unless explicitly requested"
+        wardrobe: "30-second timeout lightstrip automation; contributes to bedroom motion/occupancy but not vice versa; triggers ottoman lightstrip"
+        ottoman: "Vibration sensor integration with wardrobe motion trigger for lightstrip activation"
         ensuite: "Privacy-aware timing, shower occupancy detection integration"
 
     kitchen_complex:
@@ -82,7 +141,7 @@ promptset:
       main_area: kitchen
       connected_areas: [laundry_room]
       behaviors:
-        kitchen: "Cooking-mode context awareness, counter vs ambient lighting zones"
+        kitchen: "Standard motion lighting with appropriate timeout for food prep and cleanup activities"
 
     hallway_system:
       description: "Circulation spaces"
@@ -106,8 +165,9 @@ promptset:
     rules:
       bedroom: [core_executor]
       desk: [core_executor, link_entities]           # task lighting coherence
-      wardrobe: [core_executor]                      # brief interaction; shorter timeout
-      kitchen: [core_executor, add_on]               # cooking context tweaks
+      wardrobe: [core_executor, link_entities]       # 30s timeout + ottoman lightstrip trigger
+      ottoman: [link_entities]                       # vibration sensor + wardrobe motion linkage
+      kitchen: [core_executor]                       # standard motion lighting
       ensuite: [core_executor]                       # privacy timing
       hallway_downstairs: [core_executor]
       hallway_upstairs: [core_executor]
@@ -134,6 +194,7 @@ promptset:
       motion_sensors: "binary_sensor.*_motion_beta"
       occupancy_sensors: "binary_sensor.*_occupancy_beta"
       illuminance_sensors: "sensor.*_illuminance_beta"
+      vibration_sensors: "binary_sensor.*_vibration"
       presence_entity: "person.evert"
 
   # Prompts Section
@@ -230,14 +291,17 @@ promptset:
         
         ## Phase 2: Blueprint Configuration Generation
         
-        Based on the validated entity inventory, generate working YAML configurations using appropriate blueprints from the blueprint collection.
+        Based on the validated entity inventory, generate COMPLETE, DEPLOYABLE YAML configurations using appropriate blueprints from the blueprint collection.
+        
+        CRITICAL: Generate full automation bodies with `use_blueprint:` blocks, NOT alias-only lists.
 
         ### Configuration Requirements:
         
         #### Area-Specific Behaviors:
         - **Desk subarea:** Extended timeout for work sessions, presence-enhanced brightness, independence from bedroom main lighting
-        - **Wardrobe subarea:** Brief interaction lighting, automatic off after clothing selection
-        - **Kitchen:** Cooking-mode context awareness, counter vs ambient lighting zones
+        - **Wardrobe subarea:** 30-second timeout lightstrip; contributes to bedroom motion aggregate (unidirectional); triggers ottoman lightstrip
+        - **Ottoman subarea:** Vibration sensor (bedroom_ottoman_alpha_vibration) integration with wardrobe motion trigger for lightstrip
+        - **Kitchen:** Standard motion lighting with appropriate timeout for food prep and cleanup activities
         - **Ensuite:** Privacy-aware timing, shower occupancy detection integration
         - **Hallways:** Motion-triggered transit lighting with area-to-area propagation logic
 
@@ -258,11 +322,33 @@ promptset:
           - motion_sensors: ["binary_sensor.<area>_motion_beta"]
         inputs_optional:
           - occupancy_sensors: ["binary_sensor.<area>_occupancy_beta"]
+          - vibration_sensors: ["binary_sensor.<area>_vibration"]
           - ambient_lux_entity: ["sensor.<area>_illuminance_beta"]
           - presence_entity: ["binary_sensor.<area>_presence_beta"]
         policy:
           - "If optional inputs missing, set to '' and add '# TODO'."
           - "Always use eta-tier group lights as targets."
+        
+        #### MANDATORY OUTPUT FORMAT:
+        ```yaml
+        # Complete automation with blueprint instantiation - NOT alias-only
+        automation:
+          - alias: "Motion Lights — Bedroom"
+            use_blueprint:
+              path: library/blueprints/sensor-light.yaml
+            input:
+              motion_trigger: binary_sensor.bedroom_motion_beta
+              light_switch: light.group_bedroom_lights_eta
+              time_delay: 300
+              presence_entity: '# TODO: binary_sensor.bedroom_presence_beta'
+              require_presence_for_activation: false
+        ```
+        
+        #### ANTI-PATTERNS TO AVOID:
+        - ❌ `- alias: "Motion Lights — Bedroom"` (incomplete)
+        - ❌ Empty `var:` blocks without definitions
+        - ❌ Helper declarations without initial values
+        - ✅ Complete `use_blueprint:` blocks with all inputs
 
         ### Output Required:
         Generate complete, working blueprint configurations for each target area with:
@@ -282,18 +368,55 @@ promptset:
             - name: sanctum_complex_config.yaml
               required: true
               content: |
-                # Sanctum Complex Lighting Configuration
-                # Generated blueprint configurations for bedroom, desk, wardrobe, ottoman, hifi_configuration, ensuite
+                # COMPLETE package file with:
+                input_boolean:
+                  motion_bypass_bedroom: {initial: false, icon: mdi:motion-sensor-off}
+                  motion_bypass_desk: {initial: false, icon: mdi:motion-sensor-off}
+                  motion_bypass_wardrobe: {initial: false, icon: mdi:motion-sensor-off}
+                
+                var:
+                  motion_timeout_bedroom: 300
+                  motion_timeout_desk: 180
+                  motion_timeout_wardrobe: 30
+                  motion_timeout_ensuite: 600
+                
+                automation:
+                  - alias: "Motion Lights — Bedroom"
+                    use_blueprint:
+                      path: library/blueprints/sensor-light.yaml
+                    input:
+                      motion_trigger: binary_sensor.bedroom_motion_beta
+                      light_switch: light.group_bedroom_lights_eta
+                  - alias: "Motion Lights — Wardrobe"
+                    use_blueprint:
+                      path: library/blueprints/sensor-light.yaml
+                    input:
+                      motion_trigger: binary_sensor.wardrobe_motion_beta
+                      light_switch: light.bedroom_ottoman_lightstrip_alpha_matter
+                      time_delay: 30
+                  - alias: "Linked — Wardrobe to Ottoman Lightstrip"
+                    use_blueprint:
+                      path: library/blueprints/ha-blueprint-linked-entities.yaml
+                    input:
+                      linked_entity: 
+                        - binary_sensor.wardrobe_motion_beta
+                        - binary_sensor.bedroom_ottoman_alpha_vibration
+                      target_entity: light.bedroom_ottoman_lightstrip_alpha_matter
             - name: kitchen_complex_config.yaml
               required: true
               content: |
-                # Kitchen Complex Lighting Configuration
-                # Generated blueprint configurations for kitchen and laundry_room
+                # COMPLETE package with standard motion lighting (no unmeasurable cooking mode gates)
+                input_boolean:
+                  motion_bypass_kitchen: {initial: false, icon: mdi:motion-sensor-off}
+                  motion_bypass_laundry_room: {initial: false, icon: mdi:motion-sensor-off}
+                
+                var:
+                  motion_timeout_kitchen: 180
+                  motion_timeout_laundry_room: 120
             - name: hallway_system_config.yaml
               required: true
               content: |
-                # Hallway System Lighting Configuration
-                # Generated blueprint configurations for hallway circulation spaces
+                # COMPLETE package with propagation logic and circulation automation
 
     - id: enhanced_lighting.critical_analysis.v1
       persona: home_automation_architect
@@ -404,6 +527,9 @@ promptset:
       - "Blueprint selection follows blueprint_matrix and no duplicate logic across add-ons"
       - "Timeouts follow config/preferences/motion_timeout.conf profiles"
       - "YAML passes ha core check; two-space indent; A→Z keys"
+      - "NO ALIAS-ONLY AUTOMATIONS: Every automation has complete use_blueprint block"
+      - "NO EMPTY BLOCKS: All var:, input_boolean:, automation: sections populated"
+      - "DEPLOYABLE STATE: Files load in HA without syntax errors or missing references"
     risk:
       - "Missing beta composites in certain rooms (emit TODO blanks)"
       - "Propagation tuning could over/under-trigger; use decay_rate 0.7 and 20s window"

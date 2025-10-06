@@ -1,0 +1,43 @@
+automation:
+  - alias: Motion Telemetry — Update last_triggered on light ON (All Rooms)
+    id: motion_telemetry_last_triggered_all
+    initial_state: "on"
+    mode: parallel
+    trigger:
+      - platform: state
+        entity_id:
+          - light.adaptive_bedroom_light_group
+          - light.adaptive_desk_light_group
+          - light.group_ensuite_lights
+          - light.group_kitchen_lights
+          - light.group_hallway_lights_downstairs
+          - light.group_hallway_lights_upstairs
+          - light.group_ottoman_light
+          - light.group_wardrobe_light
+        to: "on"
+    variables:
+      map: >-
+        {{ {
+          'light.adaptive_bedroom_light_group':'var.motion_profile_bedroom',
+          'light.adaptive_desk_light_group':'var.motion_profile_desk',
+          'light.group_ensuite_lights':'var.motion_profile_ensuite',
+          'light.group_kitchen_lights':'var.motion_profile_kitchen',
+          'light.group_hallway_lights_downstairs':'var.motion_profile_hallway_downstairs',
+          'light.group_hallway_lights_upstairs':'var.motion_profile_hallway_upstairs',
+          'light.group_ottoman_light':'var.motion_profile_ottoman',
+          'light.group_wardrobe_light':'var.motion_profile_wardrobe'
+        } }}
+      target_var: >-
+        {% if trigger is defined and trigger.entity_id is defined and trigger.entity_id in map %}
+          {{ map[trigger.entity_id] }}
+        {% else %}
+          ''
+        {% endif %}
+    condition: "{{ target_var != '' }}"
+    action:
+      - service: var.set
+        data:
+          entity_id: "{{ target_var }}"
+          value: ""
+          attributes:
+            last_triggered: "{{ now().isoformat() }}"

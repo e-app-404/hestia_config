@@ -10,7 +10,7 @@ automation:
   - alias: "URC 7935 – Shortcut: Apple TV (N)"
     description: "Align matrix to Apple TV when 'N' is pressed on URC 7935"
     trigger:
-      - platform: event
+      - trigger: event
         event_type: call_service
         event_data:
           domain: remote

@@ -1,0 +1,58 @@
+automation:
+  - alias: Motion Lights — Ottoman
+    id: motion_lights_ottoman
+    description: Subarea lighting driven by provided proxy; AL optional; presence never gates.
+    initial_state: "on"
+    max_exceeded: silent
+    mode: restart
+    use_blueprint:
+      path: hestia/library/blueprints/sensor-light.yaml
+      input:
+        bypass_entity: binary_sensor.motion_bypass_ottoman
+        inhibit_on_startup_seconds: 10
+        motion_sensors:
+          - binary_sensor.bedroom_ottoman_motion_proxy
+        night_mode_brightness_pct: 12
+        night_mode_color_temp_mired: 420
+        night_mode_enabled: true
+        night_mode_sun_elevation: -6
+        only_if_lights_off: false
+        presence_entity: ""
+        require_presence_for_activation: false
+        require_sun_condition: false
+        restore_state_after_restart: true
+        sun_max_elevation: 20
+        sun_min_elevation: -12
+        target_lights:
+          - light.group_ottoman_light
+        timeout_seconds: "{{ state_attr('var.motion_profile_ottoman','timeout_seconds') | int(180) }}"
+        transition_seconds: 0.3
+
+  - alias: Motion Lights — Wardrobe
+    id: motion_lights_wardrobe
+    description: Subarea lighting driven by motion sensor; AL optional; presence never gates.
+    initial_state: "on"
+    max_exceeded: silent
+    mode: restart
+    use_blueprint:
+      path: hestia/library/blueprints/sensor-light.yaml
+      input:
+        bypass_entity: binary_sensor.motion_bypass_wardrobe
+        inhibit_on_startup_seconds: 10
+        motion_sensors:
+          - binary_sensor.wardrobe_motion_beta
+        night_mode_brightness_pct: 12
+        night_mode_color_temp_mired: 420
+        night_mode_enabled: true
+        night_mode_sun_elevation: -6
+        only_if_lights_off: false
+        presence_entity: ""
+        require_presence_for_activation: false
+        require_sun_condition: false
+        restore_state_after_restart: true
+        sun_max_elevation: 20
+        sun_min_elevation: -12
+        target_lights:
+          - light.group_wardrobe_light
+        timeout_seconds: "{{ state_attr('var.motion_profile_wardrobe','timeout_seconds') | int(180) }}"
+        transition_seconds: 0.3

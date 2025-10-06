@@ -1,0 +1,177 @@
+---
+#═══════════════════════════════════════════════════════════════
+# ▶ LIGHTS: Grouped Bedroom Lights ◀
+# Loader: !include_dir_merge_named domain/lights/grouped_lights.yaml
+# Schema: group
+# Notes:
+# - Includes both *_alpha and *_alpha_matter where applicable.
+# - Wall panels, Monitor backlight & BB-8 entities are excluded 
+#═══════════════════════════════════════════════════════════════
+
+- platform: group
+  name: "Group - All Bedroom Lights"
+  unique_id: "7F3A9B2C1D6E4F8G"
+  entities:
+    - light.bedroom_accent_alpha
+    - light.bedroom_hifi_accent_alpha
+    - light.bedroom_hifi_accent_alpha_matter
+    - light.bedroom_main_alpha
+    - light.bedroom_main_alpha_matter
+    - light.bedroom_entrance_alpha
+    - light.bedroom_entrance_alpha_matter
+    - light.bedroom_mirror_lightstrip_alpha
+    - light.bedroom_wall_alpha
+    - light.bedroom_nightstand_left_alpha
+    - light.bedroom_nightstand_left_alpha_matter
+    - light.bedroom_nightstand_right_alpha
+    - light.bedroom_nightstand_right_alpha_matter
+    - light.bedroom_ottoman_lightstrip_alpha
+    - light.bedroom_ottoman_lightstrip_alpha_matter
+    - light.bedroom_wardrobe_lightstrip_alpha
+    - light.bedroom_desk_alpha
+    - light.bedroom_desk_alpha_matter
+    - light.bedroom_desk_corner_alpha
+    - light.bedroom_desk_lightstrip_alpha
+    - light.bedroom_desk_lightstrip_alpha_matter
+    - light.bedroom_desk_wall_alpha
+    - light.bedroom_desk_wall_alpha_matter
+
+- platform: group
+  name: "Group - Main Bedroom Lights"
+  unique_id: "2B8E6C4D1A9F7G3H"
+  entities:
+    - light.bedroom_accent_alpha
+    - light.bedroom_hifi_accent_alpha
+    - light.bedroom_hifi_accent_alpha_matter
+    - light.bedroom_main_alpha
+    - light.bedroom_main_alpha_matter
+    - light.bedroom_entrance_alpha
+    - light.bedroom_entrance_alpha_matter
+    - light.bedroom_mirror_lightstrip_alpha
+    - light.bedroom_wall_alpha
+
+- platform: group
+  name: "Group - Bedroom Nightstand Lights"
+  unique_id: "5D1F9A3B7C2E8G4H"
+  entities:
+    - light.bedroom_nightstand_left_alpha
+    - light.bedroom_nightstand_left_alpha_matter
+    - light.bedroom_nightstand_right_alpha
+    - light.bedroom_nightstand_right_alpha_matter
+    - light.bedroom_mirror_lightstrip_alpha
+
+- platform: group
+  name: "Group - Desk Lights"
+  unique_id: "9C3E7A1B5D2F8G4H"
+  entities:
+    - light.bedroom_desk_alpha
+    - light.bedroom_desk_alpha_matter
+    - light.bedroom_desk_corner_alpha
+    - light.bedroom_desk_lightstrip_alpha
+    - light.bedroom_desk_lightstrip_alpha_matter
+    - light.bedroom_desk_wall_alpha
+    - light.bedroom_desk_wall_alpha_matter
+#    - light.monitor_backlight_alpha
+
+- platform: group
+  name: "Group - Hifi Area Lights"
+  unique_id: "e9b1c4a6f2d4478bb1c2d3e4f50617231"
+  entities:
+    - light.bedroom_hifi_accent_alpha
+    - light.bedroom_hifi_accent_alpha_matter
+
+- platform: group
+  name: "Group - Wardrobe Light"
+  unique_id: "4A7E2C9B1D5F8G3H"
+  entities:
+    - light.bedroom_wardrobe_lightstrip_alpha
+
+- platform: group
+  name: "Group - Ottoman Light"
+  unique_id: "4A7E2C9B1D5F8G4I"
+  entities:
+    - light.bedroom_ottoman_lightstrip_alpha
+    - light.bedroom_ottoman_lightstrip_alpha_matter
+
+- platform: group
+  name: "Group - Bedroom Utility Lights"
+  unique_id: "8F2C7A1B3D5E9G4H"
+  entities:
+    - light.bedroom_ottoman_lightstrip_alpha
+    - light.bedroom_ottoman_lightstrip_alpha_matter
+    - light.bedroom_wardrobe_lightstrip_alpha
+
+# ── Ensuite ───────────────────────────────────────────────────
+- platform: group
+  name: "Group - Ensuite Lights"
+  unique_id: "A1B2C3D4E5F60701"
+  entities:
+    - light.ensuite_accent_alpha
+    - light.ensuite_main_alpha
+    - light.ensuite_main_alpha_matter
+    - light.ensuite_lightstrip_alpha
+    - light.ensuite_lightstrip_alpha_matter
+
+# ── Kitchen ───────────────────────────────────────────────────
+- platform: group
+  name: "Group - Kitchen Lights"
+  unique_id: "B1C2D3E4F5A60702"
+  entities:
+    - light.kitchen_ceiling_alpha
+    - light.kitchen_cupboards_lightstrip_alpha
+
+# ── Laundry Room ──────────────────────────────────────────
+- platform: group
+  name: "Group - Laundry Room Lights"
+  unique_id: "C1D2E3F4A5B60703"
+  entities:
+    - light.laundry_ceiling_alpha
+
+# ── Living Room (All) ────────────────────────────────────────
+- platform: group
+  name: "Group - Living Room Lights (All)"
+  unique_id: "D1E2F3A4B5C60704"
+  entities:
+    - light.living_room_desk_alpha
+    - light.living_room_floorlamp_alpha
+    - light.living_room_foxy_alpha
+    - light.living_room_main_alpha
+    - light.living_room_side_alpha
+    - light.living_room_desk_alpha_matter
+    - light.living_room_floorlamp_alpha_matter
+    - light.living_room_foxy_alpha_matter
+    - light.living_room_main_alpha_matter
+    - light.living_room_side_alpha_matter
+    # Note: stringlights kept out of “All” per your draft; see Switch Lights group
+
+# ── Hallway (All floors) ─────────────────────────────────────
+- platform: group
+  name: "Group - Hallway Lights (All)"
+  unique_id: "E1F2A3B4C5D60705"
+  entities:
+    - light.downstairs_lightstrip_alpha
+    - light.hallway_lightstrip_alpha
+    - light.upstairs_lightstrip_alpha
+
+# ── Hallway (Downstairs) ─────────────────────────────────────
+- platform: group
+  name: "Group - Hallway Lights (Downstairs)"
+  unique_id: "E1F2A3B4C5D60706"
+  entities:
+    - light.downstairs_lightstrip_alpha
+    - light.hallway_lightstrip_alpha
+
+# ── Hallway (Upstairs) ───────────────────────────────────────
+- platform: group
+  name: "Group - Hallway Lights (Upstairs)"
+  unique_id: "E1F2A3B4C5D60707"
+  entities:
+    - light.upstairs_lightstrip_alpha
+
+# ── Switch-controlled Extras ──────────────────────────────────
+- platform: group
+  name: "Group - Switch Lights"
+  unique_id: "F1A2B3C4D5E60708"
+  entities:
+    - light.kitchen_cupboards_lightstrip_alpha
+    - light.living_room_stringlights_alpha

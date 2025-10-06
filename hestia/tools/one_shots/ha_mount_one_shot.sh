@@ -1,11 +1,24 @@
-cat >"$HOME/ha_mount_one_shot.sh" <<'SCRIPT'
+# --- BEGIN HOME STABILIZER ---
+# Resolve the login home from Directory Service so we don't trust a modified $HOME (e.g., actions-runner)
+USER_REAL_HOME="$(/usr/bin/dscl . -read /Users/$USER NFSHomeDirectory 2>/dev/null | awk '{print $2}')"
+[ -n "$USER_REAL_HOME" ] || USER_REAL_HOME="/Users/$USER"
+HOME_SAFE="$USER_REAL_HOME"
+
+# If a process set HOME to actions-runner, override it for this script
+case "$HOME" in
+  */actions-runner/*)
+    echo "[hass] WARNING: overriding HOME ('$HOME') -> '$HOME_SAFE'" >&2
+    HOME="$HOME_SAFE"; export HOME;;
+esac
+# --- END HOME STABILIZER ---
+cat >"$HOME_SAFE/ha_mount_one_shot.sh" <<'SCRIPT'
 #!/usr/bin/env bash
 set -e
 
 # variables up-front (edit user/host if needed)
-AGENT="$HOME/Library/LaunchAgents/com.local.hass.mount.plist"
-LOG="$HOME/Library/Logs/hass-mount.log"
-MNT="$HOME/hass"
+AGENT="$HOME_SAFE/Library/LaunchAgents/com.local.hass.mount.plist"
+LOG="$HOME_SAFE/Library/Logs/hass-mount.log"
+MNT="$HOME_SAFE/hass"
 
 # Deconflict: stop any previous agents/daemons that might own ~/hass
 launchctl bootout gui/$(id -u)/com.local.ha.mount      2>/dev/null || true

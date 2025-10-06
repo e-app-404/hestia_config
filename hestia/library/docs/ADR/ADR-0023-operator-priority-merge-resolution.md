@@ -20,8 +20,23 @@ notes: "Canonicalizes the merge strategy that prioritizes active development wor
 
 # ADR-0023: Operator Priority Resolution for Workspace Merge Conflicts
 
-## 1. Status
-**Accepted** (2025-10-04)
+## 1. Table of Contents
+
+- [1. Table of Contents](#1-table-of-contents)
+- [2. Context](#2-context)
+- [3. Decision](#3-decision)
+  - [3.1 Operator Priority Principle](#31-operator-priority-principle)
+  - [3.2 Merge Resolution Protocol](#32-merge-resolution-protocol)
+  - [3.3 Conflict Categories and Resolution Rules](#33-conflict-categories-and-resolution-rules)
+  - [3.4 Exception Handling](#34-exception-handling)
+- [4. Implementation](#4-implementation)
+  - [4.1 Merge Execution Pattern](#41-merge-execution-pattern)
+  - [4.2 Post-Merge Validation](#42-post-merge-validation)
+- [5. Consequences](#5-consequences)
+  - [5.1 Positive Outcomes](#51-positive-outcomes)
+  - [5.2 Trade-offs](#52-trade-offs)
+  - [5.3 Risk Mitigation](#53-risk-mitigation)
+- [6. Governance](#6-governance)
 
 ## 2. Context
 

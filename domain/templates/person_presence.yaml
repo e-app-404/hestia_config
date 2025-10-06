@@ -82,3 +82,180 @@
         tier: "γ"
         subsystem: "perseus"
         module: "zone_tracking"
+
+
+- binary_sensor:
+    # BEDROOM PRESENCE (BETA)
+    - name: "Bedroom Presence (Beta)"
+      unique_id: "bedroom_presence_beta"
+      device_class: occupancy
+      state: >-
+        {# Robust presence logic for bedroom area #}
+        {% set persons = ['person.evert'] %}
+        {% set present_count = 0 %}
+        {% for person_id in persons %}
+          {% set person_state = states(person_id) %}
+          {% set source = state_attr(person_id, 'source') %}
+          {% set last_changed = states[person_id].last_changed if states[person_id] is defined else none %}
+          
+          {# Apply robust presence rules #}
+          {% set is_present = false %}
+          {% if person_state == 'home' %}
+            {% set is_present = true %}
+          {% elif source and states(source) == 'home' %}
+            {# Check if linked tracker is more reliable than person state #}
+            {% set source_type = state_attr(source, 'source_type') %}
+            {% if source_type in ['gps', 'bluetooth_le', 'bluetooth'] %}
+              {% set is_present = true %}
+            {% endif %}
+          {% endif %}
+          
+          {# Check staleness (>24h makes unreliable) #}
+          {% if last_changed %}
+            {% set now_ts = as_timestamp(now()) %}
+            {% set last_ts = as_timestamp(last_changed) %}
+            {% set stale = (now_ts - last_ts) > 86400 %}
+            {% if stale %}
+              {% set is_present = false %}
+            {% endif %}
+          {% endif %}
+          
+          {% if is_present %}
+            {% set present_count = present_count + 1 %}
+          {% endif %}
+        {% endfor %}
+        {{ present_count > 0 }}
+      attributes:
+        persons: "{{ ['person.evert'] }}"
+        strategy: "asymmetric: presence enhances, absence never blocks"
+        untracked_housemate_warning: "Motion activation must remain independent - untracked occupant exists"
+        area_id: "bedroom"
+        tier: "β"
+        subsystem: "hermes"
+        module: "presence_inference"
+
+    # DESK PRESENCE (BETA)  
+    - name: "Desk Presence (Beta)"
+      unique_id: "presence_beta_desk"
+      device_class: occupancy
+      state: >-
+        {# Enhanced desk presence with workstation indicators #}
+        {% set persons = ['person.evert'] %}
+        {% set present_count = 0 %}
+        
+        {# Primary: person presence #}
+        {% for person_id in persons %}
+          {% set person_state = states(person_id) %}
+          {% if person_state == 'home' %}
+            {% set present_count = present_count + 1 %}
+          {% endif %}
+        {% endfor %}
+        
+        {# Enhancement: desk-specific indicators #}
+        {% set desk_inferred = states('binary_sensor.desk_presence_inferred') %}
+        {% if desk_inferred == 'on' %}
+          {% set present_count = present_count + 1 %}
+        {% endif %}
+        
+        {{ present_count > 0 }}
+      attributes:
+        persons: "{{ ['person.evert'] }}"
+        strategy: "asymmetric: presence enhances, absence never blocks"
+        enhancement_sensors: "{{ ['binary_sensor.desk_presence_inferred'] }}"
+        untracked_housemate_warning: "Motion activation must remain independent - untracked occupant exists"
+        area_id: "desk"
+        tier: "β"
+        subsystem: "hermes"
+        module: "presence_inference"
+
+    # LIVING ROOM PRESENCE (BETA)
+    - name: "Living Room Presence (Beta)"
+      unique_id: "presence_beta_living_room"
+      device_class: occupancy
+      state: >-
+        {# Living room presence logic #}
+        {% set persons = ['person.evert'] %}
+        {% set present_count = 0 %}
+        {% for person_id in persons %}
+          {% set person_state = states(person_id) %}
+          {% set source = state_attr(person_id, 'source') %}
+          
+          {% set is_present = false %}
+          {% if person_state == 'home' %}
+            {% set is_present = true %}
+          {% elif source and states(source) == 'home' %}
+            {% set source_type = state_attr(source, 'source_type') %}
+            {% if source_type in ['gps', 'bluetooth_le', 'bluetooth'] %}
+              {% set is_present = true %}
+            {% endif %}
+          {% endif %}
+          
+          {% if is_present %}
+            {% set present_count = present_count + 1 %}
+          {% endif %}
+        {% endfor %}
+        {{ present_count > 0 }}
+      attributes:
+        persons: "{{ ['person.evert'] }}"
+        strategy: "asymmetric: presence enhances, absence never blocks"
+        untracked_housemate_warning: "Shared space - untracked occupant may be present when sensor shows false"
+        area_id: "living_room"
+        tier: "β"
+        subsystem: "hermes"
+        module: "presence_inference"
+
+    # KITCHEN PRESENCE (BETA) - Always False (Untracked Housemate Area)
+    - name: "Kitchen Presence (Beta)"
+      unique_id: "presence_beta_kitchen"
+      device_class: occupancy
+      state: false  # Always false - untracked housemate uses kitchen
+      attributes:
+        persons: "{{ [] }}"
+        strategy: "always_false: untracked housemate primary kitchen user"
+        untracked_housemate_warning: "Kitchen used by untracked occupant - never rely on this sensor for blocking"
+        area_id: "kitchen"
+        tier: "β"
+        subsystem: "hermes"
+        module: "presence_inference"
+
+    # ENSUITE PRESENCE (BETA) - Always False (Untracked Housemate Area)
+    - name: "Ensuite Presence (Beta)"
+      unique_id: "presence_beta_ensuite"
+      device_class: occupancy
+      state: false  # Always false - untracked housemate uses ensuite
+      attributes:
+        persons: "{{ [] }}"
+        strategy: "always_false: untracked housemate uses ensuite"
+        untracked_housemate_warning: "Ensuite used by untracked occupant - never rely on this sensor for blocking"
+        area_id: "ensuite"
+        tier: "β"
+        subsystem: "hermes"
+        module: "presence_inference"
+
+    # HALLWAY DOWNSTAIRS PRESENCE (BETA) - Always False (Common Area)
+    - name: "Hallway Downstairs Presence (Beta)"
+      unique_id: "presence_beta_hallway_downstairs"
+      device_class: occupancy
+      state: false  # Always false - common transit area
+      attributes:
+        persons: "{{ [] }}"
+        strategy: "always_false: common transit area"
+        untracked_housemate_warning: "Common area used by untracked occupant - never rely on this sensor for blocking"
+        area_id: "hallway_downstairs"
+        tier: "β"
+        subsystem: "hermes"
+        module: "presence_inference"
+
+    # HALLWAY UPSTAIRS PRESENCE (BETA) - Always False (Common Area)
+    - name: "Hallway Upstairs Presence (Beta)"
+      unique_id: "presence_beta_hallway_upstairs"
+      device_class: occupancy
+      state: false  # Always false - common transit area
+      attributes:
+        persons: "{{ [] }}"
+        strategy: "always_false: common transit area"
+        untracked_housemate_warning: "Common area used by untracked occupant - never rely on this sensor for blocking"
+        area_id: "hallway_upstairs"
+        tier: "β"
+        subsystem: "hermes"
+        module: "presence_inference"

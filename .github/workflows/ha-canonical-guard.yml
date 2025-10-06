@@ -1,15 +1,37 @@
-name: ha-canonical-guard
-on: [push, pull_request]
+name: ADR-0024 Canonical Guard
+
+on:
+  push:
+    branches: [ "**" ]
+  pull_request:
+    branches: [ "**" ]
+
 jobs:
-  guard:
+  guard-linux-container:
     runs-on: ubuntu-latest
+    container:
+      image: ubuntu:24.04
+      options: --volume ${{ github.workspace }}:/config
     steps:
       - uses: actions/checkout@v4
-      - name: No legacy paths outside docs
+      - name: Bootstrap tools
         run: |
-          set -e
-          rg -n --hidden --glob '!.git' --glob '!hestia/docs/**' '/n/ha|/Volumes/config' . \
-            && { echo "Legacy paths found"; exit 1; } || echo "OK"
+          apt-get update && apt-get install -y ripgrep bash python3
+      - name: Lint paths
+        working-directory: /config
+        run: tools/lint_paths.sh
+      - name: Config health
+        working-directory: /config
+        run: bin/config-health /config
+
+  guard-macos-smoke:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install ripgrep
+        run: brew install ripgrep || true
+      - name: Lint paths (no /config bind here)
+        run: tools/lint_paths.sh
       - name: No tracked symlinks or nested .git
         run: |
           BAD_SYM=$(find . -type l -print | while read -r f; do git check-ignore -q "$f" || echo "$f"; done)

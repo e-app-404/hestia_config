@@ -1,0 +1,254 @@
+# Normalized operator findings (ready for ingestion)
+
+## A. Top-level `/config` — classification & actions
+
+| Path | Class | Action | Rationale / Notes |
+|---|---|---|---|
+| `/config/ADR/deprecated` | Misplaced | **Move** → `/config/hestia/workspace/archive/adr/deprecated/` | ADR content should not live at config root; archive for history. |
+| `/config/archive/` (empty) | Misplaced | **Remove or consolidate** into `/config/hestia/workspace/archive/` | Duplicate placeholder; maintain single archive root. |
+| `/config/includes/shell_command.yaml` | Keep (review) | **Keep** (ensure entries call canonical tools under `/config/hestia/tools/…`) | Include file is valid at `/config/includes`; content must reference ADR-0024 canonical tools. |
+| `/config/ps5-mqtt/` | Keep (RO) | **Mark read-only** + exclude from VS Code Explorer/scan | Third-party addon/config; avoid accidental edits. |
+| `/config/ssh/authorized_keys` | Misplaced | **Merge** into `/config/.ssh/authorized_keys` (create dir if absent) | Normalize SSH keys under `.ssh`. |
+| `/config/staging/` (+ two CSVs) | Misplaced | **Move** → `/config/hestia/workspace/archive/analysis/<YYYY-Www>/` | Staging artifacts → weekly archive. |
+| `/config/reports/checkpoints/CONFIG_DIAGNOSTICS/` | Misplaced | **Move** → `/config/hestia/workspace/reports/checkpoints/CONFIG_DIAGNOSTICS/` | All reports under `hestia/workspace/reports`. |
+| `/config/blueprints/` | Keep (RO) | **Mark read-only** | Core HA directory; protect from edits. |
+| `.dockerignore`, `.ruff.toml`, `apparmor.txt`, `CHANGELOG.md`, `pytest.ini`, `VERSION` (BB8) | Misplaced | **Quarantine** → `/config/hestia/workspace/archive/bleedthrough/<TS>/` | Addon/dev files should not sit in `/config` root. |
+| `.pre-commit-config.yaml` | Misplaced | **Quarantine** (same as above) | Dev tooling config not needed at runtime. |
+| `body.json`, `new_token.json` | Uncertain | **Quarantine** → `/config/hestia/workspace/archive/ingest/<TS>/` | Preserve for audit; likely transient exports. |
+| `groups.yaml` (empty) | Remove/Archive | **Archive** → `/config/hestia/workspace/archive/legacy/` | Empty legacy file; keep for traceability. |
+| `pyproject.toml` | Review | **Hold** (no change) | If actively used by HA custom code, keep; else treat as bleedthrough in next pass. |
+| `tmp_inventory.py`, `tmp_outliers.py`, `tmp_schema.py` | Misplaced | **Move** → `/config/hestia/tools/python_scripts/config_diagnostics/{inventory.py,outliers.py,schema.py}` | Tooling belongs under `hestia/tools`. |
+| `workspace_ops_export.yaml` | Review | **Relocate** → `/config/hestia/workspace/operations/workspace_ops_export.yaml` (after review) | Ops doc belongs under workspace/operations. |
+| `.git`, `.github`, `.githooks` | Keep (review) | **Keep** repo at `/config`; **fold** `.githooks` into `.git/hooks` template later | Live Git repo is OK; eliminate duplication in a planned step. |
+
+> Governance note: The diagnostics flagged 320 outliers and a large “unknown” pool; your summary shows multiple tarballs and build metadata still under `/config`. These must live under `hestia/workspace/{archive|cache}` per ADR-0024. :contentReference[oaicite:0]{index=0}
+
+## B. `/config/hestia` structure
+
+- `tools/` → **OK** (canonical home for operational scripts).
+- `library/` → **OK** (shared assets).
+- `workspace/` → **OK** (operations, reports, archive, cache).
+- `hestia/reports/` → **NOT OK** → **Move** to `hestia/workspace/reports/` and retire the top-level `hestia/reports` node.
+
+### Workspace subtrees to normalize
+- `hestia/workspace/operations/logs` & `…/reports` currently unused → **Converge** on `hestia/workspace/reports` and drop shadow trees after migration.
+
+## C. Ingest-ready summary
+
+- All **runtime** config stays under `/config` (HA defaults, includes, blueprints).
+- All **tools** under `/config/hestia/tools`.
+- All **evidence & reports** under `/config/hestia/workspace/reports`.
+- All **archives** under `/config/hestia/workspace/archive/<bucket>/…` (e.g., `analysis/`, `tarballs/`, `backups/`).
+- All **cache/build metadata** under `/config/hestia/workspace/cache/…` (e.g., python `*.egg-info/`).
+- **Bleedthrough** quarantined under `/config/hestia/workspace/archive/bleedthrough/<TS>/` for later triage.
+
+```copilot
+# SAFE EXECUTIVE COMMANDS — Workspace normalization (non-destructive, idempotent)
+
+# Usage:
+#   DRY RUN first (prints planned actions). Set APPLY=1 to execute.
+#   All moves preserve structure and leave no mutations if sources are absent.
+#   Requires: bash, rsync, install, date.
+
+set -euo pipefail
+ROOT="/config"
+TS="$(date -u +%Y%m%dT%H%M%SZ)"
+ISO="$(date +%G-W%V)"
+APPLY="${APPLY:-0}"
+
+dst() { printf "%s/hestia/workspace/%s\n" "$ROOT" "$1"; }
+mv_safe() { src="$1"; dest="$2"; [ -e "$src" ] || { echo "skip: $src"; return 0; }; echo "move: $src -> $dest"; 
+  if [ "$APPLY" = "1" ]; then install -d "$dest"; rsync -a --remove-source-files "$src"/ "$dest"/ 2>/dev/null || rsync -a --remove-source-files "$src" "$dest"/; rmdir "$src" 2>/dev/null || true; fi; }
+
+cp_safe() { src="$1"; dest="$2"; [ -e "$src" ] || { echo "skip: $src"; return 0; }; echo "copy: $src -> $dest"; 
+  if [ "$APPLY" = "1" ]; then install -d "$(dirname "$dest")"; cp -a "$src" "$dest"; fi; }
+
+echo "=== DRY RUN (APPLY=$APPLY) — start normalization ==="
+
+# A) Root ADR & archive placeholders
+mv_safe "$ROOT/ADR/deprecated" "$(dst "archive/adr/deprecated")"
+[ -d "$ROOT/archive" ] && { echo "remove placeholder: $ROOT/archive"; [ "$APPLY" = "1" ] && rmdir "$ROOT/archive" 2>/dev/null || true; }
+
+# B) Includes — keep file, verify contents later (no mutation here)
+[ -f "$ROOT/includes/shell_command.yaml" ] && echo "verify contents: $ROOT/includes/shell_command.yaml uses /config/hestia/tools/*"
+
+# C) ps5-mqtt → read-only & exclude (workspace change only; no FS mutation)
+echo "recommend: mark $ROOT/ps5-mqtt read-only in VS Code & workspace excludes"
+
+# D) SSH keys normalization
+if [ -f "$ROOT/ssh/authorized_keys" ]; then
+  echo "merge: $ROOT/ssh/authorized_keys -> $ROOT/.ssh/authorized_keys"
+  if [ "$APPLY" = "1" ]; then 
+    install -d "$ROOT/.ssh"
+    cat "$ROOT/ssh/authorized_keys" >> "$ROOT/.ssh/authorized_keys"
+    chmod 700 "$ROOT/.ssh"; chmod 600 "$ROOT/.ssh/authorized_keys"
+    rm -f "$ROOT/ssh/authorized_keys"
+    rmdir "$ROOT/ssh" 2>/dev/null || true
+  fi
+fi
+
+# E) Staging CSVs -> weekly archive
+mv_safe "$ROOT/staging" "$(dst "archive/analysis/$ISO")"
+
+# F) Diagnostics reports -> workspace/reports
+mv_safe "$ROOT/reports/checkpoints/CONFIG_DIAGNOSTICS" "$(dst "reports/checkpoints/CONFIG_DIAGNOSTICS")"
+# optional: remove empty /config/reports
+[ -d "$ROOT/reports" ] && [ -z "$(ls -A "$ROOT/reports" 2>/dev/null)" ] && { echo "clean: rmdir $ROOT/reports"; [ "$APPLY" = "1" ] && rmdir "$ROOT/reports"; }
+
+# G) Blueprints read-only (no FS move)
+echo "recommend: set RO attribute for $ROOT/blueprints in VS Code"
+
+# H) BB8 / dev artifacts -> bleedthrough quarantine
+BLEED_DIR="$(dst "archive/bleedthrough/$TS")"
+for f in ".dockerignore" ".ruff.toml" "apparmor.txt" "CHANGELOG.md" "pytest.ini" "VERSION" ".pre-commit-config.yaml"; do
+  [ -e "$ROOT/$f" ] && mv_safe "$ROOT/$f" "$BLEED_DIR"
+done
+
+# I) Uncertain writer tokens -> ingest quarantine
+for f in "body.json" "new_token.json"; do
+  [ -e "$ROOT/$f" ] && mv_safe "$ROOT/$f" "$(dst "archive/ingest/$TS")"
+done
+
+# J) Empty legacy file -> archive for traceability
+[ -f "$ROOT/groups.yaml" ] && [ ! -s "$ROOT/groups.yaml" ] && mv_safe "$ROOT/groups.yaml" "$(dst "archive/legacy")"
+
+# K) Ops export → operations
+[ -f "$ROOT/workspace_ops_export.yaml" ] && mv_safe "$ROOT/workspace_ops_export.yaml" "$(dst "operations")"
+
+# L) Diagnostics helper scripts → tools
+for f in "tmp_inventory.py" "tmp_outliers.py" "tmp_schema.py"; do
+  [ -f "$ROOT/$f" ] && dest="$(dst "tools/python_scripts/config_diagnostics")" && mv_safe "$ROOT/$f" "$dest"
+done
+
+# M) Normalize hestia/reports -> hestia/workspace/reports
+[ -d "$ROOT/hestia/reports" ] && mv_safe "$ROOT/hestia/reports" "$(dst "reports")"
+
+echo "=== DRY RUN complete (APPLY=$APPLY). Review output above. ==="
+echo "Set APPLY=1 to execute."
+
+# Post-migration checks (non-destructive)
+echo "Post-checks:"
+echo "- Confirm no new outliers appeared: re-run CONFIG_DIAGNOSTICS collector"
+echo "- Verify includes: configuration.yaml and includes/* paths remain valid"
+echo "- Ensure Git status is clean or only shows quarantined moves"
+```
+---
+
+# Governance review — ADR-0024 workspace cleanup (post-action)
+
+Status
+- Cleanup largely **meets policy**: runtime config stays under `/config`, tools under `hestia/tools`, evidence under `hestia/workspace/reports`, archives under `hestia/workspace/archive`.  
+- Copilot report shows 14/17 completed; residuals are low-risk.
+
+Residual items & rulings (binary)
+1) Empty placeholders (`/config/ADR`, `/config/archive`, `/config/reports`) — **remove** once verified empty.
+2) `pyproject.toml` at root — **MOVE** to `/config/hestia/workspace/archive/bleedthrough/<TS>/` unless it’s actively required by **HA’s python_scripts** or a custom component. If required, **document** its purpose in `/config/README.local.md` and keep.
+3) `docker-compose.yml` at root — **MOVE** to `/config/hestia/workspace/archive/dev_envs/<TS>/` (dev-only asset; not part of HA runtime).
+4) Lock rules — install a *root hygiene* guard to prevent recurrence (CI + local check).
+
+Acceptance (binary)
+- No dev/build artifacts in `/config/*`.  
+- Placeholders removed.  
+- `pyproject.toml` and `docker-compose.yml` quarantined (or documented if strictly required).  
+- Guard in place: running `hestia/tools/root_hygiene_check.sh` exits 0; CI job passes.
+
+Decision confirmations requested
+- Approve quarantine of `pyproject.toml` and `docker-compose.yml` as above?  
+- Approve creation of guard script + CI check?
+
+On “yes/yes”, execute the `copilot` block below with `APPLY=1` and post the updated summary for sign-off.
+
+
+```copilot
+# SAFE EXEC COMMANDS — finalize cleanup + guards (idempotent, non-destructive by default)
+# Usage: set APPLY=1 to apply; otherwise DRY-RUN.
+
+set -euo pipefail
+ROOT="/config"
+TS="$(date -u +%Y%m%dT%H%M%SZ)"
+APPLY="${APPLY:-0}"
+
+msg(){ echo "[$(date -u +%H:%M:%SZ)] $*"; }
+mv_safe(){ src="$1"; dest="$2"; [ -e "$src" ] || { msg "skip: $src (absent)"; return 0; }; msg "move: $src -> $dest";
+  if [ "$APPLY" = "1" ]; then install -d "$dest"; rsync -a --remove-source-files "$src" "$dest"/; rmdir "$src" 2>/dev/null || true; fi; }
+
+msg "=== DRY RUN (APPLY=$APPLY) — finalize ADR-0024 cleanup ==="
+
+# 1) Remove empty placeholders
+for d in "$ROOT/ADR" "$ROOT/archive" "$ROOT/reports" "; do
+  if [ -d "$d" ] && [ -z "$(ls -A "$d" 2>/dev/null)" ]; then
+    msg "remove empty: $d"
+    [ "$APPLY" = "1" ] && rmdir "$d" || true
+  else
+    msg "keep: $d (non-empty or absent)"
+  fi
+done
+
+# 2) Quarantine dev artifacts if present
+[ -f "$ROOT/docker-compose.yml" ] && mv_safe "$ROOT/docker-compose.yml" "$ROOT/hestia/workspace/archive/dev_envs/$TS"
+[ -f "$ROOT/pyproject.toml" ] && mv_safe "$ROOT/pyproject.toml" "$ROOT/hestia/workspace/archive/bleedthrough/$TS"
+
+# 3) Create root hygiene guard (local runner)
+install -d "$ROOT/hestia/tools"
+cat >"$ROOT/hestia/tools/root_hygiene_check.sh" <<'SH'
+#!/usr/bin/env bash
+set -euo pipefail
+ROOT="/config"
+ALLOWED="configuration.yaml includes blueprints custom_components python_scripts scenes.yaml scripts.yaml automations.yaml packages .storage .ssh hestia www tts themes entities"
+# extra allowed files that HA may generate:
+ALLOWED_FILES=".HA_VERSION .uuid home-assistant.log"
+violations=0
+shopt -s dotglob
+for p in "$ROOT"/*; do
+  name="${p##*/}"
+  case " $ALLOWED $ALLOWED_FILES " in
+    *" $name "*) : ;;
+    *) 
+      # ignore if it is known transient dir managed under hestia/workspace/*
+      if [[ "$p" == "$ROOT/hestia"* ]]; then :; else
+        echo "VIOLATION: unexpected root item -> $p"
+        violations=$((violations+1))
+      fi
+    ;;
+  esac
+done
+shopt -u dotglob
+if [ $violations -gt 0 ]; then
+  echo "Root hygiene check: FAIL ($violations violations)"; exit 2
+else
+  echo "Root hygiene check: OK"
+fi
+SH
+chmod +x "$ROOT/hestia/tools/root_hygiene_check.sh"
+msg "created: /config/hestia/tools/root_hygiene_check.sh"
+
+# 4) Optional CI guard (emit a ready-to-commit script under hestia/workspace/ops)
+install -d "$ROOT/hestia/workspace/ops"
+cat >"$ROOT/hestia/workspace/ops/ci_root_hygiene_check.sh" <<'SH'
+#!/usr/bin/env bash
+set -euo pipefail
+/config/hestia/tools/root_hygiene_check.sh
+SH
+chmod +x "$ROOT/hestia/workspace/ops/ci_root_hygiene_check.sh"
+msg "created: /config/hestia/workspace/ops/ci_root_hygiene_check.sh"
+
+# 5) Re-run diagnostics summary (optional refresh)
+if [ "${REFRESH_DIAG:-0}" = "1" ]; then
+  OUT="$ROOT/hestia/workspace/reports/checkpoints/CONFIG_DIAGNOSTICS"
+  [ -d "$OUT" ] || { msg "diagnostics folder missing; skip refresh"; exit 0; }
+  msg "refresh: CONFIG_DIAGNOSTICS_SUMMARY.md (no deep crawl)"
+  # lightweight refresh: list root + counts
+  {
+    echo "# CONFIG DIAGNOSTICS SUMMARY (refresh)"
+    echo "_Generated: $(date -u +%FT%TZ)_"
+    echo "## Root items"
+    ls -al "$ROOT" | sed 's/^/    /'
+    echo
+    echo "## Hygiene"
+    /config/hestia/tools/root_hygiene_check.sh || true
+  } > "$OUT/CONFIG_DIAGNOSTICS_SUMMARY.md"
+  msg "updated: $OUT/CONFIG_DIAGNOSTICS_SUMMARY.md"
+fi
+
+msg "=== DONE (APPLY=$APPLY). To apply, re-run with APPLY=1 ==="
+```

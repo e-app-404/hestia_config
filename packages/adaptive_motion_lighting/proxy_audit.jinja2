@@ -1,0 +1,17 @@
+{% set proxies = [
+  'binary_sensor.bedroom_ottoman_motion_proxy',
+  'binary_sensor.entrance_motion_proxy',
+  'binary_sensor.hallway_downstairs_motion_recent_beta'
+] %}
+
+# Proxy Sensors — Provenance & Wiring Audit
+{% for p in proxies %}
+## {{ p }}
+- state: {{ states(p) }}
+- upstream_sources: {{ state_attr(p,'upstream_sources') }}
+- downstream_consumers: {{ state_attr(p,'downstream_consumers') }}
+- tier: {{ state_attr(p,'tier') }}
+- role: {{ state_attr(p,'role') }}
+- area_id: {{ state_attr(p,'area_id') or state_attr(p,'subarea') }}
+---
+{% endfor %}

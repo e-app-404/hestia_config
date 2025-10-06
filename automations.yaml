@@ -76,7 +76,7 @@
   use_blueprint:
     path: Raukze/contact-sensor-left-open-notification.yaml
     input:
-      trigger_entity: binary_sensor.entrance_door_alpha_contact
+      trigger_entity: binary_sensor.entrance_door_contact_alpha_door
       friendly_name: Front door
       duration_issue_state:
         hours: 0
@@ -592,4 +592,4 @@
         device_id:
         - 438784bcd85b3be95a17452bc3a5c966
         - d6c5d8ce01882c8bb93eb5f40ff9d15b
-        - d90e30e2f88b73d9ad58d1fea898837e
+        - 57eb5e861c91a7d371b478c74d9d069d

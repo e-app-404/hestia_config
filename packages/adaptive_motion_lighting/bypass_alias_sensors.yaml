@@ -1,0 +1,34 @@
+template:
+  - binary_sensor:
+      - name: "Motion Bypass Bedroom"
+        unique_id: motion_bypass_bedroom
+        device_class: safety
+        state: "{{ state_attr('var.motion_profile_bedroom','bypass') | bool(false) }}"
+      - name: "Motion Bypass Desk"
+        unique_id: motion_bypass_desk
+        device_class: safety
+        state: "{{ state_attr('var.motion_profile_desk','bypass') | bool(false) }}"
+      - name: "Motion Bypass Ensuite"
+        unique_id: motion_bypass_ensuite
+        device_class: safety
+        state: "{{ state_attr('var.motion_profile_ensuite','bypass') | bool(false) }}"
+      - name: "Motion Bypass Kitchen"
+        unique_id: motion_bypass_kitchen
+        device_class: safety
+        state: "{{ state_attr('var.motion_profile_kitchen','bypass') | bool(false) }}"
+      - name: "Motion Bypass Hallway Downstairs"
+        unique_id: motion_bypass_hallway_downstairs
+        device_class: safety
+        state: "{{ state_attr('var.motion_profile_hallway_downstairs','bypass') | bool(false) }}"
+      - name: "Motion Bypass Hallway Upstairs"
+        unique_id: motion_bypass_hallway_upstairs
+        device_class: safety
+        state: "{{ state_attr('var.motion_profile_hallway_upstairs','bypass') | bool(false) }}"
+      - name: "Motion Bypass Ottoman"
+        unique_id: motion_bypass_ottoman
+        device_class: safety
+        state: "{{ state_attr('var.motion_profile_ottoman','bypass') | bool(false) }}"
+      - name: "Motion Bypass Wardrobe"
+        unique_id: motion_bypass_wardrobe
+        device_class: safety
+        state: "{{ state_attr('var.motion_profile_wardrobe','bypass') | bool(false) }}"

@@ -1,0 +1,76 @@
+bedroom_config:
+  friendly_name: "Bedroom Config"
+  unique_id: "variable_bedroom_config"
+  initial_value: "{}" # JSON string: { "setting": value, ... }
+  restore: true
+  icon: mdi:bed
+  attributes:
+    last_changed: ""
+    source: "" # e.g., "mobile_app", "voice_assistant", etc.
+    subareas: "{}" # JSON string: { "subarea": "setting", ... }
+    motion: false
+    recent_motion:
+    occupied:
+    person:
+    last_cleaned:
+    needs_cleaning:
+    motion_lights:
+    motion_bypass:
+    policy:
+      untracked_housemate: true
+      require_presence_for_activation_default: false
+      presence_enhancement_mode: true
+  device_class: "config"
+  entity_category: "config"
+  hidden: true
+  propagation_rules:
+    motion:
+      from_subarea_to_area: probable # e.g., desk → bedroom
+      from_area_to_subarea: improbable # e.g., bedroom → desk
+      from_area_to_container: probable # e.g., bedroom → sanctum
+      from_container_to_area: undefined
+      transient_decay: true # motion loses confidence across boundaries
+      decay_rate: 0.7 # relative confidence reduction per level
+      tags: [decay, boundary, propagation]
+    presence:
+      from_subarea_to_area: possible
+      from_area_to_subarea: rare
+      from_area_to_container: possible
+      from_container_to_area: unlikely
+      memory: sticky # presence has higher retention than motion
+      tags: [retention, propagation]
+    occupancy:
+      aggregate_method: weighted_sum
+      weights:
+        subarea: 0.6
+        area: 1.0
+        container: 0.4
+      decay_profile:
+        subarea_timeout: 2m
+        area_timeout: 5m
+        container_timeout: 10m
+      tags: [aggregation, decay]
+    graph:
+      allow_cycles: false
+      max_depth: 5
+      transitive_inference: true
+      tags: [graph, traversal]
+    climate: 
+      enabled: [true, false]
+      target_temperature: [?int]
+      target_humidity: [?int]
+      hvac_mode: [?str]
+      preset_mode: [?str]
+    air_quality: 
+      enabled: [true, false]
+      pm25: [?float]
+      pm10: [?float]
+      co2: [?int]
+      voc: [?int]
+      threshold: [?str] # e.g., "good", "moderate", "unhealthy"
+    lighting: 
+      enabled: [true, false]
+      brightness: [?int] # 0-255
+      color_temp: [?int] # in Kelvin
+      rgb_color: [?list] # [R, G, B]
+      effect: [?str] # e.g., "reading", "relax", "night

@@ -68,6 +68,11 @@ hades-validate: venv
 	@echo "Running Hades config index validation..."
 	@$(PY) hestia/tools/utils/validators/hades_index_validator.py
 
+# Entity registry validator
+validate-entities: venv
+	@echo "Validating Home Assistant entities using validator_registry_entities.py"
+	@$(PY) hestia/tools/utils/validators/validator_registry_entities.py -i packages/motion_lighting/helpers.yaml || true
+
 adr-validate: venv
 	@echo "Validating ADR files..."
 	@for adr in $$(find hestia/library/docs/ADR -name "*.md" -not -name "*template*" 2>/dev/null || true); do \
@@ -96,8 +101,12 @@ backup-create: venv
 	@bash hestia/tools/utils/backup/hestia_tarball.sh
 
 tarball: venv
-	@echo "Creating Hestia workspace backup..."
-	@bash hestia/tools/utils/backup/hestia_tarball.sh
+	@echo "Creating Hestia workspace backup (excluding .storage)..."
+	@INCLUDE_STORAGE=false bash hestia/tools/utils/backup/hestia_tarball.sh
+
+storage-tarball: venv
+	@echo "Creating Hestia workspace backup with .storage included..."
+	@INCLUDE_STORAGE=true bash hestia/tools/utils/backup/hestia_tarball.sh
 
 backup-rename: venv
 	@echo "Normalizing legacy backup file names..."

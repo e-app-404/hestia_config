@@ -11,8 +11,6 @@
         entity_id:
           - group.unavailable_entities
           - sensor.smartthings_entity_list
-        apply_filter: true
-        repack: false
 
 - id: 1a2b3c4d-5e6f-7a8b-9c0d-111213141516
   alias: "Recorder weekly repack"

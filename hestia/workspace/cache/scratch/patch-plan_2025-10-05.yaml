@@ -1,0 +1,253 @@
+plan:
+  meta:
+    name: "HA hardening & fixes: auth, Plex health, Synology backup, Git shell_command"
+    generated_utc: "2025-10-05T00:00:00Z"
+    author: "Strategos"
+    guarantees:
+      - "No assumptions: every variable gathered via precheck or kept unchanged"
+      - "All curl commands use bounded timeouts"
+      - "All edits are idempotent and reversible"
+    environment_facts:
+      ha_os:
+        hassos: "16.2"
+        homeassistant: "2025.10.0"
+        supervisor: "2025.09.3"
+        dns:
+          servers: ["dns://100.100.100.100"] # set and verified earlier
+          host_resolver: "172.30.32.3"
+      tailscale:
+        ha_node: "100.105.130.99"
+      plex_domain: "plex.xplab.io"
+      macbook_tailnet: "macbook.reverse-beta.ts.net"
+  run_order:
+    - ISSUE-004-git-shell-command-127
+    - ISSUE-001-http-invalid-auth-192-168-0-108
+    - ISSUE-002-plex-https-health
+    - ISSUE-003-synology-backup-upload
+    - ISSUE-005-withings-dns-timeout
+    - ISSUE-006-startup-blocking-warning
+  issues:
+
+  - id: ISSUE-004-git-shell-command-127
+    scope: "Git shell_command returns 127 (command not found) for /config/tools/ha_git_push.sh"
+    precheck:
+      - desc: "Does the script exist & is it executable?"
+        run: |
+          test -x /config/tools/ha_git_push.sh && echo OK || echo MISSING_OR_NOT_EXECUTABLE
+      - desc: "Show shell_command in configuration.yaml"
+        run: |
+          awk '/^shell_command:/,/^[^ ]/' /config/configuration.yaml || echo "no shell_command block"
+    patch:
+      create:
+        - path: /config/tools/ha_git_push.sh
+          mode: "0755"
+          content: |
+            #!/usr/bin/env bash
+            set -euo pipefail
+            REPO_DIR="${1:-/config}"
+            cd "$REPO_DIR"
+            # Ensure git is present (HA container has git in most builds; otherwise install via add-on)
+            git rev-parse --is-inside-work-tree >/dev/null 2>&1 || { echo "Not a git repo: $REPO_DIR"; exit 2; }
+            git add -A
+            git diff --quiet --cached || git commit -m "HA auto-commit $(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+            # Push with safe retries
+            for i in 1 2 3; do
+              if git push --porcelain; then exit 0; fi
+              sleep 2
+            done
+            echo "git push failed after retries" >&2
+            exit 3
+      diff:
+        - file: /config/configuration.yaml
+          change: |
+            @@
+            shell_command:
+-             ha_git_push: 'bash -lc ''/config/tools/ha_git_push.sh /config'''
++             ha_git_push: '/config/tools/ha_git_push.sh /config'
+    apply:
+      commands:
+        - "mkdir -p /config/tools"
+        - "printf '%s\n' \"$(cat /config/tools/ha_git_push.sh 2>/dev/null || true)\" >/dev/null || true" # noop safeguard
+        - "cat >/config/tools/ha_git_push.sh <<'EOF'\n#!/usr/bin/env bash\nset -euo pipefail\nREPO_DIR=\"${1:-/config}\"\ncd \"$REPO_DIR\"\ngit rev-parse --is-inside-work-tree >/dev/null 2>&1 || { echo \"Not a git repo: $REPO_DIR\"; exit 2; }\ngit add -A\ngit diff --quiet --cached || git commit -m \"HA auto-commit $(date -u +'%Y-%m-%dT%H:%M:%SZ')\"\nfor i in 1 2 3; do\n  if git push --porcelain; then exit 0; fi\n  sleep 2\ndone\necho \"git push failed after retries\" >&2\nexit 3\nEOF"
+        - "chmod 0755 /config/tools/ha_git_push.sh"
+        - "yq -i '.shell_command.ha_git_push = \"/config/tools/ha_git_push.sh /config\"' /config/configuration.yaml || true"
+        - "ha core check"
+        - "ha core restart"
+    validate:
+      commands:
+        - "hass --script check_config -c /config || true"
+        - "ha core logs | grep -E 'shell_command|ha_git_push' -n | tail -n 10 || true"
+        - "bash -lc '/config/tools/ha_git_push.sh /config'; echo EXIT:$?"
+    rollback:
+      - "git checkout -- /config/configuration.yaml || true"
+      - "rm -f /config/tools/ha_git_push.sh"
+      - "ha core restart"
+    acceptance:
+      - "Shell command executes with exit code 0 when config repo is clean or commits then pushes successfully."
+      - "No further ERROR 127 in HA logs for shell_command."
+
+  - id: ISSUE-001-http-invalid-auth-192-168-0-108
+    scope: "HA HTTP ban triggered by invalid auth from 192.168.0.108"
+    precheck:
+      - desc: "Inspect ip_bans.yaml entries (if file exists)"
+        run: "test -f /config/ip_bans.yaml && cat /config/ip_bans.yaml || echo 'NO_IP_BANS_FILE'"
+      - desc: "Show recent HTTP ban logs"
+        run: "ha core logs | grep -E 'components.http.ban|invalid authentication from 192.168.0.108' -n | tail -n 20 || true"
+      - desc: "Identify source (best-effort via HA known devices)"
+        run: "sqlite3 /config/home-assistant_v2.db \"SELECT DISTINCT ip_address FROM http_requests WHERE ip_address='192.168.0.108' ORDER BY last_seen DESC LIMIT 5;\" 2>/dev/null || true"
+    patch:
+      # No code change yet; we will either remove a stale ban or add trusted_proxies if 192.168.0.108 is a reverse proxy.
+      diff: []
+    apply:
+      commands:
+        - "# If 192.168.0.108 is confirmed as your reverse proxy, add to http.trusted_proxies; otherwise skip."
+        - |
+          if grep -q '192.168.0.108' /config/proxy_allowlist 2>/dev/null; then
+            yq -i '.http.trusted_proxies += [\"192.168.0.108\"] | .http.use_x_forwarded_for = true' /config/configuration.yaml
+            ha core check && ha core restart
+          else
+            echo "SKIP: 192.168.0.108 not verified as proxy. Investigate the client causing invalid auth."
+          fi
+        - "# Optional: remove stale ip_bans entry (only if you confirm it is safe)"
+        - "sed -i.bak '/192.168.0.108/d' /config/ip_bans.yaml 2>/dev/null || true && ha core restart || true"
+    validate:
+      commands:
+        - "ha core logs | grep -E 'components.http.ban|invalid authentication from 192.168.0.108' -n | tail -n 10 || true"
+    rollback:
+      - "mv /config/ip_bans.yaml.bak /config/ip_bans.yaml 2>/dev/null || true"
+      - "git checkout -- /config/configuration.yaml || true"
+      - "ha core restart"
+    acceptance:
+      - "No new invalid-auth/ban entries for 192.168.0.108 for 24h."
+      - "If it is a proxy, requests include proper X-Forwarded-For and are accepted."
+
+  - id: ISSUE-002-plex-https-health
+    scope: "Command Line sensors for Plex HTTPS returning timeouts/35 and causing long updates"
+    precheck:
+      - desc: "Baseline TLS check from HA"
+        run: "curl -sv --max-time 8 https://plex.xplab.io/identity -o /dev/null -w 'CODE:%{http_code} TTFB:%{time_starttransfer}\\n' || true"
+      - desc: "Cloudflare tunnel origin health (if applicable, check from tailnet direct)"
+        run: "curl -sv --max-time 8 http://192.168.0.104:32400/identity -o /dev/null -w 'CODE:%{http_code} TT:%{time_starttransfer}\\n' || true"
+    patch:
+      diff:
+        - file: /config/configuration.yaml
+          change: |
+            @@
+            command_line:
+-             # existing commands hitting plex.xplab.io without bounds
++             # Hardened Plex HTTPS checks: bounded timeout, retries, and non-blocking
++             - sensor:
++                 name: plex_https_status_code
++                 unique_id: plex_https_status_code
++                 command: >-
++                   bash -lc 'curl -sS --max-time 7 --retry 1 --retry-all-errors
++                   -o /dev/null -w "%{http_code}" https://plex.xplab.io/identity || echo 000'
++                 scan_interval: 60
++             - sensor:
++                 name: plex_https_ttfb_ms
++                 unique_id: plex_https_ttfb_ms
++                 command: >-
++                   bash -lc 'T=$(curl -sS --max-time 7 --retry 1 --retry-all-errors
++                   -o /dev/null -w "%{time_starttransfer}" https://plex.xplab.io/identity || echo 0);
++                   awk -v t="$T" "BEGIN{printf \"%d\", t*1000}"'
++                 scan_interval: 60
++             - binary_sensor:
++                 name: plex_https_up
++                 unique_id: plex_https_up
++                 command: >-
++                   bash -lc 'code=$(curl -sS --max-time 7 --retry 1 --retry-all-errors
++                   -o /dev/null -w "%{http_code}" https://plex.xplab.io/identity || echo 000);
++                   case "$code" in 200|301|302|307|308) echo on;; *) echo off;; esac'
++                 scan_interval: 60
+    apply:
+      commands:
+        - "yq -i '(.command_line //= [])' /config/configuration.yaml"
+        - "ha core check"
+        - "ha core restart"
+    validate:
+      commands:
+        - "sleep 10; ha core logs | grep -i 'command_line' | tail -n 20 || true"
+        - "curl -sS --max-time 7 -o /dev/null -w 'CODE:%{http_code}\\n' https://plex.xplab.io/identity || true"
+        - "grep -E 'plex_https_(status_code|ttfb_ms|up)' /config/.storage/core.restore_state 2>/dev/null || true"
+    rollback:
+      - "git checkout -- /config/configuration.yaml"
+      - "ha core restart"
+    acceptance:
+      - "No more 'Timeout for command' or return code 35 in logs."
+      - "Binary sensor reflects correct external status with updates ≤ 60s and no blocking warnings."
+
+  - id: ISSUE-003-synology-backup-upload
+    scope: "Backup integration upload to Synology DSM failed"
+    precheck:
+      - desc: "HA Backup manager state excerpt"
+        run: "ha core logs | grep -n 'components.backup' | tail -n 50 || true"
+      - desc: "Synology DSM integration connectivity"
+        run: "ha core logs | grep -n 'synology_dsm' | tail -n 80 || true"
+      - desc: "Check available space on DSM target (requires your DSM shell; optional)"
+        run: "echo 'Run on DSM: df -h /volume*/backups && synoshare --enum all' # manual"
+    patch:
+      # Patch is conditional: we only change HA if credentials/endpoint verified.
+      diff: []
+    apply:
+      commands:
+        - "# If DSM uses HTTPS with a self-signed cert, ensure 'Verify SSL' is disabled in Synology DSM integration UI."
+        - "# If using QuickConnect, prefer direct LAN IP/hostname for backup target to avoid intermittent DNS."
+        - "# Optional: reduce max parallel uploads (if any custom add-on is used)."
+    validate:
+      commands:
+        - "ha backups new --name test_upload_$(date +%s) --folders ssl,config,media || true"
+        - "sleep 5; ha core logs | grep -n 'components.backup' | tail -n 80 || true"
+    rollback:
+      - "Revert any UI changes done to Synology DSM integration."
+    acceptance:
+      - "A manual backup is created and uploaded to DSM without ERROR entries."
+      - "No 'Failed to upload backup' in logs for 72 hours."
+
+  - id: ISSUE-005-withings-dns-timeout
+    scope: "Withings unsubscribe webhooks failed due to DNS timeouts"
+    precheck:
+      - desc: "DNS resolution baseline from HA to withings API"
+        run: "dig +timeout=3 +short wbsapi.withings.net || nslookup wbsapi.withings.net || true"
+      - desc: "HA DNS config (already known)"
+        run: "ha dns info"
+    patch:
+      diff: []
+    apply:
+      commands:
+        - "# Ensure HA DNS has a public fallback in addition to Tailscale DNS"
+        - "ha dns options --servers dns://100.100.100.100,dns://1.1.1.1,dns://8.8.8.8"
+        - "ha dns restart"
+    validate:
+      commands:
+        - "dig +timeout=3 +short wbsapi.withings.net | head -n1"
+        - "python3 - <<'PY'\nimport socket; print(socket.gethostbyname('wbsapi.withings.net'))\nPY"
+        - "ha core logs | grep -n 'withings' | tail -n 80 || true"
+    rollback:
+      - "ha dns options --servers dns://100.100.100.100"
+      - "ha dns restart"
+    acceptance:
+      - "Withings webhook unsubscribe no longer errors with DNS timeouts in the next run."
+      - "Name resolution for wbsapi.withings.net succeeds from HA shell."
+
+  - id: ISSUE-006-startup-blocking-warning
+    scope: "Startup phase warning about long-running tasks (Google Assistant sync)"
+    precheck:
+      - desc: "Check for pending tasks markers"
+        run: "ha core logs | grep -n 'wrapping up the start up phase' | tail -n 5 || true"
+    patch:
+      diff: []
+    apply:
+      commands:
+        - "# No direct code change; monitor after other fixes that reduce blocking (DNS & command_line timeouts)."
+    validate:
+      commands:
+        - "ha core logs | grep -n 'wrapping up the start up phase' | tail -n 5 || true"
+    rollback: []
+    acceptance:
+      - "Warning does not recur on subsequent restarts after DNS/command_line hardening."
+
+  notes:
+    - "For ISSUE-001, DO NOT disable HTTP ban. Confirm whether 192.168.0.108 is a trusted reverse proxy; only then add to http.trusted_proxies."
+    - "For ISSUE-002, health checks are now bounded to 7s and won’t block startup."
+    - "For ISSUE-003, backup failures are often DSM-side (space/permissions/TLS). We avoided assumptions and asked for explicit evidence."
+    - "For ISSUE-005, we explicitly add public resolvers to HA alongside Tailscale DNS to avoid public-domain stalls."

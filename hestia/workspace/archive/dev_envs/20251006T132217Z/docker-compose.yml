@@ -1,0 +1,16 @@
+version: "3.9"
+services:
+  ha:
+    image: ghcr.io/home-assistant/home-assistant:stable
+    container_name: ha-dev
+    user: "0:0"
+    volumes:
+      - /System/Volumes/Data/homeassistant:/config
+    environment:
+      - TZ=UTC
+    healthcheck:
+      test: ["CMD", "bash", "-lc", "[ -d /config ] || exit 1" ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped

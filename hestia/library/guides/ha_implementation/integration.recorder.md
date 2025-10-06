@@ -140,9 +140,6 @@ The following characters can be used in entity globs:
 
 - `*` - The asterisk represents zero, one, or multiple characters
 - `?` - The question mark represents zero or one character
-The following characters can be used in entity globs:
-
-* - The asterisk represents zero, one, or multiple characters ? - The question mark represents zero or one character
 
 > **Tip**: If you only want to hide events from your logbook, take a look at the logbook integration. But if you have privacy concerns about certain events or want them in neither the history or logbook, you should use the exclude/include options of the recorder integration. That way they aren't even in your database, you can reduce storage and keep the database small by excluding certain often-logged events (like `sensor.last_boot`).
 
@@ -216,17 +213,23 @@ Perform the action `recorder.purge` to start a purge task which deletes events a
 | `keep_days` | yes | The number of history days to keep in recorder database (defaults to the integration `purge_keep_days` configuration) |
 | `repack` | yes | When using SQLite or PostgreSQL this will rewrite the entire database. When using MySQL or MariaDB it will optimize or recreate the events and states tables. This is a heavy operation that can cause slowdowns and increased disk space usage while it runs. Only supported by SQLite, PostgreSQL, MySQL and MariaDB |
 | `apply_filter` | yes | Apply entity_id and event_type filter in addition to time based purge. Useful in combination with include / exclude filter to remove falsely added states and events. Combine with `repack: true` to reduce database size |
-Action purge_entities 
-Perform the action recorder.purge_entities to start a task that purges events and states from the recorder database that match any of the specified entity_id, domains, and entity_globs fields. At least one of the three selection criteria fields must be provided.
 
-Data attribute	Optional	Description
-entity_id	yes	A list of entity_ids that should be purged from the recorder database.
-domains	yes	A list of domains that should be purged from the recorder database.
-entity_globs	yes	A list of regular expressions that identify entities to purge from the recorder database.
-keep_days	yes	Number of history days to keep in the database of matching rows. The default of 0 days will remove all matching rows.
-Example automation to remove data rows for specific entities 
-The below automation will remove history for sensor.power_sensor_0 older than 5 days at 04:15:00 every day.
+### Action purge_entities
+Perform the action `recorder.purge_entities` to start a task that purges events and states from the recorder database that match any of the specified `entity_id`, `domains`, and `entity_globs` fields. At least one of the three selection criteria fields must be provided.
+  
+#### Parameters
 
+| Data Attribute | Optional | Description |
+|---------------|----------|-------------|
+| `entity_id` | yes | A list of entity_ids that should be purged from the recorder database. |
+| `domains` | yes | A list of domains that should be purged from the recorder database. |
+| `entity_globs` | yes | A list of regular expressions that identify entities to purge from the recorder database. |
+| `keep_days` | yes | Number of history days to keep in the database of matching rows. The default of 0 days will remove all matching rows. |
+
+#### Example automation to remove data rows for specific entities
+The below automation will remove history for `sensor.power_sensor_0` older than 5 days at 04:15:00 every day.
+
+```yaml
 alias: "Purge noisy power sensors"
 triggers:
   - trigger: time
@@ -236,28 +239,26 @@ actions:
     data:
       keep_days: 5
       entity_id: sensor.power_sensor_0
-YAML
-Action disable 
-Perform the action recorder.disable to stop saving events and states to the database.
+```
 
-Action enable 
-Perform the action recorder.enable to start again saving events and states to the database. This is the opposite of recorder.disable.
+### Action get_statistics
 
-Action get_statistics 
-Perform the action recorder.get_statistics to retrieve statistics for one or more entities from the recorder database. This action is useful for automations or scripts that need to access historical statistics, such as mean, min, max, or sum values, for supported entities like sensors.
+Perform the action `recorder.get_statistics` to retrieve statistics for one or more entities from the recorder database. This action is useful for automations or scripts that need to access historical statistics, such as mean, min, max, or sum values, for supported entities like sensors.
 
- Note
+> Note: Statistics are only available for entities that store Long-term statistics
 
-Statistics are only available for entities that store Long-term statistics
+| Data attribute | Optional | Description |
+|----------------|----------|-------------|
+| statistic_ids  | no       | The entity IDs or statistic IDs to get statistics for. |
+| start_time     | no       | The start time for the statistics query. |
+| end_time       | yes      | The end time for the statistics query. If omitted, returns all statistics from start time onward. |
+| period         | no       | The time period to group statistics by (5minute, hour, day, week, or month). |
+| types          | no       | The types of statistics values to return (change, last_reset, max, mean, min, state, or sum). |
+| units          | yes      | Optional unit conversion mapping. An object where keys are device classes and values are the desired target units. This allows retrieving statistics converted to different units than what’s stored in the database. |
 
-Data attribute	Optional	Description
-statistic_ids	no	The entity IDs or statistic IDs to get statistics for.
-start_time	no	The start time for the statistics query.
-end_time	yes	The end time for the statistics query. If omitted, returns all statistics from start time onward.
-period	no	The time period to group statistics by (5minute, hour, day, week, or month).
-types	no	The types of statistics values to return (change, last_reset, max, mean, min, state, or sum).
-units	yes	Optional unit conversion mapping. An object where keys are device classes and values are the desired target units. This allows retrieving statistics converted to different units than what’s stored in the database.
-Example using get_statistics 
+#### Example using get_statistics
+
+```yaml
 action: recorder.get_statistics
 data:
   statistic_ids:
@@ -273,159 +274,194 @@ data:
     energy: kWh
     volume: L
 response_variable: consumption_stats
-YAML
-Handling disk corruption and hardware failures 
+```
+
+### Handling disk corruption and hardware failures
 When using SQLite, if the system encounters unrecoverable disk corruption, it will move the database aside and create a new database to keep the system online. In this case, having at least 2.5x the database size available in free disk space is essential. Starting a new database is the system’s last resort recovery option and is usually caused by failing flash storage, an inadequate power supply, an unclean shutdown, or another hardware failure.
 
 In this event, it may be possible to recover the old database by following the SQLite recovery guide.
 
-Custom database engines 
- Warning
+## Custom database engines
 
-SQLite is the most tested, and newer version of Home Assistant are highly optimized to perform well when using SQLite.
+> **⚠️ Warning**: SQLite is the most tested, and newer version of Home Assistant are highly optimized to perform well when using SQLite. When choosing another option, you should be comfortable in the role of the database administrator, including making backups of the external database.
 
-When choosing another option, you should be comfortable in the role of the database administrator, including making backups of the external database.
+Here are examples to use with the `db_url` configuration option:
 
-Here are examples to use with the db_url configuration option.
-
-SQLite
+**SQLite**
+```
 sqlite:////PATH/TO/DB_NAME
+```
 
-MariaDB (omit pymysql)
+**MariaDB** (omit pymysql)
+```
 mysql://user:password@SERVER_IP/DB_NAME?charset=utf8mb4
+```
 
-MariaDB (omit pymysql, using TLS encryption)
+**MariaDB** (omit pymysql, using TLS encryption)
+```
 mysql://user:password@SERVER_IP/DB_NAME?charset=utf8mb4;ssl=true
+```
 
-MariaDB (omit pymysql, Socket)
+**MariaDB** (omit pymysql, Socket)
+```
 mysql://user:password@SERVER_IP/DB_NAME?unix_socket=/var/run/mysqld/mysqld.sock&charset=utf8mb4
+```
 
-MySQL
+**MySQL**
+```
 mysql://user:password@SERVER_IP/DB_NAME?charset=utf8mb4
+```
 
-MySQL (using TLS encryption)
+**MySQL** (using TLS encryption)
+```
 mysql://user:password@SERVER_IP/DB_NAME?charset=utf8mb4;ssl=true
+```
 
-MySQL (Socket)
+**MySQL** (Socket)
+```
 mysql://user:password@localhost/DB_NAME?unix_socket=/var/run/mysqld/mysqld.sock&charset=utf8mb4
+```
 
-MariaDB
+**MariaDB**
+```
 mysql+pymysql://user:password@SERVER_IP/DB_NAME?charset=utf8mb4
+```
 
-MariaDB (Socket)
+**MariaDB** (Socket)
+```
 mysql+pymysql://user:password@localhost/DB_NAME?unix_socket=/var/run/mysqld/mysqld.sock&charset=utf8mb4
+```
 
-PostgreSQL
+**PostgreSQL**
+```
 postgresql://user:password@SERVER_IP/DB_NAME
+```
 
-PostgreSQL (Socket)
+**PostgreSQL** (Socket)
+```
 postgresql://@/DB_NAME
+```
 
-PostgreSQL (Custom socket dir)
+**PostgreSQL** (Custom socket dir)
+```
 postgresql://@/DB_NAME?host=/path/to/dir
+```
 
- Note
+> **Note**: Some installations of MariaDB/MySQL may require an ALTERNATE_PORT (3rd-party hosting providers or parallel installations) to be added to the SERVER_IP, e.g., mysql://user:password@SERVER_IP:ALTERNATE_PORT/DB_NAME?charset=utf8mb4.
 
-Some installations of MariaDB/MySQL may require an ALTERNATE_PORT (3rd-party hosting providers or parallel installations) to be added to the SERVER_IP, e.g., mysql://user:password@SERVER_IP:ALTERNATE_PORT/DB_NAME?charset=utf8mb4.
+> **Note**: When using a MariaDB or MySQL server, adding +pymysql to the URL will use the pure Python MySQL library, which is slower but may be required if the C MySQL library is not available. When using the official Docker image, the C MySQL library will always be available. pymysql is most commonly used with venv where the C MySQL library is not installed.
 
- Note
+> **Tip**: Unix Socket connections always bring performance advantages over TCP, if the database is on the same host as the recorder instance (i.e., localhost).
 
-When using a MariaDB or MySQL server, adding +pymysql to the URL will use the pure Python MySQL library, which is slower but may be required if the C MySQL library is not available.
+> **Note**: If you want to use Unix Sockets for PostgreSQL you need to modify the pg_hba.conf. See PostgreSQL
 
-When using the official Docker image, the C MySQL library will always be available. pymysql is most commonly used with venv where the C MySQL library is not installed.
+### Database startup
 
- Tip
+If you are running a database server instance on the same server as Home Assistant then you must ensure that this action starts before Home Assistant. For a Linux instance running Systemd (Raspberry Pi, Debian, Ubuntu and others) you should edit the service file. To help facilitate this, `db_max_retry` and `db_retry_wait` variables have been added to ensure the recorder retries the connection to your database enough times, for your database to start up.
 
-Unix Socket connections always bring performance advantages over TCP, if the database is on the same host as the recorder instance (i.e., localhost).
-
- Note
-
-If you want to use Unix Sockets for PostgreSQL you need to modify the pg_hba.conf. See PostgreSQL
-
-Database startup 
-If you are running a database server instance on the same server as Home Assistant then you must ensure that this action starts before Home Assistant. For a Linux instance running Systemd (Raspberry Pi, Debian, Ubuntu and others) you should edit the service file. To help facilitate this, db_max_retry and db_retry_wait variables have been added to ensure the recorder retries the connection to your database enough times, for your database to start up.
-
+```bash
 sudo nano /etc/systemd/system/home-assistant@homeassistant.service
-Bash
+```
+
 and add the action for the database, for example, PostgreSQL:
 
+```ini
 [Unit]
 Description=Home Assistant
 After=network.target postgresql.service
-Txt
+```
+
 Save the file then reload systemctl:
 
+```bash
 sudo systemctl daemon-reload
-Bash
-Installation notes 
+```
+## Installation notes
+
 Not all Python bindings for the chosen database engine can be installed directly. This section contains additional details that should help you to get it working.
 
-MariaDB and MySQL 
- Warning
+### MariaDB and MySQL
 
-MariaDB versions before 10.5.17, 10.6.9, 10.7.5, and 10.8.4 suffer from a performance regression which can result in the system becoming overloaded while querying history data or purging the database.
+> **⚠️ Warning**: MariaDB versions before 10.5.17, 10.6.9, 10.7.5, and 10.8.4 suffer from a performance regression which can result in the system becoming overloaded while querying history data or purging the database.
 
-Make sure the default character set of your database server is set to utf8mb4 (see MariaDB documentation). If you are in a virtual environment, don’t forget to activate it before installing the mysqlclient Python package described below.
+Make sure the default character set of your database server is set to `utf8mb4` (see MariaDB documentation). If you are in a virtual environment, don't forget to activate it before installing the `mysqlclient` Python package described below.
 
+```bash
 pi@homeassistant:~ $ sudo -u homeassistant -H -s
 homeassistant@homeassistant:~$ source /srv/homeassistant/bin/activate
 (homeassistant) homeassistant@homeassistant:~$ pip3 install mysqlclient
-Bash
-For MariaDB you may have to install a few dependencies. If you’re using MariaDB 10.3, the package libmariadb-dev-compat must also be installed. Please install the correct packages based on your MariaDB version.
+```
 
-On the Python side we use the mysqlclient:
+For MariaDB you may have to install a few dependencies. If you're using MariaDB 10.3, the package `libmariadb-dev-compat` must also be installed. Please install the correct packages based on your MariaDB version.
 
+On the Python side we use the `mysqlclient`:
+
+```bash
 sudo apt-get install libmariadbclient-dev libssl-dev
 pip3 install mysqlclient
-Bash
-For MySQL you may have to install a few dependencies. You can choose between pymysql and mysqlclient:
+```
+For MySQL you may have to install a few dependencies. You can choose between `pymysql` and `mysqlclient`:
 
+```bash
 sudo apt-get install default-libmysqlclient-dev libssl-dev
 pip3 install mysqlclient
-Bash
-After installing the dependencies, it is required to create the database manually. During the startup, Home Assistant will look for the database specified in the db_url. If the database doesn’t exist, it will not automatically create it for you.
+```
+
+After installing the dependencies, it is required to create the database manually. During the startup, Home Assistant will look for the database specified in the `db_url`. If the database doesn't exist, it will not automatically create it for you.
 
 The database engine must be InnoDB as MyIASM is not supported.
 
+```sql
 SET GLOBAL default_storage_engine = 'InnoDB';
 CREATE DATABASE DB_NAME CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-Bash
-Where DB_NAME is the name of your database
+```
+
+Where `DB_NAME` is the name of your database
 
 Once Home Assistant finds the database, with the right level of permissions, all the required tables will then be automatically created and the data will be populated accordingly.
 
-PostgreSQL 
-Create the PostgreSQL database with utf8 encoding. The PostgreSQL default encoding is SQL_ASCII. From the postgres user account;
+### PostgreSQL
 
+Create the PostgreSQL database with utf8 encoding. The PostgreSQL default encoding is SQL_ASCII. From the postgres user account:
+
+```bash
 createdb -E utf8 DB_NAME
-Bash
-Where DB_NAME is the name of your database
+```
 
-If the Database in use is not utf8, adding ?client_encoding=utf8 to the db_url may solve any issue.
+Where `DB_NAME` is the name of your database
+
+If the Database in use is not utf8, adding `?client_encoding=utf8` to the `db_url` may solve any issue.
 
 For PostgreSQL you may have to install a few dependencies:
 
+```bash
 sudo apt-get install postgresql-server-dev-X.Y
 pip3 install psycopg2
-Bash
-For using Unix Sockets, first create your user from the postgres user account;
+```
+For using Unix Sockets, first create your user from the postgres user account:
 
+```bash
 createuser USER_NAME
-Bash
-Where USER_NAME is the name of the user running the Home Assistant instance (see securing your installation).
+```
 
-Then add the following line to your pg_hba.conf:
+Where `USER_NAME` is the name of the user running the Home Assistant instance (see securing your installation).
 
+Then add the following line to your `pg_hba.conf`:
+
+```
 local DB_NAME USER_NAME peer
+```
 
-Where DB_NAME is the name of your database and USER_NAME is the name of the user running the Home Assistant instance (see securing your installation).
+Where `DB_NAME` is the name of your database and `USER_NAME` is the name of the user running the Home Assistant instance (see securing your installation).
 
 Reload the PostgreSQL configuration after that:
 
+```bash
 $ sudo -i -u postgres psql -c "SELECT pg_reload_conf();"
  pg_reload_conf
 ----------------
  t
 (1 row)
-Bash
+```
+
 A service restart will work as well.

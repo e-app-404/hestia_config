@@ -25,7 +25,7 @@ foundation:
       Alternative tarballs use reduced indexing until Mnemosyne restoration.
     structure:
       snapshot_root: "/mnt/data/final_snapshot_yyyy-mm-dd_hh-mm-ss/"
-      apollo_knowledge: "apollo_knowledge/n/ha/share/APOLLO/"
+      apollo_knowledge: "apollo_knowledge/config/share/APOLLO/"
       config_snapshot: "config_snapshot/"
       git_mirrors: "Volumes/Share/GIT/"
 

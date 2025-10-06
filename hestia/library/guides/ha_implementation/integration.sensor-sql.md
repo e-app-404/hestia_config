@@ -3,7 +3,7 @@ title: "SQL sensor integration"
 authors: "Home Assistant"
 source: "Home Assistant Docs"
 slug: "sql-sensor-integration"
-tags: ["home-assistant","sql","sensor","database","recorder","ops"]
+tags: ["home-assistant","sql","sensor","database","recorder","ops", "adr", "governance"]
 original_date: "2022-04-05"
 last_updated: "2025-09-28"
 url: "https://www.home-assistant.io/integrations/sql/"

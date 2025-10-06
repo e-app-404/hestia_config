@@ -3,7 +3,7 @@ title: "RESTful Command"
 authors: "Home Assistant"
 source: "Home Assistant Docs"
 slug: "restful_command"
-tags: ["home-assistant","ops","integration"]
+tags: ["home-assistant","ops","integration", "rest_command", "automation", "notify", "sensor"]
 original_date: "2022-04-05"
 last_updated: "2025-09-24"
 url: "https://www.home-assistant.io/integrations/rest_command/"

@@ -1,0 +1,184 @@
+var:
+  room_profile_bedroom:
+    friendly_name: "Room Profile — Bedroom"
+    unique_id: var_room_profile_bedroom
+    initial_value: normal
+    restore: true
+    icon: mdi:home-analytics
+    attributes:
+      al_enabled: true
+      only_once: true
+      sleep: false
+      default_brightness_pct: 100
+      default_ct_mired: 420
+      night_brightness_pct: 12
+      night_ct_mired: 420
+      manual_override_until: ""
+
+  room_profile_desk:
+    friendly_name: "Room Profile — Desk"
+    unique_id: var_room_profile_desk
+    initial_value: work
+    restore: true
+    icon: mdi:desk
+    attributes:
+      al_enabled: true
+      only_once: true
+      sleep: false
+      default_brightness_pct: 100
+      default_ct_mired: 420
+      night_brightness_pct: 12
+      night_ct_mired: 420
+      manual_override_until: ""
+
+  room_profile_ensuite:
+    friendly_name: "Room Profile — Ensuite"
+    unique_id: var_room_profile_ensuite
+    initial_value: normal
+    restore: true
+    icon: mdi:shower
+    attributes:
+      al_enabled: true
+      only_once: true
+      sleep: false
+      default_brightness_pct: 100
+      default_ct_mired: 420
+      night_brightness_pct: 12
+      night_ct_mired: 420
+      manual_override_until: ""
+
+  room_profile_kitchen:
+    friendly_name: "Room Profile — Kitchen"
+    unique_id: var_room_profile_kitchen
+    initial_value: normal
+    restore: true
+    icon: mdi:stove
+    attributes:
+      al_enabled: true
+      only_once: true
+      sleep: false
+      default_brightness_pct: 100
+      default_ct_mired: 420
+      night_brightness_pct: 12
+      night_ct_mired: 420
+      manual_override_until: ""
+
+  room_profile_hallway_downstairs:
+    friendly_name: "Room Profile — Hallway Downstairs"
+    unique_id: var_room_profile_hallway_downstairs
+    initial_value: transit
+    restore: true
+    icon: mdi:stairs-down
+    attributes:
+      al_enabled: true
+      only_once: true
+      sleep: false
+      default_brightness_pct: 100
+      default_ct_mired: 420
+      night_brightness_pct: 12
+      night_ct_mired: 420
+      manual_override_until: ""
+
+  room_profile_hallway_upstairs:
+    friendly_name: "Room Profile — Hallway Upstairs"
+    unique_id: var_room_profile_hallway_upstairs
+    initial_value: transit
+    restore: true
+    icon: mdi:stairs-up
+    attributes:
+      al_enabled: true
+      only_once: true
+      sleep: false
+      default_brightness_pct: 100
+      default_ct_mired: 420
+      night_brightness_pct: 12
+      night_ct_mired: 420
+      manual_override_until: ""
+
+  motion_profile_bedroom:
+    friendly_name: "Motion Profile — Bedroom"
+    unique_id: var_motion_profile_bedroom
+    initial_value: ""
+    restore: true
+    icon: mdi:motion-sensor
+    attributes:
+      bypass: false
+      timeout_seconds: 120
+      last_triggered: ""
+
+  motion_profile_desk:
+    friendly_name: "Motion Profile — Desk"
+    unique_id: var_motion_profile_desk
+    initial_value: ""
+    restore: true
+    icon: mdi:motion-sensor
+    attributes:
+      bypass: false
+      timeout_seconds: 300
+      last_triggered: ""
+
+  motion_profile_ensuite:
+    friendly_name: "Motion Profile — Ensuite"
+    unique_id: var_motion_profile_ensuite
+    initial_value: ""
+    restore: true
+    icon: mdi:motion-sensor
+    attributes:
+      bypass: false
+      timeout_seconds: 240
+      last_triggered: ""
+
+  motion_profile_kitchen:
+    friendly_name: "Motion Profile — Kitchen"
+    unique_id: var_motion_profile_kitchen
+    initial_value: ""
+    restore: true
+    icon: mdi:motion-sensor
+    attributes:
+      bypass: false
+      timeout_seconds: 300
+      last_triggered: ""
+
+  motion_profile_hallway_downstairs:
+    friendly_name: "Motion Profile — Hallway Downstairs"
+    unique_id: var_motion_profile_hallway_downstairs
+    initial_value: ""
+    restore: true
+    icon: mdi:motion-sensor
+    attributes:
+      bypass: false
+      timeout_seconds: 90
+      last_triggered: ""
+
+  motion_profile_hallway_upstairs:
+    friendly_name: "Motion Profile — Hallway Upstairs"
+    unique_id: var_motion_profile_hallway_upstairs
+    initial_value: ""
+    restore: true
+    icon: mdi:motion-sensor
+    attributes:
+      bypass: false
+      timeout_seconds: 90
+      last_triggered: ""
+
+  motion_profile_ottoman:
+    friendly_name: "Motion Profile — Ottoman"
+    unique_id: var_motion_profile_ottoman
+    initial_value: ""
+    restore: true
+    icon: mdi:motion-sensor
+    attributes:
+      bypass: false
+      timeout_seconds: 180
+      last_triggered: ""
+
+  motion_profile_wardrobe:
+    friendly_name: "Motion Profile — Wardrobe"
+    unique_id: var_motion_profile_wardrobe
+    initial_value: ""
+    restore: true
+    icon: mdi:motion-sensor
+    attributes:
+      bypass: false
+      timeout_seconds: 180
+      last_triggered: ""

@@ -7,3 +7,9 @@
 house_alert_enabled:
   name: "House Alert"
   icon: mdi:package
+hestia_approve_trash: 
+  name: "Approve Empty Trash"
+  icon: mdi:trash-can-outline
+hestia_approve_tmp:
+  name: "Approve Prune Tmp"
+  icon: mdi:folder-remove-outline

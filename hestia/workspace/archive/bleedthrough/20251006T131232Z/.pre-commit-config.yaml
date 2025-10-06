@@ -1,0 +1,55 @@
+repos:
+  - repo: local
+    hooks:
+      - id: hestia-adr-lint
+        name: hestia-adr-lint
+        entry: hestia-adr-lint --format human
+        language: system
+        files: ^hestia/library/docs/ADR/.*\.md$
+        exclude: ^(docs/playbooks|docs/runbooks)/
+
+  - repo: https://github.com/adrienverge/yamllint
+    rev: v1.35.1
+    hooks:
+      - id: yamllint
+        args: [--format, colored, -s]
+
+  - repo: local
+    hooks:
+      - id: validate-metadata
+        name: Validate HESTIA metadata
+        entry: .venv/bin/python hestia/tools/validate_metadata.py
+        language: system
+        pass_filenames: false
+      - id: hestia-workspace-enforcer
+        name: Hestia Workspace Enforcer
+        entry: hestia/tools/system/hestia_workspace_enforcer.sh
+        language: script
+        types: [yaml, sh, py, txt]
+        pass_filenames: false
+
+  - repo: local
+    hooks:
+      - id: deny-offer-lines
+        name: deny-offer-lines
+        entry: hestia/workspace/operations/guardrails/deny_offer_lines.sh
+        language: script
+        files: "\\.(md|markdown|txt|yml|yaml)$"
+      - id: lint-paths
+        name: lint-paths
+        entry: tools/lint_paths.sh
+        language: system
+        pass_filenames: false
+        files: '^(config|scripts|packages|custom_components|\.devcontainer|\.vscode)/'
+      - id: ha-path-guard
+        name: HA Path Guard
+        entry: tools/lib/require-config-root.sh
+        language: system
+        pass_filenames: false
+        always_run: true
+      - id: adr0024-path-lint
+        name: ADR-0024 Path Lint
+        entry: tools/lint_paths.sh
+        language: system
+        pass_filenames: false
+        stages: [commit, push]

@@ -1,0 +1,11 @@
+blueprint_matrix:
+- blueprint_guide: "hestia/library/docs/reference/blueprint_usage_guide.md"
+- blueprint_matrix: "hestia/library/blueprints/blueprint-matrix.yaml"
+- link_entities: "hestia/library/blueprints/ha-blueprint-linked-entities.yaml"
+- ha-blueprint-linked-lights: "hestia/library/blueprints/ha-blueprint-linked-lights.yaml"
+- auto_off_manual_light: "hestia/library/blueprints/manual-light.yaml"
+- motion_lights: "hestia/library/blueprints/motion_lights.yaml"
+- motion_light_triggered: "hestia/library/blueprints/motion_triggered_lights_with_timer.yaml"
+- add_on: "hestia/library/blueprints/sensor-light-add-on.yaml"
+- sensor_light_pattern: "hestia/library/blueprints/sensor-light-pattern.yaml"
+- core_executor: "hestia/library/blueprints/sensor-light.yaml"

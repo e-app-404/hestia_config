@@ -7,9 +7,9 @@ notes below to be productive quickly and avoid unsafe changes.
 
 ## Canonical Workspace Structure (ADR-0016)
 
-- **Edit root**: `~/hass` (canonical path for all operations)
-- **NEVER** use `/n/ha` or `/private/var/ha_real` (deprecated legacy paths)
-- **Python paths**: Always use `.expanduser()` with tilde paths: `Path('~/hass/...').expanduser()`
+- **Edit root**: `/config` (canonical path for all operations)
+- **NEVER** use `~/hass`, `/n/ha` or `/private/var/ha_real` (deprecated legacy paths)
+- **Python paths**: Always use `/config` directly: `Path('/config/...')`
 - **VS Code**: Use workspace-relative paths (`${workspaceFolder}`) in configs
 
 ## Key Workspace Areas (per hestia_structure.md)
@@ -47,7 +47,7 @@ notes below to be productive quickly and avoid unsafe changes.
 ### Python Code
 - **Version**: Python >= 3.10
 - **Style**: Ruff settings in `pyproject.toml` (line-length 100)
-- **Path expansion**: `Path('~/hass/...').expanduser()` for tilde paths
+- **Path expansion**: Use `/config` directly, no expansion needed
 
 ## Workflows and Commands
 
@@ -67,7 +67,7 @@ notes below to be productive quickly and avoid unsafe changes.
 
 - **Tailscale/Network**: Configs under `hestia/config/network`
 - **ADR compliance**: Follow ADR-0009 formatting (YAML front-matter, TOKEN_BLOCK)
-- **Mount validation**: Scripts should check `${HA_MOUNT:-$HOME/hass}` exists
+- **Mount validation**: Scripts should check `/config` exists using `tools/lib/require-config-root.sh`
 - **Git hooks**: Pre-commit validates paths, prevents banned file tracking
 
 ## Safety Guidelines for AI Agents
@@ -95,7 +95,7 @@ notes below to be productive quickly and avoid unsafe changes.
 ## Deprecated Paths (DO NOT USE)
 
 - `hestia/reports/` — DEPRECATED, use `hestia/workspace/operations/logs/` instead
-- `/n/ha` — DEPRECATED, use `~/hass` instead
+- `/n/ha`, `~/hass` — DEPRECATED, use `/config` instead
 - `hestia/core/` — DEPRECATED, use `hestia/config/` instead
 - `hestia/docs/ADR/` — DEPRECATED, use `hestia/library/docs/ADR/` instead
 

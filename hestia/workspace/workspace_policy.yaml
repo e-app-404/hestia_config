@@ -1,0 +1,5 @@
+exclusions:
+  - "/config/www/*"
+  - "/config/.storage/*"
+  - "/config/home-assistant_v2.db*"
+  - "/config/hestia/workspace/archive/*"

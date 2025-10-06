@@ -112,3 +112,56 @@
         media_player_entity_id: media_player.bedroom_google_home_mini_speaker
         message: "Home Assistant will shut down at {{ now().strftime('%Y-%m-%d %H:%M:%S') }}"
         language: en-ca
+
+- id: W3mPTGMiX7SeIb0r9yL3HCP18lLWIZQW
+  alias: Hestia Trash Reaches Threshold
+  trigger:
+    - platform: numeric_state
+      entity_id: sensor.hestia_trash_size
+      above: 512000  # ~500MB in KiB
+  action:
+    - service: notify.mobile_app_your_phone
+      data:
+        message: "Trash exceeded 500MB. Approve to empty?"
+    - wait_for_trigger:
+        - platform: state
+          entity_id: input_boolean.hestia_approve_trash
+          to: "on"
+      timeout: "24:00:00"
+    - choose:
+        - conditions: "{{ is_state('input_boolean.hestia_approve_trash','on') }}"
+          sequence:
+            - service: shell_command.hestia_empty_trash
+            - service: input_boolean.turn_off
+              target: { entity_id: input_boolean.hestia_approve_trash }
+
+- id: wI9fehuS06MVsRXqcdFHSri12G08I153
+  alias: Hestia Tmp Weekly Prune
+  trigger:
+    - platform: time
+      at: "03:30:00"
+  condition:
+    - condition: time
+      weekday: [sun]
+  action:
+    - service: notify.mobile_app_your_phone
+      data: { message: "Weekly tmp prune pending. Approve to proceed." }
+    - wait_for_trigger:
+        - platform: state
+          entity_id: input_boolean.hestia_approve_tmp
+          to: "on"
+      timeout: "24:00:00"
+    - choose:
+        - conditions: "{{ is_state('input_boolean.hestia_approve_tmp','on') }}"
+          sequence:
+            - service: shell_command.hestia_prune_tmp
+            - service: input_boolean.turn_off
+              target: { entity_id: input_boolean.hestia_approve_tmp }
+
+- id: pvCE6fsuA9pNCB9hhBzRQStt08hpDgaa
+  alias: Hestia On Shutdown - Prune Tmp
+  trigger: 
+    - platform: homeassistant
+      event: shutdown
+  action:
+    - service: shell_command.hestia_prune_tmp

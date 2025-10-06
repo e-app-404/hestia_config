@@ -27,7 +27,6 @@ Hestia’s lighting automations historically referenced **raw (alpha-tier)** dev
 
 1. **Single abstraction layer**: Automations **must consume beta-tier room composites** for motion/occupancy and eta-tier group lights. **No additional layer** is introduced above beta.
 2. **Signal roles**:
-
    * **Motion** → *fast trigger* (enter/leave detection).
    * **Occupancy** → *stickiness* (stillness tolerance; extends hold).
    * **Presence** → *context only* (never a hard gate in our household).

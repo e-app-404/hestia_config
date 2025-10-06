@@ -41,6 +41,9 @@ jobs:
       - name: Unique 'unique_id' across repo
         run: python hestia/guardrails/check_unique_unique_ids.py
 
+      - name: Lint for path drift
+        run: tools/lint_paths.sh
+
       - name: Containerized Home Assistant check_config
         run: |
           docker run --rm -v "${{ github.workspace }}":/config ghcr.io/home-assistant/home-assistant:stable \

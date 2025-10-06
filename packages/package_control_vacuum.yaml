@@ -411,6 +411,8 @@ script:
       - action: input_boolean.turn_on
         target:
           entity_id: input_boolean.downstairs_cleaning_success
+
+# ══ Template Sensors ══
 template:
   - sensor:
       # Base cleaning timestamp sensors (for automation compatibility)

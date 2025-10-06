@@ -1,35 +1,298 @@
-error_patterns:
-  jinja_whitespace_control:
-    category: "jinja"
-    severity: "medium"
-    symptoms: 
-      - "empty_macro_output"
-      - "unwanted_whitespace" 
-      - "quoted_empty_strings"
-      - "boolean_comparison_failure"
-    detection_method: "template_developer_tools"
-    regex_patterns:
-      macro_opening: "{% macro.*[^-]%}"
-      macro_closing: "{% endmacro %}"
-    fix_patterns:
-      macro_opening: "s/{% macro \\([^}]*\\) %}/{% macro \\1 -%}/g"
-      macro_closing: "s/{% endmacro %}/{%- endmacro %}/g"
+# Home Assistant Error Patterns and Resolution Guide
+# This file documents common error patterns in Home Assistant and their fixes
+# Used by diagnostic tools and documentation
+
+patterns:
+  - name: "template_variable_undefined"
+    category: "jinja_template"
+    description: "Template errors when variables don't exist or are undefined"
+    error_format: "UndefinedError: 'variable_name' is undefined"
+    symptoms:
+      - "Template errors in Home Assistant logs"
+      - "Sensors showing 'unavailable' state"
+      - "Automations failing to execute"
+    root_causes:
+      - "Missing existence checks before using template variables"
+      - "Improper Jinja whitespace control leading to empty strings"
+      - "Using template functions on undefined variables"
+    solution:
+      - "Add defensive checks: {% if trigger.to_state is not none %}"
+      - "Use whitespace control: {%- set var = value -%}"
+      - "Check state validity: {{ raw not in ['unknown','unavailable',''] }}"
     examples:
-      incorrect: |
-        {% macro preference_select(sources) %}
-          {% set result = 'off' %}
-          {{ result }}
-        {% endmacro %}
-      correct: |
-        {% macro preference_select(sources) -%}
-          {%- set result = 'off' -%}
-          {{- result -}}
-        {%- endmacro %}
-    validation_method: "template_developer_tools_clean_output"
-    tooling:
-      detector: "hestia/tools/template_patcher/fix_jinja_whitespace.sh --dry-run"
-      fixer: "hestia/tools/template_patcher/fix_jinja_whitespace.sh"
-      make_target: "make template-fix"
+      bad: |
+        value_template: "{{ trigger.to_state.state | abs }}"
+      good: |
+        value_template: >-
+          {%- set state = trigger.to_state -%}
+          {{ state is not none and state.state not in ['unknown','unavailable',''] 
+             and state.state | abs or 0 }}
     references:
-      - "ADR-0020"
-      - "custom_templates/template.library.jinja"
+      - "ADR-0002: Jinja Template Standards"
+      - "ADR-0020: Template Error Handling"
+
+  - name: "blueprint_path_resolution"
+    category: "automation_blueprint"
+    description: "Blueprint loading errors due to incorrect path references"
+    error_format: "Unable to find [path]/blueprint.yaml"
+    symptoms:
+      - "Blueprint loading failures in Home Assistant"
+      - "Automations showing as 'unknown' or failing to load"
+      - "Configuration validation errors for blueprint paths"
+    root_causes:
+      - "Incorrect blueprint path references in automation files"
+      - "Missing 'hestia/' prefix in blueprint paths"
+      - "Blueprint files moved but automation paths not updated"
+    solution:
+      - "Use canonical blueprint path: hestia/library/blueprints/"
+      - "Verify blueprint file exists at referenced path"
+      - "Update all automation files with correct blueprint paths"
+    examples:
+      bad: |
+        use_blueprint:
+          path: library/blueprints/sensor-light.yaml
+      good: |
+        use_blueprint:
+          path: hestia/library/blueprints/sensor-light.yaml
+    resolution_steps:
+      - "Search for incorrect blueprint references: grep -r 'path: library/blueprints/' **/*.yaml"
+      - "Verify blueprint files exist: ls hestia/library/blueprints/"
+      - "Replace incorrect paths with canonical paths"
+      - "Validate Home Assistant configuration after changes"
+    references:
+      - "ADR-0016: Canonical Workspace Structure"
+
+  - name: "recorder_invalid_action_parameter"
+    category: "automation_action"
+    description: "Invalid parameters used with Home Assistant recorder actions"
+    error_format: "extra keys not allowed @ data['parameter_name']"
+    symptoms:
+      - "Automation execution failures with recorder actions"
+      - "Error messages about extra keys not allowed"
+      - "Script execution errors in recorder actions"
+    root_causes:
+      - "Using parameters valid for one recorder action with another action"
+      - "Incorrect parameter names or deprecated parameters"
+      - "Mixing recorder.purge and recorder.purge_entities parameters"
+    solution:
+      - "Use correct parameters for each recorder action"
+      - "Remove invalid parameters from action data"
+      - "Consult Home Assistant documentation for valid parameters"
+    examples:
+      bad: |
+        action: recorder.purge_entities
+        data:
+          keep_days: 0
+          entity_id: sensor.example
+          apply_filter: true  # Invalid for purge_entities
+      good: |
+        action: recorder.purge_entities
+        data:
+          keep_days: 0
+          entity_id: sensor.example
+        # OR use recorder.purge with apply_filter
+        action: recorder.purge
+        data:
+          keep_days: 7
+          apply_filter: true
+    resolution_steps:
+      - "Identify the failing automation from error logs"
+      - "Check Home Assistant documentation for valid action parameters"
+      - "Remove invalid parameters from automation action data"
+      - "Test automation execution after fix"
+    references:
+      - "Home Assistant Recorder Integration Documentation"
+
+  - name: "shell_command_path_error"
+    category: "shell_command"
+    description: "Shell command execution failures due to incorrect file paths"
+    error_format: "Error running command: `command`, return code: 127"
+    symptoms:
+      - "Shell command returning exit code 127 (command not found)"
+      - "Scripts failing to execute from Home Assistant"
+      - "File not found errors in shell command execution"
+    root_causes:
+      - "Incorrect file paths in shell command configuration"
+      - "Scripts moved but configuration not updated"
+      - "Missing executable permissions on script files"
+    solution:
+      - "Use correct canonical paths to script files"
+      - "Verify script files exist at specified locations"
+      - "Ensure scripts have executable permissions"
+    examples:
+      bad: |
+        shell_command:
+          git_push: "bash -lc '/config/tools/script.sh'"
+      good: |
+        shell_command:
+          git_push: "bash -lc '/config/hestia/tools/script.sh'"
+    resolution_steps:
+      - "Check if script file exists at the specified path"
+      - "Update path to use canonical workspace structure"
+      - "Verify script has executable permissions: chmod +x script.sh"
+      - "Test shell command execution from Home Assistant"
+    references:
+      - "ADR-0016: Canonical Workspace Structure"
+
+  - name: "missing_integration_reference"
+    category: "integration_loading"
+    description: "WebSocket errors when frontend tries to access non-existent integrations"
+    error_format: "Integration 'integration_name' not found"
+    symptoms:
+      - "WebSocket API errors in Home Assistant logs"
+      - "Frontend elements failing to load"
+      - "Unknown error messages in browser console"
+    root_causes:
+      - "Custom integrations removed but still referenced in frontend"
+      - "Cached references to removed integrations"
+      - "UI elements trying to access non-existent integration manifests"
+    solution:
+      - "Clear browser cache and restart Home Assistant"
+      - "Remove any lingering configuration references"
+      - "Check for custom UI elements referencing the integration"
+    examples:
+      symptoms: |
+        homeassistant.loader.IntegrationNotFound: Integration 'icloud3' not found.
+      resolution: |
+        1. Clear browser cache
+        2. Check custom_components directory
+        3. Search configuration files for references
+        4. Restart Home Assistant
+    resolution_steps:
+      - "Identify the missing integration from error logs"
+      - "Search configuration files for any references: grep -r 'integration_name' ."
+      - "Clear browser cache and Home Assistant frontend cache"
+      - "Restart Home Assistant to clear cached references"
+    references:
+      - "Home Assistant Integration Loading Documentation"
+
+  - name: "command_line_curl_ssl_error"
+    category: "command_line_sensor"
+    description: "Command line sensors failing due to SSL/TLS connection issues with curl"
+    error_format: "Command failed (with return code 35): bash -lc '.*curl.*'"
+    symptoms:
+      - "Command line sensors showing 'unknown' or 'unavailable' states"
+      - "Return code 35 errors in Home Assistant logs"
+      - "SSL connect error messages in command line integration logs"
+      - "Intermittent sensor failures"
+    root_causes:
+      - "SSL/TLS handshake failures with remote servers"
+      - "Certificate validation issues or expired certificates"
+      - "Network connectivity problems during SSL negotiation"
+      - "Cloudflare or proxy SSL configuration issues"
+      - "Insufficient error handling in curl commands"
+    solution:
+      - "Add error handling with fallback values using || echo 'fallback'"
+      - "Redirect stderr to /dev/null to suppress SSL noise: 2>/dev/null"
+      - "Use appropriate fallback values in value_template"
+      - "Consider adding curl SSL options like --insecure for internal services (with caution)"
+    examples:
+      bad: |
+        command: >-
+          bash -lc '
+            set -eo pipefail
+            curl -s -o /dev/null -w "%{http_code}" https://example.com/api | tr -d "\n"
+          '
+        value_template: "{{ value | default('unknown') | trim }}"
+      good: |
+        command: >-
+          bash -lc '
+            set -eo pipefail
+            curl -s -o /dev/null -w "%{http_code}" https://example.com/api 2>/dev/null | tr -d "\n" || echo "000"
+          '
+        value_template: "{{ value | default('000') | trim }}"
+    resolution_steps:
+      - "Identify the failing command from error logs"
+      - "Add error handling to curl commands with || echo 'fallback_value'"
+      - "Redirect stderr to /dev/null to suppress SSL error noise"
+      - "Update value_template to use appropriate default values"
+      - "Test manually: bash -lc 'your_curl_command || echo fallback'"
+      - "Consider certificate verification if using internal services"
+    prevention_strategies:
+      - "Always include error handling in curl-based command line sensors"
+      - "Use appropriate timeouts with --connect-timeout and --max-time"
+      - "Monitor SSL certificate expiration dates"
+      - "Test commands in various network conditions"
+    tooling:
+      detector: "grep -r 'Command failed.*return code 35' /config/home-assistant.log"
+      validator: "Test curl commands manually with verbose output: curl -v"
+    references:
+      - "Home Assistant Command Line Integration Documentation"
+      - "curl manual and error codes documentation"
+      - "SSL/TLS troubleshooting guides"
+
+  - name: "yaml_duplicate_key_error"
+    category: "yaml_configuration"
+    description: "YAML parsing errors due to duplicate keys in configuration files"
+    error_format: "YAML file [path] contains duplicate key \"[key]\". Check lines [n] and [m]"
+    symptoms:
+      - "YAML parsing warnings in Home Assistant logs"
+      - "Configuration sections not loading as expected"
+      - "Duplicate key warnings during startup"
+    root_causes:
+      - "Multiple sections with the same key in a single YAML file"
+      - "Copy-paste errors creating duplicate configuration blocks"
+      - "Legacy cache files accidentally being loaded"
+      - "Incorrect file includes or symlinks"
+    solution:
+      - "Merge duplicate sections into a single configuration block"
+      - "Remove redundant key definitions"
+      - "Check for accidental file inclusions from cache directories"
+      - "Validate YAML structure before deployment"
+    examples:
+      bad: |
+        input_boolean:
+          setting_one: true
+        # Later in same file...
+        input_boolean:
+          setting_two: false
+      good: |
+        input_boolean:
+          setting_one: true
+          setting_two: false
+    resolution_steps:
+      - "Identify the file and line numbers from error message"
+      - "Open the file and locate the duplicate key sections"
+      - "Merge the configurations into a single block"
+      - "Remove any redundant or conflicting definitions"
+      - "Validate YAML syntax after changes"
+    references:
+      - "Home Assistant Configuration Documentation"
+      - "YAML Specification"
+
+  - name: "blueprint_loading_error"
+    category: "automation_blueprint"
+    description: "Blueprint loading failures due to incorrect file paths or missing files"
+    error_format: "Failed to load blueprint: Unable to find [path]"
+    symptoms:
+      - "Blueprint automation generation failures"
+      - "Blueprint path resolution errors in logs"
+      - "Automations showing as unavailable or failing to load"
+    root_causes:
+      - "Incorrect blueprint file paths in blueprint matrix or automation files"
+      - "Missing hestia/ prefix in blueprint paths"
+      - "Blueprint files moved but references not updated"
+      - "Typos in blueprint file paths"
+    solution:
+      - "Use correct canonical blueprint paths with hestia/ prefix"
+      - "Verify blueprint files exist at referenced locations"
+      - "Update blueprint matrix with correct paths"
+      - "Fix typos in blueprint references"
+    examples:
+      bad: |
+        # Blueprint matrix with incorrect paths
+        - core_executor: "library/blueprints/sensor-light.yaml"
+        - link_entities: "library/blueprints/ha-blueprint-linked-entities.yaml"
+      good: |
+        # Blueprint matrix with correct canonical paths
+        - core_executor: "hestia/library/blueprints/sensor-light.yaml"
+        - link_entities: "hestia/library/blueprints/ha-blueprint-linked-entities.yaml"
+    resolution_steps:
+      - "Identify the missing blueprint path from error logs"
+      - "Verify the blueprint file exists: ls hestia/library/blueprints/"
+      - "Update blueprint matrix or automation files with correct paths"
+      - "Use canonical hestia/library/blueprints/ prefix for all blueprint references"
+      - "Test blueprint loading after path corrections"
+    references:
+      - "ADR-0016: Canonical Workspace Structure"
+      - "Home Assistant Blueprint Documentation"

@@ -29,6 +29,8 @@ backup*/
 *.zip
 # Exception: allow critical deployment bundles
 !home_assistant_complete_restoration_v2.0_FINAL_APPROVED.tar.gz
+# Exception: allow backup tools (not backup storage)
+!hestia/tools/utils/backup/
 # Secrets (do NOT commit)
 secrets.yaml
 secrets.yml
@@ -306,3 +308,7 @@ reports/
 # Exclude any files that might have been generated with personal paths
 **/*evertappels*
 **/HomeAssistant/_backups/*
+/config
+
+# build metadata
+*.egg-info/

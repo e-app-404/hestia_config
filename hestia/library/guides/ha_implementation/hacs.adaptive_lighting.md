@@ -4,8 +4,8 @@ authors: "basnijholt / Adaptive Lighting"
 source: "Adaptive Lighting (HACS)"
 slug: "adaptive-lighting"
 tags: ["home-assistant","hacs","adaptive-lighting","lights"]
-original_date: "2019-01-01"
-last_updated: "2025-10-03"
+original_date: 2019-01-01
+last_updated: 2025-10-03
 url: "https://github.com/basnijholt/adaptive-lighting"
 ---
 
