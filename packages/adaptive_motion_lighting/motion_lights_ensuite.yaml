@@ -25,6 +25,8 @@ automation:
         sun_max_elevation: 20
         sun_min_elevation: -12
         target_lights:
-          - light.group_ensuite_lights
+          - light.ensuite_accent_alpha
+          - light.ensuite_main_alpha_matter        
+          - light.ensuite_lightstrip_alpha_matter
         timeout_seconds: "{{ state_attr('var.motion_profile_ensuite','timeout_seconds') | int(240) }}"
         transition_seconds: 0.3
