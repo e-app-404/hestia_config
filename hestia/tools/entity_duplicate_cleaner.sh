@@ -59,7 +59,11 @@ log_debug() {
     echo "  --plan FILE       - Plan file to execute"
     echo "  --batch-size N    - Max changes per run (default: 25)"
     echo "  --sleep-ms N      - Sleep between ops (default: 150)"
-    echo "  --dry-run         - Show what would be done without executing (default)"
+    echo "  echo "  --plan FILE       - Plan file to execute"
+    echo "  --batch-size N    - Max changes per run (default: 25)"
+    echo "  --sleep-ms N      - Sleep between ops (default: 150)"
+    echo "  --force           - Skip backup requirement for destructive ops"
+    echo "  --dry-run         - Show what would be done without executing (default)""
     echo
     echo "Examples:"
     echo "  $0 scan                                      # Quick scan for duplicates"
@@ -325,7 +329,7 @@ check_config_entries() {
     # API compatibility: some builds expect POST /api/config/entity_registry/<entity_id>
     response=$(ha_api_call "POST" "/api/config/entity_registry/$entity_id" '{"disabled_by":"user"}')
     
-    if [[ "$DRY_RUN" != "true" ]]; then
+    if [[ "${DRY_RUN:-true}" == "true" ]]; then
         if echo "$response" | grep -q '"entity_id"'; then
             log_info "✓ Successfully disabled entity: $entity_id"
         else
