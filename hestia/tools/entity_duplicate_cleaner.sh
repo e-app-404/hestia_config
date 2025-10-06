@@ -73,10 +73,57 @@ probe_registry_endpoints() {
 backup_storage() {
     local bdir="/config/hestia/workspace/archive/backups/$TS"
     install -d "$bdir"
+    
+    # Critical: Full .storage backup before takeover operations
+    log_info "Creating comprehensive .storage backup before takeover operations..."
+    
+    # Backup entire .storage directory
+    if [[ -d "/config/.storage" ]]; then
+        cp -a "/config/.storage" "$bdir/storage_complete"
+        log_success "Complete .storage directory backed up to: $bdir/storage_complete"
+    else
+        log_error ".storage directory not found at /config/.storage"
+        return 1
+    fi
+    
+    # Also create individual file backups for critical registries
     cp -a "$ENTITY_REGISTRY" "$bdir/core.entity_registry.json"
     [[ -f "$DEVICE_REGISTRY" ]] && cp -a "$DEVICE_REGISTRY" "$bdir/core.device_registry.json"
     [[ -f "$CONFIG_ENTRIES" ]] && cp -a "$CONFIG_ENTRIES" "$bdir/core.config_entries.json"
+    
+    # Create restore script
+    cat > "$bdir/restore.sh" << 'EOF'
+#!/bin/bash
+# Emergency restore script for entity takeover operations
+# Usage: ./restore.sh
+
+BACKUP_DIR="$(dirname "$0")"
+STORAGE_DIR="/config/.storage"
+
+echo "🚨 EMERGENCY RESTORE: Restoring .storage from backup"
+echo "Backup location: $BACKUP_DIR"
+echo "Target location: $STORAGE_DIR"
+
+read -p "Are you sure you want to restore? This will overwrite current .storage (y/N): " -n 1 -r
+echo
+if [[ $REPLY =~ ^[Yy]$ ]]; then
+    echo "Stopping Home Assistant..."
+    # Note: Add your HA stop command here if needed
+    
+    echo "Restoring .storage directory..."
+    rm -rf "$STORAGE_DIR"
+    cp -a "$BACKUP_DIR/storage_complete" "$STORAGE_DIR"
+    
+    echo "✅ Restore complete. Restart Home Assistant to apply changes."
+    echo "💡 All entity takeover operations have been reverted."
+else
+    echo "Restore cancelled."
+fi
+EOF
+    chmod +x "$bdir/restore.sh"
+    
     log_info "Backup created: $bdir"
+    log_info "Emergency restore script: $bdir/restore.sh"
 }
 
 # Binary acceptance checklist validation
@@ -100,13 +147,13 @@ validate_execution_readiness() {
         fi
     fi
     
-    # Check 1: Backup directory and files
+    # Check 1: Backup directory and files (including complete .storage backup)
     local backup_dir="/config/hestia/workspace/archive/backups/$TS"
-    if [[ -f "$backup_dir/core.entity_registry.json" && -f "$backup_dir/core.device_registry.json" ]]; then
-        echo "✅ Backup present: $backup_dir/{core.entity_registry.json,core.device_registry.json}"
+    if [[ -d "$backup_dir/storage_complete" && -f "$backup_dir/core.entity_registry.json" && -f "$backup_dir/restore.sh" ]]; then
+        echo "✅ Complete backup present: $backup_dir/{storage_complete/,*.json,restore.sh}"
         ((checks_passed++))
     else
-        echo "❌ Backup missing: $backup_dir/"
+        echo "❌ Complete backup missing: $backup_dir/ (requires full .storage backup)"
     fi
     
     # Check 2: Plan file exists and non-empty
@@ -217,8 +264,11 @@ execute_plan() {
     
     log_info "Starting execution: $planned_groups groups planned"
     
-    if [[ "$FORCE_MODE" != "true" ]]; then
-        backup_storage
+    # MANDATORY backup before takeover operations - cannot be bypassed
+    log_warn "MANDATORY: Creating complete .storage backup before takeover operations"
+    if ! backup_storage; then
+        log_error "Backup failed - ABORTING execution for safety"
+        return 1
     fi
     
     local n=0
