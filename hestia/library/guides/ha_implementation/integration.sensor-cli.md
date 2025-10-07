@@ -1,4 +1,3 @@
-
 ---
 title: "Command Line Integration"
 authors: "Home Assistant"
