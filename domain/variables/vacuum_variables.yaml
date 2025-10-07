@@ -7,10 +7,10 @@ var:
     attributes:
       living_room_last_cleaned: null
       living_room_needs_cleaning: false
-      living_room_segment_id: 1
+      living_room_segment_id: 19
       kitchen_last_cleaned: null
       kitchen_needs_cleaning: false
-      kitchen_segment_id: 2
+      kitchen_segment_id: 17
       powder_room_last_cleaned: null
       powder_room_needs_cleaning: false
       powder_room_segment_id: 20
