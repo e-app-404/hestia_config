@@ -34,13 +34,13 @@ script:
                   - condition: template
                     value_template: "{{ wait.completed }}"
                 sequence:
-                  - service: variable.set_variable
+                  - service: var.set
                     data: >
                       {% from 'custom_template/template.library.jinja' import json_update_mark_cleaned %}
                       {{ json_update_mark_cleaned('var.living_room') | from_json }}
               - conditions: []
                 sequence:
-                  - service: variable.set_variable
+                  - service: var.set
                     data: >
                       {% from 'custom_template/template.library.jinja' import json_update_needs_cleaning %}
                       {{ json_update_needs_cleaning('var.living_room', true) | from_json }}
@@ -82,13 +82,13 @@ script:
                   - condition: template
                     value_template: "{{ wait.completed }}"
                 sequence:
-                  - service: variable.set_variable
+                  - service: var.set
                     data: >
                       {% from 'custom_template/template.library.jinja' import json_update_mark_cleaned %}
                       {{ json_update_mark_cleaned('var.kitchen') | from_json }}
               - conditions: []
                 sequence:
-                  - service: variable.set_variable
+                  - service: var.set
                     data: >
                       {% from 'custom_template/template.library.jinja' import json_update_needs_cleaning %}
                       {{ json_update_needs_cleaning('var.kitchen', true) | from_json }}
@@ -130,13 +130,13 @@ script:
                   - condition: template
                     value_template: "{{ wait.completed }}"
                 sequence:
-                  - service: variable.set_variable
+                  - service: var.set
                     data: >
                       {% from 'custom_template/template.library.jinja' import json_update_mark_cleaned %}
                       {{ json_update_mark_cleaned('var.powder_room') | from_json }}
               - conditions: []
                 sequence:
-                  - service: variable.set_variable
+                  - service: var.set
                     data: >
                       {% from 'custom_template/template.library.jinja' import json_update_needs_cleaning %}
                       {{ json_update_needs_cleaning('var.powder_room', true) | from_json }}
@@ -178,13 +178,13 @@ script:
                   - condition: template
                     value_template: "{{ wait.completed }}"
                 sequence:
-                  - service: variable.set_variable
+                  - service: var.set
                     data: >
                       {% from 'custom_template/template.library.jinja' import json_update_mark_cleaned %}
                       {{ json_update_mark_cleaned('var.downstairs_hallway') | from_json }}
               - conditions: []
                 sequence:
-                  - service: variable.set_variable
+                  - service: var.set
                     data: >
                       {% from 'custom_template/template.library.jinja' import json_update_needs_cleaning %}
                       {{ json_update_needs_cleaning('var.downstairs_hallway', true) | from_json }}
@@ -226,13 +226,13 @@ script:
                   - condition: template
                     value_template: "{{ wait.completed }}"
                 sequence:
-                  - service: variable.set_variable
+                  - service: var.set
                     data: >
                       {% from 'custom_template/template.library.jinja' import json_update_mark_cleaned %}
                       {{ json_update_mark_cleaned('var.laundry_room') | from_json }}
               - conditions: []
                 sequence:
-                  - service: variable.set_variable
+                  - service: var.set
                     data: >
                       {% from 'custom_template/template.library.jinja' import json_update_needs_cleaning %}
                       {{ json_update_needs_cleaning('var.laundry_room', true) | from_json }}

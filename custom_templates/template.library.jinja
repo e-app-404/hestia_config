@@ -145,12 +145,16 @@
   {{ output if ns.found else ('off' if output == 'on' else 'false') }}
 {%- endmacro %}
 
-{# -- Valetudo Template Library ------------------------------------------- #}
-{# This file provides reusable Jinja macros for room cleaning sensors/scripts #}
-{# Assumes per-room variable entities exist: var.living_room, var.kitchen, ... #}
-{# Each var.<room> has attributes: last_cleaned, needs_cleaning, segment_id,   #}
-{# cleaning_frequency_hours, job_last_run, job_last_result                     #}
+{# --------------------------------------------------------------------
+  Valetudo Template Library (v1.0)
+  Provides reusable Jinja macros for composite room sensors and scripts.
+  Assumes per-room variables exist: var.living_room, var.kitchen, ...
+  Each var.<room> exposes attributes:
+    last_cleaned, needs_cleaning, segment_id, cleaning_frequency_hours,
+    job_last_run, job_last_result
+--------------------------------------------------------------------- #}
 
+{# ----------------------------- helpers ----------------------------- #}
 {%- macro _attr(var_ent, key, default_val=None) -%}
   {{ state_attr(var_ent, key) if state_attr(var_ent, key) is not none else default_val }}
 {%- endmacro -%}
@@ -159,6 +163,7 @@
   {{ val in [none, '', 'unknown', 'unavailable'] }}
 {%- endmacro -%}
 
+{# -------------------------- time calculators ----------------------- #}
 {%- macro hours_since(var_ent) -%}
   {%- set last = state_attr(var_ent, 'last_cleaned') -%}
   {%- if last in [none, '', 'unknown', 'unavailable'] -%}{{ none }}
@@ -178,6 +183,7 @@
   {%- else -%}{{ (as_timestamp(last) + (freq*3600)) | timestamp_local }}{%- endif -%}
 {%- endmacro -%}
 
+{# --------------------------- sensor visuals ------------------------ #}
 {%- macro room_icon(var_ent) -%}
   {%- set needs = state_attr(var_ent, 'needs_cleaning') | default(false) -%}
   {{ 'mdi:alert' if needs else 'mdi:vacuum' }}
@@ -195,13 +201,14 @@
   {%- endif -%}
 {%- endmacro -%}
 
-{# "Getters" for attributes, to keep YAML clean #}
+{# ----------------------------- getters ----------------------------- #}
 {%- macro get_segment_id(var_ent) -%}{{ state_attr(var_ent, 'segment_id') }}{%- endmacro -%}
 {%- macro get_needs_cleaning(var_ent) -%}{{ state_attr(var_ent, 'needs_cleaning') | default(false) }}{%- endmacro -%}
 {%- macro get_last_cleaned(var_ent) -%}{{ state_attr(var_ent, 'last_cleaned') }}{%- endmacro -%}
 {%- macro get_freq(var_ent, default_freq=24) -%}{{ (state_attr(var_ent, 'cleaning_frequency_hours') or default_freq) | int }}{%- endmacro -%}
 
-{# JSON builders for variable.set_variable payloads ------------------------ #}
+{# -------------------------- JSON builders -------------------------- #}
+{# Use with: data: > {{ json_update_mark_cleaned('var.kitchen') | from_json }} #}
 {%- macro json_update_mark_cleaned(var_ent) -%}
 {{ {
   'variable': (var_ent.split('.')[1]),

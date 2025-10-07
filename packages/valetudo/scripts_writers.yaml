@@ -7,7 +7,7 @@ script:
         description: "Variable entity_id, e.g., var.living_room"
         example: "var.living_room"
     sequence:
-      - service: variable.set_variable
+      - service: var.set
         data: >
           {% from 'custom_template/template.library.jinja' import json_update_mark_cleaned %}
           {{ json_update_mark_cleaned(room_var) | from_json }}
@@ -18,7 +18,7 @@ script:
       room_var: { description: "var.<room> entity", example: "var.kitchen" }
       flag: { description: "true/false" }
     sequence:
-      - service: variable.set_variable
+      - service: var.set
         data: >
           {% from 'custom_template/template.library.jinja' import json_update_needs_cleaning %}
           {{ json_update_needs_cleaning(room_var, flag) | from_json }}
@@ -29,7 +29,7 @@ script:
       room_var: { description: "var.<room> entity" }
       segment_id: { description: "integer" }
     sequence:
-      - service: variable.set_variable
+      - service: var.set
         data: >
           {% from 'custom_template/template.library.jinja' import json_update_segment_id %}
           {{ json_update_segment_id(room_var, segment_id) | from_json }}
@@ -40,7 +40,7 @@ script:
       room_var: { description: "var.<room> entity" }
       hours: { description: "integer hours" }
     sequence:
-      - service: variable.set_variable
+      - service: var.set
         data: >
           {% from 'custom_template/template.library.jinja' import json_update_frequency %}
           {{ json_update_frequency(room_var, hours) | from_json }}
