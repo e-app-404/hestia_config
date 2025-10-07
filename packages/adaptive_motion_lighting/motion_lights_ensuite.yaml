@@ -8,7 +8,7 @@ automation:
     use_blueprint:
       path: Blackshome/sensor-light.yaml
       input:
-        ambient_lux_entity: sensor.ensuite_motion_alpha_illuminance
+        ambient_lux_entity: sensor.ensuite_illuminance_beta
         ambient_lux_threshold: 10
         bypass_entity: binary_sensor.motion_bypass_ensuite
         inhibit_on_startup_seconds: 10
@@ -19,7 +19,7 @@ automation:
         night_mode_enabled: true
         night_mode_sun_elevation: -6
         only_if_lights_off: false
-        presence_entity: ""
+        presence_entity: binary_sensor.ensuite_presence_beta
         require_presence_for_activation: false
         require_sun_condition: false
         restore_state_after_restart: true

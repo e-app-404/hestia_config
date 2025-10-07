@@ -20,7 +20,7 @@ automation:
         night_mode_enabled: true
         night_mode_sun_elevation: -6
         only_if_lights_off: false
-        presence_entity: ""
+        presence_entity: binary_sensor.bedroom_presence_beta
         require_presence_for_activation: false
         require_sun_condition: false
         restore_state_after_restart: true
