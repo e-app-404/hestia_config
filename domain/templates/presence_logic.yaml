@@ -26,6 +26,7 @@
         zone_reference: "home"
         last_updated: "{{ now().isoformat() }}"
 
+- sensor:
     - name: "Evert Current Location"
       unique_id: "evert_current_location"
       icon: mdi:map-marker-radius
@@ -44,7 +45,7 @@
         role: "zone_tracking"
         subsystem: "perseus"
         tier: "γ"
-        type: "last_known_zone"
+        type: "current_zone"
         last_updated: "{{ now().isoformat() }}"
 
     - name: "Evert Last Known Zone"
@@ -84,7 +85,6 @@
         last_updated: "{{ now().isoformat() }}"
 
 - binary_sensor:
-- binary_sensor:
     - name: "Bedroom Presence (Beta)"
       unique_id: "bedroom_presence_beta"
       device_class: occupancy
@@ -103,11 +103,11 @@
         floor_id: "sanctum"
         module: "presence_inference"
         persons: "person.evert"
-        strategy: "asymmetric: presence enhances, absence never blocks"
+        strategy: "asymmetric"
         subsystem: "hermes"
         area_type: "private"
         tier: "β"
-        untracked_housemate_warning: "Motion activation must remain independent - untracked occupant exists"
+        reliability: excellent
         description: |
           # Presence is on if: person.evert is home OR their tracker says home
           # OR desk presence is inferred OR bedroom occupancy/motion is active.
@@ -125,12 +125,15 @@
         floor_id: "bedroom"
         module: "presence_inference"
         persons: "person.evert"
-        strategy: "asymmetric: presence enhances, absence never blocks"
+        strategy: "asymmetric"
         subsystem: "hermes"
         area_type: "private"
         tier: "β"
         upstream_sources: >
           {{ ["binary_sensor.desk_presence_inferred"] | tojson }}
+        reliability: excellent
+        notes: |
+          "Private area not used by other occupants"
 
     # LIVING ROOM PRESENCE (BETA)
     - name: "Living Room Presence (Beta)"
@@ -147,11 +150,13 @@
         floor_id: "downstairs"
         module: "presence_inference"
         persons: "person.evert"
-        strategy: "asymmetric: presence enhances, absence never blocks"
+        strategy: "asymmetric"
         subsystem: "hermes"
         area_type: "shared"
         tier: "β"
-        untracked_housemate_warning: "Shared space - untracked occupant may be present when sensor shows false"
+        reliability: poor
+        notes: |
+          "Common area used by untracked occupant - never rely on this sensor for blocking"
 
     # KITCHEN PRESENCE (BETA) - Always False (Untracked Housemate Area)
     - name: "Kitchen Presence (Beta)"
@@ -163,11 +168,13 @@
         floor_id: "downstairs"
         module: "presence_inference"
         persons: ""
-        strategy: "always_false: untracked housemate primary kitchen user"
+        strategy: "always_false"
         area_type: "shared"
         subsystem: "hermes"
         tier: "β"
-        untracked_housemate_warning: "Kitchen used by untracked occupant - never rely on this sensor for blocking"
+        reliability: poor
+        notes: |
+          "Common area used by untracked occupant - never rely on this sensor for blocking"
 
     # ENSUITE PRESENCE (BETA) - Always False (Untracked Housemate Area)
     - name: "Ensuite Presence (Beta)"
@@ -187,10 +194,13 @@
         floor_id: "sanctum"
         module: "presence_inference"
         persons: "person.evert"
-        strategy: "track only person.evert; presence enhances, never blocks"
+        strategy: "presence enhances, never blocks"
         area_type: "private"
         subsystem: "hermes"
         tier: "β"
+        reliability: excellent
+        notes: |
+          "Private area not used by other occupants"
 
     # HALLWAY DOWNSTAIRS PRESENCE (BETA) - Always False (Common Area)
     - name: "Hallway Downstairs Presence (Beta)"
@@ -203,10 +213,12 @@
         area_type: "shared"
         module: "presence_inference"
         persons: ""
-        strategy: "always_false: common transit area"
+        strategy: "always_false"
         subsystem: "hermes"
         tier: "β"
-        untracked_housemate_warning: "Common area used by untracked occupant - never rely on this sensor for blocking"
+        reliability: poor
+        notes: |
+          "Common area used by untracked occupant - never rely on this sensor for blocking"
 
     # HALLWAY UPSTAIRS PRESENCE (BETA) - Always False (Common Area)
     - name: "Hallway Upstairs Presence (Beta)"
@@ -219,7 +231,9 @@
         area_type: "shared"
         module: "presence_inference"
         persons: ""
-        strategy: "always_false: common transit area"
+        strategy: "always_false"
         subsystem: "hermes"
         tier: "β"
-        untracked_housemate_warning: "Common area used by untracked occupant - never rely on this sensor for blocking"
+        reliability: poor
+        notes: |
+          "Common area used by untracked occupant - never rely on this sensor for blocking"
