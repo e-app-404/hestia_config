@@ -84,7 +84,7 @@ template:
   # Powder Room
   - trigger:
       - platform: state
-        entity_id: var.powder_room
+        entity_id: var.vacuum_powder_room
       - platform: time_pattern
         minutes: "/30"
     sensor:
@@ -92,39 +92,39 @@ template:
         unique_id: room_powder_room_cleaning_v1
         icon: >
           {% from 'custom_template/template.library.jinja' import room_icon %}
-          {{ room_icon('var.powder_room') }}
+          {{ room_icon('var.vacuum_powder_room') }}
         state: >
           {% from 'custom_template/template.library.jinja' import room_state %}
-          {{ room_state('var.powder_room', 24) }}
+          {{ room_state('var.vacuum_powder_room', 24) }}
         attributes:
           room: "powder_room"
           display_name: "Powder Room"
           segment_id: >
             {% from 'custom_template/template.library.jinja' import get_segment_id %}
-            {{ get_segment_id('var.powder_room') }}
+            {{ get_segment_id('var.vacuum_powder_room') }}
           needs_cleaning: >
             {% from 'custom_template/template.library.jinja' import get_needs_cleaning %}
-            {{ get_needs_cleaning('var.powder_room') }}
+            {{ get_needs_cleaning('var.vacuum_powder_room') }}
           last_cleaned: >
             {% from 'custom_template/template.library.jinja' import get_last_cleaned %}
-            {{ get_last_cleaned('var.powder_room') }}
+            {{ get_last_cleaned('var.vacuum_powder_room') }}
           cleaning_frequency_hours: >
             {% from 'custom_template/template.library.jinja' import get_freq %}
-            {{ get_freq('var.powder_room', 24) }}
+            {{ get_freq('var.vacuum_powder_room', 24) }}
           hours_since_last_cleaned: >
             {% from 'custom_template/template.library.jinja' import hours_since %}
-            {{ hours_since('var.powder_room') }}
+            {{ hours_since('var.vacuum_powder_room') }}
           days_since_last_cleaned: >
             {% from 'custom_template/template.library.jinja' import days_since %}
-            {{ days_since('var.powder_room') }}
+            {{ days_since('var.vacuum_powder_room') }}
           next_due_at: >
             {% from 'custom_template/template.library.jinja' import next_due %}
-            {{ next_due('var.powder_room', 24) }}
+            {{ next_due('var.vacuum_powder_room', 24) }}
 
   # Downstairs Hallway
   - trigger:
       - platform: state
-        entity_id: var.downstairs_hallway
+        entity_id: var.vacuum_downstairs_hallway
       - platform: time_pattern
         minutes: "/30"
     sensor:
@@ -132,39 +132,39 @@ template:
         unique_id: room_downstairs_hallway_cleaning_v1
         icon: >
           {% from 'custom_template/template.library.jinja' import room_icon %}
-          {{ room_icon('var.downstairs_hallway') }}
+          {{ room_icon('var.vacuum_downstairs_hallway') }}
         state: >
           {% from 'custom_template/template.library.jinja' import room_state %}
-          {{ room_state('var.downstairs_hallway', 24) }}
+          {{ room_state('var.vacuum_downstairs_hallway', 24) }}
         attributes:
           room: "downstairs_hallway"
           display_name: "Downstairs Hallway"
           segment_id: >
             {% from 'custom_template/template.library.jinja' import get_segment_id %}
-            {{ get_segment_id('var.downstairs_hallway') }}
+            {{ get_segment_id('var.vacuum_downstairs_hallway') }}
           needs_cleaning: >
             {% from 'custom_template/template.library.jinja' import get_needs_cleaning %}
-            {{ get_needs_cleaning('var.downstairs_hallway') }}
+            {{ get_needs_cleaning('var.vacuum_downstairs_hallway') }}
           last_cleaned: >
             {% from 'custom_template/template.library.jinja' import get_last_cleaned %}
-            {{ get_last_cleaned('var.downstairs_hallway') }}
+            {{ get_last_cleaned('var.vacuum_downstairs_hallway') }}
           cleaning_frequency_hours: >
             {% from 'custom_template/template.library.jinja' import get_freq %}
-            {{ get_freq('var.downstairs_hallway', 24) }}
+            {{ get_freq('var.vacuum_downstairs_hallway', 24) }}
           hours_since_last_cleaned: >
             {% from 'custom_template/template.library.jinja' import hours_since %}
-            {{ hours_since('var.downstairs_hallway') }}
+            {{ hours_since('var.vacuum_downstairs_hallway') }}
           days_since_last_cleaned: >
             {% from 'custom_template/template.library.jinja' import days_since %}
-            {{ days_since('var.downstairs_hallway') }}
+            {{ days_since('var.vacuum_downstairs_hallway') }}
           next_due_at: >
             {% from 'custom_template/template.library.jinja' import next_due %}
-            {{ next_due('var.downstairs_hallway', 24) }}
+            {{ next_due('var.vacuum_downstairs_hallway', 24) }}
 
   # Laundry Room
   - trigger:
       - platform: state
-        entity_id: var.laundry_room
+        entity_id: var.vacuum_laundry_room
       - platform: time_pattern
         minutes: "/30"
     sensor:
@@ -172,31 +172,31 @@ template:
         unique_id: room_laundry_room_cleaning_v1
         icon: >
           {% from 'custom_template/template.library.jinja' import room_icon %}
-          {{ room_icon('var.laundry_room') }}
+          {{ room_icon('var.vacuum_laundry_room') }}
         state: >
           {% from 'custom_template/template.library.jinja' import room_state %}
-          {{ room_state('var.laundry_room', 24) }}
+          {{ room_state('var.vacuum_laundry_room', 24) }}
         attributes:
           room: "laundry_room"
           display_name: "Laundry Room"
           segment_id: >
             {% from 'custom_template/template.library.jinja' import get_segment_id %}
-            {{ get_segment_id('var.laundry_room') }}
+            {{ get_segment_id('var.vacuum_laundry_room') }}
           needs_cleaning: >
             {% from 'custom_template/template.library.jinja' import get_needs_cleaning %}
-            {{ get_needs_cleaning('var.laundry_room') }}
+            {{ get_needs_cleaning('var.vacuum_laundry_room') }}
           last_cleaned: >
             {% from 'custom_template/template.library.jinja' import get_last_cleaned %}
-            {{ get_last_cleaned('var.laundry_room') }}
+            {{ get_last_cleaned('var.vacuum_laundry_room') }}
           cleaning_frequency_hours: >
             {% from 'custom_template/template.library.jinja' import get_freq %}
-            {{ get_freq('var.laundry_room', 24) }}
+            {{ get_freq('var.vacuum_laundry_room', 24) }}
           hours_since_last_cleaned: >
             {% from 'custom_template/template.library.jinja' import hours_since %}
-            {{ hours_since('var.laundry_room') }}
+            {{ hours_since('var.vacuum_laundry_room') }}
           days_since_last_cleaned: >
             {% from 'custom_template/template.library.jinja' import days_since %}
-            {{ days_since('var.laundry_room') }}
+            {{ days_since('var.vacuum_laundry_room') }}
           next_due_at: >
             {% from 'custom_template/template.library.jinja' import next_due %}
-            {{ next_due('var.laundry_room', 24) }}
+            {{ next_due('var.vacuum_laundry_room', 24) }}

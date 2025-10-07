@@ -4,8 +4,8 @@ script:
     description: Update per-room variable to mark as cleaned now.
     fields:
       room_var:
-        description: "Variable entity_id, e.g., var.living_room"
-        example: "var.living_room"
+        description: "Variable entity_id, e.g., var.vacuum_living_room"
+        example: "var.vacuum_living_room"
     sequence:
       - service: var.set
         data: >
@@ -15,7 +15,7 @@ script:
   valetudo_room_set_needs_cleaning:
     alias: Set Needs Cleaning (Generic)
     fields:
-      room_var: { description: "var.<room> entity", example: "var.kitchen" }
+      room_var: { description: "var.<room> entity", example: "var.vacuum_kitchen" }
       flag: { description: "true/false" }
     sequence:
       - service: var.set
