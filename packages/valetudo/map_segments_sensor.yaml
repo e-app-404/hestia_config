@@ -1,0 +1,13 @@
+# Deterministic ID -> Name mapping expected by the "Clean Rooms" blueprint.
+# Edit attributes to match your current Valetudo map if necessary.
+template:
+  - sensor:
+      - name: "Valetudo Map Segments"
+        unique_id: valetudo_map_segments_id_name
+        state: "ready"
+        attributes:
+          "19": "Living Room"
+          "17": "Kitchen"
+          "20": "Powder Room"
+          "18": "Downstairs Hallway"
+          "16": "Laundry Room"

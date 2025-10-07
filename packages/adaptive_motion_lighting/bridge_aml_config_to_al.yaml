@@ -1,0 +1,63 @@
+# Bridge AML Config to Adaptive Lighting
+# Automation that syncs consolidated var attributes to AL switches
+# Triggered by changes to any consolidated AML config variable
+
+automation:
+  - id: bridge_aml_config_to_al
+    alias: "Bridge AML Config to AL"
+    description: "Sync consolidated AML config changes to Adaptive Lighting switches"
+    
+    trigger:
+      - platform: state
+        entity_id:
+          - var.bedroom_aml_config
+          - var.desk_aml_config  
+          - var.ensuite_aml_config
+          - var.hallway_aml_config
+          - var.kitchen_aml_config
+          - var.ottoman_aml_config
+          - var.utility_aml_config
+          - var.wardrobe_aml_config
+    
+    condition:
+      - condition: template
+        value_template: "{{ trigger.entity_id is defined }}"
+    
+    action:
+      - variables:
+          # Extract room name from triggered entity_id 
+          room_name: "{{ trigger.entity_id.split('.')[1].replace('_aml_config', '') }}"
+          
+          # Get the triggered variable's attributes
+          var_attributes: "{{ state_attr(trigger.entity_id, '') }}"
+          al_switch: "{{ state_attr(trigger.entity_id, 'al_switch') }}"
+          al_manual_control: "{{ state_attr(trigger.entity_id, 'al_manual_control') }}"
+          bypass_state: "{{ state_attr(trigger.entity_id, 'bypass') }}"
+      
+      - choose:
+          # Handle bypass state changes
+          - conditions:
+              - condition: template
+                value_template: "{{ bypass_state == true }}"
+            sequence:
+              - service: switch.turn_off
+                target:
+                  entity_id: "{{ al_switch }}"
+              - service: switch.turn_off  
+                target:
+                  entity_id: "{{ al_manual_control }}"
+          
+          # Handle bypass disabled - re-enable AL
+          - conditions:
+              - condition: template
+                value_template: "{{ bypass_state == false }}"
+            sequence:
+              - service: switch.turn_on
+                target:
+                  entity_id: "{{ al_switch }}"
+              - service: switch.turn_on
+                target:
+                  entity_id: "{{ al_manual_control }}"
+    
+    mode: parallel
+    max: 10

@@ -344,11 +344,11 @@ automation:
           entity_id: var.room_cleaning_state
           value: initialized
           attributes:
-            living_room_segment_id: 1
-            kitchen_segment_id: 2
-            powder_room_segment_id: 3
-            downstairs_hallway_segment_id: 4
-            laundry_room_segment_id: 5
+            living_room_segment_id: 19
+            kitchen_segment_id: 17
+            powder_room_segment_id: 20
+            downstairs_hallway_segment_id: 18
+            laundry_room_segment_id: 16
 
   - id: mark_completion_when_docked
     alias: Mark room cleaned on docked
