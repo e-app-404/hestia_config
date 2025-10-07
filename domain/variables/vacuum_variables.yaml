@@ -13,13 +13,13 @@ var:
       kitchen_segment_id: 2
       powder_room_last_cleaned: null
       powder_room_needs_cleaning: false
-      powder_room_segment_id: 3
+      powder_room_segment_id: 20
       downstairs_hallway_last_cleaned: null
       downstairs_hallway_needs_cleaning: false
-      downstairs_hallway_segment_id: 4
+      downstairs_hallway_segment_id: 18
       laundry_room_last_cleaned: null
       laundry_room_needs_cleaning: false
-      laundry_room_segment_id: 5
+      laundry_room_segment_id: 16
       job_last_run: null
       job_last_result: "idle"
 

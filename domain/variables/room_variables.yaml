@@ -7,7 +7,7 @@ var:
     attributes:
       last_cleaned: null
       needs_cleaning: false
-      segment_id: '19'
+      segment_id: 19
       job_last_run: null
       job_last_result: "idle"
       cleaning_frequency_hours: 24
