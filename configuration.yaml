@@ -13,9 +13,6 @@ homeassistant:
     - "/config/hestia/library/docs/governance/system_instruction"
     - "/config/hestia/config/diagnostics"
 
-# 🔧 HACS Variable component
-var: !include_dir_merge_named domain/variables/
-
 # 🔧 UI-based automations (editable via GUI)
 automation ui: !include automations.yaml
 
@@ -44,10 +41,4 @@ input_number: !include domain/helpers/input_number.yaml
 input_datetime: !include domain/helpers/input_datetime.yaml
 input_text: !include domain/helpers/input_text.yaml
 counter: !include domain/helpers/counter.yaml
-
-# 🔧 shell commands (loaded via packages)
-
-# �👤 person entities
-#person: !include domain/persons/key_persons.yaml
-
 

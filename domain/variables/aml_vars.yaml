@@ -19,7 +19,7 @@ desk_aml_config:
     al_switch: "switch.adaptive_lighting_desk_lights"
     al_manual_control: "switch.adaptive_lighting_adapt_desk_lights"
     al_lights: "light.adaptive_desk_light_group"
-    motion_sensor: "binary_sensor.desk_motion_beta"
+    motion_sensor: "binary_sensor.desk_motion_proxy"
     presence_sensor: "binary_sensor.desk_presence_beta"
     illuminance_sensor: "sensor.bedroom_illuminance_beta"
     illuminance_threshold: 10

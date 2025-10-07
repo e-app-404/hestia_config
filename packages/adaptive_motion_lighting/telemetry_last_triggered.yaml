@@ -22,7 +22,7 @@ automation:
     mode: single
     trigger:
       - platform: state
-        entity_id: binary_sensor.desk_motion_beta
+        entity_id: binary_sensor.desk_motion_proxy
         from: "off"
         to: "on"
     action:
