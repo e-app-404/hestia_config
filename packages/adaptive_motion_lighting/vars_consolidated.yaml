@@ -67,8 +67,8 @@ var:
       al_lights: "light.group_hallway_lights_downstairs"
       
       # Motion Configuration
-      motion_sensor: "binary_sensor.hallway_motion_beta"
-      illuminance_sensor: "sensor.hallway_motion_beta"
+      motion_sensor: "binary_sensor.hallway_downstairs_motion_beta"
+      illuminance_sensor: "sensor.hallway_downstairs_illuminance_beta"
       illuminance_threshold: 5
       
       # Policy Configuration
@@ -85,8 +85,8 @@ var:
       al_lights: "light.al_adaptive_kitchen_light_group"
       
       # Motion Configuration
-      motion_sensor: "binary_sensor.kitchen_motion_beta"
-      illuminance_sensor: "sensor.kitchen_motion_beta"
+      motion_sensor: "binary_sensor.kitchen_illuminance_beta"
+      illuminance_sensor: "sensor.kitchen_illuminance_beta"
       illuminance_threshold: 10
       
       # Policy Configuration
@@ -121,8 +121,8 @@ var:
       al_lights: "light.group_utility_lights"
       
       # Motion Configuration
-      motion_sensor: "binary_sensor.utility_motion_beta"
-      illuminance_sensor: "sensor.utility_motion_beta"
+      motion_sensor: "binary_sensor.utility_illuminance_beta"
+      illuminance_sensor: "sensor.utility_illuminance_beta"
       illuminance_threshold: 5
       
       # Policy Configuration
