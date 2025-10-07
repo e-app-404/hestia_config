@@ -173,7 +173,7 @@ cat > "$RECONCILIATION_FILE" << EOF
 **Orphaned Devices:** $ORPHANED_DEVICE_COUNT  
 
 ## Orphaned Config Entries Being Removed
-$(printf '- `%s`\n' "${ORPHANED_CONFIG_ENTRIES[@]}")
+$(for entry in "${ORPHANED_CONFIG_ENTRIES[@]}"; do echo "- \`$entry\`"; done)
 
 ## Entities to be Removed (will need re-registration)
 EOF
