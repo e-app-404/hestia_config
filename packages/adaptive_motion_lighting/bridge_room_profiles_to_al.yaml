@@ -1,7 +1,11 @@
+# Adaptive Motion Lighting — Room Profiles → Adaptive Lighting Bridge
+# Syncs per-room profile attributes to AL switches and manual control window.
+# Rooms covered: bedroom, desk, ensuite, kitchen, hallway_downstairs, hallway_upstairs
+# Ottoman/Wardrobe intentionally excluded (no AL there).
+
 automation:
-  - alias: Room Profiles → Adaptive Lighting Sync (All Rooms)
-    id: room_profiles_to_al_all_rooms
-    initial_state: "on"
+  - alias: Room Profiles → Adaptive Lighting Sync (AL Rooms)
+    id: aml_room_profiles_to_al_sync
     mode: restart
     trigger:
       - platform: state
@@ -17,48 +21,82 @@ automation:
     variables:
       room_map: >-
         {{ {
-          'bedroom': {'al_main':'switch.adaptive_lighting_bedroom','al_sleep':'switch.adaptive_lighting_sleep_mode_bedroom','group':'light.al_adaptive_bedroom_light_group'},
-          'wardrobe': {'al_main':'switch.adaptive_lighting_wardrobe','al_sleep':'switch.adaptive_lighting_sleep_mode_wardrobe','group':'light.al_adaptive_wardrobe_light_group'},
-          'desk': {'al_main':'switch.adaptive_lighting_desk','al_sleep':'switch.adaptive_lighting_sleep_mode_desk','group':'light.al_adaptive_desk_light_group'},
-          'ensuite': {'al_main':'switch.adaptive_lighting_ensuite','al_sleep':'switch.adaptive_lighting_sleep_mode_ensuite','group':'light.group_ensuite_lights'},
-          'kitchen': {'al_main':'switch.adaptive_lighting_kitchen','al_sleep':'switch.adaptive_lighting_sleep_mode_kitchen','group':'light.group_kitchen_lights'},
-          'hallway_downstairs': {'al_main':'switch.adaptive_lighting_hallway_downstairs','al_sleep':'switch.adaptive_lighting_sleep_mode_hallway_downstairs','group':'light.group_hallway_lights_downstairs'},
-          'hallway_upstairs': {'al_main':'switch.adaptive_lighting_hallway_upstairs','al_sleep':'switch.adaptive_lighting_sleep_mode_hallway_upstairs','group':'light.group_hallway_lights_upstairs'}
+          'bedroom': {
+            'al_main':  'switch.adaptive_lighting_bedroom',
+            'al_sleep': 'switch.adaptive_lighting_sleep_mode_bedroom',
+            'group':    'light.al_adaptive_bedroom_light_group'
+          },
+          'desk': {
+            'al_main':  'switch.adaptive_lighting_desk',
+            'al_sleep': 'switch.adaptive_lighting_sleep_mode_desk',
+            'group':    'light.al_adaptive_desk_light_group'
+          },
+          'ensuite': {
+            'al_main':  'switch.adaptive_lighting_ensuite',
+            'al_sleep': 'switch.adaptive_lighting_sleep_mode_ensuite',
+            'group':    'light.group_ensuite_lights'
+          },
+          'kitchen': {
+            'al_main':  'switch.adaptive_lighting_kitchen',
+            'al_sleep': 'switch.adaptive_lighting_sleep_mode_kitchen',
+            'group':    'light.al_adaptive_kitchen_light_group'
+          },
+          'hallway_downstairs': {
+            'al_main':  'switch.adaptive_lighting_hallway_downstairs',
+            'al_sleep': 'switch.adaptive_lighting_sleep_mode_hallway_downstairs',
+            'group':    'light.group_hallway_lights_downstairs'
+          },
+          'hallway_upstairs': {
+            'al_main':  'switch.adaptive_lighting_hallway_upstairs',
+            'al_sleep': 'switch.adaptive_lighting_sleep_mode_hallway_upstairs',
+            'group':    'light.group_hallway_lights_upstairs'
+          }
         } }}
-      changed_room: >-
-        {% if trigger.platform == 'state' and 'var.room_profile_' in trigger.entity_id %}
+      current_room: >-
+        {% if trigger is defined and trigger.entity_id %}
           {{ trigger.entity_id.split('var.room_profile_')[1] }}
-        {% else %} all {% endif %}
-      rooms: >-
-        {% if changed_room == 'all' %}{{ room_map.keys() | list }}{% else %}{{ [changed_room] }}{% endif %}
+        {% else %}
+          bedroom
+        {% endif %}
+      main_switch: "{{ room_map[current_room]['al_main'] }}"
+      sleep_switch: "{{ room_map[current_room]['al_sleep'] }}"
+      group_light: "{{ room_map[current_room]['group'] }}"
+      al_enabled: "{{ state_attr('var.room_profile_' ~ current_room, 'al_enabled') | default(true) }}"
+      sleep_flag: "{{ state_attr('var.room_profile_' ~ current_room, 'sleep') | default(false) }}"
+      until_ts: "{{ state_attr('var.room_profile_' ~ current_room, 'manual_override_until') | default('') }}"
     action:
-      - if:
-          - condition: template
-            value_template: "{{ trigger.platform == 'homeassistant' }}"
-        then:
-          - variables: { rooms: "{{ room_map.keys() | list }}" }
-      - repeat:
-          for_each: "{{ rooms }}"
-          sequence:
-            - variables:
-                r: "{{ repeat.item }}"
-                main: "{{ room_map[repeat.item]['al_main'] }}"
-                sleep: "{{ room_map[repeat.item]['al_sleep'] }}"
-                grp: "{{ room_map[repeat.item]['group'] }}"
-                al_enabled: "{{ state_attr('var.room_profile_' ~ repeat.item,'al_enabled') | default(true) }}"
-                sleep_flag: "{{ state_attr('var.room_profile_' ~ repeat.item,'sleep') | default(false) }}"
-            - choose:
-                - conditions: "{{ al_enabled | bool }}"
-                  sequence: [ { service: switch.turn_on, target: { entity_id: "{{ main }}" } } ]
-                - conditions: "{{ not (al_enabled | bool) }}"
-                  sequence: [ { service: switch.turn_off, target: { entity_id: "{{ main }}" } } ]
-            - choose:
-                - conditions: "{{ sleep_flag | bool }}"
-                  sequence: [ { service: switch.turn_on, target: { entity_id: "{{ sleep }}" } } ]
-                - conditions: "{{ not (sleep_flag | bool) }}"
-                  sequence: [ { service: switch.turn_off, target: { entity_id: "{{ sleep }}" } } ]
-            - choose:
-                - conditions: "{{ al_enabled | bool }}"
-                  sequence:
-                    - service: adaptive_lighting.set_manual_control
-                      data: { entity_id: "{{ main }}", lights: [ "{{ grp }}" ], manual_control: false }
+      - choose:
+          - conditions: "{{ al_enabled | bool }}"
+            sequence:
+              - service: switch.turn_on
+                target: { entity_id: "{{ main_switch }}" }
+          - conditions: "{{ not (al_enabled | bool) }}"
+            sequence:
+              - service: switch.turn_off
+                target: { entity_id: "{{ main_switch }}" }
+      - choose:
+          - conditions: "{{ sleep_flag | bool }}"
+            sequence:
+              - service: switch.turn_on
+                target: { entity_id: "{{ sleep_switch }}" }
+          - conditions: "{{ not (sleep_flag | bool) }}"
+            sequence:
+              - service: switch.turn_off
+                target: { entity_id: "{{ sleep_switch }}" }
+      - choose:
+          - conditions: "{{ until_ts != '' and now() < as_datetime(until_ts) }}"
+            sequence:
+              - service: adaptive_lighting.set_manual_control
+                data:
+                  entity_id: "{{ main_switch }}"
+                  lights:
+                    - "{{ group_light }}"
+                  manual_control: true
+          - conditions: "{{ until_ts == '' or now() >= as_datetime(until_ts) }}"
+            sequence:
+              - service: adaptive_lighting.set_manual_control
+                data:
+                  entity_id: "{{ main_switch }}"
+                  lights:
+                    - "{{ group_light }}"
+                  manual_control: false

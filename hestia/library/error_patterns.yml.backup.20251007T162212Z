@@ -1,0 +1,119 @@
+error_patterns:
+  jinja_whitespace_control:
+    category: "jinja"
+    severity: "medium"
+    symptoms: 
+      - "empty_macro_output"
+      - "unwanted_whitespace" 
+      - "quoted_empty_strings"
+      - "boolean_comparison_failure"
+    detection_method: "template_developer_tools"
+    regex_patterns:
+      macro_opening: "{% macro.*[^-]%}"
+      macro_closing: "{% endmacro %}"
+    fix_patterns:
+      macro_opening: "s/{% macro \\([^}]*\\) %}/{% macro \\1 -%}/g"
+      macro_closing: "s/{% endmacro %}/{%- endmacro %}/g"
+    examples:
+      incorrect: |
+        {% macro preference_select(sources) %}
+          {% set result = 'off' %}
+          {{ result }}
+        {% endmacro %}
+      correct: |
+        {% macro preference_select(sources) -%}
+          {%- set result = 'off' -%}
+          {{- result -}}
+        {%- endmacro %}
+    validation_method: "template_developer_tools_clean_output"
+    tooling:
+      detector: "hestia/tools/template_patcher/fix_jinja_whitespace.sh --dry-run"
+      fixer: "hestia/tools/template_patcher/fix_jinja_whitespace.sh"
+      make_target: "make template-fix"
+    references:
+      - "ADR-0020"
+      - "custom_templates/template.library.jinja"
+
+  template_variable_undefined:
+    category: "template"
+    severity: "high"
+    symptoms:
+      - "template_variable_error_undefined"
+      - "template_variable_warning_undefined"
+      - "automation_template_errors"
+      - "sensor_unavailable_states"
+    detection_method: "home_assistant_logs"
+    regex_patterns:
+      value_json_undefined: "Template variable error: 'value_json' is undefined"
+      trigger_undefined: "Template variable error: 'trigger' is undefined"
+      variable_scope_undefined: "Template variable warning: .* is undefined"
+    common_causes:
+      - "REST sensor templates accessing value_json without existence check"
+      - "Automation templates using trigger context outside trigger scope"
+      - "Variable scoping issues in repeat loops and conditional blocks"
+      - "Template evaluation during Home Assistant startup before entities exist"
+    fix_patterns:
+      value_json_check:
+        from: "{{ value_json.property }}"
+        to: "{% if value_json is defined and 'property' in value_json %}{{ value_json.property }}{% else %}default_value{% endif %}"
+      trigger_check:
+        from: "{{ trigger.entity_id }}"
+        to: "{% if trigger is defined and trigger.entity_id is defined %}{{ trigger.entity_id }}{% else %}''{% endif %}"
+      variable_scope:
+        from: "{{ r }}"
+        to: "{{ repeat.item }}"
+    examples:
+      incorrect: |
+        # REST sensor without value_json validation
+        value_template: "{{ value_json.health.summary | default('unknown') }}"
+        
+        # Automation using undefined variable in loop
+        al_enabled: "{{ state_attr('var.room_profile_' ~ r,'al_enabled') | default(true) }}"
+        
+        # Trigger access without validation
+        target_var: "{{ map[trigger.entity_id] if trigger.entity_id in map else '' }}"
+      correct: |
+        # REST sensor with proper validation
+        value_template: >
+          {% if value_json is defined and 'health' in value_json and 'summary' in value_json.health %}
+            {{ value_json.health.summary }}
+          {% else %}
+            unknown
+          {% endif %}
+        
+        # Automation with proper variable scoping
+        al_enabled: "{{ state_attr('var.room_profile_' ~ repeat.item,'al_enabled') | default(true) }}"
+        
+        # Trigger access with validation
+        target_var: >
+          {% if trigger is defined and trigger.entity_id is defined and trigger.entity_id in map %}
+            {{ map[trigger.entity_id] }}
+          {% else %}
+            ''
+          {% endif %}
+    validation_method: "template_developer_tools"
+    prevention_strategies:
+      - "Always check variable existence before access using 'is defined'"
+      - "Use 'in' operator for safe property access on mappings"
+      - "Define variables in correct scope context (repeat.item vs custom variables)"
+      - "Add defensive programming with fallback values"
+      - "Test templates in Developer Tools before deployment"
+    log_signatures:
+      - "Logger: homeassistant.helpers.template"
+      - "Source: helpers/template/__init__.py"
+      - "Template variable error: '.*' is undefined"
+      - "Template variable warning: '.*' is undefined"
+    resolution_steps:
+      - "Identify the undefined variable from error logs"
+      - "Locate the template using the variable (search codebase)"
+      - "Add existence check using 'is defined' operator"
+      - "For nested properties use 'in' operator for safe access"
+      - "Provide appropriate fallback values"
+      - "Test fix in Developer Tools before deployment"
+    tooling:
+      detector: "grep -r 'Template variable.*undefined' /config/home-assistant.log"
+      validator: "Home Assistant Developer Tools > Template"
+    references:
+      - "Home Assistant Template Documentation"
+      - "Jinja2 Template Documentation"
+      - "ADR-0020: Template Error Patterns"

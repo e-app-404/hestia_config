@@ -1,4 +1,3 @@
----
 automation:
   - alias: Motion Lights — Desk
     id: motion_lights_desk

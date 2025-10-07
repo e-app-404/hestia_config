@@ -1,55 +1,161 @@
+# AML Telemetry — Update last_triggered on MOTION (per area)
 automation:
-  - alias: Motion Telemetry — Update last_triggered on light ON (All Rooms)
-    id: motion_telemetry_last_triggered_all
+  - alias: AML Telemetry — Last Triggered (Bedroom)
+    id: aml_telemetry_last_triggered_bedroom
+    mode: single
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.bedroom_motion_beta
+        from: "off"
+        to: "on"
+    action:
+      - service: var.set
+        data:
+          entity_id: var.motion_profile_bedroom
+          attributes:
+            last_triggered: "{{ now().isoformat() }}"
+
+  - alias: AML Telemetry — Last Triggered (Desk)
+    id: aml_telemetry_last_triggered_desk
+    mode: single
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.desk_motion_beta
+        from: "off"
+        to: "on"
+    action:
+      - service: var.set
+        data:
+          entity_id: var.motion_profile_desk
+          attributes:
+            last_triggered: "{{ now().isoformat() }}"
+
+  - alias: AML Telemetry — Last Triggered (Ensuite)
+    id: aml_telemetry_last_triggered_ensuite
+    mode: single
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.ensuite_motion_beta
+        from: "off"
+        to: "on"
+    action:
+      - service: var.set
+        data:
+          entity_id: var.motion_profile_ensuite
+          attributes:
+            last_triggered: "{{ now().isoformat() }}"
+
+  - alias: AML Telemetry — Last Triggered (Kitchen)
+    id: aml_telemetry_last_triggered_kitchen
+    mode: single
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.kitchen_motion_beta
+        from: "off"
+        to: "on"
+    action:
+      - service: var.set
+        data:
+          entity_id: var.motion_profile_kitchen
+          attributes:
+            last_triggered: "{{ now().isoformat() }}"
+
+  - alias: AML Telemetry — Last Triggered (Hallway Downstairs)
+    id: aml_telemetry_last_triggered_hallway_downstairs
+    mode: single
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.hallway_downstairs_motion_beta
+        from: "off"
+        to: "on"
+    action:
+      - service: var.set
+        data:
+          entity_id: var.motion_profile_hallway_downstairs
+          attributes:
+            last_triggered: "{{ now().isoformat() }}"
+
+  - alias: AML Telemetry — Last Triggered (Hallway Upstairs)
+    id: aml_telemetry_last_triggered_hallway_upstairs
+    mode: single
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.hallway_upstairs_motion_beta
+        from: "off"
+        to: "on"
+    action:
+      - service: var.set
+        data:
+          entity_id: var.motion_profile_hallway_upstairs
+          attributes:
+            last_triggered: "{{ now().isoformat() }}"
+
+  - alias: AML Telemetry — Last Triggered (Ottoman)
+    id: aml_telemetry_last_triggered_ottoman
+    mode: single
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.bedroom_ottoman_motion_proxy
+        from: "off"
+        to: "on"
+    action:
+      - service: var.set
+        data:
+          entity_id: var.motion_profile_ottoman
+          attributes:
+            last_triggered: "{{ now().isoformat() }}"
+
+  - alias: AML Telemetry — Last Triggered (Wardrobe)
+    id: aml_telemetry_last_triggered_wardrobe
+    mode: single
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.wardrobe_motion_beta
+        from: "off"
+        to: "on"
+    action:
+      - service: var.set
+        data:
+          entity_id: var.motion_profile_wardrobe
+          attributes:
+            last_triggered: "{{ now().isoformat() }}"
+
+
+  # AML Telemetry — Update last_triggered on LIGHT GROUP ON
+  # Triggers only on the canonical groups (avoids long α lists and drift).
+  - alias: AML Telemetry — Update last_triggered on light ON (Groups)
+    id: aml_telemetry_last_triggered_groups
     initial_state: "on"
     mode: parallel
     trigger:
       - platform: state
         entity_id:
-          - light.bedroom_accent_alpha
-          - light.bedroom_main_alpha_matter
-          - light.bedroom_wall_alpha
-          - light.bedroom_nightstand_left_alpha_matter
-          - light.bedroom_nightstand_right_alpha_matter
-          - light.bedroom_wardrobe_lightstrip_alpha
-          - light.bedroom_ottoman_lightstrip_alpha_matter
-          - light.kitchen_ceiling_alpha
-          - light.kitchen_cupboards_lightstrip_alpha
-          - light.laundry_ceiling_alpha    
-          - light.upstairs_lightstrip_alpha
-          - light.hallway_lightstrip_alpha    
-          - light.downstairs_lightstrip_alpha    
-          - light.ensuite_accent_alpha
-          - light.ensuite_main_alpha_matter        
-          - light.ensuite_lightstrip_alpha_matter   
-          - light.bedroom_desk_alpha_matter
-          - light.bedroom_desk_corner_alpha
-          - light.bedroom_desk_lightstrip_alpha_matter
-          - light.bedroom_desk_wall_alpha_matter                                  
+          - light.al_adaptive_bedroom_light_group
+          - light.al_adaptive_desk_light_group
+          - light.group_ensuite_lights
+          - light.al_adaptive_kitchen_light_group
+          - light.group_hallway_lights_downstairs
+          - light.group_hallway_lights_upstairs
+          - light.group_ottoman_light
+          - light.group_wardrobe_light
         to: "on"
     variables:
       map: >-
         {{ {
-          'light.al_adaptive_bedroom_light_group':'var.motion_profile_bedroom',
-          'light.al_adaptive_desk_light_group':'var.motion_profile_desk',
-          'light.group_ensuite_lights':'var.motion_profile_ensuite',
-          'light.al_adaptive_kitchen_light_group':'var.motion_profile_kitchen',
-          'light.group_hallway_lights_downstairs':'var.motion_profile_hallway_downstairs',
-          'light.group_hallway_lights_upstairs':'var.motion_profile_hallway_upstairs',
-          'light.group_ottoman_light':'var.motion_profile_ottoman',
-          'light.group_wardrobe_light':'var.motion_profile_wardrobe'
+          'light.al_adaptive_bedroom_light_group':     'var.motion_profile_bedroom',
+          'light.al_adaptive_desk_light_group':        'var.motion_profile_desk',
+          'light.group_ensuite_lights':                'var.motion_profile_ensuite',
+          'light.al_adaptive_kitchen_light_group':     'var.motion_profile_kitchen',
+          'light.group_hallway_lights_downstairs':     'var.motion_profile_hallway_downstairs',
+          'light.group_hallway_lights_upstairs':       'var.motion_profile_hallway_upstairs',
+          'light.group_ottoman_light':                 'var.motion_profile_ottoman',
+          'light.group_wardrobe_light':                'var.motion_profile_wardrobe'
         } }}
-      target_var: >-
-        {% if trigger is defined and trigger.entity_id is defined and trigger.entity_id in map %}
-          {{ map[trigger.entity_id] }}
-        {% else %}
-          ''
-        {% endif %}
+      target_var: "{{ map.get(trigger.entity_id, '') }}"
     condition: "{{ target_var != '' }}"
     action:
       - service: var.set
         data:
           entity_id: "{{ target_var }}"
-          value: ""
           attributes:
             last_triggered: "{{ now().isoformat() }}"

@@ -1,4 +1,3 @@
----
 automation:
   - alias: Motion Lights — Kitchen
     id: motion_lights_kitchen

@@ -1,4 +1,3 @@
----
 automation:
   - alias: Motion Lights — Ensuite
     id: motion_lights_ensuite
