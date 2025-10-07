@@ -57,7 +57,6 @@ automation:
         sun_max_elevation: 20
         sun_min_elevation: -12
         target_lights:
-          - light.upstairs_lightstrip_alpha
-          - light.hallway_lightstrip_alpha
+          - light.group.hallway_upstairs
         timeout_seconds: "{{ state_attr('var.motion_profile_hallway_upstairs','timeout_seconds') | int(90) }}"
         transition_seconds: 0.3
