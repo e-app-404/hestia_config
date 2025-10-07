@@ -6,7 +6,7 @@
 #═══════════════════════════════════════════════════════════════
 
 - platform: group
-  name: "(AL) - Adaptive Bedroom Light Group"
+  name: "Adaptive Bedroom Light Group"
   unique_id: "002A9B6C1E6E4F4R5"
   entities:
     - light.bedroom_accent_alpha
@@ -19,7 +19,7 @@
     - light.bedroom_nightstand_right_alpha_matter
 
 - platform: group
-  name: "(AL) - Adaptive Desk Light Group"
+  name: "Adaptive Desk Light Group"
   unique_id: "00ALD7A1B502F823H"
   entities:
     - light.bedroom_desk_alpha
@@ -31,7 +31,7 @@
     - light.bedroom_desk_wall_alpha_matter
 
 - platform: group
-  name: "(AL) - Adaptive Kitchen Light Group"
+  name: "Adaptive Kitchen Light Group"
   unique_id: "0002D3E4FQA60702"
   entities:
     - light.kitchen_ceiling_alpha
