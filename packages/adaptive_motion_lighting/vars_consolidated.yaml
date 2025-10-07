@@ -4,7 +4,7 @@
 
 var:
   bedroom_aml_config:
-    name: "Bedroom AML Config"
+    friendly_name: "Bedroom AML Config"
     initial_value: "configured"
     attributes:
       # Adaptive Lighting Configuration
@@ -19,10 +19,10 @@ var:
       
       # Policy Configuration
       bypass: false
-      last_triggered: null
+      last_triggered: ""
       
   desk_aml_config:
-    name: "Desk AML Config"
+    friendly_name: "Desk AML Config"
     initial_value: "configured"
     attributes:
       # Adaptive Lighting Configuration
@@ -37,10 +37,10 @@ var:
       
       # Policy Configuration
       bypass: false
-      last_triggered: null
+      last_triggered: ""
 
   ensuite_aml_config:
-    name: "Ensuite AML Config"
+    friendly_name: "Ensuite AML Config"
     initial_value: "configured"
     attributes:
       # Adaptive Lighting Configuration
@@ -55,10 +55,10 @@ var:
       
       # Policy Configuration
       bypass: false
-      last_triggered: null
+      last_triggered: ""
 
   hallway_aml_config:
-    name: "Hallway AML Config"
+    friendly_name: "Hallway AML Config"
     initial_value: "configured"
     attributes:
       # Adaptive Lighting Configuration
@@ -73,10 +73,10 @@ var:
       
       # Policy Configuration
       bypass: false
-      last_triggered: null
+      last_triggered: ""
 
   kitchen_aml_config:
-    name: "Kitchen AML Config"
+    friendly_name: "Kitchen AML Config"
     initial_value: "configured"
     attributes:
       # Adaptive Lighting Configuration
@@ -91,10 +91,10 @@ var:
       
       # Policy Configuration
       bypass: false
-      last_triggered: null
+      last_triggered: ""
 
   ottoman_aml_config:
-    name: "Ottoman AML Config"
+    friendly_name: "Ottoman AML Config"
     initial_value: "configured"
     attributes:
       # Adaptive Lighting Configuration
@@ -109,10 +109,10 @@ var:
       
       # Policy Configuration
       bypass: false
-      last_triggered: null
+      last_triggered: ""
 
   utility_aml_config:
-    name: "Utility AML Config"
+    friendly_name: "Utility AML Config"
     initial_value: "configured"
     attributes:
       # Adaptive Lighting Configuration
@@ -127,10 +127,10 @@ var:
       
       # Policy Configuration
       bypass: false
-      last_triggered: null
+      last_triggered: ""
 
   wardrobe_aml_config:
-    name: "Wardrobe AML Config"
+    friendly_name: "Wardrobe AML Config"
     initial_value: "configured"
     attributes:
       # Adaptive Lighting Configuration
@@ -145,4 +145,4 @@ var:
       
       # Policy Configuration
       bypass: false
-      last_triggered: null
+      last_triggered: ""

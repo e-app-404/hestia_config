@@ -4,11 +4,11 @@ var:
     restore: true
     value: "ok"
     attributes:
-      last_cleaned: null
+      last_cleaned: ""
       needs_cleaning: false
       segment_id: 1
       cleaning_frequency_hours: 24
-      job_last_run: null
+      job_last_run: ""
       job_last_result: "idle"
 
   kitchen:
@@ -16,11 +16,11 @@ var:
     restore: true
     value: "ok"
     attributes:
-      last_cleaned: null
+      last_cleaned: ""
       needs_cleaning: false
       segment_id: 2
       cleaning_frequency_hours: 24
-      job_last_run: null
+      job_last_run: ""
       job_last_result: "idle"
 
   powder_room:
@@ -28,11 +28,11 @@ var:
     restore: true
     value: "ok"
     attributes:
-      last_cleaned: null
+      last_cleaned: ""
       needs_cleaning: false
       segment_id: 3
       cleaning_frequency_hours: 24
-      job_last_run: null
+      job_last_run: ""
       job_last_result: "idle"
 
   downstairs_hallway:
@@ -40,11 +40,11 @@ var:
     restore: true
     value: "ok"
     attributes:
-      last_cleaned: null
+      last_cleaned: ""
       needs_cleaning: false
       segment_id: 4
       cleaning_frequency_hours: 24
-      job_last_run: null
+      job_last_run: ""
       job_last_result: "idle"
 
   laundry_room:
@@ -52,9 +52,9 @@ var:
     restore: true
     value: "ok"
     attributes:
-      last_cleaned: null
+      last_cleaned: ""
       needs_cleaning: false
       segment_id: 5
       cleaning_frequency_hours: 24
-      job_last_run: null
+      job_last_run: ""
       job_last_result: "idle"
