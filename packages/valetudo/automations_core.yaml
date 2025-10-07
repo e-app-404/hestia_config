@@ -1,0 +1,45 @@
+# Core safety/observability automations (minimal entities footprint).
+automation:
+  - id: valetudo_error_notification_basic
+    alias: "Valetudo Error Notification (basic)"
+    initial_state: "on"
+    trigger:
+      - platform: state
+        entity_id: sensor.valetudo_roborocks5_error
+    condition:
+      - condition: template
+        value_template: "{{ trigger.to_state.state not in ['None','','unknown','unavailable'] }}"
+    action:
+      - service: persistent_notification.create
+        data:
+          title: "Valetudo Error"
+          message: "Robot reports: {{ states('sensor.valetudo_roborocks5_error') }}"
+
+  - id: valetudo_connectivity_watchdog
+    alias: "Valetudo Connectivity Watchdog"
+    initial_state: "on"
+    trigger:
+      - platform: state
+        entity_id: vacuum.valetudo_roborocks5
+        to: unavailable
+        for: "00:02:00"
+    action:
+      - service: persistent_notification.create
+        data:
+          title: "Vacuum Connectivity"
+          message: "Vacuum is unavailable. Verify MQTT broker and robot connectivity."
+
+# Optional: Instantiate rich notifications blueprint (disabled by default).
+# Uncomment and set real entities if desired.
+# automation:
+#   - alias: "Valetudo Notifications (Blueprint)"
+#     initial_state: "off"
+#     use_blueprint:
+#       path: mundschenk-at/valetudo-notifications.yaml
+#       input:
+#         vacuum: vacuum.valetudo_roborocks5
+#         rendered_map: camera.valetudo_map
+#         error_message: sensor.valetudo_roborocks5_error
+#         status_flag: sensor.valetudo_roborocks5_status
+#         dashboard_url: /lovelace
+#         language: English

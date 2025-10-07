@@ -1,0 +1,39 @@
+{# Valetudo Audit — paste into Developer Tools → Templates #}
+{% set rooms = [
+  ('living_room','Living Room'),
+  ('kitchen','Kitchen'),
+  ('powder_room','Powder Room'),
+  ('downstairs_hallway','Downstairs Hallway'),
+  ('laundry_room','Laundry Room')
+] %}
+{% set seg_sensor = 'sensor.valetudo_map_segments' %}
+
+# Valetudo Audit — {{ now() }}
+Base topic: Valetudo/{{ 'RoboRockS5' }}
+
+{% for key,label in rooms %}
+## {{ label }}
+- segment_id (var.{{key}}): {{ state_attr('var.'~key,'segment_id') }}
+- map_name (segments[segment_id]): {{
+    state_attr(seg_sensor, (state_attr('var.'~key,'segment_id') | string))
+}}
+- last_cleaned: {{ state_attr('var.'~key,'last_cleaned') }}
+- needs_cleaning: {{ state_attr('var.'~key,'needs_cleaning') }}
+- freq_hours: {{ state_attr('var.'~key,'cleaning_frequency_hours') }}
+- next_due_at: {{
+    (as_timestamp(state_attr('var.'~key,'last_cleaned')) + ( (state_attr('var.'~key,'cleaning_frequency_hours')|int(24) )*3600)) | timestamp_local
+    if state_attr('var.'~key,'last_cleaned') not in [none,'','unknown','unavailable'] else '—'
+}}
+- last_result: {{ state_attr('var.'~key,'job_last_result') }}
+{% set seg_id = state_attr('var.'~key,'segment_id') %}
+{% set map_name = state_attr(seg_sensor, (seg_id|string)) %}
+{% if seg_id is number and map_name %}
+  {% set normalized = (label) %}
+  {% if map_name != normalized %}
+- WARNING: Map drift detected. map_name='{{ map_name }}' != expected='{{ normalized }}'
+  {% endif %}
+{% else %}
+- WARNING: Missing or invalid segment_id mapping for this room.
+{% endif %}
+
+{% endfor %}

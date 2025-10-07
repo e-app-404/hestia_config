@@ -144,3 +144,94 @@
   {%- endfor -%}
   {{ output if ns.found else ('off' if output == 'on' else 'false') }}
 {%- endmacro %}
+
+{# -- Valetudo Template Library ------------------------------------------- #}
+{# This file provides reusable Jinja macros for room cleaning sensors/scripts #}
+{# Assumes per-room variable entities exist: var.living_room, var.kitchen, ... #}
+{# Each var.<room> has attributes: last_cleaned, needs_cleaning, segment_id,   #}
+{# cleaning_frequency_hours, job_last_run, job_last_result                     #}
+
+{%- macro _attr(var_ent, key, default_val=None) -%}
+  {{ state_attr(var_ent, key) if state_attr(var_ent, key) is not none else default_val }}
+{%- endmacro -%}
+
+{%- macro _is_empty(val) -%}
+  {{ val in [none, '', 'unknown', 'unavailable'] }}
+{%- endmacro -%}
+
+{%- macro hours_since(var_ent) -%}
+  {%- set last = state_attr(var_ent, 'last_cleaned') -%}
+  {%- if last in [none, '', 'unknown', 'unavailable'] -%}{{ none }}
+  {%- else -%}{{ ((as_timestamp(now()) - as_timestamp(last)) / 3600) | round(1) }}{%- endif -%}
+{%- endmacro -%}
+
+{%- macro days_since(var_ent) -%}
+  {%- set last = state_attr(var_ent, 'last_cleaned') -%}
+  {%- if last in [none, '', 'unknown', 'unavailable'] -%}{{ none }}
+  {%- else -%}{{ ((as_timestamp(now()) - as_timestamp(last)) / 86400) | round(1) }}{%- endif -%}
+{%- endmacro -%}
+
+{%- macro next_due(var_ent, default_freq=24) -%}
+  {%- set last = state_attr(var_ent, 'last_cleaned') -%}
+  {%- set freq = (state_attr(var_ent, 'cleaning_frequency_hours') or default_freq) | int -%}
+  {%- if last in [none, '', 'unknown', 'unavailable'] -%}{{ none }}
+  {%- else -%}{{ (as_timestamp(last) + (freq*3600)) | timestamp_local }}{%- endif -%}
+{%- endmacro -%}
+
+{%- macro room_icon(var_ent) -%}
+  {%- set needs = state_attr(var_ent, 'needs_cleaning') | default(false) -%}
+  {{ 'mdi:alert' if needs else 'mdi:vacuum' }}
+{%- endmacro -%}
+
+{%- macro room_state(var_ent, default_freq=24) -%}
+  {%- set needs = state_attr(var_ent, 'needs_cleaning') | default(false) -%}
+  {%- set last = state_attr(var_ent, 'last_cleaned') -%}
+  {%- set freq = (state_attr(var_ent, 'cleaning_frequency_hours') or default_freq) | int -%}
+  {%- if needs %}needs_cleaning
+  {%- elif last in [none, '', 'unknown', 'unavailable'] %}never
+  {%- else %}
+    {%- set hours = ((as_timestamp(now()) - as_timestamp(last)) / 3600) -%}
+    {{ 'due' if hours >= freq else 'ok' }}
+  {%- endif -%}
+{%- endmacro -%}
+
+{# "Getters" for attributes, to keep YAML clean #}
+{%- macro get_segment_id(var_ent) -%}{{ state_attr(var_ent, 'segment_id') }}{%- endmacro -%}
+{%- macro get_needs_cleaning(var_ent) -%}{{ state_attr(var_ent, 'needs_cleaning') | default(false) }}{%- endmacro -%}
+{%- macro get_last_cleaned(var_ent) -%}{{ state_attr(var_ent, 'last_cleaned') }}{%- endmacro -%}
+{%- macro get_freq(var_ent, default_freq=24) -%}{{ (state_attr(var_ent, 'cleaning_frequency_hours') or default_freq) | int }}{%- endmacro -%}
+
+{# JSON builders for variable.set_variable payloads ------------------------ #}
+{%- macro json_update_mark_cleaned(var_ent) -%}
+{{ {
+  'variable': (var_ent.split('.')[1]),
+  'value': 'ok',
+  'attributes': {
+    'last_cleaned': now().isoformat(),
+    'needs_cleaning': false,
+    'job_last_run': now().isoformat(),
+    'job_last_result': 'success'
+  }
+} | tojson }}
+{%- endmacro -%}
+
+{%- macro json_update_needs_cleaning(var_ent, flag) -%}
+{{ {
+  'variable': (var_ent.split('.')[1]),
+  'attributes': { 'needs_cleaning': (true if flag else false) }
+} | tojson }}
+{%- endmacro -%}
+
+{%- macro json_update_segment_id(var_ent, seg_id) -%}
+{{ {
+  'variable': (var_ent.split('.')[1]),
+  'attributes': { 'segment_id': (seg_id | int) }
+} | tojson }}
+{%- endmacro -%}
+
+{%- macro json_update_frequency(var_ent, hours) -%}
+{{ {
+  'variable': (var_ent.split('.')[1]),
+  'attributes': { 'cleaning_frequency_hours': (hours | int) }
+} | tojson }}
+{%- endmacro -%}
