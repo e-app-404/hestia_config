@@ -593,3 +593,15 @@
         - 438784bcd85b3be95a17452bc3a5c966
         - d6c5d8ce01882c8bb93eb5f40ff9d15b
         - 57eb5e861c91a7d371b478c74d9d069d
+- id: '1759847047776'
+  alias: Group Sonos Roam on Motion
+  description: ''
+  use_blueprint:
+    path: legovaer/group-sonos-on-motion.yaml
+    input:
+      motion_trigger:
+      - binary_sensor.ensuite_shower_occupancy_epsilon
+      - binary_sensor.ensuite_presence_beta
+      sonos_source: media_player.bedroom_sonos_ray
+      sonos_target: media_player.ensuite_sonos_roam
+      allow_tv: true
