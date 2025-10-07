@@ -84,53 +84,33 @@
         last_updated: "{{ now().isoformat() }}"
 
 - binary_sensor:
-    # BEDROOM PRESENCE (BETA)
+- binary_sensor:
     - name: "Bedroom Presence (Beta)"
       unique_id: "bedroom_presence_beta"
       device_class: occupancy
       state: >-
-        {# Robust presence logic for bedroom area #}
-        {% set persons = ['person.evert'] %}
-        {% set present = false %}
-        {% for person_id in persons %}
-          {% set person_state = states(person_id) %}
-          {% set source = state_attr(person_id, 'source') %}
-          {% set s = states[person_id] if person_id in states else None %}
-          {% set is_here = false %}
-
-          {# Primary: person home #}
-          {% if person_state == 'home' %}
-            {% set is_here = true %}
-          {% elif source and states(source) == 'home' %}
-            {# Secondary: tracker indicates home with reliable transport #}
-            {% set st = state_attr(source, 'source_type') %}
-            {% if st in ['gps', 'bluetooth_le', 'bluetooth'] %}
-              {% set is_here = true %}
-            {% endif %}
-          {% endif %}
-
-          {# Staleness guard > 24h #}
-          {% if s %}
-            {% set last_ts = as_timestamp(s.last_changed) %}
-            {% if last_ts is number and (as_timestamp(now()) - last_ts) > 86400 %}
-              {% set is_here = false %}
-            {% endif %}
-          {% endif %}
-
-          {% if is_here %}
-            {% set present = true %}
-          {% endif %}
-        {% endfor %}
-        {% if present %}on{% else %}off{% endif %}
+        {% set person_home = (states('person.evert') == 'home') %}
+        {% set src = state_attr('person.evert','source') %}
+        {% set via_src = src and states(src) == 'home' %}
+        {% set desk = is_state('binary_sensor.desk_presence_inferred','on') %}
+        {% set bed_occ = is_state('binary_sensor.bedroom_occupancy_beta','on') %}
+        {% set bed_motion = is_state('binary_sensor.bedroom_motion_beta','on') %}
+        {% if person_home or via_src or desk or bed_occ or bed_motion %}on{% else %}off{% endif %}
+      delay_off:
+        minutes: 10
       attributes:
         area_id: "bedroom"
         floor_id: "sanctum"
         module: "presence_inference"
-        persons: "person.evert"   # ← attribute is a string template, not a YAML list
+        persons: "person.evert"
         strategy: "asymmetric: presence enhances, absence never blocks"
         subsystem: "hermes"
+        area_type: "private"
         tier: "β"
         untracked_housemate_warning: "Motion activation must remain independent - untracked occupant exists"
+        description: |
+          # Presence is on if: person.evert is home OR their tracker says home
+          # OR desk presence is inferred OR bedroom occupancy/motion is active.
 
     # DESK PRESENCE (BETA)
     - name: "Desk Presence (Beta)"
@@ -147,6 +127,7 @@
         persons: "person.evert"
         strategy: "asymmetric: presence enhances, absence never blocks"
         subsystem: "hermes"
+        area_type: "private"
         tier: "β"
         upstream_sources: >
           {{ ["binary_sensor.desk_presence_inferred"] | tojson }}
@@ -168,6 +149,7 @@
         persons: "person.evert"
         strategy: "asymmetric: presence enhances, absence never blocks"
         subsystem: "hermes"
+        area_type: "shared"
         tier: "β"
         untracked_housemate_warning: "Shared space - untracked occupant may be present when sensor shows false"
 
@@ -175,13 +157,14 @@
     - name: "Kitchen Presence (Beta)"
       unique_id: "kitchen_presence_beta"
       device_class: occupancy
-      state: "off"  # Always off - untracked housemate primary kitchen user
+      state: "off"
       attributes:
         area_id: "kitchen"
         floor_id: "downstairs"
         module: "presence_inference"
         persons: ""
         strategy: "always_false: untracked housemate primary kitchen user"
+        area_type: "shared"
         subsystem: "hermes"
         tier: "β"
         untracked_housemate_warning: "Kitchen used by untracked occupant - never rely on this sensor for blocking"
@@ -203,9 +186,9 @@
         area_id: "ensuite"
         floor_id: "sanctum"
         module: "presence_inference"
-        persons: "person.evert"  # attribute values must be strings for template integration
+        persons: "person.evert"
         strategy: "track only person.evert; presence enhances, never blocks"
-        area_
+        area_type: "private"
         subsystem: "hermes"
         tier: "β"
 
@@ -213,10 +196,11 @@
     - name: "Hallway Downstairs Presence (Beta)"
       unique_id: "hallway_downstairs_presence_beta"
       device_class: occupancy
-      state: "off"  # Always off - common transit area
+      state: "off"
       attributes:
         area_id: "downstairs"
         floor_id: "hallway"
+        area_type: "shared"
         module: "presence_inference"
         persons: ""
         strategy: "always_false: common transit area"
@@ -228,10 +212,11 @@
     - name: "Hallway Upstairs Presence (Beta)"
       unique_id: "hallway_upstairs_presence_beta"
       device_class: occupancy
-      state: "off"  # Always off - common transit area
+      state: "off"
       attributes:
         area_id: "upstairs"
         floor_id: "hallway"
+        area_type: "shared"
         module: "presence_inference"
         persons: ""
         strategy: "always_false: common transit area"
