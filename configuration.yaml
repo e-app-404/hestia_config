@@ -13,6 +13,9 @@ homeassistant:
     - "/config/hestia/library/docs/governance/system_instruction"
     - "/config/hestia/config/diagnostics"
 
+# 🔧 HACS Variable component
+var: !include_dir_merge_named domain/variables/
+
 # 🔧 UI-based automations (editable via GUI)
 automation ui: !include automations.yaml
 

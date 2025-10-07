@@ -1,0 +1,186 @@
+extracted_config:
+  repo_base: "/config/hestia/core/config"
+  promptset_id: "meta_capture.promptset.v1.2025-09-21T00:00:00Z.6f3b2c9a-7e0d-4b8a-9d1c-5f84a2c1e7d3"
+  hosts:
+    nas:
+      model: "Synology DS220+"
+      hostname_tailnet: "ds220plus.reverse-beta.ts.net"
+      ip_lan: "192.168.0.104"
+      os: "DSM 7.x (Btrfs volume)"
+      services:
+        - name: "ssh"
+          port: 22/tcp
+        - name: "git-server (git-shell)"
+          protocol: "ssh://"
+          auth: "publickey"
+      sftp_enabled: null
+    macbook:
+      hostname: "macbook"
+      role: "developer workstation"
+      tools:
+        - "git"
+        - "ssh"
+        - "pbcopy/pbpaste"
+        - "git-filter-repo (planned)"
+        - "git-lfs (planned)"
+  users:
+    nas_admin: "babylonrobot"
+    nas_git_user: "gituser"
+    gituser_shell: "git-shell (no interactive commands)"
+    sudo_requires_tty: true
+  github:
+    org: "e-app-404"
+    repo: "omega_registry"
+    ssh_url: "git@github.com:e-app-404/omega_registry.git"
+    deploy_key:
+      private_path: "/var/services/homes/gituser/.ssh/omega_registry_mirror_key"
+      public_path: "/var/services/homes/gituser/.ssh/omega_registry_mirror_key.pub"
+      fingerprint: "SHA256:Avt2XLlXELFfzUUfxtBljUQYvZcXz8q4fSEnpWQkHT4"
+      public_first60: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEj1psN9yqZIvYgUkknZiAGT"
+      scope: "repo deploy key (read/write)"
+  git:
+    nas_gitroot: "/volume1/git"
+    bare_repos:
+      - name: "omega_registry"
+        path: "/volume1/git/omega_registry.git"
+        origin_remote_from_mac:
+          lan: "ssh://gituser@192.168.0.104/volume1/git/omega_registry.git"
+          tailnet: "ssh://gituser@ds220plus.reverse-beta.ts.net/volume1/git/omega_registry.git"
+        post_receive_hook:
+          path: "/volume1/git/omega_registry.git/hooks/post-receive"
+          mirror_target: "git@github.com:e-app-404/omega_registry.git"
+          uses_key: "/var/services/homes/gituser/.ssh/omega_registry_mirror_key"
+          log_path: "/volume1/git/_mirror_logs/omega_registry.log"
+          behavior: "non-blocking; logs success/fail"
+  storage:
+    snapshot_replication:
+      enabled: true
+      shares:
+        - name: "git"
+          schedule: null
+          retention: null
+        - name: "usbshare1"
+          snapshots_supported: false
+    backups:
+      strategy: null
+      notes: "Hyper Backup recommended for git share; cron-based git bundle optional"
+  dns:
+    mac_dns_observation: "NAS tailnet hostname failed resolution; LAN IP worked"
+    action: "use LAN IP for remotes or fix DNS/hosts"
+
+transient_state:
+  auth:
+    mac_to_nas_gituser_publickey: "working"
+    nas_gituser_to_github_with_deploy_key: "working"
+  repo_push_status:
+    mac_to_nas_origin_push: "success"
+    nas_to_github_mirror_push: "failed_pre_receive_large_files"
+  mirror_log_dir:
+    path: "/volume1/git/_mirror_logs"
+    exists: false
+  sftp_state: "unknown"
+  tailscale_dns_from_mac: "intermittent/unresolved"
+  large_objects_detected:
+    - path: "canonical/registry_inputs/core.entity_registry"
+      size_mb: 278.62
+    - path: "addon/meta/rehydration/.../canonical_literal_map.csv"
+      size_mb: 19311.28
+    - path: "canonical/logs/tools/generator_omega_registry_generator.log"
+      size_mb: 215.46
+    - path: "canonical/logs/tools/enrichment_engine_enrichment_engine.log"
+      size_mb: 80.93
+    - path: "_backups/omega_registry_project_20250801_235757.tar.gz"
+      size_mb: 52.82
+
+relationships:
+  - source: "macbook"
+    relation: "pushes_to"
+    target: "ssh://gituser@192.168.0.104/volume1/git/omega_registry.git"
+  - source: "omega_registry.git (NAS)"
+    relation: "mirrors_to"
+    target: "git@github.com:e-app-404/omega_registry.git"
+    via_key: "/var/services/homes/gituser/.ssh/omega_registry_mirror_key"
+  - source: "gituser"
+    relation: "allowed_in_git_server"
+    target: "DSM Git Server (git-shell)"
+  - source: "post-receive hook"
+    relation: "writes_log_to"
+    target: "/volume1/git/_mirror_logs/omega_registry.log"
+  - source: "Snapshot Replication"
+    relation: "protects"
+    target: "share: git (Btrfs)"
+
+suggested_commands:
+  mac_env:
+    - |
+      export REPO="omega_registry"
+      export NAS_HOST="ds220plus.reverse-beta.ts.net"
+      export NAS_HOST_LAN="192.168.0.104"
+      export NAS_USER="gituser"
+      export NAS_ADMIN="babylonrobot"
+      export NAS_GITROOT="/volume1/git"
+      export GH_ORG="e-app-404"
+      export GH_REPO="omega_registry"
+      export GH_URL="git@github.com:${GH_ORG}/${GH_REPO}.git"
+      export MIRROR_KEY="/var/services/homes/${NAS_USER}/.ssh/${REPO}_mirror_key"
+  mac_set_remote_and_push_lan:
+    - |
+      git remote remove origin 2>/dev/null || true
+      git remote add origin "ssh://${NAS_USER}@${NAS_HOST_LAN}${NAS_GITROOT}/${REPO}.git"
+      git ls-remote "ssh://${NAS_USER}@${NAS_HOST_LAN}${NAS_GITROOT}/${REPO}.git"
+      git push -u origin HEAD
+  nas_make_log_dir_and_fix_hook:
+    - |
+      sudo -u gituser mkdir -p /volume1/git/_mirror_logs
+      HOOK="/volume1/git/omega_registry.git/hooks/post-receive"
+      sudo tee "$HOOK" >/dev/null <<'EOF'
+      #!/bin/sh
+      set -eu
+      GH_URL="git@github.com:e-app-404/omega_registry.git"
+      KEY="/var/services/homes/gituser/.ssh/omega_registry_mirror_key"
+      LOG="/volume1/git/_mirror_logs/omega_registry.log"
+      start=$(date -Iseconds)
+      echo "[$start] mirror start -> $GH_URL" >> "$LOG"
+      GIT_SSH_COMMAND="ssh -i $KEY -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes"
+      if /usr/bin/env GIT_SSH_COMMAND="$GIT_SSH_COMMAND" git push --mirror "$GH_URL" >> "$LOG" 2>&1; then
+        echo "[$(date -Iseconds)] mirror OK" >> "$LOG"
+      else
+        echo "[$(date -Iseconds)] mirror FAIL" >> "$LOG"
+      fi
+      exit 0
+      EOF
+      sudo chown gituser:users "$HOOK"
+      sudo chmod +x "$HOOK"
+  nas_verify_github_auth_and_mirror:
+    - |
+      sudo -u gituser ssh -i /var/services/homes/gituser/.ssh/omega_registry_mirror_key -o IdentitiesOnly=yes -T git@github.com || true
+      sudo -u gituser /usr/bin/env GIT_SSH_COMMAND="ssh -i /var/services/homes/gituser/.ssh/omega_registry_mirror_key -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes" git --git-dir="/volume1/git/omega_registry.git" push --mirror "git@github.com:e-app-404/omega_registry.git"
+      sudo tail -n 100 /volume1/git/_mirror_logs/omega_registry.log
+  mac_history_rewrite_cleanup_option:
+    - |
+      brew install git-filter-repo git-lfs
+      git lfs install
+      cd /Users/evertappels/Projects/omega_registry
+      git filter-repo --strip-blobs-bigger-than 100M
+      git push --force --all origin
+      git push --force --tags origin
+  nas_filtered_mirror_option:
+    - |
+      sudo -u gituser git clone --mirror /volume1/git/omega_registry.git /volume1/git/omega_registry_mirror.git
+      tmpdir=$(mktemp -d)
+      sudo -u gituser git clone /volume1/git/omega_registry_mirror.git "$tmpdir/omega_registry"
+      cd "$tmpdir/omega_registry"
+      sudo -u gituser git filter-repo --strip-blobs-bigger-than 100M
+      sudo -u gituser git remote remove origin
+      sudo -u gituser git remote add origin /volume1/git/omega_registry_mirror.git
+      sudo -u gituser git push --force --all origin
+      sudo -u gituser git push --force --tags origin
+      cd ~ && rm -rf "$tmpdir"
+      sudo -u gituser /usr/bin/env GIT_SSH_COMMAND="ssh -i /var/services/homes/gituser/.ssh/omega_registry_mirror_key -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes" git --git-dir="/volume1/git/omega_registry_mirror.git" push --mirror "git@github.com:e-app-404/omega_registry.git"
+
+notes:
+  - Public-key auth is confirmed: Mac→NAS (`gituser`) and NAS→GitHub (deploy key).
+  - Tailnet DNS failed from Mac; LAN IP works and is configured for the working `origin`.
+  - GitHub mirror was rejected due to large files; choose LFS or history rewrite, or maintain a filtered mirror.
+  - Post-receive hook must log to a path writable by `gituser` (use `/volume1/git/_mirror_logs`).
+  - Snapshot Replication is enabled on Btrfs; specific schedules/retentions for `git` share are not confirmed and should be set.
