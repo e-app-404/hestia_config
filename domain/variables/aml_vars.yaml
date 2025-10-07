@@ -1,148 +1,143 @@
-# Consolidated AML Configuration Variables
-# Single source of truth for Adaptive Motion Lighting per room/subarea
-# Drives both Adaptive Lighting and Motion automation systems
+bedroom_aml_config:
+  friendly_name: "Bedroom AML Config"
+  initial_value: "configured"
+  attributes:
+    # Adaptive Lighting Configuration
+    al_switch: "switch.adaptive_lighting_bedroom_lights"  
+    al_manual_control: "switch.adaptive_lighting_adapt_bedroom_lights"
+    al_lights: "light.al_adaptive_bedroom_light_group"
+    
+    # Motion Configuration  
+    motion_sensor: "binary_sensor.bedroom_motion_beta"
+    illuminance_sensor: "sensor.bedroom_illuminance_beta"
+    illuminance_threshold: 10
+    
+    # Policy Configuration
+    bypass: false
+    last_triggered: ""
+    
+desk_aml_config:
+  friendly_name: "Desk AML Config"
+  initial_value: "configured"
+  attributes:
+    # Adaptive Lighting Configuration
+    al_switch: "switch.adaptive_lighting_bedroom_lights"
+    al_manual_control: "switch.adaptive_lighting_adapt_bedroom_lights"
+    al_lights: "light.al_adaptive_desk_light_group"
+    
+    # Motion Configuration
+    motion_sensor: "binary_sensor.desk_motion_beta"
+    illuminance_sensor: "sensor.bedroom_illuminance_beta"
+    illuminance_threshold: 10
+    
+    # Policy Configuration
+    bypass: false
+    last_triggered: ""
 
-var:
-  bedroom_aml_config:
-    friendly_name: "Bedroom AML Config"
-    initial_value: "configured"
-    attributes:
-      # Adaptive Lighting Configuration
-      al_switch: "switch.adaptive_lighting_bedroom_lights"  
-      al_manual_control: "switch.adaptive_lighting_adapt_bedroom_lights"
-      al_lights: "light.al_adaptive_bedroom_light_group"
-      
-      # Motion Configuration  
-      motion_sensor: "binary_sensor.bedroom_motion_beta"
-      illuminance_sensor: "sensor.bedroom_illuminance_beta"
-      illuminance_threshold: 10
-      
-      # Policy Configuration
-      bypass: false
-      last_triggered: ""
-      
-  desk_aml_config:
-    friendly_name: "Desk AML Config"
-    initial_value: "configured"
-    attributes:
-      # Adaptive Lighting Configuration
-      al_switch: "switch.adaptive_lighting_bedroom_lights"
-      al_manual_control: "switch.adaptive_lighting_adapt_bedroom_lights"
-      al_lights: "light.al_adaptive_desk_light_group"
-      
-      # Motion Configuration
-      motion_sensor: "binary_sensor.desk_motion_beta"
-      illuminance_sensor: "sensor.bedroom_illuminance_beta"
-      illuminance_threshold: 10
-      
-      # Policy Configuration
-      bypass: false
-      last_triggered: ""
+ensuite_aml_config:
+  friendly_name: "Ensuite AML Config"
+  initial_value: "configured"
+  attributes:
+    # Adaptive Lighting Configuration
+    al_switch: "switch.adaptive_lighting_ensuite_lights"
+    al_manual_control: "switch.adaptive_lighting_adapt_ensuite_lights"
+    al_lights: "light.group_ensuite_lights"
+    
+    # Motion Configuration
+    motion_sensor: "binary_sensor.ensuite_motion_beta"
+    illuminance_sensor: "sensor.ensuite_illuminance_beta"
+    illuminance_threshold: 5
+    
+    # Policy Configuration
+    bypass: false
+    last_triggered: ""
 
-  ensuite_aml_config:
-    friendly_name: "Ensuite AML Config"
-    initial_value: "configured"
-    attributes:
-      # Adaptive Lighting Configuration
-      al_switch: "switch.adaptive_lighting_ensuite_lights"
-      al_manual_control: "switch.adaptive_lighting_adapt_ensuite_lights"
-      al_lights: "light.group_ensuite_lights"
-      
-      # Motion Configuration
-      motion_sensor: "binary_sensor.ensuite_motion_beta"
-      illuminance_sensor: "sensor.ensuite_illuminance_beta"
-      illuminance_threshold: 5
-      
-      # Policy Configuration
-      bypass: false
-      last_triggered: ""
+hallway_aml_config:
+  friendly_name: "Hallway AML Config"
+  initial_value: "configured"
+  attributes:
+    # Adaptive Lighting Configuration
+    al_switch: "switch.adaptive_lighting_hallway_lights"
+    al_manual_control: "switch.adaptive_lighting_adapt_hallway_lights"
+    al_lights: "light.group_hallway_lights_downstairs"
+    
+    # Motion Configuration
+    motion_sensor: "binary_sensor.hallway_downstairs_motion_beta"
+    illuminance_sensor: "sensor.hallway_downstairs_illuminance_beta"
+    illuminance_threshold: 5
+    
+    # Policy Configuration
+    bypass: false
+    last_triggered: ""
 
-  hallway_aml_config:
-    friendly_name: "Hallway AML Config"
-    initial_value: "configured"
-    attributes:
-      # Adaptive Lighting Configuration
-      al_switch: "switch.adaptive_lighting_hallway_lights"
-      al_manual_control: "switch.adaptive_lighting_adapt_hallway_lights"
-      al_lights: "light.group_hallway_lights_downstairs"
-      
-      # Motion Configuration
-      motion_sensor: "binary_sensor.hallway_downstairs_motion_beta"
-      illuminance_sensor: "sensor.hallway_downstairs_illuminance_beta"
-      illuminance_threshold: 5
-      
-      # Policy Configuration
-      bypass: false
-      last_triggered: ""
+kitchen_aml_config:
+  friendly_name: "Kitchen AML Config"
+  initial_value: "configured"
+  attributes:
+    # Adaptive Lighting Configuration
+    al_switch: "switch.adaptive_lighting_kitchen_lights"
+    al_manual_control: "switch.adaptive_lighting_adapt_kitchen_lights"
+    al_lights: "light.al_adaptive_kitchen_light_group"
+    
+    # Motion Configuration
+    motion_sensor: "binary_sensor.kitchen_illuminance_beta"
+    illuminance_sensor: "sensor.kitchen_illuminance_beta"
+    illuminance_threshold: 10
+    
+    # Policy Configuration
+    bypass: false
+    last_triggered: ""
 
-  kitchen_aml_config:
-    friendly_name: "Kitchen AML Config"
-    initial_value: "configured"
-    attributes:
-      # Adaptive Lighting Configuration
-      al_switch: "switch.adaptive_lighting_kitchen_lights"
-      al_manual_control: "switch.adaptive_lighting_adapt_kitchen_lights"
-      al_lights: "light.al_adaptive_kitchen_light_group"
-      
-      # Motion Configuration
-      motion_sensor: "binary_sensor.kitchen_illuminance_beta"
-      illuminance_sensor: "sensor.kitchen_illuminance_beta"
-      illuminance_threshold: 10
-      
-      # Policy Configuration
-      bypass: false
-      last_triggered: ""
+ottoman_aml_config:
+  friendly_name: "Ottoman AML Config"
+  initial_value: "configured"
+  attributes:
+    # Adaptive Lighting Configuration
+    al_switch: "switch.adaptive_lighting_bedroom_lights"
+    al_manual_control: "switch.adaptive_lighting_adapt_bedroom_lights"
+    al_lights: "light.group_ottoman_light"
+    
+    # Motion Configuration
+    motion_sensor: "binary_sensor.ottoman_motion_beta"
+    illuminance_sensor: "sensor.bedroom_illuminance_beta"
+    illuminance_threshold: 10
+    
+    # Policy Configuration
+    bypass: false
+    last_triggered: ""
 
-  ottoman_aml_config:
-    friendly_name: "Ottoman AML Config"
-    initial_value: "configured"
-    attributes:
-      # Adaptive Lighting Configuration
-      al_switch: "switch.adaptive_lighting_bedroom_lights"
-      al_manual_control: "switch.adaptive_lighting_adapt_bedroom_lights"
-      al_lights: "light.group_ottoman_light"
-      
-      # Motion Configuration
-      motion_sensor: "binary_sensor.ottoman_motion_beta"
-      illuminance_sensor: "sensor.bedroom_illuminance_beta"
-      illuminance_threshold: 10
-      
-      # Policy Configuration
-      bypass: false
-      last_triggered: ""
+utility_aml_config:
+  friendly_name: "Utility AML Config"
+  initial_value: "configured"
+  attributes:
+    # Adaptive Lighting Configuration
+    al_switch: "switch.adaptive_lighting_utility_lights"
+    al_manual_control: "switch.adaptive_lighting_adapt_utility_lights"
+    al_lights: "light.group_utility_lights"
+    
+    # Motion Configuration
+    motion_sensor: "binary_sensor.utility_illuminance_beta"
+    illuminance_sensor: "sensor.utility_illuminance_beta"
+    illuminance_threshold: 5
+    
+    # Policy Configuration
+    bypass: false
+    last_triggered: ""
 
-  utility_aml_config:
-    friendly_name: "Utility AML Config"
-    initial_value: "configured"
-    attributes:
-      # Adaptive Lighting Configuration
-      al_switch: "switch.adaptive_lighting_utility_lights"
-      al_manual_control: "switch.adaptive_lighting_adapt_utility_lights"
-      al_lights: "light.group_utility_lights"
-      
-      # Motion Configuration
-      motion_sensor: "binary_sensor.utility_illuminance_beta"
-      illuminance_sensor: "sensor.utility_illuminance_beta"
-      illuminance_threshold: 5
-      
-      # Policy Configuration
-      bypass: false
-      last_triggered: ""
-
-  wardrobe_aml_config:
-    friendly_name: "Wardrobe AML Config"
-    initial_value: "configured"
-    attributes:
-      # Adaptive Lighting Configuration
-      al_switch: "switch.adaptive_lighting_bedroom_lights"
-      al_manual_control: "switch.adaptive_lighting_adapt_bedroom_lights"
-      al_lights: "light.group_wardrobe_light"
-      
-      # Motion Configuration
-      motion_sensor: "binary_sensor.wardrobe_motion_beta"
-      illuminance_sensor: "sensor.bedroom_illuminance_beta"
-      illuminance_threshold: 10
-      
-      # Policy Configuration
-      bypass: false
-      last_triggered: ""
+wardrobe_aml_config:
+  friendly_name: "Wardrobe AML Config"
+  initial_value: "configured"
+  attributes:
+    # Adaptive Lighting Configuration
+    al_switch: "switch.adaptive_lighting_bedroom_lights"
+    al_manual_control: "switch.adaptive_lighting_adapt_bedroom_lights"
+    al_lights: "light.group_wardrobe_light"
+    
+    # Motion Configuration
+    motion_sensor: "binary_sensor.wardrobe_motion_beta"
+    illuminance_sensor: "sensor.bedroom_illuminance_beta"
+    illuminance_threshold: 10
+    
+    # Policy Configuration
+    bypass: false
+    last_triggered: ""

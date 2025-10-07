@@ -1,60 +1,59 @@
-var:
-  vacuum_living_room:
-    friendly_name: "Living Room (Config)"
-    restore: true
-    initial_value: "ok"
-    attributes:
-      last_cleaned: ""
-      needs_cleaning: false
-      segment_id: 1
-      cleaning_frequency_hours: 24
-      job_last_run: ""
-      job_last_result: "idle"
+vacuum_living_room:
+  friendly_name: "Living Room (Config)"
+  restore: true
+  initial_value: "ok"
+  attributes:
+    last_cleaned: ""
+    needs_cleaning: false
+    segment_id: 1
+    cleaning_frequency_hours: 24
+    job_last_run: ""
+    job_last_result: "idle"
 
-  vacuum_kitchen:
-    friendly_name: "Kitchen (Config)"
-    restore: true
-    initial_value: "ok"
-    attributes:
-      last_cleaned: ""
-      needs_cleaning: false
-      segment_id: 2
-      cleaning_frequency_hours: 24
-      job_last_run: ""
-      job_last_result: "idle"
+vacuum_kitchen:
+  friendly_name: "Kitchen (Config)"
+  restore: true
+  initial_value: "ok"
+  attributes:
+    last_cleaned: ""
+    needs_cleaning: false
+    segment_id: 2
+    cleaning_frequency_hours: 24
+    job_last_run: ""
+    job_last_result: "idle"
 
-  vacuum_powder_room:
-    friendly_name: "Powder Room (Config)"
-    restore: true
-    initial_value: "ok"
-    attributes:
-      last_cleaned: ""
-      needs_cleaning: false
-      segment_id: 3
-      cleaning_frequency_hours: 24
-      job_last_run: ""
-      job_last_result: "idle"
+vacuum_powder_room:
+  friendly_name: "Powder Room (Config)"
+  restore: true
+  initial_value: "ok"
+  attributes:
+    last_cleaned: ""
+    needs_cleaning: false
+    segment_id: 3
+    cleaning_frequency_hours: 24
+    job_last_run: ""
+    job_last_result: "idle"
 
-  vacuum_downstairs_hallway:
-    friendly_name: "Downstairs Hallway (Config)"
-    restore: true
-    initial_value: "ok"
-    attributes:
-      last_cleaned: ""
-      needs_cleaning: false
-      segment_id: 4
-      cleaning_frequency_hours: 24
-      job_last_run: ""
-      job_last_result: "idle"
+vacuum_downstairs_hallway:
+  friendly_name: "Downstairs Hallway (Config)"
+  restore: true
+  initial_value: "ok"
+  attributes:
+    last_cleaned: ""
+    needs_cleaning: false
+    segment_id: 4
+    cleaning_frequency_hours: 24
+    job_last_run: ""
+    job_last_result: "idle"
 
-  vacuum_laundry_room:
-    friendly_name: "Laundry Room (Config)"
-    restore: true
-    initial_value: "ok"
-    attributes:
-      last_cleaned: ""
-      needs_cleaning: false
-      segment_id: 5
-      cleaning_frequency_hours: 24
-      job_last_run: ""
-      job_last_result: "idle"
+vacuum_laundry_room:
+  friendly_name: "Laundry Room (Config)"
+  restore: true
+  initial_value: "ok"
+  attributes:
+    last_cleaned: ""
+    needs_cleaning: false
+    segment_id: 5
+    cleaning_frequency_hours: 24
+    job_last_run: ""
+    job_last_result: "idle"
