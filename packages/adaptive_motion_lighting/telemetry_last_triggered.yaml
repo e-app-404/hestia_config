@@ -33,7 +33,7 @@ automation:
           'light.al_adaptive_bedroom_light_group':'var.motion_profile_bedroom',
           'light.al_adaptive_desk_light_group':'var.motion_profile_desk',
           'light.group_ensuite_lights':'var.motion_profile_ensuite',
-          'light.group_kitchen_lights':'var.motion_profile_kitchen',
+          'light.al_adaptive_kitchen_light_group':'var.motion_profile_kitchen',
           'light.group_hallway_lights_downstairs':'var.motion_profile_hallway_downstairs',
           'light.group_hallway_lights_upstairs':'var.motion_profile_hallway_upstairs',
           'light.group_ottoman_light':'var.motion_profile_ottoman',

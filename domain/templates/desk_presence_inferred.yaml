@@ -35,7 +35,7 @@
 
     - name: "MacBook Bedroom TV (AirPlay) Active"
       unique_id: "macbook_bedroom_tv_airplay_active"
-      icon: mdi:television
+      icon: mdi:cast-variant
       state: >
         {% set displays = state_attr('sensor.macbook_displays', 'Display Names') or [] %}
         {{ 'Bedroom TV (AirPlay)' in displays }}
@@ -102,9 +102,10 @@
         area_id: "desk"
         floor_id: "sanctum"
 
-    - name: "Desk MacBook Recent Connectivity (Desk)"
+    - name: "Desk MacBook Recent Connectivity"
       unique_id: "desk_macbook_recent_connectivity"
       device_class: connectivity
+      icon: mdi:desk
       delay_off:
         seconds: 240
       state: >-
