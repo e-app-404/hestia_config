@@ -67,7 +67,7 @@ automation:
     use_blueprint:
       path: Blackshome/sensor-light.yaml
       input:
-        ambient_lux_entity: ""
+        ambient_lux_entity: sensor.bedroom_illuminance_beta
         ambient_lux_threshold: 10
         bypass_entity: binary_sensor.motion_bypass_ottoman
         inhibit_on_startup_seconds: 10
@@ -98,7 +98,7 @@ automation:
     use_blueprint:
       path: Blackshome/sensor-light.yaml
       input:
-        ambient_lux_entity: ""
+        ambient_lux_entity: sensor.bedroom_illuminance_beta
         ambient_lux_threshold: 10
         bypass_entity: binary_sensor.motion_bypass_wardrobe
         inhibit_on_startup_seconds: 10

@@ -25,7 +25,7 @@ adaptive_lighting:
     initial_transition: 0.3
     transition: 2
   - name: kitchen
-    lights: [ light.group_kitchen_lights ]
+    lights: [ light.al_adaptive_kitchen_light_group ]
     only_once: true
     take_over_control: true
     initial_transition: 0.3
