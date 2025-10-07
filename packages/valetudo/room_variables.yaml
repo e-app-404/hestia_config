@@ -1,8 +1,8 @@
 var:
-  living_room:
+  vacuum_living_room:
     friendly_name: "Living Room (Config)"
     restore: true
-    value: "ok"
+    initial_value: "ok"
     attributes:
       last_cleaned: ""
       needs_cleaning: false
@@ -11,10 +11,10 @@ var:
       job_last_run: ""
       job_last_result: "idle"
 
-  kitchen:
+  vacuum_kitchen:
     friendly_name: "Kitchen (Config)"
     restore: true
-    value: "ok"
+    initial_value: "ok"
     attributes:
       last_cleaned: ""
       needs_cleaning: false
@@ -23,10 +23,10 @@ var:
       job_last_run: ""
       job_last_result: "idle"
 
-  powder_room:
+  vacuum_powder_room:
     friendly_name: "Powder Room (Config)"
     restore: true
-    value: "ok"
+    initial_value: "ok"
     attributes:
       last_cleaned: ""
       needs_cleaning: false
@@ -35,10 +35,10 @@ var:
       job_last_run: ""
       job_last_result: "idle"
 
-  downstairs_hallway:
+  vacuum_downstairs_hallway:
     friendly_name: "Downstairs Hallway (Config)"
     restore: true
-    value: "ok"
+    initial_value: "ok"
     attributes:
       last_cleaned: ""
       needs_cleaning: false
@@ -47,10 +47,10 @@ var:
       job_last_run: ""
       job_last_result: "idle"
 
-  laundry_room:
+  vacuum_laundry_room:
     friendly_name: "Laundry Room (Config)"
     restore: true
-    value: "ok"
+    initial_value: "ok"
     attributes:
       last_cleaned: ""
       needs_cleaning: false
