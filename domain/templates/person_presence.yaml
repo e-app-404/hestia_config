@@ -204,7 +204,8 @@
         floor_id: "sanctum"
         module: "presence_inference"
         persons: "person.evert"  # attribute values must be strings for template integration
-        strategy: "private_area: track only person.evert; presence enhances, never blocks"
+        strategy: "track only person.evert; presence enhances, never blocks"
+        area_
         subsystem: "hermes"
         tier: "β"
 
