@@ -190,15 +190,23 @@
     - name: "Ensuite Presence (Beta)"
       unique_id: "ensuite_presence_beta"
       device_class: occupancy
-      state: "off"  # Always off - untracked housemate uses ensuite
+      state: >-
+        {# Presence is on when the tracked user is home.
+           Uses person state and, as a fallback, the person's tracker source when reliable. #}
+        {% set person_state = states('person.evert') %}
+        {% set source = state_attr('person.evert', 'source') %}
+        {% set via_person = (person_state == 'home') %}
+        {% set via_source = source and states(source) == 'home'
+           and (state_attr(source,'source_type') in ['gps','bluetooth_le','bluetooth']) %}
+        {% if via_person or via_source %}on{% else %}off{% endif %}
       attributes:
         area_id: "ensuite"
+        floor_id: "sanctum"
         module: "presence_inference"
-        persons: ""
-        strategy: "always_false: untracked housemate uses ensuite"
+        persons: "person.evert"  # attribute values must be strings for template integration
+        strategy: "private_area: track only person.evert; presence enhances, never blocks"
         subsystem: "hermes"
         tier: "β"
-        untracked_housemate_warning: "Ensuite used by untracked occupant - never rely on this sensor for blocking"
 
     # HALLWAY DOWNSTAIRS PRESENCE (BETA) - Always False (Common Area)
     - name: "Hallway Downstairs Presence (Beta)"
