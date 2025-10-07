@@ -7,9 +7,10 @@ var:
     attributes:
       last_cleaned: null
       needs_cleaning: false
-      segment_id: 1
+      segment_id: '19'
       job_last_run: null
       job_last_result: "idle"
+      cleaning_frequency_hours: 24
 
   kitchen:
     friendly_name: "Kitchen config"
@@ -18,9 +19,11 @@ var:
     attributes:
       last_cleaned: null
       needs_cleaning: false
-      segment_id: 1
+      segment_id: 17
       job_last_run: null
       job_last_result: "idle"
+      cleaning_frequency_hours: 24
+
   powder_room:
     friendly_name: "Powder room config"
     restore: true
@@ -28,9 +31,10 @@ var:
     attributes:
       last_cleaned: null
       needs_cleaning: false
-      segment_id: 1
+      segment_id: 20
       job_last_run: null
       job_last_result: "idle"
+      cleaning_frequency_hours: 24
 
   downstairs_hallway:
     friendly_name: "Downstairs hallway config"
@@ -39,21 +43,22 @@ var:
     attributes:
       last_cleaned: null
       needs_cleaning: false
-      segment_id: 1
+      segment_id: 18
       job_last_run: null
       job_last_result: "idle"
+      cleaning_frequency_hours: 24
 
   laundry_room:
-    friendly_name: "Laundry room config
-    "
+    friendly_name: "Laundry room config"
     restore: true
     value: "idle"
     attributes:
       last_cleaned: null
       needs_cleaning: false
-      segment_id: 1
+      segment_id: 16
       job_last_run: null
       job_last_result: "idle"
+      cleaning_frequency_hours: 24
 
 
   vacuum_job_state:
