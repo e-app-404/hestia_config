@@ -95,8 +95,10 @@
             'sensor.macbook_displays',
             'sensor.macbook_internal_battery_state',
             'device_tracker.macbook',
-            'binary_sensor.desk_macbook_recent_connectivity'
+            'binary_sensor.desk_macbook_recent_connectivity_desk'
           ] | tojson }}
+        downstream_consumers: >
+          {{ ["binary_sensor.presence_beta_desk"] | tojson }}
         area_id: "desk"
         floor_id: "sanctum"
 
