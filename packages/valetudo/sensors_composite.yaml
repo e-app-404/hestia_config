@@ -4,7 +4,7 @@ template:
   # Living Room
   - trigger:
       - platform: state
-        entity_id: var.living_room
+        entity_id: var.vacuum_living_room
       - platform: time_pattern
         minutes: "/30"
     sensor:
@@ -12,39 +12,39 @@ template:
         unique_id: room_living_room_cleaning_v1
         icon: >
           {% from 'custom_template/template.library.jinja' import room_icon %}
-          {{ room_icon('var.living_room') }}
+          {{ room_icon('var.vacuum_living_room') }}
         state: >
           {% from 'custom_template/template.library.jinja' import room_state %}
-          {{ room_state('var.living_room', 24) }}
+          {{ room_state('var.vacuum_living_room', 24) }}
         attributes:
           room: "living_room"
           display_name: "Living Room"
           segment_id: >
             {% from 'custom_template/template.library.jinja' import get_segment_id %}
-            {{ get_segment_id('var.living_room') }}
+            {{ get_segment_id('var.vacuum_living_room') }}
           needs_cleaning: >
             {% from 'custom_template/template.library.jinja' import get_needs_cleaning %}
-            {{ get_needs_cleaning('var.living_room') }}
+            {{ get_needs_cleaning('var.vacuum_living_room') }}
           last_cleaned: >
             {% from 'custom_template/template.library.jinja' import get_last_cleaned %}
-            {{ get_last_cleaned('var.living_room') }}
+            {{ get_last_cleaned('var.vacuum_living_room') }}
           cleaning_frequency_hours: >
             {% from 'custom_template/template.library.jinja' import get_freq %}
-            {{ get_freq('var.living_room', 24) }}
+            {{ get_freq('var.vacuum_living_room', 24) }}
           hours_since_last_cleaned: >
             {% from 'custom_template/template.library.jinja' import hours_since %}
-            {{ hours_since('var.living_room') }}
+            {{ hours_since('var.vacuum_living_room') }}
           days_since_last_cleaned: >
             {% from 'custom_template/template.library.jinja' import days_since %}
-            {{ days_since('var.living_room') }}
+            {{ days_since('var.vacuum_living_room') }}
           next_due_at: >
             {% from 'custom_template/template.library.jinja' import next_due %}
-            {{ next_due('var.living_room', 24) }}
+            {{ next_due('var.vacuum_living_room', 24) }}
 
   # Kitchen
   - trigger:
       - platform: state
-        entity_id: var.kitchen
+        entity_id: var.vacuum_kitchen
       - platform: time_pattern
         minutes: "/30"
     sensor:
@@ -52,34 +52,34 @@ template:
         unique_id: room_kitchen_cleaning_v1
         icon: >
           {% from 'custom_template/template.library.jinja' import room_icon %}
-          {{ room_icon('var.kitchen') }}
+          {{ room_icon('var.vacuum_kitchen') }}
         state: >
           {% from 'custom_template/template.library.jinja' import room_state %}
-          {{ room_state('var.kitchen', 24) }}
+          {{ room_state('var.vacuum_kitchen', 24) }}
         attributes:
           room: "kitchen"
           display_name: "Kitchen"
           segment_id: >
             {% from 'custom_template/template.library.jinja' import get_segment_id %}
-            {{ get_segment_id('var.kitchen') }}
+            {{ get_segment_id('var.vacuum_kitchen') }}
           needs_cleaning: >
             {% from 'custom_template/template.library.jinja' import get_needs_cleaning %}
-            {{ get_needs_cleaning('var.kitchen') }}
+            {{ get_needs_cleaning('var.vacuum_kitchen') }}
           last_cleaned: >
             {% from 'custom_template/template.library.jinja' import get_last_cleaned %}
-            {{ get_last_cleaned('var.kitchen') }}
+            {{ get_last_cleaned('var.vacuum_kitchen') }}
           cleaning_frequency_hours: >
             {% from 'custom_template/template.library.jinja' import get_freq %}
-            {{ get_freq('var.kitchen', 24) }}
+            {{ get_freq('var.vacuum_kitchen', 24) }}
           hours_since_last_cleaned: >
             {% from 'custom_template/template.library.jinja' import hours_since %}
-            {{ hours_since('var.kitchen') }}
+            {{ hours_since('var.vacuum_kitchen') }}
           days_since_last_cleaned: >
             {% from 'custom_template/template.library.jinja' import days_since %}
-            {{ days_since('var.kitchen') }}
+            {{ days_since('var.vacuum_kitchen') }}
           next_due_at: >
             {% from 'custom_template/template.library.jinja' import next_due %}
-            {{ next_due('var.kitchen', 24) }}
+            {{ next_due('var.vacuum_kitchen', 24) }}
 
   # Powder Room
   - trigger:
