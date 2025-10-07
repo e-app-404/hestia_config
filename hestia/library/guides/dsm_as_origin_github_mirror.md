@@ -21,14 +21,14 @@ Below is a single, end-to-end chain of actions. Read the brief descriptions, the
 Run on **both** Mac and NAS shells before other blocks (adjust only once on each).
 
 ```bash
-export REPO="omega_registry"
-export NAS_HOST="ds220plus.reverse-beta.ts.net"
-export NAS_HOST_LAN="192.168.0.104"
-export NAS_USER="gituser"
-export NAS_ADMIN="babylonrobot"
+export REPO="__REPO_NAME__"
+export NAS_HOST="__NAS_HOSTNAME__"
+export NAS_HOST_LAN="__NAS_IP_ADDRESS__"
+export NAS_USER="__GIT_USER__"
+export NAS_ADMIN="__NAS_ADMIN_USER__"
 export NAS_GITROOT="/volume1/git"
-export GH_ORG="e-app-404"
-export GH_REPO="omega_registry"
+export GH_ORG="__GITHUB_ORG__"
+export GH_REPO="__GITHUB_REPO__"
 export GH_URL="git@github.com:${GH_ORG}/${GH_REPO}.git"
 export MIRROR_KEY="/var/services/homes/${NAS_USER}/.ssh/${REPO}_mirror_key"
 ```
