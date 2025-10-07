@@ -1,0 +1,46 @@
+script:
+  valetudo_room_mark_cleaned:
+    alias: Mark Room Cleaned (Generic)
+    description: Update per-room variable to mark as cleaned now.
+    fields:
+      room_var:
+        description: "Variable entity_id, e.g., var.living_room"
+        example: "var.living_room"
+    sequence:
+      - service: variable.set_variable
+        data: >
+          {% from 'custom_template/template.library.jinja' import json_update_mark_cleaned %}
+          {{ json_update_mark_cleaned(room_var) | from_json }}
+
+  valetudo_room_set_needs_cleaning:
+    alias: Set Needs Cleaning (Generic)
+    fields:
+      room_var: { description: "var.<room> entity", example: "var.kitchen" }
+      flag: { description: "true/false" }
+    sequence:
+      - service: variable.set_variable
+        data: >
+          {% from 'custom_template/template.library.jinja' import json_update_needs_cleaning %}
+          {{ json_update_needs_cleaning(room_var, flag) | from_json }}
+
+  valetudo_room_set_segment_id:
+    alias: Set Segment ID (Generic)
+    fields:
+      room_var: { description: "var.<room> entity" }
+      segment_id: { description: "integer" }
+    sequence:
+      - service: variable.set_variable
+        data: >
+          {% from 'custom_template/template.library.jinja' import json_update_segment_id %}
+          {{ json_update_segment_id(room_var, segment_id) | from_json }}
+
+  valetudo_room_set_frequency:
+    alias: Set Cleaning Frequency (Generic)
+    fields:
+      room_var: { description: "var.<room> entity" }
+      hours: { description: "integer hours" }
+    sequence:
+      - service: variable.set_variable
+        data: >
+          {% from 'custom_template/template.library.jinja' import json_update_frequency %}
+          {{ json_update_frequency(room_var, hours) | from_json }}
