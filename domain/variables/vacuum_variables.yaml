@@ -44,7 +44,7 @@ var:
       topic_prefix: Valetudo
       robot_identifier: RoboRockS5
       base_topic: Valetudo/RoboRockS5
-      mqtt_broker: 192.168.0.129
-      mqtt_port: 1883
-      mqtt_username: valetudo
-      mqtt_password: valetudo
+      mqtt_broker: !secret valetudo_mqtt_broker
+      mqtt_port: !secret valetudo_mqtt_port
+      mqtt_username: !secret valetudo_mqtt_username
+      mqtt_password: !secret valetudo_mqtt_password
