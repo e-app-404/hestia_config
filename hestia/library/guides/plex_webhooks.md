@@ -7,6 +7,8 @@ tags: ["home-assistant", "plex", "webhooks"]
 original_date: "2025-10-07"
 last_updated: "2025-10-07"
 url: "https://support.plex.tv/articles/webhooks/"
+related:
+   - blueprint: "thenextbutton/plex_webhook_release"
 ---
 
 # Webhooks

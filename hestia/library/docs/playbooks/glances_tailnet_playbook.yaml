@@ -18,7 +18,7 @@ playbook:
       tailscale_fqdn: "macbook.reverse-beta.ts.net"
       glances_loopback: "http://127.0.0.1:61208"
       glances_api: "http://127.0.0.1:61208/api/4/all"
-      launch_agent_label: "io.glances.web"
+      launch_agent_name: "io.glances.web"
       launch_agent_path: "/Users/<USER>/Library/LaunchAgents/io.glances.web.plist"
       logs:
         out: "/Users/<USER>/Library/Logs/glances-web.out"

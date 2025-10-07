@@ -1,9 +1,11 @@
 ---
-title: "Template Integration"
-authors: ["Home Assistant Team"]
+title: "Template Integration Guide"
+authors: "Home Assistant Team"
 source: "https://www.home-assistant.io/integrations/template/"
-tags: ["template", "integration", "home assistant"]
-date: "2025-10-06"
+slug: "template-integration"
+tags: ["home-assistant", "template", "integration"]
+original_date: "2025-10-06"
+last_updated: "2025-10-07"
 url: "https://www.home-assistant.io/integrations/template/"
 ---
 
@@ -1151,8 +1153,6 @@ template:
         max: 24
         icon: mdi:ruler
 ```
-
-### Configuration Variables
 
 Looking for your configuration file?
 
