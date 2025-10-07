@@ -71,7 +71,7 @@
         {% set ac = state_attr('sensor.macbook_internal_battery_state','Power Source State') %}
         {% set ac_power = (ac == 'AC Power') %}
         {% set at_home = is_state('device_tracker.macbook','home') %}
-        {% set conn = states('binary_sensor.macbook_connectivity_recent_desk') %}
+        {% set conn = states('binary_sensor.desk_macbook_recent_connectivity_desk') %}
         {% set connection_ok = (conn == 'on') %}
         {{ display_ok and ac_power and at_home and connection_ok }}
       attributes:
@@ -98,7 +98,7 @@
             'binary_sensor.desk_macbook_recent_connectivity_desk'
           ] | tojson }}
         downstream_consumers: >
-          {{ ["binary_sensor.presence_beta_desk"] | tojson }}
+          {{ ["binary_sensor.desk_presence_beta"] | tojson }}
         area_id: "desk"
         floor_id: "sanctum"
 
