@@ -2101,7 +2101,8 @@ template:
         reference_entity: binary_sensor.foo
     name: Inverted foo
     unique_id: inverted_foo
-YAML
+```
+
 If you look at the blueprint definition, you will notice it has one input defined (reference_entity), which expects a binary_sensor entity ID. When you create a template entity based on that blueprint, you will have to tell it which of your binary_sensor entities it should use to fill that spot.
 
 Importing blueprints 
