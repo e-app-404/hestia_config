@@ -1,11 +1,13 @@
+---
 automation:
   - alias: Motion Lights — Bedroom
     id: motion_lights_bedroom
-    description: Motion-driven; AL handles brightness/CT; presence never gates. Subarea proxy is already folded into bedroom_motion_beta.
+    description: Motion-driven lighting; AL decides photometrics; presence never gates.
     initial_state: "on"
     max_exceeded: silent
     mode: restart
     use_blueprint:
+      # Installed under /config/blueprints/automation/Blackshome/sensor-light.yaml
       path: Blackshome/sensor-light.yaml
       input:
         ambient_lux_entity: sensor.bedroom_illuminance_beta
@@ -26,7 +28,7 @@ automation:
         sun_max_elevation: 20
         sun_min_elevation: -12
         target_lights:
-           - light.al_adaptive_bedroom_light_group
+          - light.al_adaptive_bedroom_light_group
 #          - light.bedroom_accent_alpha
 #          - light.bedroom_main_alpha_matter
 #          - light.bedroom_wall_alpha
