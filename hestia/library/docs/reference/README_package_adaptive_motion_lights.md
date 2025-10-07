@@ -14,7 +14,7 @@
 * The following *beta-tier* motion/occupancy/illuminance sensors exist:
 
   * `binary_sensor.bedroom_motion_beta`
-  * `binary_sensor.desk_motion_beta` (if not present, `binary_sensor.desk_occupancy_beta` is acceptable)
+  * `binary_sensor.desk_motion_proxy` (if not present, `binary_sensor.desk_occupancy_beta` is acceptable)
   * `binary_sensor.ensuite_motion_beta`, `binary_sensor.ensuite_occupancy_beta`
   * `binary_sensor.kitchen_motion_beta`, `binary_sensor.kitchen_occupancy_beta`
   * `binary_sensor.hallway_downstairs_motion_beta`, `binary_sensor.hallway_upstairs_motion_beta`
@@ -695,7 +695,7 @@ automation:
         bypass_entity: binary_sensor.motion_bypass_desk
         inhibit_on_startup_seconds: 10
         motion_sensors:
-          - binary_sensor.desk_motion_beta
+          - binary_sensor.desk_motion_proxy
         night_mode_brightness_pct: 12
         night_mode_color_temp_mired: 420
         night_mode_enabled: true
