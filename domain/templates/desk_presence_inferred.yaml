@@ -84,7 +84,7 @@
           On when external monitor is connected, on AC power, at home, and connectivity is either a known home Wi-Fi SSID or Ethernet (current/recent).
         fusion_strategy: "{{ ['display','ac_power','at_home','connectivity_recent'] | tojson }}"
         last_updated: "{{ now().isoformat() }}"
-        subsystem: "soteria"
+        subsystem: "hermes"
         module: "presence"
         type: "inference"
         tier: "γ"

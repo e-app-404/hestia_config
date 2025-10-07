@@ -363,6 +363,37 @@
         floor_id: "downstairs"
         area_id: "entrance"
 
+    - name: "Desk Motion (Proxy)"
+      unique_id: desk_motion_proxy
+      device_class: motion
+      delay_off:
+        seconds: 45
+      state: >-
+        {{ is_state('binary_sensor.desk_presence_inferred','on')
+           or is_state('binary_sensor.desk_presence_inferred','detected') }}
+      availability: >-
+        {{ states('binary_sensor.desk_presence_inferred') not in ['unknown','unavailable', none, ''] }}
+      icon: "mdi:motion-sensor"
+      attributes:
+        tier: "β"
+        canonical_id: "desk_motion_proxy_β"
+        subsystem: "hermes"
+        module: "motion"
+        type: "composite"
+        role: "proxy"
+        file: "/config/domain/templates/motion_logic.yaml"
+        upstream_sources: >
+          {{ ['binary_sensor.desk_presence_inferred'] | tojson }}
+        downstream_consumers: >
+          {{ ['binary_sensor.desk_motion_beta','binary_sensor.desk_motion_recent_beta','sensor.desk_last_activity','hestia.config.devices.motion_index'] | tojson }}
+        aggregation_strategy: "vibration→motion pulse"
+        source_count: "1"
+        version: "1.1"
+        last_updated: "2025-10-06"
+        floor_id: "upstairs"
+        area_id: "bedroom"
+        subarea: "ottoman"
+
     # ───────────────────────────── RECENT (delay_off) WRAPPERS ──────────────
     - name: "Bedroom Motion Recent (Beta)"
       unique_id: "bedroom_motion_recent_beta"
