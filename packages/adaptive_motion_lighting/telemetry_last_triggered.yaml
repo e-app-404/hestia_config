@@ -130,10 +130,10 @@ automation:
     trigger:
       - platform: state
         entity_id:
-          - light.al_adaptive_bedroom_light_group
-          - light.al_adaptive_desk_light_group
+          - light.adaptive_bedroom_light_group
+          - light.adaptive_desk_light_group
           - light.group_ensuite_lights
-          - light.al_adaptive_kitchen_light_group
+          - light.adaptive_kitchen_light_group
           - light.group_hallway_lights_downstairs
           - light.group_hallway_lights_upstairs
           - light.group_ottoman_light
@@ -142,14 +142,14 @@ automation:
     variables:
       map: >-
         {{ {
-          'light.al_adaptive_bedroom_light_group': 'var.bedroom_aml_config',
-          'light.al_adaptive_desk_light_group':    'var.desk_aml_config',
-          'light.group_ensuite_lights':            'var.ensuite_aml_config',
-          'light.al_adaptive_kitchen_light_group': 'var.kitchen_aml_config',
+          'light.adaptive_bedroom_light_group': 'var.bedroom_aml_config',
+          'light.adaptive_desk_light_group':    'var.desk_aml_config',
+          'light.group_ensuite_lights':         'var.ensuite_aml_config',
+          'light.adaptive_kitchen_light_group': 'var.kitchen_aml_config',
           'light.group_hallway_lights_downstairs': 'var.hallway_downstairs_aml_config',
-          'light.group_hallway_lights_upstairs':   'var.hallway_upstairs_aml_config',
-          'light.group_ottoman_light':             'var.ottoman_aml_config',
-          'light.group_wardrobe_light':            'var.wardrobe_aml_config'
+          'light.group_hallway_lights_upstairs': 'var.hallway_upstairs_aml_config',
+          'light.group_ottoman_light':          'var.ottoman_aml_config',
+          'light.group_wardrobe_light':         'var.wardrobe_aml_config'
         } }}
       target_var: "{{ map.get(trigger.entity_id, '') }}"
     condition: "{{ target_var != '' }}"

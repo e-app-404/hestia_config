@@ -7,6 +7,7 @@ bedroom_aml_config:
     al_lights: "light.adaptive_bedroom_light_group"
     motion_sensor: "binary_sensor.bedroom_motion_beta"
     illuminance_sensor: "sensor.bedroom_illuminance_beta"
+    presence_sensor: "binary_sensor.bedroom_presence_beta"
     illuminance_threshold: 10
     bypass: false
     last_triggered: ""
@@ -19,6 +20,7 @@ desk_aml_config:
     al_manual_control: "switch.adaptive_lighting_adapt_desk_lights"
     al_lights: "light.adaptive_desk_light_group"
     motion_sensor: "binary_sensor.desk_motion_beta"
+    presence_sensor: "binary_sensor.desk_presence_beta"
     illuminance_sensor: "sensor.bedroom_illuminance_beta"
     illuminance_threshold: 10
     bypass: false
@@ -32,12 +34,13 @@ ensuite_aml_config:
     al_manual_control: "switch.adaptive_lighting_adapt_ensuite_lights"
     al_lights: "light.group_ensuite_lights"
     motion_sensor: "binary_sensor.ensuite_motion_beta"
+    presence_sensor: "binary_sensor.ensuite_presence_beta"
     illuminance_sensor: "sensor.ensuite_illuminance_beta"
     illuminance_threshold: 5
     bypass: false
     last_triggered: ""
 
-hallway_aml_config:
+hallway_downstairs_aml_config:
   friendly_name: "Hallway AML Config"
   initial_value: "configured"
   attributes:    
@@ -45,6 +48,7 @@ hallway_aml_config:
     al_manual_control: "switch.adaptive_lighting_adapt_hallway_lights"
     al_lights: "light.group_hallway_lights_downstairs"
     motion_sensor: "binary_sensor.hallway_downstairs_motion_beta"
+    presence_sensor: ""
     illuminance_sensor: ""
     illuminance_threshold: 5
     bypass: false
@@ -58,6 +62,7 @@ kitchen_aml_config:
     al_manual_control: "switch.adaptive_lighting_adapt_kitchen_lights"
     al_lights: "light.adaptive_kitchen_light_group"
     motion_sensor: "binary_sensor.kitchen_illuminance_beta"
+    presence_sensor: ""
     illuminance_sensor: ""
     illuminance_threshold: 10
     bypass: false
@@ -71,6 +76,7 @@ ottoman_aml_config:
     al_manual_control: "switch.adaptive_lighting_adapt_bedroom_lights"
     al_lights: "light.group_ottoman_light"
     motion_sensor: "binary_sensor.ottoman_motion_beta"
+    presence_sensor: ""
     illuminance_sensor: "sensor.bedroom_illuminance_beta"
     illuminance_threshold: 10
     bypass: false
@@ -84,6 +90,7 @@ wardrobe_aml_config:
     al_manual_control: "switch.adaptive_lighting_adapt_bedroom_lights"
     al_lights: "light.group_wardrobe_light"
     motion_sensor: "binary_sensor.wardrobe_motion_beta"
+    presence_sensor: ""
     illuminance_sensor: "sensor.bedroom_illuminance_beta"
     illuminance_threshold: 10
     bypass: false

@@ -11,9 +11,9 @@ You are GitHub Copilot in VS Code. Refactor my Adaptive Motion Lighting (AML) pa
 - Canonical root: /config. True HA packages: homeassistant.packages !include_dir_named packages
 - Blueprints: /config/blueprints/automation/Blackshome/sensor-light.yaml
 - AL light groups: 
-  - Bedroom: light.al_adaptive_bedroom_light_group
-  - Desk:    light.al_adaptive_desk_light_group
-  - Kitchen: light.al_adaptive_kitchen_light_group
+  - Bedroom: light.adaptive_bedroom_light_group
+  - Desk:    light.adaptive_desk_light_group
+  - Kitchen: light.adaptive_kitchen_light_group
 - Subareas (motion only): 
   - Ottoman:  light.group_ottoman_light
   - Wardrobe: light.group_wardrobe_light
@@ -62,7 +62,7 @@ var:
       ambient_lux_entity: sensor.bedroom_illuminance_beta
       ambient_lux_threshold: 10
       bypass: false
-      group: light.al_adaptive_bedroom_light_group
+      group: light.adaptive_bedroom_light_group
       inhibit_on_startup_seconds: 10
       last_triggered: ""
       motion_sensors: [binary_sensor.bedroom_motion_beta]
@@ -93,7 +93,7 @@ var:
       ambient_lux_entity: ""
       ambient_lux_threshold: 10
       bypass: false
-      group: light.al_adaptive_desk_light_group
+      group: light.adaptive_desk_light_group
       inhibit_on_startup_seconds: 10
       last_triggered: ""
       motion_sensors: [binary_sensor.desk_motion_beta]
@@ -155,7 +155,7 @@ var:
       ambient_lux_entity: ""
       ambient_lux_threshold: 10
       bypass: false
-      group: light.al_adaptive_kitchen_light_group
+      group: light.adaptive_kitchen_light_group
       inhibit_on_startup_seconds: 10
       last_triggered: ""
       motion_sensors: [binary_sensor.kitchen_motion_beta]
@@ -574,10 +574,10 @@ automation:
     trigger:
       - platform: state
         entity_id:
-          - light.al_adaptive_bedroom_light_group
-          - light.al_adaptive_desk_light_group
+          - light.adaptive_bedroom_light_group
+          - light.adaptive_desk_light_group
           - light.group_ensuite_lights
-          - light.al_adaptive_kitchen_light_group
+          - light.adaptive_kitchen_light_group
           - light.group_hallway_lights_downstairs
           - light.group_hallway_lights_upstairs
           - light.group_ottoman_light
@@ -586,10 +586,10 @@ automation:
     variables:
       map: >-
         {{ {
-          'light.al_adaptive_bedroom_light_group': 'var.bedroom_aml_config',
-          'light.al_adaptive_desk_light_group':    'var.desk_aml_config',
+          'light.adaptive_bedroom_light_group': 'var.bedroom_aml_config',
+          'light.adaptive_desk_light_group':    'var.desk_aml_config',
           'light.group_ensuite_lights':            'var.ensuite_aml_config',
-          'light.al_adaptive_kitchen_light_group': 'var.kitchen_aml_config',
+          'light.adaptive_kitchen_light_group': 'var.kitchen_aml_config',
           'light.group_hallway_lights_downstairs': 'var.hallway_downstairs_aml_config',
           'light.group_hallway_lights_upstairs':   'var.hallway_upstairs_aml_config',
           'light.group_ottoman_light':             'var.ottoman_aml_config',
