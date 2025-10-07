@@ -1,0 +1,65 @@
+#!/usr/bin/env bash
+set -Eeuo pipefail
+
+# Strategos instrumentation (Gate A)
+log_ts() { printf "[%s] %s\n" "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$*"; }
+
+log_ts "ECHO: run.sh starting (instrumented)"
+
+# Essential MQTT configuration from options.json
+OPTIONS=/data/options.json
+JQ='/usr/bin/jq'
+getopt_opt() { "$JQ" -r "$1 // empty" "$OPTIONS" 2>/dev/null || true; }
+
+# MQTT configuration with HA internal networking
+H=$(getopt_opt '.mqtt_host // .mqtt_broker')
+U=$(getopt_opt '.mqtt_user // .mqtt_username')
+P=$(getopt_opt '.mqtt_password // .mqtt_pass')
+B=$(getopt_opt '.mqtt_base // .mqtt_topic_prefix')
+PORT=$(getopt_opt '.mqtt_port // .mqtt_broker_port')
+[ -z "$PORT" ] && PORT=1883
+[ -z "$B" ] && B=bb8
+# Use internal HA networking if localhost or external IP
+[ -z "$H" ] && H="core-mosquitto"
+[[ "$H" == "localhost" || "$H" == "192.168.0.129" ]] && H="core-mosquitto"
+
+export MQTT_HOST="$H"
+export MQTT_PORT="$PORT"
+export MQTT_USERNAME="$U"
+export MQTT_PASSWORD="$P"
+export MQTT_BASE="$B"
+export MQTT_USER="$U"
+export MQTT_PASS="$P"
+
+# Set Python environment
+export PYTHONUNBUFFERED=1
+export PYTHONPATH=/usr/src/app:${PYTHONPATH:-}
+cd /usr/src/app
+
+# Masked env preview (no secrets)
+( env | grep -E '^(MQTT_HOST|MQTT_PORT|MQTT_BASE|REQUIRE_DEVICE_ECHO|PYTHONPATH)=' | sed -E 's/=.+/=\[MASKED\]/' ) || true
+
+# Python sanity checks (do not fail add-on if unavailable; we log and continue)
+python3 - << 'PY' || true
+import sys
+try:
+    import paho.mqtt.client as m
+    v = getattr(m, '__version__', 'unknown')
+    print(f"PYENV_OK PAHO={v}")
+except Exception as e:
+    print(f"PYENV_FAIL {type(e).__name__}: {e}")
+PY
+
+MODE="${MODE:-echo}"
+if [[ "$MODE" == "sentinel" ]]; then
+  log_ts "ECHO: SENTINEL START (60s)"
+  exec python3 - << 'PY'
+import time
+print("SENTINEL START", flush=True)
+time.sleep(60)
+PY
+fi
+
+# Default: echo foreground process
+log_ts "ECHO: launching bb8_core.echo_responder (foreground exec)"
+exec python3 -m bb8_core.echo_responder
