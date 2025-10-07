@@ -6,14 +6,26 @@ automation:
     trigger:
       - platform: state
         entity_id:
-          - light.al_adaptive_bedroom_light_group
-          - light.al_adaptive_desk_light_group
-          - light.group_ensuite_lights
-          - light.group_kitchen_lights
-          - light.group_hallway_lights_downstairs
-          - light.group_hallway_lights_upstairs
-          - light.group_ottoman_light
-          - light.group_wardrobe_light
+          - light.bedroom_accent_alpha
+          - light.bedroom_main_alpha_matter
+          - light.bedroom_wall_alpha
+          - light.bedroom_nightstand_left_alpha_matter
+          - light.bedroom_nightstand_right_alpha_matter
+          - light.bedroom_wardrobe_lightstrip_alpha
+          - light.bedroom_ottoman_lightstrip_alpha_matter
+          - light.kitchen_ceiling_alpha
+          - light.kitchen_cupboards_lightstrip_alpha
+          - light.laundry_ceiling_alpha    
+          - light.upstairs_lightstrip_alpha
+          - light.hallway_lightstrip_alpha    
+          - light.downstairs_lightstrip_alpha    
+          - light.ensuite_accent_alpha
+          - light.ensuite_main_alpha_matter        
+          - light.ensuite_lightstrip_alpha_matter   
+          - light.bedroom_desk_alpha_matter
+          - light.bedroom_desk_corner_alpha
+          - light.bedroom_desk_lightstrip_alpha_matter
+          - light.bedroom_desk_wall_alpha_matter                                  
         to: "on"
     variables:
       map: >-
