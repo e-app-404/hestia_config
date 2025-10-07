@@ -312,3 +312,4 @@ reports/
 
 # build metadata
 *.egg-info/
+hestia/library/prompts/_archive/
