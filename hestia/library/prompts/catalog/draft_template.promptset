@@ -1,7 +1,6 @@
 ---
 # Future-facing promptset template (draft)
 # Supports legacy and new-style promptsets, multi-phase workflows, and governance protocols
-# TODO: REVIEW AND DEPLOY
 
 promptset:
   id: unique-id.promptset.draft
