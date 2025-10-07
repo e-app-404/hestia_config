@@ -1,0 +1,100 @@
+# ═══════════════════════════════════════════════════════════════
+# ⟫⟫ ▶ REST sensors  •  MacBook Glances Diagnostics ◀
+# ⟫⟫ Monitors CPU, memory, disk and uptime from Glances over REST
+# ⟫⟫ Loader: !include_dir_merge_list from domain/sensors/
+# ⟫⟫ Tier: α  •  Domain: diagnostics  •  Created: 2025-07-31
+# ⟫⟫ Updated: 2025-10-06 (platform format for domain/sensors structure)
+# ═══════════════════════════════════════════════════════════════
+
+# MacBook System Monitoring via Glances REST API (Enhanced Platform Format)
+- platform: rest
+  name: "MacBook CPU Percent"
+  unique_id: "glances_macbook_cpu_percent"
+  resource: http://100.92.58.104:61208/api/4/cpu
+  scan_interval: 120
+  timeout: 10
+  verify_ssl: false
+  value_template: >-
+    {% if value_json is defined and value_json is mapping and 'total' in value_json %}
+      {{ value_json.total | float | round(1) }}
+    {% else %}
+      0
+    {% endif %}
+  unit_of_measurement: "%"
+  device_class: power_factor
+  state_class: measurement
+  icon: mdi:cpu-64-bit
+
+- platform: rest
+  name: "MacBook Memory Percent"
+  unique_id: "glances_macbook_memory_percent"
+  resource: http://100.92.58.104:61208/api/4/mem
+  scan_interval: 60
+  timeout: 10
+  verify_ssl: false
+  value_template: >-
+    {% if value_json is defined and value_json is mapping and 'percent' in value_json %}
+      {{ value_json.percent | float | round(1) }}
+    {% else %}
+      0
+    {% endif %}
+  unit_of_measurement: "%"
+  device_class: power_factor
+  state_class: measurement
+  icon: mdi:memory
+
+- platform: rest
+  name: "MacBook Swap Percent"
+  unique_id: "glances_macbook_swap_percent"
+  resource: http://100.92.58.104:61208/api/4/mem
+  scan_interval: 60
+  timeout: 10
+  verify_ssl: false
+  value_template: >-
+    {% if value_json is defined and value_json is mapping and 'swap' in value_json and value_json.swap is mapping and 'percent' in value_json.swap %}
+      {{ value_json.swap.percent | float | round(1) }}
+    {% else %}
+      0
+    {% endif %}
+  unit_of_measurement: "%"
+  device_class: power_factor
+  state_class: measurement
+  icon: mdi:swap-horizontal
+
+- platform: rest
+  name: "MacBook Disk Used %"
+  unique_id: "glances_macbook_disk_used"
+  resource: http://100.92.58.104:61208/api/4/fs
+  scan_interval: 300
+  timeout: 10
+  verify_ssl: false
+  value_template: >-
+    {% if value_json is defined and value_json is iterable and value_json is not string %}
+      {% set root_fs = value_json | selectattr('mnt', 'equalto', '/') | list %}
+      {% if root_fs | length > 0 and 'percent' in root_fs[0] %}
+        {{ root_fs[0].percent | float | round(1) }}
+      {% else %}
+        0
+      {% endif %}
+    {% else %}
+      0
+    {% endif %}
+  unit_of_measurement: "%"
+  device_class: power_factor
+  state_class: measurement
+  icon: mdi:harddisk
+
+- platform: rest
+  name: "MacBook Uptime"
+  unique_id: "glances_macbook_uptime"
+  resource: http://100.92.58.104:61208/api/4/uptime
+  scan_interval: 300
+  timeout: 10
+  verify_ssl: false
+  value_template: >-
+    {% if value_json is defined and value_json is mapping and 'days' in value_json and 'hours' in value_json and 'minutes' in value_json %}
+      {{ value_json.days }}d {{ value_json.hours }}h {{ value_json.minutes }}m
+    {% else %}
+      unavailable
+    {% endif %}
+  icon: mdi:clock-outline
