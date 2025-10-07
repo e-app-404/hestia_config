@@ -1,151 +1,252 @@
-# Adaptive Motion Lighting — Variables (Profiles)
-# Combines AL room profiles (for bridge → AL) and Motion profiles (timeouts/bypass/telemetry).
+# AML — Consolidated per-room configuration variables (AL + Motion)
 
 var:
-  # ── Room Profiles (AL control bus) ──────────────────────────────────────────
-  room_profile_bedroom:
-    friendly_name: "Room Profile — Bedroom"
-    unique_id: var_room_profile_bedroom
-    initial_value: "normal"
+  bedroom_aml_config:
+    friendly_name: "Bedroom — AML Config"
+    unique_id: var_bedroom_aml_config
+    initial_value: normal
     restore: true
     attributes:
       al_enabled: true
-      manual_override_until: ""
-      only_once: true
-      sleep: false
-
-  room_profile_desk:
-    friendly_name: "Room Profile — Desk"
-    unique_id: var_room_profile_desk
-    initial_value: "work"
-    restore: true
-    attributes:
-      al_enabled: true
-      manual_override_until: ""
-      only_once: true
-      sleep: false
-
-  room_profile_ensuite:
-    friendly_name: "Room Profile — Ensuite"
-    unique_id: var_room_profile_ensuite
-    initial_value: "normal"
-    restore: true
-    attributes:
-      al_enabled: true
-      manual_override_until: ""
-      only_once: true
-      sleep: false
-
-  room_profile_kitchen:
-    friendly_name: "Room Profile — Kitchen"
-    unique_id: var_room_profile_kitchen
-    initial_value: "normal"
-    restore: true
-    attributes:
-      al_enabled: true
-      manual_override_until: ""
-      only_once: true
-      sleep: false
-
-  room_profile_hallway_downstairs:
-    friendly_name: "Room Profile — Hallway Downstairs"
-    unique_id: var_room_profile_hallway_downstairs
-    initial_value: "transit"
-    restore: true
-    attributes:
-      al_enabled: true
-      manual_override_until: ""
-      only_once: true
-      sleep: false
-
-  room_profile_hallway_upstairs:
-    friendly_name: "Room Profile — Hallway Upstairs"
-    unique_id: var_room_profile_hallway_upstairs
-    initial_value: "transit"
-    restore: true
-    attributes:
-      al_enabled: true
-      manual_override_until: ""
-      only_once: true
-      sleep: false
-
-  # ── Motion Profiles (timeouts / bypass / last_triggered) ────────────────────
-  motion_profile_bedroom:
-    friendly_name: "Motion Profile — Bedroom"
-    unique_id: var_motion_profile_bedroom
-    initial_value: "active"
-    restore: true
-    attributes:
+      al_main: switch.adaptive_lighting_bedroom
+      al_sleep: switch.adaptive_lighting_sleep_mode_bedroom
+      ambient_lux_entity: sensor.bedroom_illuminance_beta
+      ambient_lux_threshold: 10
       bypass: false
+      group: light.al_adaptive_bedroom_light_group
+      inhibit_on_startup_seconds: 10
       last_triggered: ""
+      motion_sensors: [binary_sensor.bedroom_motion_beta]
+      night_mode_brightness_pct: 12
+      night_mode_color_temp_mired: 420
+      night_mode_enabled: true
+      night_mode_sun_elevation: -6
+      only_if_lights_off: false
+      only_once: true
+      presence_entity: ""
+      require_presence_for_activation: false
+      require_sun_condition: false
+      restore_state_after_restart: true
+      sleep: false
+      sun_max_elevation: 20
+      sun_min_elevation: -12
       timeout_seconds: 120
 
-  motion_profile_desk:
-    friendly_name: "Motion Profile — Desk"
-    unique_id: var_motion_profile_desk
-    initial_value: "work"
+  desk_aml_config:
+    friendly_name: "Desk — AML Config"
+    unique_id: var_desk_aml_config
+    initial_value: work
     restore: true
     attributes:
+      al_enabled: true
+      al_main: switch.adaptive_lighting_desk
+      al_sleep: switch.adaptive_lighting_sleep_mode_desk
+      ambient_lux_entity: ""
+      ambient_lux_threshold: 10
       bypass: false
+      group: light.al_adaptive_desk_light_group
+      inhibit_on_startup_seconds: 10
       last_triggered: ""
+      motion_sensors: [binary_sensor.desk_motion_beta]
+      night_mode_brightness_pct: 12
+      night_mode_color_temp_mired: 420
+      night_mode_enabled: true
+      night_mode_sun_elevation: -6
+      only_if_lights_off: false
+      only_once: true
+      presence_entity: ""
+      require_presence_for_activation: false
+      require_sun_condition: false
+      restore_state_after_restart: true
+      sleep: false
+      sun_max_elevation: 20
+      sun_min_elevation: -12
       timeout_seconds: 300
 
-  motion_profile_ensuite:
-    friendly_name: "Motion Profile — Ensuite"
-    unique_id: var_motion_profile_ensuite
-    initial_value: "active"
+  ensuite_aml_config:
+    friendly_name: "Ensuite — AML Config"
+    unique_id: var_ensuite_aml_config
+    initial_value: normal
     restore: true
     attributes:
+      al_enabled: true
+      al_main: switch.adaptive_lighting_ensuite
+      al_sleep: switch.adaptive_lighting_sleep_mode_ensuite
+      ambient_lux_entity: ""
+      ambient_lux_threshold: 10
       bypass: false
+      group: light.group_ensuite_lights
+      inhibit_on_startup_seconds: 10
       last_triggered: ""
+      motion_sensors: [binary_sensor.ensuite_motion_beta]
+      night_mode_brightness_pct: 12
+      night_mode_color_temp_mired: 420
+      night_mode_enabled: true
+      night_mode_sun_elevation: -6
+      only_if_lights_off: false
+      only_once: true
+      presence_entity: ""
+      require_presence_for_activation: false
+      require_sun_condition: false
+      restore_state_after_restart: true
+      sleep: false
+      sun_max_elevation: 20
+      sun_min_elevation: -12
       timeout_seconds: 240
 
-  motion_profile_kitchen:
-    friendly_name: "Motion Profile — Kitchen"
-    unique_id: var_motion_profile_kitchen
-    initial_value: "active"
+  kitchen_aml_config:
+    friendly_name: "Kitchen — AML Config"
+    unique_id: var_kitchen_aml_config
+    initial_value: normal
     restore: true
     attributes:
+      al_enabled: true
+      al_main: switch.adaptive_lighting_kitchen
+      al_sleep: switch.adaptive_lighting_sleep_mode_kitchen
+      ambient_lux_entity: ""
+      ambient_lux_threshold: 10
       bypass: false
+      group: light.al_adaptive_kitchen_light_group
+      inhibit_on_startup_seconds: 10
       last_triggered: ""
+      motion_sensors: [binary_sensor.kitchen_motion_beta]
+      night_mode_brightness_pct: 12
+      night_mode_color_temp_mired: 420
+      night_mode_enabled: true
+      night_mode_sun_elevation: -6
+      only_if_lights_off: false
+      only_once: true
+      presence_entity: ""
+      require_presence_for_activation: false
+      require_sun_condition: false
+      restore_state_after_restart: true
+      sleep: false
+      sun_max_elevation: 20
+      sun_min_elevation: -12
       timeout_seconds: 300
 
-  motion_profile_hallway_downstairs:
-    friendly_name: "Motion Profile — Hallway Downstairs"
-    unique_id: var_motion_profile_hallway_downstairs
-    initial_value: "transit"
+  hallway_downstairs_aml_config:
+    friendly_name: "Hallway Downstairs — AML Config"
+    unique_id: var_hallway_downstairs_aml_config
+    initial_value: transit
     restore: true
     attributes:
+      al_enabled: true
+      al_main: switch.adaptive_lighting_hallway_downstairs
+      al_sleep: switch.adaptive_lighting_sleep_mode_hallway_downstairs
+      ambient_lux_entity: ""
+      ambient_lux_threshold: 10
       bypass: false
+      group: light.group_hallway_lights_downstairs
+      inhibit_on_startup_seconds: 10
       last_triggered: ""
+      motion_sensors: [binary_sensor.hallway_downstairs_motion_beta]
+      night_mode_brightness_pct: 12
+      night_mode_color_temp_mired: 420
+      night_mode_enabled: true
+      night_mode_sun_elevation: -6
+      only_if_lights_off: false
+      only_once: true
+      presence_entity: ""
+      require_presence_for_activation: false
+      require_sun_condition: false
+      restore_state_after_restart: true
+      sleep: false
+      sun_max_elevation: 20
+      sun_min_elevation: -12
       timeout_seconds: 90
 
-  motion_profile_hallway_upstairs:
-    friendly_name: "Motion Profile — Hallway Upstairs"
-    unique_id: var_motion_profile_hallway_upstairs
-    initial_value: "transit"
+  hallway_upstairs_aml_config:
+    friendly_name: "Hallway Upstairs — AML Config"
+    unique_id: var_hallway_upstairs_aml_config
+    initial_value: transit
     restore: true
     attributes:
+      al_enabled: true
+      al_main: switch.adaptive_lighting_hallway_upstairs
+      al_sleep: switch.adaptive_lighting_sleep_mode_hallway_upstairs
+      ambient_lux_entity: ""
+      ambient_lux_threshold: 10
       bypass: false
+      group: light.group_hallway_lights_upstairs
+      inhibit_on_startup_seconds: 10
       last_triggered: ""
+      motion_sensors:
+        - binary_sensor.hallway_upstairs_motion_beta
+        - binary_sensor.hallway_downstairs_motion_recent_beta
+      night_mode_brightness_pct: 12
+      night_mode_color_temp_mired: 420
+      night_mode_enabled: true
+      night_mode_sun_elevation: -6
+      only_if_lights_off: false
+      only_once: true
+      presence_entity: ""
+      require_presence_for_activation: false
+      require_sun_condition: false
+      restore_state_after_restart: true
+      sleep: false
+      sun_max_elevation: 20
+      sun_min_elevation: -12
       timeout_seconds: 90
 
-  motion_profile_ottoman:
-    friendly_name: "Motion Profile — Ottoman"
-    unique_id: var_motion_profile_ottoman
-    initial_value: "brief"
+  ottoman_aml_config:
+    friendly_name: "Ottoman — AML Config"
+    unique_id: var_ottoman_aml_config
+    initial_value: brief
     restore: true
     attributes:
+      al_enabled: false
+      al_main: ""
+      al_sleep: ""
+      ambient_lux_entity: ""
+      ambient_lux_threshold: 10
       bypass: false
+      group: light.group_ottoman_light
+      inhibit_on_startup_seconds: 10
       last_triggered: ""
+      motion_sensors: [binary_sensor.bedroom_ottoman_motion_proxy]
+      night_mode_brightness_pct: 12
+      night_mode_color_temp_mired: 420
+      night_mode_enabled: true
+      night_mode_sun_elevation: -6
+      only_if_lights_off: false
+      only_once: true
+      presence_entity: ""
+      require_presence_for_activation: false
+      require_sun_condition: false
+      restore_state_after_restart: true
+      sleep: false
+      sun_max_elevation: 20
+      sun_min_elevation: -12
       timeout_seconds: 180
 
-  motion_profile_wardrobe:
-    friendly_name: "Motion Profile — Wardrobe"
-    unique_id: var_motion_profile_wardrobe
-    initial_value: "brief"
+  wardrobe_aml_config:
+    friendly_name: "Wardrobe — AML Config"
+    unique_id: var_wardrobe_aml_config
+    initial_value: brief
     restore: true
     attributes:
+      al_enabled: false
+      al_main: ""
+      al_sleep: ""
+      ambient_lux_entity: ""
+      ambient_lux_threshold: 10
       bypass: false
+      group: light.group_wardrobe_light
+      inhibit_on_startup_seconds: 10
       last_triggered: ""
+      motion_sensors: [binary_sensor.wardrobe_motion_beta]
+      night_mode_brightness_pct: 12
+      night_mode_color_temp_mired: 420
+      night_mode_enabled: true
+      night_mode_sun_elevation: -6
+      only_if_lights_off: false
+      only_once: true
+      presence_entity: ""
+      require_presence_for_activation: false
+      require_sun_condition: false
+      restore_state_after_restart: true
+      sleep: false
+      sun_max_elevation: 20
+      sun_min_elevation: -12
       timeout_seconds: 180
