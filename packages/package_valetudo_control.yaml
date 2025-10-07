@@ -1,0 +1,415 @@
+# Optimized Valetudo Vacuum Control Package (MQTT-based)
+# Generated: 2025-10-07T11:28:57Z
+
+homeassistant:
+  customize_glob: {}
+
+recorder:
+  exclude:
+    entity_globs:
+      - sensor.*_days_since_last_cleaned
+
+template:
+  - sensor:
+      - name: "Living Room Last Cleaned"
+        unique_id: sensor_living_room_last_cleaned
+        state: >
+          {% set ts = state_attr('var.room_cleaning_state','living_room_last_cleaned') %}
+          {% if ts %}{{ ts }}{% else %}unknown{% endif %}
+
+      - name: "Living Room Days Since Last Cleaned"
+        unique_id: sensor_living_room_days_since_last_cleaned
+        unit_of_measurement: "d"
+        state: >
+          {% set ts = state_attr('var.room_cleaning_state','living_room_last_cleaned') %}
+          {% if ts %}
+            {{ ((as_timestamp(now()) - as_timestamp(ts)) / 86400) | round(1) }}
+          {% else %}
+            unknown
+          {% endif %}
+
+      - name: "Kitchen Last Cleaned"
+        unique_id: sensor_kitchen_last_cleaned
+        state: >
+          {% set ts = state_attr('var.room_cleaning_state','kitchen_last_cleaned') %}
+          {% if ts %}{{ ts }}{% else %}unknown{% endif %}
+
+      - name: "Kitchen Days Since Last Cleaned"
+        unique_id: sensor_kitchen_days_since_last_cleaned
+        unit_of_measurement: "d"
+        state: >
+          {% set ts = state_attr('var.room_cleaning_state','kitchen_last_cleaned') %}
+          {% if ts %}
+            {{ ((as_timestamp(now()) - as_timestamp(ts)) / 86400) | round(1) }}
+          {% else %}
+            unknown
+          {% endif %}
+
+      - name: "Powder Room Last Cleaned"
+        unique_id: sensor_powder_room_last_cleaned
+        state: >
+          {% set ts = state_attr('var.room_cleaning_state','powder_room_last_cleaned') %}
+          {% if ts %}{{ ts }}{% else %}unknown{% endif %}
+
+      - name: "Powder Room Days Since Last Cleaned"
+        unique_id: sensor_powder_room_days_since_last_cleaned
+        unit_of_measurement: "d"
+        state: >
+          {% set ts = state_attr('var.room_cleaning_state','powder_room_last_cleaned') %}
+          {% if ts %}
+            {{ ((as_timestamp(now()) - as_timestamp(ts)) / 86400) | round(1) }}
+          {% else %}
+            unknown
+          {% endif %}
+
+      - name: "Downstairs Hallway Last Cleaned"
+        unique_id: sensor_downstairs_hallway_last_cleaned
+        state: >
+          {% set ts = state_attr('var.room_cleaning_state','downstairs_hallway_last_cleaned') %}
+          {% if ts %}{{ ts }}{% else %}unknown{% endif %}
+
+      - name: "Downstairs Hallway Days Since Last Cleaned"
+        unique_id: sensor_downstairs_hallway_days_since_last_cleaned
+        unit_of_measurement: "d"
+        state: >
+          {% set ts = state_attr('var.room_cleaning_state','downstairs_hallway_last_cleaned') %}
+          {% if ts %}
+            {{ ((as_timestamp(now()) - as_timestamp(ts)) / 86400) | round(1) }}
+          {% else %}
+            unknown
+          {% endif %}
+
+      - name: "Laundry Room Last Cleaned"
+        unique_id: sensor_laundry_room_last_cleaned
+        state: >
+          {% set ts = state_attr('var.room_cleaning_state','laundry_room_last_cleaned') %}
+          {% if ts %}{{ ts }}{% else %}unknown{% endif %}
+
+      - name: "Laundry Room Days Since Last Cleaned"
+        unique_id: sensor_laundry_room_days_since_last_cleaned
+        unit_of_measurement: "d"
+        state: >
+          {% set ts = state_attr('var.room_cleaning_state','laundry_room_last_cleaned') %}
+          {% if ts %}
+            {{ ((as_timestamp(now()) - as_timestamp(ts)) / 86400) | round(1) }}
+          {% else %}
+            unknown
+          {% endif %}
+
+      - name: "Vacuum Job Active"
+        unique_id: sensor_vacuum_job_active
+        state: >
+          {% set v = state_attr('var.vacuum_job_state','active') %}
+          {% if v %}on{% else %}off{% endif %}
+
+  - binary_sensor:
+      - name: "Living Room Needs Cleaning"
+        unique_id: bs_living_room_needs_cleaning
+        device_class: problem
+        state: >
+          {% set v = state_attr('var.room_cleaning_state','living_room_needs_cleaning') %}
+          {% if v in [true,false] %}{{ v }}{% else %}false{% endif %}
+
+      - name: "Kitchen Needs Cleaning"
+        unique_id: bs_kitchen_needs_cleaning
+        device_class: problem
+        state: >
+          {% set v = state_attr('var.room_cleaning_state','kitchen_needs_cleaning') %}
+          {% if v in [true,false] %}{{ v }}{% else %}false{% endif %}
+
+      - name: "Powder Room Needs Cleaning"
+        unique_id: bs_powder_room_needs_cleaning
+        device_class: problem
+        state: >
+          {% set v = state_attr('var.room_cleaning_state','powder_room_needs_cleaning') %}
+          {% if v in [true,false] %}{{ v }}{% else %}false{% endif %}
+
+      - name: "Downstairs Hallway Needs Cleaning"
+        unique_id: bs_downstairs_hallway_needs_cleaning
+        device_class: problem
+        state: >
+          {% set v = state_attr('var.room_cleaning_state','downstairs_hallway_needs_cleaning') %}
+          {% if v in [true,false] %}{{ v }}{% else %}false{% endif %}
+
+      - name: "Laundry Room Needs Cleaning"
+        unique_id: bs_laundry_room_needs_cleaning
+        device_class: problem
+        state: >
+          {% set v = state_attr('var.room_cleaning_state','laundry_room_needs_cleaning') %}
+          {% if v in [true,false] %}{{ v }}{% else %}false{% endif %}
+
+script:
+  valetudo_publish_segment_clean:
+    alias: Publish Segment Clean (Valetudo)
+    description: Publish a segment clean command to Valetudo over MQTT and track job state.
+    fields:
+      room:
+        description: 'room key (e.g., living_room)'
+      segment_id:
+        description: 'segment id'
+      iterations:
+        description: 'number of passes'
+        default: 1
+    sequence:
+      - action: var.set
+        data:
+          entity_id: var.vacuum_job_state
+          value: running
+          attributes:
+            active: true
+            current_room: "{{ room }}"
+            current_segment_id: "{{ segment_id }}"
+            iterations: "{{ iterations|int }}"
+            started_at: "{{ now().isoformat() }}"
+            completed_at: null
+            error: null
+
+      - action: mqtt.publish
+        data:
+          topic: "Valetudo/RoboRockS5/MapSegmentationCapability/clean/set"
+          qos: 1
+          retain: false
+          payload: >
+            {{
+              {
+                'action': 'start_segment_action',
+                'segment_ids': [ (segment_id | int) ],
+                'iterations': (iterations | int),
+                'customOrder': true
+              } | to_json
+            }}
+
+      - wait_for_trigger:
+          - platform: state
+            entity_id: vacuum.valetudo_roborocks5
+            to: cleaning
+        timeout: '00:01:00'
+        continue_on_timeout: true
+
+  valetudo_mark_room_cleaned:
+    alias: Mark Room Cleaned (Valetudo)
+    fields:
+      room:
+        description: 'room key'
+    sequence:
+      - variables:
+          attr_last: "{{ room ~ '_last_cleaned' }}"
+          attr_flag: "{{ room ~ '_needs_cleaning' }}"
+      - action: var.set
+        data:
+          entity_id: var.room_cleaning_state
+          value: ok
+          attributes:
+            "{{ attr_last }}": "{{ now().isoformat() }}"
+            "{{ attr_flag }}": false
+            job_last_run: "{{ now().isoformat() }}"
+            job_last_result: success
+      - action: var.set
+        data:
+          entity_id: var.vacuum_job_state
+          value: idle
+          attributes:
+            active: false
+            completed_at: "{{ now().isoformat() }}"
+
+  valetudo_clean_living_room:
+    alias: Clean Living Room
+    sequence:
+      - variables:
+          seg: "{{ state_attr('var.room_cleaning_state','living_room_segment_id') }}"
+      - if:
+          - condition: template
+            value_template: "{{ seg not in [none, '', 'null'] }}"
+        then:
+          - action: script.valetudo_publish_segment_clean
+            data:
+              room: living_room
+              segment_id: "{{ seg }}"
+              iterations: 1
+        else:
+          - action: persistent_notification.create
+            data:
+              title: 'Valetudo: Missing segment id for Living Room'
+              message: 'Set the segment id in var.room_cleaning_state first.'
+
+  valetudo_clean_kitchen:
+    alias: Clean Kitchen
+    sequence:
+      - variables:
+          seg: "{{ state_attr('var.room_cleaning_state','kitchen_segment_id') }}"
+      - if:
+          - condition: template
+            value_template: "{{ seg not in [none, '', 'null'] }}"
+        then:
+          - action: script.valetudo_publish_segment_clean
+            data:
+              room: kitchen
+              segment_id: "{{ seg }}"
+              iterations: 1
+        else:
+          - action: persistent_notification.create
+            data:
+              title: 'Valetudo: Missing segment id for Kitchen'
+              message: 'Set the segment id in var.room_cleaning_state first.'
+
+  valetudo_clean_powder_room:
+    alias: Clean Powder Room
+    sequence:
+      - variables:
+          seg: "{{ state_attr('var.room_cleaning_state','powder_room_segment_id') }}"
+      - if:
+          - condition: template
+            value_template: "{{ seg not in [none, '', 'null'] }}"
+        then:
+          - action: script.valetudo_publish_segment_clean
+            data:
+              room: powder_room
+              segment_id: "{{ seg }}"
+              iterations: 1
+        else:
+          - action: persistent_notification.create
+            data:
+              title: 'Valetudo: Missing segment id for Powder Room'
+              message: 'Set the segment id in var.room_cleaning_state first.'
+
+  valetudo_clean_downstairs_hallway:
+    alias: Clean Downstairs Hallway
+    sequence:
+      - variables:
+          seg: "{{ state_attr('var.room_cleaning_state','downstairs_hallway_segment_id') }}"
+      - if:
+          - condition: template
+            value_template: "{{ seg not in [none, '', 'null'] }}"
+        then:
+          - action: script.valetudo_publish_segment_clean
+            data:
+              room: downstairs_hallway
+              segment_id: "{{ seg }}"
+              iterations: 1
+        else:
+          - action: persistent_notification.create
+            data:
+              title: 'Valetudo: Missing segment id for Downstairs Hallway'
+              message: 'Set the segment id in var.room_cleaning_state first.'
+
+  valetudo_clean_laundry_room:
+    alias: Clean Laundry Room
+    sequence:
+      - variables:
+          seg: "{{ state_attr('var.room_cleaning_state','laundry_room_segment_id') }}"
+      - if:
+          - condition: template
+            value_template: "{{ seg not in [none, '', 'null'] }}"
+        then:
+          - action: script.valetudo_publish_segment_clean
+            data:
+              room: laundry_room
+              segment_id: "{{ seg }}"
+              iterations: 1
+        else:
+          - action: persistent_notification.create
+            data:
+              title: 'Valetudo: Missing segment id for Laundry Room'
+              message: 'Set the segment id in var.room_cleaning_state first.'
+
+  cleaning_job_downstairs:
+    alias: Run Downstairs Cleaning Job
+    sequence:
+      - repeat:
+          for_each:
+            - living_room
+            - kitchen
+            - powder_room
+            - downstairs_hallway
+            - laundry_room
+          sequence:
+            - variables:
+                rn: "{{ repeat.item }}"
+                flag: "{{ state_attr('var.room_cleaning_state', rn ~ '_needs_cleaning') }}"
+            - if:
+                - condition: template
+                  value_template: "{{ flag == true }}"
+              then:
+                - action: script.valetudo_clean_{{ rn }}
+
+automation:
+  - id: initialize_valetudo_variables
+    alias: Initialize Valetudo Variables on Startup
+    trigger:
+      - platform: homeassistant
+        event: start
+    action:
+      - action: var.set
+        data:
+          entity_id: var.room_cleaning_state
+          value: initialized
+          attributes:
+            living_room_segment_id: 1
+            kitchen_segment_id: 2
+            powder_room_segment_id: 3
+            downstairs_hallway_segment_id: 4
+            laundry_room_segment_id: 5
+
+  - id: mark_completion_when_docked
+    alias: Mark room cleaned on docked
+    trigger:
+      - platform: state
+        entity_id: vacuum.valetudo_roborocks5
+        to: docked
+        for: '00:00:20'
+    condition:
+      - condition: template
+        value_template: "{{ state_attr('var.vacuum_job_state','active') == true }}"
+    action:
+      - variables:
+          rn: "{{ state_attr('var.vacuum_job_state','current_room') }}"
+      - if:
+          - condition: template
+            value_template: "{{ rn is string and rn|length > 0 }}"
+        then:
+          - action: script.valetudo_mark_room_cleaned
+            data:
+              room: "{{ rn }}"
+
+  - id: valetudo_error_notification
+    alias: Valetudo Error Notification
+    trigger:
+      - platform: state
+        entity_id: sensor.valetudo_roborocks5_error
+    condition:
+      - condition: template
+        value_template: "{{ trigger.to_state.state not in ['none','unknown','unavailable',''] }}"
+    action:
+      - action: persistent_notification.create
+        data:
+          title: 'Valetudo Error'
+          message: >
+            Error reported by vacuum: {{ states('sensor.valetudo_roborocks5_error') }}
+      - action: var.set
+        data:
+          entity_id: var.vacuum_job_state
+          value: error
+          attributes:
+            error: "{{ states('sensor.valetudo_roborocks5_error') }}"
+            active: false
+
+  - id: mqtt_connectivity_issue
+    alias: Vacuum Unavailable (MQTT/Connectivity)
+    trigger:
+      - platform: state
+        entity_id: vacuum.valetudo_roborocks5
+        to: 'unavailable'
+        for: '00:02:00'
+    action:
+      - action: persistent_notification.create
+        data:
+          title: 'Vacuum Connectivity Issue'
+          message: 'Vacuum became unavailable. Check MQTT broker at 192.168.0.129:1883 and robot connectivity.'
+
+  - id: downstairs_daily_schedule
+    alias: Run Downstairs Cleaning Job Daily
+    trigger:
+      - platform: time
+        at: '10:00:00'
+    action:
+      - action: script.cleaning_job_downstairs
