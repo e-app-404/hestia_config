@@ -143,7 +143,6 @@ template:
         unique_id: bedroom_last_activity
         state: "{{ now().strftime('%Y-%m-%d %H:%M:%S') }}"
         attributes:
-          friendly_name: "Bedroom Last Activity"
           tier: "β"
           module: "presence"
           role: "room_timer"
@@ -170,7 +169,6 @@ template:
           {% endif %}
         unit_of_measurement: "min"
         attributes:
-          friendly_name: "Bedroom Minutes Since Activity"
           tier: "β"
           module: "fallback"
           role: "timer"
@@ -196,7 +194,6 @@ template:
         unique_id: kitchen_last_activity
         state: "{{ now().strftime('%Y-%m-%d %H:%M:%S') }}"
         attributes:
-          friendly_name: "Kitchen Last Activity"
           tier: "β"
           module: "presence"
           role: "room_timer"
@@ -221,7 +218,6 @@ template:
           {% endif %}
         unit_of_measurement: "min"
         attributes:
-          friendly_name: "Kitchen Minutes Since Activity"
           tier: "β"
           module: "cleaning_schedule"
           role: "timer"
@@ -246,7 +242,6 @@ template:
         unique_id: living_room_last_activity
         state: "{{ now().strftime('%Y-%m-%d %H:%M:%S') }}"
         attributes:
-          friendly_name: "Living Room Last Activity"
           tier: "β"
           module: "presence"
           role: "room_timer"
@@ -271,7 +266,6 @@ template:
           {% endif %}
         unit_of_measurement: "min"
         attributes:
-          friendly_name: "Living Room Minutes Since Activity"
           tier: "β"
           module: "fallback"
           role: "timer"
@@ -296,7 +290,6 @@ template:
         unique_id: ensuite_last_activity
         state: "{{ now().strftime('%Y-%m-%d %H:%M:%S') }}"
         attributes:
-          friendly_name: "Ensuite Last Activity"
           tier: "β"
           module: "presence"
           role: "room_timer"
@@ -321,7 +314,6 @@ template:
           {% endif %}
         unit_of_measurement: "min"
         attributes:
-          friendly_name: "Ensuite Minutes Since Activity"
           tier: "β"
           module: "fallback"
           role: "timer"
@@ -346,7 +338,6 @@ template:
         unique_id: hallway_downstairs_last_activity
         state: "{{ now().strftime('%Y-%m-%d %H:%M:%S') }}"
         attributes:
-          friendly_name: "Hallway Downstairs Last Activity"
           tier: "β"
           module: "presence"
           role: "room_timer"
@@ -371,7 +362,6 @@ template:
           {% endif %}
         unit_of_measurement: "min"
         attributes:
-          friendly_name: "Hallway Downstairs Minutes Since Activity"
           tier: "β"
           module: "fallback"
           role: "timer"
@@ -396,7 +386,6 @@ template:
         unique_id: hallway_upstairs_last_activity
         state: "{{ now().strftime('%Y-%m-%d %H:%M:%S') }}"
         attributes:
-          friendly_name: "Hallway Upstairs Last Activity"
           tier: "β"
           module: "presence"
           role: "room_timer"
@@ -421,7 +410,6 @@ template:
           {% endif %}
         unit_of_measurement: "min"
         attributes:
-          friendly_name: "Hallway Upstairs Minutes Since Activity"
           tier: "β"
           module: "fallback"
           role: "timer"
@@ -446,7 +434,6 @@ template:
         unique_id: entrance_last_activity
         state: "{{ now().strftime('%Y-%m-%d %H:%M:%S') }}"
         attributes:
-          friendly_name: "Entrance Last Activity"
           tier: "β"
           module: "presence"
           role: "room_timer"
@@ -471,7 +458,6 @@ template:
           {% endif %}
         unit_of_measurement: "min"
         attributes:
-          friendly_name: "Entrance Minutes Since Activity"
           tier: "β"
           module: "fallback"
           role: "timer"
@@ -496,7 +482,6 @@ template:
         unique_id: zone_downstairs_last_activity
         state: "{{ now().strftime('%Y-%m-%d %H:%M:%S') }}"
         attributes:
-          friendly_name: "Zone Downstairs Last Activity"
           tier: "β"
           module: "presence"
           role: "room_timer"
@@ -521,7 +506,6 @@ template:
           {% endif %}
         unit_of_measurement: "min"
         attributes:
-          friendly_name: "Zone Downstairs Minutes Since Activity"
           tier: "β"
           module: "fallback"
           role: "timer"
@@ -546,7 +530,6 @@ template:
         unique_id: zone_upstairs_last_activity
         state: "{{ now().strftime('%Y-%m-%d %H:%M:%S') }}"
         attributes:
-          friendly_name: "Zone Upstairs Last Activity"
           tier: "β"
           module: "presence"
           role: "room_timer"
@@ -571,7 +554,6 @@ template:
           {% endif %}
         unit_of_measurement: "min"
         attributes:
-          friendly_name: "Zone Upstairs Minutes Since Activity"
           tier: "β"
           module: "fallback"
           role: "timer"
@@ -596,7 +578,6 @@ template:
         unique_id: zone_home_last_activity
         state: "{{ now().strftime('%Y-%m-%d %H:%M:%S') }}"
         attributes:
-          friendly_name: "Zone Home Last Activity"
           tier: "β"
           module: "presence"
           role: "room_timer"
@@ -621,7 +602,6 @@ template:
           {% endif %}
         unit_of_measurement: "min"
         attributes:
-          friendly_name: "Zone Home Minutes Since Activity"
           tier: "β"
           module: "fallback"
           role: "timer"
