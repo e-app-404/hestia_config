@@ -1,5 +1,5 @@
 vacuum_living_room:
-  friendly_name: "Living Room (Config)"
+  friendly_name: "Living Room (Valetudo Config)"
   restore: true
   initial_value: "ok"
   attributes:
@@ -11,7 +11,7 @@ vacuum_living_room:
     job_last_result: "idle"
 
 vacuum_kitchen:
-  friendly_name: "Kitchen (Config)"
+  friendly_name: "Kitchen (Valetudo Config)"
   restore: true
   initial_value: "ok"
   attributes:
@@ -23,7 +23,7 @@ vacuum_kitchen:
     job_last_result: "idle"
 
 vacuum_powder_room:
-  friendly_name: "Powder Room (Config)"
+  friendly_name: "Powder Room (Valetudo Config)"
   restore: true
   initial_value: "ok"
   attributes:
@@ -35,7 +35,7 @@ vacuum_powder_room:
     job_last_result: "idle"
 
 vacuum_downstairs_hallway:
-  friendly_name: "Downstairs Hallway (Config)"
+  friendly_name: "Downstairs Hallway (Valetudo Config)"
   restore: true
   initial_value: "ok"
   attributes:
@@ -47,7 +47,7 @@ vacuum_downstairs_hallway:
     job_last_result: "idle"
 
 vacuum_laundry_room:
-  friendly_name: "Laundry Room (Config)"
+  friendly_name: "Laundry Room (Valetudo Config)"
   restore: true
   initial_value: "ok"
   attributes:

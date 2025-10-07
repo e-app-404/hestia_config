@@ -41,11 +41,25 @@ ensuite_aml_config:
     last_triggered: ""
 
 hallway_downstairs_aml_config:
-  friendly_name: "Hallway AML Config"
+  friendly_name: "Hallway Downstairs AML Config"
   initial_value: "configured"
   attributes:    
-    al_switch: "switch.adaptive_lighting_hallway_lights"
-    al_manual_control: "switch.adaptive_lighting_adapt_hallway_lights"
+    al_switch: "switch.adaptive_lighting_hallway_downstairs"
+    al_manual_control: "switch.adaptive_lighting_adapt_hallway_downstairs_lights"
+    al_lights: "light.group_hallway_lights_downstairs"
+    motion_sensor: "binary_sensor.hallway_downstairs_motion_beta"
+    presence_sensor: ""
+    illuminance_sensor: ""
+    illuminance_threshold: 5
+    bypass: false
+    last_triggered: ""
+
+hallway_upstairs_aml_config:
+  friendly_name: "Hallway Upstairs AML Config"
+  initial_value: "configured"
+  attributes:    
+    al_switch: "switch.adaptive_lighting_hallway_upstairs"
+    al_manual_control: "switch.adaptive_lighting_adapt_hallway_upstairs_lights"
     al_lights: "light.group_hallway_lights_downstairs"
     motion_sensor: "binary_sensor.hallway_downstairs_motion_beta"
     presence_sensor: ""
@@ -72,8 +86,8 @@ ottoman_aml_config:
   friendly_name: "Ottoman AML Config"
   initial_value: "configured"
   attributes:
-    al_switch: "switch.adaptive_lighting_bedroom_lights"
-    al_manual_control: "switch.adaptive_lighting_adapt_bedroom_lights"
+    al_switch: ""
+    al_manual_control: ""
     al_lights: "light.group_ottoman_light"
     motion_sensor: "binary_sensor.ottoman_motion_beta"
     presence_sensor: ""
@@ -86,8 +100,8 @@ wardrobe_aml_config:
   friendly_name: "Wardrobe AML Config"
   initial_value: "configured"
   attributes:
-    al_switch: "switch.adaptive_lighting_bedroom_lights"
-    al_manual_control: "switch.adaptive_lighting_adapt_bedroom_lights"
+    al_switch: ""
+    al_manual_control: ""
     al_lights: "light.group_wardrobe_light"
     motion_sensor: "binary_sensor.wardrobe_motion_beta"
     presence_sensor: ""
