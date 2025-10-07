@@ -3,7 +3,7 @@ title: "Template Integration Guide"
 authors: "Home Assistant Team"
 source: "https://www.home-assistant.io/integrations/template/"
 slug: "template-integration"
-tags: ["home-assistant", "template", "integration"]
+tags: ["home-assistant", "ops", "integration"]
 original_date: "2025-10-06"
 last_updated: "2025-10-07"
 url: "https://www.home-assistant.io/integrations/template/"
@@ -1102,12 +1102,11 @@ Looking for your configuration file?
 | Variable | Type | Description |
 | -------- | ---- | ----------- |
 | `lock` | map Required | List of locks |
-| `code_format` | template (Optional, default: None) | Defines a template to get the code_format attribute of the entity. This template must evaluate to a valid Python regular expression or None. If it evaluates to a not-None value, you are prompted to enter a code when interacting with the lock. The code will be matched against the regular expression, and the lock/unlock actions will be executed only if they match. The actual validity of the entered code must be verified within these actions. If there’s a syntax error in the template, the entity will be unavailable. If the template fails to render for other reasons or if the regular expression is invalid, no code will be accepted, and the lock/unlock actions will never be invoked. |
+| `code_format` | template (Optional, default: None) | Defines a template to get the code_format attribute of the entity. This template must evaluate to a valid Python regular expression or None. If it evaluates to a not-None value, the user is prompted to enter a code when interacting with the lock. The code will be matched against the regular expression, and only if it matches, the lock/unlock actions will be executed. The actual validity of the entered code must be verified within these actions. If there’s a syntax error in the template, the entity will be unavailable. If the template fails to render for other reasons or if the regular expression is invalid, no code will be accepted and the lock/unlock actions will never be invoked. |
 | `lock` | action Required | Defines an action to run when the lock is locked. |
+| `unlock` | action Required | Defines an action to run when the lock is unlocked. |
 | `open` | action (Optional) | Defines an action to run when the lock is opened. |
 | `optimistic` | boolean (Optional, default: false) | Flag that defines if the lock works in optimistic mode. When enabled, the lock’s state will update immediately when a new option is chosen through the UI or service calls, without waiting for the template defined in state to update. When disabled (default), the lock will only update when the state template returns a new value. |
-| `state` | template Required | Defines a template to set the state of the lock. Valid output values from the template are locked, unlocked, open, locking, unlocking, opening, and jammed, which are directly mapped to the corresponding states. In addition, true and on are valid as synonyms to locked while false and off are valid as synonyms to unlocked. |
-| `unlock` | action Required | Defines an action to run when the lock is unlocked. |
 
 ## Number
 
@@ -1629,155 +1628,156 @@ This example shows how you can use a Template Vacuum to control an IR vacuum cle
 ```yaml
 vacuum:
   - platform: template
-template:
-  - switch:
-      - name: "Skylight"
-        value_template: "{{ is_state('sensor.skylight', 'on') }}"
-        turn_on:
-          action: switch.turn_on
-          target:
-            entity_id: switch.skylight_open
-        turn_off:
-          action: switch.turn_on
-          target:
-            entity_id: switch.skylight_close
-YAML
-State based switch - Optimistic Switch 
-This example switch with an assumed state based on the actions performed. This switch will immediately change state after a turn_on/turn_off command.
-
-template:
-  - switch:
-      - name: "Blind"
-        turn_on:
-          action: switch.toggle
-          target:
-            entity_id: switch.blind_toggle
-        turn_off:
-          action: switch.toggle
-          target:
-            entity_id: switch.blind_toggle
-YAML
-Update 
-The template update platform allows you to create update entities with templates to define the state and a script to define the install action.
-
-Update entities can be created from the frontend in the Helpers section or via YAML.
-
-# Example state-based configuration.yaml entry
-template:
-  - update:
-      - name: Frigate
-        installed_version: "{{ states('sensor.installed_version') }}"
-        latest_version: "{{ states('sensor.latest_version') }}"
-        install:
-          action: script.update_frigate
-YAML
-# Example trigger-based configuration.yaml entry
-template:
-  - triggers:
-      - trigger: time
-        at: "00:00:00"
-    update:
-      - name: Frigate
-        installed_version: "{{ states('sensor.installed_version') }}"
-        latest_version: "{{ states('sensor.latest_version') }}"
-        install:
-          action: script.update_frigate
-YAML
-Configuration Variables 
-Looking for your configuration file?
-update map Required
-List of update entities
-
-backup boolean (Optional, default: false)
-Enable or disable the automatic backup before update option in the update repair. When disabled, the backup variable will always provide False during the install action and it will not accept the backup option.
-
-device_class device_class (Optional, default: None)
-Sets the class of the device, changing the device state and icon that is displayed on the UI.
-
-in_progress template (Optional)
-Defines a template to get the in-progress state.
-
-install action (Optional)
-Defines actions to run when the update is installed. Receives variables specific_version and backup when enabled.
-
-installed_version template Required
-Defines a template to get the installed version. When the value of installed_version matches the value of latest_version, the update entity state will be on.
-
-latest_version template Required
-Defines a template to get the latest version. When the value of installed_version matches the value of latest_version, the update entity state will be on.
-
-release_summary template (Optional)
-Defines a template to get the release summary.
-
-release_url template (Optional)
-Defines a template to get the release URL.
-
-specific_version boolean (Optional, default: false)
-Enable or disable using the version variable with the install action. When disabled, the specific_version variable will always provide None in the install actions.
-
-title template (Optional)
-Defines a template to get the update title.
-
-update_percent template (Optional)
-Defines a template to get the update completion percentage.
-
-Vacuum 
-The template vacuum platform allows you to create vacuum entities with templates to define the state and scripts to define each action.
-
-Vacuum entities can only be created via YAML.
-
-# Example state-based configuration.yaml entry
-template:
-  - vacuum:
-      - name: Living Room Vacuum
+    vacuums:
+      living_room_vacuum:
         start:
-          action: script.vacuum_start
+          - action: remote.send_command
+            target:
+              entity_id: remote.harmony_hub
+            data:
+              command: Clean
+              device: 52840686
+        return_to_base:
+          - action: remote.send_command
+            target:
+              entity_id: remote.harmony_hub
+            data:
+              command: Home
+              device: 52840686
+        clean_spot:
+          - action: remote.send_command
+            target:
+              entity_id: remote.harmony_hub
+            data:
+              command: SpotCleaning
+              device: 52840686
+```
+
+### State based vacuum - Custom attributes
+
+This example shows how to add custom attributes.
+
+```yaml
+vacuum:
+  - platform: template
+    vacuums:
+      living_room_vacuum:
+        value_template: "{{ states('sensor.vacuum_state') }}"
+        battery_level_template: "{{ states('sensor.vacuum_battery_level')|int }}"
+        fan_speed_template: "{{ states('sensor.vacuum_fan_speed') }}"
+        attribute_templates:
+          status: >-
+            {% if (states('sensor.robot_vacuum_robot_cleaner_movement') == "after" and states('sensor.robot_vacuum_robot_cleaner_cleaning_mode') == "stop")  %}
+              Charging to Resume
+            {% elif states('sensor.robot_vacuum_robot_cleaner_cleaning_mode') == "auto" %}
+              Cleaning
+            {% else %}
+              Charging
+            {% endif %}
+```
+
+## Weather
+
+The template weather platform allows you to create weather entities with templates to define the state and attributes.
+
+Weather entities can only be created via YAML.
+
+# Example state-based configuration.yaml entry
+template:
+  - weather:
+      - name: "My Weather Station"
+        condition_template: "{{ states('weather.my_region') }}"
+        temperature_template: "{{ states('sensor.temperature') | float }}"
+        temperature_unit: "°C"
+        humidity_template: "{{ states('sensor.humidity') | float }}"
+        forecast_daily_template: "{{ state_attr('weather.my_region', 'forecast_data') }}"
 YAML
 # Example trigger-based configuration.yaml entry
 template:
   - triggers:
       - trigger: state
-        entity_id: sensor.living_room_vacuum_state
-    vacuum:
-      - name: Living Room Vacuum
-        state: "{{ states('sensor.living_room_vacuum_state') }}"
-        start:
-          action: script.vacuum_start
+        entity_id:
+        - weather.my_region
+        - sensor.temperature
+        - sensor.humidity
+    weather:
+      - name: "My Weather Station"
+        condition_template: "{{ states('weather.my_region') }}"
+        temperature_template: "{{ states('sensor.temperature') | float }}"
+        temperature_unit: "°C"
+        humidity_template: "{{ states('sensor.humidity') | float }}"
+        forecast_daily_template: "{{ state_attr('weather.my_region', 'forecast_data') }}"
 YAML
 Configuration Variables 
 Looking for your configuration file?
-vacuum map Required
-List of vacuum entities
+weather map Required
+List of weather entities
 
-attributes map (Optional)
-Defines templates for attributes of the entity.
+apparent_temperature_template template (Optional)
+The current apparent (feels-like) temperature.
 
-attribute: template template Required
-The attribute and corresponding template.
+cloud_coverage_template template (Optional)
+The current cloud coverage.
 
-battery_level template (Optional)
-Defines a template to get the battery level of the vacuum. Legal values are numbers between 0 and 100.
+condition_template template Required
+The current weather condition.
 
-clean_spot action (Optional)
-Defines an action to run when the vacuum is given a clean spot command.
+dew_point_template template (Optional)
+The current dew point.
 
-fan_speed template (Optional)
-Defines a template to get the fan speed of the vacuum.
+forecast_daily_template template (Optional)
+Daily forecast data.
 
-fan_speeds string | list (Optional)
-List of fan speeds supported by the vacuum.
+forecast_hourly_template template (Optional)
+Hourly forecast data.
 
-locate action (Optional)
-Defines an action to run when the vacuum is given a locate command.
+forecast_twice_daily_template template (Optional)
+Twice daily forecast data.
 
-optimistic boolean (Optional, default: false)
-Flag that defines if the vacuum works in optimistic mode. When enabled, the vacuum’s state will update immediately when a new option is chosen through the UI or service calls, without waiting for the template defined in state to update. When disabled (default), the vacuum will only update when the state template returns a new value.
+humidity_template template Required
+The current humidity.
 
-pause action (Optional)
-Defines an action to run when the vacuum is paused.
+ozone_template template (Optional)
+The current ozone level.
 
-return_to_base action (Optional)
-Defines an action to run when the vacuum is given a return to base command.
+precipitation_unit string (Optional)
+Unit for precipitation output. Valid options are km, mi, ft, m, cm, mm, in, yd.
+
+pressure_template template (Optional)
+The current air pressure.
+
+pressure_unit string (Optional)
+Unit for pressure_template output. Valid options are Pa, hPa, kPa, bar, cbar, mbar, mmHg, inHg, psi.
+
+temperature_template template Required
+The current temperature.
+
+temperature_unit string (Optional)
+Unit for temperature_template output. Valid options are °C, °F, and K.
+
+uv_index_template template (Optional)
+The current UV index.
+
+visibility_template template (Optional)
+The current visibility.
+
+visibility_unit string (Optional)
+Unit for visibility_template output. Valid options are km, mi, ft, m, cm, mm, in, yd.
+
+wind_gust_speed_template template (Optional)
+The current wind gust speed.
+
+wind_speed_template template (Optional)
+The current wind speed.
+
+wind_speed_unit string (Optional)
+Unit for wind_speed_template output. Valid options are m/s, km/h, mph, mm/d, in/d, and in/h.
+
+wind_bearing_template template (Optional)
+The current wind bearing.
+
+Trigger based weather - Weather Forecast from response data 
+This example demonstrates how to use an action to call a action with response data and use the response in a template.
 
 set_fan_speed action (Optional)
 Defines an action to run when the vacuum is given a command to set the fan speed.
@@ -1969,6 +1969,8 @@ Combining multiple template entities
 The template integration allows defining multiple sections.
 
 # Example configuration.yaml entry with two sections
+
+```yaml
 template:
   # Define state-based template entities
   - sensor:
@@ -1983,10 +1985,12 @@ template:
       ...
     binary_sensor:
       ...
-YAML
+```
+
 Trigger based sensor and binary sensor storing webhook information 
 Template entities can be triggered using any automation trigger, including webhook triggers. Use a trigger-based template entity to store this information in template entities.
 
+```yaml
 template:
   - triggers:
       - trigger: webhook
@@ -2004,14 +2008,17 @@ template:
       - name: "Motion"
         state: "{{ trigger.json.motion }}"
         device_class: motion
-YAML
+```
+
 You can test this trigger entity with the following CURL command:
 
+```bash
 curl --header "Content-Type: application/json" \
   --request POST \
   --data '{"temperature": 5, "humidity": 34, "motion": true}' \
   http://homeassistant.local:8123/api/webhook/my-super-secret-webhook-id
-Bash
+```
+
 Template and action variables 
 State-based and trigger-based template entities have the special template variable this available in their templates and actions. The this variable is the current state object of the entity and aids self-referencing of an entity’s state and attributes in templates and actions. Trigger-based entities also provide the trigger data.
 
@@ -2085,6 +2092,8 @@ Each blueprint contains the “recipe” for creating a single template entity, 
 To create your first template entity based on a blueprint, open up your configuration.yaml file and add:
 
 # Example configuration.yaml template entity based on a blueprint located in config/blueprints/homeassistant/inverted_binary_sensor.yaml
+
+```yaml
 template:
   - use_blueprint:
       path: homeassistant/inverted_binary_sensor.yaml # relative to config/blueprints/template/
