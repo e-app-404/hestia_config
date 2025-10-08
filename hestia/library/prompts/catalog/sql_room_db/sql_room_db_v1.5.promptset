@@ -48,7 +48,7 @@ promptset:
     scan_interval_seconds: 30
     json1_required_functions: ["json_extract","json_group_object","json_group_array","json_valid"]
     room_id_pattern: "^[a-z0-9_]+$"
-    canonical_mapping_file: "/config/domain/architecture/area_mapping.yaml"
+    canonical_mapping_file: "/config/architecture/area_mapping.yaml"
     schema_expected: 1
     appdaemon_base_url: "http://appdaemon:5050"
     valetudo_base_topic_var: "valetudo_base_topic"
