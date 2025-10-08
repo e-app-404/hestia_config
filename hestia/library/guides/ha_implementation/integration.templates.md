@@ -37,7 +37,6 @@ There is currently support for the following device types within Home Assistant:
 - Update
 - Vacuum
 - Weather
-
 ## Table of Contents
 
 
@@ -72,7 +71,6 @@ There is currently support for the following device types within Home Assistant:
 `variable_name: value` string Required
 : The variable name and corresponding value.
 
-## Alarm Control Panel
 
 The template alarm control panel platform allows you to create a alarm control panels with templates to define the state and scripts to define each actions.
 
@@ -118,7 +116,6 @@ template:
 
 | Variable | Type | Description |
 | -------- | ---- | ----------- |
-| `alarm_control_panel` | map Required | List of alarm control panels |
 | `arm_away` | action (Optional) | Defines an action to run when the alarm is armed to away mode. |
 | `arm_custom_bypass` | action (Optional) | Defines an action to run when the alarm is armed to custom bypass mode. |
 | `arm_home` | action (Optional) | Defines an action to run when the alarm is armed to home mode. |
