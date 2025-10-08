@@ -1,0 +1,75 @@
+planned_change: >
+  Remove Tailscale SMB mounts (config/share/addons) and enforce a single SMB mount
+  from homeassistant.local to the canonical path /config. Guard with a preflight.
+
+deliverable:
+  - Single active mount: //USERNAME@homeassistant.local/config → /config
+  - No mounts under /Volumes/HA/{config,share,addons}
+  - Preflight script to assert /config health before any write
+  - VS Code workspace pinned to /config (already done)
+  - Keychain & nsmb cred hygiene to prevent auto re-mounts
+
+action_needed:
+  - Unmount Tailscale duplicates:
+    - diskutil unmount /Volumes/HA/config || sudo umount -f /Volumes/HA/config
+    - diskutil unmount /Volumes/HA/share  || sudo umount -f /Volumes/HA/share
+    - diskutil unmount /Volumes/HA/addons || sudo umount -f /Volumes/HA/addons
+  - Ensure only the local mount exists:
+    - sudo mkdir -p /config
+    - if not mounted: sudo mount_smbfs -o nobrowse -N //USERNAME@homeassistant.local/config /config
+  - Credential hygiene:
+    - Remove any saved Keychain passwords for homeassistant.reverse-beta.ts.net
+    - Keep (or add) one for homeassistant.local
+  - Guardrail preflight (save as /usr/local/bin/ha_config_preflight.sh; chmod +x):
+    - see script below
+  - Optional: unload/disable any LaunchAgents that mount to paths other than /config
+
+rationale: >
+  ADR canon requires a single canonical path to avoid split-brain writes, ENOENT,
+  and tooling ambiguity. Finder shows both endpoints; terminal confirms both are writable.
+  We standardize on the local identity to align with existing synthetic.conf and LaunchAgent.
+
+status: "proposed-ready"
+
+path:
+  - /config
+  - /Volumes/HA/config
+  - /Volumes/HA/share
+  - /Volumes/HA/addons
+  - ~/Library/LaunchAgents/com.local.hass.mount.plist
+  - /usr/local/bin/ha_config_preflight.sh
+
+RACI_matrix:
+  - role: Owner
+    party: "You (workstation)"
+    responsibility: "Execute unmounts, run preflight, validate acceptance"
+  - role: Accountable
+    party: "Strategos"
+    responsibility: "Governance compliance & acceptance gates"
+  - role: Consulted
+    party: "Copilot/other agents"
+    responsibility: "Execution assistance only; no authority"
+  - role: Informed
+    party: "Future collaborators"
+    responsibility: "FYI via ADR update note"
+
+acceptance_criteria:
+  - "mount output shows exactly one smbfs line: //…@homeassistant.local/config on /config"
+  - "smbutil statshares -a shows only 'config' from homeassistant.local"
+  - "Write/read probe at /config/.ha-acceptance.<timestamp> is immediately visible"
+  - "create_file (or editor save) writes appear under /config and persist"
+  - "No ENOENT for path-in-config operations over a 24h window"
+
+risk_assessment:
+  risks:
+    - "Loss of convenient access to 'share' and 'addons' mounts if workflows relied on /Volumes/HA/*"
+    - "Keychain auto-mount could resurrect Tailscale mounts"
+  mitigations:
+    - "If needed, mount 'share' or 'addons' on-demand to distinct paths (not /config) and never point tools there"
+    - "Purge Tailscale host credentials in Keychain; disable any agents that auto-mount reverse-beta host"
+  rollback:
+    - "Re-mount previous Tailscale shares: mount_smbfs //USERNAME@homeassistant.reverse-beta.ts.net/{config,share,addons} /Volumes/HA/{config,share,addons}"
+    - "Re-enable any disabled LaunchAgents"
+  residual_risk: "Low once guardrails are in place"
+
+signoff_required: ["Owner", "Strategos"]
