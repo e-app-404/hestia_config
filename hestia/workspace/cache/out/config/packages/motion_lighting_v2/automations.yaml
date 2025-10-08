@@ -1,0 +1,57 @@
+automation:
+  - alias: "Motion Lights — Bedroom (SQL-driven)"
+    id: motion_lights_bedroom_sql
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.bedroom_motion_beta
+        to: "on"
+    variables:
+      _raw: "{{ state_attr('sensor.room_configs_motion_lighting','payload') }}"
+      _cfgs: "{{ _raw | from_json if _raw else {} }}"
+      room_config: "{{ _cfgs.get('bedroom', {}) }}"
+      timeout: "{{ room_config.get('timeout', 120) | int }}"
+      bypass: "{{ room_config.get('bypass', false) | bool }}"
+      presence_multiplier: "{{ room_config.get('presence_timeout_multiplier', 1.0) | float }}"
+      is_presence_detected: "{{ is_state('person.evert','home') }}"
+      effective_timeout: "{{ (timeout * presence_multiplier) | int if is_presence_detected else timeout }}"
+      illuminance_threshold: "{{ room_config.get('illuminance_threshold', 10) | int }}"
+    condition:
+      - condition: template
+        value_template: "{{ not bypass }}"
+      - condition: template
+        value_template: >
+          {{ (states('sensor.bedroom_illuminance_beta') | float(9999)) < illuminance_threshold }}
+    action:
+      - service: light.turn_on
+        target:
+          entity_id: light.adaptive_bedroom_light_group
+        data:
+          transition: 2
+      - service: persistent_notification.create
+        data:
+          title: "Motion Light Trigger"
+          message: "Bedroom SQL-driven activation at {{ now() }}"
+      - choose:
+          - conditions: "{{ path_exists('/config/.sql_room_db_tokens/MIGRATION_TOKEN_SQLITE3_OK') }}"
+            sequence:
+              - service: shell_command.update_room_config
+                data:
+                  room_id: "bedroom"
+                  domain: "motion_lighting"
+                  config_data: >-
+                    {{ dict(room_config, **{'last_triggered': now().isoformat(), 'trigger_count': (room_config.get('trigger_count', 0) | int) + 1}) }}
+          - conditions: "{{ not path_exists('/config/.sql_room_db_tokens/MIGRATION_TOKEN_SQLITE3_OK') }}"
+            sequence:
+              - service: rest_command.room_db_update_config
+                data:
+                  room_id: "bedroom"
+                  domain: "motion_lighting"
+                  config_data: >-
+                    {{ dict(room_config, **{'last_triggered': now().isoformat(), 'trigger_count': (room_config.get('trigger_count', 0) | int) + 1}) }}
+      - delay:
+          seconds: "{{ effective_timeout }}"
+      - service: light.turn_off
+        target:
+          entity_id: light.adaptive_bedroom_light_group
+        data:
+          transition: 5

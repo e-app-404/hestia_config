@@ -1,0 +1,19 @@
+template:
+  - sensor:
+      - name: "Motion Timeout — Bedroom (SQL)"
+        unique_id: "motion_timeout_bedroom_sql"
+        state: >-
+          {% set raw = state_attr('sensor.room_configs_motion_lighting','payload') %}
+          {% set cfg = (raw | from_json).get('bedroom', {}) if raw else {} %}
+          {{ cfg.get('timeout', 120) }}
+        attributes:
+          bypass: >-
+            {% set raw = state_attr('sensor.room_configs_motion_lighting','payload') %}
+            {% set cfg = (raw | from_json).get('bedroom', {}) if raw else {} %}
+            {{ cfg.get('bypass', false) }}
+          last_triggered: >-
+            {% set raw = state_attr('sensor.room_configs_motion_lighting','payload') %}
+            {% set cfg = (raw | from_json).get('bedroom', {}) if raw else {} %}
+            {{ cfg.get('last_triggered', '') }}
+          room_id: "bedroom"
+          source: "room_database_sql"

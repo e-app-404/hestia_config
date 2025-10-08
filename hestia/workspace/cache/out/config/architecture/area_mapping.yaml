@@ -1,0 +1,4 @@
+# Stub canonical area mapping — replace with your real mapping
+rooms:
+  bedroom:
+    segment_id: 1
