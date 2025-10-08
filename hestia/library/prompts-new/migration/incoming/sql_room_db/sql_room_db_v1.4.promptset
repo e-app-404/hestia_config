@@ -37,7 +37,7 @@ promptset:
     scan_interval_seconds: 30                       # platform-level cadence for SQL platform
     json1_required_functions: ["json_extract", "json_group_object", "json_group_array", "json_valid"]
     room_id_pattern: "^[a-z0-9_]+$"                 # slugified room IDs
-    canonical_mapping_file: "/config/architecture/area_mapping.yaml"
+    canonical_mapping_file: "/config/domain/architecture/area_mapping.yaml"
     tokens_dir: "/config/.sql_room_db_tokens"      # preflight/migration tokens directory
     schema_expected: 1                               # expected DB schema_version
     appdaemon_base_url: "http://appdaemon:5050"     # override if different

@@ -41,7 +41,7 @@ promptset:
     room_id_pattern: "^[a-z0-9_]+$"                 # Slugified room IDs
     tokens_dir: "/config/.sql_room_db_tokens"      # Preflight/migration tokens directory
     schema_expected: 1                               # Expected DB schema_version
-    canonical_mapping_file: "/config/architecture/area_mapping.yaml"
+    canonical_mapping_file: "/config/domain/architecture/area_mapping.yaml"
 
   artifacts:
     required:
