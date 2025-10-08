@@ -1,0 +1,227 @@
+---
+# SQL Room Database Architecture Promptset for Strategos GPT
+# Multi-phase reconstruction of Variable integration using SQL-based room databases
+# Targets: Adaptive Motion Lighting + Valetudo Vacuum Control packages
+
+promptset:
+  id: sql-room-database-architecture.promptset
+  version: 1.0
+  created: "2025-10-08"
+  description: |
+    Comprehensive 5-phase promptset for Strategos GPT (ChatGPT-5 Extended Thinking) to architect
+    and implement SQL-based room database solution replacing HACS Variable integration.
+    Merges adaptive motion lighting and vacuum control into unified room-scoped data architecture
+    achieving 70%+ entity reduction through dynamic database-backed configuration objects.
+  persona: strategos_gpt
+  purpose: |
+    Transform Variable integration dependencies into production-grade SQL-based room database
+    architecture. Create unified data layer for motion lighting and vacuum control with
+    room-scoped configuration objects, maintaining all functionality while eliminating
+    entity sprawl through strategic database design.
+  legacy_compatibility: false
+  schema_version: 1.0
+
+  # Execution Context for Strategos GPT
+  execution_context:
+    model: "GPT-5 Extended Thinking"
+    approach: "Sequential phase execution with thinking reinforcement"
+    mandate: "Replace 70+ helper entities with <10 SQL sensors + room database architecture"
+    success_criteria: "Production-ready packages with copy-paste YAML components"
+
+  # Artifacts & Bindings
+  artifacts:
+    required:
+      # Input package components for analysis
+      - path: /mnt/data/adaptive_motion_lighting/
+        description: "Complete adaptive motion lighting package with room configs, automations, and helper definitions"
+      - path: /mnt/data/valetudo/
+        description: "Valetudo vacuum control package with room cleaning logic and state management"
+      
+      # SQL integration patterns and constraints
+      - path: /mnt/data/homeassistant_sql_integration_guide.md
+        description: "Official HA SQL integration documentation with schema patterns, query validation, and template integration"
+      - path: /mnt/data/sqlite_homeassistant_patterns.md
+        description: "SQLite usage patterns in HA ecosystem, performance considerations, and database design best practices"
+      
+      # Architecture governance
+      - path: /mnt/data/ADR/ADR-0008-normalization-and-determinism-rules.md
+        description: "YAML normalization rules and deterministic configuration patterns for package consistency"
+      - path: /mnt/data/ADR/ADR-0021-motion-occupancy-presence-signals.md
+        description: "Motion/occupancy/presence signal handling requirements and tier progression standards"
+      - path: /mnt/data/ADR/ADR-0024-canonical-config-path.md
+        description: "Canonical workspace structure and file placement requirements"
+      
+      # Reference architecture
+      - path: /mnt/data/architecture/area_mapping.yaml
+        description: "Canonical area/room/zone mapping with hierarchical relationships"
+      - path: /mnt/data/architecture/presence_mapping.yaml
+        description: "Presence detection architecture and entity relationship mapping"
+      - path: /mnt/data/architecture/tier_mapping.yaml
+        description: "Alpha/beta/eta tier progression rules for entity references"
+
+    consulted:
+      # Extended context sources
+      - path: /mnt/data/hestia_structure.md
+        description: "Workspace organization principles and package placement conventions"
+      - path: /mnt/data/draft_template.promptset
+        description: "Template structure for promptset organization and phase management"
+      - path: /mnt/data/enhanced-motion-lighting-config.promptset
+        description: "Previous motion lighting architecture for feature preservation analysis"
+      - path: /mnt/data/valetudo_optimization_comprehensive_v2.promptset
+        description: "Previous vacuum optimization approach for integration pattern analysis"
+
+  bindings:
+    protocols:
+      - sql_database_first_architecture
+      - room_scoped_data_modeling
+      - entity_reduction_optimization
+      - production_grade_validation
+      - adr_compliance_enforcement
+    hard_guardrails:
+      - "Database schema MUST support JSON attributes for complex room configurations"
+      - "SQL queries MUST use HA recorder database unless explicitly requiring external database"
+      - "Room objects MUST consolidate 6+ entities into single queryable configuration"
+      - "All YAML output MUST pass HA configuration validation"
+      - "Package structure MUST follow ADR-0024 canonical path requirements"
+      - "Entity references MUST use beta-tier entities per ADR-0021 progression rules"
+    persona: strategos_gpt
+
+  retrieval_tags:
+    - sql_architecture
+    - room_database
+    - entity_reduction
+    - variable_replacement
+    - motion_lighting
+    - vacuum_control
+    - home_assistant
+    - database_design
+
+  operational_modes:
+    - research_mode
+    - deconstruction_mode
+    - architecture_mode
+    - implementation_mode
+    - validation_mode
+
+  # 5-Phase Sequential Execution Plan
+  prompts:
+    # PHASE 1: Research Foundation
+    - id: sql_room_db.research.foundation
+      persona: strategos_gpt
+      label: "Research — SQL Integration Patterns & Package Analysis"
+      mode: research_mode
+      protocols:
+        - sql_database_first_architecture
+        - production_grade_validation
+      bindings:
+        - /mnt/data/homeassistant_sql_integration_guide.md
+        - /mnt/data/sqlite_homeassistant_patterns.md
+        - /mnt/data/adaptive_motion_lighting/
+        - /mnt/data/valetudo/
+        - /mnt/data/ADR/ADR-0008-normalization-and-determinism-rules.md
+      prompt: |
+        **STRATEGOS PHASE 1/5: RESEARCH FOUNDATION**
+        
+        You are Strategos GPT operating in Extended Thinking mode. Your objective: architect SQL-based room database solution to replace HACS Variable integration, achieving 70%+ entity reduction while preserving all functionality.
+
+        ## Research Directives
+
+        ### 1.1 SQL Integration Mastery
+        **Absorb from \`/mnt/data/homeassistant_sql_integration_guide.md\`:**
+        - SQL sensor configuration patterns and YAML schema requirements
+        - Query validation rules and SELECT-only constraints
+        - Template integration patterns for dynamic query generation
+        - Database connection management (recorder vs external database)
+        - JSON column support and nested attribute extraction
+        - Performance considerations and query optimization
+
+        ### 1.2 SQLite Architecture Patterns  
+        **Extract from \`/mnt/data/sqlite_homeassistant_patterns.md\`:**
+        - Room-scoped database design patterns
+        - JSON storage vs normalized table approaches
+        - Transaction handling and data consistency models
+        - Integration with HA recorder database vs standalone SQLite
+        - Query caching and performance optimization techniques
+
+        ### 1.3 Package Component Analysis
+        **Unpack and inventory \`/mnt/data/adaptive_motion_lighting/\`:**
+        - Count total entities (helpers, sensors, automations)
+        - Extract room configuration patterns and data structures
+        - Identify dynamic data requirements (motion timeouts, bypass states)
+        - Map entity interdependencies and automation triggers
+        - Document GUI touchpoints and user-configurable elements
+
+        **Unpack and inventory \`/mnt/data/valetudo/\`:**
+        - Analyze vacuum control state management approach
+        - Extract room-to-segment mapping patterns
+        - Identify cleaning schedule and status tracking mechanisms
+        - Document MQTT integration patterns and command structures
+
+        ### 1.4 Governance Requirements
+        **From ADR-0008 extract normalization requirements:**
+        - YAML formatting standards (2-space indent, A→Z keys, UTF-8/LF)
+        - Configuration determinism requirements
+        - Package structure and naming conventions
+
+        ## Required Output Structure
+        ```yaml
+        research_foundation:
+          sql_capabilities:
+            # SQL integration features and constraints
+          sqlite_patterns:
+            # Room database design patterns
+          current_architecture:
+            adaptive_lighting:
+              entity_count: n
+              room_configs: {}
+              dependencies: []
+            valetudo:
+              entity_count: n  
+              room_mappings: {}
+              state_tracking: []
+          consolidation_opportunities:
+            # Specific entity reduction targets
+          governance_constraints:
+            # ADR compliance requirements
+        ```
+
+        **THINKING REQUIREMENT:** Use extended thinking to analyze interdependencies and architectural implications before outputting structured analysis.
+
+        **CONFIDENCE ASSESSMENT:** [n]%
+
+  # Execution Summary for Strategos GPT
+  execution_summary:
+    objective: "Replace HACS Variable integration with SQL-based room database architecture"
+    target_reduction: "70%+ entity reduction through room-scoped configuration objects"
+    deliverables:
+      - Research analysis of SQL integration patterns
+      - Deconstructed feature requirements from both packages
+      - Complete room database architecture design
+      - Production-ready YAML package implementations  
+      - Comprehensive validation and acceptance framework
+    success_metrics:
+      - Entity count: 70%+ reduction achieved
+      - Functionality: 100% feature preservation
+      - Performance: <100ms SQL query response times
+      - Compliance: Full ADR-0008 and ADR-0021 adherence
+      - Deployability: Copy-paste ready YAML components
+
+  # Final Instructions for Strategos
+  strategos_instructions: |
+    Execute each phase sequentially, using Extended Thinking mode to analyze interdependencies
+    and architectural implications. Each phase builds on previous outputs - maintain context
+    continuity throughout execution.
+    
+    Your final deliverable should be production-ready Home Assistant packages that can be
+    dropped directly into a /config/packages/ directory and function immediately, replacing
+    the failed HACS Variable integration with superior SQL-based architecture.
+    
+    Focus on practical implementation over theoretical discussion. Every YAML block should
+    be syntactically valid and functionally complete.
+
+# Documentation  
+documentation:
+  - Reference: ADR-0021 for motion/presence signal requirements
+  - See architecture/*.yaml files for canonical room/area mappings
+  - SQL integration guide provides query optimization patterns
+  - Package placement follows ADR-0024 canonical structure
