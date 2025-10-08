@@ -29,7 +29,7 @@ rationale: >
   and tooling ambiguity. Finder shows both endpoints; terminal confirms both are writable.
   We standardize on the local identity to align with existing synthetic.conf and LaunchAgent.
 
-status: "proposed-ready"
+status: "executed-2025-10-08"
 
 path:
   - /config
@@ -73,3 +73,23 @@ risk_assessment:
   residual_risk: "Low once guardrails are in place"
 
 signoff_required: ["Owner", "Strategos"]
+
+execution_notes: |
+  Executed successfully on 2025-10-08 11:15-11:30 UTC.
+  
+  Results:
+  - Tailscale mounts (/Volumes/HA/{config,share,addons}) successfully unmounted
+  - Single mount confirmed: homeassistant.local/config → /config via synthetic.conf
+  - Preflight script created and tested: /usr/local/bin/ha_config_preflight.sh
+  - VS Code workspace updated to use canonical /config path
+  - All acceptance criteria verified and passed
+  - ADR-0024 addendum documentation added
+  
+  Post-execution validation:
+  - mount | grep smbfs shows single SMB filesystem
+  - smbutil statshares -a shows only homeassistant.local server
+  - Write operations to /config work reliably
+  - create_file tool issues resolved through mount conflict elimination
+
+executed_by: "Copilot (GitHub Copilot)"
+validated_by: "User (evertappels)"

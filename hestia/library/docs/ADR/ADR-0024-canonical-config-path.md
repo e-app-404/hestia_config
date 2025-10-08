@@ -594,3 +594,91 @@ print('VS Code environment: OK')
 - **2025-10-05 (Documentation):** Markdown formatting standardized, TOC added, YAML frontmatter enhanced with implementation metadata.
 - **2025-10-05 (Post-Reboot):** ✅ **FINAL VALIDATION COMPLETE** - Hybrid synthetic configuration operational, all compliance items implemented, comprehensive testing passed.
 - **2025-10-06 (Comprehensive Tooling):** ✅ **TOOLING SUITE COMPLETE** - Added comprehensive implementation of `bin/require-config-root` with RO/RW modes, `bin/config-health` path validator, `bin/vscode-env-smoke` environment tester, enhanced `tools/lint_paths.sh` with ripgrep support, `tools/fix_path_drift.sh` automated remediation, CI/CD pipeline with `.github/workflows/ha-canonical-guard.yml`, pre-commit hooks, VS Code tasks integration, and devcontainer support. All 12 validation components passing. Post-internet-disruption integrity verification completed successfully.
+
+---
+
+# ADR-0024-addendum-canonical-config-mount-enforcement
+
+**Status:** Accepted
+**Related ADRs:** ADR-0024 (Canonical Config Path), ADR-0022 (Mount Management), ADR-0016 (Legacy Mount Issues, superseded)
+**Date:** 2025-10-08
+
+## Context
+
+Dual SMB mounts were active to the HA config storage:
+
+* `//…@homeassistant.local/config` → `/config` (via `synthetic.conf`)
+* `//…@homeassistant.reverse-beta.ts.net/config` → `/Volumes/HA/config` (plus `share`, `addons`)
+
+Both were writable, causing path ambiguity, ENOENTs, and "phantom edits." Governance requires a single canonical runtime path.
+
+## Decision
+
+* Keep **`homeassistant.local` → `/config`** as the **only** writable config mount.
+* **Block** automatic mounts of the Tailscale host to `/Volumes/HA/{config,share,addons}` in normal operation.
+* Allow **manual, temporary** mounts of `share`/`addons` for ad-hoc use; tools/automations **must not** reference them.
+* Enforce a `/config` **preflight** before any write.
+* Editors/agents/workflows **must reference `/config` only** (workspace updated).
+* Keychain hygiene: keep creds for `homeassistant.local`; remove `homeassistant.reverse-beta.ts.net` to prevent auto-remounts.
+
+## Implementation Notes
+
+Unmount duplicates:
+
+```zsh
+diskutil unmount /Volumes/HA/config  || sudo umount -f /Volumes/HA/config  || true
+diskutil unmount /Volumes/HA/share   || sudo umount -f /Volumes/HA/share   || true
+diskutil unmount /Volumes/HA/addons  || sudo umount -f /Volumes/HA/addons  || true
+```
+
+Mount canonical path (expects creds in Keychain or `~/.nsmbrc`):
+
+```zsh
+sudo mkdir -p /config
+sudo mount_smbfs -o nobrowse -N "//${USER}@homeassistant.local/config" /config
+```
+
+Preflight (save as `/usr/local/bin/ha_config_preflight.sh`, `chmod +x`):
+
+```zsh
+#!/bin/zsh
+set -euo pipefail
+HOST="homeassistant.local"; MP="/config"
+if mount | grep -q " on $MP " && ! mount | grep -q "//.*@$HOST/config on $MP"; then echo "[FAIL] unexpected host"; exit 78; fi
+if ! mount | grep -q "//.*@$HOST/config on $MP"; then sudo mkdir -p "$MP"; sudo mount_smbfs -o nobrowse -N "//${USER}@$HOST/config" "$MP"; fi
+[ -w "$MP" ] || { echo "[FAIL] not writable"; exit 78; }
+[ -f "$MP/configuration.yaml" ] || { echo "[FAIL] configuration.yaml missing"; exit 78; }
+echo "[OK] /config healthy"
+```
+
+LaunchAgent guard (excerpt):
+
+```xml
+<key>ProgramArguments</key>
+<array><string>/bin/zsh</string><string>-lc</string><string>/usr/local/bin/ha_config_preflight.sh</string></array>
+<key>RunAtLoad</key><true/>
+<key>KeepAlive</key><dict><key>NetworkState</key><true/></dict>
+```
+
+## Acceptance Criteria (binary)
+
+* `mount` shows **one** smbfs line: `//…@homeassistant.local/config on /config`.
+* `smbutil statshares -a` lists only `config` from `homeassistant.local`.
+* Writing `/config/.ha-acceptance.<ts>` succeeds and is immediately visible.
+* No ENOENT related to config path for 24h.
+
+## Consequences
+
+* Stable, single-source writes; simpler troubleshooting.
+* Workflows referencing `/Volumes/HA/*` must migrate to `/config` (or use temporary, manual mounts).
+
+## Rollback
+
+If needed:
+
+```zsh
+sudo mount_smbfs //${USER}@homeassistant.reverse-beta.ts.net/config /Volumes/HA/config
+sudo mount_smbfs //${USER}@homeassistant.reverse-beta.ts.net/share  /Volumes/HA/share
+sudo mount_smbfs //${USER}@homeassistant.reverse-beta.ts.net/addons /Volumes/HA/addons
+```
+
