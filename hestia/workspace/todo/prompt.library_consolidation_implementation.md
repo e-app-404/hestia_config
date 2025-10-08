@@ -9,11 +9,11 @@
 ### 2025-10-08: ✅ Complete Implementation Package Created
 
 **Tools Implemented**:
-- ✅ `/config/tools/prompt_prep/prep_prompts.py` - Enhanced metadata extraction with all required fields
-- ✅ `/config/tools/prompt_prep/validate_frontmatter.py` - Comprehensive frontmatter validation
-- ✅ `/config/tools/catalog/place_in_catalog.py` - Catalog placement with hard copy generation
-- ✅ `/config/tools/catalog/sync_copies.py` - Copy synchronization utility
-- ✅ `/config/tools/catalog/validate_copies.py` - Copy consistency validation
+- ✅ `/config/hestia/tools/prompt_prep/prep_prompts.py` - Enhanced metadata extraction with all required fields
+- ✅ `/config/hestia/tools/prompt_prep/validate_frontmatter.py` - Comprehensive frontmatter validation
+- ✅ `/config/hestia/tools/catalog/place_in_catalog.py` - Catalog placement with hard copy generation
+- ✅ `/config/hestia/tools/catalog/sync_copies.py` - Copy synchronization utility
+- ✅ `/config/hestia/tools/catalog/validate_copies.py` - Copy consistency validation
 - ✅ `/config/bin/prompt-prep` - CLI wrapper for all operations
 
 **Enhanced Metadata Fields** (corrected from original plan):

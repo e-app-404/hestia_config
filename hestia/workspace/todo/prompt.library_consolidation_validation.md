@@ -47,11 +47,11 @@ redaction_log: []                     # Change tracking
 
 | Tool | Path | Status | Function |
 |------|------|--------|----------|
-| **prep_prompts.py** | `/config/tools/prompt_prep/` | ✅ | Enhanced metadata extraction |
-| **validate_frontmatter.py** | `/config/tools/prompt_prep/` | ✅ | Comprehensive validation |
-| **place_in_catalog.py** | `/config/tools/catalog/` | ✅ | Catalog placement + hard copies |
-| **sync_copies.py** | `/config/tools/catalog/` | ✅ | Copy synchronization |
-| **validate_copies.py** | `/config/tools/catalog/` | ✅ | Consistency validation |
+| **prep_prompts.py** | `/config/hestia/tools/prompt_prep/` | ✅ | Enhanced metadata extraction |
+| **validate_frontmatter.py** | `/config/hestia/tools/prompt_prep/` | ✅ | Comprehensive validation |
+| **place_in_catalog.py** | `/config/hestia/tools/catalog/` | ✅ | Catalog placement + hard copies |
+| **sync_copies.py** | `/config/hestia/tools/catalog/` | ✅ | Copy synchronization |
+| **validate_copies.py** | `/config/hestia/tools/catalog/` | ✅ | Consistency validation |
 | **prompt-prep** | `/config/bin/` | ✅ | CLI wrapper |
 
 ---
