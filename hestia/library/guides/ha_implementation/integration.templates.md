@@ -224,43 +224,7 @@ template:
 The template button platform allows you to create button entities with scripts to define each action.
 
 
-          - condition: state
-            entity_id: sensor.garage_door
-            state: "on"
-          - action: switch.turn_off
-            target:
-              entity_id: switch.garage_door
-        stop_cover:
-          action: switch.turn_on
-          target:
-            entity_id: switch.garage_door
-        icon: >-
-          {% if states('sensor.garage_door')|float > 0 %}
-            mdi:garage-open
-          {% else %}
-            mdi:garage
-          {% endif %}
-```
 
-#### State based cover - Optimistic Garage Door with Momentary Switch
-
-This example converts a garage door with a momentary switch.
-
-```yaml
-template:
-  - cover:
-      - name: Garage Door
-        device_class: garage
-        open_cover:
-          - action: switch.turn_on
-            target:
-              entity_id: switch.garage_door
-        close_cover:
-          - action: switch.turn_on
-            target:
-              entity_id: switch.garage_door
-        stop_cover:
-          - action: switch.turn_on
             target:
               entity_id: switch.garage_door
 ```
@@ -1778,43 +1742,7 @@ template:
 If the template accesses every state on the system, a rate limit of one update per minute is applied. If the template accesses all states under a specific domain, a rate limit of one update per second is applied. If the template only accesses specific states, receives update events for specifically referenced entities, or the `homeassistant.update_entity` action is used, no rate limit is applied.
 
 
-## Considerations
 
-### Startup
-
-If you are using the state of a platform that might not be available during startup, the Template Sensor may get an unknown state. To avoid this, use the `states()` function in your template. For example, you should replace `{{ states.sensor.moon.state }}` with this equivalent that returns the state and never results in unknown: `{{ states('sensor.moon') }}`.
-
-The same would apply to the `is_state()` function. You should replace `{{ states.switch.source.state == 'on' }}` with this equivalent that returns true/false and never gives an unknown result:
-
-```jinja
-{{ is_state('switch.source', 'on') }}
-```
-
-## Using blueprints
-
-If you’re just starting out and are not really familiar with templates, we recommend that you start with blueprint template entities. These are template entities which are ready-made by the community and that you only need to configure.
-
-Each blueprint contains the “recipe” for creating a single template entity, but you can create multiple template entities based on the same blueprint.
-
-To create your first template entity based on a blueprint, open up your `configuration.yaml` file and add:
-
-#### Example configuration.yaml template entity based on a blueprint located in `config/blueprints/homeassistant/inverted_binary_sensor.yaml`
-
-```yaml
-template:
-  - use_blueprint:
-      path: homeassistant/inverted_binary_sensor.yaml # relative to config/blueprints/template/
-      input:
-        reference_entity: binary_sensor.foo
-    name: Inverted foo
-    unique_id: inverted_foo
-```
-
-If you look at the blueprint definition, you will notice it has one input defined (`reference_entity`), which expects a `binary_sensor` entity ID. When you create a template entity based on that blueprint, you will have to tell it which of your `binary_sensor` entities it should use to fill that spot.
-
-### Importing blueprints
-
-Home Assistant can import blueprints from the Home Assistant forums, GitHub, and GitHub gists.
 
 To import a blueprint, first find a blueprint you want to import.
 
@@ -1865,42 +1793,7 @@ alarm_control_panel:
           data:
             code: !secret alarm_code
         disarm:
-          - condition: state
-            entity_id: device_tracker.paulus
-            state: "home"
-          - action: alarm_control_panel.alarm_disarm
-            target:
-              entity_id: alarm_control_panel.real_alarm
-            data:
-              code: !secret alarm_code
-```
 
-### Configuration Variables
-
-| Variable | Type | Description |
-| -------- | ---- | ----------- |
-| `panels` | map (Required) | List of your panels. |
-| `alarm_control_panel_name` | map (Required) | The slug of the panel. |
-| `name` | string (Optional) | Name to use in the frontend. Default: Template Alarm Control Panel |
-| `unique_id` | string (Optional) | An ID that uniquely identifies this alarm control panel. Set this to a unique value to allow customization through the UI. |
-| `value_template` | template (Optional) | Defines a template to set the state of the alarm panel. Only the states armed_away, armed_home, armed_night, armed_vacation, arming, disarmed, pending, triggered and unavailable are used. |
-| `disarm` | action (Optional) | Defines an action to run when the alarm is disarmed. |
-| `arm_away` | action (Optional) | Defines an action to run when the alarm is armed to away mode. |
-
-arm_home action (Optional)
-Defines an action to run when the alarm is armed to home mode.
-
-arm_night action (Optional)
-Defines an action to run when the alarm is armed to night mode.
-
-arm_vacation action (Optional)
-Defines an action to run when the alarm is armed to vacation mode.
-
-arm_custom_bypass action (Optional)
-Defines an action to run when the alarm is armed to custom bypass mode.
-
-sensor_name map Required
-friendly_name string (Optional)
 device_class device_class (Optional, default: None)
 availability_template template (Optional, default: true)
 delay_on time (Optional)
