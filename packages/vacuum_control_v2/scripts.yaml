@@ -6,7 +6,8 @@ script:
       room:
         description: "Room slug (e.g., 'bedroom')"
         required: true
-        selector: { text: {} }
+        selector:
+          text:
     variables:
       _raw: "{{ state_attr('sensor.room_configs_vacuum_control','payload') }}"
       _cfgs: "{{ _raw | from_json if _raw else {} }}"
