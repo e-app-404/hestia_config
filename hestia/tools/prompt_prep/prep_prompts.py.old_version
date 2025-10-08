@@ -4,14 +4,13 @@ Prompt Library Pre-Preparation Script
 Converts all prompt files to Markdown with YAML frontmatter stub
 """
 
-import hashlib
 import os
 import re
-from datetime import datetime
-from pathlib import Path
-
 import yaml
-
+from pathlib import Path
+from datetime import datetime
+import hashlib
+import sys
 
 class PromptPrepper:
     def __init__(self, source_dir, output_dir, dry_run=True):
@@ -225,7 +224,7 @@ class PromptPrepper:
     def process_file(self, filepath):
         """Process a single file"""
         try:
-            with open(filepath, encoding='utf-8') as f:
+            with open(filepath, 'r', encoding='utf-8') as f:
                 content = f.read()
             
             metadata = self.extract_metadata(filepath, content)
