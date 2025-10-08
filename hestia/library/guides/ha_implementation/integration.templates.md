@@ -40,110 +40,21 @@ There is currently support for the following device types within Home Assistant:
 
 ## Table of Contents
 
-- [Configuration](#configuration)
-- [YAML Configuration](#yaml-configuration)
-- [State-based Template Entities](#state-based-template-entities)
-- [Trigger-based Template Entities](#trigger-based-template-entities)
-- [Configuration Reference](#configuration-reference)
-- [Common Device Configuration Options](#common-device-configuration-options)
-- [Examples](#examples)
-- [Considerations](#considerations)
-- [Using Blueprints](#using-blueprints)
-- [Legacy Configuration Formats](#legacy-configuration-formats)
 
-## Configuration
+| `pressure_unit` | string (Optional) | Unit for pressure_template output. Valid options: Pa, hPa, kPa, bar, cbar, mbar, mmHg, inHg, psi. |
+| `wind_speed_template` | template (Optional) | The current wind speed. |
+| `wind_gust_speed_template` | template (Optional) | The current wind gust speed. |
+| `wind_speed_unit` | string (Optional) | Unit for wind_speed_template output. Valid options: m/s, km/h, mph, mm/d, in/d, and in/h. |
+| `wind_bearing_template` | template (Optional) | The current wind bearing. |
+| `ozone_template` | template (Optional) | The current ozone level. |
+| `cloud_coverage_template` | template (Optional) | The current cloud coverage. |
+| `visibility_template` | template (Optional) | The current visibility. |
+| `visibility_unit` | string (Optional) | Unit for visibility_template output. Valid options: km, mi, ft, m, cm, mm, in, yd. |
+| `forecast_daily_template` | template (Optional) | Daily forecast data. |
+| `forecast_hourly_template` | template (Optional) | Hourly forecast data. |
+| `forecast_twice_daily_template` | template (Optional) | Twice daily forecast data. |
+| `precipitation_unit` | string (Optional) | Unit for precipitation output. Valid options: km, mi, ft, m, cm, mm, in, yd. |
 
-To be able to add Helpers via the user interface, you should have `default_config:` in your `configuration.yaml`. It should already be there by default unless you removed it.
-
-## YAML Configuration
-
-Entities are defined in your YAML configuration files under the `template:` key. You can define multiple configuration blocks as a list. Each block defines sensor/binary sensor/number/select entities and can contain optional update triggers.
-
-### State-based Template Entities
-
-Template entities will by default update as soon as any of the referenced data in the template updates.
-
-For example, you can have a template that takes the averages of two sensors. Home Assistant will update your template sensor as soon as either source sensor updates.
-
-```yaml
-template:
-  - sensor:
-      - name: "Average temperature"
-        unit_of_measurement: "°C"
-        state: >
-          {% set bedroom = states('sensor.bedroom_temperature') | float %}
-          {% set kitchen = states('sensor.kitchen_temperature') | float %}
-
-          {{ ((bedroom + kitchen) / 2) | round(1, default=0) }}
-```
-
-### Trigger-based Template Entities
-
-If you want more control over when an entity updates, you can define triggers. Triggers follow the same format and work exactly the same as triggers in automations. This feature is a great way to create entities based on webhook data (example), or update entities based on a schedule.
-
-Whenever a trigger fires, all related entities will re-render and it will have access to the trigger data in the templates.
-
-Trigger-based entities do not automatically update when states referenced in the templates change. This functionality can be added back by defining a state trigger for each entity that you want to trigger updates.
-
-The state, including attributes, of trigger-based sensors and binary sensors is restored when Home Assistant is restarted. The state of other trigger-based template entities is not restored.
-
-> **Note**: Buttons do not support using trigger or action options.
-
-
-#### Example configuration entry
-
-```yaml
-template:
-  - triggers:
-      - trigger: time_pattern
-        # This will update every night
-        hours: 0
-        minutes: 0
-    sensor:
-      # Keep track how many days have past since a date
-      - name: "Not smoking"
-        state: '{{ ( ( as_timestamp(now()) - as_timestamp(strptime("06.07.2018", "%d.%m.%Y")) ) / 86400 ) | round(default=0) }}'
-        unit_of_measurement: "Days"
-```
-
-## Configuration Reference
-
-
-### Configuration Variables
-
-| Variable | Type | Description |
-| -------- | ---- | ----------- |
-| `actions` | list (Optional) | Define actions to be executed when the trigger fires (for trigger-based entities only). Optional. Variables set by the action script are available when evaluating entity templates. This can be used to interact with anything using actions, in particular actions with response data. See action documentation. |
-| `conditions` | list (Optional) | Define conditions that have to be met after a trigger fires and before any actions are executed or sensor updates are performed (for trigger-based entities only). Optional. See condition documentation. |
-| `triggers` | list (Optional) | Define one or multiple automation triggers to update the entities. Optional. If omitted will update based on referenced entities. See trigger documentation. |
-| `unique_id` | string (Optional) | The unique ID for this config block. This will be prefixed to all unique IDs of all entities in this block. |
-| `variables` | map (Optional) | Key-value pairs of variable definitions which can be referenced and used in the templates below (for trigger-based entities only). Mostly used by blueprints. With State-based template entities, variables are only resolved when the configuration is loaded or reloaded. Trigger based template entities resolve variables between triggers and actions. |
-
-`variable_name: value` string Required
-: The variable name and corresponding value.
-
-## Common Device Configuration Options
-
-Each entity platform has its own set of configuration options, but there are some common options that can be used across all entity platforms.
-
-
-#### Example configuration.yaml entry
-
-```yaml
-template:
-  - binary_sensor:
-      # Common configuration options
-    - default_entity_id: binary_sensor.my_alert
-      unique_id: my_unique_sensor_id
-      variables:
-        my_entity: sensor.watts
-      availability: "{{ my_entity | has_value }}"
-      icon: "{{ 'mdi:flash-alert' if states(my_entity) | float > 100 else 'mdi:flash' }}"
-      name: "{{ states(my_entity) }} Alert"
-      # Entity specific configuration options
-      state: "{{ states(my_entity) | float > 100}}"
-      device_class: problem
-```
 
 
 ### Configuration Variables
@@ -272,73 +183,7 @@ This example creates a washing machine “load running” sensor by monitoring a
 #### Example configuration.yaml entry
 
 ```yaml
-# Determine when the washing machine has a load running.
-template:
-  - binary_sensor:
-      - name: "Washing Machine"
-        delay_off:
-          minutes: 5
-        state: >
-          {{ states('sensor.washing_machine_power')|float > 0 }}
-```
 
-### State based binary sensor - Is Anyone Home
-
-This example is determining if anyone is home based on the combination of device tracking and motion sensors. It’s extremely useful if you have kids/baby sitter/grand parents who might still be in your house that aren’t represented by a trackable device in Home Assistant. This is providing a composite of Wi-Fi based device tracking and Z-Wave multisensor presence sensors.
-
-#### Example configuration.yaml entry
-
-```yaml
-template:
-  - binary_sensor:
-      - name: People home
-        state: >
-          {{ is_state('device_tracker.sean', 'home')
-             or is_state('device_tracker.susan', 'home')
-             or is_state('binary_sensor.office_124', 'on')
-             or is_state('binary_sensor.hallway_134', 'on')
-             or is_state('binary_sensor.living_room_139', 'on')
-             or is_state('binary_sensor.porch_ms6_1_129', 'on')
-             or is_state('binary_sensor.family_room_144', 'on') }}
-```
-
-### State based binary sensor - device tracker sensor with latitude and longitude attributes
-
-This example shows how to combine a non-GPS (e.g., NMAP) and GPS device tracker while still including latitude and longitude attributes
-
-#### Example configuration.yaml entry
-
-```yaml
-template:
-  - binary_sensor:
-      - name: My Device
-        state: >
-          {{ is_state('device_tracker.my_device_nmap', 'home') or is_state('device_tracker.my_device_gps', 'home') }}
-        device_class: "presence"
-        attributes:
-          latitude: >
-            {% if is_state('device_tracker.my_device_nmap', 'home') %}
-              {{ state_attr('zone.home', 'latitude') }}
-            {% else %}
-              {{ state_attr('device_tracker.my_device_gps', 'latitude') }}
-            {% endif %}
-          longitude: >
-            {% if is_state('device_tracker.my_device_nmap', 'home') %}
-              {{ state_attr('zone.home', 'longitude') }}
-            {% else %}
-              {{ state_attr('device_tracker.my_device_gps', 'longitude') }}
-            {% endif %}
-```
-
-### State based binary sensor - Change the icon when a state changes
-
-This example demonstrates how to use template to change the icon as its state changes. This icon is referencing its own state.
-
-#### Example configuration.yaml entry
-
-```yaml
-template:
-  - binary_sensor:
       - name: Sun Up
         state: >
           {{ is_state("sun.sun", "above_horizon") }}
@@ -378,117 +223,7 @@ template:
 
 The template button platform allows you to create button entities with scripts to define each action.
 
-Button entities can be created from the frontend in the Helpers section or via YAML.
 
-#### Example configuration.yaml entry
-
-```yaml
-template:
-  - button:
-      - name: Fast Forward
-        press:
-          action: remote.send_command
-          target:
-            entity_id: remote.living_room
-          data:
-            command: fast_forward
-```
-
-## Cover
-
-The template cover platform allows you to create covers with templates to define the state and scripts to define each action.
-
-
-#### Example state-based configuration.yaml entry
-
-```yaml
-template:
-  - cover:
-      - name: Garage Door
-        state: "{{ states('sensor.garage_door')|float > 0 }}"
-        device_class: garage
-        open_cover:
-          action: script.open_garage_door
-        close_cover:
-          action: script.close_garage_door
-        stop_cover:
-          action: script.stop_garage_door
-```
-
-
-#### Example trigger-based configuration.yaml entry
-
-```yaml
-template:
-  - triggers:
-      - trigger: state
-        entity_id: sensor.garage_door
-    cover:
-      - name: Garage Door
-        state: "{{ trigger.to_state.state|float(0) > 0 }}"
-        device_class: garage
-        open_cover:
-          action: script.open_garage_door
-        close_cover:
-          action: script.close_garage_door
-        stop_cover:
-          action: script.stop_garage_door
-```
-
-
-### Configuration Variables
-
-| Variable | Type | Description |
-| -------- | ---- | ----------- |
-| `cover` | map | Characteristics of a cover |
-| `close_cover` | action (Inclusive) | Defines an action to close the cover. |
-| `device_class` | string (Optional) | Sets the class of the device, changing the device state and icon that is displayed on the frontend. |
-| `open_cover` | action (Inclusive) | Defines an action to open the cover. If open_cover is specified, close_cover must also be specified. At least one of open_cover and set_cover_position must be specified. |
-| `optimistic` | boolean (Optional, default: false) | Force cover position to use optimistic mode. |
-| `position` | template (Optional) | Defines a template to get the position of the cover. Legal values are numbers between 0 (closed) and 100 (open). If the template produces a None value the current position will be set to unknown. |
-| `set_cover_position` | action (Optional) | Defines an action to set to a cover position (between 0 and 100). The variable position will contain the entity’s set position. |
-| `set_cover_tilt_position` | action (Optional) | Defines an action to set the tilt of a cover (between 0 and 100). The variable tilt will contain the entity’s set tilt position. |
-| `state` | template (Optional) | Defines a template to get the state of the cover. Valid output values from the template are open, opening, closing and closed which are directly mapped to the corresponding states. In addition, true is valid as a synonym to open and false as a synonym to closed. If both a state and a position template are specified, only opening and closing are set from the state template. If the template produces a None value the state will be set to unknown. |
-| `stop_cover` | action (Optional) | Defines an action to stop the cover. |
-| `tilt` | template (Optional) | Defines a template to get the tilt state of the cover. Legal values are numbers between 0 (closed) and 100 (open). If the template produces a None value, the current tilt state will be set to unknown. |
-| `tilt_optimistic` | boolean (Optional, default: false) | Force cover tilt position to use optimistic mode. |
-
-### Cover Optimistic Mode
-
-In optimistic mode, the cover position state is maintained internally. This mode is automatically enabled if neither state or position are specified. Note that this is unlikely to be very reliable without some feedback mechanism, since there is otherwise no way to know if the cover is moving properly. The cover can be forced into optimistic mode by using the optimistic attribute. There is an equivalent mode for tilt_position that is enabled when tilt is not specified or when the tilt_optimistic attribute is used.
-
-### Combining state and position templates
-
-If both a state and a position are specified only opening and closing states are set directly from the state, the open and closed states will instead be derived from the cover position.
-
-| value_template output | result |
-| --------------------- | ------ |
-| open | state defined by position_template |
-| closed | state defined by position_template |
-| true | state defined by position_template |
-| false | state defined by position_template |
-| opening | state set to opening |
-| closing | state set to closing |
-| No change of state or position | |
-
-#### State based cover - Garage Door
-
-This example converts a garage door with a controllable switch and position sensor into a cover. The condition check is optional, but suggested if you use the same switch to open and close the garage.
-
-```yaml
-template:
-  - cover:
-      - name: Garage Door
-        device_class: garage
-        position: "{{ states('sensor.garage_door') }}"
-        open_cover:
-          - condition: state
-            entity_id: sensor.garage_door
-            state: "off"
-          - action: switch.turn_on
-            target:
-              entity_id: switch.garage_door
-        close_cover:
           - condition: state
             entity_id: sensor.garage_door
             state: "on"
@@ -2179,11 +1914,10 @@ delay_off time (Optional)
 | `code_arm_required` | boolean (Optional, default: true) | If true, the code is required to arm the alarm. |
 | `code_format` | string (Optional, default: number) | One of number, text or no_code. Format for the code used to arm/disarm the alarm. |
 
-## Legacy Binary Sensor configuration format
 
-These formats still work but are no longer recommended. Use modern configuration.
+### Legacy Binary Sensor configuration format
 
-This format is configured as a platform for the binary_sensor integration and not directly under the template integration.
+> **Note**: This format still works but is no longer recommended. Use modern configuration. This format is configured as a platform for the binary_sensor integration and not directly under the template integration.
 
 #### Example configuration.yaml entry
 
@@ -2214,11 +1948,10 @@ binary_sensor:
 | `delay_on` | time (Optional) | The amount of time the template state must be met before this sensor will switch to on. This can also be a template. |
 | `delay_off` | time (Optional) | The amount of time the template state must be not met before this sensor will switch to off. This can also be a template. |
 
-## Legacy Cover configuration format
 
-This format still works but is no longer recommended. Use modern configuration.
+### Legacy Cover configuration format
 
-This format is configured as a platform for the cover integration and not directly under the template integration.
+> **Note**: This format still works but is no longer recommended. Use modern configuration. This format is configured as a platform for the cover integration and not directly under the template integration.
 
 #### Example configuration.yaml entry
 
