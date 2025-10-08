@@ -1,0 +1,353 @@
+---
+# Valetudo Vacuum Control Optimization Promptset
+# Comprehensive prompt for ChatGPT-5 Thinking to generate production-grade Valetudo package
+
+promptset:
+  id: valetudo-vacuum-optimization.promptset.v1
+  version: 1.0
+  created: "2025-10-07"
+  description: |
+    Comprehensive promptset for optimizing Valetudo vacuum control package using HACS Variable component,
+    proper MQTT commands, and production-grade Home Assistant patterns. Targets ChatGPT-5 Thinking model
+    for intelligent code generation with full context awareness.
+  persona: strategos_gpt
+  purpose: |
+    Generate a complete, production-ready Valetudo vacuum control package that replaces unreliable
+    vacuum.send_command patterns with proper MQTT publish commands, optimizes state management using
+    HACS Variable component, and implements comprehensive room cleaning automation with proper error
+    handling and notifications.
+  legacy_compatibility: false
+  schema_version: 1.0
+
+  # Artifacts & Bindings
+  artifacts:
+    required:
+      - path: /config/packages/package_control_vacuum.yaml
+        description: "Current vacuum package with reliability issues and incorrect command syntax"
+      - path: /config/hestia/config/devices/valetudo.conf
+        description: "Valetudo robot configuration with MQTT settings and segment mapping"
+      - path: /config/hestia/library/guides/ha_implementation/hacs.variable.md
+        description: "HACS Variable component documentation for optimized state management"
+      - path: /config/hestia/library/guides/ha_implementation/integration.vacuum.md
+        description: "Home Assistant vacuum integration reference"
+      - path: /config/hestia/library/guides/ha_implementation/integration.valetudo.md
+        description: "Valetudo-specific integration patterns and MQTT commands"
+    optional:
+      - path: /config/blueprints/automation/mundschenk-at/valetudo-notifications.yaml
+        description: "Reference blueprint for Valetudo notifications"
+      - path: /config/blueprints/script/mundschenk-at/valetudo-clean-rooms.yaml
+        description: "Reference blueprint for room cleaning scripts"
+      - path: /config/blueprints/script/mundschenk-at/valetudo-send-vacuum-command.yaml
+        description: "Reference blueprint for vacuum command patterns"
+
+  bindings:
+    protocols:
+      - production_ready_first
+      - mqtt_command_validation
+      - variable_optimization_analysis
+      - comprehensive_error_handling
+    persona: strategos_gpt
+
+  retrieval_tags:
+    - valetudo
+    - vacuum
+    - mqtt
+    - hacs-variable
+    - optimization
+    - production-grade
+    - home-assistant
+
+  operational_modes:
+    - optimization_analysis_mode
+    - code_generation_mode
+    - validation_mode
+
+  # Prompts Section
+  prompts:
+    - id: valetudo.optimization.comprehensive.v1
+      persona: strategos_gpt
+      label: "Valetudo Vacuum Control Optimization — Comprehensive v1"
+      mode: optimization_analysis_mode
+      protocols:
+        - production_ready_first
+        - mqtt_command_validation
+        - variable_optimization_analysis
+        - comprehensive_error_handling
+      bindings:
+        - /config/packages/package_control_vacuum.yaml
+        - /config/hestia/config/devices/valetudo.conf
+        - /config/hestia/library/guides/ha_implementation/hacs.variable.md
+        - /config/hestia/library/guides/ha_implementation/integration.vacuum.md
+        - /config/hestia/library/guides/ha_implementation/integration.valetudo.md
+      prompt: |
+        **You are Strategos GPT (model: GPT-5 Thinking). Follow these directions exactly. Do not ask clarifying questions. If something is ambiguous, make a best, conservative assumption and list it under "Assumptions" at the top. Do not end with offers or open-ended invitations. Produce a single, conclusive optimization that closes this workstream.**
+
+        ## Context Analysis (Critical Foundation)
+
+        ### Current Problems Identified:
+        1. **Command Syntax Issues**: Current package uses `vacuum.send_command` with unreliable segment cleaning
+        2. **State Management Inefficiency**: 12 input helpers (6 datetime + 6 boolean) for simple room tracking
+        3. **MQTT Integration Gap**: Not using proper Valetudo MQTT topics per official documentation
+        4. **Error Handling Gaps**: Limited error detection and recovery mechanisms
+        5. **Notification Deficiencies**: Basic notifications without comprehensive status reporting
+
+        ### Technical Environment:
+        - **Robot**: RoboRock S5 via Valetudo (IP: 192.168.0.82)
+        - **MQTT Broker**: 192.168.0.129:1883 (credentials: valetudo/valetudo)
+        - **Base Topic**: `Valetudo/RoboRockS5` (from valetudo.conf)
+        - **Segments**: Living Room, Kitchen, Powder Room, Downstairs Hallway, Laundry Room
+        - **HACS Variable**: Available for optimized state management
+        - **Discovery**: MQTT autodiscovery enabled with HomeAssistant integration
+
+        ### Reference Patterns:
+        **Correct MQTT Command Pattern:**
+        ```yaml
+        - action: mqtt.publish
+          data:
+            topic: "valetudo/{{ robot_identifier }}/MapSegmentationCapability/clean/set"
+            payload: >
+              {{
+                {
+                  "action": "start_segment_action",
+                  "segment_ids": [{{ segment_id }}],
+                  "iterations": {{ iterations | default(1) }},
+                  "customOrder": true
+                } | to_json
+              }}
+        ```
+
+        **Variable Optimization Target:**
+        ```yaml
+        var:
+          room_cleaning_state:
+            friendly_name: "Room Cleaning State"
+            attributes:
+              living_room_last_cleaned: null
+              living_room_needs_cleaning: false
+              living_room_segment_id: 1
+              # ... other rooms
+        ```
+
+        ## Optimization Objectives
+
+        ### 1. Variable Component Analysis & Implementation
+        - **Analyze Current State**: Review 12 input helpers vs HACS Variable consolidation opportunities
+        - **Recommend Variable Usage**: Where Variables provide concrete benefits (persistence, SQL queries, template updates, automation simplification)
+        - **Entity Reduction**: Target minimum 50% reduction in helper entities while maintaining functionality
+        - **Performance Optimization**: Reduce automation trigger frequency and state change overhead
+
+        ### 2. MQTT Command Modernization
+        - **Replace vacuum.send_command**: Implement proper MQTT publish patterns per Valetudo documentation
+        - **Segment Mapping**: Use actual segment IDs from robot configuration
+        - **Command Validation**: Add payload validation and error detection
+        - **Topic Structure**: Implement proper Valetudo MQTT topic hierarchy
+
+        ### 3. Production-Grade Error Handling
+        - **MQTT Connection Monitoring**: Detect and handle broker disconnections
+        - **Robot State Validation**: Monitor vacuum status and error conditions
+        - **Cleaning Verification**: Confirm successful segment completion
+        - **Rollback Procedures**: Handle failed cleaning operations gracefully
+
+        ### 4. Comprehensive Notification System
+        - **Cleaning Reports**: Detailed completion summaries with timing and coverage
+        - **Error Alerts**: Actionable error notifications with troubleshooting steps
+        - **Status Dashboard**: Real-time cleaning status and next scheduled operations
+        - **Maintenance Reminders**: Proactive maintenance scheduling based on usage patterns
+
+        ## Technical Requirements
+
+        ### Package Structure (True HA Packages):
+        ```yaml
+        homeassistant:
+          packages: !include_dir_named packages
+        var: !include_dir_merge_named domain/variables/
+        ```
+
+        ### Mandatory Components:
+        1. **Variable Definitions**: `domain/variables/vacuum_variables.yaml`
+        2. **Main Package**: `packages/package_valetudo_control.yaml`
+        3. **Audit Template**: `devtools/templates/valetudo_audit.jinja2`
+        4. **Apply Script**: `tools/valetudo_optimization_apply.sh`
+        5. **Rollback Script**: `tools/valetudo_optimization_rollback.sh`
+
+        ### Integration Requirements:
+        - **MQTT Topics**: Use `Valetudo/RoboRockS5/MapSegmentationCapability/clean/set`
+        - **Segment IDs**: Map actual room segments (determine from robot state)
+        - **Error Sensors**: Monitor `sensor.valetudo_roborocks5_error`
+        - **Status Tracking**: Use `vacuum.valetudo_roborocks5` state changes
+        - **Discovery**: Maintain MQTT autodiscovery compatibility
+
+        ## Deliverables Required
+
+        ### 1. Complete Optimization Package (All Files in Full)
+        - **No TODO placeholders or ellipses** - provide working, deployable configuration
+        - **Variable optimization analysis** with before/after entity comparison
+        - **MQTT command implementation** with proper payload structure
+        - **Error handling automation** with comprehensive failure scenarios
+        - **Notification system** with actionable status reporting
+        - **Audit template** for ongoing monitoring and validation
+
+        ### 2. Deterministic Apply Plan
+        - **Installation steps** for HACS Variable component (if optimization requires it)
+        - **File creation sequence** with directory structure
+        - **Configuration validation** commands
+        - **Testing procedures** for each major component
+        - **Rollback procedures** if optimization fails
+
+        ### 3. Benefits Analysis & Validation
+        - **Entity reduction metrics** (current 12 helpers vs optimized count)
+        - **Performance improvements** (automation trigger reduction, state change efficiency)
+        - **Reliability enhancements** (MQTT vs vacuum.send_command success rates)
+        - **Maintainability gains** (centralized state management, simplified troubleshooting)
+
+        ### 4. Production Validation Suite
+        - **Configuration check commands** for syntax validation
+        - **MQTT connectivity tests** for broker communication
+        - **Segment mapping validation** for correct room targeting
+        - **Error simulation tests** for failure handling verification
+        - **Performance monitoring** for resource usage assessment
+
+        ## Critical Constraints
+
+        ### Safety Requirements:
+        - **Non-destructive optimization** - preserve existing functionality during transition
+        - **Rollback capability** - immediate reversion to current package if issues arise
+        - **Validation gates** - comprehensive testing before production deployment
+        - **Backup procedures** - preserve current configuration as `.bk.YYYYMMDDTHHMMSSZ`
+
+        ### Technical Constraints:
+        - **Path discipline**: Use `/config` canonical paths, no repository-relative references
+        - **MQTT authentication**: Use valetudo/valetudo credentials from valetudo.conf
+        - **Package format**: True HA packages, not automation includes
+        - **Component compatibility**: Ensure HACS Variable component integration if used
+
+        ### Quality Standards:
+        - **ADR compliance**: Follow workspace ADR patterns for file naming and structure
+        - **Documentation completeness**: Include comprehensive inline documentation
+        - **Error message clarity**: Provide actionable error messages and troubleshooting steps
+        - **Performance optimization**: Minimize database queries and state change frequency
+
+        ## Success Criteria (Binary Pass/Fail)
+
+        1. **✅ Entity Reduction**: Minimum 50% reduction in helper entities while maintaining full functionality
+        2. **✅ MQTT Implementation**: All room cleaning uses proper MQTT publish commands, zero vacuum.send_command usage
+        3. **✅ Error Handling**: Comprehensive error detection and recovery for all failure scenarios
+        4. **✅ Notification System**: Detailed status reporting with actionable insights
+        5. **✅ Production Readiness**: Complete apply/rollback procedures with validation gates
+        6. **✅ Performance Validation**: Demonstrable improvement in automation efficiency and reliability
+
+        ## Implementation Phases
+
+        ### Phase 1: Analysis & Design
+        **Objective**: Analyze current package and design optimized architecture
+        **Deliverables**: 
+        - Variable component analysis with recommendation
+        - MQTT command mapping for all room operations
+        - Entity reduction plan with migration strategy
+        - Error handling design with failure scenarios
+
+        ### Phase 2: Core Implementation
+        **Objective**: Implement optimized package with Variable component and MQTT commands
+        **Deliverables**:
+        - Complete variable definitions file
+        - Optimized main package with MQTT publish actions
+        - Error handling automations with comprehensive coverage
+        - Notification system with detailed reporting
+
+        ### Phase 3: Validation & Documentation
+        **Objective**: Provide comprehensive validation and deployment procedures
+        **Deliverables**:
+        - Apply/rollback scripts with safety checks
+        - Validation suite with all test scenarios
+        - Audit template for ongoing monitoring
+        - Benefits analysis with quantitative improvements
+
+        ---
+
+        **Execute this optimization completely. Provide all files in full with no placeholders. Include comprehensive apply procedures and validation suite. Demonstrate clear benefits over current implementation.**
+
+      phases:
+        - name: analysis_design
+          persona: strategos_gpt
+          instructions: |
+            Analyze current vacuum package inefficiencies and design optimized architecture.
+            Focus on Variable component benefits, MQTT command improvements, and entity reduction opportunities.
+            Provide quantitative analysis of current vs optimized approach.
+          outputs:
+            - name: optimization_analysis.md
+              required: true
+              content: |
+                # Valetudo Optimization Analysis
+                ## Current State Assessment
+                - Entity inventory: 12 input helpers
+                - Command reliability issues with vacuum.send_command
+                - Limited error handling and notification capabilities
+                
+                ## Optimization Opportunities
+                - HACS Variable consolidation potential
+                - MQTT command modernization requirements
+                - Error handling enhancement areas
+                
+                ## Benefits Projection
+                - Entity reduction: X% decrease
+                - Reliability improvement: MQTT vs send_command
+                - Performance gains: reduced automation triggers
+
+        - name: core_implementation
+          persona: strategos_gpt
+          instructions: |
+            Implement complete optimized package with all components in full.
+            No placeholders or TODO items - provide production-ready configuration.
+            Include comprehensive error handling and notification systems.
+          outputs:
+            - name: domain/variables/vacuum_variables.yaml
+              required: true
+              content: |
+                # Complete Variable component definitions
+            - name: packages/package_valetudo_control.yaml
+              required: true
+              content: |
+                # Complete optimized package with MQTT commands
+            - name: devtools/templates/valetudo_audit.jinja2
+              required: true
+              content: |
+                # Comprehensive audit template for monitoring
+
+        - name: validation_deployment
+          persona: strategos_gpt
+          instructions: |
+            Provide complete apply/rollback procedures with comprehensive validation.
+            Include all testing scenarios and safety checks.
+            Document benefits and performance improvements.
+          outputs:
+            - name: tools/valetudo_optimization_apply.sh
+              required: true
+              content: |
+                # Complete apply script with validation gates
+            - name: tools/valetudo_optimization_rollback.sh
+              required: true
+              content: |
+                # Complete rollback script with safety checks
+            - name: validation_suite.md
+              required: true
+              content: |
+                # Comprehensive validation procedures and test scenarios
+
+  # Migration & Extensibility
+  migration:
+    strategy: |
+      This promptset targets ChatGPT-5 Thinking model for comprehensive Valetudo optimization.
+      Includes complete context analysis, technical requirements, and production validation.
+      Designed for single-execution optimization with complete deliverables.
+
+  extensibility:
+    - Adapt segment mapping for different robot models by updating valetudo.conf
+    - Extend room definitions by adding new Variable attributes and automation triggers
+    - Integrate additional Valetudo capabilities (zones, go-to locations) using same MQTT patterns
+    - Scale notification system for multiple robots using topic prefixes
+
+  documentation:
+    - Reference: Valetudo MQTT API documentation at valetudo.cloud
+    - HACS Variable component: github.com/snarky-snark/home-assistant-variables
+    - Home Assistant vacuum integration: home-assistant.io/integrations/vacuum/
+    - MQTT autodiscovery: home-assistant.io/integrations/mqtt/#discovery

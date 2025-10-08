@@ -39,10 +39,10 @@ Set up migration/, catalog/, historical/, active/, development/ directories
 
 ## 3. Normalization Pipeline
 
-Copy files to migration/incoming/
-Run prep script (dry-run → manual review 20 files → full run)
-Validate frontmatter
-Place in catalog with hard copies
+3.1 Copy files to migration/incoming/
+3.2 Run prep script (dry-run → manual review 20 files → full run)
+3.2 Validate frontmatter
+3.3 Place in catalog with hard copies
 
 ## 4. Enforcement & Automation
 
