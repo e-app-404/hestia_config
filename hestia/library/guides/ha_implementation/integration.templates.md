@@ -2530,11 +2530,10 @@ switch:
 | `icon_template` | template (Optional) | Defines a template for the icon of the switch. |
 | `entity_picture_template` | template (Optional) | Defines a template for the picture of the switch. |
 
-## Legacy Vacuum configuration format
 
-This format still works but is no longer recommended. Use modern configuration.
+## Legacy Vacuum Configuration Format
 
-This format is configured as a platform for the vacuum integration and not directly under the template integration.
+> **Note**: This format still works but is no longer recommended. Use modern configuration. This format is configured as a platform for the vacuum integration and not directly under the template integration.
 
 #### Example configuration.yaml entry
 
@@ -2567,13 +2566,12 @@ vacuum:
 | `clean_spot` | action (Optional) | Defines an action to run when the vacuum is given a clean spot command. |
 | `locate` | action (Optional) | Defines an action to run when the vacuum is given a locate command. |
 | `set_fan_speed` | action (Optional) | Defines an action to run when the vacuum is given a command to set the fan speed. |
-| `fan_speeds` | string \| list (Optional) | List of fan speeds supported by the vacuum. |
+| `fan_speeds` | string or list (Optional) | List of fan speeds supported by the vacuum. |
 
-## Legacy Weather configuration format
 
-This format still works but is no longer recommended. Use modern configuration.
+## Legacy Weather Configuration Format
 
-This format is configured as a platform for the weather integration and not directly under the template integration.
+> **Note**: This format still works but is no longer recommended. Use modern configuration. This format is configured as a platform for the weather integration and not directly under the template integration.
 
 #### Example configuration.yaml entry
 
@@ -2598,23 +2596,23 @@ weather:
 | `temperature_template` | template (Required) | The current temperature. |
 | `dew_point_template` | template (Optional) | The current dew point. |
 | `apparent_temperature_template` | template (Optional) | The current apparent (feels-like) temperature. |
-| `temperature_unit` | string (Optional) | Unit for temperature_template output. Valid options are °C, °F, and K. |
+| `temperature_unit` | string (Optional) | Unit for temperature_template output. Valid options: °C, °F, K. |
 | `humidity_template` | template (Required) | The current humidity. |
 | `attribution_template` | string (Optional) | The attribution to be shown in the frontend. |
 | `pressure_template` | template (Optional) | The current air pressure. |
-| `pressure_unit` | string (Optional) | Unit for pressure_template output. Valid options are Pa, hPa, kPa, bar, cbar, mbar, mmHg, inHg, psi. |
+| `pressure_unit` | string (Optional) | Unit for pressure_template output. Valid options: Pa, hPa, kPa, bar, cbar, mbar, mmHg, inHg, psi. |
 | `wind_speed_template` | template (Optional) | The current wind speed. |
 | `wind_gust_speed_template` | template (Optional) | The current wind gust speed. |
-| `wind_speed_unit` | string (Optional) | Unit for wind_speed_template output. Valid options are m/s, km/h, mph, mm/d, in/d, and in/h. |
+| `wind_speed_unit` | string (Optional) | Unit for wind_speed_template output. Valid options: m/s, km/h, mph, mm/d, in/d, in/h. |
 | `wind_bearing_template` | template (Optional) | The current wind bearing. |
 | `ozone_template` | template (Optional) | The current ozone level. |
 | `cloud_coverage_template` | template (Optional) | The current cloud coverage. |
 | `visibility_template` | template (Optional) | The current visibility. |
-| `visibility_unit` | string (Optional) | Unit for visibility_template output. Valid options are km, mi, ft, m, cm, mm, in, yd. |
+| `visibility_unit` | string (Optional) | Unit for visibility_template output. Valid options: km, mi, ft, m, cm, mm, in, yd. |
 | `forecast_daily_template` | template (Optional) | Daily forecast data. |
 | `forecast_hourly_template` | template (Optional) | Hourly forecast data. |
 | `forecast_twice_daily_template` | template (Optional) | Twice daily forecast data. |
-| `precipitation_unit` | string (Optional) | Unit for precipitation output. Valid options are km, mi, ft, m, cm, mm, in, yd. |
+| `precipitation_unit` | string (Optional) | Unit for precipitation output. Valid options: km, mi, ft, m, cm, mm, in, yd. |
 
 Legacy Cover configuration format 
 This format still works but is no longer recommended. Use modern configuration.
