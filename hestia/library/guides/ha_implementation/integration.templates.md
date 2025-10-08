@@ -2052,6 +2052,7 @@ This format is configured as a platform for the lock integration and not directl
 #### Example configuration.yaml entry
 
 ```yaml
+##### Lock: Example configuration.yaml entry
 lock:
   - platform: template
     name: Garage door
