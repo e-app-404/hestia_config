@@ -1,0 +1,4 @@
+# Simple formula for ensuring the availability field
+availability: >-
+    {% from 'availability_template.jinja' import avail %}
+    {{- avail(['entity_1','entity_2']) | bool -}}
