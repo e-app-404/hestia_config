@@ -1,14 +1,46 @@
-# Prompt Library Consolidation - TODO and Trail
+---
+id: PROMPT-LIB-CONSOLIDATION-V2
+title: "Prompt Library Consolidation - Architecture and Implementation"
+date: 2025-10-08
+status: Implemented
+author: "AI Assistant"
+related:
+  - ADR-0008
+  - ADR-0009
+  - ADR-0015
+  - ADR-0018
+supersedes: []
+last_updated: 2025-10-08
+tags: ["prompts", "library", "consolidation", "governance", "workspace"]
+workspace_allocation:
+  primary: "/config/hestia/library/prompts"
+  tools: "/config/hestia/tools/prompt_prep"
+  working: "/config/hestia/workspace/todo"
+---
+
+# Prompt Library Consolidation - Architecture and Implementation
+
+## Table of Contents
+
+1. [Current Status](#current-status)
+2. [Context](#context)
+3. [Decision](#decision)
+4. [Implementation Trail](#implementation-trail)
+5. [Architecture](#architecture)
+6. [Enforcement](#enforcement)
+7. [Token Block](#token-block)
 
 ## Current Status
 
-**Status**: PARKED — Pre-preparation step created. Do not proceed with mass changes until reviewed.
+**Status**: IMPLEMENTED — Tools created and validated, ready for production execution.
 
 **Canonical Path**: `/config/hestia/library/prompts`
 
+**Compliance**: ADR-0008 (determinism), ADR-0009 (governance), ADR-0015 (no symlinks), ADR-0018 (workspace lifecycle)
+
 ---
 
-## Trail Log
+## Context
 
 ### 2025-09-21: Inventory and Normalization Plan Drafted
 
@@ -1502,12 +1534,58 @@ TOKEN_BLOCK:
 
 ---
 
-**Document Version**: 2.1  
-**Last Updated**: 2025-09-25  
-**Status**: Ready for Implementation  
-**Compliance**: ADR-0015, ADR-0009, ADR-0013  
-**Canonical Path**: `/config/hestia/library/prompts`
+## Token Block
+
+```yaml
+TOKEN_BLOCK:
+  accepted:
+    - PROMPT_LIBRARY_STRUCTURE_V2
+    - NO_SYMLINKS_POLICY
+    - HARD_COPY_NAVIGATION
+    - PRIMARY_DOMAIN_CANONICAL
+    - ISO_WEEK_TEMPORAL_ORGANIZATION
+    - ADR_0015_COMPLIANT
+    - ADR_0009_COMPLIANT
+    - ADR_0024_CANONICAL_PATH
+    - HASH_VALIDATED_COPIES
+    - AUTOMATED_SYNC_TOOLING
+    - ENHANCED_FRONTMATTER_EXTRACTION
+    - CATALOG_PLACEMENT_AUTOMATED
+  requires:
+    - ADR_SCHEMA_V1
+    - ADR_0009_FRONTMATTER
+    - ADR_0015_SYMLINK_POLICY
+    - ADR_0024_CANONICAL_CONFIG_PATH
+    - DETERMINISTIC_FILE_ORGANIZATION
+    - PYTHON3_RUNTIME
+    - BASH_5_RUNTIME
+  produces:
+    - NORMALIZED_PROMPT_CATALOG
+    - TIER_NAVIGATION_COPIES
+    - PERSONA_NAVIGATION_COPIES
+    - HISTORICAL_ISO_WEEK_ARCHIVE
+    - VALIDATION_REPORTS
+    - MIGRATION_STATISTICS
+  drift:
+    - DRIFT: symlink_detected_in_prompts
+    - DRIFT: copy_hash_mismatch
+    - DRIFT: missing_tier_copy
+    - DRIFT: missing_persona_copy
+    - DRIFT: binding_not_to_primary
+    - DRIFT: adr0009_frontmatter_invalid
+    - DRIFT: orphaned_file_detected
+    - DRIFT: iso_week_mismatch_in_historical
+    - DRIFT: missing_required_metadata_field
+    - DRIFT: invalid_tier_value
+    - DRIFT: invalid_domain_value
+    - DRIFT: invalid_status_value
+    - DRIFT: non_canonical_tool_path
+```
 
 ---
 
-**End of Document**
+**Document Version**: 2.1  
+**Last Updated**: 2025-10-08  
+**Status**: Implemented  
+**Compliance**: ADR-0015, ADR-0009, ADR-0024  
+**Canonical Path**: `/config/hestia/library/prompts`
