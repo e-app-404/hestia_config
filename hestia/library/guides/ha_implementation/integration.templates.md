@@ -1372,76 +1372,77 @@ Weather entities can only be created via YAML.
 ```yaml
 template:
   - weather:
-      - name: "My Weather Station"
-        condition_template: "{{ states('weather.my_region') }}"
-        temperature_template: "{{ states('sensor.temperature') | float }}"
-        temperature_unit: "°C"
-        humidity_template: "{{ states('sensor.humidity') | float }}"
-        forecast_daily_template: "{{ state_attr('weather.my_region', 'forecast_data') }}"
-```
 
-#### Example trigger-based configuration.yaml entry
+      ---
+      title: "Template Integration Guide"
+      authors: "Home Assistant Team"
+      source: "https://www.home-assistant.io/integrations/template/"
+      slug: "template-integration"
+      tags: ["home-assistant", "ops", "integration"]
+      original_date: "2025-10-06"
+      last_updated: "2025-10-07"
+      url: "https://www.home-assistant.io/integrations/template/"
+      ---
 
-```yaml
-template:
-  - triggers:
-      - trigger: state
-        entity_id:
-          - weather.my_region
-          - sensor.temperature
-          - sensor.humidity
-    weather:
-      - name: "My Weather Station"
-        condition_template: "{{ states('weather.my_region') }}"
-        temperature_template: "{{ states('sensor.temperature') | float }}"
-        temperature_unit: "°C"
-        humidity_template: "{{ states('sensor.humidity') | float }}"
-        forecast_daily_template: "{{ state_attr('weather.my_region', 'forecast_data') }}"
-```
-apparent_temperature_template template (Optional)
+      # Template Integration
 
-### Configuration Variables
+      The template integration allows creating entities which derive their values from other data. This is done by specifying templates for properties of an entity, like the name or the state.
 
-| Variable | Type | Description |
-| -------- | ---- | ----------- |
-| `apparent_temperature_template` | template (Optional) | The current apparent (feels-like) temperature. |
-| `cloud_coverage_template` | template (Optional) | The current cloud coverage. |
-| `condition_template` | template (Required) | The current weather condition. |
-| `dew_point_template` | template (Optional) | The current dew point. |
-| `forecast_daily_template` | template (Optional) | Daily forecast data. |
-| `forecast_hourly_template` | template (Optional) | Hourly forecast data. |
-| `forecast_twice_daily_template` | template (Optional) | Twice daily forecast data. |
-| `humidity_template` | template (Required) | The current humidity. |
-| `ozone_template` | template (Optional) | The current ozone level. |
-| `precipitation_unit` | string (Optional) | Unit for precipitation output. Valid options: km, mi, ft, m, cm, mm, in, yd. |
-| `pressure_template` | template (Optional) | The current air pressure. |
-| `pressure_unit` | string (Optional) | Unit for pressure_template output. Valid options: Pa, hPa, kPa, bar, cbar, mbar, mmHg, inHg, psi. |
-| `temperature_template` | template (Required) | The current temperature. |
-| `temperature_unit` | string (Optional) | Unit for temperature_template output. Valid options: °C, °F, K. |
-| `uv_index_template` | template (Optional) | The current UV index. |
-| `visibility_template` | template (Optional) | The current visibility. |
-| `visibility_unit` | string (Optional) | Unit for visibility_template output. Valid options: km, mi, ft, m, cm, mm, in, yd. |
-| `wind_gust_speed_template` | template (Optional) | The current wind gust speed. |
-| `wind_speed_template` | template (Optional) | The current wind speed. |
-| `wind_speed_unit` | string (Optional) | Unit for wind_speed_template output. Valid options: m/s, km/h, mph, mm/d, in/d, in/h. |
-| `wind_bearing_template` | template (Optional) | The current wind bearing. |
+      > **Note**: Configuration using the user interface provides a more limited subset of options, making this integration more accessible while covering most use cases. If you need more specific features for your use case, the manual YAML-configuration section of this integration might provide them.
 
-Trigger based weather - Weather Forecast from response data 
-This example demonstrates how to use an action to call a action with response data and use the response in a template.
+      ## Supported Device Types
 
-set_fan_speed action (Optional)
-Defines an action to run when the vacuum is given a command to set the fan speed.
+      There is currently support for the following device types within Home Assistant:
 
-start action Required
-Defines an action to run when the vacuum is started.
+      - Alarm control panel
+      - Binary sensor
+      - Button
+      - Cover
+      - Event
+      - Fan
+      - Image
+      - Light
+      - Lock
+      - Number
+      - Select
+      - Sensor
+      - Switch
+      - Update
+      - Vacuum
+      - Weather
 
-state template (Optional, default: optimistic)
-Defines a template to get the state of the vacuum. Valid value: docked/cleaning/idle/paused/returning/error
+      ## Table of Contents
 
-stop action (Optional)
-Defines an action to run when the vacuum is stopped.
+      | Variable | Type | Description |
+      | -------- | ---- | ----------- |
+      | `pressure_unit` | string (Optional) | Unit for pressure_template output. Valid options: Pa, hPa, kPa, bar, cbar, mbar, mmHg, inHg, psi. |
+      | `wind_speed_template` | template (Optional) | The current wind speed. |
+      | `wind_gust_speed_template` | template (Optional) | The current wind gust speed. |
+      | `wind_speed_unit` | string (Optional) | Unit for wind_speed_template output. Valid options: m/s, km/h, mph, mm/d, in/d, and in/h. |
+      | `wind_bearing_template` | template (Optional) | The current wind bearing. |
+      | `ozone_template` | template (Optional) | The current ozone level. |
+      | `cloud_coverage_template` | template (Optional) | The current cloud coverage. |
+      | `visibility_template` | template (Optional) | The current visibility. |
+      | `visibility_unit` | string (Optional) | Unit for visibility_template output. Valid options: km, mi, ft, m, cm, mm, in, yd. |
+      | `forecast_daily_template` | template (Optional) | Daily forecast data. |
+      | `forecast_hourly_template` | template (Optional) | Hourly forecast data. |
+      | `forecast_twice_daily_template` | template (Optional) | Twice daily forecast data. |
+      | `precipitation_unit` | string (Optional) | Unit for precipitation output. Valid options: km, mi, ft, m, cm, mm, in, yd. |
 
-State based vacuum - Control vacuum with Harmony Hub 
+      ### Configuration Variables
+
+      | Variable | Type | Description |
+      | ------------------ | -------------------------- | ----------- |
+      | `availability` | template (Optional, default: true) | Defines a template to get the available state of the entity. If the template either fails to render or returns True, "1", "true", "yes", "on", "enable", or a non-zero number, the entity will be available. If the template returns any other value, the entity will be unavailable. If not configured, the entity will always be available. Note that the string comparison is not case sensitive; "TrUe" and "yEs" are allowed. |
+      | `default_entity_id` | string (Optional) | Use default_entity_id instead of name for automatic generation of the entity id. E.g. sensor.my_awesome_sensor. When used without a unique_id, the entity id will update during restart or reload if the entity id is available. If the entity id already exists, the entity id will be created with a number at the end. When used with a unique_id, the default_entity_id is only used when the entity is added for the first time. When set, this overrides a user-customized Entity ID in case the entity was deleted and added again. |
+      | `icon` | template (Optional) | Defines a template for the icon of the entity. |
+      | `picture` | template (Optional) | Defines a template for the entity picture of the sensor. |
+      | `name` | template (Optional) | Defines a template to get the name of the entity. |
+      | `unique_id` | string (Optional) | An ID that uniquely identifies this entity. Will be combined with the unique ID of the configuration block if available. This allows changing the name, icon and entity_id from the web interface. Changing the entity_id from the web interface will overwrite the value in default_entity_id. |
+      | `variables` | map (Optional) | Key-value pairs of variable definitions which can be referenced and used in the templates below (for trigger-based entities only). Mostly used by blueprints. With State-based template entities, variables are only resolved when the configuration is loaded or reloaded. Trigger based template entities resolve variables between triggers and actions. |
+
+      `variable_name: value` string Required
+      : The variable name and corresponding value.
 This example shows how you can use a Template Vacuum to control an IR vacuum cleaner using the Harmony Hub Remote integration.
 
 vacuum:

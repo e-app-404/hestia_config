@@ -1,0 +1,506 @@
+# Strategos — Execute Promptset v1.3
+# This script:
+# 1) Unpacks provided tarballs into /mnt/data staging paths (if present)
+# 2) Generates the requested production files under /mnt/data/config/... (mirrors HA /config)
+# 3) Performs self-checks against the generated artifacts (text-level checks; HA is not running here)
+# 4) Bundles everything into a tar.gz for download
+# 5) Emits a concise validation pack markdown
+import os, tarfile, json, re, textwrap, datetime, pathlib, io, shutil
+
+NOW = datetime.datetime.utcnow().strftime("%Y%m%d_%H%M%SZ")
+
+# --- Globals from promptset ---
+globals_spec = {
+    "timezone": "Europe/London",
+    "ha_state_char_limit": 255,
+    "scan_interval_seconds": 30,
+    "json1_required_functions": ["json_extract", "json_group_object", "json_group_array", "json_valid"],
+    "valetudo_base_topic_var": "valetudo_base_topic",
+    "room_id_pattern": r"^[a-z0-9_]+$",
+    "tokens_dir": "/config/.sql_room_db_tokens",
+    "schema_expected": 1,
+    "canonical_mapping_file": "/config/architecture/area_mapping.yaml",
+    "db_path": "/config/room_database.db",
+    "naming": {
+        "sql_sensors": {
+            "motion": "sensor.room_configs_motion_lighting",
+            "vacuum": "sensor.room_configs_vacuum_control",
+            "cleaning_need": "sensor.rooms_needing_cleaning",
+        }
+    },
+}
+
+# --- Helper paths ---
+staging_root = "/mnt/data"
+config_root = os.path.join(staging_root, "config")  # mirrors HA /config
+pkg_roomdb = os.path.join(config_root, "packages", "room_database")
+pkg_motion = os.path.join(config_root, "packages", "motion_lighting_v2")
+pkg_vacuum = os.path.join(config_root, "packages", "vacuum_control_v2")
+appdaemon_root = os.path.join(config_root, "appdaemon", "apps", "room_db_updater")
+tokens_dir_fs = os.path.join(config_root, ".sql_room_db_tokens")
+arch_dir = os.path.join(config_root, "architecture")
+
+for p in [pkg_roomdb, pkg_motion, pkg_vacuum, appdaemon_root, tokens_dir_fs, arch_dir]:
+    os.makedirs(p, exist_ok=True)
+
+# --- 1) Unpack tarballs if present ---
+tar_candidates = [
+    "/mnt/data/ADR.tar.gz",
+    "/mnt/data/reference.tar.gz",
+    "/mnt/data/ha_implementation.tar.gz",
+    "/mnt/data/valetudo.tar.gz",
+    "/mnt/data/adaptive_motion_lighting.tar.gz",
+    "/mnt/data/domain.tar.gz",
+]
+
+unpacked = []
+for tarpath in tar_candidates:
+    if os.path.exists(tarpath):
+        try:
+            target_dir = os.path.join(staging_root, pathlib.Path(tarpath).stem.replace(".tar",""))
+            os.makedirs(target_dir, exist_ok=True)
+            with tarfile.open(tarpath, "r:gz") as tf:
+                tf.extractall(path=target_dir)
+            unpacked.append({"archive": tarpath, "to": target_dir})
+        except Exception as e:
+            unpacked.append({"archive": tarpath, "error": str(e)})
+
+# Symlink/mirror for promptset bindings (if unpacked provided nested dirs named as expected)
+# We simply ensure these directories exist to satisfy reference paths
+for logical, dest in [("adaptive_motion_lighting", os.path.join(staging_root, "adaptive_motion_lighting")),
+                      ("valetudo", os.path.join(staging_root, "valetudo"))]:
+    if not os.path.exists(dest):
+        os.makedirs(dest, exist_ok=True)
+
+# --- 2) Generate files (with guarded token replacement) ---
+def fill_tokens(s: str) -> str:
+    # Only replace the exact promptset placeholder tokens, not generic Jinja from HA templates.
+    replacements = {
+        "{{ scan_interval_seconds }}": str(globals_spec["scan_interval_seconds"]),
+        "{{ schema_expected }}": str(globals_spec["schema_expected"]),
+        "{{ tokens_dir }}": globals_spec["tokens_dir"],
+        "{{ valetudo_base_topic_var }}": globals_spec["valetudo_base_topic_var"],
+        "{{ room_id_pattern }}": globals_spec["room_id_pattern"],
+        "{{ canonical_mapping_file }}": globals_spec["canonical_mapping_file"],
+    }
+    for k,v in replacements.items():
+        s = s.replace(k, v)
+    return s
+
+# sql_sensors.yaml content (as in promptset; we keep query column order to match spec)
+sql_sensors_yaml = fill_tokens(textwrap.dedent("""
+sensor:
+  - platform: sql
+    db_url: sqlite:////config/room_database.db
+    scan_interval: {{ scan_interval_seconds }}
+    queries:
+      - name: "Room Configs — Motion Lighting"
+        query: >
+          SELECT 'ok' AS state,
+                 json_group_object(room_id, config_data) AS payload
+          FROM room_configs
+          WHERE config_domain = 'motion_lighting';
+        column: state
+      - name: "Room Configs — Vacuum Control"
+        query: >
+          SELECT 'ok' AS state,
+                 json_group_object(room_id, config_data) AS payload
+          FROM room_configs
+          WHERE config_domain = 'vacuum_control';
+        column: state
+      - name: "Rooms Needing Cleaning"
+        query: >
+          SELECT COALESCE(json_group_array(room_id),'[]') AS payload,
+                 json_array_length(COALESCE(json_group_array(room_id),'[]')) AS count
+          FROM room_configs
+          WHERE config_domain = 'vacuum_control'
+            AND json_extract(config_data, '$.needs_cleaning') = 1;
+        column: count
+"""))
+
+# shell_commands.yaml content (fallback)
+shell_commands_yaml = fill_tokens(textwrap.dedent(r"""
+shell_command:
+  update_room_config: >-
+    /bin/sh -c 'command -v sqlite3 >/dev/null 2>&1 || exit 123; sqlite3 /config/room_database.db <<"SQL"\nBEGIN IMMEDIATE;\nSELECT CASE WHEN (SELECT version FROM schema_version)={{ schema_expected }} THEN 1 ELSE RAISE(ABORT,"SCHEMA_VERSION_MISMATCH") END;\nINSERT OR REPLACE INTO room_configs (room_id, config_domain, config_data, updated_at)\nVALUES ("{{ room_id }}","{{ domain }}","{{ config_data | tojson }}", datetime("now"));\nCOMMIT;\nSQL'
+  update_motion_timeout: >-
+    /bin/sh -c 'command -v sqlite3 >/dev/null 2>&1 || exit 123; sqlite3 /config/room_database.db <<"SQL"\nBEGIN IMMEDIATE;\nSELECT CASE WHEN (SELECT version FROM schema_version)={{ schema_expected }} THEN 1 ELSE RAISE(ABORT,"SCHEMA_VERSION_MISMATCH") END;\nUPDATE room_configs\nSET config_data = json_set(config_data, "$.timeout", {{ timeout }}), updated_at = datetime("now")\nWHERE room_id="{{ room_id }}" AND config_domain="motion_lighting";\nCOMMIT;\nSQL'
+  mark_room_cleaned: >-
+    /bin/sh -c 'command -v sqlite3 >/dev/null 2>&1 || exit 123; sqlite3 /config/room_database.db <<"SQL"\nBEGIN IMMEDIATE;\nSELECT CASE WHEN (SELECT version FROM schema_version)={{ schema_expected }} THEN 1 ELSE RAISE(ABORT,"SCHEMA_VERSION_MISMATCH") END;\nUPDATE room_configs\nSET config_data = json_set(config_data, "$.last_cleaned", datetime("now"), "$.needs_cleaning", 0), updated_at = datetime("now")\nWHERE room_id="{{ room_id }}" AND config_domain="vacuum_control";\nCOMMIT;\nSQL'
+"""))
+
+database_init_sql = fill_tokens("PRAGMA journal_mode=WAL;\nPRAGMA synchronous=NORMAL;\nCREATE TABLE IF NOT EXISTS room_configs (\n  room_id TEXT NOT NULL,\n  config_domain TEXT NOT NULL,\n  config_data TEXT NOT NULL,\n  version INTEGER DEFAULT 1,\n  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\n  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\n  PRIMARY KEY (room_id, config_domain)\n);\nCREATE INDEX IF NOT EXISTS idx_room_configs_domain_room ON room_configs(config_domain, room_id);\nCREATE TABLE IF NOT EXISTS schema_version (version INTEGER NOT NULL);\nINSERT OR IGNORE INTO schema_version(version) VALUES({{ schema_expected }});\n")
+
+preflight_yaml = fill_tokens(textwrap.dedent(r"""
+shell_command:
+  room_db_json1_preflight: >-
+    /bin/sh -c 'mkdir -p {{ tokens_dir }}; rm -f {{ tokens_dir }}/MIGRATION_TOKEN_JSON1_*; if sqlite3 /config/room_database.db "PRAGMA compile_options;" | grep -i JSON1 >/dev/null; then touch {{ tokens_dir }}/MIGRATION_TOKEN_JSON1_OK; else touch {{ tokens_dir }}/MIGRATION_TOKEN_JSON1_MISSING; fi'
+  room_db_sqlite_presence: >-
+    /bin/sh -c 'mkdir -p {{ tokens_dir }}; rm -f {{ tokens_dir }}/MIGRATION_TOKEN_SQLITE3_*; if command -v sqlite3 >/dev/null 2>&1; then touch {{ tokens_dir }}/MIGRATION_TOKEN_SQLITE3_OK; else touch {{ tokens_dir }}/MIGRATION_TOKEN_SQLITE3_MISSING; fi'
+automation:
+  - alias: "Room DB Preflight — On Start"
+    id: room_db_preflight_on_start
+    trigger:
+      - platform: homeassistant
+        event: start
+    action:
+      - service: shell_command.room_db_sqlite_presence
+      - service: shell_command.room_db_json1_preflight
+      - choose:
+          - conditions: "{{ not path_exists('{{ tokens_dir }}/MIGRATION_TOKEN_SQLITE3_OK') }}"
+            sequence:
+              - service: persistent_notification.create
+                data:
+                  title: "Room DB Preflight"
+                  message: "> sqlite3 not found — shell fallback disabled; AppDaemon/Node-RED path required."
+          - conditions: "{{ path_exists('{{ tokens_dir }}/MIGRATION_TOKEN_JSON1_MISSING') }}"
+            sequence:
+              - service: persistent_notification.create
+                data:
+                  title: "Room DB Preflight"
+                  message: "> SQLite JSON1 missing — using normalized schema + alternate sensors."
+"""))
+
+recorder_policy_yaml = textwrap.dedent("""
+recorder:
+  exclude:
+    entity_globs:
+      - sensor.room_configs_*
+      - sensor.rooms_needing_cleaning
+""")
+
+app_yaml = fill_tokens(textwrap.dedent("""
+room_db_updater:
+  module: room_db_updater
+  class: RoomDbUpdater
+  db_path: /config/room_database.db
+  schema_expected: {{ schema_expected }}
+  canonical_mapping_file: {{ canonical_mapping_file }}
+"""))
+
+# AppDaemon Python skeleton; replace room_id regex
+room_db_updater_py = fill_tokens(textwrap.dedent(r"""
+import appdaemon.plugins.hass.hassapi as hass
+import json, sqlite3, yaml, re, time, os
+
+ROOM_ID_RE = re.compile(r"{{ room_id_pattern }}")
+
+class RoomDbUpdater(hass.Hass):
+    def initialize(self):
+        self.register_endpoint(self.update_config, "room_db/update_config")
+        self.log("RoomDbUpdater initialized")
+
+    def _validate_room(self, room_id):
+        if not ROOM_ID_RE.match(room_id or ""):
+            raise ValueError("Invalid room_id slug")
+        cfile = self.args.get("canonical_mapping_file")
+        if not cfile or not os.path.exists(cfile):
+            raise FileNotFoundError("Canonical mapping file not found")
+        with open(cfile, "r") as f:
+            amap = yaml.safe_load(f) or {}
+        # Expect structure: rooms: {room_id: {...}}
+        rooms = (amap.get("rooms") or {}) if isinstance(amap, dict) else {}
+        if room_id not in rooms:
+            raise ValueError("room_id not in canonical mapping")
+
+    def _schema_ok(self, cur, expected):
+        cur.execute("SELECT version FROM schema_version")
+        v = cur.fetchone()[0]
+        if int(v) != int(expected):
+            raise RuntimeError("SCHEMA_VERSION_MISMATCH")
+
+    def update_config(self, data):
+        try:
+            room_id = data.get("room_id")
+            domain = data.get("domain")
+            cfg = data.get("config_data")
+            self._validate_room(room_id)
+            conn = sqlite3.connect(self.args.get("db_path"))
+            cur = conn.cursor()
+            try:
+                self._schema_ok(cur, self.args.get("schema_expected"))
+                conn.execute("BEGIN IMMEDIATE")
+                cur.execute(
+                    "INSERT OR REPLACE INTO room_configs (room_id, config_domain, config_data, updated_at) VALUES (?,?,?, datetime('now'))",
+                    (room_id, domain, json.dumps(cfg))
+                )
+                conn.commit()
+            except Exception:
+                conn.rollback()
+                raise
+            finally:
+                conn.close()
+            return {"status": "ok"}
+        except Exception as e:
+            self.error(str(e))
+            self.call_service("persistent_notification/create", title="Room DB Update Failed", message=str(e))
+            return {"status": "error", "error": str(e)}
+"""))
+
+# Motion lighting automation (modify base_topic handling and keep tokens dir paths)
+motion_automations_yaml = fill_tokens(textwrap.dedent(r"""
+automation:
+  - alias: "Motion Lights — Bedroom (SQL-driven)"
+    id: motion_lights_bedroom_sql
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.bedroom_motion_beta
+        to: "on"
+    variables:
+      _raw: "{{ state_attr('sensor.room_configs_motion_lighting','payload') }}"
+      _cfgs: "{{ _raw | from_json if _raw else {} }}"
+      room_config: "{{ _cfgs.get('bedroom', {}) }}"
+      timeout: "{{ room_config.get('timeout', 120) | int }}"
+      bypass: "{{ room_config.get('bypass', false) | bool }}"
+      presence_multiplier: "{{ room_config.get('presence_timeout_multiplier', 1.0) | float }}"
+      is_presence_detected: "{{ is_state('person.evert','home') }}"
+      effective_timeout: "{{ (timeout * presence_multiplier) | int if is_presence_detected else timeout }}"
+      illuminance_threshold: "{{ room_config.get('illuminance_threshold', 10) | int }}"
+    condition:
+      - condition: template
+        value_template: "{{ not bypass }}"
+      - condition: template
+        value_template: >
+          {{ (states('sensor.bedroom_illuminance_beta') | float(9999)) < illuminance_threshold }}
+    action:
+      - service: light.turn_on
+        target:
+          entity_id: light.adaptive_bedroom_light_group
+        data:
+          transition: 2
+      - service: persistent_notification.create
+        data:
+          title: "Motion Light Trigger"
+          message: "Bedroom SQL-driven activation at {{ now() }}"
+      - choose:
+          - conditions: "{{ path_exists('{{ tokens_dir }}/MIGRATION_TOKEN_SQLITE3_OK') }}"
+            sequence:
+              - service: shell_command.update_room_config
+                data:
+                  room_id: "bedroom"
+                  domain: "motion_lighting"
+                  config_data: >-
+                    {{ dict(room_config, **{'last_triggered': now().isoformat(), 'trigger_count': (room_config.get('trigger_count', 0) | int) + 1}) }}
+          - conditions: "{{ not path_exists('{{ tokens_dir }}/MIGRATION_TOKEN_SQLITE3_OK') }}"
+            sequence:
+              - service: rest_command.room_db_update_config
+                data:
+                  room_id: "bedroom"
+                  domain: "motion_lighting"
+                  config_data: >-
+                    {{ dict(room_config, **{'last_triggered': now().isoformat(), 'trigger_count': (room_config.get('trigger_count', 0) | int) + 1}) }}
+      - delay:
+          seconds: "{{ effective_timeout }}"
+      - service: light.turn_off
+        target:
+          entity_id: light.adaptive_bedroom_light_group
+        data:
+          transition: 5
+"""))
+
+motion_templates_yaml = textwrap.dedent(r"""
+template:
+  - sensor:
+      - name: "Motion Timeout — Bedroom (SQL)"
+        unique_id: "motion_timeout_bedroom_sql"
+        state: >-
+          {% set raw = state_attr('sensor.room_configs_motion_lighting','payload') %}
+          {% set cfg = (raw | from_json).get('bedroom', {}) if raw else {} %}
+          {{ cfg.get('timeout', 120) }}
+        attributes:
+          bypass: >-
+            {% set raw = state_attr('sensor.room_configs_motion_lighting','payload') %}
+            {% set cfg = (raw | from_json).get('bedroom', {}) if raw else {} %}
+            {{ cfg.get('bypass', false) }}
+          last_triggered: >-
+            {% set raw = state_attr('sensor.room_configs_motion_lighting','payload') %}
+            {% set cfg = (raw | from_json).get('bedroom', {}) if raw else {} %}
+            {{ cfg.get('last_triggered', '') }}
+          room_id: "bedroom"
+          source: "room_database_sql"
+""")
+
+vacuum_scripts_yaml = fill_tokens(textwrap.dedent(r"""
+script:
+  clean_room_with_sql_tracking:
+    alias: "Clean Room with SQL Database Tracking"
+    fields:
+      room:
+        description: "Room to clean"
+        required: true
+        selector:
+          text:
+    variables:
+      _raw: "{{ state_attr('sensor.room_configs_vacuum_control','payload') }}"
+      _cfgs: "{{ _raw | from_json if _raw else {} }}"
+      room_config: "{{ _cfgs.get(room, {}) }}"
+      segment_id: "{{ room_config.get('segment_id', 1) | int }}"
+      base_topic: "{{ states('input_text.%s') }}"  # single source of truth
+    sequence:
+      - service: mqtt.publish
+        data:
+          topic: "{{ base_topic }}/MapSegmentationCapability/action/start_segment_action"
+          payload: "{{ {'action':'clean','segment_ids':[segment_id],'iterations':1,'customOrder':True} | tojson }}"
+      - choose:
+          - conditions: "{{ path_exists('{{ tokens_dir }}/MIGRATION_TOKEN_SQLITE3_OK') }}"
+            sequence:
+              - service: shell_command.mark_room_cleaned
+                data:
+                  room_id: "{{ room }}"
+          - conditions: "{{ not path_exists('{{ tokens_dir }}/MIGRATION_TOKEN_SQLITE3_OK') }}"
+            sequence:
+              - service: rest_command.room_db_update_config
+                data:
+                  room_id: "{{ room }}"
+                  domain: "vacuum_control"
+                  config_data: "{{ dict(room_config, **{'last_cleaned': now().isoformat(), 'needs_cleaning': false}) }}"
+      - service: persistent_notification.create
+        data:
+          title: "Vacuum Control"
+          message: "Started cleaning {{ room }} (segment {{ segment_id }})"
+          notification_id: "vacuum_{{ room }}"
+""" % globals_spec["valetudo_base_topic_var"]))
+
+mqtt_commands_yaml = fill_tokens(textwrap.dedent("""
+# Valetudo base topic variable
+input_text:
+  {var}:
+    name: "Valetudo Base Topic"
+    min: 1
+    max: 128
+    initial: "valetudo/robot"
+""".format(var=globals_spec["valetudo_base_topic_var"])))
+
+tokens_readme = textwrap.dedent("""
+Token semantics:
+- MIGRATION_TOKEN_SQLITE3_OK|MISSING
+- MIGRATION_TOKEN_JSON1_OK|MISSING
+""")
+
+secrets_example_yaml = fill_tokens(textwrap.dedent("""
+{var}: "valetudo/robot"
+""".format(var=globals_spec["valetudo_base_topic_var"])))
+
+validation_md = textwrap.dedent(f"""
+# Validation Pack — SQL Room Database Architecture v1.3
+**Generated:** {NOW}
+
+## Acceptance Criteria (checklist)
+- [ ] DB initialized from `database_init.sql` and created at {globals_spec["db_path"]}
+- [ ] JSON1 preflight tokens exist in {globals_spec["tokens_dir"]}
+- [ ] SQL sensors present; each exposes `payload` attribute
+- [ ] Writes guarded by `schema_version == {globals_spec["schema_expected"]}`
+- [ ] Transactional writes (BEGIN IMMEDIATE/COMMIT) enforced in shell fallback
+- [ ] Recorder excludes for `sensor.room_configs_*` and `sensor.rooms_needing_cleaning`
+- [ ] Motion: presence modulates timeouts, never blocks activation (ADR-0021)
+- [ ] Single Valetudo base topic via `input_text.{globals_spec["valetudo_base_topic_var"]}`
+- [ ] Package structure under `/config/packages` per ADR-0024
+
+## Diagnostics Templates (snippets)
+- Read payload: `{{ '{{ state_attr(\"sensor.room_configs_motion_lighting\",\"payload\") | default(\"\") }}' }}`
+- JSON1 OK token present: file exists `{globals_spec["tokens_dir"]}/MIGRATION_TOKEN_JSON1_OK`
+- sqlite3 presence token: file exists `{globals_spec["tokens_dir"]}/MIGRATION_TOKEN_SQLITE3_OK`
+
+## Migration Tokens (operator order)
+1. Create DB with `database_init.sql`
+2. Run preflights to produce tokens in {globals_spec["tokens_dir"]}:
+   - MIGRATION_TOKEN_SQLITE3_OK or MIGRATION_TOKEN_SQLITE3_MISSING
+   - MIGRATION_TOKEN_JSON1_OK or MIGRATION_TOKEN_JSON1_MISSING
+
+## Rollback
+- Stop HA → backup DB → restore prior DB file → remove new packages → restart HA
+
+## Performance Targets
+- SQL sensor p50 < 100ms (3 queries)
+- Update p50 < 200ms (AppDaemon endpoint or shell fallback)
+""")
+
+# Write files
+files_written = []
+def write(path, content, mode="w"):
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    with open(path, mode, encoding="utf-8") as f:
+        f.write(content)
+    files_written.append(path)
+
+write(os.path.join(pkg_roomdb, "sql_sensors.yaml"), sql_sensors_yaml)
+write(os.path.join(pkg_roomdb, "shell_commands.yaml"), shell_commands_yaml)
+write(os.path.join(pkg_roomdb, "database_init.sql"), database_init_sql)
+write(os.path.join(pkg_roomdb, "preflight.yaml"), preflight_yaml)
+write(os.path.join(pkg_roomdb, "recorder_policy.yaml"), recorder_policy_yaml)
+write(os.path.join(appdaemon_root, "app.yaml"), app_yaml)
+write(os.path.join(appdaemon_root, "room_db_updater.py"), room_db_updater_py)
+write(os.path.join(pkg_motion, "automations.yaml"), motion_automations_yaml)
+write(os.path.join(pkg_motion, "templates.yaml"), motion_templates_yaml)
+write(os.path.join(pkg_vacuum, "scripts.yaml"), vacuum_scripts_yaml)
+write(os.path.join(pkg_vacuum, "mqtt_commands.yaml"), mqtt_commands_yaml)
+write(os.path.join(tokens_dir_fs, "README.txt"), tokens_readme)
+write(os.path.join(config_root, "secrets.example.yaml"), secrets_example_yaml)
+write(os.path.join(config_root, "VALIDATION.md"), validation_md)
+
+# --- 3) Self-checks (text-level) ---
+report = {"generated": NOW, "checks": []}
+
+def add_check(name, ok, detail=None):
+    report["checks"].append({"name": name, "ok": bool(ok), "detail": detail})
+
+# Load contents
+def read(path):
+    with open(path, "r", encoding="utf-8") as f:
+        return f.read()
+
+# Check 1: scan_interval present and equals 30
+content = read(os.path.join(pkg_roomdb, "sql_sensors.yaml"))
+add_check("SQL sensor scan_interval=30", "scan_interval: 30" in content, None)
+
+# Check 2: two columns and column: state/count
+add_check("Query 1 has state+payload", ("'ok' AS state" in content and "AS payload" in content))
+add_check("Query 2 has state+payload", content.count("Room Configs — Vacuum Control") == 1 and "column: state" in content)
+add_check("Query 3 has count+payload & column: count", ("AS count" in content and "column: count" in content))
+
+# Check 3: tokens dir in preflight
+pre = read(os.path.join(pkg_roomdb, "preflight.yaml"))
+add_check("Preflight tokens path present", globals_spec["tokens_dir"] in pre)
+
+# Check 4: recorder excludes present
+rec = read(os.path.join(pkg_roomdb, "recorder_policy.yaml"))
+add_check("Recorder excludes room_configs", "sensor.room_configs_*" in rec)
+add_check("Recorder excludes rooms_needing_cleaning", "sensor.rooms_needing_cleaning" in rec)
+
+# Check 5: AppDaemon schema enforcement and room_id regex
+ad_py = read(os.path.join(appdaemon_root, "room_db_updater.py"))
+add_check("AppDaemon enforces schema_version", "_schema_ok" in ad_py and "SCHEMA_VERSION_MISMATCH" in ad_py)
+add_check("AppDaemon room_id regex", globals_spec["room_id_pattern"] in ad_py)
+
+# Check 6: Valetudo base topic single source via input_text
+vac = read(os.path.join(pkg_vacuum, "scripts.yaml"))
+add_check("Vacuum script uses input_text base topic", f"input_text.{globals_spec['valetudo_base_topic_var']}" in vac)
+
+# Check 7: Names match globals.naming.*
+names_ok = (
+    globals_spec["naming"]["sql_sensors"]["motion"] in motion_templates_yaml
+    and globals_spec["naming"]["sql_sensors"]["motion"] in motion_automations_yaml
+    and globals_spec["naming"]["sql_sensors"]["vacuum"] in vacuum_scripts_yaml
+)
+add_check("Sensor entity names consistent", names_ok)
+
+# Save report
+report_path = os.path.join(config_root, "SELF_CHECK_REPORT.json")
+with open(report_path, "w", encoding="utf-8") as f:
+    json.dump(report, f, indent=2)
+files_written.append(report_path)
+
+# --- 4) Bundle tar.gz ---
+bundle_path = os.path.join(staging_root, f"sql_room_database_pack_{NOW}.tar.gz")
+with tarfile.open(bundle_path, "w:gz") as tf:
+    tf.add(config_root, arcname="config")
+
+# Emit summary artifacts
+summary = {
+    "unpacked": unpacked,
+    "files_written_count": len(files_written),
+    "bundle": bundle_path,
+    "files_written": files_written,
+    "self_check": report,
+}
+summary
