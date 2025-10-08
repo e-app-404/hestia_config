@@ -2667,24 +2667,13 @@ Defines a template to get the available state of the entity. If the template eit
 
 | `turn_on` | action | Required | Defines an action or list of actions to run when the switch is turned on. |
 | `turn_off` | action | Required | Defines an action or list of actions to run when the switch is turned off. |
-
 | `icon_template` | template | (Optional) | Defines a template for the icon of the switch. |
-
 | `entity_picture_template` | template | (Optional) | Defines a template for the picture of the switch. |
-Defines a template for the picture of the switch.
-
 | `friendly_name` | string | (Optional) | Name to use in the frontend. |  
-
 | `unique_id` | string | (Optional) | An ID that uniquely identifies this vacuum. Set this to a unique value to allow customization through the UI. |
-
 | `value_template` | template | (Optional) | Defines a template to get the state of the vacuum. Valid value: docked/cleaning/idle/paused/returning/error |
-
 | `battery_level_template` | template | (Optional) | Defines a template to get the battery level of the vacuum. Legal values are numbers between 0 and 100. |
-
 | `fan_speed_template` | template | (Optional) | Defines a template to get the fan speed of the vacuum. |
-
-Defines a template to get the fan speed of the vacuum.
-
 | `attribute_templates` | map | (Optional) | Defines templates for attributes of the sensor. |
 
 | `attribute` | template | Required | The attribute and corresponding template. |
