@@ -957,6 +957,7 @@ Sensor entities can be created from the frontend in the Helpers section or via Y
 #### Example state-based configuration.yaml entry
 
 ```yaml
+##### Sensor: Example state-based configuration.yaml entry
 template:
   - sensor:
       - name: "Kettle"
@@ -972,7 +973,7 @@ template:
           {% endif %}
 ```
 
-#### Example trigger-based configuration.yaml entry
+##### Sensor: Example trigger-based configuration.yaml entry
 
 ```yaml
 template:
@@ -1083,6 +1084,7 @@ Switch entities can be created from the frontend in the Helpers section or via Y
 #### Example state-based configuration.yaml entry
 
 ```yaml
+##### Switch: Example state-based configuration.yaml entry
 template:
   - switch:
       - name: Skylight
@@ -1097,7 +1099,7 @@ template:
             entity_id: switch.skylight_close
 ```
 
-#### Example trigger-based configuration.yaml entry
+##### Switch: Example trigger-based configuration.yaml entry
 
 ```yaml
 template:
@@ -2237,7 +2239,7 @@ weather:
 | `forecast_twice_daily_template` | template (Optional) | Twice daily forecast data. |
 | `precipitation_unit` | string (Optional) | Unit for precipitation output. Valid options: km, mi, ft, m, cm, mm, in, yd. |
 
-Legacy Cover configuration format 
+## Legacy Cover configuration format
 This format still works but is no longer recommended. Use modern configuration.
 
 This format is configured as a platform for the cover integration and not directly under the template integration.
@@ -2260,58 +2262,43 @@ cover:
           action: script.stop_garage_door
 ```
 
-Configuration Variables covers map Required
-List of your covers.
+### Configuration Variables 
 
-friendly_name string (Optional)
-Name to use in the frontend.
+| Variable | Type | Description |
+| -------- | ---- | ----------- |
+| covers   | map  | Required. List of your covers. |
+| friendly_name | string | Optional. Name to use in the frontend. |
 
-unique_id string (Optional)
-An ID that uniquely identifies this cover. Set this to a unique value to allow customization through the UI.
+| unique_id | string | Optional. An ID that uniquely identifies this cover. Set this to a unique value to allow customization through the UI. |
+| value_template | template | Optional. Defines a template to get the state of the cover. Valid output values from the template are open, opening, closing and closed which are directly mapped to the corresponding states. In addition, true is valid as a synonym to open and false as a synonym to closed. If both a value_template and a position_template are specified, only opening and closing are set from the value_template. If the template produces a None value the state will be set to unknown. |
+| position_template | template | Optional. Defines a template to get the position of the cover. Legal values are numbers between 0 (closed) and 100 (open). If the template produces a None value the current position will be set to unknown. |
 
-value_template template (Optional)
-Defines a template to get the state of the cover. Valid output values from the template are open, opening, closing and closed which are directly mapped to the corresponding states. In addition, true is valid as a synonym to open and false as a synonym to closed. If both a value_template and a position_template are specified, only opening and closing are set from the value_template. If the template produces a None value the state will be set to unknown.
+| icon_template | template | Optional. Defines a template to specify which icon to use. |
 
-position_template template (Optional)
-Defines a template to get the position of the cover. Legal values are numbers between 0 (closed) and 100 (open). If the template produces a None value the current position will be set to unknown.
+| entity_picture_template | template | Optional. Defines a template for the entity picture of the cover. |
 
-icon_template template (Optional)
-Defines a template to specify which icon to use.
+| availability_template | template | Optional. Defines a template to get the available state of the entity. If the template either fails to render or returns True, "1", "true", "yes", "on", "enable", or a non-zero number, the entity will be available. If the template returns any other value, the entity will be unavailable. If not configured, the entity will always be available. Note that the string comparison is not case sensitive; "TrUe" and "yEs" are allowed. |
 
-entity_picture_template template (Optional)
-Defines a template for the entity picture of the cover.
+| device_class | string | Optional. Sets the class of the device, changing the device state and icon that is displayed on the frontend. |
 
-availability_template template (Optional, default: true)
-Defines a template to get the available state of the entity. If the template either fails to render or returns True, "1", "true", "yes", "on", "enable", or a non-zero number, the entity will be available. If the template returns any other value, the entity will be unavailable. If not configured, the entity will always be available. Note that the string comparison is not case sensitive; "TrUe" and "yEs" are allowed.
+| open_cover | action | Optional. Defines an action to open the cover. If open_cover is specified, close_cover must also be specified. At least one of open_cover and set_cover_position must be specified. |
 
-device_class string (Optional)
-Sets the class of the device, changing the device state and icon that is displayed on the frontend.
+| close_cover | action | Optional. Defines an action to close the cover. | If close_cover is specified, open_cover must also be specified. At least one of close_cover and set_cover_position must be specified. |
 
-open_cover action (Inclusive)
-Defines an action to open the cover. If open_cover is specified, close_cover must also be specified. At least one of open_cover and set_cover_position must be specified.
+| stop_cover | action | Optional. Defines an action to stop the cover. |
 
-close_cover action (Inclusive)
-Defines an action to close the cover.
+| set_cover_position | action | Optional. Defines an action to set to a cover position (between 0 and 100). The variable position will contain the entity’s set position. |
 
-stop_cover action (Optional)
-Defines an action to stop the cover.
+| set_cover_tilt_position | action | Optional. Defines an action to set the tilt of a cover (between 0 and 100). The variable tilt will contain the entity’s set tilt position. |
 
-set_cover_position action (Optional)
-Defines an action to set to a cover position (between 0 and 100). The variable position will contain the entity’s set position.
+| optimistic | boolean | Optional. Defines whether to use optimistic mode. |
 
-set_cover_tilt_position action (Optional)
-Defines an action to set the tilt of a cover (between 0 and 100). The variable tilt will contain the entity’s set tilt position.
+| tilt_optimistic | boolean | Optional. Defines whether to use optimistic mode for tilt. |
 
-optimistic boolean (Optional, default: false)
-Force cover position to use optimistic mode.
-
-tilt_optimistic boolean (Optional, default: false)
-Force cover tilt position to use optimistic mode.
-
-tilt_template template (Optional)
+| tilt_template | template | Optional. Defines a template to get the tilt state of the cover. |
 Defines a template to get the tilt state of the cover. Legal values are numbers between 0 (closed) and 100 (open). If the template produces a None value the current tilt state will be set to unknown.
 
-Legacy Fan configuration format 
+### Legacy Fan configuration format 
 This format still works but is no longer recommended. Use modern configuration.
 
 This format is configured as a platform for the fan integration and not directly under the template integration.
@@ -2356,14 +2343,13 @@ fan:
           - 'whoosh'
 ```
 
-Configuration Variables fans map Required
+### Configuration Variables fans map Required
 List of your fans.
 
-friendly_name string (Optional)
-Name to use in the frontend.
-
-unique_id string (Optional)
-An ID that uniquely identifies this fan. Set this to a unique value to allow customization through the UI.
+| Variable | Type | Description |
+| -------- | ---- | ----------- |
+| friendly_name | string | (Optional) Name to use in the frontend. |
+| unique_id | string | (Optional) An ID that uniquely identifies this fan. Set this to a unique value to allow customization through the UI. |
 
 value_template template Required
 Defines a template to get the state of the fan. Valid values: on, off
@@ -2463,11 +2449,11 @@ light:
               effect: "{{ effect }}"
         supports_transition_template: "{{ true }}"
 ```
-friendly_name string (Optional)
-Name to use in the frontend.
 
-unique_id string (Optional)
-An ID that uniquely identifies this light. Set this to a unique value to allow customization through the UI.
+| Variable | Type | Description |
+| -------- | ---- | ----------- |
+| friendly_name | string | (Optional) Name to use in the frontend. |
+| unique_id | string | (Optional) An ID that uniquely identifies this light. Set this to a unique value to allow customization through the UI. |
 
 value_template template (Optional, default: optimistic)
 Defines a template to get the state of the light.
@@ -2547,9 +2533,7 @@ Defines an action to run when the lock is unlocked.
 open action (Optional)
 Defines an action to run when the lock is opened.
 
-optimistic boolean (Optional, default: false)
-Flag that defines if lock works in optimistic mode.
-
+| optimistic | boolean | Optional. Flag that defines if lock works in optimistic mode. |
 
 ### Legacy Light configuration format
 
@@ -2658,25 +2642,21 @@ sensor:
         value_template: "{{ state_attr('sun.sun', 'next_rising') }}"
 ```
 
-friendly_name string (Optional)
-Name to use in the frontend.
+| Variable | Type | Description |
+| -------- | ---- | ----------- |
+| friendly_name | string | (Optional) Name to use in the frontend. |
+| friendly_name_template | template | (Optional) Defines a template for the name to be used in the frontend (this overrides friendly_name). |
 
-friendly_name_template template (Optional)
-Defines a template for the name to be used in the frontend (this overrides friendly_name).
+| unique_id | string | (Optional) An ID that uniquely identifies this sensor. Set this to a unique value to allow customization through the UI. |
 
-unique_id string (Optional)
-An ID that uniquely identifies this sensor. Set this to a unique value to allow customization through the UI.
-
-unit_of_measurement string (Optional, default: None)
+| unit_of_measurement | string | (Optional, default: None) Defines the units of measurement for the sensor. |
 Defines the units of measurement of the sensor, if any. This will also display the value based on the user profile Number Format setting and influence the graphical presentation in the history visualization as a continuous value.
 
-value_template template Required
-Defines a template to get the state of the sensor.
+| value_template | template | Required. Defines a template to get the state of the sensor. |
 
-icon_template template (Optional)
-Defines a template for the icon of the sensor.
+| icon_template | template | (Optional) Defines a template for the icon of the sensor. |
 
-entity_picture_template template (Optional)
+| entity_picture_template | template | (Optional) Defines a template for the entity picture of the sensor. |
 Defines a template for the entity picture of the sensor.
 
 attribute_templates map (Optional)
