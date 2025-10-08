@@ -6,7 +6,6 @@ Handles various legacy patterns and converts them to canonical format.
 import argparse
 import re
 from pathlib import Path
-from datetime import datetime
 
 
 def normalize_backup_name(filename):
