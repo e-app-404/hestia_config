@@ -9,11 +9,13 @@ last_updated: "2025-10-07"
 url: "https://www.home-assistant.io/integrations/template/"
 ---
 
+
 # Template Integration
 
 The template integration allows creating entities which derive their values from other data. This is done by specifying templates for properties of an entity, like the name or the state.
 
-> **ℹ️ Note**: Configuration using the user interface provides a more limited subset of options, making this integration more accessible while covering most use cases. If you need more specific features for your use case, the manual YAML-configuration section of this integration might provide them.
+
+> **Note**: Configuration using the user interface provides a more limited subset of options, making this integration more accessible while covering most use cases. If you need more specific features for your use case, the manual YAML-configuration section of this integration might provide them.
 
 ## Supported Device Types
 
@@ -87,6 +89,7 @@ The state, including attributes, of trigger-based sensors and binary sensors is 
 
 > **Note**: Buttons do not support using trigger or action options.
 
+
 #### Example configuration entry
 
 ```yaml
@@ -105,9 +108,8 @@ template:
 
 ## Configuration Reference
 
-### Configuration Variables
 
-Looking for your configuration file?
+### Configuration Variables
 
 | Variable | Type | Description |
 | -------- | ---- | ----------- |
@@ -123,6 +125,7 @@ Looking for your configuration file?
 ## Common Device Configuration Options
 
 Each entity platform has its own set of configuration options, but there are some common options that can be used across all entity platforms.
+
 
 #### Example configuration.yaml entry
 
@@ -142,9 +145,8 @@ template:
       device_class: problem
 ```
 
-### Configuration Variables
 
-Looking for your configuration file?
+### Configuration Variables
 
 | Variable | Type | Description |
 | -------- | ---- | ----------- |
@@ -165,6 +167,7 @@ The template alarm control panel platform allows you to create a alarm control p
 
 Alarm control panel entities can be created from the frontend in the Helpers section or via YAML.
 
+
 #### Example state-based configuration.yaml entry
 
 ```yaml
@@ -179,6 +182,7 @@ template:
         disarm:
           action: script.disarm_panel
 ```
+
 
 #### Example trigger-based configuration.yaml entry
 
@@ -198,9 +202,8 @@ template:
           action: script.disarm_panel
 ```
 
-### Configuration Variables
 
-Looking for your configuration file?
+### Configuration Variables
 
 | Variable | Type | Description |
 | -------- | ---- | ----------- |
@@ -248,8 +251,6 @@ template:
 
 ### Configuration Variables
 
-Looking for your configuration file?
-
 | Variable | Type | Description |
 | -------- | ---- | ----------- |
 | `binary_sensor` | list Required | List of binary sensors |
@@ -266,6 +267,7 @@ Looking for your configuration file?
 ### State based binary sensor - Washing Machine Running
 
 This example creates a washing machine “load running” sensor by monitoring an energy meter connected to the washer. During the washer’s operation, the energy meter will fluctuate wildly, hitting zero frequently even before the load is finished. By utilizing `delay_off`, we can have this sensor only turn off if there has been no washer activity for 5 minutes.
+
 
 #### Example configuration.yaml entry
 
@@ -396,6 +398,7 @@ template:
 
 The template cover platform allows you to create covers with templates to define the state and scripts to define each action.
 
+
 #### Example state-based configuration.yaml entry
 
 ```yaml
@@ -411,6 +414,7 @@ template:
         stop_cover:
           action: script.stop_garage_door
 ```
+
 
 #### Example trigger-based configuration.yaml entry
 
@@ -431,9 +435,8 @@ template:
           action: script.stop_garage_door
 ```
 
-### Configuration Variables
 
-Looking for your configuration file?
+### Configuration Variables
 
 | Variable | Type | Description |
 | -------- | ---- | ----------- |
@@ -649,8 +652,6 @@ template:
 
 ### Configuration Variables
 
-Looking for your configuration file?
-
 | Variable | Type | Description |
 | -------- | ---- | ----------- |
 | `fan` | map Required | List of fans |
@@ -674,6 +675,7 @@ Looking for your configuration file?
 When converting a fan with 3 speeds from the old fan entity model, the following percentages can be used:
 
 0 - off 33 - low 66 - medium 100 - high
+
 
 ### State based fan - Helper fan
 
@@ -705,6 +707,7 @@ template:
             data:
               value: "{{ percentage }}"
 ```
+
 
 ### State based fan - Fan with preset modes
 
@@ -772,6 +775,7 @@ The template image platform allows you to create image entities with templates t
 
 Image entities can be created from the frontend in the Helpers section or via YAML.
 
+
 #### Example state-based configuration.yaml entry
 
 ```yaml
@@ -780,6 +784,7 @@ template:
       - name: "My Image"
         url: "http://example.com/image.jpg"
 ```
+
 
 #### Example trigger-based configuration.yaml entry
 
@@ -800,8 +805,6 @@ template:
 ```
 
 ### Configuration Variables
-
-Looking for your configuration file?
 
 | Variable | Type | Description |
 | -------- | ---- | ----------- |
@@ -924,8 +927,6 @@ template:
 ```
 
 ### Configuration Variables
-
-Looking for your configuration file?
 
 | Variable | Type | Description |
 | -------- | ---- | ----------- |
@@ -1097,8 +1098,6 @@ template:
 
 ### Configuration Variables
 
-Looking for your configuration file?
-
 | Variable | Type | Description |
 | -------- | ---- | ----------- |
 | `lock` | map Required | List of locks |
@@ -1152,8 +1151,6 @@ template:
         max: 24
         icon: mdi:ruler
 ```
-
-Looking for your configuration file?
 
 | Variable | Type | Description |
 | -------- | ---- | ----------- |
@@ -1228,8 +1225,6 @@ template:
 
 ### Configuration Variables
 
-Looking for your configuration file?
-
 | Variable | Type | Description |
 | -------- | ---- | ----------- |
 | `select` | map Required | List of selects |
@@ -1299,8 +1294,6 @@ template:
 ```
 
 ### Configuration Variables
-
-Looking for your configuration file?
 
 | Variable | Type | Description |
 | -------- | ---- | ----------- |
@@ -1430,8 +1423,6 @@ template:
 
 ### Configuration Variables
 
-Looking for your configuration file?
-
 | Variable | Type | Description |
 | -------- | ---- | ----------- |
 | `switch` | map Required | List of switches |
@@ -1550,8 +1541,6 @@ template:
 
 ### Configuration Variables
 
-Looking for your configuration file?
-
 | Variable | Type | Description |
 | -------- | ---- | ----------- |
 | `update` | map Required | List of update entities |
@@ -1598,8 +1587,6 @@ template:
 ```
 
 ### Configuration Variables
-
-Looking for your configuration file?
 
 | Variable | Type | Description |
 | -------- | ---- | ----------- |
@@ -1682,7 +1669,9 @@ The template weather platform allows you to create weather entities with templat
 
 Weather entities can only be created via YAML.
 
-# Example state-based configuration.yaml entry
+#### Example state-based configuration.yaml entry
+
+```yaml
 template:
   - weather:
       - name: "My Weather Station"
@@ -1691,15 +1680,18 @@ template:
         temperature_unit: "°C"
         humidity_template: "{{ states('sensor.humidity') | float }}"
         forecast_daily_template: "{{ state_attr('weather.my_region', 'forecast_data') }}"
-YAML
-# Example trigger-based configuration.yaml entry
+```
+
+#### Example trigger-based configuration.yaml entry
+
+```yaml
 template:
   - triggers:
       - trigger: state
         entity_id:
-        - weather.my_region
-        - sensor.temperature
-        - sensor.humidity
+          - weather.my_region
+          - sensor.temperature
+          - sensor.humidity
     weather:
       - name: "My Weather Station"
         condition_template: "{{ states('weather.my_region') }}"
@@ -1707,74 +1699,34 @@ template:
         temperature_unit: "°C"
         humidity_template: "{{ states('sensor.humidity') | float }}"
         forecast_daily_template: "{{ state_attr('weather.my_region', 'forecast_data') }}"
-YAML
-Configuration Variables 
-Looking for your configuration file?
-weather map Required
-List of weather entities
-
+```
 apparent_temperature_template template (Optional)
-The current apparent (feels-like) temperature.
 
-cloud_coverage_template template (Optional)
-The current cloud coverage.
+### Configuration Variables
 
-condition_template template Required
-The current weather condition.
-
-dew_point_template template (Optional)
-The current dew point.
-
-forecast_daily_template template (Optional)
-Daily forecast data.
-
-forecast_hourly_template template (Optional)
-Hourly forecast data.
-
-forecast_twice_daily_template template (Optional)
-Twice daily forecast data.
-
-humidity_template template Required
-The current humidity.
-
-ozone_template template (Optional)
-The current ozone level.
-
-precipitation_unit string (Optional)
-Unit for precipitation output. Valid options are km, mi, ft, m, cm, mm, in, yd.
-
-pressure_template template (Optional)
-The current air pressure.
-
-pressure_unit string (Optional)
-Unit for pressure_template output. Valid options are Pa, hPa, kPa, bar, cbar, mbar, mmHg, inHg, psi.
-
-temperature_template template Required
-The current temperature.
-
-temperature_unit string (Optional)
-Unit for temperature_template output. Valid options are °C, °F, and K.
-
-uv_index_template template (Optional)
-The current UV index.
-
-visibility_template template (Optional)
-The current visibility.
-
-visibility_unit string (Optional)
-Unit for visibility_template output. Valid options are km, mi, ft, m, cm, mm, in, yd.
-
-wind_gust_speed_template template (Optional)
-The current wind gust speed.
-
-wind_speed_template template (Optional)
-The current wind speed.
-
-wind_speed_unit string (Optional)
-Unit for wind_speed_template output. Valid options are m/s, km/h, mph, mm/d, in/d, and in/h.
-
-wind_bearing_template template (Optional)
-The current wind bearing.
+| Variable | Type | Description |
+| -------- | ---- | ----------- |
+| `apparent_temperature_template` | template (Optional) | The current apparent (feels-like) temperature. |
+| `cloud_coverage_template` | template (Optional) | The current cloud coverage. |
+| `condition_template` | template (Required) | The current weather condition. |
+| `dew_point_template` | template (Optional) | The current dew point. |
+| `forecast_daily_template` | template (Optional) | Daily forecast data. |
+| `forecast_hourly_template` | template (Optional) | Hourly forecast data. |
+| `forecast_twice_daily_template` | template (Optional) | Twice daily forecast data. |
+| `humidity_template` | template (Required) | The current humidity. |
+| `ozone_template` | template (Optional) | The current ozone level. |
+| `precipitation_unit` | string (Optional) | Unit for precipitation output. Valid options: km, mi, ft, m, cm, mm, in, yd. |
+| `pressure_template` | template (Optional) | The current air pressure. |
+| `pressure_unit` | string (Optional) | Unit for pressure_template output. Valid options: Pa, hPa, kPa, bar, cbar, mbar, mmHg, inHg, psi. |
+| `temperature_template` | template (Required) | The current temperature. |
+| `temperature_unit` | string (Optional) | Unit for temperature_template output. Valid options: °C, °F, K. |
+| `uv_index_template` | template (Optional) | The current UV index. |
+| `visibility_template` | template (Optional) | The current visibility. |
+| `visibility_unit` | string (Optional) | Unit for visibility_template output. Valid options: km, mi, ft, m, cm, mm, in, yd. |
+| `wind_gust_speed_template` | template (Optional) | The current wind gust speed. |
+| `wind_speed_template` | template (Optional) | The current wind speed. |
+| `wind_speed_unit` | string (Optional) | Unit for wind_speed_template output. Valid options: m/s, km/h, mph, mm/d, in/d, in/h. |
+| `wind_bearing_template` | template (Optional) | The current wind bearing. |
 
 Trigger based weather - Weather Forecast from response data 
 This example demonstrates how to use an action to call a action with response data and use the response in a template.
@@ -1871,9 +1823,7 @@ template:
         humidity_template: "{{ states('sensor.humidity') | float }}"
         forecast_daily_template: "{{ state_attr('weather.my_region', 'forecast_data') }}"
 YAML
-Configuration Variables 
-Looking for your configuration file?
-weather map Required
+Configuration Variables weather map Required
 List of weather entities
 
 apparent_temperature_template template (Optional)
@@ -1939,9 +1889,12 @@ Unit for wind_speed_template output. Valid options are m/s, km/h, mph, mm/d, in/
 wind_bearing_template template (Optional)
 The current wind bearing.
 
-Trigger based weather - Weather Forecast from response data 
-This example demonstrates how to use an action to call a action with response data and use the response in a template.
+template:
+### Trigger-based weather — Weather Forecast from response data
 
+This example demonstrates how to use an action to call a service with response data and use the response in a template.
+
+```yaml
 template:
   - triggers:
       - trigger: time_pattern
@@ -1959,16 +1912,16 @@ template:
         state: "{{ now().isoformat() }}"
         attributes:
           forecast: "{{ hourly['weather.home'].forecast }}"
-YAML
-Video tutorial 
-This video tutorial explains how to set up a trigger based template that makes use of an action to retrieve the weather forecast (precipitation).
+```
 
-Play: How to create Action Template Sensors in Home Assistant
+> **Tip**: See the Home Assistant video tutorial for how to set up a trigger-based template that uses an action to retrieve the weather forecast (precipitation).
 
-Combining multiple template entities 
+
+## Combining multiple template entities
+
 The template integration allows defining multiple sections.
 
-# Example configuration.yaml entry with two sections
+#### Example configuration.yaml entry with two sections
 
 ```yaml
 template:
@@ -1987,7 +1940,9 @@ template:
       ...
 ```
 
-Trigger based sensor and binary sensor storing webhook information 
+
+## Trigger-based sensor and binary sensor storing webhook information
+
 Template entities can be triggered using any automation trigger, including webhook triggers. Use a trigger-based template entity to store this information in template entities.
 
 ```yaml
@@ -2019,16 +1974,19 @@ curl --header "Content-Type: application/json" \
   http://homeassistant.local:8123/api/webhook/my-super-secret-webhook-id
 ```
 
-Template and action variables 
-State-based and trigger-based template entities have the special template variable this available in their templates and actions. The this variable is the current state object of the entity and aids self-referencing of an entity’s state and attributes in templates and actions. Trigger-based entities also provide the trigger data.
+template:
 
- Note
+## Template and action variables
 
-Self-referencing using this provides the state and attributes for the entity before rendering the templates to calculate a new state. In other words, it contains the previous state.
+State-based and trigger-based template entities have the special template variable `this` available in their templates and actions. The `this` variable is the current state object of the entity and aids self-referencing of an entity’s state and attributes in templates and actions. Trigger-based entities also provide the trigger data.
 
-Self referencing 
-This example demonstrates how the this variable can be used in templates for self-referencing.
+> **Note**: Self-referencing using `this` provides the state and attributes for the entity before rendering the templates to calculate a new state. In other words, it contains the previous state.
 
+### Self referencing
+
+This example demonstrates how the `this` variable can be used in templates for self-referencing.
+
+```yaml
 template:
   - sensor:
       - name: test
@@ -2036,62 +1994,76 @@ template:
         # not: "{{ state_attr('sensor.test', 'test') }}"
         attributes:
           test: "{{ now() }}"
-YAML
-Optimistic mode 
-For template entities that support interactivity (like number and select), you can enable optimistic mode by setting the optimistic parameter to true. This affects how the entity’s state updates when you interact with it:
+```
 
-With optimistic mode disabled (default): When you interact with the entity (for example, selecting a new option in a dropdown or setting a new number value), the entity’s state in Home Assistant will only update after the underlying template defined in the state parameter returns the new value.
+## Optimistic mode
 
-With optimistic mode enabled: When you interact with the entity, the entity’s state in Home Assistant immediately updates to reflect your change, without waiting for the state template to update. This provides a more responsive UI experience but may not reflect the actual state if the underlying action fails or takes time to complete.
+For template entities that support interactivity (like number and select), you can enable optimistic mode by setting the `optimistic` parameter to `true`. This affects how the entity’s state updates when you interact with it:
+
+- With optimistic mode **disabled** (default): When you interact with the entity (for example, selecting a new option in a dropdown or setting a new number value), the entity’s state in Home Assistant will only update after the underlying template defined in the state parameter returns the new value.
+- With optimistic mode **enabled**: When you interact with the entity, the entity’s state in Home Assistant immediately updates to reflect your change, without waiting for the state template to update. This provides a more responsive UI experience but may not reflect the actual state if the underlying action fails or takes time to complete.
 
 Optimistic mode is particularly useful when:
 
-The underlying system doesn’t provide immediate feedback
-You want a more responsive UI experience
-You’re confident the action will succeed
+- The underlying system doesn’t provide immediate feedback
+- You want a more responsive UI experience
+- You’re confident the action will succeed
+
 When optimistic mode is disabled (default), you get more accuracy but potentially a less responsive UI, as the entity only updates after confirmation from the underlying system.
 
-Rate limiting updates 
+template:
+template:
+
+## Rate limiting updates
+
 When there are entities present in the template and no triggers are defined, the template will be re-rendered when one of the entities changes states. To avoid this taking up too many resources in Home Assistant, rate limiting will be automatically applied if too many states are observed.
 
- Tip
+> **Tip**: Define a trigger to avoid a rate limit and get more control over entity updates.
 
-Define a trigger to avoid a rate limit and get more control over entity updates.
-
-When states is used in a template by itself to iterate all states on the system, the template is re-rendered each time any state changed event happens if any part of the state is accessed. When merely counting states, the template is only re-rendered when a state is added or removed from the system. On busy systems with many entities or hundreds of thousands state changed events per day, templates may re-render more than desirable.
+When `states` is used in a template by itself to iterate all states on the system, the template is re-rendered each time any state changed event happens if any part of the state is accessed. When merely counting states, the template is only re-rendered when a state is added or removed from the system. On busy systems with many entities or hundreds of thousands state changed events per day, templates may re-render more than desirable.
 
 In the below example, re-renders are limited to once per minute because we iterate over all available entities:
 
+```yaml
 template:
   - binary_sensor:
       - name: "Has Unavailable States"
         state: "{{ states | selectattr('state', 'in', ['unavailable', 'unknown', 'none']) | list | count }}"
-YAML
+```
+
 In the below example, re-renders are limited to once per second because we iterate over all entities in a single domain (sensor):
 
+```yaml
 template:
   - binary_sensor:
       - name: "Has Unavailable States"
         state: "{{ states.sensor | selectattr('state', 'in', ['unavailable', 'unknown', 'none']) | list | count }}"
-YAML
-If the template accesses every state on the system, a rate limit of one update per minute is applied. If the template accesses all states under a specific domain, a rate limit of one update per second is applied. If the template only accesses specific states, receives update events for specifically referenced entities, or the homeassistant.update_entity action is used, no rate limit is applied.
+```
 
-Considerations 
-Startup 
-If you are using the state of a platform that might not be available during startup, the Template Sensor may get an unknown state. To avoid this, use the states() function in your template. For example, you should replace {{ states.sensor.moon.state }} with this equivalent that returns the state and never results in unknown: {{ states('sensor.moon') }} .
+If the template accesses every state on the system, a rate limit of one update per minute is applied. If the template accesses all states under a specific domain, a rate limit of one update per second is applied. If the template only accesses specific states, receives update events for specifically referenced entities, or the `homeassistant.update_entity` action is used, no rate limit is applied.
 
-The same would apply to the is_state() function. You should replace {{ states.switch.source.state == 'on' }} with this equivalent that returns true/false and never gives an unknown result:
 
+## Considerations
+
+### Startup
+
+If you are using the state of a platform that might not be available during startup, the Template Sensor may get an unknown state. To avoid this, use the `states()` function in your template. For example, you should replace `{{ states.sensor.moon.state }}` with this equivalent that returns the state and never results in unknown: `{{ states('sensor.moon') }}`.
+
+The same would apply to the `is_state()` function. You should replace `{{ states.switch.source.state == 'on' }}` with this equivalent that returns true/false and never gives an unknown result:
+
+```jinja
 {{ is_state('switch.source', 'on') }}
-YAML
-Using blueprints 
+```
+
+## Using blueprints
+
 If you’re just starting out and are not really familiar with templates, we recommend that you start with blueprint template entities. These are template entities which are ready-made by the community and that you only need to configure.
 
 Each blueprint contains the “recipe” for creating a single template entity, but you can create multiple template entities based on the same blueprint.
 
-To create your first template entity based on a blueprint, open up your configuration.yaml file and add:
+To create your first template entity based on a blueprint, open up your `configuration.yaml` file and add:
 
-# Example configuration.yaml template entity based on a blueprint located in config/blueprints/homeassistant/inverted_binary_sensor.yaml
+#### Example configuration.yaml template entity based on a blueprint located in `config/blueprints/homeassistant/inverted_binary_sensor.yaml`
 
 ```yaml
 template:
@@ -2103,9 +2075,10 @@ template:
     unique_id: inverted_foo
 ```
 
-If you look at the blueprint definition, you will notice it has one input defined (reference_entity), which expects a binary_sensor entity ID. When you create a template entity based on that blueprint, you will have to tell it which of your binary_sensor entities it should use to fill that spot.
+If you look at the blueprint definition, you will notice it has one input defined (`reference_entity`), which expects a `binary_sensor` entity ID. When you create a template entity based on that blueprint, you will have to tell it which of your `binary_sensor` entities it should use to fill that spot.
 
-Importing blueprints 
+### Importing blueprints
+
 Home Assistant can import blueprints from the Home Assistant forums, GitHub, and GitHub gists.
 
 To import a blueprint, first find a blueprint you want to import.
@@ -2113,8 +2086,8 @@ To import a blueprint, first find a blueprint you want to import.
 If you just want to practice importing, you can use this URL:
 
 https://github.com/home-assistant/core/blob/dev/homeassistant/components/template/blueprints/inverted_binary_sensor.yaml
-Text
-Download the file and place it under config/blueprints/template/<source or author>/<blueprint name>.yaml
+
+Download the file and place it under `config/blueprints/template/<source or author>/<blueprint name>.yaml`
 
 Use a config similar to the one above to create a new template entity based on the blueprint you just imported.
 
@@ -2122,17 +2095,23 @@ Make sure to fill in all required inputs.
 
 The blueprint can now be used for creating template entities.
 
-Event event_template_reloaded 
-Event event_template_reloaded is fired when Template entities have been reloaded and entities thus might have changed.
 
-This event has no additional data.
+## Event: `event_template_reloaded`
 
-Legacy Alarm Control Panel configuration format 
+The `event_template_reloaded` event is fired when Template entities have been reloaded and entities thus might have changed. This event has no additional data.
+
+alarm_control_panel_name map Required
+disarm action (Optional)
+
+## Legacy Alarm Control Panel configuration format
+
 These formats still work but are no longer recommended. Use modern configuration.
 
 This format is configured as a platform for the alarm_control_panel integration and not directly under the template integration.
 
-# Example configuration.yaml entry
+#### Example configuration.yaml entry
+
+```yaml
 alarm_control_panel:
   - platform: template
     panels:
@@ -2159,30 +2138,19 @@ alarm_control_panel:
               entity_id: alarm_control_panel.real_alarm
             data:
               code: !secret alarm_code
-YAML
-Configuration Variables 
-Looking for your configuration file?
-panels map Required
-List of your panels.
+```
 
-alarm_control_panel_name map Required
-The slug of the panel.
+### Configuration Variables
 
-name string (Optional)
-Name to use in the frontend.
-
-Default: Template Alarm Control Panel
-unique_id string (Optional)
-An ID that uniquely identifies this alarm control panel. Set this to a unique value to allow customization through the UI.
-
-value_template template (Optional)
-Defines a template to set the state of the alarm panel. Only the states armed_away, armed_home, armed_night, armed_vacation, arming, disarmed, pending, triggered and unavailable are used.
-
-disarm action (Optional)
-Defines an action to run when the alarm is disarmed.
-
-arm_away action (Optional)
-Defines an action to run when the alarm is armed to away mode.
+| Variable | Type | Description |
+| -------- | ---- | ----------- |
+| `panels` | map (Required) | List of your panels. |
+| `alarm_control_panel_name` | map (Required) | The slug of the panel. |
+| `name` | string (Optional) | Name to use in the frontend. Default: Template Alarm Control Panel |
+| `unique_id` | string (Optional) | An ID that uniquely identifies this alarm control panel. Set this to a unique value to allow customization through the UI. |
+| `value_template` | template (Optional) | Defines a template to set the state of the alarm panel. Only the states armed_away, armed_home, armed_night, armed_vacation, arming, disarmed, pending, triggered and unavailable are used. |
+| `disarm` | action (Optional) | Defines an action to run when the alarm is disarmed. |
+| `arm_away` | action (Optional) | Defines an action to run when the alarm is armed to away mode. |
 
 arm_home action (Optional)
 Defines an action to run when the alarm is armed to home mode.
@@ -2219,9 +2187,7 @@ binary_sensor:
         friendly_name: "Sun is up"
         value_template: "{{ state_attr('sun.sun', 'elevation') > 0 }}"
 `
-Configuration Variables 
-Looking for your configuration file?
-sensors map Required
+Configuration Variables sensors map Required
 List of your sensors.
 
 sensor_name map Required
@@ -2283,9 +2249,7 @@ cover:
           action: script.stop_garage_door
 ```
 
-Configuration Variables 
-Looking for your configuration file?
-covers map Required
+Configuration Variables covers map Required
 List of your covers.
 
 friendly_name string (Optional)
@@ -2381,9 +2345,7 @@ fan:
           - 'whoosh'
 ```
 
-Configuration Variables 
-Looking for your configuration file?
-fans map Required
+Configuration Variables fans map Required
 List of your fans.
 
 friendly_name string (Optional)
@@ -2490,9 +2452,7 @@ light:
               effect: "{{ effect }}"
         supports_transition_template: "{{ true }}"
 ```
-Configuration Variables 
-Looking for your configuration file?
-lights map Required
+Configuration Variables lights map Required
 List of your lights.
 
 friendly_name string (Optional)
@@ -2593,8 +2553,6 @@ lock:
 ```
 
 ## Configuration Variables 
-Looking for your configuration file?
-
 name string (Optional, default: Template Lock)
 Name to use in the frontend.
 
@@ -2642,9 +2600,7 @@ sensor:
         value_template: "{{ state_attr('sun.sun', 'next_rising') }}"
 ```
 
-Configuration Variables 
-Looking for your configuration file?
-sensors map Required
+Configuration Variables sensors map Required
 Map of your sensors.
 
 friendly_name string (Optional)
@@ -2700,9 +2656,7 @@ switch:
           target:
             entity_id: switch.skylight_close
 YAML
-Configuration Variables 
-Looking for your configuration file?
-switches map Required
+Configuration Variables switches map Required
 List of your switches.
 
 friendly_name string (Optional)
@@ -2742,9 +2696,7 @@ vacuum:
         start:
           action: script.vacuum_start
 YAML
-Configuration Variables 
-Looking for your configuration file?
-vacuums map Required
+Configuration Variables vacuums map Required
 List of your vacuums.
 
 friendly_name string (Optional)
@@ -2810,9 +2762,7 @@ weather:
     humidity_template: "{{ states('sensor.humidity') | float }}"
     forecast_daily_template: "{{ state_attr('weather.my_region', 'forecast_data') }}"
 YAML
-Configuration Variables 
-Looking for your configuration file?
-name template Required
+Configuration Variables name template Required
 Name to use in the frontend.
 
 unique_id string (Optional)
