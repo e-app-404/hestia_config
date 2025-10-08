@@ -1,0 +1,9 @@
+room_db_updater:
+  module: room_db_updater
+  class: RoomDbUpdater
+  db_path: /config/room_database.db
+  schema_expected: 1
+  canonical_mapping_file: /config/architecture/area_mapping.yaml
+  allowed_domains: ["motion_lighting","vacuum_control","shared"]
+  max_config_size_bytes: 4096
+  write_rate_limit_seconds: 2
