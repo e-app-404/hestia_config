@@ -109,12 +109,12 @@ storage-tarball: venv
 	@INCLUDE_STORAGE=true bash hestia/tools/utils/backup/hestia_tarball.sh
 
 backup-rename: venv
-	@echo "Normalizing legacy backup file names..."
-	@$(PY) hestia/tools/utils/legacy_backup_renamer.py --apply
+	@echo "Normalizing backup file names to ADR-0018 standard..."
+	@$(PY) hestia/tools/utils/normalize_backup_names.py --apply
 
 backup-rename-dry: venv
-	@echo "Checking legacy backup file names (dry run)..."
-	@$(PY) hestia/tools/utils/legacy_backup_renamer.py
+	@echo "Checking backup file names for ADR-0018 compliance (dry run)..."
+	@$(PY) hestia/tools/utils/normalize_backup_names.py --dry-run
 
 # Template Tools (ADR-0020)
 template-fix: venv

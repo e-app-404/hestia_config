@@ -45,8 +45,8 @@ def normalize_backup_name(filename):
         name, ext, timestamp = match.groups()
         return f"{name}_{ext}.{timestamp}.bk"
     
-    # Pattern 7: name.qualifier.YYYYMMDDTHHMMSSZ.bk -> name_qualifier.YYYYMMDDTHHMMSSZ.bk
-    match = re.match(r'^(.+)\.([^.]+)\.(\d{8}T\d{6}Z)\.bk$', filename)
+    # Pattern 7: name.bk.qualifier.YYYYMMDDTHHMMSSZ -> name_qualifier.YYYYMMDDTHHMMSSZ.bk
+    match = re.match(r'^(.+)\.bk\.([^.]+)\.(\d{8}T\d{6}Z)$', filename)
     if match:
         name, qualifier, timestamp = match.groups()
         return f"{name}_{qualifier}.{timestamp}.bk"
