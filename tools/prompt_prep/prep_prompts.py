@@ -94,7 +94,7 @@ class PromptPrepper:
         
         # Return domain with highest score, or 'operational' as default
         if max(scores.values()) > 0:
-            return max(scores, key=scores.get)
+            return max(scores.items(), key=lambda item: item[1])[0]
         return 'operational'
     
     def _detect_persona(self, content):
