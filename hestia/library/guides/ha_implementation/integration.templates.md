@@ -2211,13 +2211,14 @@ These formats still work but are no longer recommended. Use modern configuration
 This format is configured as a platform for the binary_sensor integration and not directly under the template integration.
 
 # Example configuration.yaml entry
+```yaml
 binary_sensor:
   - platform: template
     sensors:
       sun_up:
         friendly_name: "Sun is up"
         value_template: "{{ state_attr('sun.sun', 'elevation') > 0 }}"
-YAML
+`
 Configuration Variables 
 Looking for your configuration file?
 sensors map Required
@@ -2264,7 +2265,9 @@ This format still works but is no longer recommended. Use modern configuration.
 
 This format is configured as a platform for the cover integration and not directly under the template integration.
 
-# Example configuration.yaml entry
+### Example configuration.yaml entry
+
+```yaml
 cover:
   - platform: template
     covers:
@@ -2278,7 +2281,8 @@ cover:
           action: script.close_garage_door
         stop_cover:
           action: script.stop_garage_door
-YAML
+```
+
 Configuration Variables 
 Looking for your configuration file?
 covers map Required
@@ -2337,7 +2341,9 @@ This format still works but is no longer recommended. Use modern configuration.
 
 This format is configured as a platform for the fan integration and not directly under the template integration.
 
-# Example configuration.yaml entry
+### Example configuration.yaml entry
+
+```yaml
 fan:
   - platform: template
     fans:
@@ -2373,7 +2379,8 @@ fan:
           - 'auto'
           - 'smart'
           - 'whoosh'
-YAML
+```
+
 Configuration Variables 
 Looking for your configuration file?
 fans map Required
@@ -2432,7 +2439,9 @@ This format still works but is no longer recommended. Use modern configuration.
 
 This format is configured as a platform for the light integration and not directly under the template integration.
 
-# Example configuration.yaml entry
+### Example configuration.yaml entry
+
+```yaml
 light:
   - platform: template
     lights:
@@ -2480,7 +2489,7 @@ light:
                 - light.led_strip
               effect: "{{ effect }}"
         supports_transition_template: "{{ true }}"
-YAML
+```
 Configuration Variables 
 Looking for your configuration file?
 lights map Required
@@ -2566,7 +2575,9 @@ This format still works but is no longer recommended. Use modern configuration.
 
 This format is configured as a platform for the lock integration and not directly under the template integration.
 
-# Example configuration.yaml entry
+### Example configuration.yaml entry
+
+```yaml
 lock:
   - platform: template
     name: Garage door
@@ -2579,9 +2590,11 @@ lock:
       action: switch.turn_off
       target:
         entity_id: switch.door
-YAML
-Configuration Variables 
+```
+
+## Configuration Variables 
 Looking for your configuration file?
+
 name string (Optional, default: Template Lock)
 Name to use in the frontend.
 
@@ -2614,7 +2627,9 @@ This format still works but is no longer recommended. Use modern configuration.
 
 This format is configured as a platform for the sensor integration and not directly under the template integration.
 
-# Example configuration.yaml entry
+### Example configuration.yaml entry
+
+```yaml
 sensor:
   - platform: template
     sensors:
@@ -2625,7 +2640,8 @@ sensor:
 
       sunrise:
         value_template: "{{ state_attr('sun.sun', 'next_rising') }}"
-YAML
+```
+
 Configuration Variables 
 Looking for your configuration file?
 sensors map Required
@@ -2664,12 +2680,12 @@ Defines a template to get the available state of the integration. If the templat
 device_class device_class (Optional, default: None)
 Sets the class of the device, changing the device state and icon that is displayed on the UI (see below). It does not set the unit_of_measurement.
 
-Legacy Switch configuration format 
+## Legacy Switch configuration format 
 This format still works but is no longer recommended. Use modern configuration.
 
 This format is configured as a platform for the switch integration and not directly under the template integration.
 
-# Example configuration.yaml entry
+### Example configuration.yaml entry
 switch:
   - platform: template
     switches:

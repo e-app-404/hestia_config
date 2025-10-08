@@ -12,13 +12,13 @@ promptset:
     and implement SQL-based room database solution replacing HACS Variable integration.
     Merges adaptive motion lighting and vacuum control into unified room-scoped data architecture
     achieving 70%+ entity reduction through dynamic database-backed configuration objects.
+  legacy_compatibility: false
   persona: strategos_gpt
   purpose: |
     Transform Variable integration dependencies into production-grade SQL-based room database
     architecture. Create unified data layer for motion lighting and vacuum control with
     room-scoped configuration objects, maintaining all functionality while eliminating
     entity sprawl through strategic database design.
-  legacy_compatibility: false
   schema_version: 1.0
 
   # Execution Context for Strategos GPT
@@ -30,34 +30,27 @@ promptset:
 
   # Artifacts & Bindings
   artifacts:
-    required:
-      # Input package components for analysis
-      - path: /mnt/data/adaptive_motion_lighting/
-        description: "Complete adaptive motion lighting package with room configs, automations, and helper definitions"
-      - path: /mnt/data/valetudo/
-        description: "Valetudo vacuum control package with room cleaning logic and state management"
-      
-      # SQL integration patterns and constraints
-      - path: /mnt/data/homeassistant_sql_integration_guide.md
-        description: "Official HA SQL integration documentation with schema patterns, query validation, and template integration"
-      - path: /mnt/data/sqlite_homeassistant_patterns.md
-        description: "SQLite usage patterns in HA ecosystem, performance considerations, and database design best practices"
-      
-      # Architecture governance
-      - path: /mnt/data/ADR/ADR-0008-normalization-and-determinism-rules.md
-        description: "YAML normalization rules and deterministic configuration patterns for package consistency"
-      - path: /mnt/data/ADR/ADR-0021-motion-occupancy-presence-signals.md
-        description: "Motion/occupancy/presence signal handling requirements and tier progression standards"
-      - path: /mnt/data/ADR/ADR-0024-canonical-config-path.md
-        description: "Canonical workspace structure and file placement requirements"
-      
-      # Reference architecture
-      - path: /mnt/data/architecture/area_mapping.yaml
-        description: "Canonical area/room/zone mapping with hierarchical relationships"
-      - path: /mnt/data/architecture/presence_mapping.yaml
-        description: "Presence detection architecture and entity relationship mapping"
-      - path: /mnt/data/architecture/tier_mapping.yaml
-        description: "Alpha/beta/eta tier progression rules for entity references"
+      required:
+        - description: "Complete adaptive motion lighting package with room configs, automations, and helper definitions"
+          path: /mnt/data/adaptive_motion_lighting/
+        - description: "Valetudo vacuum control package with room cleaning logic and state management"
+          path: /mnt/data/valetudo/
+        - description: "Official HA SQL integration documentation with schema patterns, query validation, and template integration"
+          path: /mnt/data/homeassistant_sql_integration_guide.md
+        - description: "SQLite usage patterns in HA ecosystem, performance considerations, and database design best practices"
+          path: /mnt/data/sqlite_homeassistant_patterns.md
+        - description: "YAML normalization rules and deterministic configuration patterns for package consistency"
+          path: /mnt/data/ADR/ADR-0008-normalization-and-determinism-rules.md
+        - description: "Motion/occupancy/presence signal handling requirements and tier progression standards"
+          path: /mnt/data/ADR/ADR-0021-motion-occupancy-presence-signals.md
+        - description: "Canonical workspace structure and file placement requirements"
+          path: /mnt/data/ADR/ADR-0024-canonical-config-path.md
+        - description: "Canonical area/room/zone mapping with hierarchical relationships"
+          path: /mnt/data/architecture/area_mapping.yaml
+        - description: "Presence detection architecture and entity relationship mapping"
+          path: /mnt/data/architecture/presence_mapping.yaml
+        - description: "Alpha/beta/eta tier progression rules for entity references"
+          path: /mnt/data/architecture/tier_mapping.yaml
 
     consulted:
       # Extended context sources
@@ -71,40 +64,40 @@ promptset:
         description: "Previous vacuum optimization approach for integration pattern analysis"
 
   bindings:
-    protocols:
-      - sql_database_first_architecture
-      - room_scoped_data_modeling
-      - entity_reduction_optimization
-      - production_grade_validation
-      - adr_compliance_enforcement
-    hard_guardrails:
-      - "Database schema MUST support JSON attributes for complex room configurations"
-      - "SQL queries MUST use HA recorder database unless explicitly requiring external database"
-      - "Room objects MUST consolidate 6+ entities into single queryable configuration"
-      - "All YAML output MUST pass HA configuration validation"
-      - "Package structure MUST follow ADR-0024 canonical path requirements"
-      - "Entity references MUST use beta-tier entities per ADR-0021 progression rules"
-    persona: strategos_gpt
+      protocols:
+        - sql_database_first_architecture
+        - room_scoped_data_modeling
+        - entity_reduction_optimization
+        - production_grade_validation
+        - adr_compliance_enforcement
+      hard_guardrails:
+        - Database schema MUST support JSON attributes for complex room configurations
+        - SQL queries MUST use HA recorder database unless explicitly requiring external database
+        - Room objects MUST consolidate 6+ entities into single queryable configuration
+        - All YAML output MUST pass HA configuration validation
+        - Package structure MUST follow ADR-0024 canonical path requirements
+        - Entity references MUST use beta-tier entities per ADR-0021 progression rules
+      persona: strategos_gpt
 
   retrieval_tags:
-    - sql_architecture
-    - room_database
-    - entity_reduction
-    - variable_replacement
-    - motion_lighting
-    - vacuum_control
-    - home_assistant
-    - database_design
+     - sql_architecture
+     - room_database
+     - entity_reduction
+     - variable_replacement
+     - motion_lighting
+     - vacuum_control
+     - home_assistant
+     - database_design
 
   operational_modes:
-    - research_mode
-    - deconstruction_mode
-    - architecture_mode
-    - implementation_mode
-    - validation_mode
+     - research_mode
+     - deconstruction_mode
+     - architecture_mode
+     - implementation_mode
+     - validation_mode
 
   # 5-Phase Sequential Execution Plan
-  prompts:
+    prompts:
     # PHASE 1: Research Foundation
     - id: sql_room_db.research.foundation
       persona: strategos_gpt
