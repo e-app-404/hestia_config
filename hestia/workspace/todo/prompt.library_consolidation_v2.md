@@ -113,8 +113,6 @@ workspace_allocation:
 
 ---
 
----
-
 # Prompt Library Proposed Directory Structure
 
 ## Executive Summary
