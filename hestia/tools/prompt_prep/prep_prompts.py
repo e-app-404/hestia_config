@@ -1,19 +1,21 @@
 #!/usr/bin/env python3
 """
-Prompt Library Pre-Preparation Script
-Converts all prompt files to Markdown with YAML frontmatter stub
+Prompt preparation tool for the Hestia prompt library consolidation workflow.
+Extracts metadata from prompt files and generates content-based slugs and filenames.
+Enhanced version with file date detection and improved slug generation.
 """
-
+import argparse
+import hashlib
 import os
 import re
-import yaml
-from pathlib import Path
 from datetime import datetime
-import hashlib
-import sys
+from pathlib import Path
+
+import yaml
+
 
 class PromptPrepper:
-    def __init__(self, source_dir, output_dir, dry_run=True):
+    def __init__(self, source_dir, output_dir, dry_run=False):
         self.source_dir = Path(source_dir)
         self.output_dir = Path(output_dir)
         self.dry_run = dry_run
@@ -25,53 +27,173 @@ class PromptPrepper:
         slug = re.sub(r'[^\w\s-]', '', slug)
         slug = re.sub(r'[-\s]+', '-', slug)
         return slug.strip('-')
-    
-    def _generate_id(self, filepath):
-        """Generate deterministic ID from file path"""
-        # Try to extract existing ID from filename
-        match = re.search(r'prompt_(\d{8}_\d{3})', filepath.name)
-        if match:
-            return f"prompt_{match.group(1)}"
+
+    def _get_file_date(self, filepath):
+        """Get file creation/modification date, prioritizing content date if available"""
+        try:
+            # Get file modification time
+            mtime = filepath.stat().st_mtime
+            return datetime.fromtimestamp(mtime)
+        except Exception:
+            # Fallback to current date
+            return datetime.now()
+
+    def _extract_date_from_content(self, content, filepath):
+        """Extract date from content, fallback to file date"""
+        # Look for date in YAML frontmatter
+        if content.startswith('---'):
+            try:
+                parts = content.split('---', 2)
+                if len(parts) >= 3:
+                    metadata = yaml.safe_load(parts[1])
+                    for date_field in ['date', 'created', 'original_date', 'created_at']:
+                        if date_field in metadata:
+                            date_str = str(metadata[date_field])
+                            # Try to parse various date formats
+                            for fmt in ['%Y-%m-%d', '%Y-%m-%d %H:%M:%S', '%Y/%m/%d']:
+                                try:
+                                    return datetime.strptime(date_str, fmt)
+                                except ValueError:
+                                    continue
+            except Exception:
+                pass
         
-        # Generate fallback ID using hash
+        # Look for date patterns in content
+        date_patterns = [
+            r'(?:date|created|updated):\s*(\d{4}-\d{2}-\d{2})',
+            r'(\d{4}-\d{2}-\d{2})',  # ISO date format
+            r'(\d{1,2}/\d{1,2}/\d{4})',  # US date format
+        ]
+        
+        for pattern in date_patterns:
+            match = re.search(pattern, content, re.IGNORECASE)
+            if match:
+                date_str = match.group(1)
+                for fmt in ['%Y-%m-%d', '%m/%d/%Y', '%d/%m/%Y']:
+                    try:
+                        return datetime.strptime(date_str, fmt)
+                    except ValueError:
+                        continue
+        
+        # Fallback to file modification date
+        return self._get_file_date(filepath)
+
+    def _generate_id(self, filepath, content_date):
+        """Generate deterministic ID using content/file date"""
+        # Try to extract existing ID from filename
+        id_match = re.search(r'prompt[_-](\d{8}[_-]\w+)', filepath.name)
+        if id_match:
+            return f"prompt_{id_match.group(1)}"
+        
+        # Generate ID using content/file date + hash
         hash_suffix = hashlib.md5(str(filepath).encode()).hexdigest()[:6]
-        date_prefix = datetime.now().strftime('%Y%m%d')
+        date_prefix = content_date.strftime('%Y%m%d')
         return f"prompt_{date_prefix}_{hash_suffix}"
-    
-    def _extract_title(self, filename, content):
-        """Extract title from filename or first heading"""
+
+    def _extract_title_from_content(self, content, filepath):
+        """Extract title from content first, fallback to filename"""
         # Try to find first markdown heading
         match = re.search(r'^#\s+(.+)$', content, re.MULTILINE)
         if match:
             return match.group(1).strip()
         
+        # Try to find title in YAML frontmatter
+        if content.startswith('---'):
+            try:
+                parts = content.split('---', 2)
+                if len(parts) >= 3:
+                    metadata = yaml.safe_load(parts[1])
+                    if 'title' in metadata:
+                        return metadata['title'].strip('"\'')
+            except Exception:
+                pass
+        
+        # Look for objective or context patterns
+        objective_match = re.search(
+            r'(?:objective|purpose|goal)[:*]\s*(.+?)(?:\n|$)', 
+            content, re.IGNORECASE
+        )
+        if objective_match:
+            title = objective_match.group(1).strip()
+            if len(title) < 100:  # Reasonable title length
+                return title
+
+        # Look for "You are" patterns common in prompts
+        you_are_match = re.search(
+            r'^You are (?:an? )?(.+?)(?:\.|$)', content, re.MULTILINE | re.IGNORECASE
+        )
+        if you_are_match:
+            title = you_are_match.group(1).strip()
+            if len(title) < 80:
+                return f"Assistant: {title.title()}"
+        
+        # Look for first sentence as title
+        first_sentence = re.search(r'^(.+?)\.', content.strip())
+        if first_sentence:
+            sentence = first_sentence.group(1).strip()
+            if 10 < len(sentence) < 100:  # Reasonable length
+                return sentence
+
         # Fallback to cleaned filename
-        title = filename.stem.replace('_', ' ').replace('-', ' ')
-        title = re.sub(r'^(batch\d+-|prompt_\d+_\d+_)', '', title, flags=re.IGNORECASE)
+        title = filepath.stem.replace('_', ' ').replace('-', ' ')
+        title = re.sub(
+            r'^(batch\d+-|prompt_\d+_\d+_)', '', title, flags=re.IGNORECASE
+        )
         return title.title()
-    
-    def _detect_tier(self, content, filename):
+
+    def _detect_tier(self, content, filepath):
         """Detect tier from content patterns"""
         content_lower = content.lower()
-        filename_lower = filename.lower()
         
         # Look for explicit tier declarations
-        tier_match = re.search(r'tier:\s*([αβγδεζημΩ])', content)
+        tier_match = re.search(r'tier:\s*([αβγδεζμΩ])', content)
         if tier_match:
             return tier_match.group(1)
         
-        # Heuristic detection based on keywords
-        if any(kw in content_lower for kw in ['governance', 'emergency', 'critical', 'core system']):
+        # Heuristic detection based on keywords (content-first approach)
+        governance_kw = ['governance', 'emergency', 'critical', 'core system', 'meta']
+        if any(kw in content_lower for kw in governance_kw):
             return 'α'
-        elif any(kw in content_lower for kw in ['integration', 'operational', 'workflow', 'extraction']):
+        
+        operational_kw = ['integration', 'operational', 'workflow', 'extraction', 'automation']
+        if any(kw in content_lower for kw in operational_kw):
             return 'β'
-        elif any(kw in content_lower for kw in ['instruction', 'guide', 'template', 'documentation']):
+        
+        instructional_kw = ['instruction', 'guide', 'template', 'documentation', 'tutorial']
+        if any(kw in content_lower for kw in instructional_kw):
             return 'γ'
+        
+        universal_kw = ['universal', 'meta', 'framework']
+        if any(kw in content_lower for kw in universal_kw):
+            return 'Ω'
         
         # Default to beta if uncertain
         return 'β'
-    
-    def _detect_domain(self, content, filename):
+
+    def _generate_slug_from_content(self, content, filepath):
+        """Generate slug from content, promoting it as filename basis"""
+        title = self._extract_title_from_content(content, filepath)
+        
+        # Clean and slugify the title
+        slug = title.lower()
+        slug = re.sub(r'[^a-z0-9\s-]', '', slug)  # Remove special chars
+        slug = re.sub(r'\s+', '-', slug)  # Replace spaces with hyphens
+        slug = re.sub(r'-+', '-', slug)  # Collapse multiple hyphens
+        slug = slug.strip('-')  # Remove leading/trailing hyphens
+        
+        # Limit length for practical filenames
+        if len(slug) > 50:
+            slug = slug[:50].rstrip('-')
+        
+        # If slug is still empty or too short, use filename
+        if len(slug) < 3:
+            slug = filepath.stem.lower()
+            slug = re.sub(r'[^a-z0-9-]', '-', slug)
+            slug = re.sub(r'-+', '-', slug).strip('-')
+        
+        return slug
+
+    def _detect_domain(self, content, filepath):
         """Detect domain from content patterns"""
         content_lower = content.lower()
         
@@ -93,9 +215,9 @@ class PromptPrepper:
         
         # Return domain with highest score, or 'operational' as default
         if max(scores.values()) > 0:
-            return max(scores, key=scores.get)
+            return max(scores.keys(), key=lambda k: scores[k])
         return 'operational'
-    
+
     def _detect_persona(self, content):
         """Detect persona from content patterns"""
         content_lower = content.lower()
@@ -114,7 +236,7 @@ class PromptPrepper:
                 return persona
         
         return 'generic'
-    
+
     def _detect_status(self, content):
         """Detect status from content patterns"""
         content_lower = content.lower()
@@ -127,15 +249,25 @@ class PromptPrepper:
             return 'candidate'
         
         return 'candidate'
-    
+
     def _extract_author(self, content):
         """Extract author from content"""
-        match = re.search(r'author:\s*["\']?([^"\'\n]+)["\']?', content, re.IGNORECASE)
+        match = re.search(
+            r'author:\s*["\']?([^"\'\n]+)["\']?', content, re.IGNORECASE
+        )
         if match:
             return match.group(1).strip()
+        
+        # Look for authors field (plural)
+        match = re.search(
+            r'authors?:\s*["\']?([^"\'\n]+)["\']?', content, re.IGNORECASE
+        )
+        if match:
+            return match.group(1).strip()
+            
         return 'Unknown'
-    
-    def _extract_tags(self, filename, content):
+
+    def _extract_tags(self, filepath, content):
         """Extract tags from content and filename"""
         tags = []
         
@@ -147,35 +279,36 @@ class PromptPrepper:
                     metadata = yaml.safe_load(parts[1])
                     if 'tags' in metadata:
                         tags.extend(metadata['tags'])
-            except:
+            except Exception:
                 pass
         
         # Extract from filename
-        filename_lower = filename.lower()
-        tag_keywords = ['diagnostic', 'validation', 'extraction', 'automation', 
-                       'governance', 'emergency', 'instructional']
+        filename_lower = filepath.name.lower()
+        tag_keywords = [
+            'diagnostic', 'validation', 'extraction', 'automation', 
+            'governance', 'emergency', 'instructional'
+        ]
         tags.extend([kw for kw in tag_keywords if kw in filename_lower])
         
         return list(set(tags))  # Remove duplicates
-    
+
     def extract_metadata(self, filepath, content):
         """Extract metadata using heuristics"""
-        filename = filepath.name
+        # Extract date from content or use file date
+        content_date = self._extract_date_from_content(content, filepath)
         
-        # Extract title from filename or first heading
-        title = self._extract_title(filename, content)
+        # Extract title from content and generate slug from it
+        title = self._extract_title_from_content(content, filepath)
+        slug = self._generate_slug_from_content(content, filepath)
         
-        # Generate deterministic ID
-        file_id = self._generate_id(filepath)
-        
-        # Generate slug from title
-        slug = self._generate_slug(title)
+        # Generate deterministic ID using content/file date
+        file_id = self._generate_id(filepath, content_date)
         
         # Detect tier from content patterns
-        tier = self._detect_tier(content, filename)
+        tier = self._detect_tier(content, filepath)
         
         # Detect domain from content patterns
-        domain = self._detect_domain(content, filename)
+        domain = self._detect_domain(content, filepath)
         
         # Detect persona from content patterns  
         persona = self._detect_persona(content)
@@ -187,13 +320,13 @@ class PromptPrepper:
         author = self._extract_author(content)
         
         # Extract tags from content and filename
-        tags = self._extract_tags(filename, content)
+        tags = self._extract_tags(filepath, content)
         
         return {
             'id': file_id,
             'slug': slug,
             'title': title,
-            'date': datetime.now().strftime('%Y-%m-%d'),
+            'date': content_date.strftime('%Y-%m-%d'),
             'tier': tier,
             'domain': domain,
             'persona': persona,
@@ -206,7 +339,7 @@ class PromptPrepper:
             'last_updated': datetime.now().isoformat(),
             'redaction_log': []
         }
-    
+
     def _create_prepped_content(self, metadata, original_content, filepath):
         """Create prepped markdown with frontmatter"""
         # Remove existing frontmatter if present
@@ -217,14 +350,16 @@ class PromptPrepper:
                 content = parts[2].strip()
         
         # Create new frontmatter
-        frontmatter = yaml.dump(metadata, default_flow_style=False, sort_keys=False)
+        frontmatter = yaml.dump(
+            metadata, default_flow_style=False, sort_keys=False
+        )
         
         return f"---\n{frontmatter}---\n\n{content}\n"
-    
+
     def process_file(self, filepath):
         """Process a single file"""
         try:
-            with open(filepath, 'r', encoding='utf-8') as f:
+            with open(filepath, encoding='utf-8') as f:
                 content = f.read()
             
             metadata = self.extract_metadata(filepath, content)
@@ -234,7 +369,9 @@ class PromptPrepper:
             output_path = self.output_dir / output_name
             
             # Generate prepped content
-            prepped_content = self._create_prepped_content(metadata, content, filepath)
+            prepped_content = self._create_prepped_content(
+                metadata, content, filepath
+            )
             
             if self.dry_run:
                 print(f"[DRY RUN] Would create: {output_name}")
@@ -257,7 +394,7 @@ class PromptPrepper:
         except Exception as e:
             print(f"❌ Error processing {filepath}: {e}")
             return False
-    
+
     def process_directory(self):
         """Process all files in source directory"""
         stats = {'processed': 0, 'failed': 0}
@@ -271,10 +408,11 @@ class PromptPrepper:
         
         return stats
 
-def main():
-    import argparse
-    
-    parser = argparse.ArgumentParser(description='Prepare prompts with frontmatter')
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(
+        description='Prepare prompts with frontmatter'
+    )
     parser.add_argument('--source', required=True, help='Source directory')
     parser.add_argument('--output', required=True, help='Output directory')
     parser.add_argument('--dry-run', action='store_true', help='Dry run mode')
@@ -285,10 +423,3 @@ def main():
     stats = prepper.process_directory()
     
     print(f"\n📊 Summary: {stats['processed']} processed, {stats['failed']} failed")
-    
-    if not args.dry_run:
-        print(f"✅ Output written to: {args.output}")
-        print("⚠️  Files are read-only until sign-off")
-
-if __name__ == "__main__":
-    main()
