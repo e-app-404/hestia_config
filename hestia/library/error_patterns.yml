@@ -349,6 +349,59 @@ patterns:
       - "Home Assistant Configuration Documentation"
       - "YAML Specification"
 
+  - name: "yaml_heredoc_parsing_error"
+    category: "yaml_configuration"
+    description: "YAML parsing errors when using heredoc syntax within folded scalars"
+    error_format: "while scanning a simple key...could not find expected ':'"
+    symptoms:
+      - "Configuration loading failures with cryptic YAML parsing errors"
+      - "Shell command configurations failing to load"
+      - "Error messages pointing to line numbers with colon expectations"
+      - "Home Assistant failing to start due to configuration syntax errors"
+    root_causes:
+      - "Using heredoc syntax (<<\"DELIMITER\") within YAML folded scalar blocks (>-)"
+      - "Complex shell commands with embedded quotes conflicting with YAML parsing"
+      - "Multi-line SQL or shell scripts incorrectly formatted in YAML"
+      - "YAML parser unable to handle nested quoting structures"
+    solution:
+      - "Convert from folded scalar (>-) to literal scalar (|) block style"
+      - "Eliminate heredoc syntax and use inline SQL with proper escaping"
+      - "Escape all internal quotes within the command string"
+      - "Use single-line format for complex SQL operations"
+    examples:
+      bad: |
+        shell_command:
+          update_room_config: >-
+            /bin/sh -c 'sqlite3 /config/room_database.db <<"SQL"
+            PRAGMA journal_mode=WAL;
+            UPDATE table SET data = "{{ value }}";
+        SQL'
+      good: |
+        shell_command:
+          update_room_config: |
+            /bin/sh -c 'sqlite3 /config/room_database.db "PRAGMA journal_mode=WAL; UPDATE table SET data = \"{{ value }}\";"'
+    resolution_steps:
+      - "Identify the problematic YAML file from error message line numbers"
+      - "Locate shell commands or complex multi-line strings using >- folded scalars"
+      - "Convert folded scalar (>-) to literal scalar (|) block style"
+      - "Remove heredoc syntax and inline the SQL/shell commands"
+      - "Escape all internal quotes: \" becomes \\\" within the command string"
+      - "Test configuration loading with: /config/bin/config-health /config"
+      - "Verify shell commands execute properly after YAML fixes"
+    prevention_strategies:
+      - "Use literal scalar (|) for complex shell commands instead of folded scalar (>-)"
+      - "Avoid heredoc syntax within YAML; use inline commands with proper escaping"
+      - "Test YAML parsing after adding complex shell commands"
+      - "Consider external script files for very complex multi-line operations"
+    tooling:
+      detector: "Look for error patterns: 'while scanning a simple key' + 'could not find expected':'"
+      validator: "/config/bin/config-health /config - validates Home Assistant YAML configuration"
+      test_yaml: "python -c \"import yaml; yaml.safe_load(open('file.yaml'))\" - test YAML parsing"
+    references:
+      - "YAML Specification - Block Scalar Styles"
+      - "Home Assistant Shell Command Integration Documentation"
+      - "ADR-0018: Configuration Normalization Standards"
+
   - name: "blueprint_loading_error"
     category: "automation_blueprint"
     description: "Blueprint loading failures due to incorrect file paths or missing files"
