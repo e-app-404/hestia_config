@@ -1,3 +1,7 @@
+# REST commands for room database operations
+# Note: For new implementations, prefer shell_command equivalents for better reliability
+# The shell commands provide direct SQLite access with validation and rate limiting
+
 rest_command:
   room_db_update_config:
     url: "http://appdaemon:5050/api/app/room_db_updater/room_db/update_config"
@@ -5,3 +9,18 @@ rest_command:
     content_type: "application/json"
     payload: >-
       {"room_id": "{{ room_id }}", "domain": "{{ domain }}", "config_data": {{ config_data }} }
+
+# Use shell_command.update_room_config instead for:
+# - Direct SQLite database access
+# - Better error handling and validation
+# - Rate limiting protection
+# - Schema version checking
+# - Area mapping validation
+
+# Example usage:
+# service: shell_command.update_room_config
+# data:
+#   room_id: "bedroom"
+#   domain: "motion_lighting"
+#   config_data: '{"timeout": 120, "bypass": false}'
+#   schema_expected: 1
