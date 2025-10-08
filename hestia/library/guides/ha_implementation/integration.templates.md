@@ -1962,6 +1962,7 @@ This format is configured as a platform for the light integration and not direct
 #### Example configuration.yaml entry
 
 ```yaml
+##### Light: Example configuration.yaml entry
 light:
   - platform: template
     lights:
@@ -2644,104 +2645,60 @@ sensor:
 
 | Variable | Type | Description |
 | -------- | ---- | ----------- |
-| friendly_name | string | (Optional) Name to use in the frontend. |
-| friendly_name_template | template | (Optional) Defines a template for the name to be used in the frontend (this overrides friendly_name). |
-
-| unique_id | string | (Optional) An ID that uniquely identifies this sensor. Set this to a unique value to allow customization through the UI. |
-
-| unit_of_measurement | string | (Optional, default: None) Defines the units of measurement for the sensor. |
+| `friendly_name` | string | (Optional) Name to use in the frontend. |
+| `friendly_name_template` | template | (Optional) Defines a template for the name to be used in the frontend (this overrides friendly_name). |
+| `unique_id` | string | (Optional) An ID that uniquely identifies this sensor. Set this to a unique value to allow customization through the UI. |
+| `unit_of_measurement` | string | (Optional, default: None) Defines the units of measurement for the sensor. |
 Defines the units of measurement of the sensor, if any. This will also display the value based on the user profile Number Format setting and influence the graphical presentation in the history visualization as a continuous value.
-
-| value_template | template | Required. Defines a template to get the state of the sensor. |
-
-| icon_template | template | (Optional) Defines a template for the icon of the sensor. |
-
-| entity_picture_template | template | (Optional) Defines a template for the entity picture of the sensor. |
-Defines a template for the entity picture of the sensor.
-
-attribute_templates map (Optional)
-Defines templates for attributes of the sensor.
-
-attribute: template template Required
-The attribute and corresponding template.
-
-availability_template template (Optional, default: true)
-Defines a template to get the available state of the integration. If the template returns true, the device is available. If the template returns any other value, the device will be unavailable. If availability_template is not configured, the integration will always be available.
-
-device_class device_class (Optional, default: None)
-Sets the class of the device, changing the device state and icon that is displayed on the UI (see below). It does not set the unit_of_measurement.
-
-friendly_name string (Optional)
-Name to use in the frontend.
-
-unique_id string (Optional)
-An ID that uniquely identifies this switch. Set this to a unique value to allow customization through the UI.
-
-value_template template (Optional, default: optimistic)
+| `value_template` | template | Required. Defines a template to get the state of the sensor. |
+| `icon_template` | template | (Optional) Defines a template for the icon of the sensor. |
+| `entity_picture_template` | template | (Optional) Defines a template for the entity picture of the sensor. |
+| `attribute_templates` | map (Optional)  |  Defines templates for attributes of the sensor. |
+| `attribute` | template | Required |
+| `availability_template` | template | (Optional, default: true) |
+| `device_class` | string | (Optional, default: None) | Sets the class of the device, changing the device state and icon that is displayed on the UI (see below). It does not set the unit_of_measurement. |
+| `friendly_name` | string | (Optional) Name to use in the frontend. |
+| `unique_id` | string | (Optional) An ID that uniquely identifies this switch. Set this to a unique value to allow customization through the UI. |
+| `value_template` | template | (Optional, default: optimistic) |
 Defines a template to set the state of the switch. If not defined, the switch will optimistically assume all commands are successful.
-
-availability_template template (Optional, default: true)
+| `availability_template` | template | (Optional, default: true) |
 Defines a template to get the available state of the entity. If the template either fails to render or returns True, "1", "true", "yes", "on", "enable", or a non-zero number, the entity will be available. If the template returns any other value, the entity will be unavailable. If not configured, the entity will always be available. Note that the string comparison not case sensitive; "TrUe" and "yEs" are allowed.
 
-turn_on action Required
-Defines an action or list of actions to run when the switch is turned on.
+| `turn_on` | action | Required | Defines an action or list of actions to run when the switch is turned on. |
+| `turn_off` | action | Required | Defines an action or list of actions to run when the switch is turned off. |
 
-turn_off action Required
-Defines an action or list of actions to run when the switch is turned off.
+| `icon_template` | template | (Optional) | Defines a template for the icon of the switch. |
 
-icon_template template (Optional)
-Defines a template for the icon of the switch.
-
-entity_picture_template template (Optional)
+| `entity_picture_template` | template | (Optional) | Defines a template for the picture of the switch. |
 Defines a template for the picture of the switch.
 
-friendly_name string (Optional)
-Name to use in the frontend.
+| `friendly_name` | string | (Optional) | Name to use in the frontend. |  
 
-unique_id string (Optional)
-An ID that uniquely identifies this vacuum. Set this to a unique value to allow customization through the UI.
+| `unique_id` | string | (Optional) | An ID that uniquely identifies this vacuum. Set this to a unique value to allow customization through the UI. |
 
-value_template template (Optional)
-Defines a template to get the state of the vacuum. Valid value: docked/cleaning/idle/paused/returning/error
+| `value_template` | template | (Optional) | Defines a template to get the state of the vacuum. Valid value: docked/cleaning/idle/paused/returning/error |
 
-battery_level_template template (Optional)
-Defines a template to get the battery level of the vacuum. Legal values are numbers between 0 and 100.
+| `battery_level_template` | template | (Optional) | Defines a template to get the battery level of the vacuum. Legal values are numbers between 0 and 100. |
 
-fan_speed_template template (Optional)
+| `fan_speed_template` | template | (Optional) | Defines a template to get the fan speed of the vacuum. |
+
 Defines a template to get the fan speed of the vacuum.
 
-attribute_templates map (Optional)
-Defines templates for attributes of the sensor.
+| `attribute_templates` | map | (Optional) | Defines templates for attributes of the sensor. |
 
-attribute: template template Required
-The attribute and corresponding template.
+| `attribute` | template | Required | The attribute and corresponding template. |
+The attribute and corresponding template. |
+| `availability_template` | template | (Optional, default: true) | Defines a template to get the available state of the entity. If the template either fails to render or returns True, "1", "true", "yes", "on", "enable", or a non-zero number, the entity will be available. If the template returns any other value, the entity will be unavailable. If not configured, the entity will always be available. Note that the string comparison not case sensitive; "TrUe" and "yEs" are allowed. |
 
-availability_template template (Optional, default: true)
-Defines a template to get the available state of the entity. If the template either fails to render or returns True, "1", "true", "yes", "on", "enable", or a non-zero number, the entity will be available. If the template returns any other value, the entity will be unavailable. If not configured, the entity will always be available. Note that the string comparison not case sensitive; "TrUe" and "yEs" are allowed.
+| `start` | action | Required | Defines an action to run when the vacuum is started. |
 
-start action Required
-Defines an action to run when the vacuum is started.
-
-pause action (Optional)
-Defines an action to run when the vacuum is paused.
-
-stop action (Optional)
-Defines an action to run when the vacuum is stopped.
-
-return_to_base action (Optional)
-Defines an action to run when the vacuum is given a return to base command.
-
-clean_spot action (Optional)
-Defines an action to run when the vacuum is given a clean spot command.
-
-locate action (Optional)
-Defines an action to run when the vacuum is given a locate command.
-
-set_fan_speed action (Optional)
-Defines an action to run when the vacuum is given a command to set the fan speed.
-
-fan_speeds string | list (Optional)
-List of fan speeds supported by the vacuum.
+| `pause` | action | (Optional) | Defines an action to run when the vacuum is paused. |
+| `stop` | action | (Optional) | Defines an action to run when the vacuum is stopped. | 
+| `return_to_base` | action | (Optional) | Defines an action to run when the vacuum is given a return to base command. |
+| `clean_spot` | action | (Optional) | Defines an action to run when the vacuum is given a clean spot command. |
+| `locate` | action | (Optional) | Defines an action to run when the vacuum is given a locate command. |
+| `set_fan_speed` | action | (Optional) | Defines an action to run when the vacuum is given a command to set the fan speed. |
+| `fan_speeds` | list (Optional) | List of fan speeds supported by the vacuum. |
 
 ### Configuration Variables
 
@@ -2841,26 +2798,26 @@ vacuum:
 | `set_fan_speed`             | action (Optional) | Defines an action to run when the vacuum is given a command to set the fan speed. |
 | `fan_speeds`                | string or list (Optional) | List of fan speeds supported by the vacuum.                                  |
 
-temperature_template template Required
-dew_point_template template (Optional)
-apparent_temperature_template template (Optional)
-temperature_unit string (Optional)
-humidity_template template Required
-attribution_template string (Optional)
-pressure_template template (Optional)
-pressure_unit string (Optional)
-wind_speed_template template (Optional)
-wind_gust_speed_template template (Optional)
-wind_speed_unit string (Optional)
-wind_bearing_template template (Optional)
-ozone_template template (Optional)
-cloud_coverage_template template (Optional)
-visibility_template template (Optional)
-visibility_unit string (Optional)
-forecast_daily_template template (Optional)
-forecast_hourly_template template (Optional)
-forecast_twice_daily_template template (Optional)
-precipitation_unit string (Optional)
+| `temperature_template`      | template | Required. Defines a template to get the temperature of the vacuum. |
+| `dew_point_template`        | template | (Optional) Defines a template to get the dew point of the vacuum. |
+| `apparent_temperature_template` | template | (Optional) Defines a template to get the apparent temperature of the vacuum. |
+| `temperature_unit`          | string | (Optional) Defines the unit of measurement for the temperature. |
+| `humidity_template`         | template | Required. Defines a template to get the humidity of the vacuum. |
+| `attribution_template`     | string | (Optional) Defines a template for the attribution of the vacuum. |
+| `pressure_template`        | template | (Optional) Defines a template to get the pressure of the vacuum. |
+| `pressure_unit`            | string | (Optional) Defines the unit of measurement for the pressure. |
+| `wind_speed_template`     | template | (Optional) Defines a template to get the wind speed of the vacuum. |
+| `wind_gust_speed_template` | template | (Optional) Defines a template to get the wind gust speed of the vacuum. |
+| `wind_speed_unit`         | string | (Optional) Defines the unit of measurement for the wind speed. |
+| `wind_bearing_template`   | template | (Optional) Defines a template to get the wind bearing of the vacuum. |
+| `ozone_template`          | template | (Optional) Defines a template to get the ozone level of the vacuum. |
+| `cloud_coverage_template` | template | (Optional) Defines a template to get the cloud coverage of the vacuum. |
+| `visibility_template`     | template | (Optional) Defines a template to get the visibility of the vacuum. |
+| `visibility_unit`         | string | (Optional) Defines the unit of measurement for the visibility. |
+| `forecast_daily_template` | template | (Optional) Defines a template for the daily forecast of the vacuum. |
+| `forecast_hourly_template` | template | (Optional) Defines a template for the hourly forecast of the vacuum. |
+| `forecast_twice_daily_template` | template | (Optional) Defines a template for the twice-daily forecast of the vacuum. |
+| `precipitation_unit`      | string | (Optional) Defines the unit of measurement for the precipitation. |
 
 ---
 
