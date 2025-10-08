@@ -30,7 +30,7 @@ containment_graph:
   hallway:
       children: [downstairs, upstairs, hallway]  # Shared areas connecting both floors
   downstairs: # floor id downstairs, meaning ground floor
-    children: [kitchen, laundry_room, living_room, powder_room, entrance]
+    children: [kitchen, laundry_room, living_room, powder_room, entrance, hallway_downstairs]
   sanctum:
       children: [bedroom, ensuite]
   bedroom:
@@ -53,6 +53,7 @@ containment_graph:
   laundry_room: null
   living_room: null
   entrance: null
+  hallway_downstairs: null
   upstairs: null
   glances: null
   clapham: null
@@ -103,6 +104,14 @@ nodes:
     container: ["area", "entrance", "Entrance"]
     devices: 5
     entities: 3
+    services: 0
+  - id: hallway_downstairs
+    type: subarea
+    canonical_name: Hallway (Downstairs)
+    parents: [downstairs]
+    container: ["area", "hallway_downstairs", "Hallway Downstairs"]
+    devices: 0
+    entities: 0
     services: 0
   - id: downstairs
     type: area

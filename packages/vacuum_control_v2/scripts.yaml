@@ -18,9 +18,15 @@ script:
         data:
           topic: "{{ base_topic }}/MapSegmentationCapability/action/start_segment_action"
           payload: "{{ {'action':'clean','segment_ids':[segment_id],'iterations':1,'customOrder':true} | tojson }}"
-      - service: shell_command.mark_room_cleaned
+      - service: rest_command.room_db_update_config
         data:
           room_id: "{{ room }}"
+          domain: "vacuum_control"
+          config_data: >-
+            {{ dict(room_config, **{
+              'last_cleaned': now().isoformat(),
+              'needs_cleaning': false
+            }) | tojson }}
       - service: persistent_notification.create
         data:
           title: "Vacuum Control"
