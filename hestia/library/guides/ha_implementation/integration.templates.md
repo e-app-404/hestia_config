@@ -2840,9 +2840,6 @@ light:
               effect: "{{ effect }}"
         supports_transition_template: "{{ true }}"
 ```
-Configuration Variables lights map Required
-List of your lights.
-
 friendly_name string (Optional)
 Name to use in the frontend.
 
@@ -2918,12 +2915,73 @@ Defines an action to run when the light is given an RGBWW color command. Availab
 set_effect action (Inclusive)
 Defines an action to run when the light is given an effect command. Receives variable effect. May also receive variables brightness and/or transition.
 
-Legacy Lock configuration format 
+availability_template template (Optional, default: true)
+Defines a template to get the available state of the entity. If the template either fails to render or returns True, "1", "true", "yes", "on", "enable", or a non-zero number, the entity will be available. If the template returns any other value, the entity will be unavailable. If not configured, the entity will always be available. Note that the string comparison not case sensitive; "TrUe" and "yEs" are allowed.
+
+unlock action Required
+Defines an action to run when the lock is unlocked.
+
+open action (Optional)
+Defines an action to run when the lock is opened.
+
+optimistic boolean (Optional, default: false)
+Flag that defines if lock works in optimistic mode.
+
+
+### Legacy Light configuration format
+
+This format still works but is no longer recommended. Use modern configuration.
+
+This format is configured as a platform for the light integration and not directly under the template integration.
+
+#### Example configuration.yaml entry
+
+```yaml
+light:
+  - platform: template
+    lights:
+      theater_lights:
+```
+
+### Configuration Variables
+
+| Variable                      | Type      | Description                                                                 |
+|-------------------------------|-----------|-----------------------------------------------------------------------------|
+| `friendly_name`               | string (Optional) | Name to use in the frontend.                                                |
+| `unique_id`                   | string (Optional) | An ID that uniquely identifies this light.                                  |
+| `value_template`              | template (Optional, default: optimistic) | Defines a template to get the state of the light.                           |
+| `level_template`              | template (Optional, default: optimistic) | Defines a template to get the brightness of the light.                      |
+| `temperature_template`        | template (Optional, default: optimistic) | Defines a template to get the color temperature of the light.               |
+| `hs_template`                 | template (Optional, default: optimistic) | Defines a template to get the HS color of the light. Must render a tuple (hue, saturation). |
+| `rgb_template`                | template (Optional, default: optimistic) | Defines a template to get the RGB color of the light. Must render a tuple or a list (red, green, blue). |
+| `rgbw_template`               | template (Optional, default: optimistic) | Defines a template to get the RGBW color of the light. Must render a tuple or a list (red, green, blue, white). |
+| `rgbww_template`              | template (Optional, default: optimistic) | Defines a template to get the RGBWW color of the light. Must render a tuple or a list (red, green, blue, cold white, warm white). |
+| `supports_transition_template`| template (Optional, default: false) | Defines a template to get if light supports transition. Should return boolean value (True/False). If this value is True, the transition parameter in a turn on or turn off call will be passed as a named parameter transition to either of the scripts. |
+| `effect_list_template`        | template (Inclusive, default: optimistic) | Defines a template to get the list of supported effects. Must render a list. |
+| `effect_template`             | template (Inclusive, default: optimistic) | Defines a template to get the effect of the light.                           |
+| `min_mireds_template`         | template (Optional, default: optimistic) | Defines a template to get the min mireds value of the light.                 |
+| `max_mireds_template`         | template (Optional, default: optimistic) | Defines a template to get the max mireds value of the light.                 |
+| `icon_template`               | template (Optional) | Defines a template for an icon or picture, e.g., showing a different icon for different states. |
+| `availability_template`       | template (Optional, default: true) | Defines a template to get the available state of the entity. If the template either fails to render or returns True, "1", "true", "yes", "on", "enable", or a non-zero number, the entity will be available. If the template returns any other value, the entity will be unavailable. If not configured, the entity will always be available. Note that the string comparison is not case sensitive; "TrUe" and "yEs" are allowed. |
+| `turn_on`                     | action (Required) | Defines an action to run when the light is turned on. May receive variables brightness and/or transition. |
+| `turn_off`                    | action (Required) | Defines an action to run when the light is turned off. May receive variable transition. |
+| `set_level`                   | action (Optional) | Defines an action to run when the light is given a brightness command. The script will only be called if the turn_on call only has brightness, and optionally transition. Receives variables brightness and optionally transition. |
+| `set_temperature`             | action (Optional) | Defines an action to run when the light is given a color temperature command. Receives variable color_temp. May also receive variables brightness and/or transition. |
+| `set_hs`                      | action (Optional) | Defines an action to run when the light is given a hs color command. Available variables: hs as a tuple, h and s. |
+| `set_rgb`                     | action (Optional) | Defines an action to run when the light is given an RGB color command. Available variables: rgb as a tuple, r, g and b. |
+| `set_rgbw`                    | action (Optional) | Defines an action to run when the light is given an RGBW color command. Available variables: rgbw as a tuple, rgb as a tuple, r, g, b and w. |
+| `set_rgbww`                   | action (Optional) | Defines an action to run when the light is given an RGBWW color command. Available variables: rgbww as a tuple, rgb as a tuple, r, g, b, cw and ww. |
+| `set_effect`                  | action (Inclusive) | Defines an action to run when the light is given an effect command. Receives variable effect. May also receive variables brightness and/or transition. |
+
+---
+
+### Legacy Lock configuration format
+
 This format still works but is no longer recommended. Use modern configuration.
 
 This format is configured as a platform for the lock integration and not directly under the template integration.
 
-### Example configuration.yaml entry
+#### Example configuration.yaml entry
 
 ```yaml
 lock:
@@ -2940,35 +2998,24 @@ lock:
         entity_id: switch.door
 ```
 
-## Configuration Variables 
-name string (Optional, default: Template Lock)
-Name to use in the frontend.
+### Configuration Variables
 
-unique_id string (Optional)
-An ID that uniquely identifies this lock. Set this to a unique value to allow customization through the UI.
+| Variable                | Type      | Description                                                                 |
+|-------------------------|-----------|-----------------------------------------------------------------------------|
+| `name`                  | string (Optional, default: Template Lock) | Name to use in the frontend.                                                |
+| `unique_id`             | string (Optional) | An ID that uniquely identifies this lock.                                   |
+| `value_template`        | template (Required) | Defines a template to set the state of the lock.                            |
+| `availability_template` | template (Optional, default: true) | Defines a template to get the available state of the entity. If the template either fails to render or returns True, "1", "true", "yes", "on", "enable", or a non-zero number, the entity will be available. If the template returns any other value, the entity will be unavailable. If not configured, the entity will always be available. Note that the string comparison is not case sensitive; "TrUe" and "yEs" are allowed. |
+| `code_format_template`  | template (Optional, default: None) | Defines a template to get the code_format attribute of the entity. This template must evaluate to a valid Python regular expression or None. If it evaluates to a not-None value, the user is prompted to enter a code when interacting with the lock. The code will be matched against the regular expression, and only if it matches, the lock/unlock actions will be executed. The actual validity of the entered code must be verified within these actions. If there’s a syntax error in the template, the entity will be unavailable. If the template fails to render for other reasons or if the regular expression is invalid, no code will be accepted and the lock/unlock actions will never be invoked. |
+| `lock`                  | action (Required) | Defines an action to run when the lock is locked.                            |
+| `unlock`                | action (Required) | Defines an action to run when the lock is unlocked.                          |
+| `open`                  | action (Optional) | Defines an action to run when the lock is opened.                            |
+| `optimistic`            | boolean (Optional, default: false) | Flag that defines if lock works in optimistic mode.                          |
 
-value_template template Required
-Defines a template to set the state of the lock.
+---
 
-availability_template template (Optional, default: true)
-Defines a template to get the available state of the entity. If the template either fails to render or returns True, "1", "true", "yes", "on", "enable", or a non-zero number, the entity will be available. If the template returns any other value, the entity will be unavailable. If not configured, the entity will always be available. Note that the string comparison not case sensitive; "TrUe" and "yEs" are allowed.
+### Legacy Sensor configuration format
 
-code_format_template template (Optional, default: None)
-Defines a template to get the code_format attribute of the entity. This template must evaluate to a valid Python regular expression or None. If it evaluates to a not-None value, the user is prompted to enter a code when interacting with the lock. The code will be matched against the regular expression, and only if it matches, the lock/unlock actions will be executed. The actual validity of the entered code must be verified within these actions. If there’s a syntax error in the template, the entity will be unavailable. If the template fails to render for other reasons or if the regular expression is invalid, no code will be accepted and the lock/unlock actions will never be invoked.
-
-lock action Required
-Defines an action to run when the lock is locked.
-
-unlock action Required
-Defines an action to run when the lock is unlocked.
-
-open action (Optional)
-Defines an action to run when the lock is opened.
-
-optimistic boolean (Optional, default: false)
-Flag that defines if lock works in optimistic mode.
-
-Legacy Sensor configuration format 
 This format still works but is no longer recommended. Use modern configuration.
 
 This format is configured as a platform for the sensor integration and not directly under the template integration.
@@ -2987,9 +3034,6 @@ sensor:
       sunrise:
         value_template: "{{ state_attr('sun.sun', 'next_rising') }}"
 ```
-
-Configuration Variables sensors map Required
-Map of your sensors.
 
 friendly_name string (Optional)
 Name to use in the frontend.
@@ -3024,29 +3068,6 @@ Defines a template to get the available state of the integration. If the templat
 device_class device_class (Optional, default: None)
 Sets the class of the device, changing the device state and icon that is displayed on the UI (see below). It does not set the unit_of_measurement.
 
-## Legacy Switch configuration format 
-This format still works but is no longer recommended. Use modern configuration.
-
-This format is configured as a platform for the switch integration and not directly under the template integration.
-
-### Example configuration.yaml entry
-switch:
-  - platform: template
-    switches:
-      skylight:
-        value_template: "{{ is_state('sensor.skylight', 'on') }}"
-        turn_on:
-          action: switch.turn_on
-          target:
-            entity_id: switch.skylight_open
-        turn_off:
-          action: switch.turn_off
-          target:
-            entity_id: switch.skylight_close
-YAML
-Configuration Variables switches map Required
-List of your switches.
-
 friendly_name string (Optional)
 Name to use in the frontend.
 
@@ -3070,22 +3091,6 @@ Defines a template for the icon of the switch.
 
 entity_picture_template template (Optional)
 Defines a template for the picture of the switch.
-
-Legacy Vacuum configuration format 
-This format still works but is no longer recommended. Use modern configuration.
-
-This format is configured as a platform for the vacuum integration and not directly under the template integration.
-
-# Example configuration.yaml entry
-vacuum:
-  - platform: template
-    vacuums:
-      living_room_vacuum:
-        start:
-          action: script.vacuum_start
-YAML
-Configuration Variables vacuums map Required
-List of your vacuums.
 
 friendly_name string (Optional)
 Name to use in the frontend.
@@ -3135,12 +3140,136 @@ Defines an action to run when the vacuum is given a command to set the fan speed
 fan_speeds string | list (Optional)
 List of fan speeds supported by the vacuum.
 
-Legacy Weather configuration format 
+### Configuration Variables
+
+| Variable                    | Type      | Description                                                                 |
+|-----------------------------|-----------|-----------------------------------------------------------------------------|
+| `sensors`                   | map (Required) | Map of your sensors.                                                        |
+| `friendly_name`             | string (Optional) | Name to use in the frontend.                                                |
+| `friendly_name_template`    | template (Optional) | Defines a template for the name to be used in the frontend (this overrides friendly_name). |
+| `unique_id`                 | string (Optional) | An ID that uniquely identifies this sensor.                                 |
+| `unit_of_measurement`       | string (Optional, default: None) | Defines the units of measurement of the sensor, if any. This will also display the value based on the user profile Number Format setting and influence the graphical presentation in the history visualization as a continuous value. |
+| `value_template`            | template (Required) | Defines a template to get the state of the sensor.                           |
+| `icon_template`             | template (Optional) | Defines a template for the icon of the sensor.                               |
+| `entity_picture_template`   | template (Optional) | Defines a template for the entity picture of the sensor.                     |
+| `attribute_templates`       | map (Optional) | Defines templates for attributes of the sensor.                              |
+| `attribute: template`       | template (Required) | The attribute and corresponding template.                                    |
+| `availability_template`     | template (Optional, default: true) | Defines a template to get the available state of the integration. If the template returns true, the device is available. If the template returns any other value, the device will be unavailable. If availability_template is not configured, the integration will always be available. |
+| `device_class`              | device_class (Optional, default: None) | Sets the class of the device, changing the device state and icon that is displayed on the UI (see below). It does not set the unit_of_measurement. |
+
+---
+
+## Legacy Switch configuration format
+
+This format still works but is no longer recommended. Use modern configuration.
+
+This format is configured as a platform for the switch integration and not directly under the template integration.
+
+### Example configuration.yaml entry
+
+```yaml
+switch:
+  - platform: template
+    switches:
+      skylight:
+        value_template: "{{ is_state('sensor.skylight', 'on') }}"
+        turn_on:
+          action: switch.turn_on
+          target:
+            entity_id: switch.skylight_open
+        turn_off:
+          action: switch.turn_off
+          target:
+            entity_id: switch.skylight_close
+```
+
+### Configuration Variables
+
+| Variable                    | Type      | Description                                                                 |
+|-----------------------------|-----------|-----------------------------------------------------------------------------|
+| `switches`                  | map (Required) | List of your switches.                                                      |
+| `friendly_name`             | string (Optional) | Name to use in the frontend.                                                |
+| `unique_id`                 | string (Optional) | An ID that uniquely identifies this switch.                                 |
+| `value_template`            | template (Optional, default: optimistic) | Defines a template to set the state of the switch. If not defined, the switch will optimistically assume all commands are successful. |
+| `availability_template`     | template (Optional, default: true) | Defines a template to get the available state of the entity. If the template either fails to render or returns True, "1", "true", "yes", "on", "enable", or a non-zero number, the entity will be available. If the template returns any other value, the entity will be unavailable. If not configured, the entity will always be available. Note that the string comparison is not case sensitive; "TrUe" and "yEs" are allowed. |
+| `turn_on`                   | action (Required) | Defines an action or list of actions to run when the switch is turned on.    |
+| `turn_off`                  | action (Required) | Defines an action or list of actions to run when the switch is turned off.   |
+| `icon_template`             | template (Optional) | Defines a template for the icon of the switch.                               |
+| `entity_picture_template`   | template (Optional) | Defines a template for the picture of the switch.                            |
+
+---
+
+## Legacy Vacuum configuration format
+
+This format still works but is no longer recommended. Use modern configuration.
+
+This format is configured as a platform for the vacuum integration and not directly under the template integration.
+
+### Example configuration.yaml entry
+
+```yaml
+vacuum:
+  - platform: template
+    vacuums:
+      living_room_vacuum:
+        start:
+          action: script.vacuum_start
+```
+
+### Configuration Variables
+
+| Variable                    | Type      | Description                                                                 |
+|-----------------------------|-----------|-----------------------------------------------------------------------------|
+| `vacuums`                   | map (Required) | List of your vacuums.                                                       |
+| `friendly_name`             | string (Optional) | Name to use in the frontend.                                                |
+| `unique_id`                 | string (Optional) | An ID that uniquely identifies this vacuum.                                 |
+| `value_template`            | template (Optional) | Defines a template to get the state of the vacuum. Valid value: docked/cleaning/idle/paused/returning/error. |
+| `battery_level_template`    | template (Optional) | Defines a template to get the battery level of the vacuum. Legal values are numbers between 0 and 100. |
+| `fan_speed_template`        | template (Optional) | Defines a template to get the fan speed of the vacuum.                      |
+| `attribute_templates`       | map (Optional) | Defines templates for attributes of the sensor.                              |
+| `attribute: template`       | template (Required) | The attribute and corresponding template.                                    |
+| `availability_template`     | template (Optional, default: true) | Defines a template to get the available state of the entity. If the template either fails to render or returns True, "1", "true", "yes", "on", "enable", or a non-zero number, the entity will be available. If the template returns any other value, the entity will be unavailable. If not configured, the entity will always be available. Note that the string comparison is not case sensitive; "TrUe" and "yEs" are allowed. |
+| `start`                     | action (Required) | Defines an action to run when the vacuum is started.                         |
+| `pause`                     | action (Optional) | Defines an action to run when the vacuum is paused.                          |
+| `stop`                      | action (Optional) | Defines an action to run when the vacuum is stopped.                         |
+| `return_to_base`            | action (Optional) | Defines an action to run when the vacuum is given a return to base command.  |
+| `clean_spot`                | action (Optional) | Defines an action to run when the vacuum is given a clean spot command.      |
+| `locate`                    | action (Optional) | Defines an action to run when the vacuum is given a locate command.          |
+| `set_fan_speed`             | action (Optional) | Defines an action to run when the vacuum is given a command to set the fan speed. |
+| `fan_speeds`                | string or list (Optional) | List of fan speeds supported by the vacuum.                                  |
+
+temperature_template template Required
+dew_point_template template (Optional)
+apparent_temperature_template template (Optional)
+temperature_unit string (Optional)
+humidity_template template Required
+attribution_template string (Optional)
+pressure_template template (Optional)
+pressure_unit string (Optional)
+wind_speed_template template (Optional)
+wind_gust_speed_template template (Optional)
+wind_speed_unit string (Optional)
+wind_bearing_template template (Optional)
+ozone_template template (Optional)
+cloud_coverage_template template (Optional)
+visibility_template template (Optional)
+visibility_unit string (Optional)
+forecast_daily_template template (Optional)
+forecast_hourly_template template (Optional)
+forecast_twice_daily_template template (Optional)
+precipitation_unit string (Optional)
+
+---
+
+## Legacy Weather configuration format
+
 This format still works but is no longer recommended. Use modern configuration.
 
 This format is configured as a platform for the weather integration and not directly under the template integration.
 
-# Example configuration.yaml entry
+### Example configuration.yaml entry
+
+```yaml
 weather:
   - platform: template
     name: "My Weather Station"
@@ -3149,73 +3278,33 @@ weather:
     temperature_unit: "°C"
     humidity_template: "{{ states('sensor.humidity') | float }}"
     forecast_daily_template: "{{ state_attr('weather.my_region', 'forecast_data') }}"
-YAML
-Configuration Variables name template Required
-Name to use in the frontend.
+```
 
-unique_id string (Optional)
-An ID that uniquely identifies this weather entity. Set this to a unique value to allow customization through the UI.
+### Configuration Variables
 
-condition_template template Required
-The current weather condition.
-
-temperature_template template Required
-The current temperature.
-
-dew_point_template template (Optional)
-The current dew point.
-
-apparent_temperature_template template (Optional)
-The current apparent (feels-like) temperature.
-
-temperature_unit string (Optional)
-Unit for temperature_template output. Valid options are °C, °F, and K.
-
-humidity_template template Required
-The current humidity.
-
-attribution_template string (Optional)
-The attribution to be shown in the frontend.
-
-pressure_template template (Optional)
-The current air pressure.
-
-pressure_unit string (Optional)
-Unit for pressure_template output. Valid options are Pa, hPa, kPa, bar, cbar, mbar, mmHg, inHg, psi.
-
-wind_speed_template template (Optional)
-The current wind speed.
-
-wind_gust_speed_template template (Optional)
-The current wind gust speed.
-
-wind_speed_unit string (Optional)
-Unit for wind_speed_template output. Valid options are m/s, km/h, mph, mm/d, in/d, and in/h.
-
-wind_bearing_template template (Optional)
-The current wind bearing.
-
-ozone_template template (Optional)
-The current ozone level.
-
-cloud_coverage_template template (Optional)
-The current cloud coverage.
-
-visibility_template template (Optional)
-The current visibility.
-
-visibility_unit string (Optional)
-Unit for visibility_template output. Valid options are km, mi, ft, m, cm, mm, in, yd.
-
-forecast_daily_template template (Optional)
-Daily forecast data.
-
-forecast_hourly_template template (Optional)
-Hourly forecast data.
-
-forecast_twice_daily_template template (Optional)
-Twice daily forecast data.
-
-precipitation_unit string (Optional)
-Unit for precipitation output. Valid options are km, mi, ft, m, cm, mm, in, yd.
+| Variable                      | Type      | Description                                                                 |
+|-------------------------------|-----------|-----------------------------------------------------------------------------|
+| `name`                        | template (Required) | Name to use in the frontend.                                                |
+| `unique_id`                   | string (Optional) | An ID that uniquely identifies this weather entity.                         |
+| `condition_template`          | template (Required) | The current weather condition.                                              |
+| `temperature_template`        | template (Required) | The current temperature.                                                    |
+| `dew_point_template`          | template (Optional) | The current dew point.                                                      |
+| `apparent_temperature_template`| template (Optional) | The current apparent (feels-like) temperature.                              |
+| `temperature_unit`            | string (Optional) | Unit for temperature_template output. Valid options: °C, °F, and K.         |
+| `humidity_template`           | template (Required) | The current humidity.                                                       |
+| `attribution_template`        | string (Optional) | The attribution to be shown in the frontend.                                |
+| `pressure_template`           | template (Optional) | The current air pressure.                                                   |
+| `pressure_unit`               | string (Optional) | Unit for pressure_template output. Valid options: Pa, hPa, kPa, bar, cbar, mbar, mmHg, inHg, psi. |
+| `wind_speed_template`         | template (Optional) | The current wind speed.                                                     |
+| `wind_gust_speed_template`    | template (Optional) | The current wind gust speed.                                                |
+| `wind_speed_unit`             | string (Optional) | Unit for wind_speed_template output. Valid options: m/s, km/h, mph, mm/d, in/d, and in/h. |
+| `wind_bearing_template`       | template (Optional) | The current wind bearing.                                                   |
+| `ozone_template`              | template (Optional) | The current ozone level.                                                    |
+| `cloud_coverage_template`     | template (Optional) | The current cloud coverage.                                                 |
+| `visibility_template`         | template (Optional) | The current visibility.                                                     |
+| `visibility_unit`             | string (Optional) | Unit for visibility_template output. Valid options: km, mi, ft, m, cm, mm, in, yd. |
+| `forecast_daily_template`     | template (Optional) | Daily forecast data.                                                        |
+| `forecast_hourly_template`    | template (Optional) | Hourly forecast data.                                                       |
+| `forecast_twice_daily_template`| template (Optional) | Twice daily forecast data.                                                  |
+| `precipitation_unit`          | string (Optional) | Unit for precipitation output. Valid options: km, mi, ft, m, cm, mm, in, yd.|
 
