@@ -493,3 +493,60 @@ patterns:
       - "Home Assistant Script Documentation"
       - "Home Assistant Selector Documentation"
       - "YAML Best Practices for Home Assistant"
+
+  - name: "automation_unknown_action_service"
+    category: "automation_action"
+    description: "Automation failures due to referencing non-existent or misnamed services"
+    error_format: "uses an unknown action...has an unknown action: [service_name]"
+    symptoms:
+      - "Automations showing error status and not executing"
+      - "Error messages about unknown actions in automation configuration"
+      - "Automation reported as having configuration errors"
+      - "Services not found during automation execution"
+    root_causes:
+      - "Referencing rest_command services that don't exist in configuration"
+      - "Typos in service names (e.g., rest_command vs shell_command)"
+      - "Services removed or renamed but automation not updated"
+      - "Missing integration providing the referenced service"
+      - "Incorrect service domain or action name"
+    solution:
+      - "Verify the correct service exists in Home Assistant configuration"
+      - "Update service calls to use correct service names and domains"
+      - "Check if service requires specific integration to be installed"
+      - "Add missing required parameters for the correct service"
+      - "Use Developer Tools > Services to verify available services"
+    examples:
+      bad: |
+        - service: rest_command.room_db_update_config
+          data:
+            room_id: "bedroom"
+            domain: "motion_lighting"
+            config_data: "{{ some_data | tojson }}"
+      good: |
+        - service: shell_command.update_room_config
+          data:
+            room_id: "bedroom"
+            domain: "motion_lighting"
+            config_data: "{{ some_data | tojson }}"
+            schema_expected: 1
+    resolution_steps:
+      - "Identify the failing automation from Home Assistant error messages"
+      - "Check what services are actually available in configuration"
+      - "Verify service domain: rest_command vs shell_command vs other domains"
+      - "Update service call to use correct service name and domain"
+      - "Add any required parameters that the correct service expects"
+      - "Test automation after fixing service references"
+      - "Use Developer Tools > Services to verify service is callable"
+    prevention_strategies:
+      - "Use Developer Tools > Services to verify service names before use"
+      - "Keep automation service references in sync with configuration changes"
+      - "Document service dependencies and parameter requirements"
+      - "Test automations after configuration changes"
+    troubleshooting:
+      service_discovery: "Developer Tools > Services - browse available services"
+      config_check: "/config/bin/config-health /config - validate configuration"
+      service_test: "Developer Tools > Services - test service calls manually"
+    references:
+      - "Home Assistant Services Documentation"
+      - "Home Assistant Automation Action Documentation"
+      - "Home Assistant Developer Tools Guide"
