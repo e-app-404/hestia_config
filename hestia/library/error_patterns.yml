@@ -438,3 +438,58 @@ patterns:
     references:
       - "ADR-0016: Canonical Workspace Structure"
       - "Home Assistant Blueprint Documentation"
+
+  - name: "script_selector_configuration_error"
+    category: "script_configuration"
+    description: "Script configuration errors due to malformed selector syntax in field definitions"
+    error_format: "Only one type can be specified. Found for dictionary value @ data['fields']['field_name']['selector']. Got OrderedDict()."
+    symptoms:
+      - "Scripts showing as 'not active' due to configuration errors"
+      - "Script configuration validation failures"
+      - "Error messages about dictionary values and multiple types in selectors"
+      - "Script field selectors not working properly in UI"
+    root_causes:
+      - "Using inline dictionary format for selectors: selector: { text: {} }"
+      - "YAML parser interpreting nested empty dictionaries as ambiguous types"
+      - "Selector syntax not following Home Assistant's expected block format"
+      - "Mixed selector syntax formats within the same configuration"
+    solution:
+      - "Convert inline selector format to explicit block format"
+      - "Use proper YAML indentation for selector definitions"
+      - "Ensure consistent selector syntax throughout configuration"
+      - "Remove unnecessary empty dictionary values"
+    examples:
+      bad: |
+        fields:
+          room:
+            description: "Room slug (e.g., 'bedroom')"
+            required: true
+            selector: { text: {} }
+      good: |
+        fields:
+          room:
+            description: "Room slug (e.g., 'bedroom')"
+            required: true
+            selector:
+              text:
+    resolution_steps:
+      - "Identify the problematic script from Home Assistant error messages"
+      - "Locate the script configuration file (usually in scripts.yaml or packages/)"
+      - "Find the fields section with selector definitions"
+      - "Convert inline selector format { type: {} } to block format"
+      - "Remove empty dictionary values and use proper YAML block structure"
+      - "Test configuration loading with: /config/bin/config-health /config"
+      - "Verify script shows as active in Home Assistant UI"
+    prevention_strategies:
+      - "Always use block format for selector definitions in scripts"
+      - "Avoid inline dictionary syntax for complex YAML structures"
+      - "Test script configurations after adding new fields"
+      - "Use consistent selector syntax patterns across all scripts"
+    tooling:
+      detector: "Look for error patterns: 'Only one type can be specified' + 'selector' + 'OrderedDict()'"
+      validator: "/config/bin/config-health /config - validates Home Assistant configuration"
+      script_check: "Check script status in Home Assistant Developer Tools > Services"
+    references:
+      - "Home Assistant Script Documentation"
+      - "Home Assistant Selector Documentation"
+      - "YAML Best Practices for Home Assistant"
