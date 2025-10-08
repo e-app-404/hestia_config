@@ -1,35 +1,29 @@
 shell_command:
   update_room_config: >-
     /bin/sh -c 'command -v sqlite3 >/dev/null 2>&1 || exit 123;
-    test -f /config/architecture/area_mapping.yaml || exit 125;
-    grep -Eq "(^|[[:space:]]){{ room_id }}:" /config/architecture/area_mapping.yaml || exit 126;
     sqlite3 /config/room_database.db <<"SQL"
     PRAGMA journal_mode=WAL;
     PRAGMA synchronous=NORMAL;
     CREATE TABLE IF NOT EXISTS write_guard(domain TEXT PRIMARY KEY, last_ts INTEGER);
-    CREATE TABLE IF NOT EXISTS schema_version(version INTEGER);
-    CREATE TABLE IF NOT EXISTS room_configs(room_id TEXT, config_domain TEXT, config_data TEXT, updated_at TEXT, PRIMARY KEY(room_id, config_domain));
     BEGIN IMMEDIATE;
     SELECT CASE WHEN (SELECT version FROM schema_version)={{ schema_expected }} THEN 1 ELSE RAISE(ABORT,"SCHEMA_VERSION_MISMATCH") END;
     SELECT CASE WHEN "{{ domain }}" IN ("motion_lighting","vacuum_control","shared") THEN 1 ELSE RAISE(ABORT,"DOMAIN_NOT_ALLOWED") END;
     SELECT CASE WHEN "{{ room_id }}" GLOB "[a-z0-9_]*" AND LENGTH("{{ room_id }}")>0 THEN 1 ELSE RAISE(ABORT,"BAD_ROOM_ID") END;
-    SELECT CASE WHEN LENGTH("{{ config_data }}") <= 4096 THEN 1 ELSE RAISE(ABORT,"CONFIG_TOO_LARGE") END;
-    SELECT CASE WHEN COALESCE(strftime("%s","now") - (SELECT last_ts FROM write_guard WHERE domain="{{ domain }}"), 9999) >= 2 THEN 1 ELSE RAISE(ABORT,"WRITE_RATE_LIMIT") END;
-    INSERT OR REPLACE INTO room_configs (room_id, config_domain, config_data, updated_at) VALUES ("{{ room_id }}","{{ domain }}","{{ config_data }}", datetime("now"));
+    SELECT CASE WHEN LENGTH({{ config_data | tojson }}) <= 4096 THEN 1 ELSE RAISE(ABORT,"CONFIG_TOO_LARGE") END;
+    SELECT CASE WHEN COALESCE(strftime("%s","now") - (SELECT last_ts FROM write_guard WHERE domain="{{ domain }}"), 9999) >= 2
+                THEN 1 ELSE RAISE(ABORT,"WRITE_RATE_LIMIT") END;
+    INSERT OR REPLACE INTO room_configs (room_id, config_domain, config_data, updated_at)
+    VALUES ("{{ room_id }}","{{ domain }}",{{ config_data | tojson }}, datetime("now"));
     INSERT OR REPLACE INTO write_guard(domain,last_ts) VALUES("{{ domain }}", strftime("%s","now"));
     COMMIT;
 SQL'
 
   update_motion_timeout: >-
     /bin/sh -c 'command -v sqlite3 >/dev/null 2>&1 || exit 123;
-    test -f /config/architecture/area_mapping.yaml || exit 125;
-    grep -Eq "(^|[[:space:]]){{ room_id }}:" /config/architecture/area_mapping.yaml || exit 126;
     sqlite3 /config/room_database.db <<"SQL"
     PRAGMA journal_mode=WAL;
     PRAGMA synchronous=NORMAL;
     CREATE TABLE IF NOT EXISTS write_guard(domain TEXT PRIMARY KEY, last_ts INTEGER);
-    CREATE TABLE IF NOT EXISTS schema_version(version INTEGER);
-    CREATE TABLE IF NOT EXISTS room_configs(room_id TEXT, config_domain TEXT, config_data TEXT, updated_at TEXT, PRIMARY KEY(room_id, config_domain));
     BEGIN IMMEDIATE;
     SELECT CASE WHEN (SELECT version FROM schema_version)={{ schema_expected }} THEN 1 ELSE RAISE(ABORT,"SCHEMA_VERSION_MISMATCH") END;
     SELECT CASE WHEN "{{ room_id }}" GLOB "[a-z0-9_]*" AND LENGTH("{{ room_id }}")>0 THEN 1 ELSE RAISE(ABORT,"BAD_ROOM_ID") END;
@@ -45,14 +39,10 @@ SQL'
 
   mark_room_cleaned: >-
     /bin/sh -c 'command -v sqlite3 >/dev/null 2>&1 || exit 123;
-    test -f /config/architecture/area_mapping.yaml || exit 125;
-    grep -Eq "(^|[[:space:]]){{ room_id }}:" /config/architecture/area_mapping.yaml || exit 126;
     sqlite3 /config/room_database.db <<"SQL"
     PRAGMA journal_mode=WAL;
     PRAGMA synchronous=NORMAL;
     CREATE TABLE IF NOT EXISTS write_guard(domain TEXT PRIMARY KEY, last_ts INTEGER);
-    CREATE TABLE IF NOT EXISTS schema_version(version INTEGER);
-    CREATE TABLE IF NOT EXISTS room_configs(room_id TEXT, config_domain TEXT, config_data TEXT, updated_at TEXT, PRIMARY KEY(room_id, config_domain));
     BEGIN IMMEDIATE;
     SELECT CASE WHEN (SELECT version FROM schema_version)={{ schema_expected }} THEN 1 ELSE RAISE(ABORT,"SCHEMA_VERSION_MISMATCH") END;
     SELECT CASE WHEN COALESCE(strftime("%s","now") - (SELECT last_ts FROM write_guard WHERE domain="vacuum_control"), 9999) >= 2
