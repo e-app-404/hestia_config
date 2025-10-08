@@ -1,0 +1,37 @@
+promptset:
+  id: example_promptset_v1
+  title: "Example Production Promptset"
+  description: "Template for production promptset composition"
+  version: "1.0"
+  created: "2025-10-08"
+  author: "HESTIA System"
+  
+  # Metadata
+  tier: β
+  domain: instructional
+  status: candidate
+  
+  # Bindings reference primary canonical locations only
+  bindings:
+    - /config/hestia/library/prompts/catalog/by_domain/instructional/prompt_20251008_001_example_template.md
+    - /config/hestia/library/prompts/catalog/by_domain/operational/prompt_20251008_002_workflow_guide.md
+  
+  # Configuration
+  config:
+    context_window: 4096
+    temperature: 0.7
+    
+  # Execution parameters
+  execution:
+    mode: sequential
+    validation: required
+    
+  # Notes and documentation
+  notes: |
+    This is an example promptset showing proper structure and binding conventions.
+    
+    Key principles:
+    - Always reference by_domain/ for canonical sources
+    - Never reference by_tier/ or by_persona/ copies
+    - Use absolute paths for reliability
+    - Include proper metadata and versioning
