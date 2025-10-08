@@ -550,3 +550,79 @@ patterns:
       - "Home Assistant Services Documentation"
       - "Home Assistant Automation Action Documentation"
       - "Home Assistant Developer Tools Guide"
+
+  - name: "sql_sensor_invalid_configuration_option"
+    category: "sql_sensor_configuration"
+    description: "SQL sensor configuration errors due to using invalid or deprecated options"
+    error_format: "'[option_name]' is an invalid option for 'sql', check: sql->[index]->[option_name]"
+    symptoms:
+      - "Configuration warnings about invalid SQL sensor options"
+      - "SQL sensors not loading with expected configuration"
+      - "Home Assistant configuration validation failures"
+      - "Integration setup errors for SQL sensors"
+    root_causes:
+      - "Using scan_interval option which is not supported in individual SQL sensor entries"
+      - "Attempting to use sensor platform options in top-level sql configuration"
+      - "Mixing deprecated sensor platform syntax with modern sql integration syntax"
+      - "Using options from other integrations that don't apply to SQL sensors"
+    solution:
+      - "Remove invalid options like scan_interval from individual SQL sensor entries"
+      - "Use integration-level polling control instead of sensor-level scan_interval"
+      - "Consult Home Assistant SQL integration documentation for valid options"
+      - "Use automation-based polling for custom update intervals"
+    examples:
+      bad: |
+        sql:
+          - name: "My SQL Sensor"
+            db_url: sqlite:////config/database.db
+            scan_interval: 30  # Invalid option
+            query: "SELECT value FROM table;"
+            column: value
+      good: |
+        sql:
+          - name: "My SQL Sensor"
+            db_url: sqlite:////config/database.db
+            query: "SELECT value FROM table;"
+            column: value
+        # For custom polling, use automation:
+        # automation:
+        #   - trigger:
+        #       platform: time_pattern
+        #       seconds: "/30"
+        #     action:
+        #       service: homeassistant.update_entity
+        #       target:
+        #         entity_id: sensor.my_sql_sensor
+    resolution_steps:
+      - "Identify invalid options from Home Assistant configuration warnings"
+      - "Check SQL integration documentation for valid configuration options"
+      - "Remove scan_interval and other invalid options from sql sensor entries"
+      - "Use default 30-second polling or disable polling in Integration settings"
+      - "Create automation for custom polling intervals if needed"
+      - "Test configuration after removing invalid options"
+    prevention_strategies:
+      - "Always consult official Home Assistant documentation for integration options"
+      - "Don't mix sensor platform syntax with integration syntax"
+      - "Use configuration validation to catch invalid options early"
+      - "Test SQL sensor configuration after changes"
+    valid_options:
+      - "name (required): sensor name"
+      - "query (required): SQL query string"
+      - "column (required): column name for sensor state"
+      - "db_url (optional): database connection URL"
+      - "unit_of_measurement (optional): sensor unit"
+      - "value_template (optional): template for processing value"
+      - "unique_id (optional): unique identifier"
+      - "device_class (optional): sensor device class"
+      - "state_class (optional): sensor state class"
+      - "icon (optional): sensor icon template"
+      - "picture (optional): sensor picture template"
+      - "availability (optional): availability template"
+    polling_control:
+      - "Default: 30-second automatic polling"
+      - "Custom: Disable in Integration settings + use automation"
+      - "Integration-level: Settings > Devices & Services > SQL > System Options"
+    references:
+      - "Home Assistant SQL Integration Documentation"
+      - "Home Assistant Integration Configuration Guide"
+      - "SQL Sensor Migration Guide (sensor platform to sql integration)"

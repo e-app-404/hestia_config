@@ -1,7 +1,6 @@
 sql:
   - name: "Room Configs — Motion Lighting"
     db_url: sqlite:////config/room_database.db
-    scan_interval: 30
     query: >
       SELECT 'ok' AS state,
              json_group_object(room_id, config_data) AS payload
@@ -11,7 +10,6 @@ sql:
 
   - name: "Room Configs — Vacuum Control"
     db_url: sqlite:////config/room_database.db
-    scan_interval: 30
     query: >
       SELECT 'ok' AS state,
              json_group_object(room_id, config_data) AS payload
@@ -21,7 +19,6 @@ sql:
 
   - name: "Rooms Needing Cleaning"
     db_url: sqlite:////config/room_database.db
-    scan_interval: 30
     query: >
       SELECT
         json_array_length(COALESCE(json_group_array(room_id),'[]')) AS count,
