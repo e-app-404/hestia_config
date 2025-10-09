@@ -1,14 +1,10 @@
+from appdaemon.plugins.hass import Hass
 import json
 import os
 import re
 import sqlite3
 import time
 import yaml
-
-try:
-    from appdaemon.plugins.hass import Hass
-except ImportError:
-    Hass = object  # fallback for environments without AppDaemon
 
 ROOM_ID_RE = re.compile(r"^[a-z0-9_]+$")
 

@@ -104,7 +104,7 @@ automation:
     action:
       - action: group.set
         data:
-          default_entity_id: group.unavailable_entities
+          object_id: unavailable_entities
           entities: >
             {% set ignore_seconds = 60 %}
             {% set ignore_label = 'ignored' %}
