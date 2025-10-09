@@ -1,70 +1,80 @@
-Home Assistant add-on
+---
+title: "AppDaemon Integration and Service Management Guide"
+authors: "Hestia Ops Team, frenck (upstream)"
+source: "https://github.com/home-assistant/addons/blob/master/appdaemon/DOCS.md"
+slug: "hacs-appdaemon"
+tags: ["home-assistant", "ops", "integration", "appdaemon"]
+original_date: "2023-01-15"
+last_updated: "2025-10-09"
+url: "https://community.home-assistant.io/t/appdaemon/"
+---
+
+# AppDaemon Integration and Service Management Guide
+
+## Home Assistant Add-on
+
 The official AppDaemon add-on is available in the Home Assistant Community Add-ons Repository, maintained by frenck. Please see their official documentation for installation and configuration instructions.
 
-Running
-Pip
-You can run AppDaemon from the command line as follows. Note: make sure first to create a directory to contain all AppDaemon configuration files!
+## Running via Pip
 
+You can run AppDaemon from the command line as follows. **Note:** Make sure to create a directory to contain all AppDaemon configuration files!
+
+```bash
 appdaemon -c <path_to_config_folder>
+```
+
 You should see something like the following:
 
+```text
 appdaemon -c <path_to_config_folder>
 2016-08-22 10:08:16,575 INFO Got initial state
 2016-08-22 10:08:16,576 INFO Loading Module: /home/homeassistant/conf/apps/hello.py
 2016-08-22 10:08:16,578 INFO Loading Object hello_world using class HelloWorld from module hello
 2016-08-22 10:08:16,580 INFO Hello from AppDaemon
 2016-08-22 10:08:16,584 INFO You are now ready to run Apps!
-CLI arguments
+```
+
+## CLI Arguments
+
 The following CLI arguments are available:
 
+```text
 usage: appdaemon [-h] [-c CONFIG] [-p PIDFILE] [-t TIMEWARP] [-s STARTTIME] [-e ENDTIME] [-C CONFIGFILE] [-D {DEBUG,INFO,WARNING,ERROR,CRITICAL}] [-m MODULEDEBUG MODULEDEBUG] [-v]
+```
 
-options:
--h, --help            show this help message and exit
--c CONFIG, --config CONFIG
-                        full path to config directory
--p PIDFILE, --pidfile PIDFILE
-                        full path to PID File
--t TIMEWARP, --timewarp TIMEWARP
-                        speed that the scheduler will work at for time travel
--s STARTTIME, --starttime STARTTIME
-                        start time for scheduler <YYYY-MM-DD HH:MM:SS|YYYY-MM-DD#HH:MM:SS>
--e ENDTIME, --endtime ENDTIME
-                        end time for scheduler <YYYY-MM-DD HH:MM:SS|YYYY-MM-DD#HH:MM:SS>
--C CONFIGFILE, --configfile CONFIGFILE
-                        name for config file
--D {DEBUG,INFO,WARNING,ERROR,CRITICAL}, --debug {DEBUG,INFO,WARNING,ERROR,CRITICAL}
-                        global debug level
--m MODULEDEBUG MODULEDEBUG, --moduledebug MODULEDEBUG MODULEDEBUG
--v, --version           show program's version number and exit
---write_toml            use toml file format for writing new configuration files when creating apps
+**Options:**
+- `-h, --help`            Show this help message and exit
+- `-c CONFIG, --config CONFIG`  Full path to config directory
+- `-p PIDFILE, --pidfile PIDFILE`  Full path to PID File
+- `-t TIMEWARP, --timewarp TIMEWARP`  Speed that the scheduler will work at for time travel
+- `-s STARTTIME, --starttime STARTTIME`  Start time for scheduler `<YYYY-MM-DD HH:MM:SS|YYYY-MM-DD#HH:MM:SS>`
+- `-e ENDTIME, --endtime ENDTIME`  End time for scheduler `<YYYY-MM-DD HH:MM:SS|YYYY-MM-DD#HH:MM:SS>`
+- `-C CONFIGFILE, --configfile CONFIGFILE`  Name for config file
+- `-D {DEBUG,INFO,WARNING,ERROR,CRITICAL}, --debug {DEBUG,INFO,WARNING,ERROR,CRITICAL}`  Global debug level
+- `-m MODULEDEBUG MODULEDEBUG, --moduledebug MODULEDEBUG MODULEDEBUG`
+- `-v, --version`           Show program's version number and exit
+- `--write_toml`            Use toml file format for writing new configuration files when creating apps
+
 A brief description of them follows:
 
--c path to the configuration directory
-If not specified, AppDaemon will look for a file named appdaemon.yaml under the following default locations:
+- **-c**: Path to the configuration directory. If not specified, AppDaemon will look for a file named `appdaemon.yaml` under the following default locations:
+  - `~/.homeassistant/`
+  - `/etc/appdaemon`
+  If no file is found in either location, AppDaemon will raise an exception. In addition, AppDaemon expects to find a dir named `apps` immediately subordinate to the config directory.
+- **-C**: Name of the configuration file (default: `appdaemon.yaml` or `appdaemon.toml` depending on the value of the `--toml` flag)
+- **-d, -p**: Used by the init file to start the process as a daemon. Not required if running from the command line.
+- **-D**: Increase the debug level for internal AppDaemon operations, and configure debug logs for the apps.
+- **-s, -i, -t, -e**: Time travel options. Useful only for testing. Described in more detail in the API documentation.
 
-~/.homeassistant/
+## Starting At Reboot (Systemd)
 
-/etc/appdaemon
-
-If no file is found in either location, AppDaemon will raise an exception. In addition, AppDaemon expects to find a dir named apps immediately subordinate to the config directory.
-
--C name of the configuration file (default: appdaemon.yaml or appdaemon.toml depending on the value of the --toml flag)
-
--d, -p used by the init file to start the process as a daemon
-Not required if running from the command line.
-
--D increase the debug level for internal AppDaemon operations, and configure debug logs for the apps.
-
--s, -i, -t, -e time travel options
-Useful only for testing. Described in more detail in the API documentation.
-
-Starting At Reboot (Systemd)
 To run AppDaemon at reboot, you can set it up to run as a systemd service. To run it with init.d instead, see the next section.
 
-Systemd service file
-Create a Systemd service file /etc/systemd/system/appdaemon@appdaemon.service and add the following content. Make sure to use the correct full path for your configuration directory and that you edit the User field to a valid user that can run AppDaemon, usually the same user that is running the Home Assistant process is a good choice.
+### Systemd Service File
 
+Create a Systemd service file `/etc/systemd/system/appdaemon@appdaemon.service` and add the following content. Make sure to use the correct full path for your configuration directory and that you edit the `User` field to a valid user that can run AppDaemon, usually the same user that is running the Home Assistant process is a good choice.
+
+```ini
 [Unit]
 Description=AppDaemon
 After=home-assistant@homeassistant.service
@@ -74,37 +84,40 @@ User=%I
 ExecStart=/usr/local/bin/appdaemon -c <full path to config directory>
 [Install]
 WantedBy=multi-user.target
-The above should work for Raspberry Pi OS, but if your homeassistant service is named something different you may need to change the After= lines to reflect the actual name.
+```
 
-Activate the service
+The above should work for Raspberry Pi OS, but if your homeassistant service is named something different you may need to change the `After=` lines to reflect the actual name.
+
+**Activate the service:**
+
+```bash
 sudo systemctl daemon-reload
 sudo systemctl enable appdaemon@appdaemon.service --now
+```
+
 Now AppDaemon should be up and running and good to go.
 
-Starting At Reboot (Init.d)
+## Starting At Reboot (Init.d)
+
 To run AppDaemon at reboot, you can set it up to run as an init.d service. To run it with systemd instead, see the previous section.
 
-Add Init.d Service
+### Add Init.d Service
+
 First, create a new file using vi:
 
-$ sudo vi /etc/init.d/appdaemon-daemon
+```bash
+sudo vi /etc/init.d/appdaemon-daemon
+```
+
 Copy and paste the following script into the new file, making sure that the following variables are set according to your setup.
 
-APPDAEMON_INSTALL_DIR
-Location of appdaemon installation.
+- `APPDAEMON_INSTALL_DIR`: Location of appdaemon installation.
+- `PRE_EXEC`: Command for starting the python venv for appdaemon.
+- `APPDAEMON_BIN`: Location of appdaemon binary.
+- `RUN_AS`: Usually the same user you are using to run Home Assistant.
+- `CONFIG_DIR`: Location of Home Assistant config.
 
-PRE_EXEC
-Command for starting the python venv for appdaemon.
-
-APPDAEMON_BIN
-Location of appdaemon binary.
-
-RUN_AS
-Usually the same user you are using to run Home Assistant.
-
-CONFIG_DIR
-Location of Home Assistant config.
-
+```sh
 #!/bin/sh
 ### BEGIN INIT INFO
 # Provides:          appdaemon
@@ -220,37 +233,50 @@ restart)
 *)
     echo "Usage: $0 {start|stop|restart|install|uninstall}"
 esac
+```
+
 Save the file and then make it executable:
 
-$ sudo chmod +x /etc/init.d/appdaemon-daemon
-Activate Init.d Service
-$ sudo service appdaemon-daemon install
+```bash
+sudo chmod +x /etc/init.d/appdaemon-daemon
+```
+
+**Activate Init.d Service:**
+
+```bash
+sudo service appdaemon-daemon install
+```
+
 That’s it. After a restart, AppDaemon will start automatically.
 
-If AppDaemon doesn’t start, check the log file output for errors at /var/log/appdaemon/appdaemon.log.
+If AppDaemon doesn’t start, check the log file output for errors at `/var/log/appdaemon/appdaemon.log`.
 
-If you want to start/stop AppDaemon manually, use:
+To start/stop AppDaemon manually, use:
 
-$ sudo service appdaemon-daemon <start|stop>
-Updating AppDaemon
+```bash
+sudo service appdaemon-daemon <start|stop>
+```
+
+## Updating AppDaemon
+
 To update AppDaemon after a new release has been published, run the following command to update your local installation:
 
+```bash
 pip install --upgrade appdaemon
+```
+
 If you are using Docker, refer to the steps in the tutorial.
 
-Versioning Strategy
+## Versioning Strategy
+
 AppDaemon follows a simple 3 point versioning strategy in the format x.y.z:
 
-x: major version number
-Incremented when very significant changes have been made to the platform, or sizeable new functionality has been added.
+- **x**: Major version number — Incremented for significant platform changes or new functionality.
+- **y**: Minor version number — Incremented for incremental new features or breaking changes.
+- **z**: Point version number — Typically contains bugfixes and package upgrades.
 
-y: minor version number
-Incremented when incremental new features have been added, or breaking changes have occurred
+Users should expect point release upgrades to be seamless, but should check release notes for breaking changes and new functionality for minor or major releases.
 
-z: point version number
-Point releases will typically contain bugfixes, and package upgrades
+## Next Steps
 
-Users should be able to expect point release upgrades to be seamless, but should check release notes for breaking changes and new functionality for minor or major releases.
-
-Next steps
-Now that you have a working setup for AppDaemon, learn how to configure it in the next section: Configuration.
+Now that you have a working setup for AppDaemon, learn how to configure it in the next section: **Configuration**.

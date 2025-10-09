@@ -1,7 +1,14 @@
 appdaemon:
   app_dir: /config/apps
   time_zone: Europe/London
-
+  latitude: 51.725
+  longitude: 14.3434
+  elevation: 0
+  plugins:
+    HASS:
+      type: hass
+      ha_url: !secret homeassistant_localhost
+      token: !secret hass_token
 http:
   url: http://0.0.0.0:5050
 
