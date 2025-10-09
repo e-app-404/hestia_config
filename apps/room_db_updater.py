@@ -1,4 +1,4 @@
-from appdaemon.plugins.hass import Hass
+from appdaemon.plugins.hass import hassapi
 import json
 import os
 import re
@@ -8,7 +8,7 @@ import yaml
 
 ROOM_ID_RE = re.compile(r"^[a-z0-9_]+$")
 
-class RoomDbUpdater(hass.Hass):
+class RoomDbUpdater(hassapi.Hass):
     def initialize(self):
         self.db_path = self.args.get("db_path", "/config/room_database.db")
         self.schema_expected = int(self.args.get("schema_expected", 1))
