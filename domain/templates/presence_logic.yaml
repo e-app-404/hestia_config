@@ -8,6 +8,7 @@
     - name: "Evert Home Status"
       unique_id: "evert_home_status"
       icon: mdi:account-check
+      device_class: presence
       state: >
         {% if states('person.evert') == 'home' %}
           Home
@@ -30,6 +31,7 @@
     - name: "Evert Current Location"
       unique_id: "evert_current_location"
       icon: mdi:map-marker-radius
+      device_class: presence
       state: >
         {% set zone = states('person.evert') %}
         {% if zone == 'not_home' %}
@@ -50,6 +52,8 @@
 
     - name: "Evert Last Known Zone"
       unique_id: "evert_last_known_zone"
+      icon: mdi:map-marker-radius
+      device_class: presence
       state: >
         {% set zone_id = states('person.evert') %}
         {% if zone_id == 'not_home' %}
@@ -87,7 +91,7 @@
 - binary_sensor:
     - name: "Bedroom Presence (Beta)"
       unique_id: "bedroom_presence_beta"
-      device_class: occupancy
+      device_class: presence
       state: >-
         {% set person_home = (states('person.evert') == 'home') %}
         {% set src = state_attr('person.evert','source') %}
@@ -115,7 +119,7 @@
     # DESK PRESENCE (BETA)
     - name: "Desk Presence (Beta)"
       unique_id: "desk_presence_beta"
-      device_class: occupancy
+      device_class: presence
       state: >-
         {% set present = (states('person.evert') == 'home') %}
         {% set desk_inferred = is_state('binary_sensor.desk_presence_inferred', 'on') %}
@@ -138,7 +142,7 @@
     # LIVING ROOM PRESENCE (BETA)
     - name: "Living Room Presence (Beta)"
       unique_id: "living_room_presence_beta"
-      device_class: occupancy
+      device_class: presence
       state: >-
         {% set person_state = states('person.evert') %}
         {% set source = state_attr('person.evert', 'source') %}
@@ -161,7 +165,7 @@
     # KITCHEN PRESENCE (BETA) - Always False (Untracked Housemate Area)
     - name: "Kitchen Presence (Beta)"
       unique_id: "kitchen_presence_beta"
-      device_class: occupancy
+      device_class: presence
       state: "off"
       attributes:
         area_id: "kitchen"
@@ -179,7 +183,7 @@
     # ENSUITE PRESENCE (BETA) - Always False (Untracked Housemate Area)
     - name: "Ensuite Presence (Beta)"
       unique_id: "ensuite_presence_beta"
-      device_class: occupancy
+      device_class: presence
       state: >-
         {# Presence is on when the tracked user is home.
            Uses person state and, as a fallback, the person's tracker source when reliable. #}
@@ -205,7 +209,7 @@
     # HALLWAY DOWNSTAIRS PRESENCE (BETA) - Always False (Common Area)
     - name: "Hallway Downstairs Presence (Beta)"
       unique_id: "hallway_downstairs_presence_beta"
-      device_class: occupancy
+      device_class: presence
       state: "off"
       attributes:
         area_id: "downstairs"
@@ -223,7 +227,7 @@
     # HALLWAY UPSTAIRS PRESENCE (BETA) - Always False (Common Area)
     - name: "Hallway Upstairs Presence (Beta)"
       unique_id: "hallway_upstairs_presence_beta"
-      device_class: occupancy
+      device_class: presence
       state: "off"
       attributes:
         area_id: "upstairs"
