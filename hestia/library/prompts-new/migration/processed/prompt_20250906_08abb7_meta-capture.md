@@ -16,7 +16,6 @@ last_updated: '2025-10-09T01:44:27.973382'
 redaction_log: []
 ---
 
----
 promptset:
   id: meta_capture.promptset.v1       # replace with meta_capture.unique-id-string-with-timestamp.promptset.v1
   version: 1

@@ -16,7 +16,6 @@ last_updated: '2025-10-09T01:44:26.672663'
 redaction_log: []
 ---
 
----
 # AI-Optimized Library Restructure Promptset
 # Non-destructive transformation of HA documentation for AI consumption
 # Created: 2025-10-07

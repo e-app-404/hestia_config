@@ -17,7 +17,6 @@ last_updated: '2025-10-09T01:44:27.813677'
 redaction_log: []
 ---
 
----
 # Home Assistant Configuration Diagnostician — promptset v2.5 (optimized)
 # Purpose: Structured promptset for diagnosing Home Assistant configuration, templates, integrations, and runtime state.
 promptset:

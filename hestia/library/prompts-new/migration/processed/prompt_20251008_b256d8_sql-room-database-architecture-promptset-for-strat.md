@@ -16,7 +16,6 @@ last_updated: '2025-10-09T01:44:26.993348'
 redaction_log: []
 ---
 
----
 # SQL Room Database Architecture Promptset for Strategos GPT
 # Multi-phase reconstruction of Variable integration using SQL-based room databases
 # Targets: Adaptive Motion Lighting + Valetudo Vacuum Control packages

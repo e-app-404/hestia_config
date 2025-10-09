@@ -16,7 +16,6 @@ last_updated: '2025-10-09T01:44:27.172655'
 redaction_log: []
 ---
 
----
 # Enhanced Motion-Lighting Configuration Promptset
 # Comprehensive Home Assistant lighting automation with hierarchical area behavior
 # Supports area-specific behaviors, presence enhancement, and blueprint integration

@@ -16,7 +16,6 @@ last_updated: '2025-10-09T01:44:26.810417'
 redaction_log: []
 ---
 
----
 # Valetudo Vacuum Control Optimization Promptset v2
 # Multi-prompt sequential execution with bundle artifact mapping
 
