@@ -144,3 +144,151 @@ appdaemon_index:
     database: "initialized"
     api_endpoints: "accessible"
     last_restart: "2025-10-09T23:03:10Z"
+    
+  knowledge_base_articles:
+    - path: "/config/domain/ha_implementation/hacs.appdaemon.md"
+      type: "integration_guide"
+      title: "AppDaemon Integration and Service Management Guide"
+      description: "Comprehensive guide for AppDaemon installation, configuration, and service management"
+      last_updated: "2025-10-09"
+      topics: ["installation", "cli_arguments", "systemd", "init.d", "versioning"]
+      coverage:
+        - "Home Assistant Add-on installation and configuration"
+        - "Command line installation via pip"
+        - "CLI arguments and configuration options"
+        - "Systemd and Init.d service setup for auto-start"
+        - "Update procedures and versioning strategy"
+      relevant_to: ["deployment", "service_management", "system_administration"]
+      
+    - path: "/config/domain/ha_implementation/hacs.appdaemon-configuration.md"
+      type: "configuration_reference"
+      title: "AppDaemon Configuration Reference"
+      description: "Complete configuration file reference for AppDaemon YAML and TOML formats"
+      last_updated: "2025-10-09"
+      topics: ["yaml_config", "toml_config", "plugins", "logs", "filters", "advanced_options"]
+      coverage:
+        - "YAML vs TOML configuration formats and conversion"
+        - "Plugin configuration for Home Assistant, MQTT, and other systems"
+        - "Logging configuration for system and user logs"
+        - "Filter system for preprocessing apps"
+        - "Advanced threading, performance, and namespace options"
+      relevant_to: ["configuration", "plugin_setup", "logging", "performance_tuning"]
+      
+    - path: "/config/domain/ha_implementation/hacs.appdaemon-hassapi.md"
+      type: "api_reference"
+      title: "AppDaemon HASS Plugin/API Reference"
+      description: "Complete API reference for Home Assistant plugin integration"
+      last_updated: "2025-10-09"
+      topics: ["hass_plugin", "authentication", "startup_control", "services", "templates", "api_methods"]
+      coverage:
+        - "HASS plugin configuration and websocket/REST API integration"
+        - "Long-lived access token authentication setup"
+        - "Startup control with conditions for entity/event dependencies"
+        - "Service calls, return values, timeouts, and error handling"
+        - "Template rendering using Home Assistant's templating engine"
+        - "Complete API method reference for state, events, scheduling"
+      relevant_to: ["api_development", "authentication", "service_calls", "template_rendering"]
+      
+    - path: "/config/domain/ha_implementation/hacs.appdaemon-mqttapi.md"
+      type: "api_reference"
+      title: "AppDaemon MQTT API Reference"
+      description: "MQTT plugin API reference for broker communication"
+      last_updated: "2025-10-09"
+      topics: ["mqtt_plugin", "broker_communication", "publish_subscribe", "namespaces"]
+      coverage:
+        - "MQTT plugin setup and broker configuration"
+        - "Publish, subscribe, and unsubscribe operations"
+        - "Multiple broker support using namespaces"
+        - "Connection status monitoring and event handling"
+      relevant_to: ["mqtt_integration", "iot_communication", "multi_broker_setup"]
+      
+    - path: "/config/domain/ha_implementation/hacs.appdaemon-adapi.md"
+      type: "api_reference"
+      title: "AppDaemon ADAPI Reference"
+      description: "Core AppDaemon API reference for app development"
+      last_updated: "2025-10-09"
+      topics: ["adapi_core", "entity_class", "services", "scheduling", "events", "logging"]
+      coverage:
+        - "Core ADAPI class for app development fundamentals"
+        - "Entity class for object-oriented entity manipulation"
+        - "Built-in services for admin, state, and rules namespaces"
+        - "Comprehensive method reference for state, time, scheduling"
+        - "Event handling, logging, threading, and utility functions"
+        - "Async support, namespace management, and plugin integration"
+      relevant_to: ["app_development", "entity_management", "scheduling", "event_handling"]
+      
+    - path: "/config/domain/ha_implementation/hacs.appdaemon-vscode.md"
+      type: "development_guide"
+      title: "AppDaemon VSCode Development Setup"
+      description: "VSCode development environment setup and workflow guide"
+      last_updated: "2025-10-09"
+      topics: ["vscode_setup", "extensions", "dev_workflow", "tasks", "docker_build"]
+      coverage:
+        - "VSCode extensions for Python, testing, and Ruff linting"
+        - "Development environment setup with uv and dependency management"
+        - "Development workflow including building, running, and testing"
+        - "VSCode tasks for common development operations"
+        - "Docker build process for multi-platform images"
+        - "GitHub Actions integration for CI/CD pipeline"
+      relevant_to: ["development", "ide_setup", "build_process", "testing"]
+      
+    - path: "/config/domain/ha_implementation/hacs.appdaemon-development.md"
+      type: "development_guide"
+      title: "AppDaemon Development Guide"
+      description: "Comprehensive development guide for contributing to AppDaemon"
+      last_updated: "2025-10-09"
+      topics: ["development_setup", "tools", "workflow", "testing", "documentation"]
+      coverage:
+        - "Development tools: uv, ruff, pytest, pre-commit, sphinx"
+        - "Repository setup, dependency management, and environment configuration"
+        - "Development workflow including building, testing, and documentation"
+        - "Docker build process with multi-stage and multi-platform support"
+        - "GitHub Actions pipeline for CI/CD and automated testing"
+        - "Contributing guidelines and pull request requirements"
+      relevant_to: ["contributing", "advanced_development", "ci_cd", "documentation"]
+      
+  cross_references:
+    configuration_to_deployment:
+      - "apps.yaml references room_db_updater.py module and canonical mapping file"
+      - "appdaemon.yaml API section configuration fixed based on error patterns"
+      - "File organization patterns from development guides applied to deployment"
+      
+    api_reference_to_implementation:
+      - "room_db_updater.py implements hassapi.Hass class methods"
+      - "HTTP API endpoints follow HASS plugin service call patterns"
+      - "Entity class patterns used for canonical room validation"
+      
+    development_guides_to_operational:
+      - "VSCode development setup guides local app development workflow"
+      - "Docker build processes inform add-on container architecture understanding"
+      - "Testing patterns applicable to room_db_updater validation"
+      
+  integration_points:
+    home_assistant_core:
+      - "Long-lived access token authentication (from hassapi guide)"
+      - "Service call patterns and error handling (from API references)"
+      - "Template rendering capabilities (from HASS API guide)"
+      
+    development_workflow:
+      - "uv dependency management (from development guides)"
+      - "Pre-commit hooks and linting (from VSCode guide)"
+      - "Multi-platform Docker builds (from development guide)"
+      
+    operational_patterns:
+      - "Configuration file validation (from configuration reference)"
+      - "Plugin architecture for multiple integrations (from config guide)"
+      - "Logging and debugging strategies (from API references)"
+      
+  documentation_coverage:
+    installation_deployment: "Complete coverage from basic setup to advanced service management"
+    configuration_management: "Comprehensive YAML/TOML configuration with all options documented"
+    api_development: "Full API reference for HASS, MQTT, and core AppDaemon functionality"
+    development_workflow: "Complete development environment setup and contribution guidelines"
+    troubleshooting: "Error patterns, debugging strategies, and operational guidance"
+    
+  knowledge_gaps_identified:
+    - "Advanced app architecture patterns beyond basic examples"
+    - "Performance optimization strategies for high-load scenarios"
+    - "Integration patterns with other Home Assistant add-ons"
+    - "Advanced dashboard development beyond basic examples"
+    - "Security considerations for production deployments"
