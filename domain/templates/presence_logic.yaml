@@ -92,6 +92,7 @@
     - name: "Bedroom Presence (Beta)"
       unique_id: "bedroom_presence_beta"
       device_class: presence
+      icon: mdi:home-map-marker
       state: >-
         {% set person_home = (states('person.evert') == 'home') %}
         {% set src = state_attr('person.evert','source') %}
@@ -120,6 +121,7 @@
     - name: "Desk Presence (Beta)"
       unique_id: "desk_presence_beta"
       device_class: presence
+      icon: mdi:home-map-marker
       state: >-
         {% set present = (states('person.evert') == 'home') %}
         {% set desk_inferred = is_state('binary_sensor.desk_presence_inferred', 'on') %}
@@ -143,6 +145,7 @@
     - name: "Living Room Presence (Beta)"
       unique_id: "living_room_presence_beta"
       device_class: presence
+      icon: mdi:home-map-marker
       state: >-
         {% set person_state = states('person.evert') %}
         {% set source = state_attr('person.evert', 'source') %}
@@ -166,6 +169,7 @@
     - name: "Kitchen Presence (Beta)"
       unique_id: "kitchen_presence_beta"
       device_class: presence
+      icon: mdi:home-map-marker
       state: "off"
       attributes:
         area_id: "kitchen"
@@ -184,6 +188,7 @@
     - name: "Ensuite Presence (Beta)"
       unique_id: "ensuite_presence_beta"
       device_class: presence
+      icon: mdi:home-map-marker
       state: >-
         {# Presence is on when the tracked user is home.
            Uses person state and, as a fallback, the person's tracker source when reliable. #}
@@ -211,6 +216,7 @@
       unique_id: "hallway_downstairs_presence_beta"
       device_class: presence
       state: "off"
+      icon: mdi:home-map-marker
       attributes:
         area_id: "downstairs"
         floor_id: "hallway"
@@ -229,6 +235,7 @@
       unique_id: "hallway_upstairs_presence_beta"
       device_class: presence
       state: "off"
+      icon: mdi:home-map-marker
       attributes:
         area_id: "upstairs"
         floor_id: "hallway"
