@@ -4,16 +4,19 @@ template:
         unique_id: "motion_timeout_bedroom_sql_v15"
         state: >-
           {% set raw = state_attr('sensor.room_configs_motion_lighting','payload') %}
-          {% set cfg = (raw | from_json).get('bedroom', {}) if raw else {} %}
+          {% set parsed = raw | from_json if raw else {} %}
+          {% set cfg = parsed.get('bedroom', {}) if parsed is mapping else {} %}
           {{ cfg.get('timeout', 120) }}
         attributes:
           bypass: >-
             {% set raw = state_attr('sensor.room_configs_motion_lighting','payload') %}
-            {% set cfg = (raw | from_json).get('bedroom', {}) if raw else {} %}
+            {% set parsed = raw | from_json if raw else {} %}
+            {% set cfg = parsed.get('bedroom', {}) if parsed is mapping else {} %}
             {{ cfg.get('bypass', false) }}
           last_triggered: >-
             {% set raw = state_attr('sensor.room_configs_motion_lighting','payload') %}
-            {% set cfg = (raw | from_json).get('bedroom', {}) if raw else {} %}
+            {% set parsed = raw | from_json if raw else {} %}
+            {% set cfg = parsed.get('bedroom', {}) if parsed is mapping else {} %}
             {{ cfg.get('last_triggered', '') }}
           room_id: "bedroom"
           source: "room_database_sql"
