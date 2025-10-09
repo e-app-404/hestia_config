@@ -1,10 +1,11 @@
-from appdaemon.plugins.hass import hassapi
 import json
 import os
 import re
 import sqlite3
 import time
+
 import yaml
+from appdaemon.plugins.hass import hassapi
 
 ROOM_ID_RE = re.compile(r"^[a-z0-9_]+$")
 
@@ -74,7 +75,7 @@ class RoomDbUpdater(hassapi.Hass):
     def _load_canonical_mapping(self):
         """Load and cache the canonical mapping"""
         if self._canonical_rooms is None:
-            with open(self.canonical_mapping_file, "r") as f:
+            with open(self.canonical_mapping_file) as f:
                 amap = yaml.safe_load(f) or {}
             # Extract room IDs from nodes
             nodes = amap.get("nodes", [])
