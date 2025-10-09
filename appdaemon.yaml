@@ -1,0 +1,11 @@
+appdaemon:
+  app_dir: /config/apps
+  time_zone: Europe/London
+
+http:
+  url: http://0.0.0.0:5050
+
+api: true
+
+# Optional if you want !secret in this file:
+# secrets: /config/appdaemon_secrets.yaml
