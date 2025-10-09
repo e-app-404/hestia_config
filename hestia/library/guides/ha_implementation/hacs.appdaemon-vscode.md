@@ -1,13 +1,38 @@
-VSCode
+---
+title: "AppDaemon VSCode Development Setup"
+authors: "AppDaemon Project, Hestia Ops"
+source: "AppDaemon VSCode documentation"
+slug: "hacs-appdaemon-vscode"
+tags: ["home-assistant", "ops", "integration", "development", "vscode"]
+original_date: "2023-10-09"
+last_updated: "2025-10-09"
+url: "https://appdaemon.readthedocs.io/en/latest/DEVELOPMENT.html"
+---
+
+# AppDaemon VSCode Development Setup
+
+## Table of Contents
+- [Overview](#overview)
+- [Extensions](#extensions)
+- [Dev Setup](#dev-setup)
+- [Dev Workflow](#dev-workflow)
+- [VSCode Tasks](#vscode-tasks)
+- [Docker Build Process](#docker-build-process)
+- [GitHub Actions](#github-actions)
+
+## Overview
+
 The AppDaemon repo itself contains some configuration specifically for VSCode, which makes some routine tasks easier.
 
-Python
+## Extensions
+
+### Python
 The Python extension makes Visual Studio Code an excellent Python editor, works on any operating system, and is usable with a variety of Python interpreters.
 
-Python testing
-The Python extension builds on the built-in testing features in VS Code and provides test discovery, test coverage, and running and debugging tests for Python’s built-in unittest framework and pytest.
+### Python Testing
+The Python extension builds on the built-in testing features in VS Code and provides test discovery, test coverage, and running and debugging tests for Python's built-in unittest framework and pytest.
 
-Ruff Extension
+### Ruff Extension
 A Visual Studio Code extension for Ruff, an extremely fast Python linter and code formatter, written in Rust. Available on the Visual Studio Marketplace.
 
 Dev Setup

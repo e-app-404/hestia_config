@@ -1,30 +1,4 @@
     ---
-    title: "AppDaemon ADAPI Reference"
-    authors: "AppDaemon Project, Hestia Ops"
-    source: "AppDaemon documentation"
-    slug: "hacs-appdaemon-adapi"
-    tags: ["home-assistant", "ops", "integration"]
-    original_date: "2023-10-09"
-    last_updated: "2025-10-09"
-    url: "https://appdaemon.readthedocs.io/en/latest/AD_API_REFERENCE.html"
-    ---
-
-AppDaemon APIs
-==============
-
-The AppDaemon API comes in the form of a class called ``ADAPI``, which provides high-level functionality for users to
-create their apps. This includes common functions such as listening for events/state changes, scheduling, manipulating
-entities, and calling services. The API is designed to be easy to use and understand, while still providing the power
-and flexibility needed to create complex automations.
-
-App Creation
-------------
-
-To use the API, create a new class that inherits from ``ADAPI`` and implement the ``initialize()`` method. This method
-is required for all apps and is called when the app is started.
-
-.. code:: python
----
 title: "AppDaemon ADAPI Reference"
 authors: "AppDaemon Project, Hestia Ops"
 source: "AppDaemon documentation"
@@ -35,79 +9,106 @@ last_updated: "2025-10-09"
 url: "https://appdaemon.readthedocs.io/en/latest/AD_API_REFERENCE.html"
 ---
 
-            # Use any of the ADAPI methods
-            # handle = self.listen_state(...)
-            # handle = self.listen_event(...)
+# AppDaemon ADAPI Reference
 
-.. code:: python
+## Table of Contents
+- [Overview](#overview)
+- [App Creation](#app-creation)
+- [Entity Class](#entity-class)
+- [Services](#services)
+- [Reference](#reference)
 
-    from appdaemon.adapi import ADAPI
-    from appdaemon.adbase import ADBase
-    from appdaemon.plugins.mqtt import Mqtt
+## Overview
 
+The AppDaemon API comes in the form of a class called `ADAPI`, which provides high-level functionality for users to create their apps. This includes common functions such as listening for events/state changes, scheduling, manipulating entities, and calling services. The API is designed to be easy to use and understand, while still providing the power and flexibility needed to create complex automations.
 
-    class MyApp(ADBase):
-        adapi: ADAPI    # This type annotation helps your IDE with autocompletion
-        mqttapi: Mqtt
+## App Creation
 
-        def initialize(self):
-            self.adapi = self.get_ad_api()
-            self.adapi.log("MyApp is starting")
+To use the API, create a new class that inherits from `ADAPI` and implement the `initialize()` method. This method is required for all apps and is called when the app is started.
 
-            # This requires having defined a plugin in the mqtt namespace in appdaemon.yaml
-            self.mqttapi = self.get_plugin_api('mqtt')
+```python
+from appdaemon.adapi import ADAPI
 
-            # Use any of the ADAPI methods through self.adapi
-            # handle = self.adapi.listen_state(...)
-            # handle = self.adapi.listen_event(...)
-            # handle = self.adapi.run_in(...)
-            # handle = self.adapi.run_every(...)
+class MyApp(ADAPI):
+    def initialize(self):
+        self.log("MyApp is starting")
+        # Use any of the ADAPI methods
+        # handle = self.listen_state(...)
+        # handle = self.listen_event(...)
+```
 
-Entity Class
-------------
+Alternatively, the `ADBase` class can be used, which can provide some advantages, such as being able to access APIs for plugins in multiple namespaces.
 
-Interacting with entities is a core part of writing automation apps, so being able to easily access and manipulate them
-is important. AppDaemon supports this by providing entities as python objects.
+```python
+from appdaemon.adapi import ADAPI
+from appdaemon.adbase import ADBase
+from appdaemon.plugins.mqtt import Mqtt
 
-The ``Entity`` class is essentially a light wrapper around ``ADAPI`` methods that pre-fills some arguments. Because of
-this, the entity doesn't have to actually exist for the ``Entity`` object to be created and used. If the entity doesn't
-exist, some methods will fail, but others will not. For example, ``get_state()`` will fail, but calling ``set_state()``
-for an entity that doesn't exist will create it. This is useful for creating sensor entities that are available in Home
-Assistant.
+class MyApp(ADBase):
+    adapi: ADAPI    # This type annotation helps your IDE with autocompletion
+    mqttapi: Mqtt
 
-.. code:: python
+    def initialize(self):
+        self.adapi = self.get_ad_api()
+        self.adapi.log("MyApp is starting")
 
-    from appdaemon.adapi import ADAPI
+        # This requires having defined a plugin in the mqtt namespace in appdaemon.yaml
+        self.mqttapi = self.get_plugin_api('mqtt')
 
+        # Use any of the ADAPI methods through self.adapi
+        # handle = self.adapi.listen_state(...)
+        # handle = self.adapi.listen_event(...)
+        # handle = self.adapi.run_in(...)
+        # handle = self.adapi.run_every(...)
+```
 
-    class MyApp(ADAPI):
-        def initialize(self):
-            self.log("MyApp is starting")
+## Entity Class
 
-            # Get light entity class
-            self.kitchen_light = self.get_entity("light.kitchen_ceiling_light")
+Interacting with entities is a core part of writing automation apps, so being able to easily access and manipulate them is important. AppDaemon supports this by providing entities as Python objects.
 
-            # Assign a callback for when the state changes to on
-            self.kitchen_light.listen_state(
-                self.state_callback,
-                attribute="brightness",
-                new='on'
-            )
+The `Entity` class is essentially a light wrapper around `ADAPI` methods that pre-fills some arguments. Because of this, the entity doesn't have to actually exist for the `Entity` object to be created and used. If the entity doesn't exist, some methods will fail, but others will not. For example, `get_state()` will fail, but calling `set_state()` for an entity that doesn't exist will create it. This is useful for creating sensor entities that are available in Home Assistant.
 
-        def state_callback(self, entity, attribute, old, new, **kwargs):
-            self.log(f'{self.kitchen_light.friendly_name} turned on')
+```python
+from appdaemon.adapi import ADAPI
 
-Services
---------
+class MyApp(ADAPI):
+    def initialize(self):
+        self.log("MyApp is starting")
 
-AppDaemon provides some services from some built-in namespaces. These services can be called from any app, provided they
-use the correct namespace. These services are listed below
+        # Get light entity class
+        self.kitchen_light = self.get_entity("light.kitchen_ceiling_light")
 
-Note: A service call always uses the app's default namespace. See the section on
-`namespaces <APPGUIDE.html#namespaces>`__ for more information.
+        # Assign a callback for when the state changes to on
+        self.kitchen_light.listen_state(
+            self.state_callback,
+            attribute="brightness",
+            new='on'
+        )
 
-admin
-~~~~~
+    def state_callback(self, entity, attribute, old, new, **kwargs):
+        self.log(f'{self.kitchen_light.friendly_name} turned on')
+```
+
+## Services
+
+AppDaemon provides some services from some built-in namespaces. These services can be called from any app, provided they use the correct namespace. These services are listed below.
+
+> **Note**: A service call always uses the app's default namespace. See the section on [namespaces](https://appdaemon.readthedocs.io/en/latest/APPGUIDE.html#namespaces) for more information.
+
+### Admin Namespace
+
+| Service           | Description                                                                 |
+|-------------------|-----------------------------------------------------------------------------|
+| app/create        | Create a new app. Provide module/class, optional app name, app_file, app_dir |
+| app/edit          | Edit an existing app's args in realtime                                     |
+| app/remove        | Remove an existing app                                                      |
+| app/start         | Start a terminated app                                                      |
+| app/stop          | Stop a running app                                                          |
+| app/restart       | Restart a running app                                                       |
+| app/reload        | Check for app update                                                        |
+| app/enable        | Enable a disabled app                                                       |
+| app/disable       | Disable an enabled app                                                      |
+| production_mode/set | Set production mode (True/False)                                          |
 
 **app/create**
 

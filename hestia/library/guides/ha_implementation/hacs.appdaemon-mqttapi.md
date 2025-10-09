@@ -1,56 +1,61 @@
-MQTT API Reference
-==================
+---
+title: "AppDaemon MQTT API Reference"
+authors: "AppDaemon Project, Hestia Ops"
+source: "AppDaemon documentation"
+slug: "hacs-appdaemon-mqttapi"
+tags: ["home-assistant", "ops", "integration"]
+original_date: "2023-10-09"
+last_updated: "2025-10-09"
+url: "https://appdaemon.readthedocs.io/en/latest/AD_API_REFERENCE.html"
+---
 
-A list of API calls and information specific to the MQTT plugin.
+# MQTT API Reference
 
-.. _MQTT App Creation:
+## Table of Contents
+- [App Creation](#app-creation)
+- [Making Calls to MQTT](#making-calls-to-mqtt)
+- [Examples](#examples)
+- [Reference](#reference)
+- [MQTT Config](#mqtt-config)
+- [See More](#see-more)
 
-App Creation
-------------
+## App Creation
 
-To create apps based on just the MQTT API, use some code like the following:
+To create apps based on just the MQTT API, use code like the following:
 
-.. code:: python
+```python
+import mqttapi as mqtt
 
-    import mqttapi as mqtt
+class MyApp(mqtt.Mqtt):
+    def initialize(self):
+        # Your initialization code here
+```
 
-    class MyApp(mqtt.Mqtt):
+## Making Calls to MQTT
 
-        def initialize(self):
+The MQTT Plugin uses the inherited `call_service()` helper function from the AppDaemon API to carry out service calls from within an AppDaemon app. See the documentation of this function [here](https://appdaemon.readthedocs.io/en/latest/AD_API_REFERENCE.html#appdaemon.adapi.ADAPI.call_service) for a detailed description.
 
-Making Calls to MQTT
---------------------
+The function `call_service()` allows the app to carry out one of the following services:
 
-The MQTT Plugin uses the inherited ``call_service()`` helper function the AppDaemon API,
-to carry out service calls from within an AppDaemon app. See the documentation of this
-function `here <AD_API_REFERENCE.html#appdaemon.adapi.ADAPI.call_service>`__
-for a detailed description.
+- `mqtt/publish`
+- `mqtt/subscribe`
+- `mqtt/unsubscribe`
 
-The function ``call_service()`` allows the app to carry out one of the following services:
+By simply specifying within the function what is to be done. It uses configuration specified in the plugin configuration which simplifies the call within the app significantly. Different brokers can be accessed within an App, as long as they are all declared when the plugins are configured, and using the `namespace` parameter. See the section on [namespaces](https://appdaemon.readthedocs.io/en/latest/APPGUIDE.html#namespaces) for a detailed description.
 
-  - ``mqtt/publish``
-  - ``mqtt/subscribe``
-  - ``mqtt/unsubscribe``
+## Examples
 
-By simply specifying within the function what is to be done. It uses configuration specified
-in the plugin configuration which simplifies the call within the app significantly. Different
-brokers can be accessed within an App, as long as they are all declared when the plugins are
-configured, and using the ``namespace`` parameter. See the section on `namespaces <APPGUIDE.html#namespaces>`__
-for a detailed description.
+```python
+# Publish data to a broker
+self.call_service("mqtt/publish", topic="homeassistant/bedroom/light", payload="ON")
+# Unsubscribe a topic from a broker in a different namespace
+self.call_service("mqtt/unsubscribe", topic="homeassistant/bedroom/light", namespace="mqtt2")
+```
 
-.. _MQTT Examples:
-
-Examples
-^^^^^^^^
-
-.. code:: python
-
-    # if wanting to publish data to a broker
-    self.call_service("mqtt/publish", topic = "homeassistant/bedroom/light", payload = "ON")
-    # if wanting to unsubscribe a topic from a broker in a different namespace
-    self.call_service("mqtt/unsubscribe", topic = "homeassistant/bedroom/light", namespace = "mqtt2")
-
-The MQTT API also provides 3 convenience functions to make calling of specific functions easier and more readable. These are documented in the following section.
+The MQTT API also provides 3 convenience functions to make calling of specific functions easier and more readable:
+- mqtt_subscribe
+- mqtt_unsubscribe
+- mqtt_publish
 
 Reference
 ---------

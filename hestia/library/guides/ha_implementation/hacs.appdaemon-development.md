@@ -1,11 +1,33 @@
-Development
-===========
-If you would like to improve AppDaemon, we are pleased to receive Pull Requests in `the official AppDaemon repository <https://github.com/AppDaemon/appdaemon>`_. Here are a few things to help you get started.
+---
+title: "AppDaemon Development Guide"
+authors: "AppDaemon Project, Hestia Ops"
+source: "AppDaemon development documentation"
+slug: "hacs-appdaemon-development"
+tags: ["home-assistant", "ops", "integration", "development"]
+original_date: "2023-10-09"
+last_updated: "2025-10-09"
+url: "https://appdaemon.readthedocs.io/en/latest/DEVELOPMENT.html"
+---
 
-Please note, if some documentation is required to make sense of the PR, the PR will not be accepted without it.
+# AppDaemon Development Guide
 
-Tools
------
+## Table of Contents
+- [Overview](#overview)
+- [Tools](#tools)
+- [Dev Setup](#dev-setup)
+- [Dev Workflow](#dev-workflow)
+- [VSCode Tasks](#vscode-tasks)
+- [Docker Build Process](#docker-build-process)
+- [GitHub Actions](#github-actions)
+
+## Overview
+
+If you would like to improve AppDaemon, we are pleased to receive Pull Requests in [the official AppDaemon repository](https://github.com/AppDaemon/appdaemon). Here are a few things to help you get started.
+
+> **Note**: If some documentation is required to make sense of the PR, the PR will not be accepted without it.
+
+## Tools
+
 Although it's certainly possible to use other tools for any of this, these are what's used by the contributors.
 
 Python

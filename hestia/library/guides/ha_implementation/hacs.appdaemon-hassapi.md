@@ -1,18 +1,31 @@
-Hass Plugin/API
-===============
+---
+title: "AppDaemon HASS Plugin/API Reference"
+authors: "AppDaemon Project, Hestia Ops"
+source: "AppDaemon HASS API documentation"
+slug: "hacs-appdaemon-hassapi"
+tags: ["home-assistant", "ops", "integration"]
+original_date: "2023-10-09"
+last_updated: "2025-10-09"
+url: "https://appdaemon.readthedocs.io/en/latest/HASS_PLUGIN.html"
+---
 
-About
------
+# AppDaemon HASS Plugin/API Reference
 
-Hass Plugin
-~~~~~~~~~~~
+## Table of Contents
+- [About](#about)
+- [Plugin Configuration](#plugin-configuration)
+- [Authentication](#authentication)
+- [Startup Control](#startup-control)
+- [API Usage](#api-usage)
+- [Services](#services)
+- [Rendering Templates](#rendering-templates)
+- [API Reference](#api-reference)
 
-The `Hass` plugin connects to Home Assistant using the
-`websocket API <https://developers.home-assistant.io/docs/api/websocket/>`_ and maintains this connection while
-AppDaemon is running. In addition, it maintains an HTTP session because some functionality is only available via the
-`REST API <https://developers.home-assistant.io/docs/api/rest>`_. If the connection is lost, the plugin will gracefully
-attempt to reconnect every 5s until it succeeds, any apps that are using the `Hass` API will be stopped and restarted
-when the connection is re-established.
+## About
+
+### Hass Plugin
+
+The `Hass` plugin connects to Home Assistant using the [websocket API](https://developers.home-assistant.io/docs/api/websocket/) and maintains this connection while AppDaemon is running. In addition, it maintains an HTTP session because some functionality is only available via the [REST API](https://developers.home-assistant.io/docs/api/rest). If the connection is lost, the plugin will gracefully attempt to reconnect every 5s until it succeeds, any apps that are using the `Hass` API will be stopped and restarted when the connection is re-established.
 
 Hass API
 ~~~~~~~~
