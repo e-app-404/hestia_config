@@ -42,7 +42,7 @@ Python
     The pytest framework makes it easy to write small, readable tests, and can scale to support complex functional testing for applications and libraries.
 `pre-commit <https://pre-commit.com/>`_
     A framework for managing and maintaining multi-language pre-commit hooks. Once enabled, these run things like the linter on every commit.
-`sphinx <https://www.sphinx-doc.org/en/master/>`_for `readthedocs <https://docs.readthedocs.com/platform/stable/intro/sphinx.html>`_
+`sphinx <https://www.sphinx-doc.org/en/master/>`*for `readthedocs <https://docs.readthedocs.com/platform/stable/intro/sphinx.html>`*
     Sphinx is a powerful documentation generator that has many features for writing technical documentation. Sphinx is written in Python, and supports documentation written in reStructuredText and Markdown.
 
 ### VSCode
@@ -80,7 +80,7 @@ Download a copy of the official [AppDaemon repository](https://github.com/AppDae
 **Clone dev branch:**
 
 ```console
-$ git clone -b dev https://github.com/AppDaemon/appdaemon.git
+git clone -b dev https://github.com/AppDaemon/appdaemon.git
 ```
 
 You can clone specific versions by changing `dev` to something else. Including a path like `./ad-442` will clone it there instead of into `./appdaemon`.
@@ -88,7 +88,7 @@ You can clone specific versions by changing `dev` to something else. Including a
 **Clone version 4.4.2 into a custom directory:**
 
 ```console
-$ git clone -b 4.4.2 https://github.com/AppDaemon/appdaemon.git ./ad-442
+git clone -b 4.4.2 https://github.com/AppDaemon/appdaemon.git ./ad-442
 ```
 
 All subsequent commands need to be run from inside the newy created directory.
@@ -219,7 +219,7 @@ This will start a local web server (<http://localhost:9999>) that will host the 
 
 Dependencies
 ^^^^^^^^^^^^
-The ``pyproject.toml`` file defines the dependencies according to the `PEP 631 <https://peps.python.org/pep-0631/>`_convention, and the dependencies are tracked using a `lockfile <https://docs.astral.sh/uv/concepts/projects/layout/#the-lockfile>`_, which is managed by uv. In general, only the minimum versions are specified in ``pyproject.toml``, but uv resolves everything to the latest compatible versions and stores the exact versions in the lockfile. This **pins** all the exact versions of all the dependencies, both direct and indirect.
+The ``pyproject.toml`` file defines the dependencies according to the `PEP 631 <https://peps.python.org/pep-0631/>`*convention, and the dependencies are tracked using a `lockfile <https://docs.astral.sh/uv/concepts/projects/layout/#the-lockfile>`*, which is managed by uv. In general, only the minimum versions are specified in ``pyproject.toml``, but uv resolves everything to the latest compatible versions and stores the exact versions in the lockfile. This **pins** all the exact versions of all the dependencies, both direct and indirect.
 
 .. literalinclude:: ../pyproject.toml
    :language: toml

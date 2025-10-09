@@ -136,7 +136,6 @@ the token was created for - ``AppDaemon`` is as good a name as any. When you are
 .. figure:: images/popup.png
    :alt: Popup
 
-
 3. A new dialog will popup with the token itself showing:
 
 .. figure:: images/token.png

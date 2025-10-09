@@ -323,9 +323,9 @@ The following settings provide a high level of control over AppDaemon's internal
   * ``5``
 
 * * uvloop
-  * If ``true``, AppDaemon will use `uvloop <https://github.com/MagicStack/uvloop>`_instead of the default Python ``asyncio`` loop.
+  * If ``true``, AppDaemon will use `uvloop <https://github.com/MagicStack/uvloop>`*instead of the default Python ``asyncio`` loop.
       It is said to improve the speed of the loop.
-      For more information about ``uvloop`` see `here <https://magic.io/blog/uvloop-blazing-fast-python-networking>`_.
+      For more information about ``uvloop`` see `here <https://magic.io/blog/uvloop-blazing-fast-python-networking>`*.
   * ``false``
 
 * * namespaces

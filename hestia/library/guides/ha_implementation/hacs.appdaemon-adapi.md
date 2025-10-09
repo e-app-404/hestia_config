@@ -1,5 +1,4 @@
-    ---
-
+---
 title: "AppDaemon ADAPI Reference"
 authors: "AppDaemon Project, Hestia Ops"
 source: "AppDaemon documentation"
@@ -7,7 +6,7 @@ slug: "hacs-appdaemon-adapi"
 tags: ["home-assistant", "ops", "integration"]
 original_date: "2023-10-09"
 last_updated: "2025-10-09"
-url: "<https://appdaemon.readthedocs.io/en/latest/AD_API_REFERENCE.html>"
+url: "https://appdaemon.readthedocs.io/en/latest/AD_API_REFERENCE.html"
 ---
 
 # AppDaemon ADAPI Reference
