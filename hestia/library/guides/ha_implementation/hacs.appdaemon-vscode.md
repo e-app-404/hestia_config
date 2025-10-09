@@ -12,6 +12,7 @@ url: "https://appdaemon.readthedocs.io/en/latest/DEVELOPMENT.html"
 # AppDaemon VSCode Development Setup
 
 ## Table of Contents
+
 - [Overview](#overview)
 - [Extensions](#extensions)
 - [Dev Setup](#dev-setup)
@@ -27,12 +28,15 @@ The AppDaemon repo itself contains some configuration specifically for VSCode, w
 ## Extensions
 
 ### Python
+
 The Python extension makes Visual Studio Code an excellent Python editor, works on any operating system, and is usable with a variety of Python interpreters.
 
 ### Python Testing
+
 The Python extension builds on the built-in testing features in VS Code and provides test discovery, test coverage, and running and debugging tests for Python's built-in unittest framework and pytest.
 
 ### Ruff Extension
+
 A Visual Studio Code extension for Ruff, an extremely fast Python linter and code formatter, written in Rust. Available on the Visual Studio Marketplace.
 
 Dev Setup
@@ -40,16 +44,16 @@ Pre-requisites
 For the easiest setup, install uv first.
 
 Bash SessionPowerShell
-curl -LsSf https://astral.sh/uv/install.sh | sh
+curl -LsSf <https://astral.sh/uv/install.sh> | sh
 Clone the repository
 Download a copy of the official AppDaemon repository by cloning it somewhere locally. The dev branch is generally used for this because it’s what PRs are submitted against.
 
 Clone dev branch
-git clone -b dev https://github.com/AppDaemon/appdaemon.git
+git clone -b dev <https://github.com/AppDaemon/appdaemon.git>
 You can clone specific versions by changing dev to something else. Including a path like ./ad-442 will clone it there instead of into ./appdaemon.
 
 Clone version 4.4.2 into a custom directory
-git clone -b 4.4.2 https://github.com/AppDaemon/appdaemon.git ./ad-442
+git clone -b 4.4.2 <https://github.com/AppDaemon/appdaemon.git> ./ad-442
 All subsequent commands need to be run from inside the newy created directory.
 
 Dependencies
@@ -108,7 +112,7 @@ In most cases, it is possible to share configuration directories with other AppD
 One-off tests of different versions can also be easily run using uv. This creates and uses the necessary python environment in a cache directory.
 
 Running run the testing branch with python 3.11
-uvx -p 3.11 --from git+https://github.com/AppDaemon/appdaemon@testing appdaemon -c /conf
+uvx -p 3.11 --from git+<https://github.com/AppDaemon/appdaemon@testing> appdaemon -c /conf
 Documentation
 Assistance with the docs is always welcome, whether its fixing typos and incorrect information or reorganizing and adding to the docs to make them more helpful. To work on the docs, submit a pull request with the changes, and I will review and merge them in the usual way. I use Read the Docs to build and host the documentation pages. You can easily preview your edits locally, by running the following command:
 
@@ -121,7 +125,7 @@ uv run \
     --watch ./appdaemon \
     --watch ./tests \
     docs/ build/docs
-This will start a local web server (http://localhost:9999) that will host the documentation. If any of the files change, the server will automatically regenerate the documentation its hosting, which takes a moment, but this feature is still very useful. When you finish your edits, you can stop the server via Ctrl-C.
+This will start a local web server (<http://localhost:9999>) that will host the documentation. If any of the files change, the server will automatically regenerate the documentation its hosting, which takes a moment, but this feature is still very useful. When you finish your edits, you can stop the server via Ctrl-C.
 
 Dependencies
 The pyproject.toml file defines the dependencies according to the PEP 631 convention, and the dependencies are tracked using a lockfile, which is managed by uv. In general, only the minimum versions are specified in pyproject.toml, but uv resolves everything to the latest compatible versions and stores the exact versions in the lockfile. This pins all the exact versions of all the dependencies, both direct and indirect.
@@ -211,4 +215,3 @@ The Python wheel is built and uploaded to a ./dist directory in the GitHub runne
 
 Docker Build and Push
 The Docker image is built for each platform (linux/amd64, linux/arm64/v8, linux/arm/v7, linux/arm/v6) and published to Docker Hub on dev branch pushes and git tags.
-

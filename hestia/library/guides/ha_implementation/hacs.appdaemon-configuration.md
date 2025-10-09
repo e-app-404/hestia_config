@@ -97,42 +97,42 @@ The following options are available under the ``appdaemon`` section:
   :widths:  10 70 10
   :header-rows: 1
 
-  * - Name
-    - Description
-    - Required
+* * Name
+  * Description
+  * Required
 
-  * - time_zone
-    - Used by AppDaemon for its internal time-related operations (e.g. America/New_York).
-    - **Yes**
+* * time_zone
+  * Used by AppDaemon for its internal time-related operations (e.g. America/New_York).
+  * **Yes**
 
-  * - latitude
-    - Used by AppDaemon for its internal location-related operations (decimal format).
-    - **Yes**
+* * latitude
+  * Used by AppDaemon for its internal location-related operations (decimal format).
+  * **Yes**
 
-  * - longitude
-    - Used by AppDaemon for its internal location-related operations (decimal format).
-    - **Yes**
+* * longitude
+  * Used by AppDaemon for its internal location-related operations (decimal format).
+  * **Yes**
 
-  * - elevation
-    - Meters above sea level. Used by AppDaemon for its internal location-related operations.
-    - **Yes**
+* * elevation
+  * Meters above sea level. Used by AppDaemon for its internal location-related operations.
+  * **Yes**
 
-  * - plugins
-    - Configure the plugins used by AppDaemon to communicate with third-party systems (e.f. Home Assistant, MQTT broker).
+* * plugins
+  * Configure the plugins used by AppDaemon to communicate with third-party systems (e.f. Home Assistant, MQTT broker).
 
       See the :ref:`plugins` section for more details.
-    - **Yes**
+  * **Yes**
 
-  * - filters
-    - See the :ref:`filters` section for more details.
-    - No
+* * filters
+  * See the :ref:`filters` section for more details.
+  * No
 
-  * - app_dir
-    - Load *AppDaemon apps* from a different directory than the default configuration directory.
-    - No
+* * app_dir
+  * Load *AppDaemon apps* from a different directory than the default configuration directory.
+  * No
 
-  * - exclude_dirs
-    - When loading *AppDaemon apps* in the ``apps`` directory, ignore these subdirectories.
+* * exclude_dirs
+  * When loading *AppDaemon apps* in the ``apps`` directory, ignore these subdirectories.
       By default AppDaemon ignores all directories with a ``.`` in their name (hidden folders).
 
       Example:
@@ -150,54 +150,52 @@ The following options are available under the ``appdaemon`` section:
 
       **Note**: It is not possible to match multiple level directory names e.g., ``somedir/dir1``.
       In that case, the match should be on ``dir1``, with the caveat that if you have ``dir1`` anywhere else in the hierarchy, it will also be excluded.
-    - No
+  * No
 
-
-  * - missing_app_warnings
+* * missing_app_warnings
 
       .. TODO: reference to ``apps.yaml` without having introduced it before
-    - AppDaemon by default outputs a warning if it finds a Python file that has no associated configuration in an app config file.
+  * AppDaemon by default outputs a warning if it finds a Python file that has no associated configuration in an app config file.
 
       Set this parameter to ``0`` to suppress the warning. This is useful for instance to distribute Python files not strictly related to AppDaemon along with AppDaemon apps.
-    - No
+  * No
 
-  * - invalid_config_warnings
-    - AppDaemon by default outputs a warning if it finds an app config file file that doesn’t include ``class`` and ``module`` for an app.
+* * invalid_config_warnings
+  * AppDaemon by default outputs a warning if it finds an app config file file that doesn’t include ``class`` and ``module`` for an app.
 
       Set this parameter to ``0`` to suppress the warning.
       This is intended to ease the distribution of additional files along with apps.
-    - No
+  * No
 
-  * - production_mode
-    - - ``false``: AppDaemon checks for changes in Apps and app config files every second. This can save some processing power on busy systems.
-      - ``true``: AppDaemon checks for changes in Apps and app config files only on restart
+* * production_mode
+  * * ``false``: AppDaemon checks for changes in Apps and app config files every second. This can save some processing power on busy systems.
+    * ``true``: AppDaemon checks for changes in Apps and app config files only on restart
 
       Defaults to ``false``.
 
       This option can also be changed from within apps, using the ``set_production_mode`` API call.
-    - No
+  * No
 
-  * - thread_duration_warning_threshold
-    - AppDaemon monitors the time that each thread spends in an App.
+* * thread_duration_warning_threshold
+  * AppDaemon monitors the time that each thread spends in an App.
       If a thread is taking too long to finish a callback, it may impact other apps.
       AppDaemon will log a warning if any thread is over the duration specified in seconds. The default is ``10`` seconds, setting this value to ``00`` will disable this check.
-    - No
+  * No
 
-  * - log_thread_actions
-    - If set to ``1``, AppDaemon will log all callbacks on entry and exit for the scheduler, events, and state changes.
+* * log_thread_actions
+  * If set to ``1``, AppDaemon will log all callbacks on entry and exit for the scheduler, events, and state changes.
       This can be useful for troubleshooting thread starvation issues.
-    - No
+  * No
 
-  * - import_paths
-    - Use this directive to add additional arbitrary directories to the python interpreter's search path. Directories must be fully qualified.
-    - No
+* * import_paths
+  * Use this directive to add additional arbitrary directories to the python interpreter's search path. Directories must be fully qualified.
+  * No
 
-  * - discard_init_events
-    - If set to ``1``, AppDaemon will discard all events that occur while an app is running it's initialize() method. This can be useful to avoid race conditions
+* * discard_init_events
+  * If set to ``1``, AppDaemon will discard all events that occur while an app is running it's initialize() method. This can be useful to avoid race conditions
       when callbacks are registered, and incoming events occu before the app has finished initializing. Note that this will prevent any event, including state changes,
       events and scheduler callbacks form being executed until initialize() is complete
-    - No
-
+  * No
 
 .. _filters:
 
@@ -258,7 +256,6 @@ Finally, it is possible to have multiple unconnected filters like so:
 
 Here we have defined ``.mat`` and ``.cat`` files as both creating new ``.py`` files, unrelated to each other.
 
-
 Advanced options
 ----------------
 
@@ -268,71 +265,71 @@ The following settings provide a high level of control over AppDaemon's internal
   :widths:  10 70 10
   :header-rows: 1
 
-  * - Name
-    - Description
-    - Default
+* * Name
+  * Description
+  * Default
 
-  * - total_threads
-    - The number of dedicated worker threads to create for running the apps.
+* * total_threads
+  * The number of dedicated worker threads to create for running the apps.
       Normally, AppDaemon will create enough threads to provide one per app, or default to ``10`` if app pinning is turned off.
 
       Setting this to a specific value will turn off automatic thread management.
-    -
+  *
 
-  * - loglevel
-    - The global log level for AppDaemon's main log. This can be set to ``DEBUG``, ``INFO``, ``WARNING``, ``ERROR`` or ``CRITICAL``.
+* * loglevel
+  * The global log level for AppDaemon's main log. This can be set to ``DEBUG``, ``INFO``, ``WARNING``, ``ERROR`` or ``CRITICAL``.
       The default is ``INFO``. Note that this value will be overridden by the `-D` command line flag, if it is set.
-    - ``INFO``
+  * ``INFO``
 
-  * - pin_apps
-    - If ``true``, AppDaemon apps will be pinned to a particular thread.
+* * pin_apps
+  * If ``true``, AppDaemon apps will be pinned to a particular thread.
       This should avoids complications around re-entrant code and locking of instance variables.
-    - ``true``
+  * ``true``
 
-  * - pin_threads
-    - Number of threads to use for pinned apps, allowing the user to section off a sub-pool just for pinned apps.
+* * pin_threads
+  * Number of threads to use for pinned apps, allowing the user to section off a sub-pool just for pinned apps.
 
       By default all threads are used for pinned apps.
-    -
+  *
 
-  * - threadpool_workers
-    - Maximum number of worker threads to be internally used by AppDaemon to execute the calls asynchronously.
-    - ``10``
+* * threadpool_workers
+  * Maximum number of worker threads to be internally used by AppDaemon to execute the calls asynchronously.
+  * ``10``
 
-  * - load_distribution
-    - Algorithm to use for load balancing between unpinned apps.
+* * load_distribution
+  * Algorithm to use for load balancing between unpinned apps.
 
       Possible values: ``round-robin``, ``random``, ``load``
-    - ``round-robin``
+  * ``round-robin``
 
-  * - timewarp
-    - Equivalent to the command line flag ``-t``, but this option takes precedence over the CLI flag.
-    -
+* * timewarp
+  * Equivalent to the command line flag ``-t``, but this option takes precedence over the CLI flag.
+  *
 
-  * - qsize_warning_threshold
-    - Total number of items on thread queues before a warning is issued.
-    - ``50``
+* * qsize_warning_threshold
+  * Total number of items on thread queues before a warning is issued.
+  * ``50``
 
-  * - qsize_warning_step
-    - If total queue size is over ``qsize_warning_threshold``, issue a warning every ``<qsize_warning_step>`` times the utility loop executes (normally this is once every second).
-    - ``60``
+* * qsize_warning_step
+  * If total queue size is over ``qsize_warning_threshold``, issue a warning every ``<qsize_warning_step>`` times the utility loop executes (normally this is once every second).
+  * ``60``
 
-  * - qsize_warning_iterations
-    - If set to a value greater than ``0``, when total queue size is over ``qsize_warning_threshold``, issue a warning every ``<qsize_warning_step>`` times the utility loop executes,
+* * qsize_warning_iterations
+  * If set to a value greater than ``0``, when total queue size is over ``qsize_warning_threshold``, issue a warning every ``<qsize_warning_step>`` times the utility loop executes,
       but not until the queue size has been exceeded for a minimum of ``<qsize_warning_iterations>`` iterations.
 
       This allows you to tune out brief expected spikes in queue size.
 
-    - ``5``
+  * ``5``
 
-  * - uvloop
-    - If ``true``, AppDaemon will use `uvloop <https://github.com/MagicStack/uvloop>`_ instead of the default Python ``asyncio`` loop.
+* * uvloop
+  * If ``true``, AppDaemon will use `uvloop <https://github.com/MagicStack/uvloop>`_instead of the default Python ``asyncio`` loop.
       It is said to improve the speed of the loop.
       For more information about ``uvloop`` see `here <https://magic.io/blog/uvloop-blazing-fast-python-networking>`_.
-    - ``false``
+  * ``false``
 
-  * - namespaces
-    - Configure one or more User Defined Namespaces and set their writeback strategy.
+* * namespaces
+  * Configure one or more User Defined Namespaces and set their writeback strategy.
 
       Example:
 
@@ -346,10 +343,7 @@ The following settings provide a high level of control over AppDaemon's internal
           fred:
             writeback: hybrid
 
-    -
-
-
-
+  *
 
 .. _logs:
 
@@ -362,15 +356,15 @@ Any other named log under this section will result in the creation of a *user* l
 
 The 4 built-in *system* logs are the following:
 
--  ``main_log`` is the path to where you want ``AppDaemon`` to
+* ``main_log`` is the path to where you want ``AppDaemon`` to
    keep its main log.
--  ``error_log`` is the name of the logfile for errors - this
+* ``error_log`` is the name of the logfile for errors - this
    will usually be errors during compilation and execution of the apps.
 
    If ``errorfile = STDERR`` errors are sent to stderr instead of a
    file, if not specified, the output will be sent to STDERR.
--  ``diag_log`` is the name of the log file for diagnostic information. This will contain information form the ``log_thread_actions`` parameter, as well as information dumped from AppDaemon's internal state when the AppDaemon process is sent a ``SIGUSR1`` signal.
-- ``access_log`` is the log that AppDaemon will write access information to for HADashboard and the admin interface.
+* ``diag_log`` is the name of the log file for diagnostic information. This will contain information form the ``log_thread_actions`` parameter, as well as information dumped from AppDaemon's internal state when the AppDaemon process is sent a ``SIGUSR1`` signal.
+* ``access_log`` is the log that AppDaemon will write access information to for HADashboard and the admin interface.
 
 All 4 logs have defaults, so they do not need to be specified, but if any parameters are defined, they will override the defaults.
 
@@ -398,19 +392,19 @@ All directives are optional with the exception of ``name`` for user defined logs
 
 The directives are as follows:
 
--  ``filename`` (optional) is the path to where you want the file to be written. If the directive is not
+* ``filename`` (optional) is the path to where you want the file to be written. If the directive is not
    specified, the output is sent to STDOUT.
--  ``log_size`` (optional) is the maximum size a logfile will get to
+* ``log_size`` (optional) is the maximum size a logfile will get to
    before it is rotated if not specified, this will default to 1000000
    bytes.
--  ``log_generations`` (optional) is the number of rotated logfiles that
+* ``log_generations`` (optional) is the number of rotated logfiles that
    will be retained before they are overwritten if not specified, this
    will default to 3 files.
-- ``format`` (optional) Format string for the log file - standard `str.format() logger format <https://docs.python.org/3.6/library/string.html#format-string-syntax>`__
-- ``date_format`` (optional) - Format string to specify how the date is rendered in standard `datetime strftime() format <https://docs.python.org/3.6/library/datetime.html#strftime-strptime-behavior>`__
-- ``filter_threshold`` (optional) - number of repetitions of a log line allowed before filtering starts (default is 1). Setting ``filter_threshold`` to zero will turn off log filtering entirely - since AppDaemon relies on this mechanism internally to prevent certain types of log loops, this is not recommended.
-- ``filter_timeout`` (optional) - timeout for log filtering. Duplicate log entries that are output less frequently than this value will not have filtering applied (default is 0.9 seconds)
-- ``filter_repeat_delay`` (optional) - when filtering, repeating messages will be printed out periodically every ``filter_repeat_delay`` seconds (default is 5 seconds)
+* ``format`` (optional) Format string for the log file - standard `str.format() logger format <https://docs.python.org/3.6/library/string.html#format-string-syntax>`__
+* ``date_format`` (optional) - Format string to specify how the date is rendered in standard `datetime strftime() format <https://docs.python.org/3.6/library/datetime.html#strftime-strptime-behavior>`__
+* ``filter_threshold`` (optional) - number of repetitions of a log line allowed before filtering starts (default is 1). Setting ``filter_threshold`` to zero will turn off log filtering entirely - since AppDaemon relies on this mechanism internally to prevent certain types of log loops, this is not recommended.
+* ``filter_timeout`` (optional) - timeout for log filtering. Duplicate log entries that are output less frequently than this value will not have filtering applied (default is 0.9 seconds)
+* ``filter_repeat_delay`` (optional) - when filtering, repeating messages will be printed out periodically every ``filter_repeat_delay`` seconds (default is 5 seconds)
 
 Note: Filter parameters are set globally, but are applied to individual apps and modules within AppDaemon. This means that log messages interspersed from different apps or from AppDaemon itself even though different, will not reset the filtering of log messages from an individual app if they carry on repeating.
 
@@ -424,7 +418,6 @@ In the above example, a user-defined log called ``test_log`` has also been creat
     # self.log()
     self.log("Hello", log="test_log")
 
-
 Note that the AppDaemon logs use an enhanced formatter that allows interpolation of the App Name in the logger output as well as all the other standard fields. In addition, the ``{asctime}`` token will give the right results if time travel is in use. For example, the default logfile format for AppDaemon's main log is:
 
 .. code:: python
@@ -433,18 +426,18 @@ Note that the AppDaemon logs use an enhanced formatter that allows interpolation
 
 AppDaemon's default time format is ``%Y-%m-%d %H:%M:%S.%f%z``.
 
--  ``total_threads`` (optional) - the number of dedicated worker threads to create for
+* ``total_threads`` (optional) - the number of dedicated worker threads to create for
    running the apps. Normally, AppDaemon will create enough threads to provide one per app, or default to 10 if app pinning is turned off. Setting this to a value will turn off automatic thread management.
--  ``pin_apps`` (optional) - When true (the default) Apps will be pinned to a particular thread which avoids complications around re-entrant code and locking of instance variables
--  ``pin_threads`` (optional) - Number of threads to use for pinned apps, allowing the user to section off a sub-pool just for pinned apps. Default is to use all threads for pinned apps.
-- ``threadpool_workers`` (optional) - the number of max_workers threads to be used by AD internally to execute calls asynchronously. This defaults to ``10``.
-- ``load_distribution`` - Algorithm to use for load balancing between unpinned apps. Can be ``round-robin`` (the default), ``random`` or ``load``
--  ``timewarp`` (optional) - equivalent to the command line flag ``-t`` but will take precedence
--  ``qsize_warning_threshold`` - total number of items on thread queues before a warning is issued, defaults to 50
--  ``qsize_warning_step`` - when total qsize is over ````qsize_warning_threshold`` a warning will be issued every time the ``qsize_warning_step`` times the utility loop executes (normally once every second), default is 60 meaning the warning will be issued once every 60 seconds.
--  ``qsize_warning_iterations`` - if set to a value greater than 0, when total qsize is over ````qsize_warning_threshold`` a warning will be issued every time the ``qsize_warning_step`` times the utility loop executes but not until the qsize has been excessive for a minimum of ``qsize_warning_iterations``. This allows you to tune out brief expected spikes in Q size. Default is 5, usually meaning 5 seconds.
--  ``uvloop`` (optional) - When ``True``, AD will switch from using default python asyncio loop, to utilizing the uvloop. This is said to improve the speed of the loop. More can be read `here <https://magic.io/blog/uvloop-blazing-fast-python-networking>`__ about uvloop.
-- ``namespaces`` (optional) - configure one or more User Defined Namespaces and set their writeback strategy
+* ``pin_apps`` (optional) - When true (the default) Apps will be pinned to a particular thread which avoids complications around re-entrant code and locking of instance variables
+* ``pin_threads`` (optional) - Number of threads to use for pinned apps, allowing the user to section off a sub-pool just for pinned apps. Default is to use all threads for pinned apps.
+* ``threadpool_workers`` (optional) - the number of max_workers threads to be used by AD internally to execute calls asynchronously. This defaults to ``10``.
+* ``load_distribution`` - Algorithm to use for load balancing between unpinned apps. Can be ``round-robin`` (the default), ``random`` or ``load``
+* ``timewarp`` (optional) - equivalent to the command line flag ``-t`` but will take precedence
+* ``qsize_warning_threshold`` - total number of items on thread queues before a warning is issued, defaults to 50
+* ``qsize_warning_step`` - when total qsize is over ````qsize_warning_threshold`` a warning will be issued every time the ``qsize_warning_step`` times the utility loop executes (normally once every second), default is 60 meaning the warning will be issued once every 60 seconds.
+* ``qsize_warning_iterations`` - if set to a value greater than 0, when total qsize is over ````qsize_warning_threshold`` a warning will be issued every time the ``qsize_warning_step`` times the utility loop executes but not until the qsize has been excessive for a minimum of ``qsize_warning_iterations``. This allows you to tune out brief expected spikes in Q size. Default is 5, usually meaning 5 seconds.
+* ``uvloop`` (optional) - When ``True``, AD will switch from using default python asyncio loop, to utilizing the uvloop. This is said to improve the speed of the loop. More can be read `here <https://magic.io/blog/uvloop-blazing-fast-python-networking>`__ about uvloop.
+* ``namespaces`` (optional) - configure one or more User Defined Namespaces and set their writeback strategy
 
 .. code:: yaml
 
@@ -455,7 +448,7 @@ AppDaemon's default time format is ``%Y-%m-%d %H:%M:%S.%f%z``.
         fred:
           writeback: hybrid
 
-- ``use_dictionary_unpacking`` (optional) - when this option is set to true, AppDaemon will supply individual keyword arguments to your callback rather than a dictionary, suitable for use with the python dictionary unpack operator (**)
+* ``use_dictionary_unpacking`` (optional) - when this option is set to true, AppDaemon will supply individual keyword arguments to your callback rather than a dictionary, suitable for use with the python dictionary unpack operator (**)
 
 .. _secrets:
 
@@ -495,15 +488,15 @@ plugins
 
 In the required ``plugins:`` sub-section, there will usually be one or more plugins with a number of directives introduced by a top level name. Some of these are common to all plugins:
 
--  ``type`` (required) The type of the plugin.
--  ``namespace`` (optional) - which namespace to use. This can safely be left out unless you are planning to use multiple plugins (see below)
-- ``disable`` (optional) - if set to ``true``, the plugin will not be loaded - defaults to ``false``.
+* ``type`` (required) The type of the plugin.
+* ``namespace`` (optional) - which namespace to use. This can safely be left out unless you are planning to use multiple plugins (see below)
+* ``disable`` (optional) - if set to ``true``, the plugin will not be loaded - defaults to ``false``.
 
 Plugins also support some optional parameters:
 
-- ``refresh_delay`` - How often the complete state of the plugin is refreshed, in seconds. Default is 600 seconds.
-- ``refresh_timeout`` - How long to wait for the state refresh before cancelling it, in seconds. Default is 30 seconds.
-- ``persist_entities`` - If `True` all entities created within the plugin's namespace will be persistent within AD. So in the event of a restart, the entities will be recreated in the same namespace
+* ``refresh_delay`` - How often the complete state of the plugin is refreshed, in seconds. Default is 600 seconds.
+* ``refresh_timeout`` - How long to wait for the state refresh before cancelling it, in seconds. Default is 30 seconds.
+* ``persist_entities`` - If `True` all entities created within the plugin's namespace will be persistent within AD. So in the event of a restart, the entities will be recreated in the same namespace
 
 The rest will vary depending upon which plugin type is in use.
 
@@ -512,20 +505,20 @@ HASS
 
 To configure the HASS plugin, in addition to the required parameters above, you will need to add the following:
 
--  ``type:`` This must be declared and it must be ``hass``
--  ``ha_url`` (required for the ``hass`` plugin) is a reference to your home assistant installation and
+* ``type:`` This must be declared and it must be ``hass``
+* ``ha_url`` (required for the ``hass`` plugin) is a reference to your home assistant installation and
    must include the correct port number and scheme (``http://`` or ``https://`` as appropriate)
--  ``ha_key`` should be set to your home assistant API password if you have one, otherwise it can be removed. This directive is deprecated - you should use the ``token`` directive instead
--  ``token`` (required) - set the long-lived token for access to your hass instance (see later for a description of how to create a long-lived access token)
--  ``cert_verify`` (optional) - flag for cert verification for HASS -
+* ``ha_key`` should be set to your home assistant API password if you have one, otherwise it can be removed. This directive is deprecated - you should use the ``token`` directive instead
+* ``token`` (required) - set the long-lived token for access to your hass instance (see later for a description of how to create a long-lived access token)
+* ``cert_verify`` (optional) - flag for cert verification for HASS -
    set to ``False`` to disable verification on self-signed certs, or certs for which the address used doesn't match the cert address (e.g., using an internal IP address)
--  ``api_port`` (optional) - Port the AppDaemon RESTFul API will listen
+* ``api_port`` (optional) - Port the AppDaemon RESTFul API will listen
    on. If not specified, the RESTFul API will be turned off.
--  ``app_init_delay`` (optional) - If specified, when AppDaemon connects to HASS each time, it will wait for this number of seconds before initializing apps and listening for events. This is useful for HASS instances that have subsystems that take time to initialize (e.g., zwave).
--  ``retry_secs`` (optional) - If specified, AD will wait for this many seconds in between retries to connect to HASS (default 5 seconds)
--  ``plugin_startup_conditions`` - see `HASS Plugin Startup Conditions <#startup-conditions>`__
--  ``q_timeout`` (optional, 30 seconds) - amount of time to wait for a response from Home Assistant before returning an error
--  ``suppress_log_messages`` - (optional, false) - if set to true, all ``call_service()`` related log messages will be suppressed by default. Will be overridden by the ``suppress_log_messages`` argument in ``call_service()``
+* ``app_init_delay`` (optional) - If specified, when AppDaemon connects to HASS each time, it will wait for this number of seconds before initializing apps and listening for events. This is useful for HASS instances that have subsystems that take time to initialize (e.g., zwave).
+* ``retry_secs`` (optional) - If specified, AD will wait for this many seconds in between retries to connect to HASS (default 5 seconds)
+* ``plugin_startup_conditions`` - see `HASS Plugin Startup Conditions <#startup-conditions>`__
+* ``q_timeout`` (optional, 30 seconds) - amount of time to wait for a response from Home Assistant before returning an error
+* ``suppress_log_messages`` - (optional, false) - if set to true, all ``call_service()`` related log messages will be suppressed by default. Will be overridden by the ``suppress_log_messages`` argument in ``call_service()``
 
 For example:
 
@@ -589,7 +582,6 @@ Or in TOML:
   cert_verify = true
   namespace = "default"
 
-
 Authentication
 ^^^^^^^^^^^^^^
 
@@ -609,7 +601,6 @@ This will pop up a dialog that asks you for the name of the token - this can be 
 
 .. figure:: images/popup.png
    :alt: Popup
-
 
 3. A new dialog will popup with the token itself showing:
 
@@ -667,9 +658,9 @@ state
 
 Wait until a specific state exists or has a specific value or set of values. The values can be specified as an inline dictionary as follows:
 
-- wait until an entity exists - ``state: {entity: <entity id>}``
-- wait until an entity exists and has a specific value for its state: ``state: {entity: <entity id>, value: {state: "on"}}``
-- wait until an entity exists and has a specific value for an attribute: ``state: {entity: <entity id>, value: {attributes: {attribute: value}}}``
+* wait until an entity exists - ``state: {entity: <entity id>}``
+* wait until an entity exists and has a specific value for its state: ``state: {entity: <entity id>, value: {state: "on"}}``
+* wait until an entity exists and has a specific value for an attribute: ``state: {entity: <entity id>, value: {attributes: {attribute: value}}}``
 
 Example to wait for an input boolean:
 
@@ -696,8 +687,8 @@ event
 
 Wait for an event or an event with specific data
 
-- wait for an event of a given type: ``{event_type: <event name>}``
-- wait for an event with specific data: ``{event_type: <event name>, data: {service_data: {entity_id: <some entity>}, service: <some service>}}``
+* wait for an event of a given type: ``{event_type: <event name>}``
+* wait for an event with specific data: ``{event_type: <event name>, data: {service_data: {entity_id: <some entity>}, service: <some service>}}``
 
 Example to wait for ZWave to complete initialization upon a HASS restart:
 
@@ -723,30 +714,29 @@ MQTT
 
 To configure the MQTT plugin, in addition to the required parameters above, you will need to add the following:
 
-
--  ``type:`` This must be declared and it must be ``mqtt``
--  ``namespace:`` (optional) This will default to ``default``
--  ``client_host:`` (optional) The IP address or DNS of the Broker. Defaults to 127.0.0.1 which is the localhost
--  ``client_port:`` (optional) The port number used to access the broker. Defaults to ``1883``
--  ``client_transport:`` (optional) The transport protocol used to access the broker. This can be either ``tcp`` or ``websockets`` Defaults to ``tcp``
--  ``client_clean_session:`` (optional) If the broker should clear the data belonging to the client when it disconnects. Defaults to ``True``
--  ``client_id:`` (optional) The client id to be used by the plugin, to connect to the broker. If not declared, this will be auto-generated by the plugin. The generated the client id can be retrieved within the app
--  ``client_user:`` (optional) The username to be used by the plugin to connect to the broker. It defaults to ``None``, so no username is used
--  ``client_password:`` (optional) The password to be used by the plugin to connect to the broker. It defaults to ``None``, so no password is used
--  ``client_cert:`` (optional) The certificate to be used when using SSL
--  ``tls_version:``  (optional) TLS/SSL protocol version to use. Available options are: ``auto``, ``1.0``, ``1.1``, ``1.2``. Defaults to ``auto``
--  ``verify_cert:`` (optional) This is used to determine if to verify the certificate or not. This defaults to ``True`` and should be left as True; if not no need having any certificate installed
--  ``event_name:`` (optional) The preferred event name to be used by the plugin. This name is what apps will listen to, to pick up data within apps. This defaults to ``MQTT_MESSAGE``
--  ``client_topics:`` (optional) This is a list of topics the plugin is to subscribe to on the broker. This defaults to ``#``, meaning it subscribes to all topics on the broker. This can be set to ``NONE``, if it is desired to use the subscribe service call within apps, to subscribe to topics.
--  ``client_qos:`` (optional) The quality of service (QOS) level to be used in subscribing to the topics. This will also be used as the default ``qos``, when publishing and the qos is not specified by the publishing app.
--  ``birth_topic:`` (optional) This is the topic other clients can subscribe to, to pick up the data sent by the client, when the plugin connects to the broker. If not specified, one is auto-generated
--  ``birth_payload:`` (optional) This is the payload sent by the plugin when it connects to the broker. If not specified, it defaults to ``online``
--  ``birth_retain:`` (optional) This tells the broker if it should retain the birth message. If not specified, it defaults to ``True``
--  ``will_topic:`` (optional) This is the topic other clients can subscribe to, to pick up the data sent by the broker, when the plugin unceremoniously disconnects from the broker. If not specified, one is auto-generated
--  ``will_payload:`` (optional) This is the payload sent by the broker when the plugin unceremoniously disconnects from the broker. If not specified, it defaults to ``offline``
--  ``will_retain:`` (optional) This tells the broker if it should retain the will message. If not specified, it defaults to ``True``
-- ``shutdown_payload:`` (optional) This is the payload sent to the broker when the plugin disconnects from the broker cleanly. It uses the same topic as the ``will_topic``, and if not specified, defaults to the same payload message and ``will_payload``
-- ``force_start:`` (optional) Normally when AD restarts, and the plugin cannot confirm connection to the MQTT broker, it keeps retrying until it has established a connection; this can prevent AD from starting up completely. This can be problematic, if AD is trying to connect to a Cloud broker, and the internet is down. If one is certain of the broker details being correct, and there is a possibility of the broker bring down (e.g., loss of internet connection if using an external broker), the ``force_start`` flag can be set to ``True``. This way AD will start up as usual, and when the broker is online, the plugin will connect to it. This defaults to ``False``
+* ``type:`` This must be declared and it must be ``mqtt``
+* ``namespace:`` (optional) This will default to ``default``
+* ``client_host:`` (optional) The IP address or DNS of the Broker. Defaults to 127.0.0.1 which is the localhost
+* ``client_port:`` (optional) The port number used to access the broker. Defaults to ``1883``
+* ``client_transport:`` (optional) The transport protocol used to access the broker. This can be either ``tcp`` or ``websockets`` Defaults to ``tcp``
+* ``client_clean_session:`` (optional) If the broker should clear the data belonging to the client when it disconnects. Defaults to ``True``
+* ``client_id:`` (optional) The client id to be used by the plugin, to connect to the broker. If not declared, this will be auto-generated by the plugin. The generated the client id can be retrieved within the app
+* ``client_user:`` (optional) The username to be used by the plugin to connect to the broker. It defaults to ``None``, so no username is used
+* ``client_password:`` (optional) The password to be used by the plugin to connect to the broker. It defaults to ``None``, so no password is used
+* ``client_cert:`` (optional) The certificate to be used when using SSL
+* ``tls_version:``  (optional) TLS/SSL protocol version to use. Available options are: ``auto``, ``1.0``, ``1.1``, ``1.2``. Defaults to ``auto``
+* ``verify_cert:`` (optional) This is used to determine if to verify the certificate or not. This defaults to ``True`` and should be left as True; if not no need having any certificate installed
+* ``event_name:`` (optional) The preferred event name to be used by the plugin. This name is what apps will listen to, to pick up data within apps. This defaults to ``MQTT_MESSAGE``
+* ``client_topics:`` (optional) This is a list of topics the plugin is to subscribe to on the broker. This defaults to ``#``, meaning it subscribes to all topics on the broker. This can be set to ``NONE``, if it is desired to use the subscribe service call within apps, to subscribe to topics.
+* ``client_qos:`` (optional) The quality of service (QOS) level to be used in subscribing to the topics. This will also be used as the default ``qos``, when publishing and the qos is not specified by the publishing app.
+* ``birth_topic:`` (optional) This is the topic other clients can subscribe to, to pick up the data sent by the client, when the plugin connects to the broker. If not specified, one is auto-generated
+* ``birth_payload:`` (optional) This is the payload sent by the plugin when it connects to the broker. If not specified, it defaults to ``online``
+* ``birth_retain:`` (optional) This tells the broker if it should retain the birth message. If not specified, it defaults to ``True``
+* ``will_topic:`` (optional) This is the topic other clients can subscribe to, to pick up the data sent by the broker, when the plugin unceremoniously disconnects from the broker. If not specified, one is auto-generated
+* ``will_payload:`` (optional) This is the payload sent by the broker when the plugin unceremoniously disconnects from the broker. If not specified, it defaults to ``offline``
+* ``will_retain:`` (optional) This tells the broker if it should retain the will message. If not specified, it defaults to ``True``
+* ``shutdown_payload:`` (optional) This is the payload sent to the broker when the plugin disconnects from the broker cleanly. It uses the same topic as the ``will_topic``, and if not specified, defaults to the same payload message and ``will_payload``
+* ``force_start:`` (optional) Normally when AD restarts, and the plugin cannot confirm connection to the MQTT broker, it keeps retrying until it has established a connection; this can prevent AD from starting up completely. This can be problematic, if AD is trying to connect to a Cloud broker, and the internet is down. If one is certain of the broker details being correct, and there is a possibility of the broker bring down (e.g., loss of internet connection if using an external broker), the ``force_start`` flag can be set to ``True``. This way AD will start up as usual, and when the broker is online, the plugin will connect to it. This defaults to ``False``
 
 All auto-generated data can be picked up within apps, using the ``self.get_plugin_config()`` API
 
@@ -793,7 +783,6 @@ Or in TOML:
   verify_cert = true
   event_name = "MQTT_EVENT"
   client_topics = [ "hermes/intent/#", "hermes/hotword/#" ]
-
 
 Creating a test app
 ===================
@@ -854,9 +843,7 @@ It has it's own top-level section in AppDaemon.yaml, and one mandatory argument,
     http:
         url: http://192.168.1.20:5050
 
-
--  ``url`` - the URL you want the HTTP component to listen on
-
+* ``url`` - the URL you want the HTTP component to listen on
 
 To password protect ``AppDaemon`` use the ``password`` directive:
 
@@ -965,10 +952,9 @@ Accessing Directories via Apps
 Directories used by AD internally either declared by the user or not, can be accessed by the user via apps. The following directories
 are available:
 
-- ``configuration``: self.config_dir
-- ``apps``: self.app_dir
-- ``dashboard``: self.dashboard_dir
-
+* ``configuration``: self.config_dir
+* ``apps``: self.app_dir
+* ``dashboard``: self.dashboard_dir
 
 Example Apps
 ============

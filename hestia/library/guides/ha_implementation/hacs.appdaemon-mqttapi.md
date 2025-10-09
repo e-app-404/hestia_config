@@ -12,6 +12,7 @@ url: "https://appdaemon.readthedocs.io/en/latest/AD_API_REFERENCE.html"
 # MQTT API Reference
 
 ## Table of Contents
+
 - [App Creation](#app-creation)
 - [Making Calls to MQTT](#making-calls-to-mqtt)
 - [Examples](#examples)
@@ -53,6 +54,7 @@ self.call_service("mqtt/unsubscribe", topic="homeassistant/bedroom/light", names
 ```
 
 The MQTT API also provides 3 convenience functions to make calling of specific functions easier and more readable:
+
 - mqtt_subscribe
 - mqtt_unsubscribe
 - mqtt_publish
@@ -67,7 +69,6 @@ Services
 .. autofunction:: appdaemon.plugins.mqtt.mqttapi.Mqtt.mqtt_unsubscribe
 .. autofunction:: appdaemon.plugins.mqtt.mqttapi.Mqtt.mqtt_publish
 .. autofunction:: appdaemon.plugins.mqtt.mqttapi.Mqtt.is_client_connected
-
 
 Events
 ------

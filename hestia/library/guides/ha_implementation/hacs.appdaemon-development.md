@@ -12,6 +12,7 @@ url: "https://appdaemon.readthedocs.io/en/latest/DEVELOPMENT.html"
 # AppDaemon Development Guide
 
 ## Table of Contents
+
 - [Overview](#overview)
 - [Tools](#tools)
 - [Dev Setup](#dev-setup)
@@ -41,7 +42,7 @@ Python
     The pytest framework makes it easy to write small, readable tests, and can scale to support complex functional testing for applications and libraries.
 `pre-commit <https://pre-commit.com/>`_
     A framework for managing and maintaining multi-language pre-commit hooks. Once enabled, these run things like the linter on every commit.
-`sphinx <https://www.sphinx-doc.org/en/master/>`_ for `readthedocs <https://docs.readthedocs.com/platform/stable/intro/sphinx.html>`_
+`sphinx <https://www.sphinx-doc.org/en/master/>`_for `readthedocs <https://docs.readthedocs.com/platform/stable/intro/sphinx.html>`_
     Sphinx is a powerful documentation generator that has many features for writing technical documentation. Sphinx is written in Python, and supports documentation written in reStructuredText and Markdown.
 
 `VSCode <https://code.visualstudio.com/docs>`_
@@ -57,6 +58,7 @@ The AppDaemon repo itself contains some configuration specifically for VSCode, w
 
 Dev Setup
 ---------
+
 Pre-requisites
 ^^^^^^^^^^^^^^
 For the easiest setup, `install uv <https://docs.astral.sh/uv/getting-started/installation/>`_ first.
@@ -65,7 +67,7 @@ For the easiest setup, `install uv <https://docs.astral.sh/uv/getting-started/in
 
    .. code-tab:: console
 
-        $ curl -LsSf https://astral.sh/uv/install.sh | sh
+        curl -LsSf https://astral.sh/uv/install.sh | sh
 
    .. code-tab:: powershell
 
@@ -78,14 +80,14 @@ Download a copy of the official `AppDaemon repository <https://github.com/AppDae
 .. code-block:: console
   :caption: Clone dev branch
 
-    $ git clone -b dev https://github.com/AppDaemon/appdaemon.git
+    git clone -b dev https://github.com/AppDaemon/appdaemon.git
 
 You can clone specific versions by changing ``dev`` to something else. Including a path like ``./ad-442`` will clone it there instead of into ``./appdaemon``.
 
 .. code-block:: console
   :caption: Clone version 4.4.2 into a custom directory
 
-    $ git clone -b 4.4.2 https://github.com/AppDaemon/appdaemon.git ./ad-442
+    git clone -b 4.4.2 https://github.com/AppDaemon/appdaemon.git ./ad-442
 
 All subsequent commands need to be run from inside the newy created directory.
 
@@ -97,14 +99,14 @@ Use the `uv sync <https://docs.astral.sh/uv/reference/cli/#uv-sync>`_ command to
 .. code-block:: console
   :caption: Create environment
 
-    $ uv sync
+    uv sync
 
 The extra ``doc`` is optional, but needed to work on the documentation.
 
 .. code-block:: console
   :caption: Create documentation environment
 
-    $ uv sync --extra doc
+    uv sync --extra doc
 
 Pre-Commit Hooks
 ^^^^^^^^^^^^^^^^
@@ -113,15 +115,14 @@ Install the `pre-commit <https://pre-commit.com/>`_ hooks that will run some che
 .. code-block:: console
   :caption: Install pre-commit hooks
 
-    $ uv run pre-commit install
+    uv run pre-commit install
 
 Open VSCode
 ^^^^^^^^^^^
 .. code-block:: console
   :caption: Open VSCode in current directory
 
-    $ code .
-
+    code .
 
 Dev Workflow
 ------------
@@ -133,14 +134,14 @@ When there are updates on the ``dev`` branch and you want to pull over the lates
 .. code-block:: console
   :caption: Pull changes from GitHub
 
-    $ git pull
+    git pull
 
 You can also change to a new branch by using this command. This will check out a local ``testing`` branch that will track the ``origin/testing`` branch on GitHub, so it can be updated in the future with pull commands.
 
 .. code-block:: console
   :caption: Change branch
 
-    $ git checkout --track origin/testing
+    git checkout --track origin/testing
 
 Config
 ^^^^^^
@@ -148,7 +149,7 @@ Copy the default configuration file (edit it if you need to tweak some settings)
 
 .. code-block:: console
 
-    $ cp conf/appdaemon.yaml.example conf/appdaemon.yaml
+    cp conf/appdaemon.yaml.example conf/appdaemon.yaml
 
 Building
 ^^^^^^^^
@@ -157,26 +158,26 @@ To build a Python distribution package (*wheel*), run the following command:
 .. code-block:: console
   :caption: Build wheel
 
-    $ uv build --wheel --refresh
+    uv build --wheel --refresh
 
 It will output the result of the build inside a ``./dist`` folder. This must be done before building the Docker image because the build process installs AppDaemon from this wheel.
 
 .. code-block:: console
   :caption: Build Docker image
 
-    $ docker build -t acockburn/appdaemon:local-dev .
+    docker build -t acockburn/appdaemon:local-dev .
 
 For convenience there's an included script that handles both of these steps.
 
 .. code-block:: console
   :caption: Build Docker image
 
-    $ ./scripts/docker-build.sh
+    ./scripts/docker-build.sh
 
 .. code-block:: console
   :caption: Build Docker image for all platforms
 
-    $ ./scripts/multiplatform-docker-build.sh
+    ./scripts/multiplatform-docker-build.sh
 
 Running
 ^^^^^^^
@@ -185,7 +186,7 @@ Using uv to run AppDaemon ensures that the dependencies are all met.
 .. code-block:: console
   :caption: Run AppDaemon
 
-    $ uv run appdaemon -c ./conf
+    uv run appdaemon -c ./conf
 
 In most cases, it is possible to share configuration directories with other AppDaemon instances. However, you must be aware of AppDaemon apps that use new features as they will likely cause errors for the other pre-existing version. It is recommended to use an entirely separate configuration directory for your development environment.
 
@@ -194,7 +195,7 @@ One-off tests of different versions can also be easily run using uv. This create
 .. code-block:: console
   :caption: Running run the testing branch with python 3.11
 
-    $ uvx -p 3.11 --from git+https://github.com/AppDaemon/appdaemon@testing appdaemon -c /conf
+    uvx -p 3.11 --from git+https://github.com/AppDaemon/appdaemon@testing appdaemon -c /conf
 
 Documentation
 ^^^^^^^^^^^^^
@@ -212,11 +213,11 @@ Assistance with the docs is always welcome, whether its fixing typos and incorre
       --watch ./tests \
       docs/ build/docs
 
-This will start a local web server (http://localhost:9999) that will host the documentation. If any of the files change, the server will automatically regenerate the documentation its hosting, which takes a moment, but this feature is still very useful. When you finish your edits, you can stop the server via ``Ctrl-C``.
+This will start a local web server (<http://localhost:9999>) that will host the documentation. If any of the files change, the server will automatically regenerate the documentation its hosting, which takes a moment, but this feature is still very useful. When you finish your edits, you can stop the server via ``Ctrl-C``.
 
 Dependencies
 ^^^^^^^^^^^^
-The ``pyproject.toml`` file defines the dependencies according to the `PEP 631 <https://peps.python.org/pep-0631/>`_ convention, and the dependencies are tracked using a `lockfile <https://docs.astral.sh/uv/concepts/projects/layout/#the-lockfile>`_, which is managed by uv. In general, only the minimum versions are specified in ``pyproject.toml``, but uv resolves everything to the latest compatible versions and stores the exact versions in the lockfile. This **pins** all the exact versions of all the dependencies, both direct and indirect.
+The ``pyproject.toml`` file defines the dependencies according to the `PEP 631 <https://peps.python.org/pep-0631/>`_convention, and the dependencies are tracked using a `lockfile <https://docs.astral.sh/uv/concepts/projects/layout/#the-lockfile>`_, which is managed by uv. In general, only the minimum versions are specified in ``pyproject.toml``, but uv resolves everything to the latest compatible versions and stores the exact versions in the lockfile. This **pins** all the exact versions of all the dependencies, both direct and indirect.
 
 .. literalinclude:: ../pyproject.toml
    :language: toml
@@ -229,7 +230,8 @@ See the :doc:`TESTING` page for more details.
 
 VSCode Tasks
 ------------
-VSCode has a feature called tasks, which allow it to `integrate with external tools <https://code.visualstudio.com/docs/debugtest/tasks>`_. Essentially it allows developers to run pre-defined commands and scripts using the integrated terminal. AppDaemon has several `custom tasks <https://code.visualstudio.com/docs/debugtest/tasks#_custom-tasks>`_ defined to help streamline development.
+
+VSCode has a feature called tasks, which allow it to `integrate with external tools <https://code.visualstudio.com/docs/debugtest/tasks>`*. Essentially it allows developers to run pre-defined commands and scripts using the integrated terminal. AppDaemon has several `custom tasks <https://code.visualstudio.com/docs/debugtest/tasks#_custom-tasks>`* defined to help streamline development.
 
 With the default keybindings, you can reach the command palette with ``Ctrl-Shift-P`` or ``F1``. Once it's open, the list can be quickly filtered by starting to type `run task`. After selecting ``Tasks: Run Task``, it will show a list of all the available tasks to run.
 
@@ -246,13 +248,14 @@ Ruff Statistics
 
 Docker build process
 --------------------
+
 The general idea is that the wheel for AppDaemon should be built before the Docker image is, because AppDaemon gets installed from that wheel during the process to build the Docker image.
 
 Building the container locally requires *Docker Engine 23.0+* (released in 2023), since it enables the `Docker BuildKit <https://docs.docker.com/build/buildkit>`_ by default.
 
 Layers and Caching
 ^^^^^^^^^^^^^^^^^^
-Efficient caching is very important for the *arm/v6* and *arm/v7* architectures because those versions take a while to build from scratch. Dependencies are installed in a `separate operation <https://docs.docker.com/build/cache/optimize/#order-your-layers>`_ before installing AppDaemon itself to make efficient use of `Docker's layers <https://docs.docker.com/engine/storage/drivers/#images-and-layers>`_. `Cache mounts <https://docs.docker.com/build/cache/optimize/#use-cache-mounts>`_ are also used on relevant operations to significantly speed up the build process and prevent unnecessarily redownloading or rebuilding packages.
+Efficient caching is very important for the *arm/v6* and *arm/v7* architectures because those versions take a while to build from scratch. Dependencies are installed in a `separate operation <https://docs.docker.com/build/cache/optimize/#order-your-layers>`_ before installing AppDaemon itself to make efficient use of `Docker's layers <https://docs.docker.com/engine/storage/drivers/#images-and-layers>`*. `Cache mounts <https://docs.docker.com/build/cache/optimize/#use-cache-mounts>`* are also used on relevant operations to significantly speed up the build process and prevent unnecessarily redownloading or rebuilding packages.
 
 Stages
 ^^^^^^
@@ -269,6 +272,7 @@ The general idea is that the Docker buildkit creates and sets up a Docker contai
 
 GitHub Actions
 --------------
+
 AppDaemon makes use of several GitHub actions for its CI pipeline.
 
 `Dependabot <https://docs.github.com/en/code-security/dependabot>`_

@@ -1,4 +1,5 @@
     ---
+
 title: "AppDaemon ADAPI Reference"
 authors: "AppDaemon Project, Hestia Ops"
 source: "AppDaemon documentation"
@@ -6,12 +7,13 @@ slug: "hacs-appdaemon-adapi"
 tags: ["home-assistant", "ops", "integration"]
 original_date: "2023-10-09"
 last_updated: "2025-10-09"
-url: "https://appdaemon.readthedocs.io/en/latest/AD_API_REFERENCE.html"
+url: "<https://appdaemon.readthedocs.io/en/latest/AD_API_REFERENCE.html>"
 ---
 
 # AppDaemon ADAPI Reference
 
 ## Table of Contents
+
 - [Overview](#overview)
 - [App Creation](#app-creation)
 - [Entity Class](#entity-class)
@@ -150,10 +152,8 @@ Starts an app that has been terminated. The `app` name arg is required.
 
 .. code:: python
 
-
 .. code:: python
     self.call_service("app/reload", namespace="admin")
-
 
     self.call_service("app/enable", app="living_room_app", namespace="admin")
     self.call_service("production_mode/set", mode=True, namespace="admin")
@@ -197,6 +197,7 @@ Fires an event within the specified namespace. The `event` arg is required.
     self.call_service("event/fire", event="test_event", entity_id="appdaemon.test", namespace="hass")
 
 rules
+
 ~~~~~
 
 **sequence/run**
@@ -220,6 +221,7 @@ Reference
 
 Entity API
 ~~~~~~~~~~
+
 .. automethod:: appdaemon.entity.Entity.add
 .. automethod:: appdaemon.entity.Entity.call_service
 .. automethod:: appdaemon.entity.Entity.copy
@@ -235,18 +237,19 @@ Entity API
 .. automethod:: appdaemon.entity.Entity.wait_state
 
 In addition to the above, there are a couple of property attributes the Entity class supports:
--  entity_id
--  namespace
--  domain
--  entity_name
--  state
--  attributes
--  friendly_name
--  last_changed
--  last_changed_seconds
 
+- entity_id
+- namespace
+- domain
+- entity_name
+- state
+- attributes
+- friendly_name
+- last_changed
+- last_changed_seconds
 
 State
+
 ~~~~~
 
 .. automethod:: appdaemon.adapi.ADAPI.get_state
@@ -294,6 +297,7 @@ Scheduler
 .. automethod:: appdaemon.adapi.ADAPI.reset_timer
 
 Service
+
 ~~~~~~~
 
 .. automethod:: appdaemon.adapi.ADAPI.register_service
@@ -308,6 +312,7 @@ Sequence
 .. automethod:: appdaemon.adapi.ADAPI.cancel_sequence
 
 Events
+
 ~~~~~~
 
 .. automethod:: appdaemon.adapi.ADAPI.listen_event
@@ -329,6 +334,7 @@ Logging
 .. automethod:: appdaemon.adapi.ADAPI.set_error_level
 
 Dashboard
+
 ~~~~~~~~~
 
 .. automethod:: appdaemon.adapi.ADAPI.dash_navigate
@@ -341,8 +347,8 @@ Namespace
 .. automethod:: appdaemon.adapi.ADAPI.list_namespaces
 .. automethod:: appdaemon.adapi.ADAPI.save_namespace
 
-
 Threading
+
 ~~~~~~~~~
 
 .. automethod:: appdaemon.adapi.ADAPI.set_app_pin
@@ -383,6 +389,7 @@ Dialogflow
 .. automethod:: appdaemon.adapi.ADAPI.format_dialogflow_response
 
 Alexa
+
 ~~~~~
 
 .. automethod:: appdaemon.adapi.ADAPI.get_alexa_intent
