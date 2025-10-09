@@ -49,6 +49,12 @@ notes below to be productive quickly and avoid unsafe changes.
 - **Style**: Ruff settings in `pyproject.toml` (line-length 100)
 - **Path expansion**: Use `/config` directly, no expansion needed
 
+### Prompt Library Tooling (ADR-0018, ADR-0026)
+- **Python venv location**: All prompt library CLI tools (e.g. `/config/bin/prompt-prep`) must use the operator's home directory venv (e.g. `~/hestia_venv`) and NOT `/config/.venv/`.
+- **Interpreter reference**: Update all wrappers/scripts to use `~/hestia_venv/bin/python` for ADR compliance and reproducibility.
+- **Required packages**: Ensure `pyyaml` and other dependencies are installed in the home venv.
+- **Document environment**: Specify Python version and venv location in README/operator docs.
+
 ## Workflows and Commands
 
 - **Python CLIs**: Published in `pyproject.toml` (e.g. `hestia-adr-lint`)
