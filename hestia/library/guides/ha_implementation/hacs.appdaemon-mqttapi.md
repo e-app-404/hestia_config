@@ -59,32 +59,23 @@ The MQTT API also provides 3 convenience functions to make calling of specific f
 - mqtt_unsubscribe
 - mqtt_publish
 
-Reference
----------
+## Reference
 
-Services
---------
+### Services
 
 .. autofunction:: appdaemon.plugins.mqtt.mqttapi.Mqtt.mqtt_subscribe
 .. autofunction:: appdaemon.plugins.mqtt.mqttapi.Mqtt.mqtt_unsubscribe
 .. autofunction:: appdaemon.plugins.mqtt.mqttapi.Mqtt.mqtt_publish
 .. autofunction:: appdaemon.plugins.mqtt.mqttapi.Mqtt.is_client_connected
 
-Events
-------
+### Events
 
 .. autofunction:: appdaemon.plugins.mqtt.mqttapi.Mqtt.listen_event
 
-MQTT Config
------------
+## MQTT Config
 
-Developers can get the MQTT configuration data (i.e., client_id or username) using the
-helper function ``get_plugin_config()`` inherited from the AppDaemon API. See the
-documentation of this function `here <AD_API_REFERENCE.html#appdaemon.adapi.ADAPI.get_plugin_config>`__
-for a detailed description.
+Developers can get the MQTT configuration data (i.e., client_id or username) using the helper function `get_plugin_config()` inherited from the AppDaemon API. See the documentation of this function [here](https://appdaemon.readthedocs.io/en/latest/AD_API_REFERENCE.html#appdaemon.adapi.ADAPI.get_plugin_config) for a detailed description.
 
-See More
----------
+## See More
 
-Read the `AppDaemon API Reference <AD_API_REFERENCE.html>`__ to learn other inherited helper functions that
-can be used by Hass applications.
+Read the [AppDaemon API Reference](https://appdaemon.readthedocs.io/en/latest/AD_API_REFERENCE.html) to learn other inherited helper functions that can be used by Hass applications.

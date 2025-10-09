@@ -55,8 +55,7 @@ connect to Home Assistant. This example shows where it fits into the overall con
           token: ...  # required
           ... # other Hass plugin config options here
 
-Configuration Options
-~~~~~~~~~~~~~~~~~~~~~
+### Configuration Options
 
 This is the full list of configuration options available for the `Hass` plugin.
 
@@ -159,13 +158,9 @@ token at any time by pressing the delete icon. The token will last for 10 years.
 .. figure:: images/list.png
    :alt: List
 
-Startup Control
-~~~~~~~~~~~~~~~
+## Startup Control
 
-The `Hass` plugin has the ability to pause startup until various criteria have been met. This can be useful for
-preventing apps that depend on certain entities or services from starting before they are available. AppDaemon will not
-mark the plugin as ready until all of these conditions have been met, which prevents any apps that depend on the plugin
-from being started. Each condition only has to be met once for it to be considered satisfied.
+The `Hass` plugin has the ability to pause startup until various criteria have been met. This can be useful for preventing apps that depend on certain entities or services from starting before they are available. AppDaemon will not mark the plugin as ready until all of these conditions have been met, which prevents any apps that depend on the plugin from being started. Each condition only has to be met once for it to be considered satisfied.
 
 When the plugin first starts with AppDaemon itself, it will check the conditions in the ``appdaemon_startup_conditions``
 key before starting any apps. If the connection to Home Assistant is broken and re-established, it will check the
@@ -612,15 +607,11 @@ setting ``suppress_log_messages`` to true in the plugin configuration.
       - target_temp_low
       - hvac_mode
 
-Rendering Templates
-~~~~~~~~~~~~~~~~~~~
+## Rendering Templates
 
-Home Assistant has a powerful `templating <https://www.home-assistant.io/docs/configuration/templating/>`_ engine that
-can be used to render templates in your apps. The `Hass` API provides access to this with the
-:py:meth:`render_template <appdaemon.plugins.hass.hassapi.Hass.render_template>` method.
+Home Assistant has a powerful [templating](https://www.home-assistant.io/docs/configuration/templating/) engine that can be used to render templates in your apps. The `Hass` API provides access to this with the `render_template` method.
 
-API Reference
--------------
+## API Reference
 
 .. autoclass:: appdaemon.plugins.hass.hassapi::Hass
     :members:

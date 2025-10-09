@@ -112,45 +112,60 @@ AppDaemon provides some services from some built-in namespaces. These services c
 | app/disable       | Disable an enabled app                                                      |
 | production_mode/set | Set production mode (True/False)                                          |
 
-**app/create**
+Example:
 
-Used to create a new app. For this service to be used, the module must be existing and provided with the module's class. If no `app` name is given, the module name will be used as the app's name by default. The service call also accepts ``app_file`` if wanting to create the app within a certain `yaml` file. Or ``app_dir``, if wanting the created app's `yaml` file within a certain directory. If no file or directory is given, by default the app `yaml` file will be generated in a directory ``ad_apps``, using the app's name. It should be noted that ``app_dir`` and ``app_file`` when specified, will be created within the AD's apps directory.
+```python
+# Create a new app
+data = {
+    "module": "web_app",
+    "class": "WebApp",
+    "namespace": "admin",
+    "app": "web_app3",
+    "endpoint": "endpoint3",
+    "app_dir": "web_apps",
+    "app_file": "web_apps.yaml"
+}
+self.call_service("app/create", **data)
 
-.. code:: python
+# Edit an existing app
+self.call_service("app/edit", app="light_app", module="light_system", namespace="admin")
 
-    data = {}
-    data["module"] = "web_app"
-    data["class"] = "WebApp"
-    data["namespace"] = "admin"
-    data["app"] = "web_app3"
-    data["endpoint"] = "endpoint3"
-    data["app_dir"] = "web_apps"
-    data["app_file"] = "web_apps.yaml"
+# Remove an existing app
+self.call_service("app/remove", app="light_app", namespace="admin")
 
-    self.call_service("app/create", **data)
+# Start a terminated app
+self.call_service("app/start", app="light_app", namespace="admin")
 
-**app/edit**
+# Stop a running app
+self.call_service("app/stop", app="light_app", namespace="admin")
 
-Used to edit an existing app. This way, an app' args can be edited in realtime with new args
+# Restart a running app
+self.call_service("app/restart", app="light_app", namespace="admin")
 
-.. code:: python
+# Check for app update
+self.call_service("app/reload", namespace="admin")
 
-    self.call_service("app/edit", app="light_app", module="light_system", namespace="admin")
+# Enable a disabled app
+self.call_service("app/enable", app="living_room_app", namespace="admin")
 
-**app/remove**
+# Disable an enabled app
+self.call_service("app/disable", app="living_room_app", namespace="admin")
 
-Used to remove an existing app. This way, an existing app will be deleted. If the app is the last app in the ``yaml``
-file, the file will be deleted
+# Set production mode
+self.call_service("production_mode/set", mode=True, namespace="admin")
+```
 
-.. code:: python
+### State Namespace
 
-    self.call_service("app/remove", app="light_app", namespace="admin")
+| Service           | Description                                                                 |
+|-------------------|-----------------------------------------------------------------------------|
+| state/add_entity  | Add an existing entity to the required namespace                            |
+| state/set         | Set the state of an entity                                                  |
+| state/remove_entity | Remove an existing entity from the required namespace                     |
 
-**app/start**
+Example:
 
-Starts an app that has been terminated. The `app` name arg is required.
-
-.. code:: python
+```python
 
 .. code:: python
     self.call_service("app/reload", namespace="admin")

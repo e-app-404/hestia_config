@@ -45,8 +45,8 @@ Python
 `sphinx <https://www.sphinx-doc.org/en/master/>`_for `readthedocs <https://docs.readthedocs.com/platform/stable/intro/sphinx.html>`_
     Sphinx is a powerful documentation generator that has many features for writing technical documentation. Sphinx is written in Python, and supports documentation written in reStructuredText and Markdown.
 
-`VSCode <https://code.visualstudio.com/docs>`_
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+### VSCode
+
 The AppDaemon repo itself contains some configuration specifically for VSCode, which makes some routine tasks easier.
 
 `Python <https://code.visualstudio.com/docs/python/python-quick-start>`_
@@ -73,21 +73,23 @@ For the easiest setup, `install uv <https://docs.astral.sh/uv/getting-started/in
 
         powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
 
-Clone the repository
-^^^^^^^^^^^^^^^^^^^^
-Download a copy of the official `AppDaemon repository <https://github.com/AppDaemon/appdaemon.git>`_ by cloning it somewhere locally. The ``dev`` branch is generally used for this because it's what PRs are submitted against.
+### Clone the repository
 
-.. code-block:: console
-  :caption: Clone dev branch
+Download a copy of the official [AppDaemon repository](https://github.com/AppDaemon/appdaemon.git) by cloning it somewhere locally. The `dev` branch is generally used for this because it's what PRs are submitted against.
 
-    git clone -b dev https://github.com/AppDaemon/appdaemon.git
+**Clone dev branch:**
 
-You can clone specific versions by changing ``dev`` to something else. Including a path like ``./ad-442`` will clone it there instead of into ``./appdaemon``.
+```console
+$ git clone -b dev https://github.com/AppDaemon/appdaemon.git
+```
 
-.. code-block:: console
-  :caption: Clone version 4.4.2 into a custom directory
+You can clone specific versions by changing `dev` to something else. Including a path like `./ad-442` will clone it there instead of into `./appdaemon`.
 
-    git clone -b 4.4.2 https://github.com/AppDaemon/appdaemon.git ./ad-442
+**Clone version 4.4.2 into a custom directory:**
+
+```console
+$ git clone -b 4.4.2 https://github.com/AppDaemon/appdaemon.git ./ad-442
+```
 
 All subsequent commands need to be run from inside the newy created directory.
 
