@@ -730,3 +730,189 @@ patterns:
       - "Jinja2 Template Documentation"
       - "Home Assistant Template Sensor Configuration"
       - "ADR-0020: Template Error Patterns"
+
+  - name: "appdaemon_config_validation_error"
+    category: "appdaemon_configuration"
+    description: "AppDaemon configuration validation errors due to incorrect data types in YAML configuration"
+    error_format: "1 validation error for MainConfig\n[section]\n  Input should be a valid dictionary [type=dict_type, input_value=[value], input_type=[type]]"
+    symptoms:
+      - "AppDaemon add-on fails to start with configuration validation errors"
+      - "Pydantic validation error messages in AppDaemon startup logs"
+      - "Add-on exits with code 1 immediately after configuration loading"
+      - "Error messages about dictionary type requirements"
+    root_causes:
+      - "Using boolean values (true/false) for configuration sections that require dictionaries"
+      - "Incorrect YAML syntax for dictionary sections like 'api:', 'admin:', 'hadashboard:'"
+      - "Mixed data types in configuration sections that expect consistent formatting"
+      - "Copy-paste errors from different AppDaemon configuration examples"
+    solution:
+      - "Convert boolean sections to proper dictionary format: 'api: true' → 'api:'"
+      - "Use empty dictionary syntax for sections without specific configuration"
+      - "Ensure all top-level configuration sections use consistent YAML formatting"
+      - "Validate YAML syntax before deploying AppDaemon configuration"
+    examples:
+      bad: |
+        # AppDaemon configuration with type validation errors
+        appdaemon:
+          # ... other config
+        http:
+          url: http://0.0.0.0:5050
+        admin:
+        api: true  # Boolean not allowed - should be dictionary
+        hadashboard:
+      good: |
+        # AppDaemon configuration with correct types
+        appdaemon:
+          # ... other config
+        http:
+          url: http://0.0.0.0:5050
+        admin:
+        api:  # Empty dictionary format
+        hadashboard:
+    resolution_steps:
+      - "Identify the problematic configuration section from Pydantic error message"
+      - "Check AppDaemon documentation for correct configuration format"
+      - "Convert boolean or incorrect values to proper dictionary format"
+      - "Use 'section:' format for empty dictionary sections"
+      - "Restart AppDaemon add-on to validate configuration fixes"
+      - "Monitor startup logs for successful configuration loading"
+    prevention_strategies:
+      - "Always use official AppDaemon configuration documentation as reference"
+      - "Test configuration changes in development environment first"
+      - "Use YAML linters to validate syntax before deployment"
+      - "Keep configuration sections consistent with expected data types"
+    tooling:
+      detector: "Look for 'validation error for MainConfig' + 'Input should be a valid dictionary'"
+      validator: "AppDaemon add-on startup logs show configuration validation results"
+      config_test: "Restart AppDaemon add-on to test configuration changes"
+    references:
+      - "AppDaemon Configuration Documentation"
+      - "Pydantic Data Validation Documentation"
+      - "Home Assistant AppDaemon Add-on Documentation"
+
+  - name: "appdaemon_file_access_container_path_error"
+    category: "appdaemon_file_access"
+    description: "AppDaemon apps failing to access files due to container path limitations and incorrect file locations"
+    error_format: "FileNotFoundError: [Errno 2] No such file or directory: '/config/[path]/[filename]'"
+    symptoms:
+      - "App initialization failures with file not found errors"
+      - "AppDaemon apps unable to access configuration or data files"
+      - "Path resolution errors when apps try to load external files"
+      - "Apps failing to start due to missing canonical mapping or configuration files"
+    root_causes:
+      - "AppDaemon container has limited access to /config subdirectories"
+      - "Files placed in /config/domain/ or other paths not accessible from container"
+      - "Incorrect path assumptions about container vs host filesystem mapping"
+      - "Data files placed in locations not mounted into AppDaemon container"
+    solution:
+      - "Copy required files to AppDaemon-accessible locations: /config/apps/ or /config/www/"
+      - "Update app configuration to use container-accessible paths"
+      - "Use /config/www/ for data files to prevent parsing conflicts"
+      - "Verify file permissions and accessibility from container perspective"
+    examples:
+      bad: |
+        # apps.yaml referencing inaccessible path
+        room_db_updater:
+          module: room_db_updater
+          class: RoomDbUpdater
+          canonical_mapping_file: /config/domain/architecture/area_mapping.yaml  # Not accessible
+      good: |
+        # apps.yaml with container-accessible path
+        room_db_updater:
+          module: room_db_updater
+          class: RoomDbUpdater
+          canonical_mapping_file: /config/www/area_mapping.yaml  # Accessible via www mount
+    resolution_steps:
+      - "Identify the missing file path from AppDaemon error logs"
+      - "Check if file exists on host filesystem in expected location"
+      - "Copy file to AppDaemon-accessible location (/config/www/ or /config/apps/)"
+      - "Update app configuration to reference new accessible path"
+      - "Restart AppDaemon to test file access from container"
+      - "Verify app initialization succeeds with accessible file path"
+    container_path_mapping:
+      host_addon_configs: "/Volumes/addon_configs/a0d7b954_appdaemon/"
+      container_config: "/config/"
+      accessible_paths:
+        - "/config/apps/ (app modules and configuration)"
+        - "/config/www/ (static data files)"
+        - "/config/compiled/ (compiled app cache)"
+      inaccessible_paths:
+        - "/config/domain/ (host-only directories)"
+        - "/config/hestia/ (host workspace directories)"
+        - "/config/custom_components/ (HA-specific directories)"
+    prevention_strategies:
+      - "Test file accessibility from AppDaemon container during development"
+      - "Use /config/www/ for data files that apps need to read"
+      - "Keep app-specific files within AppDaemon add-on directory structure"
+      - "Document container path limitations for future app development"
+    tooling:
+      detector: "Look for 'FileNotFoundError' in AppDaemon app initialization logs"
+      path_test: "Test file access: docker exec -it addon_a0d7b954_appdaemon ls /config/[path]"
+      validator: "Check AppDaemon app startup logs for successful file loading"
+    references:
+      - "Home Assistant AppDaemon Add-on Documentation"
+      - "Docker Container File System Documentation"
+      - "AppDaemon App Development Guide"
+
+  - name: "appdaemon_yaml_parsed_as_app_config"
+    category: "appdaemon_file_parsing"
+    description: "AppDaemon incorrectly parsing data files as app configurations causing startup errors"
+    error_format: "BadAppConfigFile: /config/apps/[filename].yaml\nBadAppConfig: The key/value pair of [data] is not valid"
+    symptoms:
+      - "AppDaemon startup errors about invalid app configuration files"
+      - "Data files in /config/apps/ being parsed as app configurations"
+      - "BadAppConfig errors for YAML files containing data rather than app definitions"
+      - "AppDaemon attempting to load non-app YAML files as applications"
+    root_causes:
+      - "Placing data files (area_mapping.yaml, configuration files) in /config/apps/ directory"
+      - "AppDaemon automatically parsing all YAML files in apps/ directory as app configurations"
+      - "Data file structure not matching expected app configuration schema"
+      - "Incorrect file organization mixing app definitions with data files"
+    solution:
+      - "Move data files from /config/apps/ to /config/www/ directory"
+      - "Keep only app module files (.py) and apps.yaml in /config/apps/ directory"
+      - "Update app configuration references to point to new data file locations"
+      - "Use /config/www/ for static data files that apps need to access"
+    examples:
+      bad: |
+        # File organization causing parsing conflicts
+        /config/apps/
+        ├── apps.yaml              # App configuration (correct)
+        ├── room_db_updater.py     # App module (correct)
+        └── area_mapping.yaml      # Data file (WRONG - parsed as app config)
+      good: |
+        # Proper file organization
+        /config/apps/
+        ├── apps.yaml              # App configuration
+        └── room_db_updater.py     # App module
+        /config/www/
+        └── area_mapping.yaml      # Data file (correct location)
+    resolution_steps:
+      - "Identify data files incorrectly placed in /config/apps/ from error messages"
+      - "Move data files from apps/ directory to www/ directory"
+      - "Update app configuration (apps.yaml) to reference new file paths"
+      - "Ensure only app modules (.py) and apps.yaml remain in apps/ directory"
+      - "Restart AppDaemon to verify clean startup without parsing errors"
+      - "Test app functionality with data files in new locations"
+    file_organization_best_practices:
+      apps_directory:
+        purpose: "App modules and configuration only"
+        allowed_files: ["apps.yaml", "*.py"]
+        prohibited_files: ["data files", "configuration files", "mapping files"]
+      www_directory:
+        purpose: "Static data files and resources"
+        allowed_files: ["*.yaml (data)", "*.json (data)", "*.txt (data)"]
+        access_pattern: "Read-only access from apps"
+    prevention_strategies:
+      - "Maintain clear separation between app code and data files"
+      - "Use www/ directory for all static data files accessed by apps"
+      - "Review file organization when adding new data files"
+      - "Document file placement guidelines for AppDaemon app development"
+    tooling:
+      detector: "Look for 'BadAppConfigFile' + 'BadAppConfig' in AppDaemon startup logs"
+      file_check: "List files in apps directory: ls -la /Volumes/addon_configs/*/apps/"
+      validator: "Monitor AppDaemon startup for clean configuration loading"
+    references:
+      - "AppDaemon App Development Documentation"
+      - "AppDaemon File Organization Best Practices"
+      - "Home Assistant AppDaemon Add-on File Structure Guide"
