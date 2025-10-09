@@ -8,3 +8,4 @@ room_db_updater:
   max_config_size_bytes: 4096
   write_rate_limit_seconds: 2
   dry_run: false
+
