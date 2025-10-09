@@ -1,4 +1,4 @@
-import appdaemon.plugins.hass.hassapi as hass
+from appdaemon.plugins.hass import Hass
 import json, sqlite3, yaml, re, time, os
 
 ROOM_ID_RE = re.compile(r"^[a-z0-9_]+$")
