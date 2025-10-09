@@ -1,3 +1,14 @@
+    ---
+    title: "AppDaemon ADAPI Reference"
+    authors: "AppDaemon Project, Hestia Ops"
+    source: "AppDaemon documentation"
+    slug: "hacs-appdaemon-adapi"
+    tags: ["home-assistant", "ops", "integration"]
+    original_date: "2023-10-09"
+    last_updated: "2025-10-09"
+    url: "https://appdaemon.readthedocs.io/en/latest/AD_API_REFERENCE.html"
+    ---
+
 AppDaemon APIs
 ==============
 
@@ -13,22 +24,20 @@ To use the API, create a new class that inherits from ``ADAPI`` and implement th
 is required for all apps and is called when the app is started.
 
 .. code:: python
-
-    from appdaemon.adapi import ADAPI
-
-
-    class MyApp(ADAPI):
-        def initialize(self):
-            self.log("MyApp is starting")
+---
+title: "AppDaemon ADAPI Reference"
+authors: "AppDaemon Project, Hestia Ops"
+source: "AppDaemon documentation"
+slug: "hacs-appdaemon-adapi"
+tags: ["home-assistant", "ops", "integration"]
+original_date: "2023-10-09"
+last_updated: "2025-10-09"
+url: "https://appdaemon.readthedocs.io/en/latest/AD_API_REFERENCE.html"
+---
 
             # Use any of the ADAPI methods
             # handle = self.listen_state(...)
             # handle = self.listen_event(...)
-            # handle = self.run_in(...)
-            # handle = self.run_every(...)
-
-Alternatively, the ``ADBase`` class can be used, which can provide some advantages, such as being able to access APIs
-for plugins in multiple namespaces.
 
 .. code:: python
 
@@ -140,68 +149,15 @@ Starts an app that has been terminated. The `app` name arg is required.
 
 .. code:: python
 
-    self.call_service("app/start", app="light_app", namespace="admin")
-
-**app/stop**
-
-Stops a running app. The `app` name arg is required.
 
 .. code:: python
-
-    self.call_service("app/stop", app="light_app", namespace="admin")
-
-**app/restart**
-
-Restarts a running app. This service basically stops and starts the app. The `app` name arg is required.
-
-.. code:: python
-
-    self.call_service("app/restart", app="light_app", namespace="admin")
-
-**app/reload**
-
-Checks for an app update. Useful if AD is running in production mode, and app changes need to be checked and loaded.
-
-.. code:: python
-
     self.call_service("app/reload", namespace="admin")
 
-**app/enable**
-
-Enables a disabled app, so it can be loaded by AD.
-
-.. code:: python
 
     self.call_service("app/enable", app="living_room_app", namespace="admin")
-
-**app/disable**
-
-Disables an enabled app, so it cannot be loaded by AD. This service call is persistent, so even if AD restarts, the app
-will not be restarted
-
-.. code:: python
-
-    self.call_service("app/disable", app="living_room_app", namespace="admin")
-
-**production_mode/set**
-
-Sets the production mode AD is running on. The value of the `mode` arg has to be `True` or `False`.
-
-.. code:: python
-
     self.call_service("production_mode/set", mode=True, namespace="admin")
 
-All namespaces except ``global``, and ``admin``:
-
-**state/add_entity**
-
-Adds an existing entity to the required namespace.
-
-.. code:: python
-
-    self.call_service(
         "state/set",
-        entity_id="sensor.test",
         state="on",
         attributes={"friendly_name" : "Sensor Test"},
         namespace="default"
