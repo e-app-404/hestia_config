@@ -1,0 +1,146 @@
+appdaemon_index:
+  version: 1
+  generated_at: "2025-10-09T22:10:51Z"
+  root_hint: "/addon_configs/a0d7b954_appdaemon"
+  workspace_context:
+    canonical_path: "/Volumes/addon_configs/a0d7b954_appdaemon"
+    container_path: "/config"
+    addon_id: "a0d7b954_appdaemon"
+    addon_name: "AppDaemon 4"
+    status: "active"
+    apps_running: ["hello_world", "room_db_updater"]
+    
+  configuration_files:
+    - path: "/Volumes/addon_configs/a0d7b954_appdaemon/appdaemon.yaml"
+      type: "main_config"
+      description: "Primary AppDaemon configuration with plugins, HTTP, API, and dashboard settings"
+      last_modified: "2025-10-09T22:58:00Z"
+      size_bytes: 232
+      validation: "passed"
+      key_sections: ["appdaemon", "http", "admin", "api", "hadashboard"]
+      
+    - path: "/Volumes/addon_configs/a0d7b954_appdaemon/apps/apps.yaml"
+      type: "app_config"
+      description: "App configuration defining hello_world and room_db_updater apps"
+      last_modified: "2025-10-09T23:06:00Z" 
+      size_bytes: 374
+      validation: "passed"
+      apps_defined: ["hello_world", "room_db_updater"]
+      
+  application_modules:
+    - path: "/Volumes/addon_configs/a0d7b954_appdaemon/apps/hello.py"
+      type: "app_module"
+      class_name: "HelloWorld"
+      description: "Simple Hello World demonstration app"
+      last_modified: "2025-10-08T21:29:00Z"
+      size_bytes: 221
+      status: "active"
+      functionality: "basic_demo"
+      
+    - path: "/Volumes/addon_configs/a0d7b954_appdaemon/apps/room_db_updater.py"
+      type: "app_module"
+      class_name: "RoomDbUpdater"
+      description: "Room configuration database management app with HTTP API endpoints"
+      last_modified: "2025-10-09T22:26:00Z"
+      size_bytes: 7779
+      status: "active"
+      functionality: "database_management"
+      features:
+        - "SQLite database initialization and schema management"
+        - "HTTP API endpoints for health checks and configuration updates"
+        - "Rate limiting and input validation"
+        - "Canonical room validation against area mapping"
+      api_endpoints:
+        - "/api/appdaemon/room_db/health"
+        - "/api/appdaemon/room_db/update_config"
+      database_file: "/Volumes/addon_configs/a0d7b954_appdaemon/room_database.db"
+      
+    - path: "/Volumes/addon_configs/a0d7b954_appdaemon/apps/spotify_mood_lights_sync.py"
+      type: "app_module"
+      class_name: "SpotifyMoodLightsSync"
+      description: "Spotify integration for mood lighting synchronization"
+      last_modified: "2025-10-09T22:27:00Z"
+      size_bytes: 16792
+      status: "inactive"
+      functionality: "spotify_integration"
+      dependencies: ["spotipy", "colorsys"]
+      
+  data_files:
+    - path: "/Volumes/addon_configs/a0d7b954_appdaemon/www/area_mapping.yaml"
+      type: "data_file"
+      description: "Canonical area hierarchy and room mapping configuration"
+      last_modified: "2025-10-09T22:59:00Z"
+      size_bytes: 11083
+      purpose: "room_validation"
+      used_by: ["room_db_updater"]
+      format: "yaml_data"
+      content_type: "area_hierarchy"
+      
+  database_files:
+    - path: "/Volumes/addon_configs/a0d7b954_appdaemon/room_database.db"
+      type: "sqlite_database"
+      description: "Room configuration database with schema versioning"
+      last_modified: "2025-10-09T23:00:00Z"
+      size_bytes: 16384
+      schema_version: 1
+      tables: ["schema_version", "room_configs"]
+      managed_by: "room_db_updater"
+      access_mode: "WAL"
+      
+  dashboard_files:
+    - path: "/Volumes/addon_configs/a0d7b954_appdaemon/dashboards/Hello.dash"
+      type: "dashboard_config"
+      description: "Simple Hello World dashboard configuration"
+      title: "Hello Panel"
+      widget_dimensions: [120, 120]
+      columns: 8
+      widgets: ["label"]
+      status: "available"
+      
+  runtime_files:
+    - path: "/config/test_room_db_api.py"
+      type: "testing_tool"
+      description: "API endpoint testing script for room_db_updater"
+      purpose: "validation"
+      tests: ["health_endpoint", "update_endpoint"]
+      
+    - path: "/config/monitor_appdaemon_startup.sh"
+      type: "monitoring_tool"
+      description: "AppDaemon startup monitoring script"
+      purpose: "diagnostics"
+      executable: true
+      
+    - path: "/config/room_database.db"
+      type: "database_copy"
+      description: "Copy of room database in main config directory"
+      related_to: "/Volumes/addon_configs/a0d7b954_appdaemon/room_database.db"
+      
+    - path: "/config/room_database_copy.db"
+      type: "database_backup"
+      description: "Backup copy of room database"
+      purpose: "backup"
+      
+    - path: "/config/test_room_db.py"
+      type: "testing_script"
+      description: "Room database testing and validation script"
+      purpose: "development"
+      
+  maintenance_records:
+    last_configuration_update: "2025-10-09T23:06:00Z"
+    last_successful_startup: "2025-10-09T23:03:10Z"
+    apps_initialized: 2
+    configuration_errors: 0
+    maintenance_session: "session_2025_10_09_appdaemon"
+    
+  error_patterns_documented:
+    - "appdaemon_config_validation_error"
+    - "appdaemon_file_access_container_path_error" 
+    - "appdaemon_yaml_parsed_as_app_config"
+    
+  deployment_status:
+    overall: "operational"
+    configuration: "valid"
+    apps_running: "2/3 active (hello_world, room_db_updater)"
+    database: "initialized"
+    api_endpoints: "accessible"
+    last_restart: "2025-10-09T23:03:10Z"
