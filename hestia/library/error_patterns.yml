@@ -626,3 +626,107 @@ patterns:
       - "Home Assistant SQL Integration Documentation"
       - "Home Assistant Integration Configuration Guide"
       - "SQL Sensor Migration Guide (sensor platform to sql integration)"
+
+  - name: "group_set_invalid_parameter"
+    category: "automation_action"
+    description: "Group.set service errors due to using invalid parameter names"
+    error_format: "extra keys not allowed @ data['parameter_name']"
+    symptoms:
+      - "Automation execution failures with group.set actions"
+      - "Error messages about extra keys not allowed in group service calls"
+      - "Group creation or modification automations failing"
+      - "Persistent automation error notifications"
+    root_causes:
+      - "Using deprecated or incorrect parameter names like 'default_entity_id'"
+      - "Confusion between different group service parameter schemas"
+      - "Copy-paste errors from outdated documentation or examples"
+      - "Mixing parameters from different Home Assistant versions"
+    solution:
+      - "Use correct parameter names for group.set service"
+      - "Replace 'default_entity_id' with 'object_id' parameter"
+      - "Remove group. prefix from entity_id when using object_id"
+      - "Consult current Home Assistant group service documentation"
+    examples:
+      bad: |
+        action: group.set
+        data:
+          default_entity_id: group.unavailable_entities
+          entities: []
+      good: |
+        action: group.set
+        data:
+          object_id: unavailable_entities
+          entities: []
+    resolution_steps:
+      - "Identify the failing automation from Home Assistant error messages"
+      - "Check Home Assistant documentation for current group.set parameters"
+      - "Replace 'default_entity_id' with 'object_id' in service calls"
+      - "Remove 'group.' prefix from object_id value"
+      - "Test automation execution after parameter fix"
+    prevention_strategies:
+      - "Always consult current Home Assistant documentation for service parameters"
+      - "Test service calls in Developer Tools before using in automations"
+      - "Avoid copy-paste from outdated examples or forums"
+      - "Validate automation configuration after Home Assistant updates"
+    tooling:
+      detector: "Look for error patterns: 'extra keys not allowed' + group.set service"
+      validator: "Developer Tools > Services - test group.set calls with correct parameters"
+      config_check: "/config/bin/config-health /config - validate automation configuration"
+    references:
+      - "Home Assistant Group Integration Documentation"
+      - "Home Assistant Services Documentation"
+      - "Home Assistant Automation Action Documentation"
+
+  - name: "template_json_parsing_error"
+    category: "jinja_template"
+    description: "Template errors when from_json filter fails and template tries to call methods on strings"
+    error_format: "UndefinedError: 'str object' has no attribute 'get'"
+    symptoms:
+      - "Template sensors showing 'unavailable' state with JSON parsing errors"
+      - "Error messages about string objects not having dictionary methods"
+      - "Template rendering failures in sensors or automations"
+      - "Intermittent template errors when JSON data is malformed"
+    root_causes:
+      - "Using from_json filter without checking if parsing succeeded"
+      - "Assuming from_json always returns a dictionary/mapping object"
+      - "Missing error handling when JSON parsing fails"
+      - "Calling dictionary methods (.get(), .keys(), etc.) on string results"
+    solution:
+      - "Add type checking after from_json: if parsed is mapping"
+      - "Use defensive programming with fallback values"
+      - "Check if parsed result is actually a dictionary before using dictionary methods"
+      - "Provide default empty dictionary when JSON parsing fails"
+    examples:
+      bad: |
+        {% set raw = state_attr('sensor.data','payload') %}
+        {% set cfg = (raw | from_json).get('key', {}) if raw else {} %}
+        {{ cfg.get('value', 'default') }}
+      good: |
+        {% set raw = state_attr('sensor.data','payload') %}
+        {% set parsed = raw | from_json if raw else {} %}
+        {% set cfg = parsed.get('key', {}) if parsed is mapping else {} %}
+        {{ cfg.get('value', 'default') }}
+    resolution_steps:
+      - "Identify the failing template from Home Assistant error messages"
+      - "Locate templates using from_json filter without type checking"
+      - "Add 'if parsed is mapping' checks before calling dictionary methods"
+      - "Provide fallback empty dictionary when JSON parsing fails"
+      - "Test template rendering with both valid and invalid JSON inputs"
+    prevention_strategies:
+      - "Always check if from_json result is a mapping before using dictionary methods"
+      - "Use defensive programming patterns in templates with external data"
+      - "Test templates with edge cases like malformed JSON or empty values"
+      - "Document expected JSON structure for template sensors"
+    defensive_patterns:
+      json_parsing: "{% set parsed = raw | from_json if raw else {} %}"
+      type_checking: "{% set data = parsed.get('key', {}) if parsed is mapping else {} %}"
+      fallback_values: "{{ data.get('field', 'default_value') }}"
+    tooling:
+      detector: "Look for error patterns: 'str object' has no attribute 'get' in template errors"
+      validator: "Test templates in Developer Tools > Templates with various JSON inputs"
+      json_validator: "Use jq or python -c 'import json; json.loads(data)' to validate JSON"
+    references:
+      - "Home Assistant Template Documentation"
+      - "Jinja2 Template Documentation"
+      - "Home Assistant Template Sensor Configuration"
+      - "ADR-0020: Template Error Patterns"
