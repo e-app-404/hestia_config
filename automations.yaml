@@ -605,5 +605,44 @@
       sonos_source: media_player.bedroom_sonos_ray
       sonos_target: media_player.ensuite_sonos_roam
       allow_tv: true
-mode: restart
-max_exceeded: silent
+  mode: restart
+  max_exceeded: silent
+- id: '1760026857122'
+  alias: Ensuite — Join Roam to Ray on presence manual
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - binary_sensor.ensuite_presence_beta
+    - binary_sensor.ensuite_shower_occupancy_epsilon
+    from:
+    to: 'on'
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 5
+  conditions:
+  - condition: device
+    device_id: 9ed135979a4cdc695ec6d8659da30cb9
+    domain: media_player
+    entity_id: 2f978c7fbb17fac3e7d58092c5e9df83
+    type: is_playing
+  - condition: not
+    conditions:
+    - condition: device
+      device_id: df67ffc2e83ad13b1f3fec4361e33184
+      domain: media_player
+      entity_id: 6ad14ba8679af799eab31a3e0169bd8c
+      type: is_playing
+  - condition: time
+    after: 07:00:00
+    before: '22:00:00'
+  actions:
+  - action: media_player.join
+    metadata: {}
+    data:
+      group_members:
+      - media_player.ensuite_sonos_roam
+    target:
+      device_id: 9ed135979a4cdc695ec6d8659da30cb9
+  mode: single
