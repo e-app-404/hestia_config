@@ -605,3 +605,151 @@
       sonos_source: media_player.bedroom_sonos_ray
       sonos_target: media_player.ensuite_sonos_roam
       allow_tv: true
+mode: restart
+max_exceeded: silent
+
+variables:
+  # presence sources
+  motion_trigger:
+    - binary_sensor.ensuite_shower_occupancy_epsilon
+    - binary_sensor.ensuite_presence_beta
+
+  # speakers
+  sonos_source: media_player.bedroom_sonos_ray
+  sonos_target: media_player.ensuite_sonos_roam
+
+  # policy
+  allow_tv: true
+  time_delay: 5  # minutes
+
+triggers:
+  - platform: state
+    entity_id: *motion_sources
+    from: 'off'
+    to: 'on'
+    id: t1
+  - platform: state
+    entity_id: *motion_sources
+    from: 'on'
+    to: 'off'
+    id: t2
+  - platform: state
+    entity_id: media_player.bedroom_sonos_ray
+    to: playing
+    id: t3
+  - platform: homeassistant
+    event: start
+    id: t4
+  - platform: event
+    event_type: automation_reloaded
+    id: t5
+
+# anchor for presence entities (keeps triggers+conditions DRY)
+motion_sources: &motion_sources
+  - binary_sensor.ensuite_shower_occupancy_epsilon
+  - binary_sensor.ensuite_presence_beta
+
+conditions: []  # branch-specific below
+
+actions:
+  - choose:
+      # ---------------- JOIN on motion ----------------
+      - alias: Motion detected → ensure grouped + match volume
+        conditions:
+          - condition: trigger
+            id: t1
+          - condition: state
+            entity_id: "{{ sonos_source }}"
+            state: playing
+          - condition: template
+            value_template: "{{ allow_tv or state_attr(sonos_source, 'source') != 'TV' }}"
+        sequence:
+          # If already grouped, just align volume; else pre-set volume then join
+          - choose:
+              - conditions:
+                  - condition: template
+                    value_template: >
+                      {{ sonos_target in (state_attr(sonos_source, 'group_members') or []) }}
+                sequence:
+                  - service: media_player.volume_set
+                    target: { entity_id: "{{ sonos_target }}" }
+                    data:
+                      volume_level: "{{ (state_attr(sonos_source, 'volume_level') | default(0.20)) | float }}"
+                  - service: media_player.volume_mute
+                    target: { entity_id: "{{ sonos_target }}" }
+                    data: { is_volume_muted: false }
+            default:
+              - service: media_player.volume_set
+                target: { entity_id: "{{ sonos_target }}" }
+                data:
+                  volume_level: "{{ (state_attr(sonos_source, 'volume_level') | default(0.20)) | float }}"
+              - service: media_player.volume_mute
+                target: { entity_id: "{{ sonos_target }}" }
+                data: { is_volume_muted: false }
+              - service: media_player.join
+                target: { entity_id: "{{ sonos_source }}" }
+                data:
+                  group_members:
+                    - "{{ sonos_target }}"
+
+      # ---------------- UNJOIN after presence clears ----------------
+      - alias: Motion cleared → unjoin after delay
+        conditions:
+          - condition: trigger
+            id: t2
+        sequence:
+          - delay:
+              minutes: "{{ time_delay }}"
+          - service: media_player.unjoin
+            target: { entity_id: "{{ sonos_target }}" }
+
+      # ---------------- RECONCILE on play/start/reload ----------------
+      - alias: Reconcile when playback starts or on reload if presence is on
+        conditions:
+          - condition: trigger
+            id: [t3, t4, t5]
+          - condition: template
+            value_template: >
+              {{ states('binary_sensor.ensuite_shower_occupancy_epsilon') == 'on'
+                 or states('binary_sensor.ensuite_presence_beta') == 'on' }}
+          - condition: template
+            value_template: "{{ allow_tv or state_attr(sonos_source, 'source') != 'TV' }}"
+          - condition: state
+            entity_id: "{{ sonos_source }}"
+            state: playing
+        sequence:
+          # Same logic: align volume; join only if not already grouped
+          - choose:
+              - conditions:
+                  - condition: template
+                    value_template: >
+                      {{ sonos_target in (state_attr(sonos_source, 'group_members') or []) }}
+                sequence:
+                  - service: media_player.volume_set
+                    target: { entity_id: "{{ sonos_target }}" }
+                    data:
+                      volume_level: "{{ (state_attr(sonos_source, 'volume_level') | default(0.20)) | float }}"
+                  - service: media_player.volume_mute
+                    target: { entity_id: "{{ sonos_target }}" }
+                    data: { is_volume_muted: false }
+            default:
+              - service: media_player.volume_set
+                target: { entity_id: "{{ sonos_target }}" }
+                data:
+                  volume_level: "{{ (state_attr(sonos_source, 'volume_level') | default(0.20)) | float }}"
+              - service: media_player.volume_mute
+                target: { entity_id: "{{ sonos_target }}" }
+                data: { is_volume_muted: false }
+              - service: media_player.join
+                target: { entity_id: "{{ sonos_source }}" }
+                data:
+                  group_members:
+                    - "{{ sonos_target }}"
+
+id: '1759847047776'
+alias: Group Sonos Roam on Motion (with reconcile & volume match)
+description: >
+  Joins Roam to Ray when presence is detected and Ray is playing; keeps volumes matched.
+  Reconciles on playback start / HA start / automation reload if presence is already on;
+  unjoins after presence clears for time_delay minutes.
+
