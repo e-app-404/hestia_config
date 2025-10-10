@@ -1,0 +1,122 @@
+# Room Database Seeding - Service Call Templates
+# Copy and paste these into Home Assistant's Developer Tools → Services
+# Execute each call individually with 2-3 second delays between calls
+
+# Motion Lighting Configurations
+
+## Kitchen Motion Lighting
+service: rest_command.room_db_update_config
+data:
+  room_id: kitchen
+  domain: motion_lighting
+  config_data: >
+    {"timeout": 180, "bypass": false, "illuminance_threshold": 10, "presence_timeout_multiplier": 1.0}
+
+---
+
+## Living Room Motion Lighting  
+service: rest_command.room_db_update_config
+data:
+  room_id: living_room
+  domain: motion_lighting
+  config_data: >
+    {"timeout": 300, "bypass": false, "illuminance_threshold": 8, "presence_timeout_multiplier": 1.2}
+
+---
+
+## Ensuite Motion Lighting
+service: rest_command.room_db_update_config
+data:
+  room_id: ensuite
+  domain: motion_lighting
+  config_data: >
+    {"timeout": 120, "bypass": false, "illuminance_threshold": 5, "presence_timeout_multiplier": 0.8}
+
+---
+
+## Upstairs Motion Lighting
+service: rest_command.room_db_update_config
+data:
+  room_id: upstairs
+  domain: motion_lighting
+  config_data: >
+    {"timeout": 180, "bypass": false, "illuminance_threshold": 12, "presence_timeout_multiplier": 1.0}
+
+---
+
+## Downstairs Motion Lighting
+service: rest_command.room_db_update_config
+data:
+  room_id: downstairs
+  domain: motion_lighting
+  config_data: >
+    {"timeout": 240, "bypass": false, "illuminance_threshold": 15, "presence_timeout_multiplier": 1.1}
+
+---
+
+# Vacuum Control Configurations
+
+## Kitchen Vacuum Control
+service: rest_command.room_db_update_config
+data:
+  room_id: kitchen
+  domain: vacuum_control
+  config_data: >
+    {"segment_id": 2, "last_cleaned": null, "cleaning_frequency": 7, "needs_cleaning": 1}
+
+---
+
+## Living Room Vacuum Control
+service: rest_command.room_db_update_config
+data:
+  room_id: living_room
+  domain: vacuum_control
+  config_data: >
+    {"segment_id": 3, "last_cleaned": null, "cleaning_frequency": 14, "needs_cleaning": 1}
+
+---
+
+## Ensuite Vacuum Control  
+service: rest_command.room_db_update_config
+data:
+  room_id: ensuite
+  domain: vacuum_control
+  config_data: >
+    {"segment_id": 4, "last_cleaned": null, "cleaning_frequency": 21, "needs_cleaning": 1}
+
+---
+
+## Hallway Vacuum Control
+service: rest_command.room_db_update_config
+data:
+  room_id: hallway
+  domain: vacuum_control
+  config_data: >
+    {"segment_id": 5, "last_cleaned": null, "cleaning_frequency": 14, "needs_cleaning": 1}
+
+---
+
+## Powder Room Vacuum Control
+service: rest_command.room_db_update_config
+data:
+  room_id: powder_room
+  domain: vacuum_control
+  config_data: >
+    {"segment_id": 6, "last_cleaned": null, "cleaning_frequency": 21, "needs_cleaning": 1}
+
+---
+
+# Verification Commands
+# After seeding all rooms, check these in Developer Tools → Templates:
+
+# Check Motion Lighting Room Count
+{{ (state_attr('sensor.room_configs_motion_lighting','payload') | from_json).keys() | list }}
+
+# Check Vacuum Control Room Count  
+{{ (state_attr('sensor.room_configs_vacuum_control','payload') | from_json).keys() | list }}
+
+# Check Rooms Needing Cleaning Count
+{{ states('sensor.rooms_needing_cleaning') }}
+
+# Full Diagnostics
+Run template: /config/hestia/library/templates/devtools/diagnostics.jinja
