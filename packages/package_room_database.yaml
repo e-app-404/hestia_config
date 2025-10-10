@@ -8,7 +8,13 @@ sql:
     db_url: sqlite:////config/room_database.db
     query: >
       SELECT 'ok' AS state,
-             json_group_object(room_id, config_data) AS payload
+             json_group_object(
+               room_id,
+               CASE WHEN json_valid(config_data)
+                    THEN json(config_data)
+                    ELSE NULL
+               END
+             ) AS payload
       FROM room_configs
       WHERE config_domain = 'motion_lighting';
     column: state
@@ -17,7 +23,13 @@ sql:
     db_url: sqlite:////config/room_database.db
     query: >
       SELECT 'ok' AS state,
-             json_group_object(room_id, config_data) AS payload
+             json_group_object(
+               room_id,
+               CASE WHEN json_valid(config_data)
+                    THEN json(config_data)
+                    ELSE NULL
+               END
+             ) AS payload
       FROM room_configs
       WHERE config_domain = 'vacuum_control';
     column: state
