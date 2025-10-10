@@ -109,7 +109,7 @@ echo ""
 echo "🚀 Next Steps:"
 echo "1. Restart Home Assistant to load new automations"
 echo "2. Run initialization scripts to configure database"
-echo "3. Test diagnostics.jinja template"
+echo "3. Test diagnostics template at /config/hestia/library/templates/devtools/diagnostics.jinja"
 echo "4. Verify individual room automations"
 echo "5. Test vacuum control with eligible rooms"
 
