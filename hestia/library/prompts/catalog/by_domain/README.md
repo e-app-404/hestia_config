@@ -6,6 +6,8 @@ This directory contains the authoritative versions of all normalized prompts in 
 
 **This is the primary canonical location** - all other locations (`by_tier/`, `by_persona/`) contain hard copies for navigation purposes only.
 
+>**Note 2025-10-09**:`by_tier/` and `by_persona/` removed for the time being to simplify procedures.
+
 ## Directory Organization
 
 Prompts are organized by functional domain:

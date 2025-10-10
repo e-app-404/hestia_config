@@ -4,8 +4,8 @@ slug: valetudo-vacuum-control-optimization-promptset
 title: Valetudo Vacuum Control Optimization Promptset
 date: '2025-10-07'
 tier: "α"
-domain: operational
-persona: strategos
+domain: generation
+persona: pythagoras
 status: approved
 tags: [valetudo, vacuum, package, yaml, configuration, packages, room_db, appdaemon, hacs, var, sql]
 version: '1.0'
