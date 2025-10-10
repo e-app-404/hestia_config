@@ -3,7 +3,7 @@ id: prompt_20250906_08abb7
 slug: meta-capture
 title: '|'
 date: '2025-09-06'
-tier: "\u03B1"
+tier: "α"
 domain: operational
 persona: promachos
 status: candidate

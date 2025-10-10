@@ -3,7 +3,7 @@ id: prompt_20251001_5acafb
 slug: you-are-the-hestia-sensor-mapper
 title: "\U0001F527 You Are The Hestia Sensor Mapper"
 date: '2025-10-01'
-tier: "\u03B1"
+tier: "α"
 domain: extraction
 persona: promachos
 status: candidate

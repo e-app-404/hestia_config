@@ -3,7 +3,7 @@ id: prompt_20250404_f81da7
 slug: batch6-mac-import-gpt-validator-error-fixer-eunomi
 title: Batch6 Mac Import Gpt Validator Error Fixer Eunomia
 date: '2025-04-04'
-tier: "\u03B1"
+tier: "α"
 domain: validation
 persona: promachos
 status: candidate

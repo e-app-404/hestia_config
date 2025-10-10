@@ -3,7 +3,7 @@ id: prompt_20251001_e7dbb5
 slug: batch1-mnemosyne-dev-prompt
 title: Batch1 Mnemosyne Dev Prompt
 date: '2025-10-01'
-tier: "\u03B1"
+tier: "α"
 domain: operational
 persona: promachos
 status: candidate

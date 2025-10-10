@@ -3,7 +3,7 @@ id: prompt_20251001_52c9b6
 slug: batch4-prompt-registry-live-ingest-v2-enhanced
 title: Batch4 Prompt Registry Live Ingest V2 Enhanced
 date: '2025-10-01'
-tier: "\u03B1"
+tier: "α"
 domain: extraction
 persona: promachos
 status: approved

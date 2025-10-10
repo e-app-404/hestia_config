@@ -3,7 +3,7 @@ id: prompt_20250409_971b01
 slug: gpt-mid-conversation-architecture-extraction-proto
 title: "\u2705 GPT Mid-Conversation Architecture Extraction Protocol"
 date: '2025-04-09'
-tier: "\u03B1"
+tier: "α"
 domain: extraction
 persona: promachos
 status: deprecated

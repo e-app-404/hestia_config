@@ -4,7 +4,7 @@ slug: copilot-mission-strategos-orchestrated-stepwise-pa
 title: "\u2705 Copilot Mission: Strategos-Orchestrated, Stepwise Patch & Normalize\
   \ Pipeline"
 date: '2025-09-12'
-tier: "\u03B1"
+tier: "α"
 domain: validation
 persona: promachos
 status: candidate

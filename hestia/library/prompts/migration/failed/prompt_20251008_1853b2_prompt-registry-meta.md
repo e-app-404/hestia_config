@@ -3,7 +3,7 @@ id: prompt_20251008_1853b2
 slug: prompt-registry-meta
 title: Prompt Registry Meta
 date: '2025-10-08'
-tier: "\u03B1"
+tier: "α"
 domain: validation
 persona: promachos
 status: candidate

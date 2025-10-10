@@ -3,7 +3,7 @@ id: prompt_20250401_a85802
 slug: gpt-task-instructions-extracting-developer-princip
 title: "\U0001F916 GPT Task Instructions: Extracting Developer Principles for HESTIA"
 date: '2025-04-01'
-tier: "\u03B1"
+tier: "α"
 domain: diagnostic
 persona: promachos
 status: deprecated

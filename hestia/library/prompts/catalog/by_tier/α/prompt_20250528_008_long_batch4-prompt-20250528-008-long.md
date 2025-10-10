@@ -3,7 +3,7 @@ id: prompt_20250528_008_long
 slug: batch4-prompt-20250528-008-long
 title: "Batch4 ## \U0001F4E6 `Prompt 20250528 008 Long`"
 date: '2025-10-01'
-tier: "\u03B1"
+tier: "α"
 domain: validation
 persona: promachos
 status: candidate

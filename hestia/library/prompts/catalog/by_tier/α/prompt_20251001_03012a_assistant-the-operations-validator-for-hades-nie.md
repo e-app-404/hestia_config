@@ -3,7 +3,7 @@ id: prompt_20251001_03012a
 slug: assistant-the-operations-validator-for-hades-nie
 title: 'Assistant: The Operations Validator For Hades Nie'
 date: '2025-10-01'
-tier: "\u03B1"
+tier: "α"
 domain: governance
 persona: promachos
 status: candidate

@@ -3,7 +3,7 @@ id: prompt_20250612_e4f3be
 slug: batch6-mac-import-gpt-prompt-post-reboot-canonical-registry-reconciliation-runtime-hardened-match-ordered-v2-yaml-copy-edit
 title: '>'
 date: '2025-06-12'
-tier: "\u03B1"
+tier: "α"
 domain: validation
 persona: promachos
 status: candidate

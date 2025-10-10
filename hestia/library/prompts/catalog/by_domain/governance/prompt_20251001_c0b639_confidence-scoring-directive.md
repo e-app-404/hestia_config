@@ -3,7 +3,7 @@ id: prompt_20251001_c0b639
 slug: confidence-scoring-directive
 title: "\U0001F4CF Confidence Scoring Directive"
 date: '2025-10-01'
-tier: "\u03B1"
+tier: "α"
 domain: governance
 persona: promachos
 status: candidate

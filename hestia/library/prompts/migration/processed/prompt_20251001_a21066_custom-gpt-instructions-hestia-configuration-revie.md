@@ -4,7 +4,7 @@ slug: custom-gpt-instructions-hestia-configuration-revie
 title: "\U0001F6E0\uFE0F Custom GPT Instructions: **\"Hestia Configuration Reviewer\"\
   ** (v 17.04)"
 date: '2025-10-01'
-tier: "\u03B1"
+tier: "α"
 domain: validation
 persona: promachos
 status: approved

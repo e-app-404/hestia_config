@@ -3,7 +3,7 @@ id: prompt_20251001_487c0f
 slug: phased-prompt-engineering-plan-mnemosyne-finalizat
 title: "\U0001F9E0 PHASED PROMPT ENGINEERING PLAN: *Mnemosyne Finalization Sequence*"
 date: '2025-10-01'
-tier: "\u03B1"
+tier: "α"
 domain: validation
 persona: promachos
 status: deprecated

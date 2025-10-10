@@ -3,7 +3,7 @@ id: prompt_20251008_150c25
 slug: continue-hestia-structure-v2-apply-20250914t000000
 title: "\u2705 CONTINUE: Hestia Structure v2 — APPLY 20250914T000000Z (Reinforced)"
 date: '2025-10-08'
-tier: "\u03B1"
+tier: "α"
 domain: validation
 persona: promachos
 status: candidate

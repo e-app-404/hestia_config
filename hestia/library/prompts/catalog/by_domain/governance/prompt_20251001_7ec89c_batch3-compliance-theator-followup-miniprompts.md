@@ -3,7 +3,7 @@ id: prompt_20251001_7ec89c
 slug: batch3-compliance-theator-followup-miniprompts
 title: Batch3 Compliance Theator Followup Miniprompts
 date: '2025-10-01'
-tier: "\u03B1"
+tier: "α"
 domain: governance
 persona: promachos
 status: candidate

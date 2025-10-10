@@ -3,7 +3,7 @@ id: prompt_20251001_f247b4
 slug: task-transform-the-hestia-alpha-light-registry-to
 title: 'Task: Transform the HESTIA Alpha Light Registry to New Schema Format'
 date: '2025-10-01'
-tier: "\u03B1"
+tier: "α"
 domain: extraction
 persona: promachos
 status: candidate

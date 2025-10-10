@@ -3,7 +3,7 @@ id: prompt_20251001_de8875
 slug: batch6-mac-import-gpt-subsysdev-soteria
 title: Batch6 Mac Import Gpt Subsysdev Soteria
 date: '2025-10-01'
-tier: "\u03B1"
+tier: "α"
 domain: diagnostic
 persona: promachos
 status: candidate

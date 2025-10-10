@@ -3,7 +3,7 @@ id: prompt_20251001_1f66ca
 slug: gpt-instructions-hestia-meta-architect
 title: "\U0001F9E0 GPT Instructions \u2013 HESTIA Meta Architect"
 date: '2025-10-01'
-tier: "\u03B1"
+tier: "α"
 domain: instructional
 persona: promachos
 status: candidate

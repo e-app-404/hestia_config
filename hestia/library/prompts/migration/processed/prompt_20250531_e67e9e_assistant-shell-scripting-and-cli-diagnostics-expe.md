@@ -3,7 +3,7 @@ id: prompt_20250531_e67e9e
 slug: assistant-shell-scripting-and-cli-diagnostics-expe
 title: 'Assistant: Shell Scripting And Cli Diagnostics Expert'
 date: '2025-05-31'
-tier: "\u03B1"
+tier: "α"
 domain: diagnostic
 persona: promachos
 status: candidate

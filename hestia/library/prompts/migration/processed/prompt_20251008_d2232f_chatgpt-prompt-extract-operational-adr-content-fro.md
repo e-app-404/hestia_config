@@ -3,7 +3,7 @@ id: prompt_20251008_d2232f
 slug: chatgpt-prompt-extract-operational-adr-content-fro
 title: 'ChatGPT Prompt: Extract Operational ADR Content from Session'
 date: '2025-10-08'
-tier: "\u03B1"
+tier: "α"
 domain: validation
 persona: nomia
 status: approved

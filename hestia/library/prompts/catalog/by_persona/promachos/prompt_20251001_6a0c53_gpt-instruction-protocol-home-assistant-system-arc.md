@@ -4,7 +4,7 @@ slug: gpt-instruction-protocol-home-assistant-system-arc
 title: "\U0001F3DB\uFE0F GPT Instruction Protocol: Home Assistant System Architecture\
   \ Optimization"
 date: '2025-10-01'
-tier: "\u03B1"
+tier: "α"
 domain: extraction
 persona: promachos
 status: approved

@@ -3,7 +3,7 @@ id: prompt_20251001_89a02b
 slug: gpt-instructions-hestia-yaml-validator-fixer
 title: "\U0001F9E0 GPT Instructions: HESTIA YAML Validator & Fixer"
 date: '2025-10-01'
-tier: "\u03B1"
+tier: "α"
 domain: extraction
 persona: promachos
 status: deprecated

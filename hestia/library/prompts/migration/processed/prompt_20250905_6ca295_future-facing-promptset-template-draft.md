@@ -3,7 +3,7 @@ id: prompt_20250905_6ca295
 slug: future-facing-promptset-template-draft
 title: Future-facing promptset template (draft)
 date: '2025-09-05'
-tier: "\u03B1"
+tier: "α"
 domain: operational
 persona: promachos
 status: candidate

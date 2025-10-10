@@ -4,7 +4,7 @@ slug: sql-room-database-architecture-promptset-v15-incre
 title: "SQL Room Database Architecture — Promptset v1.5 (Incremental Delivery,\
   \ Strategos)"
 date: '2025-10-08'
-tier: "\u03B1"
+tier: "α"
 domain: governance
 persona: promachos
 status: candidate

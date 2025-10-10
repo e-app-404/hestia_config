@@ -3,7 +3,7 @@ id: prompt_20250525_6f259b
 slug: prompt-curation-log
 title: Prompt Curation Log
 date: '2025-05-25'
-tier: "\u03B1"
+tier: "α"
 domain: operational
 persona: promachos
 status: approved

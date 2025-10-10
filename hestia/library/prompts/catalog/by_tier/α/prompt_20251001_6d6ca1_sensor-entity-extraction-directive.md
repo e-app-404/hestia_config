@@ -3,7 +3,7 @@ id: prompt_20251001_6d6ca1
 slug: sensor-entity-extraction-directive
 title: Sensor Entity Extraction Directive
 date: '2025-10-01'
-tier: "\u03B1"
+tier: "α"
 domain: extraction
 persona: promachos
 status: candidate

@@ -3,7 +3,7 @@ id: prompt_20251004_78a990
 slug: ha-bb8-addon-diagnostics
 title: '|'
 date: '2025-10-04'
-tier: "\u03B1"
+tier: "α"
 domain: diagnostic
 persona: promachos
 status: candidate

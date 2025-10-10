@@ -3,7 +3,7 @@ id: prompt_20251008_238f02
 slug: enhanced-motion-lighting-architecture-analysis-ref
 title: Enhanced Motion Lighting Architecture Analysis & Refactoring Prompt
 date: '2025-10-08'
-tier: "\u03B1"
+tier: "α"
 domain: governance
 persona: strategos
 status: candidate

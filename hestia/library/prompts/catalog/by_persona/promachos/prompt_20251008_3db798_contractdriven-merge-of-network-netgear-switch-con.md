@@ -4,7 +4,7 @@ slug: contractdriven-merge-of-network-netgear-switch-con
 title: "Contract\u2011Driven Merge of Network + Netgear Switch Configurations (Strategos\
   \ Protocols)"
 date: '2025-10-08'
-tier: "\u03B1"
+tier: "α"
 domain: governance
 persona: promachos
 status: approved

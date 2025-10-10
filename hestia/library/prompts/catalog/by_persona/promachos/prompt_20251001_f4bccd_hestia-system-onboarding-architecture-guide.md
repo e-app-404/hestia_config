@@ -3,7 +3,7 @@ id: prompt_20251001_f4bccd
 slug: hestia-system-onboarding-architecture-guide
 title: "\U0001F3D7\uFE0F Hestia System: Onboarding & Architecture Guide"
 date: '2025-10-01'
-tier: "\u03B1"
+tier: "α"
 domain: instructional
 persona: promachos
 status: candidate

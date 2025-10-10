@@ -3,7 +3,7 @@ id: prompt_20250401_377a7d
 slug: gpt-assistant-instructions-hestia-architecture-doc
 title: 'GPT Assistant Instructions: HESTIA Architecture Documentation Maintenance'
 date: '2025-04-01'
-tier: "\u03B1"
+tier: "α"
 domain: operational
 persona: promachos
 status: deprecated

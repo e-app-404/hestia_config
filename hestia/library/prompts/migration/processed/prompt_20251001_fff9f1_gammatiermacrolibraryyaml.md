@@ -3,7 +3,7 @@ id: prompt_20251001_fff9f1
 slug: gammatiermacrolibraryyaml
 title: gamma_tier_macro_library.yaml
 date: '2025-10-01'
-tier: "\u03B1"
+tier: "α"
 domain: operational
 persona: promachos
 status: candidate

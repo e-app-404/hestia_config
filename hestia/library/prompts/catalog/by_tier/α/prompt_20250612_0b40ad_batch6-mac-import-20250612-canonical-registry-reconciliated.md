@@ -3,7 +3,7 @@ id: prompt_20250612_0b40ad
 slug: batch6-mac-import-20250612-canonical-registry-reconciliated
 title: '>'
 date: '2025-06-12'
-tier: "\u03B1"
+tier: "α"
 domain: validation
 persona: promachos
 status: candidate

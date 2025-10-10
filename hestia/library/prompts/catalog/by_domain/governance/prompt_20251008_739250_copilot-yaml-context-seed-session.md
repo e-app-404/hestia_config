@@ -3,7 +3,7 @@ id: prompt_20251008_739250
 slug: copilot-yaml-context-seed-session
 title: Copilot Yaml Context Seed Session
 date: '2025-10-08'
-tier: "\u03B1"
+tier: "α"
 domain: governance
 persona: promachos
 status: candidate

@@ -3,7 +3,7 @@ id: prompt_20251001_ba6d90
 slug: batch6-mac-import-full-governance-and-quality-revi
 title: Batch6 Mac Import Full Governance And Quality Review
 date: '2025-10-01'
-tier: "\u03B1"
+tier: "α"
 domain: operational
 persona: promachos
 status: candidate

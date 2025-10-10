@@ -3,11 +3,11 @@ id: prompt_20251007_a8cc86
 slug: valetudo-vacuum-control-optimization-promptset-v2
 title: Valetudo Vacuum Control Optimization Promptset v2
 date: '2025-10-07'
-tier: "\u03B1"
+tier: "α"
 domain: validation
-persona: promachos
+persona: pythagoras
 status: candidate
-tags: []
+tags: [valetudo, vacuum, package, yaml, configuration, packages, room_db, appdaemon, hacs, var, sql]
 version: '1.0'
 source_path: valetudo_optimization_comprehensive_v2.promptset
 author: Unknown

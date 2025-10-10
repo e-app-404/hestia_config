@@ -3,7 +3,7 @@ id: prompt_20251004_b5858d
 slug: enhanced-motion-lighting-configuration-promptset
 title: Enhanced Motion-Lighting Configuration Promptset
 date: '2025-10-04'
-tier: "\u03B1"
+tier: "α"
 domain: governance
 persona: promachos
 status: candidate

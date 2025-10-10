@@ -3,7 +3,7 @@ id: prompt_20250531_d2de3f
 slug: batch4-prompt-lead-qa-takeover-exhausti
 title: "Batch4 **\U0001F527 Prompt: Lead Qa Takeover & Exhausti"
 date: '2025-05-31'
-tier: "\u03B1"
+tier: "α"
 domain: validation
 persona: promachos
 status: candidate

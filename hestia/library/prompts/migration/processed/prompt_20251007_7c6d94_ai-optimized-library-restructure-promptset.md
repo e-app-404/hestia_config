@@ -3,7 +3,7 @@ id: prompt_20251007_7c6d94
 slug: ai-optimized-library-restructure-promptset
 title: AI-Optimized Library Restructure Promptset
 date: '2025-10-07'
-tier: "\u03B1"
+tier: "α"
 domain: instructional
 persona: promachos
 status: candidate

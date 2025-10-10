@@ -3,7 +3,7 @@ id: prompt_20251001_bfa275
 slug: gpt-prompt-post-reboot-entity-remediation-protocol
 title: "\U0001F9E0 GPT Prompt: Post-Reboot Entity Remediation Protocol"
 date: '2025-10-01'
-tier: "\u03B1"
+tier: "α"
 domain: instructional
 persona: promachos
 status: candidate

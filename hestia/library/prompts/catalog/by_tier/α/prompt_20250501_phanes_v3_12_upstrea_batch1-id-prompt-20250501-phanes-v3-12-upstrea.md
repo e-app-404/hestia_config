@@ -3,7 +3,7 @@ id: prompt_20250501_phanes_v3_12_upstrea
 slug: batch1-id-prompt-20250501-phanes-v3-12-upstrea
 title: 'Batch1 Id: Prompt 20250501 Phanes V3 12 Upstrea'
 date: '2025-10-01'
-tier: "\u03B1"
+tier: "α"
 domain: validation
 persona: icaria
 status: approved

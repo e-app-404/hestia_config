@@ -3,7 +3,7 @@ id: prompt_20251008_b256d8
 slug: sql-room-database-architecture-promptset-for-strat
 title: SQL Room Database Architecture Promptset for Strategos GPT
 date: '2025-10-08'
-tier: "\u03B1"
+tier: "α"
 domain: operational
 persona: promachos
 status: deprecated

@@ -3,7 +3,7 @@ id: prompt_20251001_443cc1
 slug: gpt-prompt-post-reboot-entity-remediation-protocol
 title: "\U0001F9E0 GPT Prompt: Post-Reboot Entity Remediation Protocol (v2)"
 date: '2025-10-01'
-tier: "\u03B1"
+tier: "α"
 domain: extraction
 persona: promachos
 status: approved

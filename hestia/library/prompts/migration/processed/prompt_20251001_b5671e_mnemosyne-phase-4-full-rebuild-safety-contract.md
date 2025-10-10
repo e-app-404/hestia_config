@@ -3,7 +3,7 @@ id: prompt_20251001_b5671e
 slug: mnemosyne-phase-4-full-rebuild-safety-contract
 title: "\U0001F510 Mnemosyne Phase 4 \u2013 Full Rebuild + Safety Contract"
 date: '2025-10-01'
-tier: "\u03B1"
+tier: "α"
 domain: validation
 persona: promachos
 status: candidate

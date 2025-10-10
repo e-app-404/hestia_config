@@ -3,7 +3,7 @@ id: prompt_20251001_2a55cf
 slug: batch1-prompt-registry-dual-artifact-v1
 title: Batch1 Prompt Registry Dual Artifact V1
 date: '2025-10-01'
-tier: "\u03B1"
+tier: "α"
 domain: extraction
 persona: promachos
 status: approved

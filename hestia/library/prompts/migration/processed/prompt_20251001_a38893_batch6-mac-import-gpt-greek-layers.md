@@ -3,7 +3,7 @@ id: prompt_20251001_a38893
 slug: batch6-mac-import-gpt-greek-layers
 title: Batch6 Mac Import Gpt Greek Layers
 date: '2025-10-01'
-tier: "\u03B1"
+tier: "α"
 domain: instructional
 persona: promachos
 status: candidate

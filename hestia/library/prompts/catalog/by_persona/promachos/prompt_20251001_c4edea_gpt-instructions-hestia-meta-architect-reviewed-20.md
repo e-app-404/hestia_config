@@ -4,7 +4,7 @@ slug: gpt-instructions-hestia-meta-architect-reviewed-20
 title: "\U0001F9E0 GPT Instructions \u2013 HESTIA Meta Architect (Reviewed 20250422_2240\
   \ \u2013 Hypatia Variant)"
 date: '2025-10-01'
-tier: "\u03B1"
+tier: "α"
 domain: validation
 persona: promachos
 status: candidate

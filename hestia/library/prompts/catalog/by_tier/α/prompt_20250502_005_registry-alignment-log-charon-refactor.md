@@ -3,7 +3,7 @@ id: prompt_20250502_005
 slug: registry-alignment-log-charon-refactor
 title: 'Registry Alignment Log: Charon Refactor'
 date: '2025-04-30'
-tier: "\u03B1"
+tier: "α"
 domain: validation
 persona: promachos
 status: candidate

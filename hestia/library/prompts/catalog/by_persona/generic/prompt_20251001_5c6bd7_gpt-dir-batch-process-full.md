@@ -3,7 +3,7 @@ id: prompt_20251001_5c6bd7
 slug: gpt-dir-batch-process-full
 title: Gpt Dir Batch Process Full
 date: '2025-10-01'
-tier: "\u03B1"
+tier: "α"
 domain: emergency
 persona: generic
 status: candidate

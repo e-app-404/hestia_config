@@ -3,7 +3,7 @@ id: prompt_20251008_150236
 slug: sql-room-database-architecture-promptset-v14-final
 title: "SQL Room Database Architecture — Promptset v1.4 (Final\u2011Locked, Strategos)"
 date: '2025-10-08'
-tier: "\u03B1"
+tier: "α"
 domain: governance
 persona: promachos
 status: candidate

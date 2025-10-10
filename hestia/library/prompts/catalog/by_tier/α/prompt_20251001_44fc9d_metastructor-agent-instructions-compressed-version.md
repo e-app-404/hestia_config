@@ -3,7 +3,7 @@ id: prompt_20251001_44fc9d
 slug: metastructor-agent-instructions-compressed-version
 title: "\U0001F6E0\uFE0F **MetaStructor Agent Instructions (Compressed Version)**"
 date: '2025-10-01'
-tier: "\u03B1"
+tier: "α"
 domain: validation
 persona: promachos
 status: candidate

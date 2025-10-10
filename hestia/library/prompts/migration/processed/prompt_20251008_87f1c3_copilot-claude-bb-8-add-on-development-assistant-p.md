@@ -3,7 +3,7 @@ id: prompt_20251008_87f1c3
 slug: copilot-claude-bb-8-add-on-development-assistant-p
 title: Copilot Claude BB-8 Add-on Development Assistant Prompt
 date: '2025-10-08'
-tier: "\u03B1"
+tier: "α"
 domain: governance
 persona: promachos
 status: candidate

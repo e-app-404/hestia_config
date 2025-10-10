@@ -3,7 +3,7 @@ id: prompt_20250331_7917d7
 slug: batch6-mac-import-hephaestus-config-updated
 title: Batch6 Mac Import Hephaestus Config Updated
 date: '2025-03-31'
-tier: "\u03B1"
+tier: "α"
 domain: operational
 persona: promachos
 status: approved

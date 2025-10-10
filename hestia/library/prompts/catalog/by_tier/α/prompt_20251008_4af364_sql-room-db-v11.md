@@ -3,7 +3,7 @@ id: prompt_20251008_4af364
 slug: sql-room-db-v11
 title: Sql Room Db V1.1
 date: '2025-10-08'
-tier: "\u03B1"
+tier: "α"
 domain: governance
 persona: promachos
 status: candidate

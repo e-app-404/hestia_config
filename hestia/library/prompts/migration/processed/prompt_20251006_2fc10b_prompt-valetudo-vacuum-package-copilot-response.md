@@ -1,21 +1,17 @@
 ---
 id: prompt_20251006_2fc10b
 slug: prompt-valetudo-vacuum-package-copilot-response
-title: "\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\
-  \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\
-  \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\
-  \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\
-  \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550"
+title: "Valetudo Vacuum Control Package Optimization"
 date: '2025-10-06'
-tier: "\u03B1"
-domain: validation
-persona: promachos
-status: candidate
-tags: []
+tier: "α"
+domain: generation
+persona: pythagoras
+status: obsolete
+tags: [valetudo, vacuum, package, yaml, configuration, packages, room_db, appdaemon, hacs, var, sql]
 version: '1.0'
 source_path: ha-config/prompt_valetudo-vacuum-package-copilot-response.md
-author: Unknown
-related: []
+author: evert
+related: [prompt_20251007_650863, prompt_20251007_a8cc86]
 last_updated: '2025-10-09T01:44:27.330535'
 redaction_log: []
 ---

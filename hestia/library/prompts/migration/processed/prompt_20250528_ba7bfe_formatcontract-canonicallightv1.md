@@ -3,7 +3,7 @@ id: prompt_20250528_ba7bfe
 slug: formatcontract-canonicallightv1
 title: 'format_contract: canonical_light_v1'
 date: '2025-05-28'
-tier: "\u03B1"
+tier: "α"
 domain: operational
 persona: promachos
 status: approved

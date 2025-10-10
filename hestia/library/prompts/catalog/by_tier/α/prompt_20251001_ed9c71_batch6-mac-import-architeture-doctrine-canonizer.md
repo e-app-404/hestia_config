@@ -3,7 +3,7 @@ id: prompt_20251001_ed9c71
 slug: batch6-mac-import-architeture-doctrine-canonizer
 title: Batch6 Mac Import Architeture Doctrine Canonizer
 date: '2025-10-01'
-tier: "\u03B1"
+tier: "α"
 domain: operational
 persona: promachos
 status: candidate

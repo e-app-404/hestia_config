@@ -4,7 +4,7 @@ slug: refined-instruction-set-hestia-configuration-refac
 title: "\U0001F9E0 **Refined Instruction Set: HESTIA Configuration Refactoring & Architecture\
   \ Optimization**"
 date: '2025-10-01'
-tier: "\u03B1"
+tier: "α"
 domain: validation
 persona: promachos
 status: deprecated

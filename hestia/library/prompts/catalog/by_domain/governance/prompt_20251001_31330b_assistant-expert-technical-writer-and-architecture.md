@@ -3,7 +3,7 @@ id: prompt_20251001_31330b
 slug: assistant-expert-technical-writer-and-architecture
 title: 'Assistant: Expert Technical Writer And Architecture Reviewer'
 date: '2025-10-01'
-tier: "\u03B1"
+tier: "α"
 domain: governance
 persona: promachos
 status: candidate

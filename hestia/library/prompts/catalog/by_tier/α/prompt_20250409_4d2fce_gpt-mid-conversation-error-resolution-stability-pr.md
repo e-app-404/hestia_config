@@ -3,7 +3,7 @@ id: prompt_20250409_4d2fce
 slug: gpt-mid-conversation-error-resolution-stability-pr
 title: "\U0001F6E0\uFE0F GPT Mid-Conversation Error Resolution & Stability Protocol"
 date: '2025-04-09'
-tier: "\u03B1"
+tier: "α"
 domain: extraction
 persona: promachos
 status: approved

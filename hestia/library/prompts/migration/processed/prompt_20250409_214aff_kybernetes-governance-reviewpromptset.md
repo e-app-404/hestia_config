@@ -3,7 +3,7 @@ id: prompt_20250409_214aff
 slug: kybernetes-governance-reviewpromptset
 title: Kybernetes Governance Review.Promptset
 date: '2025-04-09'
-tier: "\u03B1"
+tier: "α"
 domain: validation
 persona: promachos
 status: approved

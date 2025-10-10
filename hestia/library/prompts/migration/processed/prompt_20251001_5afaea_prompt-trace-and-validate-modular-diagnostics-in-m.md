@@ -3,7 +3,7 @@ id: prompt_20251001_5afaea
 slug: prompt-trace-and-validate-modular-diagnostics-in-m
 title: "\U0001F9E0 Prompt: Trace and Validate Modular Diagnostics in Mnemosyne Pipeline"
 date: '2025-10-01'
-tier: "\u03B1"
+tier: "α"
 domain: validation
 persona: promachos
 status: candidate

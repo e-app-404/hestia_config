@@ -4,7 +4,7 @@ slug: mnemosyne-snapshot-engine-phase-remediation-dryrun
 title: "\U0001F9E0 **Mnemosyne Snapshot Engine \u2013 Phase Remediation & DRY_RUN\
   \ Patch Role Context**"
 date: '2025-10-01'
-tier: "\u03B1"
+tier: "α"
 domain: operational
 persona: promachos
 status: approved

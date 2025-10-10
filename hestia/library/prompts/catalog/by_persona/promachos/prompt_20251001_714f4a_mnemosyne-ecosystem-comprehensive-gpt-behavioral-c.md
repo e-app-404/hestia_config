@@ -3,7 +3,7 @@ id: prompt_20251001_714f4a
 slug: mnemosyne-ecosystem-comprehensive-gpt-behavioral-c
 title: "\U0001F9E0 **Mnemosyne Ecosystem \u2013 Comprehensive GPT Behavioral Context**"
 date: '2025-10-01'
-tier: "\u03B1"
+tier: "α"
 domain: validation
 persona: promachos
 status: approved

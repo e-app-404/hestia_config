@@ -3,7 +3,7 @@ id: prompt_20250526_002
 slug: batch4-prompt-20250526-002-autonomou
 title: "Batch4 ### \U0001F9E0 `Prompt 20250526 002` \u2013 Autonomou"
 date: '2025-05-26'
-tier: "\u03B1"
+tier: "α"
 domain: operational
 persona: strategos
 status: approved

@@ -4,7 +4,7 @@ slug: assistant-the-integration-strategist-for-the-janus
 title: 'Assistant: The **Integration Strategist** For The **Janus Network Interface
   Engine** (Nie)'
 date: '2025-10-01'
-tier: "\u03B1"
+tier: "α"
 domain: validation
 persona: promachos
 status: candidate

@@ -3,7 +3,7 @@ id: prompt_20250527_014
 slug: detect-whether-each-phase-declares-the-phases-it-d
 title: '*: Detect whether each phase declares the phases it depends on.'
 date: '2025-10-01'
-tier: "\u03B1"
+tier: "α"
 domain: validation
 persona: promachos
 status: candidate

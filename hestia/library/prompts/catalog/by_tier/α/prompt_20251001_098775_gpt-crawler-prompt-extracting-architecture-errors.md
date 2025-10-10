@@ -4,7 +4,7 @@ slug: gpt-crawler-prompt-extracting-architecture-errors
 title: "\U0001F9E0 GPT Crawler Prompt: Extracting Architecture Errors and Insights\
   \ (HESTIA v2.0)"
 date: '2025-10-01'
-tier: "\u03B1"
+tier: "α"
 domain: extraction
 persona: promachos
 status: deprecated

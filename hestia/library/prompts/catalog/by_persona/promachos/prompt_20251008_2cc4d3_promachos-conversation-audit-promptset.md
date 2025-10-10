@@ -3,7 +3,7 @@ id: prompt_20251008_2cc4d3
 slug: promachos-conversation-audit-promptset
 title: '>'
 date: '2025-10-08'
-tier: "\u03B1"
+tier: "α"
 domain: extraction
 persona: promachos
 status: candidate

@@ -3,7 +3,7 @@ id: prompt_20251001_c51fa9
 slug: batch6-mac-import-gpt-surgical-debugger-daedalia
 title: Batch6 Mac Import Gpt Surgical Debugger Daedalia
 date: '2025-10-01'
-tier: "\u03B1"
+tier: "α"
 domain: extraction
 persona: promachos
 status: candidate

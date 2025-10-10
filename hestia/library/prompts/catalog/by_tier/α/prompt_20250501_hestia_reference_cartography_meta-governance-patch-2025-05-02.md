@@ -3,7 +3,7 @@ id: prompt_20250501_hestia_reference_cartography
 slug: meta-governance-patch-2025-05-02
 title: "Meta Governance Patch \u2013 2025-05-02"
 date: '2025-05-02'
-tier: "\u03B1"
+tier: "α"
 domain: governance
 persona: promachos
 status: candidate

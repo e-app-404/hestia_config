@@ -3,7 +3,7 @@ id: prompt_20250929_88edb5
 slug: optimized-gpt-strategos-prompt-for-ha-bb8-project
 title: Optimized GPT Strategos Prompt for HA-BB8 Project Management
 date: '2025-09-29'
-tier: "\u03B1"
+tier: "α"
 domain: governance
 persona: promachos
 status: candidate

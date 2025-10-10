@@ -3,7 +3,7 @@ id: prompt_20251001_48ccf5
 slug: prompt-template-inline-self-activating-v1
 title: Prompt Template Inline Self Activating V1
 date: '2025-10-01'
-tier: "\u03B1"
+tier: "α"
 domain: validation
 persona: promachos
 status: approved

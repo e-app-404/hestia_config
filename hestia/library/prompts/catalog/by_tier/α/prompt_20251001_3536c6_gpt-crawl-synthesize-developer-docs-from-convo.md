@@ -3,7 +3,7 @@ id: prompt_20251001_3536c6
 slug: gpt-crawl-synthesize-developer-docs-from-convo
 title: Gpt Crawl Synthesize Developer Docs From Convo
 date: '2025-10-01'
-tier: "\u03B1"
+tier: "α"
 domain: instructional
 persona: promachos
 status: candidate

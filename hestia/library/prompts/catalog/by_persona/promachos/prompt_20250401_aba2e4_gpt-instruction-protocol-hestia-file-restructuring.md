@@ -3,7 +3,7 @@ id: prompt_20250401_aba2e4
 slug: gpt-instruction-protocol-hestia-file-restructuring
 title: "\U0001F6E1\uFE0F GPT Instruction Protocol: HESTIA File Restructuring & Redistribution"
 date: '2025-04-01'
-tier: "\u03B1"
+tier: "α"
 domain: validation
 persona: promachos
 status: candidate

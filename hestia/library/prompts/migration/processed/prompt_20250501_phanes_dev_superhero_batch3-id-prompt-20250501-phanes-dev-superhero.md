@@ -3,7 +3,7 @@ id: prompt_20250501_phanes_dev_superhero
 slug: batch3-id-prompt-20250501-phanes-dev-superhero
 title: 'Batch3 Id: Prompt 20250501 Phanes Dev Superhero'
 date: '2025-10-01'
-tier: "\u03B1"
+tier: "α"
 domain: validation
 persona: promachos
 status: approved

@@ -3,7 +3,7 @@ id: prompt_20251001_b1bda5
 slug: batch1-prompt-canonical-meta-schema-master
 title: Batch1 Prompt Canonical Meta Schema Master
 date: '2025-10-01'
-tier: "\u03B1"
+tier: "α"
 domain: governance
 persona: promachos
 status: deprecated

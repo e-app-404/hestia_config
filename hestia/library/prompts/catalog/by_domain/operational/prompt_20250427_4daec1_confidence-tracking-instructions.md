@@ -3,7 +3,7 @@ id: prompt_20250427_4daec1
 slug: confidence-tracking-instructions
 title: Confidence Tracking Instructions
 date: '2025-04-27'
-tier: "\u03B1"
+tier: "α"
 domain: operational
 persona: promachos
 status: candidate

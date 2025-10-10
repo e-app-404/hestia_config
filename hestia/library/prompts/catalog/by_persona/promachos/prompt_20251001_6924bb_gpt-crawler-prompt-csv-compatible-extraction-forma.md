@@ -3,7 +3,7 @@ id: prompt_20251001_6924bb
 slug: gpt-crawler-prompt-csv-compatible-extraction-forma
 title: "\U0001F9E0 GPT Crawler Prompt: CSV-Compatible Extraction Format (HESTIA v2.0)"
 date: '2025-10-01'
-tier: "\u03B1"
+tier: "α"
 domain: extraction
 persona: promachos
 status: deprecated

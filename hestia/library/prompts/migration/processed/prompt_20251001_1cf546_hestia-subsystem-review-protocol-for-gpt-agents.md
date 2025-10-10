@@ -3,7 +3,7 @@ id: prompt_20251001_1cf546
 slug: hestia-subsystem-review-protocol-for-gpt-agents
 title: "\u2705 Hestia Subsystem Review Protocol (For GPT Agents)"
 date: '2025-10-01'
-tier: "\u03B1"
+tier: "α"
 domain: validation
 persona: promachos
 status: candidate

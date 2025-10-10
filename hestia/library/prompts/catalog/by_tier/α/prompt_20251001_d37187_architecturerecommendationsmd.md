@@ -3,7 +3,7 @@ id: prompt_20251001_d37187
 slug: architecturerecommendationsmd
 title: "\U0001F9F1 ARCHITECTURE_RECOMMENDATIONS.md"
 date: '2025-10-01'
-tier: "\u03B1"
+tier: "α"
 domain: extraction
 persona: promachos
 status: candidate

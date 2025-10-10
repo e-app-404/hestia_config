@@ -3,7 +3,7 @@ id: prompt_20251001_88efb4
 slug: hestia-configuration-reviewer-gpt-v1705
 title: "\U0001F6E0\uFE0F Hestia Configuration Reviewer GPT (v17.05)"
 date: '2025-10-01'
-tier: "\u03B1"
+tier: "α"
 domain: validation
 persona: promachos
 status: candidate

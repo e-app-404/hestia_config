@@ -3,7 +3,7 @@ id: prompt_20250401_931d51
 slug: gpt-instructions-hestia-conversation-analysis-for
 title: 'GPT Instructions: HESTIA Conversation Analysis for Architectural Knowledge'
 date: '2025-04-01'
-tier: "\u03B1"
+tier: "α"
 domain: instructional
 persona: nomia
 status: candidate

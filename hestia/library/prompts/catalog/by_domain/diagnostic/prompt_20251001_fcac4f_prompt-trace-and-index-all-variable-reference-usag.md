@@ -4,7 +4,7 @@ slug: prompt-trace-and-index-all-variable-reference-usag
 title: "\U0001F9E0 Prompt: Trace and Index All Variable & Reference Usage per Mnemosyne\
   \ Phase"
 date: '2025-10-01'
-tier: "\u03B1"
+tier: "α"
 domain: diagnostic
 persona: promachos
 status: candidate

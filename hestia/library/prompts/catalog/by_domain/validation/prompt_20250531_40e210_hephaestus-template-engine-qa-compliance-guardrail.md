@@ -4,7 +4,7 @@ slug: hephaestus-template-engine-qa-compliance-guardrail
 title: "\U0001F9F0 **Hephaestus Template Engine QA Compliance & Guardrail Upgrade\
   \ Plan**"
 date: '2025-05-31'
-tier: "\u03B1"
+tier: "α"
 domain: validation
 persona: promachos
 status: candidate

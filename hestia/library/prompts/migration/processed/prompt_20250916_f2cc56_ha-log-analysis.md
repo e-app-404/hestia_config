@@ -3,7 +3,7 @@ id: prompt_20250916_f2cc56
 slug: ha-log-analysis
 title: '|'
 date: '2025-09-16'
-tier: "\u03B1"
+tier: "α"
 domain: operational
 persona: promachos
 status: candidate

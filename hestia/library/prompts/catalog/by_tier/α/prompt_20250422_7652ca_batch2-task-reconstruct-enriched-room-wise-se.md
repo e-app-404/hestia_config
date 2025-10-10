@@ -3,7 +3,7 @@ id: prompt_20250422_7652ca
 slug: batch2-task-reconstruct-enriched-room-wise-se
 title: 'Batch2 Task: "Reconstruct Enriched Room Wise Se'
 date: '2025-04-22'
-tier: "\u03B1"
+tier: "α"
 domain: extraction
 persona: promachos
 status: candidate

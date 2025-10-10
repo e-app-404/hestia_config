@@ -7,8 +7,8 @@ date: '2025-10-01'
 tier: "α"
 domain: diagnostic
 persona: promachos
-status: candidate
-tags: []
+status: deprecated
+tags: [mnemosyne, tool, shell, indexation, index, diagnostic]
 version: '1.0'
 source_path: batch 4/batch4-prompt_mnemosyne_variable_index_20250528.md
 author: Unknown
