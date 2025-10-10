@@ -9,11 +9,6 @@ last_motion:
   initial: "Last motion"
   max: 100
 
-tts_gate_registry:
-  name: "TTS Gate Registry"
-  initial: "{}"
-  max: 4096
-
 plex_tv_index:
   name: "Plex TV Index"
   initial: '{"shows": {}, "seasons": {}, "episodes": {}, "updated": ""}'
