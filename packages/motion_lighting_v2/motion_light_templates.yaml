@@ -70,20 +70,65 @@ template:
         unique_id: "motion_timeout_upstairs_sql_v15"
         state: >-
           {% set raw = state_attr('sensor.room_configs_motion_lighting','payload') %}
-          {% set parsed = raw | from_json if raw else {} %}
-          {% set cfg = parsed.get('upstairs', {}) if parsed is mapping else {} %}
-          {{ cfg.get('timeout', 180) }}
+          {% if raw %}
+            {% set parsed = raw | from_json %}
+            {% if parsed is mapping and 'upstairs' in parsed %}
+              {% set cfg = parsed.upstairs %}
+              {% if cfg is mapping %}
+                {{ cfg.get('timeout', 180) }}
+              {% elif cfg is string %}
+                {% set double_parsed = cfg | from_json %}
+                {{ double_parsed.get('timeout', 180) if double_parsed is mapping else 180 }}
+              {% else %}
+                180
+              {% endif %}
+            {% else %}
+              180
+            {% endif %}
+          {% else %}
+            180
+          {% endif %}
         attributes:
           bypass: >-
             {% set raw = state_attr('sensor.room_configs_motion_lighting','payload') %}
-            {% set parsed = raw | from_json if raw else {} %}
-            {% set cfg = parsed.get('upstairs', {}) if parsed is mapping else {} %}
-            {{ cfg.get('bypass', false) }}
+            {% if raw %}
+              {% set parsed = raw | from_json %}
+              {% if parsed is mapping and 'upstairs' in parsed %}
+                {% set cfg = parsed.upstairs %}
+                {% if cfg is mapping %}
+                  {{ cfg.get('bypass', false) }}
+                {% elif cfg is string %}
+                  {% set double_parsed = cfg | from_json %}
+                  {{ double_parsed.get('bypass', false) if double_parsed is mapping else false }}
+                {% else %}
+                  false
+                {% endif %}
+              {% else %}
+                false
+              {% endif %}
+            {% else %}
+              false
+            {% endif %}
           last_triggered: >-
             {% set raw = state_attr('sensor.room_configs_motion_lighting','payload') %}
-            {% set parsed = raw | from_json if raw else {} %}
-            {% set cfg = parsed.get('upstairs', {}) if parsed is mapping else {} %}
-            {{ cfg.get('last_triggered', '') }}
+            {% if raw %}
+              {% set parsed = raw | from_json %}
+              {% if parsed is mapping and 'upstairs' in parsed %}
+                {% set cfg = parsed.upstairs %}
+                {% if cfg is mapping %}
+                  {{ cfg.get('last_triggered', '') }}
+                {% elif cfg is string %}
+                  {% set double_parsed = cfg | from_json %}
+                  {{ double_parsed.get('last_triggered', '') if double_parsed is mapping else '' }}
+                {% else %}
+                  ''
+                {% endif %}
+              {% else %}
+                ''
+              {% endif %}
+            {% else %}
+              ''
+            {% endif %}
           room_id: "upstairs"
           source: "room_database_sql"
 
@@ -91,20 +136,65 @@ template:
         unique_id: "motion_timeout_downstairs_sql_v15"
         state: >-
           {% set raw = state_attr('sensor.room_configs_motion_lighting','payload') %}
-          {% set parsed = raw | from_json if raw else {} %}
-          {% set cfg = parsed.get('downstairs', {}) if parsed is mapping else {} %}
-          {{ cfg.get('timeout', 180) }}
+          {% if raw %}
+            {% set parsed = raw | from_json %}
+            {% if parsed is mapping and 'downstairs' in parsed %}
+              {% set cfg = parsed.downstairs %}
+              {% if cfg is mapping %}
+                {{ cfg.get('timeout', 180) }}
+              {% elif cfg is string %}
+                {% set double_parsed = cfg | from_json %}
+                {{ double_parsed.get('timeout', 180) if double_parsed is mapping else 180 }}
+              {% else %}
+                180
+              {% endif %}
+            {% else %}
+              180
+            {% endif %}
+          {% else %}
+            180
+          {% endif %}
         attributes:
           bypass: >-
             {% set raw = state_attr('sensor.room_configs_motion_lighting','payload') %}
-            {% set parsed = raw | from_json if raw else {} %}
-            {% set cfg = parsed.get('downstairs', {}) if parsed is mapping else {} %}
-            {{ cfg.get('bypass', false) }}
+            {% if raw %}
+              {% set parsed = raw | from_json %}
+              {% if parsed is mapping and 'downstairs' in parsed %}
+                {% set cfg = parsed.downstairs %}
+                {% if cfg is mapping %}
+                  {{ cfg.get('bypass', false) }}
+                {% elif cfg is string %}
+                  {% set double_parsed = cfg | from_json %}
+                  {{ double_parsed.get('bypass', false) if double_parsed is mapping else false }}
+                {% else %}
+                  false
+                {% endif %}
+              {% else %}
+                false
+              {% endif %}
+            {% else %}
+              false
+            {% endif %}
           last_triggered: >-
             {% set raw = state_attr('sensor.room_configs_motion_lighting','payload') %}
-            {% set parsed = raw | from_json if raw else {} %}
-            {% set cfg = parsed.get('downstairs', {}) if parsed is mapping else {} %}
-            {{ cfg.get('last_triggered', '') }}
+            {% if raw %}
+              {% set parsed = raw | from_json %}
+              {% if parsed is mapping and 'downstairs' in parsed %}
+                {% set cfg = parsed.downstairs %}
+                {% if cfg is mapping %}
+                  {{ cfg.get('last_triggered', '') }}
+                {% elif cfg is string %}
+                  {% set double_parsed = cfg | from_json %}
+                  {{ double_parsed.get('last_triggered', '') if double_parsed is mapping else '' }}
+                {% else %}
+                  ''
+                {% endif %}
+              {% else %}
+                ''
+              {% endif %}
+            {% else %}
+              ''
+            {% endif %}
           room_id: "downstairs"
           source: "room_database_sql"
 
@@ -112,20 +202,65 @@ template:
         unique_id: "motion_timeout_kitchen_sql_v15"
         state: >-
           {% set raw = state_attr('sensor.room_configs_motion_lighting','payload') %}
-          {% set parsed = raw | from_json if raw else {} %}
-          {% set cfg = parsed.get('kitchen', {}) if parsed is mapping else {} %}
-          {{ cfg.get('timeout', 300) }}
+          {% if raw %}
+            {% set parsed = raw | from_json %}
+            {% if parsed is mapping and 'kitchen' in parsed %}
+              {% set cfg = parsed.kitchen %}
+              {% if cfg is mapping %}
+                {{ cfg.get('timeout', 300) }}
+              {% elif cfg is string %}
+                {% set double_parsed = cfg | from_json %}
+                {{ double_parsed.get('timeout', 300) if double_parsed is mapping else 300 }}
+              {% else %}
+                300
+              {% endif %}
+            {% else %}
+              300
+            {% endif %}
+          {% else %}
+            300
+          {% endif %}
         attributes:
           bypass: >-
             {% set raw = state_attr('sensor.room_configs_motion_lighting','payload') %}
-            {% set parsed = raw | from_json if raw else {} %}
-            {% set cfg = parsed.get('kitchen', {}) if parsed is mapping else {} %}
-            {{ cfg.get('bypass', false) }}
+            {% if raw %}
+              {% set parsed = raw | from_json %}
+              {% if parsed is mapping and 'kitchen' in parsed %}
+                {% set cfg = parsed.kitchen %}
+                {% if cfg is mapping %}
+                  {{ cfg.get('bypass', false) }}
+                {% elif cfg is string %}
+                  {% set double_parsed = cfg | from_json %}
+                  {{ double_parsed.get('bypass', false) if double_parsed is mapping else false }}
+                {% else %}
+                  false
+                {% endif %}
+              {% else %}
+                false
+              {% endif %}
+            {% else %}
+              false
+            {% endif %}
           last_triggered: >-
             {% set raw = state_attr('sensor.room_configs_motion_lighting','payload') %}
-            {% set parsed = raw | from_json if raw else {} %}
-            {% set cfg = parsed.get('kitchen', {}) if parsed is mapping else {} %}
-            {{ cfg.get('last_triggered', '') }}
+            {% if raw %}
+              {% set parsed = raw | from_json %}
+              {% if parsed is mapping and 'kitchen' in parsed %}
+                {% set cfg = parsed.kitchen %}
+                {% if cfg is mapping %}
+                  {{ cfg.get('last_triggered', '') }}
+                {% elif cfg is string %}
+                  {% set double_parsed = cfg | from_json %}
+                  {{ double_parsed.get('last_triggered', '') if double_parsed is mapping else '' }}
+                {% else %}
+                  ''
+                {% endif %}
+              {% else %}
+                ''
+              {% endif %}
+            {% else %}
+              ''
+            {% endif %}
           room_id: "kitchen"
           source: "room_database_sql"
 
