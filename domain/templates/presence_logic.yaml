@@ -8,7 +8,6 @@
     - name: "Evert Home Status"
       unique_id: "evert_home_status"
       icon: mdi:account-check
-      device_class: presence
       state: >
         {% if states('person.evert') == 'home' %}
           Home
@@ -52,8 +51,6 @@
 
     - name: "Evert Last Known Zone"
       unique_id: "evert_last_known_zone"
-      icon: mdi:map-marker-radius
-      device_class: presence
       state: >
         {% set zone_id = states('person.evert') %}
         {% if zone_id == 'not_home' %}
