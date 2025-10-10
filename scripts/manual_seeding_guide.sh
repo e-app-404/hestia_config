@@ -14,47 +14,73 @@ echo "  Go to: Developer Tools → Services"
 echo "  Service: rest_command.room_db_update_config"
 echo
 echo "🏠 Motion Lighting Configurations:"
+echo "Execute each of these in Developer Tools → Services:"
 echo
 
-# Motion Lighting rooms
-declare -A MOTION_ROOMS=(
-    ["kitchen"]='{"timeout": 180, "bypass": false, "illuminance_threshold": 10, "presence_timeout_multiplier": 1.0}'
-    ["living_room"]='{"timeout": 300, "bypass": false, "illuminance_threshold": 8, "presence_timeout_multiplier": 1.2}'
-    ["ensuite"]='{"timeout": 120, "bypass": false, "illuminance_threshold": 5, "presence_timeout_multiplier": 0.8}'
-    ["upstairs"]='{"timeout": 180, "bypass": false, "illuminance_threshold": 12, "presence_timeout_multiplier": 1.0}'
-    ["downstairs"]='{"timeout": 240, "bypass": false, "illuminance_threshold": 15, "presence_timeout_multiplier": 1.1}'
-)
+echo "📝 Kitchen Motion Lighting:"
+echo "room_id: kitchen"
+echo "domain: motion_lighting"
+echo 'config_data: {"timeout": 180, "bypass": false, "illuminance_threshold": 10, "presence_timeout_multiplier": 1.0}'
+echo "---"
 
-for room in "${!MOTION_ROOMS[@]}"; do
-    config="${MOTION_ROOMS[$room]}"
-    echo "📝 $room:"
-    echo "room_id: $room"
-    echo "domain: motion_lighting"  
-    echo "config_data: $config"
-    echo "---"
-done
+echo "📝 Living Room Motion Lighting:"
+echo "room_id: living_room" 
+echo "domain: motion_lighting"
+echo 'config_data: {"timeout": 300, "bypass": false, "illuminance_threshold": 8, "presence_timeout_multiplier": 1.2}'
+echo "---"
+
+echo "📝 Ensuite Motion Lighting:"
+echo "room_id: ensuite"
+echo "domain: motion_lighting"
+echo 'config_data: {"timeout": 120, "bypass": false, "illuminance_threshold": 5, "presence_timeout_multiplier": 0.8}'
+echo "---"
+
+echo "📝 Upstairs Motion Lighting:"
+echo "room_id: upstairs"
+echo "domain: motion_lighting"
+echo 'config_data: {"timeout": 180, "bypass": false, "illuminance_threshold": 12, "presence_timeout_multiplier": 1.0}'
+echo "---"
+
+echo "📝 Downstairs Motion Lighting:"
+echo "room_id: downstairs"
+echo "domain: motion_lighting"
+echo 'config_data: {"timeout": 240, "bypass": false, "illuminance_threshold": 15, "presence_timeout_multiplier": 1.1}'
+echo "---"
 
 echo
 echo "🧹 Vacuum Control Configurations:"
+echo "Execute each of these in Developer Tools → Services:"
 echo
 
-# Vacuum Control rooms  
-declare -A VACUUM_ROOMS=(
-    ["kitchen"]='{"segment_id": 2, "last_cleaned": null, "cleaning_frequency": 7, "needs_cleaning": 1}'
-    ["living_room"]='{"segment_id": 3, "last_cleaned": null, "cleaning_frequency": 14, "needs_cleaning": 1}'
-    ["ensuite"]='{"segment_id": 4, "last_cleaned": null, "cleaning_frequency": 21, "needs_cleaning": 1}'
-    ["hallway"]='{"segment_id": 5, "last_cleaned": null, "cleaning_frequency": 14, "needs_cleaning": 1}'
-    ["powder_room"]='{"segment_id": 6, "last_cleaned": null, "cleaning_frequency": 21, "needs_cleaning": 1}'
-)
+echo "📝 Kitchen Vacuum Control:"
+echo "room_id: kitchen"
+echo "domain: vacuum_control"
+echo 'config_data: {"segment_id": 2, "last_cleaned": null, "cleaning_frequency": 7, "needs_cleaning": 1}'
+echo "---"
 
-for room in "${!VACUUM_ROOMS[@]}"; do
-    config="${VACUUM_ROOMS[$room]}"
-    echo "📝 $room:"
-    echo "room_id: $room"
-    echo "domain: vacuum_control"
-    echo "config_data: $config"
-    echo "---"
-done
+echo "📝 Living Room Vacuum Control:"
+echo "room_id: living_room"
+echo "domain: vacuum_control"
+echo 'config_data: {"segment_id": 3, "last_cleaned": null, "cleaning_frequency": 14, "needs_cleaning": 1}'
+echo "---"
+
+echo "📝 Ensuite Vacuum Control:"
+echo "room_id: ensuite"
+echo "domain: vacuum_control"
+echo 'config_data: {"segment_id": 4, "last_cleaned": null, "cleaning_frequency": 21, "needs_cleaning": 1}'
+echo "---"
+
+echo "📝 Hallway Vacuum Control:"
+echo "room_id: hallway"
+echo "domain: vacuum_control"
+echo 'config_data: {"segment_id": 5, "last_cleaned": null, "cleaning_frequency": 14, "needs_cleaning": 1}'
+echo "---"
+
+echo "📝 Powder Room Vacuum Control:"
+echo "room_id: powder_room"  
+echo "domain: vacuum_control"
+echo 'config_data: {"segment_id": 6, "last_cleaned": null, "cleaning_frequency": 21, "needs_cleaning": 1}'
+echo "---"
 
 echo
 echo "📋 STEP 3: Verification"
