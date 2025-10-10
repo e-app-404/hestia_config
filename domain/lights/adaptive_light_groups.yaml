@@ -37,3 +37,21 @@
     - light.kitchen_ceiling_alpha
     - light.kitchen_cupboards_lightstrip_alpha
     - light.laundry_ceiling_alpha
+
+- platform: group
+  name: "Adaptive Living Room Light Group"
+  unique_id: "0002F3A4B5C60704"
+  entities:
+    - light.living_room_desk_alpha_matter
+    - light.living_room_floorlamp_alpha_matter
+    - light.living_room_foxy_alpha_matter
+    - light.living_room_main_alpha_matter
+    - light.living_room_side_alpha_matter
+
+- platform: group
+  name: "Adaptive Ensuite Light Group"
+  unique_id: "0002C3D4E5F60701"
+  entities:
+    - light.ensuite_accent_alpha
+    - light.ensuite_main_alpha_matter
+    - light.ensuite_lightstrip_alpha_matter
