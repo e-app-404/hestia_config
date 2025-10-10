@@ -9,7 +9,7 @@
 {%- set rn_ok = (rn_state | regex_match('^-?\d+$')) %}
 {%- set topic = states('input_text.valetudo_base_topic') %}
 {%- set topic_ok = (topic | length) > 0 and topic != 'unknown' and topic != 'unavailable' %}
-{%- set auto_state = states('automation.motion_lights_bedroom_sql_v15') %}
+{%- set auto_state = states('automation.motion_lights_bedroom_sql_v1_5') %}
 {%- set auto_ok = auto_state not in ['unknown','unavailable'] %}
 
 {%- set checks = {
@@ -17,7 +17,7 @@
   'sensor.room_configs_vacuum_control.payload_present': vc_ok,
   'sensor.rooms_needing_cleaning.state_is_count': rn_ok,
   'input_text.valetudo_base_topic.present': topic_ok,
-  'automation.motion_lights_bedroom_sql_v15.present': auto_ok
+  'automation.motion_lights_bedroom_sql_v1_5.present': auto_ok
 } %}
 
 {%- set failures = namespace(items=[]) %}

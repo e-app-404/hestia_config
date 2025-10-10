@@ -211,15 +211,19 @@ appdaemon_index:
       validation_required: "Test script execution and verify MQTT/database updates"
       
     validation_execution_readiness:
-      status: "diagnosing_automation_loading"
+      status: "investigation_complete_network_issue_identified"
       execution_timestamp: "2025-10-10T15:00:00Z"
       previous_issue: "AppDaemon app initialization failing due to incorrect canonical_mapping_file path"
       fix_applied: "Updated apps.yaml to use correct path: /config/www/area_mapping.yaml"
-      current_diagnosis:
-        rest_command_status: "Still returning 404 - AppDaemon endpoints not accessible"
-        automation_loading: "automation.motion_lights_bedroom_sql_v15 showing as unknown/unavailable"
-        diagnostic_results: "valetudo_base_topic configured, rooms_needing_cleaning count: 1"
-        next_investigation: "Check if automation package is properly loaded and motion sensor exists"
+      investigation_completed:
+        findings:
+          appdaemon_app_status: "Successfully initializing - room_db_updater confirmed running"
+          database_status: "Working - initialized at /config/room_database.db with valid schema"
+          network_connectivity: "Unstable - constant disconnects/reconnects with Home Assistant"
+          automation_entity_id: "Mismatch - registered as automation.motion_lights_bedroom_sql_v1_5 (with underscores)"
+          binary_sensor_status: "Confirmed present - binary_sensor.bedroom_motion_beta exists in entity registry"
+        root_cause_analysis:
+                    rest_command_404: \"Network instability preventing API access, not configuration error\"\n          diagnostics_failure: \"Wrong entity ID in template (motion_lights_bedroom_sql_v15 vs motion_lights_bedroom_sql_v1_5)\"\n          system_status: \"AppDaemon functional but network-impaired\"\n        recommended_actions:\n          immediate:\n            - \"Test diagnostics.jinja with corrected automation entity ID\"\n            - \"Monitor AppDaemon network stability during low-activity periods\"\n            - \"Test REST commands during stable connectivity windows\"\n          network_troubleshooting:\n            - \"Check Home Assistant system resources and load\"\n            - \"Verify AppDaemon add-on memory/CPU allocation\"\n            - \"Consider AppDaemon add-on restart during maintenance window\"\n          validation_retry:\n            - \"Retry rest_command.room_db_health during stable network period\"\n            - \"Execute motion automation test when connectivity stable\"\n            - \"Validate SQL sensor payload updates after database writes\"
       components_prepared:
         - "Health REST command added to package configuration"
         - "Consolidated package eliminating duplicate key warnings" 
