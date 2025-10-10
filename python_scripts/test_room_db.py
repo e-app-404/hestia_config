@@ -2,11 +2,12 @@
 """
 Test script to verify room_db_updater database initialization logic
 """
-import json
 import os
 import sqlite3
 import sys
+
 import yaml
+
 
 def test_database_init():
     """Test database initialization logic"""
@@ -90,7 +91,7 @@ def test_canonical_mapping():
         return False
     
     try:
-        with open(mapping_file, "r") as f:
+        with open(mapping_file) as f:
             amap = yaml.safe_load(f) or {}
         
         # Extract room IDs from nodes
