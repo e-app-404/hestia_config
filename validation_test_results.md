@@ -11,7 +11,9 @@
 - Added `rest_command.room_db_health` to package_room_database.yaml
 - URL: `http://a0d7b954-appdaemon:5050/api/appdaemon/room_db/health`
 - Method: GET with 10s timeout
-- Status: Configuration updated, ready for testing via HA Developer Tools
+- **Issue Found**: 404 errors due to misconfigured canonical_mapping_file path
+- **Fix Applied**: Updated apps.yaml to use correct path `/config/domain/architecture/area_mapping.yaml`
+- **Status**: AppDaemon restart required to pick up configuration fix
 
 ### Step 1: SQL Sensors Baseline ✅
 **Expected SQL Sensor States:**
