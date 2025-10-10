@@ -69,23 +69,23 @@ echo "Phase 4: Diagnostics Validation"
 echo "-------------------------------"
 
 # Check if diagnostics template is valid
-if [ -f "/config/diagnostics.jinja" ]; then
-    echo "✅ Diagnostics template exists"
+if [ -f "/config/hestia/library/templates/devtools/diagnostics.jinja" ]; then
+    echo "✅ Diagnostics template exists at new location"
     
     # Check for key updates
-    if grep -q "motion_lighting_automations.all_present" /config/diagnostics.jinja; then
+    if grep -q "motion_lighting_automations.all_present" /config/hestia/library/templates/devtools/diagnostics.jinja; then
         echo "✅ Diagnostics updated to check all motion lighting automations"
     else
         echo "❌ Diagnostics not updated for multiple automations"
     fi
     
-    if grep -q "automation_states" /config/diagnostics.jinja; then
+    if grep -q "automation_states" /config/hestia/library/templates/devtools/diagnostics.jinja; then
         echo "✅ Diagnostics includes automation states for all rooms"
     else
         echo "❌ Diagnostics missing automation states details"
     fi
 else
-    echo "❌ Diagnostics template not found"
+    echo "❌ Diagnostics template not found at new location"
 fi
 
 # Summary

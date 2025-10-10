@@ -131,6 +131,21 @@ appdaemon_index:
       relocated_from: "/config/test_room_db.py"
       migration_date: "2025-10-10T15:30:00Z"
       
+    - path: "/config/hestia/library/templates/devtools/diagnostics.jinja"
+      type: "diagnostic_template"
+      description: "Multi-room SQL database health check template for Developer Tools"
+      purpose: "system_diagnostics"
+      relocated_from: "/config/diagnostics.jinja"
+      migration_date: "2025-10-10T17:20:00Z"
+      features:
+        - "Multi-room automation state checking"
+        - "SQL sensor payload validation"
+        - "Valetudo base topic verification"
+        - "Room count tracking for motion lighting and vacuum control"
+        - "Comprehensive system health reporting"
+      usage: "Developer Tools → Templates → Paste template content"
+      expected_result: "JSON status report with failures array and system details"
+      
   maintenance_records:
     last_configuration_update: "2025-10-09T23:06:00Z"
     last_successful_startup: "2025-10-09T23:03:10Z"

@@ -35,4 +35,4 @@ add_room_config "living_room" 240 10
 add_room_config "ensuite" 120 5
 
 echo "🎉 Database initialization complete!"
-echo "Run diagnostics.jinja to verify all rooms are configured."
+echo "Run /config/hestia/library/templates/devtools/diagnostics.jinja to verify all rooms are configured."

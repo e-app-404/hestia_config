@@ -37,3 +37,4 @@ add_vacuum_config "living_room" 5
 echo "🎉 Vacuum control database initialization complete!"
 echo "⚠️  Note: Verify segment IDs match your actual Valetudo robot map"
 echo "Test with: script.clean_room_with_sql_tracking"
+echo "Verify system health: /config/hestia/library/templates/devtools/diagnostics.jinja"
