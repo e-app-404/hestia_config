@@ -9,12 +9,5 @@ last_motion:
   initial: "Last motion"
   max: 100
 
-plex_tv_index:
-  name: "Plex TV Index"
-  initial: '{"shows": {}, "seasons": {}, "episodes": {}, "updated": ""}'
-  max: 2048
-
-plex_movie_index:
-  name: "Plex Movie Index"
-  initial: '{"movies": {}, "year_released": {}, "updated": ""}'
-  max: 2048
+# Note: Large JSON storage helpers (tts_gate_registry, plex_tv_index, plex_movie_index)
+# are created via UI to exceed 255 character YAML limit. See .storage/input_text
