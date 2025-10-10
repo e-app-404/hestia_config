@@ -8,8 +8,30 @@ automation:
         to: "on"
     variables:
       _raw: "{{ state_attr('sensor.room_configs_motion_lighting','payload') }}"
-      _cfgs: "{{ _raw | from_json if _raw else {} }}"
-      room_config: "{{ _cfgs.get('bedroom', {}) }}"
+      _cfgs: >-
+        {% if _raw %}
+          {% set parsed = _raw | from_json %}
+          {% if parsed is mapping %}
+            {{ parsed }}
+          {% else %}
+            {}
+          {% endif %}
+        {% else %}
+          {}
+        {% endif %}
+      room_config: >-
+        {% if _cfgs and 'bedroom' in _cfgs %}
+          {% set cfg = _cfgs.bedroom %}
+          {% if cfg is mapping %}
+            {{ cfg }}
+          {% elif cfg is string %}
+            {{ cfg | from_json }}
+          {% else %}
+            {}
+          {% endif %}
+        {% else %}
+          {}
+        {% endif %}
       timeout: "{{ room_config.get('timeout', 120) | int }}"
       bypass: "{{ room_config.get('bypass', false) | bool }}"
       presence_multiplier: "{{ room_config.get('presence_timeout_multiplier', 1.0) | float }}"
