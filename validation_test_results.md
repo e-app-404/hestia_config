@@ -9,7 +9,7 @@
 
 ### Step 0: Health REST Command Added ✅
 - Added `rest_command.room_db_health` to package_room_database.yaml
-- URL: `http://a0d7b954-appdaemon:5050/api/app/room_db_updater/room_db/health`
+- URL: `http://a0d7b954-appdaemon:5050/api/appdaemon/room_db/health`
 - Method: GET with 10s timeout
 - Status: Configuration updated, ready for testing via HA Developer Tools
 
@@ -27,6 +27,7 @@
 ### Step 2: Write Path Test Plan
 **Positive Test - Valid Room Configuration:**
 Service: `rest_command.room_db_update_config`
+Endpoint: `http://a0d7b954-appdaemon:5050/api/appdaemon/room_db/update_config`
 Data:
 ```yaml
 room_id: bedroom
