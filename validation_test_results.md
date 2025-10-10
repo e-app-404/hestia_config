@@ -5,15 +5,16 @@
 - **AppDaemon Apps**: `["hello_world", "room_db_updater"]` confirmed active
 - **Database State**: Schema version 1, empty room_configs table (ready for testing)
 - **Package Configuration**: Consolidated, no duplicate key warnings
-- **Area Mapping**: `bedroom` confirmed as valid room_id for testing
+- **Area Mapping**: File located at `/config/www/area_mapping.yaml`, `bedroom` confirmed as valid room_id for testing
 
 ### Step 0: Health REST Command Added ✅
 - Added `rest_command.room_db_health` to package_room_database.yaml
 - URL: `http://a0d7b954-appdaemon:5050/api/appdaemon/room_db/health`
 - Method: GET with 10s timeout
 - **Issue Found**: 404 errors due to misconfigured canonical_mapping_file path
-- **Fix Applied**: Updated apps.yaml to use correct path `/config/domain/architecture/area_mapping.yaml`
-- **Status**: AppDaemon restart required to pick up configuration fix
+- **Fix Applied**: Updated apps.yaml to use correct path `/config/www/area_mapping.yaml`
+- **File Verified**: Area mapping file confirmed at `/addon_configs/www/area_mapping.yaml`
+- **Status**: Configuration corrected, ready for AppDaemon restart and testing
 
 ### Step 1: SQL Sensors Baseline ✅
 **Expected SQL Sensor States:**
