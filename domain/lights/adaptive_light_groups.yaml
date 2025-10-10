@@ -55,3 +55,17 @@
     - light.ensuite_accent_alpha
     - light.ensuite_main_alpha_matter
     - light.ensuite_lightstrip_alpha_matter
+
+- platform: group
+  name: "Adaptive Downstairs Light Group"
+  unique_id: "0002A3B4C5D60706"
+  entities:
+    - light.downstairs_lightstrip_alpha
+    - light.hallway_lightstrip_alpha
+
+# ── Hallway (Upstairs) ───────────────────────────────────────
+- platform: group
+  name: "Adaptive Upstairs Light Group"
+  unique_id: "0002A3B4C5D60707"
+  entities:
+    - light.upstairs_lightstrip_alpha
