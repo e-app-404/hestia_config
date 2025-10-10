@@ -12,13 +12,16 @@ url: "https://github.com/snarky-snark/home-assistant-variables"
 
 # Variable (HACS) Integration
 
+> **⚠️ RELIABILITY NOTICE (2025-10-10)**: The HACS Variable component has demonstrated unresponsiveness and reliability issues in production environments. For critical applications requiring persistent storage (e.g., TTS gating, state management), **migrate to native Home Assistant components** like `input_text`, `input_number`, or `input_datetime`. See [TTS Gate Migration Guide](/MIGRATION_TTS_GATE.md) for a complete example.
+
 > The `var` component is a Home Assistant integration for declaring and setting generic variable entities. Variables can be set manually using the `var.set` service or they can be set using templates or SQL queries which will be run automatically whenever a specified event fires. The var component depends on the recorder component for up-to-date SQL queries and uses the same database setting.
 
 ## Internal References
 
 - **Domain Configuration**: [`domain/variables/plex_variables.yaml`](../../domain/variables/plex_variables.yaml) - Plex TV and movie index variables
-- **Package Implementation**: [`packages/package_tts_gate.yaml`](../../../packages/package_tts_gate.yaml) - TTS gating logic using variables
-- **Related Components**: `recorder`, `template`, `sql`
+- **Package Implementation**: ~~[`packages/package_tts_gate.yaml`](../../../packages/package_tts_gate.yaml) - TTS gating logic using variables~~ **MIGRATED** to [`packages/package_tts_gate_native.yaml`](../../../packages/package_tts_gate_native.yaml) - Native HA implementation
+- **Migration Guide**: [`MIGRATION_TTS_GATE.md`](../../../MIGRATION_TTS_GATE.md) - Complete migration from HACS Variable to native HA components
+- **Related Components**: `recorder`, `template`, `sql`, `input_text`, `input_number`, `input_datetime`
 
 ## Table of Contents
 
