@@ -104,11 +104,13 @@ appdaemon_index:
       purpose: "validation"
       tests: ["health_endpoint", "update_endpoint"]
       
-    - path: "/config/monitor_appdaemon_startup.sh"
+    - path: "/config/scripts/monitor_appdaemon_startup.sh"
       type: "monitoring_tool"
       description: "AppDaemon startup monitoring script"
       purpose: "diagnostics"
       executable: true
+      relocated_from: "/config/monitor_appdaemon_startup.sh"
+      migration_date: "2025-10-10T15:00:00Z"
       
     - path: "/config/room_database.db"
       type: "database_copy"
@@ -209,11 +211,15 @@ appdaemon_index:
       validation_required: "Test script execution and verify MQTT/database updates"
       
     validation_execution_readiness:
-      status: "configuration_fix_applied"
-      execution_timestamp: "2025-10-10T00:45:00Z"
-      issue_discovered: "AppDaemon app initialization failing due to incorrect canonical_mapping_file path"
+      status: "diagnosing_automation_loading"
+      execution_timestamp: "2025-10-10T15:00:00Z"
+      previous_issue: "AppDaemon app initialization failing due to incorrect canonical_mapping_file path"
       fix_applied: "Updated apps.yaml to use correct path: /config/www/area_mapping.yaml"
-      restart_required: "AppDaemon add-on must be restarted to pick up configuration changes"
+      current_diagnosis:
+        rest_command_status: "Still returning 404 - AppDaemon endpoints not accessible"
+        automation_loading: "automation.motion_lights_bedroom_sql_v15 showing as unknown/unavailable"
+        diagnostic_results: "valetudo_base_topic configured, rooms_needing_cleaning count: 1"
+        next_investigation: "Check if automation package is properly loaded and motion sensor exists"
       components_prepared:
         - "Health REST command added to package configuration"
         - "Consolidated package eliminating duplicate key warnings" 
