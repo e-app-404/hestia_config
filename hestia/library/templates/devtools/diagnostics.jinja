@@ -10,12 +10,12 @@
 {%- set topic = states('input_text.valetudo_base_topic') %}
 {%- set topic_ok = (topic | length) > 0 and topic != 'unknown' and topic != 'unavailable' %}
 {%- set auto_states = {
-  'bedroom': states('automation.motion_lights_bedroom_sql_v1_5'),
-  'upstairs': states('automation.motion_lights_upstairs_sql_v1_5'),
-  'downstairs': states('automation.motion_lights_downstairs_sql_v1_5'),  
-  'kitchen': states('automation.motion_lights_kitchen_sql_v1_5'),
-  'living_room': states('automation.motion_lights_living_room_sql_v1_5'),
-  'ensuite': states('automation.motion_lights_ensuite_sql_v1_5')
+  'bedroom': states('automation.motion_lights_bedroom_sql_v15'),
+  'upstairs': states('automation.motion_lights_upstairs_sql_v15'),
+  'downstairs': states('automation.motion_lights_downstairs_sql_v15'),  
+  'kitchen': states('automation.motion_lights_kitchen_sql_v15'),
+  'living_room': states('automation.motion_lights_living_room_sql_v15'),
+  'ensuite': states('automation.motion_lights_ensuite_sql_v15')
 } %}
 {%- set auto_ok = auto_states.values() | reject('in', ['unknown','unavailable']) | list | length == 6 %}
 
