@@ -1,7 +1,7 @@
 ---
 id: prompt_20251001_563d4c
 slug: home-assistant-configuration-mapper-optimized-gpt
-title: "\U0001F9ED Home Assistant Configuration Mapper \u2014 Optimized GPT Instructions"
+title: "\U0001F9ED Home Assistant Configuration Mapper — Optimized GPT Instructions"
 date: '2025-10-01'
 tier: "beta"
 domain: validation

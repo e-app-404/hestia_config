@@ -3,7 +3,7 @@ id: prompt_20251001_e724e7
 slug: gpt-assistant-instructions-for-hestiaarchitecture
 title: GPT Assistant Instructions for `hestia/architecture/` Documentation Maintenance
 date: '2025-10-01'
-tier: "\u03B3"
+tier: "gamma"
 domain: instructional
 persona: generic
 status: candidate

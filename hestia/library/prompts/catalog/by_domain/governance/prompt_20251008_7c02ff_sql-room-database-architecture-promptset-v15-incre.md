@@ -1,7 +1,7 @@
 ---
 id: prompt_20251008_7c02ff
 slug: sql-room-database-architecture-promptset-v15-incre
-title: "SQL Room Database Architecture \u2014 Promptset v1.5 (Incremental Delivery,\
+title: "SQL Room Database Architecture — Promptset v1.5 (Incremental Delivery,\
   \ Strategos)"
 date: '2025-10-08'
 tier: "\u03B1"

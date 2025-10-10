@@ -3,7 +3,7 @@ id: prompt_20250527_001
 slug: full-document-review-prompt
 title: '**Full Document Review Prompt**'
 date: '2025-10-01'
-tier: "\u03B3"
+tier: "gamma"
 domain: diagnostic
 persona: strategos
 status: candidate

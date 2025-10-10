@@ -1,10 +1,10 @@
 ---
 id: prompt_20251001_244e63
 slug: optimized-instruction-set-hestia-sensor-mapper-gpt
-title: "\U0001F9E0 Optimized Instruction Set: Hestia Sensor Mapper GPT (\u03BC Tier\
+title: "\U0001F9E0 Optimized Instruction Set: Hestia Sensor Mapper GPT (mu Tier\
   \ Updated)"
 date: '2025-10-01'
-tier: "\u03B3"
+tier: "gamma"
 domain: validation
 persona: promachos
 status: candidate

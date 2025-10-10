@@ -1,7 +1,7 @@
 ---
 id: prompt_20251003_08230c
 slug: home-assistant-configuration-diagnostician-prompts
-title: "Home Assistant Configuration Diagnostician \u2014 promptset v2.5 (optimized)"
+title: "Home Assistant Configuration Diagnostician — promptset v2.5 (optimized)"
 date: '2025-10-03'
 tier: "beta"
 domain: diagnostic

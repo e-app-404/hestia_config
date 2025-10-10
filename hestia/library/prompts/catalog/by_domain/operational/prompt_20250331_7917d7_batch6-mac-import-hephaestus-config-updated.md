@@ -84,7 +84,7 @@ hephaestus_configuration:
     - name: Abstraction Layer Health
       unique_id: sensor_abstraction_layer_health
       state: "{% set missing = namespace(count=0) %}{% for s in states if '_beta\
-        ' in s.entity_id or '_\u03B3' in s.entity_id or '_\u03B5' in s.entity_id or\
+        ' in s.entity_id or '_gamma' in s.entity_id or '_\u03B5' in s.entity_id or\
         \ '_\u03B6' in s.entity_id %}{% if s.state == 'unavailable' or s.state ==\
         \ 'unknown' %}{% set missing.count = missing.count + 1 %}{% endif %}{% endfor\
         \ %}{{ 'ok' if missing.count == 0 else 'missing: ' ~ missing.count }}"
@@ -93,7 +93,7 @@ hephaestus_configuration:
           \ missing or unavailable."
         tiers_monitored:
         - "_beta"
-        - "_\u03B3"
+        - "_gamma"
         - "_\u03B5"
         - "_\u03B6"
   - binary_sensor:

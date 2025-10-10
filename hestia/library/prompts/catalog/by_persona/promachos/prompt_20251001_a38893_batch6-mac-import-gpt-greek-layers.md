@@ -29,7 +29,7 @@ redaction_log: []
 To ensure all sensors in your Greek abstraction stack work properly:
 
 #### ✅ **1. Use Literal Greek Characters**
-- Avoid `\u03B3` → Always use `γ`, `δ`, etc. directly
+- Avoid `gamma` → Always use `γ`, `δ`, etc. directly
 
 #### ✅ **2. Name Format**
 Use consistent structure:

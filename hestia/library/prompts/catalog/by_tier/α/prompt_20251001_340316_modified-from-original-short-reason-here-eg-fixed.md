@@ -1,7 +1,7 @@
 ---
 id: prompt_20251001_340316
 slug: modified-from-original-short-reason-here-eg-fixed
-title: "Modified from original \u2014 [short reason here, e.g., fixed off-by-one error]"
+title: "Modified from original — [short reason here, e.g., fixed off-by-one error]"
 date: '2025-10-01'
 tier: "\u03B1"
 domain: diagnostic

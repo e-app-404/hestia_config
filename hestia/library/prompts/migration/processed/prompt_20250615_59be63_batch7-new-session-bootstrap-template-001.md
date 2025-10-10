@@ -3,7 +3,7 @@ id: prompt_20250615_59be63
 slug: batch7-new-session-bootstrap-template-001
 title: Batch7 New Session Bootstrap Template 001
 date: '2025-06-15'
-tier: "\u03B3"
+tier: "gamma"
 domain: validation
 persona: kybernetes
 status: approved

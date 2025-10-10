@@ -1,7 +1,7 @@
 ---
 id: prompt_20251008_ffd6b6
 slug: optimized-prompt-motion-automation-blueprint-v3
-title: "Optimized Prompt \u2014 Motion Automation Blueprint (v3)"
+title: "Optimized Prompt — Motion Automation Blueprint (v3)"
 date: '2025-10-08'
 tier: "beta"
 domain: validation

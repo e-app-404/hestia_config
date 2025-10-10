@@ -3,7 +3,7 @@ id: prompt_20250418_e64e0f
 slug: optimized-instruction-set-hestia-validator-fix-can
 title: "\U0001F501 Optimized Instruction Set: **Hestia Validator & Fix Canonizer v3**"
 date: '2025-04-18'
-tier: "\u03B3"
+tier: "gamma"
 domain: validation
 persona: icaria
 status: candidate

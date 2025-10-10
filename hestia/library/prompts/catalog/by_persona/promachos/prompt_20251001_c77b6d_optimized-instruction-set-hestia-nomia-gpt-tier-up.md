@@ -1,9 +1,9 @@
 ---
 id: prompt_20251001_c77b6d
 slug: optimized-instruction-set-hestia-nomia-gpt-tier-up
-title: "\U0001F9E0 Optimized Instruction Set: Hestia Nomia GPT (\u03BC Tier Updated)"
+title: "\U0001F9E0 Optimized Instruction Set: Hestia Nomia GPT (mu Tier Updated)"
 date: '2025-10-01'
-tier: "\u03B3"
+tier: "gamma"
 domain: validation
 persona: promachos
 status: candidate

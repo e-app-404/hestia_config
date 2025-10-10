@@ -3,7 +3,7 @@ id: prompt_20251001_00e987
 slug: task-map-configurationyaml-declarations-to-files
 title: "\U0001F50D Task: Map `configuration.yaml` Declarations to Files"
 date: '2025-10-01'
-tier: "\u03B3"
+tier: "gamma"
 domain: extraction
 persona: nomia
 status: candidate

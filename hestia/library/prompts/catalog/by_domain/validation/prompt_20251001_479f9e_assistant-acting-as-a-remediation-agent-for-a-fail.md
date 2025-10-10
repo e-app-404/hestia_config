@@ -3,7 +3,7 @@ id: prompt_20251001_479f9e
 slug: assistant-acting-as-a-remediation-agent-for-a-fail
 title: 'Assistant: Acting As A Remediation Agent For A Failed Qa Audit'
 date: '2025-10-01'
-tier: "\u03B3"
+tier: "gamma"
 domain: validation
 persona: icaria
 status: approved

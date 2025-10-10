@@ -1,7 +1,7 @@
 ---
 id: prompt_20251008_184cf4
 slug: sql-room-database-architecture-promptset-v13-final
-title: "SQL Room Database Architecture \u2014 Promptset v1.3 (Final, Strategos)"
+title: "SQL Room Database Architecture — Promptset v1.3 (Final, Strategos)"
 date: '2025-10-08'
 tier: "\u03B1"
 domain: governance

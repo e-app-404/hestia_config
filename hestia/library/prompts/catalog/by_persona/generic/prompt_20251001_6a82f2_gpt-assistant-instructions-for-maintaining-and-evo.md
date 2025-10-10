@@ -4,7 +4,7 @@ slug: gpt-assistant-instructions-for-maintaining-and-evo
 title: "\U0001F9E0 GPT Assistant Instructions for Maintaining and Evolving the `hestia/architecture/`\
   \ Documentation"
 date: '2025-10-01'
-tier: "\u03B3"
+tier: "gamma"
 domain: instructional
 persona: generic
 status: approved

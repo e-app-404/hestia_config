@@ -3,7 +3,7 @@ id: prompt_20251001_92b7ee
 slug: batch6-mac-import-mini-directives
 title: Batch6 Mac Import Mini Directives
 date: '2025-10-01'
-tier: "\u03B3"
+tier: "gamma"
 domain: validation
 persona: nomia
 status: candidate
