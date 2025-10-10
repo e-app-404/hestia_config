@@ -170,15 +170,22 @@ appdaemon_index:
       write_path_validation: "pending - requires rest_command test"
       
     step_4_rest_command_configuration:
-      status: "configuration_resolved"
+      status: "validation_ready"
       config_file: "/config/packages/package_room_database.yaml"
       consolidation_note: "Individual files consolidated to resolve duplicate key warnings"
-      endpoint_url: "http://a0d7b954-appdaemon:5050/api/app/room_db_updater/room_db/update_config"
-      method: "POST"
-      content_type: "application/json"
-      payload_template: "room_id, domain, config_data parameters supported"
-      validation_status: "Configuration warnings resolved - duplicate keys eliminated"
-      next_step: "Test service call from Home Assistant Developer Tools"
+      rest_commands_available:
+        room_db_update_config:
+          endpoint_url: "http://a0d7b954-appdaemon:5050/api/app/room_db_updater/room_db/update_config"
+          method: "POST"
+          content_type: "application/json"
+          payload_template: "room_id, domain, config_data parameters supported"
+        room_db_health:
+          endpoint_url: "http://a0d7b954-appdaemon:5050/api/app/room_db_updater/room_db/health"
+          method: "GET"
+          timeout: "10s"
+          purpose: "AppDaemon connectivity and health verification"
+      validation_status: "Configuration complete - ready for Developer Tools testing"
+      validation_plan: "Documented in /config/validation_test_results.md"
       
     step_5_motion_automation:
       status: "configuration_verified"
