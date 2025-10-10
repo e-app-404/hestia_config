@@ -292,3 +292,172 @@ appdaemon_index:
     - "Integration patterns with other Home Assistant add-ons"
     - "Advanced dashboard development beyond basic examples"
     - "Security considerations for production deployments"
+    
+  integrated_packages:
+    motion_lighting_v2:
+      description: "SQL-based motion lighting automation using room_db_updater configuration"
+      path: "/config/packages/motion_lighting_v2"
+      relationship_to_room_db: "primary_consumer"
+      files:
+        - path: "/config/packages/motion_lighting_v2/motion_light_automations.yaml"
+          type: "automation_config"
+          description: "Motion-triggered lighting automation with SQL configuration lookup"
+          size_bytes: 1839
+          last_modified: "2025-10-08T21:27:00Z"
+          features:
+            - "SQL-based room configuration retrieval from sensor.room_configs_motion_lighting"
+            - "Dynamic timeout calculation based on presence and room config"
+            - "Bypass functionality for manual control override"
+            - "Illuminance threshold support for daylight-aware activation"
+            - "Presence-enhanced timeout multipliers for tracked persons"
+          automation_targets: ["bedroom"]
+          sql_dependencies: ["sensor.room_configs_motion_lighting", "room_db_updater"]
+          
+        - path: "/config/packages/motion_lighting_v2/motion_light_templates.yaml"
+          type: "template_config"
+          description: "Template sensors for motion lighting configuration display"
+          size_bytes: 1101
+          last_modified: "2025-10-09T12:50:00Z"
+          features:
+            - "Motion Timeout sensor with SQL backend integration"
+            - "Real-time configuration attribute display (bypass, last_triggered)"
+            - "JSON parsing with fallback error handling"
+            - "Room-specific configuration extraction from database payload"
+          template_sensors: ["sensor.motion_timeout_bedroom_sql_v15"]
+          
+      configuration_schema:
+        room_config_structure:
+          timeout: "integer (seconds) - base motion timeout duration"
+          bypass: "boolean - manual override to disable automation"
+          presence_timeout_multiplier: "float - timeout multiplier when tracked person present"
+          illuminance_threshold: "integer (lux) - minimum light level for activation"
+          last_triggered: "string (ISO datetime) - timestamp of last motion activation"
+        sql_integration:
+          source_sensor: "sensor.room_configs_motion_lighting"
+          payload_format: "JSON string containing room configuration mappings"
+          error_handling: "Graceful fallback to default values on parse failure"
+          
+      operational_features:
+        room_awareness: "Configures lighting behavior per room using canonical area mapping"
+        presence_enhancement: "Extends timeout when person.evert is home without blocking automation"
+        daylight_integration: "Respects illuminance thresholds to avoid unnecessary activation"
+        manual_override: "Bypass system allows temporary automation disabling"
+        sql_driven: "All configuration sourced from room_database.db via room_db_updater"
+        
+    vacuum_control_v2:
+      description: "MQTT-based vacuum control with SQL tracking and room-based cleaning"
+      path: "/config/packages/vacuum_control_v2"
+      relationship_to_room_db: "bidirectional_consumer_updater"
+      files:
+        - path: "/config/packages/vacuum_control_v2/vac_mqtt_commands.yaml"
+          type: "input_config"
+          description: "Input entities for vacuum MQTT topic configuration"
+          size_bytes: 152
+          last_modified: "2025-10-08T18:49:00Z"
+          features:
+            - "Configurable Valetudo MQTT base topic via input_text entity"
+            - "Topic structure support for Valetudo robot communication"
+          input_entities: ["input_text.valetudo_base_topic"]
+          default_topic: "valetudo/robot"
+          
+        - path: "/config/packages/vacuum_control_v2/vac_scripts.yaml"
+          type: "script_config"
+          description: "Room-based vacuum cleaning scripts with SQL database integration"
+          size_bytes: 1360
+          last_modified: "2025-10-08T21:26:00Z"
+          features:
+            - "Room-specific segment cleaning via MQTT commands"
+            - "SQL database integration for cleaning history tracking"
+            - "Dynamic segment ID lookup from room configuration"
+            - "Persistent notification feedback for cleaning operations"
+            - "Automatic room status updates (last_cleaned, needs_cleaning)"
+          scripts: ["script.clean_room_with_sql_tracking"]
+          
+      configuration_schema:
+        room_config_structure:
+          segment_id: "integer - Valetudo map segment identifier for room"
+          last_cleaned: "string (ISO datetime) - timestamp of last cleaning operation"
+          needs_cleaning: "boolean - flag indicating if room requires cleaning"
+        mqtt_integration:
+          base_topic: "valetudo/robot (configurable via input_text.valetudo_base_topic)"
+          action_topic: "MapSegmentationCapability/action/start_segment_action"
+          payload_format: "JSON with action, segment_ids, iterations, customOrder"
+          
+      operational_features:
+        room_based_cleaning: "Clean specific rooms using canonical area mapping"
+        mqtt_communication: "Direct MQTT integration with Valetudo robot firmware"
+        sql_tracking: "Bidirectional database updates for cleaning history and status"
+        segment_mapping: "Maps Home Assistant areas to Valetudo map segments"
+        status_feedback: "Updates room database with cleaning timestamps and status"
+        notification_system: "Persistent notifications for cleaning operation feedback"
+        
+    domain_templates:
+      motion_logic:
+        description: "Beta-tier motion sensor aggregation and logic processing"
+        path: "/config/domain/templates/motion_logic.yaml"  
+        relationship_to_room_db: "data_provider"
+        file_details:
+          size_bytes: 25403
+          last_modified: "2025-10-07T01:20:00Z"
+          type: "template_sensor_config"
+          tier: "beta"
+          schema: "binary_sensor"
+          
+        features:
+          - "Motion aggregation using motion-only sources (occupancy removed)"
+          - "Support for non-motion inputs via proxies (vibration/contact sensors)"
+          - "Provenance tracking with upstream_sources and downstream_consumers"
+          - "Device class standardization for motion detection"
+          - "Multi-protocol sensor fusion (TPLink, Zigbee, etc.)"
+          
+        coverage_areas:
+          - "bedroom_motion_beta (sanctum complex)"
+          - "kitchen_motion_beta (utility areas)"
+          - "hallway_motion_beta (circulation spaces)"
+          - "Additional area coverage for comprehensive motion detection"
+          
+        integration_points:
+          motion_lighting: "Provides motion triggers for automation packages"
+          room_database: "Motion events inform room occupancy and usage patterns"
+          area_hierarchy: "Respects canonical area structure for sensor organization"
+          
+  package_integration_architecture:
+    data_flow:
+      motion_detection: "domain/templates/motion_logic.yaml → motion_lighting_v2 automations"
+      configuration_lookup: "room_db_updater database → motion_lighting template sensors"
+      vacuum_control: "room_db_updater database ↔ vacuum_control_v2 scripts (bidirectional)"
+      area_mapping: "area_mapping.yaml → room validation in all packages"
+      
+    sql_integration_pattern:
+      configuration_source: "room_database.db managed by room_db_updater app"
+      sensor_interface: "sensor.room_configs_[domain] provides JSON payload access"
+      template_processing: "Template sensors parse JSON and extract room-specific config"
+      automation_consumption: "Automations use template sensors for dynamic behavior"
+      script_updates: "Scripts write back status and history to database via REST API"
+      
+    canonical_area_compliance:
+      room_identification: "All packages use canonical room IDs from area_mapping.yaml"
+      hierarchical_awareness: "Packages respect area → subarea relationships"
+      validation_integration: "room_db_updater validates room IDs against canonical mapping"
+      configuration_consistency: "Database enforces canonical room structure across domains"
+      
+  operational_dependencies:
+    required_for_motion_lighting:
+      - "room_db_updater app (configuration management)"
+      - "sensor.room_configs_motion_lighting (SQL interface)"
+      - "domain/templates/motion_logic.yaml (motion detection)"
+      - "area_mapping.yaml (room validation)"
+      - "binary_sensor.*_motion_beta entities (triggers)"
+      
+    required_for_vacuum_control:
+      - "room_db_updater app (configuration and tracking)"
+      - "sensor.room_configs_vacuum_control (SQL interface)"
+      - "input_text.valetudo_base_topic (MQTT configuration)"
+      - "area_mapping.yaml (room validation)"
+      - "MQTT broker and Valetudo robot connectivity"
+      
+    cross_package_dependencies:
+      motion_to_vacuum: "Motion detection can inform vacuum scheduling"
+      database_shared: "Both packages share room_db_updater for configuration"
+      area_hierarchy_shared: "Both respect canonical area structure"
+      notification_shared: "Both can use persistent notification system"
