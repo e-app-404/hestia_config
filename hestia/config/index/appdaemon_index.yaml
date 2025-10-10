@@ -170,13 +170,15 @@ appdaemon_index:
       write_path_validation: "pending - requires rest_command test"
       
     step_4_rest_command_configuration:
-      status: "configuration_found"
-      config_file: "/config/packages/room_database/roomdb_rest_command.yaml"
-      endpoint_url: "http://appdaemon:5050/api/app/room_db_updater/room_db/update_config"
+      status: "configuration_resolved"
+      config_file: "/config/packages/package_room_database.yaml"
+      consolidation_note: "Individual files consolidated to resolve duplicate key warnings"
+      endpoint_url: "http://a0d7b954-appdaemon:5050/api/app/room_db_updater/room_db/update_config"
       method: "POST"
       content_type: "application/json"
       payload_template: "room_id, domain, config_data parameters supported"
-      validation_required: "Test service call from Home Assistant Developer Tools"
+      validation_status: "Configuration warnings resolved - duplicate keys eliminated"
+      next_step: "Test service call from Home Assistant Developer Tools"
       
     step_5_motion_automation:
       status: "configuration_verified"
@@ -540,6 +542,33 @@ appdaemon_index:
       hierarchical_awareness: "Packages respect area → subarea relationships"
       validation_integration: "room_db_updater validates room IDs against canonical mapping"
       configuration_consistency: "Database enforces canonical room structure across domains"
+      
+  consolidated_package_structure:
+    package_room_database:
+      description: "Consolidated room database package combining all SQL integration components"
+      path: "/config/packages/package_room_database.yaml"
+      consolidation_reason: "Resolved Home Assistant duplicate key warnings from individual files"
+      components_integrated:
+        sql_sensors:
+          - "sensor.room_configs_motion_lighting"
+          - "sensor.room_configs_vacuum_control"
+          - "sensor.rooms_needing_cleaning"
+        rest_commands:
+          - "rest_command.room_db_update_config"
+        shell_commands:
+          - "update_room_config (with area validation and rate limiting)"
+          - "update_motion_timeout (motion lighting specific)"  
+          - "mark_room_cleaned (vacuum control specific)"
+        recorder_configuration:
+          - "Excludes SQL sensors from history to prevent database bloat"
+      migration_completed: "2025-10-10T00:30:00Z"
+      files_removed:
+        - "/config/packages/room_database/roomdb_rest_command.yaml"
+        - "/config/packages/room_database/roomdb_shell_commands.yaml"
+        - "/config/packages/room_database/roomdb_sql_sensors.yaml"
+        - "/config/packages/room_database/roomdb_recorder_policy.yaml"
+      files_relocated:
+        - "database_init.sql moved to /config/database_init.sql"
       
   operational_dependencies:
     required_for_motion_lighting:
