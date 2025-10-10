@@ -19,11 +19,16 @@
   'automation.motion_lights_bedroom_sql_v15.present': auto_ok
 } %}
 
-{%- set failures = checks | dict2items | selectattr('value','equalto',False) | map(attribute='key') | list %}
+{%- set failures = namespace(items=[]) %}
+{%- for key, value in checks.items() %}
+  {%- if not value %}
+    {%- set failures.items = failures.items + [key] %}
+  {%- endif %}
+{%- endfor %}
 
 {%- set report = {
-  'status': 'ok' if failures | length == 0 else 'needs_attention',
-  'failures': failures,
+  'status': 'ok' if failures.items | length == 0 else 'needs_attention',
+  'failures': failures.items,
   'details': {
     'rooms_needing_cleaning_count': rn_state,
     'valetudo_base_topic': topic
