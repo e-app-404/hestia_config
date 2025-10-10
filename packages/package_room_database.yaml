@@ -77,8 +77,8 @@ shell_command:
 
   mark_room_cleaned: |
     /bin/sh -c 'command -v sqlite3 >/dev/null 2>&1 || exit 123;
-    test -f /addon_configs/www/area_mapping.yaml || exit 125;
-    grep -Eq "(^|[[:space:]]){{ room_id }}:" /addon_configs/www/area_mapping.yaml || exit 126;
+    test -f /config/www/area_mapping.yaml || exit 125;
+    grep -Eq "(^|[[:space:]]){{ room_id }}:" /config/www/area_mapping.yaml || exit 126;
     sqlite3 /config/room_database.db "PRAGMA journal_mode=WAL; PRAGMA synchronous=NORMAL; CREATE TABLE IF NOT EXISTS write_guard(domain TEXT PRIMARY KEY, last_ts INTEGER); CREATE TABLE IF NOT EXISTS schema_version(version INTEGER); CREATE TABLE IF NOT EXISTS room_configs(room_id TEXT, config_domain TEXT, config_data TEXT, updated_at TEXT, PRIMARY KEY(room_id, config_domain)); BEGIN IMMEDIATE; SELECT CASE WHEN (SELECT version FROM schema_version)={{ schema_expected }} THEN 1 ELSE RAISE(ABORT,\"SCHEMA_VERSION_MISMATCH\") END; SELECT CASE WHEN COALESCE(strftime(\"%s\",\"now\") - (SELECT last_ts FROM write_guard WHERE domain=\"vacuum_control\"), 9999) >= 2 THEN 1 ELSE RAISE(ABORT,\"WRITE_RATE_LIMIT\") END; UPDATE room_configs SET config_data = json_set(config_data, \"$.last_cleaned\", datetime(\"now\"), \"$.needs_cleaning\", 0), updated_at = datetime(\"now\") WHERE room_id=\"{{ room_id }}\" AND config_domain=\"vacuum_control\"; INSERT OR REPLACE INTO write_guard(domain,last_ts) VALUES(\"vacuum_control\", strftime(\"%s\",\"now\")); COMMIT;"'
 
 # Recorder policy to exclude SQL sensors from history (prevent database bloat)
