@@ -134,7 +134,19 @@ promptset:
         Output: YAML list `fix_candidates:` with the fields above.
 
         END: CONFIDENCE ASSESSMENT: [n]%
+    - id: hass.diagnostician.documentation
+      label: "Documentation — update and create references in error_patterns.yaml"
+      persona: hass_diagnostician
+      mode: remediation
+      protocols:
+        - verify_fix_before_documenting
+        - binary_confirmation
+      bindings:
+        - hestia/library/error_patterns.yml
+      prompt: |
+        After a remediation candidate has been successfully implemented, validate the fix is sticky by getting binary confirmation through home-assistant.log inspection. Then update the `error_patterns.yml` file for future reference.
 
+        Document all maintenance activity in /config/hestia/library/maintenance_log.yaml with timestamp, description, files changed, and outcome.
   migration:
     strategy: |
       Preserve legacy diagnostic notes by mapping them to `evidence` and `alternatives_considered` fields.
