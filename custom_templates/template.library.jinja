@@ -148,8 +148,9 @@
 {# --------------------------------------------------------------------
   Valetudo Template Library (v1.0)
   Provides reusable Jinja macros for composite room sensors and scripts.
-  Assumes per-room variables exist: var.living_room, var.kitchen, ...
-  Each var.<room> exposes attributes:
+  # Valetudo cleaning status templates
+# DEPRECATED: Variable-based room configs replaced by SQL room database
+# Current implementation uses sensor.room_configs_vacuum_control
     last_cleaned, needs_cleaning, segment_id, cleaning_frequency_hours,
     job_last_run, job_last_result
 --------------------------------------------------------------------- #}
@@ -208,7 +209,8 @@
 {%- macro get_freq(var_ent, default_freq=24) -%}{{ (state_attr(var_ent, 'cleaning_frequency_hours') or default_freq) | int }}{%- endmacro -%}
 
 {# -------------------------- JSON builders -------------------------- #}
-{# Use with: data: > {{ json_update_mark_cleaned('var.kitchen') | from_json }} #}
+{# DEPRECATED: Use AppDaemon room_db_updater REST API instead:
+   POST /api/appdaemon/room_db/update_config with domain: vacuum_control #}
 {%- macro json_update_mark_cleaned(var_ent) -%}
 {{ {
   'variable': (var_ent.split('.')[1]),

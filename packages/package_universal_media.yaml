@@ -83,6 +83,8 @@ template:
           area_id: "desk"
           floor_id: "bedroom"
           file: "/config/packages/package_universal_media.yaml"
+          note: |
+            "#TODO inspect Samsung TV integration and fix correct channel and power attribution"
 
       - name: "Bedroom TV App (Beta)"
         unique_id: "bedroom_tv_app_beta"
@@ -96,6 +98,8 @@ template:
           rationale: "Tracks which TV app is currently active for scene/automation logic."
           description: "Abstraction for current app/channel running on Bedroom TV."
           file: "/config/packages/package_universal_media.yaml"
+          note: |
+            "#TODO inspect Samsung TV integration and fix correct channel and power attribution"
 
       - name: "PS4: Telemetry (diag)"
         unique_id: "ps4_telemetry_diag"
