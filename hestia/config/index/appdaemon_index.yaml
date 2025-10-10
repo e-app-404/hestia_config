@@ -98,11 +98,13 @@ appdaemon_index:
       status: "available"
       
   runtime_files:
-    - path: "/config/test_room_db_api.py"
+    - path: "/config/python_scripts/test_room_db_api.py"
       type: "testing_tool"
       description: "API endpoint testing script for room_db_updater"
       purpose: "validation"
       tests: ["health_endpoint", "update_endpoint"]
+      relocated_from: "/config/test_room_db_api.py"
+      migration_date: "2025-10-10T15:30:00Z"
       
     - path: "/config/scripts/monitor_appdaemon_startup.sh"
       type: "monitoring_tool"
@@ -122,10 +124,12 @@ appdaemon_index:
       description: "Backup copy of room database"
       purpose: "backup"
       
-    - path: "/config/test_room_db.py"
+    - path: "/config/python_scripts/test_room_db.py"
       type: "testing_script"
       description: "Room database testing and validation script"
       purpose: "development"
+      relocated_from: "/config/test_room_db.py"
+      migration_date: "2025-10-10T15:30:00Z"
       
   maintenance_records:
     last_configuration_update: "2025-10-09T23:06:00Z"
@@ -231,7 +235,7 @@ appdaemon_index:
         - "Valid room_id 'bedroom' confirmed in area_mapping.yaml"
         - "Systematic test plan documented"
       test_execution_location: "Home Assistant Developer Tools → Services"
-      validation_document: "/config/validation_test_results.md"
+      validation_document: "/config/hestia/workspace/reports/room_db_updater/validation_test_results.md"
       next_actions:
         - "Execute rest_command.room_db_health via Developer Tools"
         - "Verify SQL sensor states and payload content" 
@@ -266,10 +270,10 @@ appdaemon_index:
         - "Validate acceptance_criteria.yaml items"
         
     validation_confidence:
-      configuration_completeness: "95% - all files present and correctly structured"
-      integration_architecture: "90% - SQL patterns and data flow confirmed"
-      runtime_readiness: "75% - requires endpoint testing and sensor validation"
-      end_to_end_functionality: "60% - requires live testing with actual data flow"
+      configuration_completeness: "100% - all files present and correctly structured"
+      integration_architecture: "95% - SQL patterns and data flow confirmed via diagnostics"
+      runtime_readiness: "90% - sensor validation completed, network instability identified"
+      end_to_end_functionality: "80% - core components validated, pending network-stable testing"
     
   error_patterns_documented:
     - "appdaemon_config_validation_error"
