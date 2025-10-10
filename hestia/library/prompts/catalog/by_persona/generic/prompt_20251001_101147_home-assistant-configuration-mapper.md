@@ -3,7 +3,7 @@ id: prompt_20251001_101147
 slug: home-assistant-configuration-mapper
 title: "\U0001F9ED Home Assistant Configuration Mapper"
 date: '2025-10-01'
-tier: "\u03B2"
+tier: "beta"
 domain: validation
 persona: generic
 status: candidate

@@ -3,7 +3,7 @@ id: prompt_20251001_40846c
 slug: batch4-id-20250527-correctivemergeok
 title: 'Batch4 Id: 20250527 Correctivemergeok'
 date: '2025-10-01'
-tier: "\u03B2"
+tier: "beta"
 domain: instructional
 persona: generic
 status: candidate

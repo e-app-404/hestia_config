@@ -3,7 +3,7 @@ id: prompt_20251001_71e462
 slug: batch6-mac-import-technical-report-on-issues-in-ho
 title: 'Batch6 Mac Import ### **Technical Report On Issues In Home'
 date: '2025-10-01'
-tier: "\u03B2"
+tier: "beta"
 domain: validation
 persona: icaria
 status: candidate

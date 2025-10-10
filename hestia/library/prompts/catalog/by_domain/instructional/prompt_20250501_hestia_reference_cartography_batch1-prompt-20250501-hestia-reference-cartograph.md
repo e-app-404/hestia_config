@@ -3,7 +3,7 @@ id: prompt_20250501_hestia_reference_cartography
 slug: batch1-prompt-20250501-hestia-reference-cartograph
 title: Batch1 Prompt 20250501 Hestia Reference Cartography
 date: '2025-10-01'
-tier: "\u03B2"
+tier: "beta"
 domain: instructional
 persona: promachos
 status: approved

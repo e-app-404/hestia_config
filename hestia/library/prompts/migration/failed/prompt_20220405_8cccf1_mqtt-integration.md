@@ -3,7 +3,7 @@ id: prompt_20220405_8cccf1
 slug: mqtt-integration
 title: MQTT Integration
 date: '2022-04-05'
-tier: "\u03B2"
+tier: "beta"
 domain: validation
 persona: icaria
 status: approved

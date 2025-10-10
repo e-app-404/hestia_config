@@ -3,7 +3,7 @@ id: prompt_20251001_252b50
 slug: custom-gpt-instructions-yaml-configuration-generat
 title: '**Custom GPT Instructions: YAML Configuration Generator & Validator**'
 date: '2025-10-01'
-tier: "\u03B2"
+tier: "beta"
 domain: diagnostic
 persona: icaria
 status: candidate

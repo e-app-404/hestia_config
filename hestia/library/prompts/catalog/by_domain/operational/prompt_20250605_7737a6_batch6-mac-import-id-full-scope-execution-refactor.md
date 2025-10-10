@@ -3,7 +3,7 @@ id: prompt_20250605_7737a6
 slug: batch6-mac-import-id-full-scope-execution-refactor
 title: Batch6 Mac Import Id Full Scope Execution Refactor Motion Occupancy Presence
 date: '2025-06-05'
-tier: "\u03B2"
+tier: "beta"
 domain: operational
 persona: nomia
 status: candidate

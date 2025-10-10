@@ -3,7 +3,7 @@ id: prompt_20250530_001
 slug: batch2-prompt-20250530-001-prompts-for-synthesis
 title: Batch2 Prompt 20250530 001 Prompts For Synthesis
 date: '2025-10-01'
-tier: "\u03B2"
+tier: "beta"
 domain: extraction
 persona: generic
 status: candidate

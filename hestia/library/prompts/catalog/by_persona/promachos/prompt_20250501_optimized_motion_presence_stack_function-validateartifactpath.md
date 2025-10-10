@@ -3,7 +3,7 @@ id: prompt_20250501_optimized_motion_presence_stack
 slug: function-validateartifactpath
 title: "\U0001F9E0 Function: validate_artifact_path"
 date: '2025-06-06'
-tier: "\u03B2"
+tier: "beta"
 domain: governance
 persona: promachos
 status: approved

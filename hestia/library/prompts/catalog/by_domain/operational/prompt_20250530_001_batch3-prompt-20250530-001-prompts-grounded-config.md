@@ -3,7 +3,7 @@ id: prompt_20250530_001
 slug: batch3-prompt-20250530-001-prompts-grounded-config
 title: Batch3 Prompt 20250530 001 Prompts Grounded Config Inventory Extraction
 date: '2025-10-01'
-tier: "\u03B2"
+tier: "beta"
 domain: operational
 persona: nomia
 status: approved

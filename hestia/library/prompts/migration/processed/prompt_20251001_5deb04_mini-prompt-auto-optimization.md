@@ -3,7 +3,7 @@ id: prompt_20251001_5deb04
 slug: mini-prompt-auto-optimization
 title: Mini Prompt Auto Optimization
 date: '2025-10-01'
-tier: "\u03B2"
+tier: "beta"
 domain: validation
 persona: promachos
 status: approved

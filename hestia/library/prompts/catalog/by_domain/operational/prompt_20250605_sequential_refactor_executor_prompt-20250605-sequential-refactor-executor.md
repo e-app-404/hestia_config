@@ -3,7 +3,7 @@ id: prompt_20250605_sequential_refactor_executor
 slug: prompt-20250605-sequential-refactor-executor
 title: Prompt 20250605 Sequential Refactor Executor
 date: '2025-10-01'
-tier: "\u03B2"
+tier: "beta"
 domain: operational
 persona: promachos
 status: approved

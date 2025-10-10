@@ -3,7 +3,7 @@ id: prompt_20251001_d01993
 slug: gpt-instruction-home-assistant-config-declaration
 title: Gpt Instruction Home Assistant Config Declaration Mapper V2
 date: '2025-10-01'
-tier: "\u03B2"
+tier: "beta"
 domain: validation
 persona: nomia
 status: candidate

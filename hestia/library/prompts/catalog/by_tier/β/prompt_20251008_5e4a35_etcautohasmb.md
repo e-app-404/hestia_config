@@ -3,7 +3,7 @@ id: prompt_20251008_5e4a35
 slug: etcautohasmb
 title: /etc/auto_ha.smb
 date: '2025-10-08'
-tier: "\u03B2"
+tier: "beta"
 domain: operational
 persona: generic
 status: candidate

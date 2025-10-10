@@ -3,7 +3,7 @@ id: prompt_20251001_d58ec3
 slug: batch4-generic-deep-dive-shell-script-review-promp
 title: Batch4 Generic Deep Dive Shell Script Review Prompt
 date: '2025-10-01'
-tier: "\u03B2"
+tier: "beta"
 domain: operational
 persona: icaria
 status: approved

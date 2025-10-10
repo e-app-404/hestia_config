@@ -3,7 +3,7 @@ id: prompt_20251008_06a6a0
 slug: etcautomasterdhestiaautofs-snippet
 title: /etc/auto_master.d/hestia.autofs snippet
 date: '2025-10-08'
-tier: "\u03B2"
+tier: "beta"
 domain: operational
 persona: generic
 status: candidate

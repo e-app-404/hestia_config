@@ -3,7 +3,7 @@ id: prompt_20251008_e0b68d
 slug: copilot-tireless-coverage-debugger
 title: '**'
 date: '2025-10-08'
-tier: "\u03B2"
+tier: "beta"
 domain: validation
 persona: kybernetes
 status: candidate

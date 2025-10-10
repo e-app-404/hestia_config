@@ -3,7 +3,7 @@ id: prompt_20251001_2a3814
 slug: batch1-directive-injection-prompt-precision-debugg
 title: Batch1 Directive Injection Prompt   Precision Debugging Mode
 date: '2025-10-01'
-tier: "\u03B2"
+tier: "beta"
 domain: diagnostic
 persona: icaria
 status: candidate

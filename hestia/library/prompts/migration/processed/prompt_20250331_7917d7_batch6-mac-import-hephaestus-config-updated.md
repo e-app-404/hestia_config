@@ -83,16 +83,16 @@ hephaestus_configuration:
       offline_risk_score: '{{ states(''sensor.device_monitor_risk_score'') }}'
     - name: Abstraction Layer Health
       unique_id: sensor_abstraction_layer_health
-      state: "{% set missing = namespace(count=0) %}{% for s in states if '_\u03B2\
+      state: "{% set missing = namespace(count=0) %}{% for s in states if '_beta\
         ' in s.entity_id or '_\u03B3' in s.entity_id or '_\u03B5' in s.entity_id or\
         \ '_\u03B6' in s.entity_id %}{% if s.state == 'unavailable' or s.state ==\
         \ 'unknown' %}{% set missing.count = missing.count + 1 %}{% endif %}{% endfor\
         \ %}{{ 'ok' if missing.count == 0 else 'missing: ' ~ missing.count }}"
       attributes:
-        description: "Shows if any abstraction tier (\u03B2\u2013\u03B6) sensors are\
+        description: "Shows if any abstraction tier (beta\u2013\u03B6) sensors are\
           \ missing or unavailable."
         tiers_monitored:
-        - "_\u03B2"
+        - "_beta"
         - "_\u03B3"
         - "_\u03B5"
         - "_\u03B6"

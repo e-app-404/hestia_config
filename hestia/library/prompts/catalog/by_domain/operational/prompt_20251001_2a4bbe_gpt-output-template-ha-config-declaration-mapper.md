@@ -3,7 +3,7 @@ id: prompt_20251001_2a4bbe
 slug: gpt-output-template-ha-config-declaration-mapper
 title: Gpt Output Template Ha Config Declaration Mapper
 date: '2025-10-01'
-tier: "\u03B2"
+tier: "beta"
 domain: operational
 persona: generic
 status: candidate

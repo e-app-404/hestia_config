@@ -3,7 +3,7 @@ id: prompt_20251001_005f35
 slug: batch4-precision-debugging-mode
 title: Batch4 Precision Debugging Mode
 date: '2025-10-01'
-tier: "\u03B2"
+tier: "beta"
 domain: diagnostic
 persona: icaria
 status: candidate

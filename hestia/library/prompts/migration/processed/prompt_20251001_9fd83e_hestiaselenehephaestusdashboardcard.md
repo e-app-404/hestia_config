@@ -3,7 +3,7 @@ id: prompt_20251001_9fd83e
 slug: hestiaselenehephaestusdashboardcard
 title: hestia/selene/hephaestus_dashboard_card
 date: '2025-10-01'
-tier: "\u03B2"
+tier: "beta"
 domain: diagnostic
 persona: generic
 status: candidate

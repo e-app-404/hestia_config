@@ -3,7 +3,7 @@ id: prompt_20251001_947561
 slug: home-assistant-configuration-mapper-optimized-gpt
 title: "\U0001F9ED Home Assistant Configuration Mapper \u2014 Optimized GPT Instructions"
 date: '2025-10-01'
-tier: "\u03B2"
+tier: "beta"
 domain: validation
 persona: nomia
 status: candidate

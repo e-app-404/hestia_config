@@ -3,7 +3,7 @@ id: prompt_20251001_430972
 slug: batch4-analyze-convo-for-diagnostics-yaml
 title: Batch4 Analyze Convo For Diagnostics Yaml
 date: '2025-10-01'
-tier: "\u03B2"
+tier: "beta"
 domain: diagnostic
 persona: promachos
 status: approved

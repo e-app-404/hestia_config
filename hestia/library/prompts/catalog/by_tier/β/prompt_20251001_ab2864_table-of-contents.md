@@ -3,7 +3,7 @@ id: prompt_20251001_ab2864
 slug: table-of-contents
 title: "\U0001F4DA Table of Contents"
 date: '2025-10-01'
-tier: "\u03B2"
+tier: "beta"
 domain: operational
 persona: icaria
 status: candidate

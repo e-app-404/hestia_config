@@ -3,7 +3,7 @@ id: prompt_20251004_2aa346
 slug: custom-gpt-instructions-yaml-automation-engineer
 title: '**Custom GPT Instructions: YAML Automation Engineer**'
 date: '2025-10-04'
-tier: "\u03B2"
+tier: "beta"
 domain: operational
 persona: generic
 status: candidate

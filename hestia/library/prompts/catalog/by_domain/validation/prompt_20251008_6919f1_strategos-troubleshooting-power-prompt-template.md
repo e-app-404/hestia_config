@@ -3,7 +3,7 @@ id: prompt_20251008_6919f1
 slug: strategos-troubleshooting-power-prompt-template
 title: Strategos Troubleshooting Power Prompt (Template)
 date: '2025-10-08'
-tier: "\u03B2"
+tier: "beta"
 domain: validation
 persona: strategos
 status: approved

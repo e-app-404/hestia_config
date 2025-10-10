@@ -3,7 +3,7 @@ id: prompt_20250502_80dcdb
 slug: prompt-deviation-log-2025-05-02
 title: "Prompt Deviation Log \u2013 2025-05-02"
 date: '2025-05-02'
-tier: "\u03B2"
+tier: "beta"
 domain: operational
 persona: generic
 status: candidate

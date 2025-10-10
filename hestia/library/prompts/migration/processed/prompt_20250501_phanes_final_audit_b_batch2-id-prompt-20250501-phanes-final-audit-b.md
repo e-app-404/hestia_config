@@ -3,7 +3,7 @@ id: prompt_20250501_phanes_final_audit_b
 slug: batch2-id-prompt-20250501-phanes-final-audit-b
 title: 'Batch2 Id: Prompt 20250501 Phanes Final Audit B'
 date: '2025-10-01'
-tier: "\u03B2"
+tier: "beta"
 domain: extraction
 persona: promachos
 status: approved

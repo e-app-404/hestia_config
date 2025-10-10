@@ -3,7 +3,7 @@ id: prompt_20251001_f55e92
 slug: recursively-parse-beardedtinkers-configuration
 title: "Recursively parse BeardedTinker\u2019s `configuration"
 date: '2025-10-01'
-tier: "\u03B2"
+tier: "beta"
 domain: extraction
 persona: strategos
 status: candidate

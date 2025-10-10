@@ -3,7 +3,7 @@ id: prompt_20251001_79d631
 slug: daedaliadiagnosticpromptmd
 title: Daedalia_diagnostic_prompt.md
 date: '2025-10-01'
-tier: "\u03B2"
+tier: "beta"
 domain: validation
 persona: icaria
 status: deprecated

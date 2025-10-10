@@ -3,7 +3,7 @@ id: prompt_20251001_bf0996
 slug: prompt-mnemosyne-dry-run-schema-validator
 title: "\U0001F9E0 Prompt: Mnemosyne Dry-Run Schema Validator"
 date: '2025-10-01'
-tier: "\u03B2"
+tier: "beta"
 domain: diagnostic
 persona: generic
 status: candidate

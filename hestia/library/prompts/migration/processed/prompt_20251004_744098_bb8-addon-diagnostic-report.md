@@ -3,7 +3,7 @@ id: prompt_20251004_744098
 slug: bb8-addon-diagnostic-report
 title: BB8 ADDON DIAGNOSTIC REPORT
 date: '2025-10-04'
-tier: "\u03B2"
+tier: "beta"
 domain: validation
 persona: icaria
 status: candidate

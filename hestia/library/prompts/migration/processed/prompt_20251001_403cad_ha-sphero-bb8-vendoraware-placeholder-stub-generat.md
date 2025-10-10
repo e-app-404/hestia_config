@@ -3,7 +3,7 @@ id: prompt_20251001_403cad
 slug: ha-sphero-bb8-vendoraware-placeholder-stub-generat
 title: Ha Sphero Bb8 Vendoraware Placeholder Stub Generation Prompt
 date: '2025-10-01'
-tier: "\u03B2"
+tier: "beta"
 domain: diagnostic
 persona: kybernetes
 status: candidate

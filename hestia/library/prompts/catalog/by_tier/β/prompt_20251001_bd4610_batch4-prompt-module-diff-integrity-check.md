@@ -3,7 +3,7 @@ id: prompt_20251001_bd4610
 slug: batch4-prompt-module-diff-integrity-check
 title: Batch4 Prompt Module Diff Integrity Check
 date: '2025-10-01'
-tier: "\u03B2"
+tier: "beta"
 domain: validation
 persona: nomia
 status: candidate

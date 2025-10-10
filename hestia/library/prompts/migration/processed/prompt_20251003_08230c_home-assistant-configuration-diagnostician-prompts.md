@@ -3,7 +3,7 @@ id: prompt_20251003_08230c
 slug: home-assistant-configuration-diagnostician-prompts
 title: "Home Assistant Configuration Diagnostician \u2014 promptset v2.5 (optimized)"
 date: '2025-10-03'
-tier: "\u03B2"
+tier: "beta"
 domain: diagnostic
 persona: copilot
 status: candidate
@@ -143,10 +143,11 @@ promptset:
         - binary_confirmation
       bindings:
         - hestia/library/error_patterns.yml
+        - hestia/config/system/maintenance_log.conf
       prompt: |
         After a remediation candidate has been successfully implemented, validate the fix is sticky by getting binary confirmation through home-assistant.log inspection. Then update the `error_patterns.yml` file for future reference.
 
-        Document all maintenance activity in /config/hestia/library/maintenance_log.yaml with timestamp, description, files changed, and outcome.
+        Document all maintenance activity in /config/hestia/config/system/maintenance_log.conf, following the established pattern, including at a minimum the timestamp, description, files changed, and outcome.
   migration:
     strategy: |
       Preserve legacy diagnostic notes by mapping them to `evidence` and `alternatives_considered` fields.
@@ -160,6 +161,7 @@ promptset:
     - Never speculate without citing log lines or config fragments.
     - Prefer the smallest possible change; avoid multi-file wide edits unless absolutely necessary.
     - Tag confidence numerically on every major output block.
+    - Raise an alert if the fix implementation would be in conflict with active ADR governance policies. 
 
   outputs:
     - name: diagnostics_report.yaml

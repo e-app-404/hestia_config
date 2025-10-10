@@ -3,7 +3,7 @@ id: prompt_20251008_872420
 slug: prompt-valetudo-vacuum-package
 title: Prompt Valetudo Vacuum Package
 date: '2025-10-08'
-tier: "\u03B2"
+tier: "beta"
 domain: validation
 persona: strategos
 status: candidate

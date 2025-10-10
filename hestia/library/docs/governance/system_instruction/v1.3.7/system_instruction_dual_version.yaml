@@ -1057,7 +1057,7 @@ system_instruction_versions:
             or non-mapping YAML types.
 
             "
-          tier: "\u03B2+"
+          tier: "beta+"
           domain: abstraction
           status: proposed
           metadata:
@@ -1503,7 +1503,7 @@ system_instruction_versions:
         location: /core/error_lexicon/validator_log.json
         required: true
         schema_reference: validator_log.schema.json
-        tier: "\u03B2"
+        tier: "beta"
       - id: error_patterns
         name: ERROR_PATTERNS.md
         role: error_registry
@@ -1516,7 +1516,7 @@ system_instruction_versions:
         location: /core/error_lexicon/ERROR_PATTERNS.md
         required: true
         schema_reference: error_pattern_001
-        tier: "\u03B2"
+        tier: "beta"
       - id: validation_chains
         name: VALIDATION_CHAINS.md
         role: escalation_graph
@@ -1527,7 +1527,7 @@ system_instruction_versions:
         location: /core/error_lexicon/VALIDATION_CHAINS.md
         required: true
         schema_reference: escalation_chain_001
-        tier: "\u03B2"
+        tier: "beta"
       - id: developer_guidelines
         name: developer_guidelines.md
         role: contributor_reference
@@ -1552,7 +1552,7 @@ system_instruction_versions:
         location: /core/governance/entity_map.json
         required: true
         schema_reference: entity_map_schema_001
-        tier: "\u03B2"
+        tier: "beta"
       - id: tool_manifest
         name: tool_manifest.json
         role: execution_registry
@@ -1565,7 +1565,7 @@ system_instruction_versions:
         location: /core/governance/tool_manifest.json
         required: true
         schema_reference: tool_manifest_schema_001
-        tier: "\u03B2"
+        tier: "beta"
       - id: doctrine
         name: ARCHITECTURE_DOCTRINE.md
         role: governance_schema
@@ -1703,7 +1703,7 @@ system_instruction_versions:
             symbol: "\u03B1"
             role: Ground truth registries and raw signal emitters
           - tier: Beta
-            symbol: "\u03B2"
+            symbol: "beta"
             role: Sensor inference logic, fusion points
           - tier: Gamma
             symbol: "\u03B3"

@@ -3,7 +3,7 @@ id: prompt_20251001_e27747
 slug: you-have-full-permission-to-proceed-through-all-fi
 title: You have full permission to proceed through all files in the current config
 date: '2025-10-01'
-tier: "\u03B2"
+tier: "beta"
 domain: operational
 persona: generic
 status: candidate

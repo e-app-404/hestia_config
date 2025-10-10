@@ -3,7 +3,7 @@ id: prompt_20251001_6f6dc8
 slug: batch6-mac-import-prompt-diagnostic-regactor-harde
 title: Batch6 Mac Import Prompt Diagnostic Regactor Harden
 date: '2025-10-01'
-tier: "\u03B2"
+tier: "beta"
 domain: operational
 persona: promachos
 status: candidate

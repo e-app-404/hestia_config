@@ -3,7 +3,7 @@ id: prompt_20251001_5659d7
 slug: hestia-architecture-sensor-abstraction-mapping-com
 title: HESTIA Architecture & Sensor Abstraction Mapping - Compact Summary
 date: '2025-10-01'
-tier: "\u03B2"
+tier: "beta"
 domain: operational
 persona: strategos
 status: candidate

@@ -3,7 +3,7 @@ id: prompt_20250615_f5f4f5
 slug: batch7-mac-session-summary-self-contained-001
 title: Batch7 Mac Session Summary Self Contained 001
 date: '2025-06-15'
-tier: "\u03B2"
+tier: "beta"
 domain: diagnostic
 persona: kybernetes
 status: candidate

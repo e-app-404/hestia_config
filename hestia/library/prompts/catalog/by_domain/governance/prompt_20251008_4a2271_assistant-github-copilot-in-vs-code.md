@@ -3,7 +3,7 @@ id: prompt_20251008_4a2271
 slug: assistant-github-copilot-in-vs-code
 title: 'Assistant: Github Copilot In Vs Code'
 date: '2025-10-08'
-tier: "\u03B2"
+tier: "beta"
 domain: governance
 persona: kybernetes
 status: candidate
