@@ -72,8 +72,30 @@ automation:
         to: "on"
     variables:
       _raw: "{{ state_attr('sensor.room_configs_motion_lighting','payload') }}"
-      _cfgs: "{{ _raw | from_json if _raw else {} }}"
-      room_config: "{{ _cfgs.get('upstairs', {}) }}"
+      _cfgs: >-
+        {% if _raw %}
+          {% set parsed = _raw | from_json %}
+          {% if parsed is mapping %}
+            {{ parsed }}
+          {% else %}
+            {}
+          {% endif %}
+        {% else %}
+          {}
+        {% endif %}
+      room_config: >-
+        {% if _cfgs and 'upstairs' in _cfgs %}
+          {% set cfg = _cfgs.upstairs %}
+          {% if cfg is mapping %}
+            {{ cfg }}
+          {% elif cfg is string %}
+            {{ cfg | from_json }}
+          {% else %}
+            {}
+          {% endif %}
+        {% else %}
+          {}
+        {% endif %}
       timeout: "{{ room_config.get('timeout', 120) | int }}"
       bypass: "{{ room_config.get('bypass', false) | bool }}"
       presence_multiplier: "{{ room_config.get('presence_timeout_multiplier', 1.0) | float }}"
@@ -114,8 +136,30 @@ automation:
         to: "on"
     variables:
       _raw: "{{ state_attr('sensor.room_configs_motion_lighting','payload') }}"
-      _cfgs: "{{ _raw | from_json if _raw else {} }}"
-      room_config: "{{ _cfgs.get('downstairs', {}) }}"
+      _cfgs: >-
+        {% if _raw %}
+          {% set parsed = _raw | from_json %}
+          {% if parsed is mapping %}
+            {{ parsed }}
+          {% else %}
+            {}
+          {% endif %}
+        {% else %}
+          {}
+        {% endif %}
+      room_config: >-
+        {% if _cfgs and 'downstairs' in _cfgs %}
+          {% set cfg = _cfgs.downstairs %}
+          {% if cfg is mapping %}
+            {{ cfg }}
+          {% elif cfg is string %}
+            {{ cfg | from_json }}
+          {% else %}
+            {}
+          {% endif %}
+        {% else %}
+          {}
+        {% endif %}
       timeout: "{{ room_config.get('timeout', 120) | int }}"
       bypass: "{{ room_config.get('bypass', false) | bool }}"
       presence_multiplier: "{{ room_config.get('presence_timeout_multiplier', 1.0) | float }}"
@@ -156,8 +200,30 @@ automation:
         to: "on"
     variables:
       _raw: "{{ state_attr('sensor.room_configs_motion_lighting','payload') }}"
-      _cfgs: "{{ _raw | from_json if _raw else {} }}"
-      room_config: "{{ _cfgs.get('kitchen', {}) }}"
+      _cfgs: >-
+        {% if _raw %}
+          {% set parsed = _raw | from_json %}
+          {% if parsed is mapping %}
+            {{ parsed }}
+          {% else %}
+            {}
+          {% endif %}
+        {% else %}
+          {}
+        {% endif %}
+      room_config: >-
+        {% if _cfgs and 'kitchen' in _cfgs %}
+          {% set cfg = _cfgs.kitchen %}
+          {% if cfg is mapping %}
+            {{ cfg }}
+          {% elif cfg is string %}
+            {{ cfg | from_json }}
+          {% else %}
+            {}
+          {% endif %}
+        {% else %}
+          {}
+        {% endif %}
       timeout: "{{ room_config.get('timeout', 120) | int }}"
       bypass: "{{ room_config.get('bypass', false) | bool }}"
       presence_multiplier: "{{ room_config.get('presence_timeout_multiplier', 1.0) | float }}"
@@ -198,8 +264,30 @@ automation:
         to: "on"
     variables:
       _raw: "{{ state_attr('sensor.room_configs_motion_lighting','payload') }}"
-      _cfgs: "{{ _raw | from_json if _raw else {} }}"
-      room_config: "{{ _cfgs.get('living_room', {}) }}"
+      _cfgs: >-
+        {% if _raw %}
+          {% set parsed = _raw | from_json %}
+          {% if parsed is mapping %}
+            {{ parsed }}
+          {% else %}
+            {}
+          {% endif %}
+        {% else %}
+          {}
+        {% endif %}
+      room_config: >-
+        {% if _cfgs and 'living_room' in _cfgs %}
+          {% set cfg = _cfgs.living_room %}
+          {% if cfg is mapping %}
+            {{ cfg }}
+          {% elif cfg is string %}
+            {{ cfg | from_json }}
+          {% else %}
+            {}
+          {% endif %}
+        {% else %}
+          {}
+        {% endif %}
       timeout: "{{ room_config.get('timeout', 120) | int }}"
       bypass: "{{ room_config.get('bypass', false) | bool }}"
       presence_multiplier: "{{ room_config.get('presence_timeout_multiplier', 1.0) | float }}"
@@ -240,8 +328,30 @@ automation:
         to: "on"
     variables:
       _raw: "{{ state_attr('sensor.room_configs_motion_lighting','payload') }}"
-      _cfgs: "{{ _raw | from_json if _raw else {} }}"
-      room_config: "{{ _cfgs.get('ensuite', {}) }}"
+      _cfgs: >-
+        {% if _raw %}
+          {% set parsed = _raw | from_json %}
+          {% if parsed is mapping %}
+            {{ parsed }}
+          {% else %}
+            {}
+          {% endif %}
+        {% else %}
+          {}
+        {% endif %}
+      room_config: >-
+        {% if _cfgs and 'ensuite' in _cfgs %}
+          {% set cfg = _cfgs.ensuite %}
+          {% if cfg is mapping %}
+            {{ cfg }}
+          {% elif cfg is string %}
+            {{ cfg | from_json }}
+          {% else %}
+            {}
+          {% endif %}
+        {% else %}
+          {}
+        {% endif %}
       timeout: "{{ room_config.get('timeout', 120) | int }}"
       bypass: "{{ room_config.get('bypass', false) | bool }}"
       presence_multiplier: "{{ room_config.get('presence_timeout_multiplier', 1.0) | float }}"
