@@ -233,7 +233,7 @@ appdaemon_index:
       status: "investigation_complete_network_issue_identified"
       execution_timestamp: "2025-10-10T15:00:00Z"
       previous_issue: "AppDaemon app initialization failing due to incorrect canonical_mapping_file path"
-      fix_applied: "Updated apps.yaml to use correct path: /config/www/area_mapping.yaml"
+      fix_applied: "Updated apps.yaml to use correct path: /addon_configs/www/area_mapping.yaml"
       investigation_completed:
         findings:
           appdaemon_app_status: "Successfully initializing - room_db_updater confirmed running"

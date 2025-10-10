@@ -815,13 +815,13 @@ patterns:
         room_db_updater:
           module: room_db_updater
           class: RoomDbUpdater
-          canonical_mapping_file: /config/domain/architecture/area_mapping.yaml  # Not accessible
+          canonical_mapping_file: /config/domain/architecture/area_mapping.yaml  # Deprecated - use /addon_configs/www/area_mapping.yaml
       good: |
         # apps.yaml with container-accessible path
         room_db_updater:
           module: room_db_updater
           class: RoomDbUpdater
-          canonical_mapping_file: /config/www/area_mapping.yaml  # Accessible via www mount
+          canonical_mapping_file: /addon_configs/www/area_mapping.yaml  # Correct addon_configs path
     resolution_steps:
       - "Identify the missing file path from AppDaemon error logs"
       - "Check if file exists on host filesystem in expected location"

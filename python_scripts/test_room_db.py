@@ -83,7 +83,7 @@ def test_database_init():
 
 def test_canonical_mapping():
     """Test canonical mapping loading"""
-    mapping_file = "/config/domain/architecture/area_mapping.yaml"
+    mapping_file = "/config/www/area_mapping.yaml"
     
     if not os.path.exists(mapping_file):
         print(f"❌ Canonical mapping file not found: {mapping_file}")
