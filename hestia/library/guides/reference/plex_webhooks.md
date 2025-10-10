@@ -9,6 +9,7 @@ last_updated: "2025-10-07"
 url: "https://support.plex.tv/articles/webhooks/"
 related:
    - blueprint: "thenextbutton/plex_webhook_release"
+   - package: "packages/package_universal_media.yaml"
 ---
 
 # Webhooks
