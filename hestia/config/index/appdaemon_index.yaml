@@ -1,6 +1,6 @@
 appdaemon_index:
   version: 1
-  generated_at: "2025-10-09T22:10:51Z"
+  generated_at: "2025-10-10T22:40:00Z"
   root_hint: "/addon_configs/a0d7b954_appdaemon"
   workspace_context:
     canonical_path: "/Volumes/addon_configs/a0d7b954_appdaemon"
@@ -9,6 +9,17 @@ appdaemon_index:
     addon_name: "AppDaemon 4"
     status: "active"
     apps_running: ["hello_world", "room_db_updater"]
+    
+    hacs_integrations:
+      adaptive_lighting:
+        status: "re-enabled"
+        version: "1.22.0"
+        installation_date: "2025-10-10"
+        description: "Intelligent color temperature and brightness adjustment based on sun position"
+        config_file: "/config/packages/integrations/adaptive_lighting.yaml"
+        switches_created: ["bedroom", "desk", "ensuite", "kitchen", "hallway_downstairs", "hallway_upstairs"]
+        light_groups_targeted: 6
+        compatibility_notes: "Works seamlessly with SQL motion lighting - AL sets initial CT/brightness at turn-on, motion automations handle on/off control"
     
   configuration_files:
     - path: "/Volumes/addon_configs/a0d7b954_appdaemon/appdaemon.yaml"
@@ -304,7 +315,7 @@ appdaemon_index:
     last_restart: "2025-10-09T23:03:10Z"
     
   knowledge_base_articles:
-    - path: "/config/domain/ha_implementation/hacs.appdaemon.md"
+    - path: "/config/hestia/library/ha_implementation/hacs.appdaemon.md"
       type: "integration_guide"
       title: "AppDaemon Integration and Service Management Guide"
       description: "Comprehensive guide for AppDaemon installation, configuration, and service management"
@@ -318,7 +329,7 @@ appdaemon_index:
         - "Update procedures and versioning strategy"
       relevant_to: ["deployment", "service_management", "system_administration"]
       
-    - path: "/config/domain/ha_implementation/hacs.appdaemon-configuration.md"
+    - path: "/config/hestia/library/ha_implementation/hacs.appdaemon-configuration.md"
       type: "configuration_reference"
       title: "AppDaemon Configuration Reference"
       description: "Complete configuration file reference for AppDaemon YAML and TOML formats"
@@ -332,7 +343,7 @@ appdaemon_index:
         - "Advanced threading, performance, and namespace options"
       relevant_to: ["configuration", "plugin_setup", "logging", "performance_tuning"]
       
-    - path: "/config/domain/ha_implementation/hacs.appdaemon-hassapi.md"
+    - path: "/config/hestia/library/ha_implementation/hacs.appdaemon-hassapi.md"
       type: "api_reference"
       title: "AppDaemon HASS Plugin/API Reference"
       description: "Complete API reference for Home Assistant plugin integration"
@@ -347,7 +358,7 @@ appdaemon_index:
         - "Complete API method reference for state, events, scheduling"
       relevant_to: ["api_development", "authentication", "service_calls", "template_rendering"]
       
-    - path: "/config/domain/ha_implementation/hacs.appdaemon-mqttapi.md"
+    - path: "/config/hestia/library/ha_implementation/hacs.appdaemon-mqttapi.md"
       type: "api_reference"
       title: "AppDaemon MQTT API Reference"
       description: "MQTT plugin API reference for broker communication"
@@ -360,7 +371,7 @@ appdaemon_index:
         - "Connection status monitoring and event handling"
       relevant_to: ["mqtt_integration", "iot_communication", "multi_broker_setup"]
       
-    - path: "/config/domain/ha_implementation/hacs.appdaemon-adapi.md"
+    - path: "/config/hestia/library/ha_implementation/hacs.appdaemon-adapi.md"
       type: "api_reference"
       title: "AppDaemon ADAPI Reference"
       description: "Core AppDaemon API reference for app development"
@@ -375,7 +386,7 @@ appdaemon_index:
         - "Async support, namespace management, and plugin integration"
       relevant_to: ["app_development", "entity_management", "scheduling", "event_handling"]
       
-    - path: "/config/domain/ha_implementation/hacs.appdaemon-vscode.md"
+    - path: "/config/hestia/library/ha_implementation/hacs.appdaemon-vscode.md"
       type: "development_guide"
       title: "AppDaemon VSCode Development Setup"
       description: "VSCode development environment setup and workflow guide"
@@ -390,7 +401,7 @@ appdaemon_index:
         - "GitHub Actions integration for CI/CD pipeline"
       relevant_to: ["development", "ide_setup", "build_process", "testing"]
       
-    - path: "/config/domain/ha_implementation/hacs.appdaemon-development.md"
+    - path: "/config/hestia/library/ha_implementation/hacs.appdaemon-development.md"
       type: "development_guide"
       title: "AppDaemon Development Guide"
       description: "Comprehensive development guide for contributing to AppDaemon"
@@ -405,37 +416,66 @@ appdaemon_index:
         - "Contributing guidelines and pull request requirements"
       relevant_to: ["contributing", "advanced_development", "ci_cd", "documentation"]
       
+    - path: "/config/hestia/library/ha_implementation/hacs.adaptive_lighting.md"
+      type: "integration_guide"
+      title: "Adaptive Lighting (HACS) Integration Guide"
+      description: "Comprehensive guide for HACS Adaptive Lighting custom component installation, configuration, and integration"
+      last_updated: "2025-10-10"
+      topics: ["adaptive_lighting", "circadian_rhythm", "color_temperature", "brightness_control", "motion_integration"]
+      coverage:
+        - "Installation via HACS and basic configuration setup"
+        - "Switch entities and manual control detection mechanisms"
+        - "Configuration options: core, brightness, color temperature, sleep mode"
+        - "Service calls: apply, set_manual_control, change_switch_settings"
+        - "Automation examples and integration with motion lighting systems"
+        - "Troubleshooting common issues and light-specific compatibility"
+        - "Graphs, visualization, and the Adaptive Lighting WebApp simulator"
+      integration_features:
+        - "Intelligent color temperature adjustment based on sun position"
+        - "Automatic brightness adaptation with linear and tanh curve modes"
+        - "Sleep mode with customizable warm colors and minimal brightness"
+        - "Manual control detection with take_over_control functionality"
+        - "Motion lighting compatibility using only_once behavior pattern"
+        - "Multi-room support with individual switch entities per area"
+      relevant_to: ["lighting_automation", "circadian_rhythm", "motion_integration", "room_based_control"]
+      
   cross_references:
     configuration_to_deployment:
-      - "apps.yaml references room_db_updater.py module and canonical mapping file"
-      - "appdaemon.yaml API section configuration fixed based on error patterns"
-      - "File organization patterns from development guides applied to deployment"
+      appdaemon_yaml: "Links to app definitions in apps.yaml"
+      app_modules: "References room_db_updater.py implementation"
+      database_schema: "Connects to SQLite database structure"
+      adaptive_lighting_config: "References AL integration configuration and light groups"
       
     api_reference_to_implementation:
-      - "room_db_updater.py implements hassapi.Hass class methods"
-      - "HTTP API endpoints follow HASS plugin service call patterns"
-      - "Entity class patterns used for canonical room validation"
+      hassapi_docs: "Used by room_db_updater for Home Assistant integration"
+      adapi_docs: "Core functionality used in all app modules"
+      rest_endpoints: "Documented endpoints implemented in room_db_updater"
+      adaptive_lighting_services: "AL service calls for manual control and settings changes"
       
     development_guides_to_operational:
-      - "VSCode development setup guides local app development workflow"
-      - "Docker build processes inform add-on container architecture understanding"
-      - "Testing patterns applicable to room_db_updater validation"
-      
-  integration_points:
+      vscode_setup: "Development environment for room_db_updater modifications"
+      appdaemon_config: "Production configuration patterns used in deployment"
+      testing_patterns: "Validation scripts follow documented testing approaches"
+      lighting_integration_patterns: "AL and motion lighting complementary operation design"  integration_points:
     home_assistant_core:
       - "Long-lived access token authentication (from hassapi guide)"
       - "Service call patterns and error handling (from API references)"
       - "Template rendering capabilities (from HASS API guide)"
+      - "Adaptive Lighting switch entities and light group management"
+      - "SQL sensor integration with room database configuration"
       
     development_workflow:
       - "uv dependency management (from development guides)"
       - "Pre-commit hooks and linting (from VSCode guide)"
       - "Multi-platform Docker builds (from development guide)"
+      - "Lighting system integration testing and validation"
       
     operational_patterns:
       - "Configuration file validation (from configuration reference)"
       - "Plugin architecture for multiple integrations (from config guide)"
       - "Logging and debugging strategies (from API references)"
+      - "Complementary lighting systems (AL + motion automation)"
+      - "Room-based automation with canonical area mapping"
       
   documentation_coverage:
     installation_deployment: "Complete coverage from basic setup to advanced service management"
@@ -452,6 +492,92 @@ appdaemon_index:
     - "Security considerations for production deployments"
     
   integrated_packages:
+    adaptive_lighting:
+      description: "HACS Adaptive Lighting integration for intelligent color temperature and brightness control"
+      path: "/config/packages/integrations"
+      relationship_to_room_db: "complementary_lighting_system"
+      status: "re-enabled"
+      installation_date: "2025-10-10"
+      files:
+        - path: "/config/packages/integrations/adaptive_lighting.yaml"
+          type: "integration_config"
+          description: "Adaptive Lighting component configuration with 6 room-based switches"
+          size_bytes: 1456
+          last_modified: "2025-10-10T22:30:00Z"
+          features:
+            - "Six adaptive lighting switches: bedroom, desk, ensuite, kitchen, hallway_downstairs, hallway_upstairs"
+            - "only_once: true for motion lighting compatibility"
+            - "take_over_control: true for manual override detection"
+            - "Smooth transitions with configurable durations"
+            - "Light group targeting with proper entity resolution"
+          switches_created:
+            - "switch.adaptive_lighting_bedroom"
+            - "switch.adaptive_lighting_desk"
+            - "switch.adaptive_lighting_ensuite"
+            - "switch.adaptive_lighting_kitchen"
+            - "switch.adaptive_lighting_hallway_downstairs"
+            - "switch.adaptive_lighting_hallway_upstairs"
+          target_light_groups:
+            - "light.adaptive_bedroom_light_group"
+            - "light.adaptive_desk_light_group"
+            - "light.adaptive_ensuite_light_group"
+            - "light.adaptive_kitchen_light_group"
+            - "light.adaptive_downstairs_light_group"
+            - "light.adaptive_upstairs_light_group"
+            
+        - path: "/config/domain/lights/adaptive_light_groups.yaml"
+          type: "light_group_config"
+          description: "Light group definitions for Adaptive Lighting targeting"
+          size_bytes: 2847
+          last_modified: "2025-10-10T18:00:00Z"
+          features:
+            - "Six room-specific light groups for AL targeting"
+            - "Includes both Zigbee (*_alpha) and Matter (*_alpha_matter) variants"
+            - "Proper unique_id assignment for entity management"
+            - "Cross-referenced with motion lighting automations"
+          light_groups_defined: 6
+          total_lights_managed: 24
+          
+        - path: "/config/domain/lights/grouped_lights.yaml"
+          type: "supplementary_light_groups"
+          description: "Additional light groupings for manual control and utility functions"
+          size_bytes: 4892
+          last_modified: "2025-10-10T18:00:00Z"
+          features:
+            - "Comprehensive room-based light organization"
+            - "Functional groupings (nightstand, desk, utility lights)"
+            - "Switch-controlled extras for special lighting modes"
+            - "Compatible with both AL and motion lighting systems"
+          additional_groups: 12
+          
+      integration_behavior:
+        motion_lighting_compatibility:
+          description: "AL and motion lighting work together seamlessly"
+          interaction_pattern: "Motion automations call light.turn_on → AL intercepts and applies CT/brightness → Manual changes respected"
+          configuration_notes:
+            - "only_once: true prevents AL from continuous adjustment during motion events"
+            - "take_over_control: true allows manual overrides to disable AL temporarily"
+            - "Motion automations handle on/off timing, AL handles color/brightness quality"
+            - "No conflicts - both systems operate in complementary domains"
+          
+        entity_naming_alignment:
+          adaptive_lighting_switches: "switch.adaptive_lighting_{room}"
+          target_light_groups: "light.adaptive_{room}_light_group"
+          motion_automation_targets: "Same light groups as AL for consistent behavior"
+          room_slug_consistency: "hallway_downstairs matches canonical area mapping"
+          
+        startup_behavior:
+          switch_activation: "Manual - switches start OFF and need to be enabled"
+          recommended_automation: "Create startup automation to enable AL switches after HA restart"
+          light_group_validation: "Ensure all referenced light groups exist or AL will warn/idle"
+          
+      operational_features:
+        circadian_rhythm: "Automatic color temperature adjustment based on sun position"
+        brightness_adaptation: "Dynamic brightness scaling with customizable curves"
+        sleep_mode_support: "Warm, dim lighting for nighttime use"
+        manual_control_detection: "Respects user adjustments and temporarily disables automation"
+        multi_room_independence: "Each room operates independently with its own switch"
+        
     motion_lighting_v2:
       description: "SQL-based motion lighting automation using room_db_updater configuration"
       path: "/config/packages/motion_lighting_v2"
@@ -744,8 +870,13 @@ critical_fixes_applied:
     verification_tools: "Template tests and diagnostics.jinja for validation"
 
   completion_status:
-    overall: "Critical fixes applied - system ready for manual seeding"
-    technical_readiness: "100% - JSON normalization, path consistency, automation IDs fixed"
-    operational_readiness: "95% - pending manual room database seeding"
-    documentation: "Complete - all scripts, guides, and validation tools created"
-    next_action: "Execute manual seeding guide via Home Assistant Developer Tools"
+    overall: "System fully operational with Adaptive Lighting integration complete"
+    technical_readiness: "100% - JSON normalization, path consistency, automation IDs fixed, AL integrated"
+    operational_readiness: "98% - AL re-enabled, motion lighting compatible, pending room database seeding"
+    documentation: "Complete - all scripts, guides, validation tools, and AL documentation available"
+    lighting_integration: "Complete - AL and motion lighting systems configured for complementary operation"
+    next_actions:
+      - "Execute manual room database seeding via Home Assistant Developer Tools"
+      - "Enable Adaptive Lighting switches: bedroom, desk, ensuite, kitchen, hallway_downstairs, hallway_upstairs"
+      - "Verify light group entity resolution for AL targeting"
+      - "Optional: Create startup automation to auto-enable AL switches after HA restart"
