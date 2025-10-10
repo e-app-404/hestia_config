@@ -1,7 +1,0 @@
-#═══════════════════════════════════════════════════════════════
-# ▶ VARIABLE: Home Assistant Variables (HACS) ◀
-# Loader: packages: !include_dir_named packages
-# Schema: variable   •  Info: /hacs/repository/199332790
-#═══════════════════════════════════════════════════════════════
-
-var: !include_dir_merge_named domain/variables

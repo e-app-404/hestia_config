@@ -25,6 +25,13 @@ template:
           last_command: "{{ states('input_text.bedroom_matrix_last_command') }}"
           last_updated: "{{ states('input_datetime.bedroom_matrix_last_updated') }}"
           file: "/config/packages/package_universal_media.yaml"
+          subarea_id: "hifi_configuration"
+          area_id: "bedroom"
+          floor_id: "sanctum"    
+          domain: "orpheus"
+          module: "virtual_matrix"    
+          role: "convenience"
+          type: "selector"  
 
       - name: "Bedroom TV Status"
         unique_id: "bedroom_tv_status_beta"
@@ -40,6 +47,9 @@ template:
           {{ app or src or ch_ok or guess or 'Unknown' }}
         attributes:
           tier: "β"
+          subarea_id: "hifi_configuration"
+          area_id: "bedroom"
+          floor_id: "sanctum"          
           canonical_id: "bedroom_tv_status_β"
           subsystem: "orpheus"
           module: "television"
@@ -98,6 +108,9 @@ template:
           rationale: "Tracks which TV app is currently active for scene/automation logic."
           description: "Abstraction for current app/channel running on Bedroom TV."
           file: "/config/packages/package_universal_media.yaml"
+          subarea_id: "hifi_configuration"
+          area_id: "bedroom"
+          floor_id: "sanctum"
           note: |
             "#TODO inspect Samsung TV integration and fix correct channel and power attribution"
 
@@ -122,6 +135,9 @@ template:
           subsystem: "orpheus"
           module: "gaming"
           domain: "status"
+          subarea_id: "hifi_configuration"
+          area_id: "bedroom"
+          floor_id: "sanctum"          
           file: "/config/packages/package_universal_media.yaml"
 
       - name: "Media Player STANDBY Diagnostic"

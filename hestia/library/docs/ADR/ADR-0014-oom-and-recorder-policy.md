@@ -111,8 +111,11 @@ recorder:
       - sensor.disabled_device_entities
       - group.unavailable_entities
       - group.smartthings_entities
-      - var.plex_tv_index
-      - var.plex_movie_index
+      - input_text.plex_tv_index
+      - input_text.plex_movie_index
+      - input_number.plex_tv_episode_count
+      - input_number.plex_movie_count
+      # Migrated from HACS Variable (var.*) to native HA helpers 2025-10-10
   include:
     domains:
       - binary_sensor

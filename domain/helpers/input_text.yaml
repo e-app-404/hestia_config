@@ -13,3 +13,13 @@ tts_gate_registry:
   name: "TTS Gate Registry"
   initial: "{}"
   max: 4096
+
+plex_tv_index:
+  name: "Plex TV Index"
+  initial: '{"shows": {}, "seasons": {}, "episodes": {}, "updated": ""}'
+  max: 2048
+
+plex_movie_index:
+  name: "Plex Movie Index"
+  initial: '{"movies": {}, "year_released": {}, "updated": ""}'
+  max: 2048

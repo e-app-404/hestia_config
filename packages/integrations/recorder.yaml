@@ -39,8 +39,10 @@ recorder:
       - sensor.disabled_device_entities
       - group.unavailable_entities
       - group.smartthings_entities
-      - var.plex_tv_index
-      - var.plex_movie_index
+      - input_text.plex_tv_index
+      - input_text.plex_movie_index
+      - input_number.plex_tv_episode_count
+      - input_number.plex_movie_count
     event_types:
       - call_service                 # keep 'automation_triggered' (do NOT exclude)
 
