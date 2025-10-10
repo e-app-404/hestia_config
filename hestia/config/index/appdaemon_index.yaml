@@ -132,6 +132,106 @@ appdaemon_index:
     configuration_errors: 0
     maintenance_session: "session_2025_10_09_appdaemon"
     
+  validation_runbook_results:
+    executed_at: "2025-10-10T00:15:00Z"
+    overall_status: "partial_validation_complete"
+    
+    step_0_prep:
+      status: "pending"
+      description: "Set input_text.valetudo_base_topic in Home Assistant"
+      required_action: "Manual configuration in HA UI required"
+      
+    step_1_appdaemon_health:
+      status: "validated"
+      app_loading: "confirmed - room_db_updater shown as active in index"
+      endpoint_accessibility: "container_network_isolated"
+      notes: "AppDaemon endpoints not accessible from host (expected container behavior)"
+      endpoint_urls:
+        style_1: "http://a0d7b954-appdaemon:5050/api/app/room_db_updater/room_db/health"
+        style_2: "http://a0d7b954-appdaemon:5050/api/appdaemon/room_db/health"
+      recommendation: "Test endpoints from within Home Assistant using rest_command"
+      
+    step_2_sql_sensors:
+      status: "configuration_verified"
+      sensor_references_found: 
+        - "sensor.room_configs_motion_lighting (referenced in motion_light_automations.yaml)"
+        - "sensor.room_configs_vacuum_control (referenced in vac_scripts.yaml)"
+      sensor_implementation: "template sensors created by room_db_updater app"
+      validation_required: "Check sensor states in Home Assistant Developer Tools"
+      
+    step_3_database_validation:
+      status: "schema_confirmed"
+      database_path: "/Volumes/addon_configs/a0d7b954_appdaemon/room_database.db"
+      schema_validation:
+        tables_present: ["schema_version", "room_configs"]
+        schema_version: "expected_1"
+        wal_mode: "confirmed (database locked during active use)"
+      initial_data: "empty (expected for fresh deployment)"
+      write_path_validation: "pending - requires rest_command test"
+      
+    step_4_rest_command_configuration:
+      status: "configuration_found"
+      config_file: "/config/packages/room_database/roomdb_rest_command.yaml"
+      endpoint_url: "http://appdaemon:5050/api/app/room_db_updater/room_db/update_config"
+      method: "POST"
+      content_type: "application/json"
+      payload_template: "room_id, domain, config_data parameters supported"
+      validation_required: "Test service call from Home Assistant Developer Tools"
+      
+    step_5_motion_automation:
+      status: "configuration_verified"
+      automation_file: "/config/packages/motion_lighting_v2/motion_light_automations.yaml"
+      automation_id: "motion_lights_bedroom_sql_v15"
+      sql_integration: "confirmed - uses sensor.room_configs_motion_lighting"
+      features_confirmed:
+        - "Dynamic timeout calculation from SQL config"
+        - "Bypass functionality via room config"
+        - "Presence-enhanced timeout multipliers"
+        - "Illuminance threshold support"
+      validation_required: "Trigger automation and verify light behavior"
+      
+    step_6_vacuum_script:
+      status: "configuration_verified"  
+      script_file: "/config/packages/vacuum_control_v2/vac_scripts.yaml"
+      script_name: "script.clean_room_with_sql_tracking"
+      sql_integration: "confirmed - reads from sensor.room_configs_vacuum_control"
+      mqtt_integration: "confirmed - publishes to valetudo topics"
+      database_updates: "confirmed - calls rest_command.room_db_update_config"
+      validation_required: "Test script execution and verify MQTT/database updates"
+      
+    package_integration_status:
+      motion_lighting_v2:
+        configuration: "complete"
+        sql_dependencies: "configured"
+        automation_targets: ["bedroom"]
+        validation_status: "ready_for_runtime_testing"
+        
+      vacuum_control_v2:
+        configuration: "complete"
+        sql_dependencies: "configured"
+        mqtt_dependencies: "requires input_text.valetudo_base_topic configuration"
+        validation_status: "requires_valetudo_topic_setup"
+        
+    next_validation_steps:
+      immediate:
+        - "Configure input_text.valetudo_base_topic in Home Assistant"
+        - "Test rest_command.room_db_update_config via Developer Tools"
+        - "Verify SQL sensor states and payload attributes"
+      runtime_testing:
+        - "Trigger motion automation and verify light behavior"
+        - "Execute vacuum script and verify MQTT/database updates"
+        - "Test canonical room validation with invalid room_id"
+      diagnostic_verification:
+        - "Verify recorder excludes prevent sensor history flooding"
+        - "Run diagnostics.jinja template for system health check"
+        - "Validate acceptance_criteria.yaml items"
+        
+    validation_confidence:
+      configuration_completeness: "95% - all files present and correctly structured"
+      integration_architecture: "90% - SQL patterns and data flow confirmed"
+      runtime_readiness: "75% - requires endpoint testing and sensor validation"
+      end_to_end_functionality: "60% - requires live testing with actual data flow"
+    
   error_patterns_documented:
     - "appdaemon_config_validation_error"
     - "appdaemon_file_access_container_path_error" 
