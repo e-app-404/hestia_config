@@ -4,7 +4,7 @@ slug: ha-bb8-addon-diagnostics
 title: '|'
 date: '2025-10-04'
 tier: "\u03B1"
-domain: governance
+domain: diagnostic
 persona: promachos
 status: candidate
 tags:

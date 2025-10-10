@@ -4,11 +4,10 @@ slug: home-assistant-configuration-diagnostician-prompts
 title: "Home Assistant Configuration Diagnostician \u2014 promptset v2.5 (optimized)"
 date: '2025-10-03'
 tier: "\u03B2"
-domain: operational
-persona: strategos
+domain: diagnostic
+persona: copilot
 status: candidate
-tags:
-- diagnostic
+tags: [diagnostic, home assistant configuration, runtime, yaml, jinja, integration, entity registry, troubleshooting, config, logs, remediation, confidence scoring, evidence collection, safe changes, patch generation, templates, error patterns]
 version: '1.0'
 source_path: diag/home_assistant_diagnostician.promptset
 author: Unknown
