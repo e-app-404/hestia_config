@@ -36,13 +36,14 @@ promptset:
 
   artifacts:
     required:
-      - path: logs/home-assistant.log
-      - path: configs/configuration.yaml
+      - path: /config/home-assistant.log
+      - path: /config/configuration.yaml
+      - path: /config/hestia/library/error_patterns.yml
     optional:
-      - path: configs/packages/*.yaml
-      - path: configs/integrations/*.yaml
-      - path: state/entity_registry.yaml
-      - path: state/known_devices.yaml
+      - path: /config/packages/*.yaml
+      - path: /config/packages/integrations/*.yaml
+      - path: /config/.storage/core.entity_registry.yaml
+      - path: /config/.storage/core.device_registry.yaml
 
   bindings:
     protocols:
