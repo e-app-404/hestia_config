@@ -238,14 +238,14 @@
         subarea: "wardrobe"
 
     - name: "Bedroom Wardrobe Motion Recent (Beta)"
-      unique_id: wardrobe_motion_recent_beta
+      unique_id: bedroom_wardrobe_motion_recent_beta
       device_class: motion
       delay_off:
         minutes: 2
-      state: "{{ is_state('binary_sensor.wardrobe_motion_beta','on') }}"
+      state: "{{ is_state('binary_sensor.bedroom_wardrobe_motion_beta','on') }}"
       attributes:
         tier: "β"
-        canonical_id: "wardrobe_motion_recent_β"
+        canonical_id: "bedroom_wardrobe_motion_recent_β"
         subsystem: "hermes"
         module: "motion"
         type: "delay_proxy"
@@ -254,7 +254,7 @@
         delay_duration: "120s"
         timeout_behavior: "delay_off"
         upstream_sources: >
-          {{ ['binary_sensor.wardrobe_motion_beta'] | tojson }}
+          {{ ['binary_sensor.bedroom_wardrobe_motion_beta'] | tojson }}
         downstream_consumers: >
           {{ ['binary_sensor.wardrobe_occupancy_beta','sensor.wardrobe_motion_score_gamma'] | tojson }}
         version: "2.2"
@@ -359,6 +359,32 @@
         area_id: "hallway"
         subarea: "upstairs"
 
+    - name: "Hallway Upstairs Motion Recent (Beta)"
+      unique_id: hallway_upstairs_motion_recent_beta
+      device_class: motion
+      delay_off:
+        seconds: 20
+      state: "{{ is_state('binary_sensor.hallway_upstairs_motion_beta','on') }}"
+      attributes:
+        tier: "β"
+        canonical_id: "hallway_upstairs_motion_recent_β"
+        subsystem: "hermes"
+        module: "motion"
+        type: "delay_proxy"
+        role: "motion_timeout"
+        file: "/config/domain/templates/motion_logic.yaml"
+        delay_duration: "20s"
+        timeout_behavior: "delay_off"
+        upstream_sources: >
+          {{ ['binary_sensor.hallway_upstairs_motion_beta'] | tojson }}
+        downstream_consumers: >
+          {{ ['binary_sensor.hallway_upstairs_occupancy_beta','sensor.hallway_upstairs_motion_score_gamma'] | tojson }}
+        version: "2.2"
+        last_updated: "2025-10-06"
+        floor_id: "upstairs"
+        area_id: "hallway"
+        subarea: "upstairs"
+
     - name: "Hallway Downstairs Motion (Beta)"
       unique_id: "hallway_downstairs_motion_beta"
       device_class: motion
@@ -390,6 +416,32 @@
           {{ get_active_source(sources) }}
         source_count: "2"
         version: "2.3"
+        last_updated: "2025-10-06"
+        floor_id: "downstairs"
+        area_id: "hallway"
+        subarea: "downstairs"
+
+    - name: "Hallway Downstairs Motion Recent (Beta)"
+      unique_id: hallway_downstairs_motion_recent_beta
+      device_class: motion
+      delay_off:
+        minutes: 5
+      state: "{{ is_state('binary_sensor.hallway_downstairs_motion_beta','on') }}"
+      attributes:
+        tier: "β"
+        canonical_id: "hallway_downstairs_motion_recent_β"
+        subsystem: "hermes"
+        module: "motion"
+        type: "delay_proxy"
+        role: "motion_timeout"
+        file: "/config/domain/templates/motion_logic.yaml"
+        delay_duration: "300s"
+        timeout_behavior: "delay_off"
+        upstream_sources: >
+          {{ ['binary_sensor.hallway_downstairs_motion_beta'] | tojson }}
+        downstream_consumers: >
+          {{ ['binary_sensor.hallway_downstairs_occupancy_beta','sensor.hallway_downstairs_motion_score_gamma'] | tojson }}
+        version: "2.2"
         last_updated: "2025-10-06"
         floor_id: "downstairs"
         area_id: "hallway"
@@ -461,6 +513,31 @@
         floor_id: "downstairs"
         area_id: "kitchen"
 
+    - name: "Kitchen Motion Recent (Beta)"
+      unique_id: kitchen_motion_recent_beta
+      device_class: motion
+      delay_off:
+        minutes: 5
+      state: "{{ is_state('binary_sensor.kitchen_motion_beta','on') }}"
+      attributes:
+        tier: "β"
+        canonical_id: "kitchen_motion_recent_β"
+        subsystem: "hermes"
+        module: "motion"
+        type: "delay_proxy"
+        role: "motion_timeout"
+        file: "/config/domain/templates/motion_logic.yaml"
+        delay_duration: "300s"
+        timeout_behavior: "delay_off"
+        upstream_sources: >
+          {{ ['binary_sensor.kitchen_motion_beta'] | tojson }}
+        downstream_consumers: >
+          {{ ['binary_sensor.kitchen_occupancy_beta','sensor.kitchen_motion_score_gamma'] | tojson }}
+        version: "2.2"
+        last_updated: "2025-10-06"
+        floor_id: "downstairs"
+        area_id: "kitchen"
+
     - name: "Living Room Motion (Beta)"
       unique_id: "living_room_motion_beta"
       device_class: motion
@@ -494,33 +571,6 @@
         floor_id: "downstairs"
         area_id: "living_room"
 
-    # ───────────────────────────── RECENT (delay_off) WRAPPERS ──────────────
-
-    - name: "Kitchen Motion Recent (Beta)"
-      unique_id: kitchen_motion_recent_beta
-      device_class: motion
-      delay_off:
-        minutes: 5
-      state: "{{ is_state('binary_sensor.kitchen_motion_beta','on') }}"
-      attributes:
-        tier: "β"
-        canonical_id: "kitchen_motion_recent_β"
-        subsystem: "hermes"
-        module: "motion"
-        type: "delay_proxy"
-        role: "motion_timeout"
-        file: "/config/domain/templates/motion_logic.yaml"
-        delay_duration: "300s"
-        timeout_behavior: "delay_off"
-        upstream_sources: >
-          {{ ['binary_sensor.kitchen_motion_beta'] | tojson }}
-        downstream_consumers: >
-          {{ ['binary_sensor.kitchen_occupancy_beta','sensor.kitchen_motion_score_gamma'] | tojson }}
-        version: "2.2"
-        last_updated: "2025-10-06"
-        floor_id: "downstairs"
-        area_id: "kitchen"
-
     - name: "Living Room Motion Recent (Beta)"
       unique_id: living_room_motion_recent_beta
       device_class: motion
@@ -546,54 +596,4 @@
         floor_id: "downstairs"
         area_id: "living_room"
 
-    - name: "Hallway Downstairs Motion Recent (Beta)"
-      unique_id: hallway_downstairs_motion_recent_beta
-      device_class: motion
-      delay_off:
-        minutes: 5
-      state: "{{ is_state('binary_sensor.hallway_downstairs_motion_beta','on') }}"
-      attributes:
-        tier: "β"
-        canonical_id: "hallway_downstairs_motion_recent_β"
-        subsystem: "hermes"
-        module: "motion"
-        type: "delay_proxy"
-        role: "motion_timeout"
-        file: "/config/domain/templates/motion_logic.yaml"
-        delay_duration: "300s"
-        timeout_behavior: "delay_off"
-        upstream_sources: >
-          {{ ['binary_sensor.hallway_downstairs_motion_beta'] | tojson }}
-        downstream_consumers: >
-          {{ ['binary_sensor.hallway_downstairs_occupancy_beta','sensor.hallway_downstairs_motion_score_gamma'] | tojson }}
-        version: "2.2"
-        last_updated: "2025-10-06"
-        floor_id: "downstairs"
-        area_id: "hallway"
-        subarea: "downstairs"
-
-    - name: "Hallway Upstairs Motion Recent (Beta)"
-      unique_id: hallway_upstairs_motion_recent_beta
-      device_class: motion
-      delay_off:
-        seconds: 20
-      state: "{{ is_state('binary_sensor.hallway_upstairs_motion_beta','on') }}"
-      attributes:
-        tier: "β"
-        canonical_id: "hallway_upstairs_motion_recent_β"
-        subsystem: "hermes"
-        module: "motion"
-        type: "delay_proxy"
-        role: "motion_timeout"
-        file: "/config/domain/templates/motion_logic.yaml"
-        delay_duration: "20s"
-        timeout_behavior: "delay_off"
-        upstream_sources: >
-          {{ ['binary_sensor.hallway_upstairs_motion_beta'] | tojson }}
-        downstream_consumers: >
-          {{ ['binary_sensor.hallway_upstairs_occupancy_beta','sensor.hallway_upstairs_motion_score_gamma'] | tojson }}
-        version: "2.2"
-        last_updated: "2025-10-06"
-        floor_id: "upstairs"
-        area_id: "hallway"
-        subarea: "upstairs"
+    # ───────────────────────────── RECENT (delay_off) WRAPPERS ──────────────
