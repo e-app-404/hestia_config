@@ -854,6 +854,51 @@ patterns:
       - "Docker Container File System Documentation"
       - "AppDaemon App Development Guide"
 
+  - name: "input_text_yaml_max_limit_exceeded"
+    category: "helper_configuration"
+    description: "YAML-defined input_text helpers failing validation due to exceeding 255 character limit"
+    error_format: "value must be at most 255 for dictionary value 'input_text->[helper_name]->max', got [value]"
+    symptoms:
+      - "Configuration validation errors for input_text helpers with large max values"
+      - "Helpers defined in YAML with max > 255 characters failing to load"
+      - "JSON storage requirements exceeding YAML input_text limits"
+    root_causes:
+      - "Home Assistant YAML input_text helpers limited to 255 characters maximum"
+      - "Large JSON storage needs (TTS registries, Plex indexes) requiring >255 chars"
+      - "Using YAML configuration instead of UI creation for large storage helpers"
+    solution:
+      - "Remove large storage helpers from YAML configuration files"
+      - "Create helpers via UI (Settings > Devices & Services > Helpers) for large storage"
+      - "UI-created helpers support up to 100,000 characters vs YAML's 255 limit"
+    examples:
+      bad: |
+        # domain/helpers/input_text.yaml
+        input_text:
+          large_json_storage:
+            name: "Large JSON Storage"
+            max: 4096  # Exceeds 255 limit
+            initial: "{}"
+      good: |
+        # Remove from YAML, create via UI instead
+        # Note: large_json_storage created via Settings > Helpers
+        # UI creation allows max: 4096+ characters
+    resolution_steps:
+      - "Remove helper definitions from YAML files in domain/helpers/"
+      - "Add helpers via UI: Settings > Devices & Services > Helpers > Add Helper"
+      - "Set appropriate max values (up to 100,000) in UI creation dialog"
+      - "Verify helpers appear in .storage/input_text after creation"
+    prevention_strategies:
+      - "Use UI creation for any input_text helper needing >255 characters"
+      - "Document large storage helpers as UI-only in configuration comments"
+      - "Check .storage/input_text to verify UI-created helper configuration"
+    tooling:
+      detector: "grep 'value must be at most 255.*input_text' home-assistant.log"
+      validator: "/config/bin/config-health /config - validate configuration after changes"
+      storage_check: "grep -E 'helper_name' /config/.storage/input_text - verify UI creation"
+    references:
+      - "Home Assistant Input Text Helper Documentation"
+      - "UI Helper Creation vs YAML Configuration Limits"
+
   - name: "appdaemon_yaml_parsed_as_app_config"
     category: "appdaemon_file_parsing"
     description: "AppDaemon incorrectly parsing data files as app configurations causing startup errors"
