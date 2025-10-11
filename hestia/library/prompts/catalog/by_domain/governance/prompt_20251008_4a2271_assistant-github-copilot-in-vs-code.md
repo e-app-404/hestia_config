@@ -31,9 +31,9 @@ You are GitHub Copilot in VS Code. Refactor and align my Adaptive Motion Lightin
 
 ## Entities (fixed names)
 - AL light groups (rooms):
-  - Bedroom  → `light.al_adaptive_bedroom_light_group`
+  - Bedroom  → `light.adaptive_bedroom_light_group`
   - Desk     → `light.al_adaptive_desk_light_group`
-  - Kitchen  → `light.al_adaptive_kitchen_light_group`
+  - Kitchen  → `light.adaptive_kitchen_light_group`
   - Ensuite  → `light.group_ensuite_lights`
   - Hall Dn  → `light.group_hallway_lights_downstairs`
   - Hall Up  → `light.group_hallway_lights_upstairs`
