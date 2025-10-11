@@ -55,8 +55,6 @@ adaptive_lighting:
     transition_until_sleep: false
   - name: hallway_downstairs
     lights: [ light.adaptive_downstairs_light_group ]
-    only_once: true
-    take_over_control: true
     initial_transition: 0.3
     transition: 2
     sleep_brightness: 20
@@ -65,10 +63,15 @@ adaptive_lighting:
     sleep_rgb_color: [255, 138, 18]
     sleep_transition: 1
     transition_until_sleep: false
-  - name: hallway_upstairs
-    lights: [ light.adaptive_upstairs_light_group ]
+    min_brightness: 15      # cap brightness lower
+    max_brightness: 35
+    min_color_temp: 380     # ~ 2630 K (warm)
+    max_color_temp: 450     # ~ 2220 K (very warm)
     only_once: true
     take_over_control: true
+
+  - name: hallway_upstairs
+    lights: [ light.adaptive_upstairs_light_group ]
     initial_transition: 0.3
     transition: 2
     sleep_brightness: 18
@@ -77,6 +80,12 @@ adaptive_lighting:
     sleep_rgb_color: [255, 120, 0]
     sleep_transition: 1
     transition_until_sleep: false
+    min_brightness: 15
+    max_brightness: 35
+    min_color_temp: 380
+    max_color_temp: 450
+    only_once: true
+    take_over_control: true
   - name: living_room
     lights: [ light.adaptive_living_room_light_group ]
     only_once: true
