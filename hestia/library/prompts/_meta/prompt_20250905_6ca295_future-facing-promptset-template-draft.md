@@ -35,10 +35,9 @@ promptset:
   artifacts:
     required:
       - path: /mnt/data/system_instruction.yaml
-      - path: /mnt/data/architecture_doctrine.yaml
     optional:
+      - path: .workspace/governance_index.md
       - path: /mnt/data/hades_config_index.yaml
-      - path: 
     # Use glob patterns for extensibility (document precedence)
     # - path: /mnt/data/**/*.yaml
   bindings:
