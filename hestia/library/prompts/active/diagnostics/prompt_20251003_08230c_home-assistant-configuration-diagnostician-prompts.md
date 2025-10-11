@@ -45,6 +45,8 @@ promptset:
       - path: /config/domain/templates/*.yaml
       - path: /config/.storage/core.entity_registry.yaml
       - path: /config/.storage/core.device_registry.yaml
+    governance:
+      - path: /config/.workspace/governance_index.md
 
   bindings:
     protocols:
@@ -73,8 +75,8 @@ promptset:
         - evidence_first
         - confidence_scoring
       bindings:
-        - logs/home-assistant.log
-        - configs/configuration.yaml
+        - /config/home-assistant.log
+        - /config/configuration.yaml
       prompt: |
         DIAGNOSTIC MODE ENGAGED
 
@@ -96,9 +98,9 @@ promptset:
         - evidence_first
         - no_unsafe_changes
       bindings:
-        - configs/packages/*.yaml
-        - configs/integrations/*.yaml
-        - state/entity_registry.yaml
+        - /config/packages/*.yaml
+        - /config/packages/integrations/*.yaml
+        - /config/.storage/core.entity_registry.yaml
       prompt: |
         Use the collected `evidence:` block from triage as input. Run the following pipeline:
 
@@ -119,7 +121,7 @@ promptset:
         - no_unsafe_changes
         - confidence_scoring
       bindings:
-        - configs/configuration.yaml
+        - /config/configuration.yaml
       prompt: |
         Given the `root_cause` and `dependency_chain`, propose up to three candidate fixes ranked by confidence.
 
@@ -145,8 +147,8 @@ promptset:
         - verify_fix_before_documenting
         - binary_confirmation
       bindings:
-        - hestia/library/error_patterns.yml
-        - hestia/config/system/maintenance_log.conf
+        - /config/hestia/library/error_patterns.yml
+        - /config/hestia/config/system/maintenance_log.conf
       prompt: |
         After a remediation candidate has been successfully implemented, validate the fix is sticky by getting binary confirmation through home-assistant.log inspection. Then update the `error_patterns.yml` file for future reference.
 

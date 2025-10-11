@@ -39,8 +39,8 @@ promptset:
       - path: logs/home-assistant.log
       - path: configs/configuration.yaml
     optional:
-      - path: configs/packages/*.yaml
-      - path: configs/integrations/*.yaml
+      - path: /config/packages/*.yaml
+      - path: /config/packages/integrations/*.yaml
       - path: state/entity_registry.yaml
       - path: state/known_devices.yaml
 
@@ -94,8 +94,8 @@ promptset:
         - evidence_first
         - no_unsafe_changes
       bindings:
-        - configs/packages/*.yaml
-        - configs/integrations/*.yaml
+        - /config/packages/*.yaml
+        - /config/packages/integrations/*.yaml
         - state/entity_registry.yaml
       prompt: |
         Use the collected `evidence:` block from triage as input. Run the following pipeline:
