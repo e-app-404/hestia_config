@@ -11,33 +11,88 @@ adaptive_lighting:
     take_over_control: true
     initial_transition: 0.3
     transition: 2
+    # Sleep mode settings based on audit results
+    sleep_brightness: 31
+    sleep_rgb_or_color_temp: color_temp
+    sleep_color_temp: 2701
+    sleep_rgb_color: [207, 155, 119]
+    sleep_transition: 1
+    transition_until_sleep: false
   - name: desk
     lights: [ light.adaptive_desk_light_group ]
     only_once: true
     take_over_control: true
     initial_transition: 0.3
     transition: 2
+    # Sleep mode settings based on audit results
+    sleep_brightness: 30
+    sleep_rgb_or_color_temp: color_temp
+    sleep_color_temp: 2701
+    sleep_rgb_color: [255, 167, 87]
+    sleep_transition: 1
+    transition_until_sleep: false
   - name: ensuite
     lights: [ light.adaptive_ensuite_light_group ]
     only_once: true
     take_over_control: true
     initial_transition: 0.3
     transition: 2
+    # Sleep mode settings - very dim for night bathroom use
+    sleep_brightness: 15
+    sleep_rgb_or_color_temp: color_temp
+    sleep_color_temp: 2200
+    sleep_rgb_color: [255, 147, 44]
+    sleep_transition: 1
+    transition_until_sleep: false
+    
   - name: kitchen
     lights: [ light.adaptive_kitchen_light_group ]
     only_once: true
     take_over_control: true
     initial_transition: 0.3
     transition: 2
+      # Sleep mode settings - functional but warm
+    sleep_brightness: 25
+    sleep_rgb_or_color_temp: color_temp
+    sleep_color_temp: 2500
+    sleep_rgb_color: [255, 166, 87]
+    sleep_transition: 1
+    transition_until_sleep: false
   - name: hallway_downstairs
     lights: [ light.adaptive_downstairs_light_group ]
     only_once: true
     take_over_control: true
     initial_transition: 0.3
     transition: 2
+    # Sleep mode settings - minimal navigation lighting
+    sleep_brightness: 20
+    sleep_rgb_or_color_temp: color_temp
+    sleep_color_temp: 2000
+    sleep_rgb_color: [255, 138, 18]
+    sleep_transition: 1
+    transition_until_sleep: false
   - name: hallway_upstairs
     lights: [ light.adaptive_upstairs_light_group ]
     only_once: true
     take_over_control: true
     initial_transition: 0.3
     transition: 2
+    # Sleep mode settings - ultra-warm for bedroom approach
+    sleep_brightness: 18
+    sleep_rgb_or_color_temp: color_temp
+    sleep_color_temp: 1800
+    sleep_rgb_color: [255, 120, 0]
+    sleep_transition: 1
+    transition_until_sleep: false
+  - name: living_room
+    lights: [ light.adaptive_living_room_light_group ]
+    only_once: true
+    take_over_control: true
+    initial_transition: 0.3
+    transition: 2
+    sleep_brightness: 31
+    sleep_rgb_or_color_temp: color_temp
+    sleep_color_temp: 2701
+    sleep_rgb_color: [207, 155, 119]
+    sleep_transition: 1
+    transition_until_sleep: false
