@@ -5,8 +5,8 @@ title: Future-facing promptset template (draft)
 date: '2025-09-05'
 tier: "α"
 domain: operational
-persona: promachos
-status: candidate
+persona: strategos
+status: active
 tags: []
 version: '1.0'
 source_path: draft_template.promptset
@@ -37,8 +37,8 @@ promptset:
       - path: /mnt/data/system_instruction.yaml
       - path: /mnt/data/architecture_doctrine.yaml
     optional:
-      - path: /mnt/data/hestia_reallocation_map.yaml
       - path: /mnt/data/hades_config_index.yaml
+      - path: 
     # Use glob patterns for extensibility (document precedence)
     # - path: /mnt/data/**/*.yaml
   bindings:
