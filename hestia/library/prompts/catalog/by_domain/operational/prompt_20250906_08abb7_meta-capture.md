@@ -1,5 +1,5 @@
 ---
-id: prompt_20250906_08abb7
+id: Use prompt 
 slug: meta-capture
 title: '|'
 date: '2025-09-06'
