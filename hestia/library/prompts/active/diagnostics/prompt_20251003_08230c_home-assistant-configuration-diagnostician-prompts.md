@@ -42,6 +42,7 @@ promptset:
     optional:
       - path: /config/packages/*.yaml
       - path: /config/packages/integrations/*.yaml
+      - path: /config/domain/templates/*.yaml
       - path: /config/.storage/core.entity_registry.yaml
       - path: /config/.storage/core.device_registry.yaml
 

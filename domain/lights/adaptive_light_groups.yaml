@@ -1,4 +1,3 @@
----
 #═══════════════════════════════════════════════════════════════
 # ▶ LIGHTS: Adaptive Light Groups ◀
 # Loader: !include_dir_merge_named domain/lights/adaptive_light_groups.yaml
