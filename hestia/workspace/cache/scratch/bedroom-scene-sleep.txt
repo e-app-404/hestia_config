@@ -1,0 +1,471 @@
+light.bedroom_accent_alpha
+bedroom_accent_alpha
+on
+min_color_temp_kelvin: 2200
+max_color_temp_kelvin: 6500
+min_mireds: 153
+max_mireds: 454
+effect_list: Alarm, Bedtime, Candlelight, Christmas, Cozy, Cool white, Daylight, Diwali, Deep dive, Fall, Fireplace, Forest, Focus, Golden white, Halloween, Jungle, Mojito, Night light, Ocean, Party, Pulse, Pastel colors, Plantgrowth, Romance, Relax, Sunset, Spring, Summer, Steampunk, True colors, TV time, White, Wake-up, Warm white, Rhythm
+supported_color_modes: color_temp, rgbw
+effect: Deep dive
+color_mode: color_temp
+brightness: 76
+color_temp_kelvin: 2700
+color_temp: 370
+hs_color: 28.395, 65.723
+rgb_color: 255, 167, 87
+xy_color: 0.525, 0.388
+rgbw_color: null
+icon: mdi:lamp
+friendly_name: bedroom_accent_alpha
+supported_features: 4
+light.bedroom_desk_alpha
+bedroom_desk_alpha
+on
+min_color_temp_kelvin: 2200
+max_color_temp_kelvin: 6500
+min_mireds: 153
+max_mireds: 454
+effect_list: Alarm, Bedtime, Candlelight, Christmas, Cozy, Cool white, Daylight, Diwali, Deep dive, Fall, Fireplace, Forest, Focus, Golden white, Halloween, Jungle, Mojito, Night light, Ocean, Party, Pulse, Pastel colors, Plantgrowth, Romance, Relax, Sunset, Spring, Summer, Steampunk, True colors, TV time, White, Wake-up, Warm white, Rhythm
+supported_color_modes: color_temp, rgbw
+effect: Romance
+color_mode: color_temp
+brightness: 76
+color_temp_kelvin: 2700
+color_temp: 370
+hs_color: 28.395, 65.723
+rgb_color: 255, 167, 87
+xy_color: 0.525, 0.388
+rgbw_color: null
+icon: mdi:desk-lamp
+friendly_name: bedroom_desk_alpha
+supported_features: 4
+light.bedroom_desk_alpha_matter
+bedroom_desk_alpha_matter
+on
+min_color_temp_kelvin: 2202
+max_color_temp_kelvin: 6535
+min_mireds: 153
+max_mireds: 454
+supported_color_modes: color_temp, hs, xy
+color_mode: color_temp
+brightness: 77
+color_temp_kelvin: 2702
+color_temp: 370
+hs_color: 28.391, 65.659
+rgb_color: 255, 167, 88
+xy_color: 0.524, 0.388
+icon: mdi:desk-lamp
+friendly_name: bedroom_desk_alpha_matter
+supported_features: 32
+light.bedroom_desk_corner_alpha
+bedroom_desk_corner_alpha
+on
+min_color_temp_kelvin: 2200
+max_color_temp_kelvin: 6500
+min_mireds: 153
+max_mireds: 454
+effect_list: Alarm, Bedtime, Candlelight, Christmas, Cozy, Cool white, Daylight, Diwali, Deep dive, Fall, Fireplace, Forest, Focus, Golden white, Halloween, Jungle, Mojito, Night light, Ocean, Party, Pulse, Pastel colors, Plantgrowth, Romance, Relax, Sunset, Spring, Summer, Steampunk, True colors, TV time, White, Wake-up, Warm white, Rhythm
+supported_color_modes: color_temp, rgbw
+effect: Romance
+color_mode: color_temp
+brightness: 76
+color_temp_kelvin: 2700
+color_temp: 370
+hs_color: 28.395, 65.723
+rgb_color: 255, 167, 87
+xy_color: 0.525, 0.388
+rgbw_color: null
+icon: mdi:lamp
+friendly_name: bedroom_desk_corner_alpha
+supported_features: 4
+light.bedroom_desk_lightstrip_alpha
+bedroom_desk_lightstrip_alpha
+on
+min_color_temp_kelvin: 2700
+max_color_temp_kelvin: 5000
+min_mireds: 200
+max_mireds: 370
+effect_list: Alarm, Bedtime, Candlelight, Christmas, Cozy, Cool white, Daylight, Diwali, Deep dive, Fall, Fireplace, Forest, Focus, Golden white, Halloween, Jungle, Mojito, Night light, Ocean, Party, Pulse, Pastel colors, Plantgrowth, Romance, Relax, Sunset, Spring, Summer, Steampunk, True colors, TV time, White, Wake-up, Warm white, Rhythm
+supported_color_modes: color_temp, rgbww
+effect: Romance
+color_mode: color_temp
+brightness: 76
+color_temp_kelvin: 2700
+color_temp: 370
+hs_color: 28.395, 65.723
+rgb_color: 255, 167, 87
+xy_color: 0.525, 0.388
+rgbww_color: null
+icon: mdi:led-strip-variant
+friendly_name: bedroom_desk_lightstrip_alpha
+supported_features: 4
+light.bedroom_desk_lightstrip_alpha_matter
+bedroom_desk_lightstrip_alpha_matter
+on
+min_color_temp_kelvin: 2702
+max_color_temp_kelvin: 5000
+min_mireds: 200
+max_mireds: 370
+supported_color_modes: color_temp, hs, xy
+color_mode: color_temp
+brightness: 77
+color_temp_kelvin: 2702
+color_temp: 370
+hs_color: 28.391, 65.659
+rgb_color: 255, 167, 88
+xy_color: 0.524, 0.388
+icon: mdi:led-strip-variant
+friendly_name: bedroom_desk_lightstrip_alpha_matter
+supported_features: 32
+light.bedroom_desk_wall_alpha
+bedroom_desk_wall_alpha
+on
+min_color_temp_kelvin: 2200
+max_color_temp_kelvin: 6500
+min_mireds: 153
+max_mireds: 454
+effect_list: Alarm, Bedtime, Candlelight, Christmas, Cozy, Cool white, Daylight, Diwali, Deep dive, Fall, Fireplace, Forest, Focus, Golden white, Halloween, Jungle, Mojito, Night light, Ocean, Party, Pulse, Pastel colors, Plantgrowth, Romance, Relax, Sunset, Spring, Summer, Steampunk, True colors, TV time, White, Wake-up, Warm white, Rhythm
+supported_color_modes: color_temp, rgbw
+effect: Romance
+color_mode: color_temp
+brightness: 76
+color_temp_kelvin: 2700
+color_temp: 370
+hs_color: 28.395, 65.723
+rgb_color: 255, 167, 87
+xy_color: 0.525, 0.388
+rgbw_color: null
+icon: mdi:wall-sconce
+friendly_name: bedroom_desk_wall_alpha
+supported_features: 4
+light.bedroom_desk_wall_alpha_matter
+bedroom_desk_wall_alpha_matter
+on
+min_color_temp_kelvin: 2202
+max_color_temp_kelvin: 6535
+min_mireds: 153
+max_mireds: 454
+supported_color_modes: color_temp, hs, xy
+color_mode: color_temp
+brightness: 77
+color_temp_kelvin: 2702
+color_temp: 370
+hs_color: 28.391, 65.659
+rgb_color: 255, 167, 88
+xy_color: 0.524, 0.388
+icon: mdi:wall-sconce
+friendly_name: bedroom_desk_wall_alpha_matter
+supported_features: 32
+light.bedroom_entrance_alpha
+bedroom_entrance_alpha
+on
+min_color_temp_kelvin: 2200
+max_color_temp_kelvin: 6500
+min_mireds: 153
+max_mireds: 454
+effect_list: Alarm, Bedtime, Candlelight, Christmas, Cozy, Cool white, Daylight, Diwali, Deep dive, Fall, Fireplace, Forest, Focus, Golden white, Halloween, Jungle, Mojito, Night light, Ocean, Party, Pulse, Pastel colors, Plantgrowth, Romance, Relax, Sunset, Spring, Summer, Steampunk, True colors, TV time, White, Wake-up, Warm white, Rhythm
+supported_color_modes: color_temp, rgbw
+effect: Deep dive
+color_mode: color_temp
+brightness: 76
+color_temp_kelvin: 2700
+color_temp: 370
+hs_color: 28.395, 65.723
+rgb_color: 255, 167, 87
+xy_color: 0.525, 0.388
+rgbw_color: null
+icon: mdi:post-lamp
+friendly_name: bedroom_entrance_alpha
+supported_features: 4
+light.bedroom_entrance_alpha_matter
+bedroom_entrance_alpha_matter
+on
+min_color_temp_kelvin: 2202
+max_color_temp_kelvin: 6535
+min_mireds: 153
+max_mireds: 454
+supported_color_modes: color_temp, hs, xy
+color_mode: color_temp
+brightness: 77
+color_temp_kelvin: 2702
+color_temp: 370
+hs_color: 28.391, 65.659
+rgb_color: 255, 167, 88
+xy_color: 0.524, 0.388
+icon: mdi:post-lamp
+friendly_name: bedroom_entrance_alpha_matter
+supported_features: 32
+light.bedroom_hifi_accent_alpha
+bedroom_hifi_accent_alpha
+on
+min_color_temp_kelvin: 2200
+max_color_temp_kelvin: 6500
+min_mireds: 153
+max_mireds: 454
+effect_list: Alarm, Bedtime, Candlelight, Christmas, Cozy, Cool white, Daylight, Diwali, Deep dive, Fall, Fireplace, Forest, Focus, Golden white, Halloween, Jungle, Mojito, Night light, Ocean, Party, Pulse, Pastel colors, Plantgrowth, Romance, Relax, Sunset, Spring, Summer, Steampunk, True colors, TV time, White, Wake-up, Warm white, Rhythm
+supported_color_modes: color_temp, rgbw
+effect: Romance
+color_mode: color_temp
+brightness: 76
+color_temp_kelvin: 2700
+color_temp: 370
+hs_color: 28.395, 65.723
+rgb_color: 255, 167, 87
+xy_color: 0.525, 0.388
+rgbw_color: null
+icon: mdi:lava-lamp
+friendly_name: bedroom_hifi_accent_alpha
+supported_features: 4
+light.bedroom_hifi_accent_alpha_matter
+bedroom_hifi_accent_alpha_matter
+on
+min_color_temp_kelvin: 2202
+max_color_temp_kelvin: 6535
+min_mireds: 153
+max_mireds: 454
+supported_color_modes: color_temp, hs, xy
+color_mode: color_temp
+brightness: 77
+color_temp_kelvin: 2702
+color_temp: 370
+hs_color: 28.391, 65.659
+rgb_color: 255, 167, 88
+xy_color: 0.524, 0.388
+icon: mdi:floor-lamp-torchiere
+friendly_name: bedroom_hifi_accent_alpha_matter
+supported_features: 32
+light.bedroom_main_alpha
+bedroom_main_alpha
+on
+min_color_temp_kelvin: 2200
+max_color_temp_kelvin: 6500
+min_mireds: 153
+max_mireds: 454
+effect_list: Alarm, Bedtime, Candlelight, Christmas, Cozy, Cool white, Daylight, Diwali, Deep dive, Fall, Fireplace, Forest, Focus, Golden white, Halloween, Jungle, Mojito, Night light, Ocean, Party, Pulse, Pastel colors, Plantgrowth, Romance, Relax, Sunset, Spring, Summer, Steampunk, True colors, TV time, White, Wake-up, Warm white, Rhythm
+supported_color_modes: color_temp, rgbw
+effect: Deep dive
+color_mode: color_temp
+brightness: 76
+color_temp_kelvin: 2700
+color_temp: 370
+hs_color: 28.395, 65.723
+rgb_color: 255, 167, 87
+xy_color: 0.525, 0.388
+rgbw_color: null
+icon: mdi:desk-lamp
+friendly_name: bedroom_main_alpha
+supported_features: 4
+light.bedroom_main_alpha_matter
+bedroom_main_alpha_matter
+on
+min_color_temp_kelvin: 2202
+max_color_temp_kelvin: 6535
+min_mireds: 153
+max_mireds: 454
+supported_color_modes: color_temp, hs, xy
+color_mode: color_temp
+brightness: 77
+color_temp_kelvin: 2702
+color_temp: 370
+hs_color: 28.391, 65.659
+rgb_color: 255, 167, 88
+xy_color: 0.524, 0.388
+icon: mdi:desk-lamp
+friendly_name: bedroom_main_alpha_matter
+supported_features: 32
+light.bedroom_mirror_lightstrip_alpha
+bedroom_mirror_lightstrip_alpha
+on
+min_color_temp_kelvin: 2700
+max_color_temp_kelvin: 5000
+min_mireds: 200
+max_mireds: 370
+effect_list: Alarm, Bedtime, Candlelight, Christmas, Cozy, Cool white, Daylight, Diwali, Deep dive, Fall, Fireplace, Forest, Focus, Golden white, Halloween, Jungle, Mojito, Night light, Ocean, Party, Pulse, Pastel colors, Plantgrowth, Romance, Relax, Sunset, Spring, Summer, Steampunk, True colors, TV time, White, Wake-up, Warm white, Rhythm
+supported_color_modes: color_temp, rgbww
+effect: Deep dive
+color_mode: color_temp
+brightness: 76
+color_temp_kelvin: 2700
+color_temp: 370
+hs_color: 28.395, 65.723
+rgb_color: 255, 167, 87
+xy_color: 0.525, 0.388
+rgbww_color: null
+icon: mdi:led-strip-variant
+friendly_name: bedroom_mirror_lightstrip_alpha
+supported_features: 4
+light.bedroom_nightstand_left_alpha
+bedroom_nightstand_left_alpha
+on
+min_color_temp_kelvin: 2200
+max_color_temp_kelvin: 6500
+min_mireds: 153
+max_mireds: 454
+effect_list: Alarm, Bedtime, Candlelight, Christmas, Cozy, Cool white, Daylight, Diwali, Deep dive, Fall, Fireplace, Forest, Focus, Golden white, Halloween, Jungle, Mojito, Night light, Ocean, Party, Pulse, Pastel colors, Plantgrowth, Romance, Relax, Sunset, Spring, Summer, Steampunk, True colors, TV time, White, Wake-up, Warm white, Rhythm
+supported_color_modes: color_temp, rgbw
+effect: Deep dive
+color_mode: color_temp
+brightness: 76
+color_temp_kelvin: 2700
+color_temp: 370
+hs_color: 28.395, 65.723
+rgb_color: 255, 167, 87
+xy_color: 0.525, 0.388
+rgbw_color: null
+icon: mdi:desk-lamp
+friendly_name: bedroom_nightstand_left_alpha
+supported_features: 4
+light.bedroom_nightstand_left_alpha_matter
+bedroom_nightstand_left_alpha_matter
+on
+min_color_temp_kelvin: 2202
+max_color_temp_kelvin: 6535
+min_mireds: 153
+max_mireds: 454
+supported_color_modes: color_temp, hs, xy
+color_mode: color_temp
+brightness: 77
+color_temp_kelvin: 2702
+color_temp: 370
+hs_color: 28.391, 65.659
+rgb_color: 255, 167, 88
+xy_color: 0.524, 0.388
+icon: mdi:desk-lamp
+friendly_name: bedroom_nightstand_left_alpha_matter
+supported_features: 32
+light.bedroom_nightstand_right_alpha
+bedroom_nightstand_right_alpha
+on
+min_color_temp_kelvin: 2200
+max_color_temp_kelvin: 6500
+min_mireds: 153
+max_mireds: 454
+effect_list: Alarm, Bedtime, Candlelight, Christmas, Cozy, Cool white, Daylight, Diwali, Deep dive, Fall, Fireplace, Forest, Focus, Golden white, Halloween, Jungle, Mojito, Night light, Ocean, Party, Pulse, Pastel colors, Plantgrowth, Romance, Relax, Sunset, Spring, Summer, Steampunk, True colors, TV time, White, Wake-up, Warm white, Rhythm
+supported_color_modes: color_temp, rgbw
+effect: Deep dive
+color_mode: color_temp
+brightness: 76
+color_temp_kelvin: 2700
+color_temp: 370
+hs_color: 28.395, 65.723
+rgb_color: 255, 167, 87
+xy_color: 0.525, 0.388
+rgbw_color: null
+friendly_name: bedroom_nightstand_right_alpha
+supported_features: 4
+light.bedroom_nightstand_right_alpha_matter
+bedroom_nightstand_right_alpha_matter
+on
+min_color_temp_kelvin: 2202
+max_color_temp_kelvin: 6535
+min_mireds: 153
+max_mireds: 454
+supported_color_modes: color_temp, hs, xy
+color_mode: color_temp
+brightness: 77
+color_temp_kelvin: 2702
+color_temp: 370
+hs_color: 28.391, 65.659
+rgb_color: 255, 167, 88
+xy_color: 0.524, 0.388
+icon: mdi:desk-lamp
+friendly_name: bedroom_nightstand_right_alpha_matter
+supported_features: 32
+light.bedroom_ottoman_lightstrip_alpha
+bedroom_ottoman_lightstrip_alpha
+on
+min_color_temp_kelvin: 2700
+max_color_temp_kelvin: 5000
+min_mireds: 200
+max_mireds: 370
+effect_list: Alarm, Bedtime, Candlelight, Christmas, Cozy, Cool white, Daylight, Diwali, Deep dive, Fall, Fireplace, Forest, Focus, Golden white, Halloween, Jungle, Mojito, Night light, Ocean, Party, Pulse, Pastel colors, Plantgrowth, Romance, Relax, Sunset, Spring, Summer, Steampunk, True colors, TV time, White, Wake-up, Warm white, Rhythm
+supported_color_modes: color_temp, rgbww
+effect: null
+color_mode: rgbww
+brightness: 76
+color_temp_kelvin: null
+color_temp: null
+hs_color: 216, 100
+rgb_color: 0, 102, 255
+xy_color: 0.139, 0.104
+rgbww_color: 0, 102, 255, 0, 0
+icon: mdi:led-strip-variant
+friendly_name: bedroom_ottoman_lightstrip_alpha
+supported_features: 4
+light.bedroom_ottoman_lightstrip_alpha_matter
+bedroom_ottoman_lightstrip_alpha_matter
+on
+min_color_temp_kelvin: 2702
+max_color_temp_kelvin: 5000
+min_mireds: 200
+max_mireds: 370
+supported_color_modes: color_temp, hs, xy
+color_mode: hs
+brightness: 77
+color_temp_kelvin: null
+color_temp: null
+hs_color: 216.85, 100
+rgb_color: 0, 98, 255
+xy_color: 0.139, 0.099
+icon: mdi:led-strip-variant
+friendly_name: bedroom_ottoman_lightstrip_alpha_matter
+supported_features: 32
+light.bedroom_wall_alpha
+bedroom_wall_alpha
+on
+min_color_temp_kelvin: 2200
+max_color_temp_kelvin: 6500
+min_mireds: 153
+max_mireds: 454
+effect_list: Alarm, Bedtime, Candlelight, Christmas, Cozy, Cool white, Daylight, Diwali, Deep dive, Fall, Fireplace, Forest, Focus, Golden white, Halloween, Jungle, Mojito, Night light, Ocean, Party, Pulse, Pastel colors, Plantgrowth, Romance, Relax, Sunset, Spring, Summer, Steampunk, True colors, TV time, White, Wake-up, Warm white, Rhythm
+supported_color_modes: color_temp, rgbw
+effect: Deep dive
+color_mode: color_temp
+brightness: 76
+color_temp_kelvin: 2700
+color_temp: 370
+hs_color: 28.395, 65.723
+rgb_color: 255, 167, 87
+xy_color: 0.525, 0.388
+rgbw_color: null
+icon: mdi:wall-sconce
+friendly_name: bedroom_wall_alpha
+supported_features: 4
+light.bedroom_wall_panel_left_switch_alpha_matter
+Wall panel Left Switch
+off
+supported_color_modes: onoff
+color_mode: null
+icon: mdi:light-switch-off
+friendly_name: Wall panel Left Switch
+supported_features: 0
+light.bedroom_wall_panel_right_switch_alpha_matter
+Wall Panel Right Switch
+off
+supported_color_modes: onoff
+color_mode: null
+icon: mdi:light-switch-off
+friendly_name: Wall Panel Right Switch
+supported_features: 0
+light.bedroom_wardrobe_lightstrip_alpha
+bedroom_wardrobe_lightstrip_alpha
+on
+min_color_temp_kelvin: 2700
+max_color_temp_kelvin: 5000
+min_mireds: 200
+max_mireds: 370
+effect_list: Alarm, Bedtime, Candlelight, Christmas, Cozy, Cool white, Daylight, Diwali, Deep dive, Fall, Fireplace, Forest, Focus, Golden white, Halloween, Jungle, Mojito, Night light, Ocean, Party, Pulse, Pastel colors, Plantgrowth, Romance, Relax, Sunset, Spring, Summer, Steampunk, True colors, TV time, White, Wake-up, Warm white, Rhythm
+supported_color_modes: color_temp, rgbww
+effect: null
+color_mode: rgbww
+brightness: 128
+color_temp_kelvin: null
+color_temp: null
+hs_color: 216, 100
+rgb_color: 0, 102, 255
+xy_color: 0.139, 0.104
+rgbww_color: 0, 102, 255, 0, 0
+icon: mdi:led-strip-variant
+friendly_name: bedroom_wardrobe_lightstrip_alpha
+supported_features: 4
