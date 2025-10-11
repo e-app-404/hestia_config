@@ -7,13 +7,13 @@ tier: "beta"
 domain: prompt_engineering
 persona: promachos
 status: approved
-tags: []
+tags: [prompt engineering, optimize, motion, presence, yaml, inline_prompt, self_activating, auto_optimization, streamlined_interaction, reusable, best_practices, gpt]
 version: '1.0'
 source_path: batch5/mini-prompt-auto-optimization.md
 author: Unknown
 related: 
-  - protocols:
-      - protocol_prompt_auto_optimization_v1
+- protocols:
+  - protocol_prompt_auto_optimization_v1
 last_updated: '2025-10-09T02:33:26.636721'
 redaction_log: []
 ---

@@ -1,16 +1,16 @@
 ---
 id: prompt_20250916_f2cc56
 slug: ha-log-analysis
-title: '|'
+title: 'Home Assistant log analysis and error-driven debugging'
 date: '2025-09-16'
 tier: "α"
-domain: operational
-persona: promachos
+domain: diagnostics
+persona: copilot
 status: candidate
 tags: []
 version: '1.0'
 source_path: diag/ha_log_analysis.promptset
-author: Unknown
+author: evert
 related: []
 last_updated: '2025-10-09T01:44:27.889565'
 redaction_log: []
