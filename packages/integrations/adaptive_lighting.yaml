@@ -11,7 +11,6 @@ adaptive_lighting:
     take_over_control: true
     initial_transition: 0.3
     transition: 2
-    # Sleep mode settings based on audit results
     sleep_brightness: 31
     sleep_rgb_or_color_temp: color_temp
     sleep_color_temp: 2701
@@ -24,7 +23,6 @@ adaptive_lighting:
     take_over_control: true
     initial_transition: 0.3
     transition: 2
-    # Sleep mode settings based on audit results
     sleep_brightness: 30
     sleep_rgb_or_color_temp: color_temp
     sleep_color_temp: 2701
@@ -37,21 +35,18 @@ adaptive_lighting:
     take_over_control: true
     initial_transition: 0.3
     transition: 2
-    # Sleep mode settings - very dim for night bathroom use
     sleep_brightness: 15
     sleep_rgb_or_color_temp: color_temp
     sleep_color_temp: 2200
     sleep_rgb_color: [255, 147, 44]
     sleep_transition: 1
     transition_until_sleep: false
-    
   - name: kitchen
     lights: [ light.adaptive_kitchen_light_group ]
     only_once: true
     take_over_control: true
     initial_transition: 0.3
     transition: 2
-      # Sleep mode settings - functional but warm
     sleep_brightness: 25
     sleep_rgb_or_color_temp: color_temp
     sleep_color_temp: 2500
@@ -64,7 +59,6 @@ adaptive_lighting:
     take_over_control: true
     initial_transition: 0.3
     transition: 2
-    # Sleep mode settings - minimal navigation lighting
     sleep_brightness: 20
     sleep_rgb_or_color_temp: color_temp
     sleep_color_temp: 2000
@@ -77,7 +71,6 @@ adaptive_lighting:
     take_over_control: true
     initial_transition: 0.3
     transition: 2
-    # Sleep mode settings - ultra-warm for bedroom approach
     sleep_brightness: 18
     sleep_rgb_or_color_temp: color_temp
     sleep_color_temp: 1800
