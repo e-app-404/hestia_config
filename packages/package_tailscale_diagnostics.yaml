@@ -50,7 +50,6 @@ group:
   tailscale_diagnostics:
     name: Tailscale Diagnostics
     entities:
-      - binary_sensor.tailscale_ds220
       - binary_sensor.tailscale_macbook
       - binary_sensor.nas_xplab_io
       - binary_sensor.tailscale_iphone14
