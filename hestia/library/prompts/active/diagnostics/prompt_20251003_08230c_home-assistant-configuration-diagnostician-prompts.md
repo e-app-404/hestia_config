@@ -3,7 +3,7 @@ id: prompt_20251003_08230c
 slug: home-assistant-configuration-diagnostician-prompts
 title: "Home Assistant Configuration Diagnostician — promptset v2.5 (optimized)"
 date: '2025-10-03'
-tier: "beta"
+tier: "mu"
 domain: diagnostic
 persona: copilot
 status: active

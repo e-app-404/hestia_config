@@ -1,10 +1,10 @@
 ---
 id: prompt_20250906_08abb7
 slug: meta-capture
-title: '|'
+title: 'Promptset for capturing and organizing system/network/device configuration'
 date: '2025-09-06'
 tier: "α"
-domain: operational
+domain: config
 persona: promachos
 status: candidate
 tags: []
@@ -17,7 +17,7 @@ redaction_log: []
 ---
 
 promptset:
-  id: meta_capture.promptset.v1       # replace with meta_capture.unique-id-string-with-timestamp.promptset.v1
+  id: meta_capture.promptset.v1
   version: 1
   version_semver: 1.0.0
   created: "2025-09-06"

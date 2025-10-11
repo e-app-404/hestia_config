@@ -3,7 +3,7 @@ id: prompt_20250916_f2cc56
 slug: ha-log-analysis
 title: 'Home Assistant log analysis and error-driven debugging'
 date: '2025-09-16'
-tier: "α"
+tier: "mu"
 domain: diagnostics
 persona: copilot
 status: candidate
