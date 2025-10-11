@@ -4,7 +4,7 @@ slug: mini-prompt-auto-optimization
 title: Mini Prompt Auto Optimization
 date: '2025-10-01'
 tier: "beta"
-domain: validation
+domain: prompt_engineering
 persona: promachos
 status: approved
 tags: []
