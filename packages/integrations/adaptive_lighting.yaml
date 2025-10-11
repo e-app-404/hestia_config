@@ -66,7 +66,7 @@ adaptive_lighting:
     transition_until_sleep: false
     min_brightness: 15      # cap brightness lower
     max_brightness: 35
-    min_color_temp: 380     # ~ 2630 K (warm)
+    min_color_temp: 400     # ~ 2630 K (warm)
     max_color_temp: 450     # ~ 2220 K (very warm)
     only_once: true
     take_over_control: true
@@ -83,7 +83,7 @@ adaptive_lighting:
     transition_until_sleep: false
     min_brightness: 15
     max_brightness: 35
-    min_color_temp: 380
+    min_color_temp: 400
     max_color_temp: 450
     only_once: true
     take_over_control: true

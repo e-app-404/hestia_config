@@ -47,13 +47,25 @@ sql:
 
 # REST commands for AppDaemon HTTP API interaction
 rest_command:
+  #room_db_update_config:
+  #  url: "http://a0d7b954-appdaemon:5050/api/appdaemon/room_db/update_config"
+  #  method: POST
+  #  content_type: "application/json"
+  #  payload: >-
+  #    {"room_id": "{{ room_id }}", "domain": "{{ domain }}", "config_data": {{ config_data }} }
   room_db_update_config:
     url: "http://a0d7b954-appdaemon:5050/api/appdaemon/room_db/update_config"
     method: POST
     content_type: "application/json"
-    payload: >-
-      {"room_id": "{{ room_id }}", "domain": "{{ domain }}", "config_data": {{ config_data }} }
-
+    timeout: 20
+    payload: >
+      {
+        "room_id": "{{ room_id }}",
+        "domain": "{{ domain }}",
+        "config_data": {{ config_data | tojson }},
+        "schema_expected": {{ schema_expected|default(1) }}
+      }
+      
   room_db_health:
     url: "http://a0d7b954-appdaemon:5050/api/appdaemon/room_db/health"
     method: GET
