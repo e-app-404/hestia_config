@@ -9,24 +9,18 @@
   unique_id: "002A9B6C1E6E4F4R5"
   entities:
     - light.bedroom_accent_alpha
-    - light.bedroom_main_alpha
     - light.bedroom_main_alpha_matter
     - light.bedroom_wall_alpha
-    - light.bedroom_nightstand_left_alpha
     - light.bedroom_nightstand_left_alpha_matter
-    - light.bedroom_nightstand_right_alpha
     - light.bedroom_nightstand_right_alpha_matter
 
 - platform: group
   name: "Adaptive Desk Light Group"
   unique_id: "00ALD7A1B502F823H"
   entities:
-    - light.bedroom_desk_alpha
     - light.bedroom_desk_alpha_matter
     - light.bedroom_desk_corner_alpha
-    - light.bedroom_desk_lightstrip_alpha
     - light.bedroom_desk_lightstrip_alpha_matter
-    - light.bedroom_desk_wall_alpha
     - light.bedroom_desk_wall_alpha_matter
 
 - platform: group
@@ -67,3 +61,4 @@
   unique_id: "0002A3B4C5D60707"
   entities:
     - light.upstairs_lightstrip_alpha
+    - light.hallway_lightstrip_alpha
