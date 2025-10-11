@@ -6,26 +6,26 @@
 
 - platform: group
   name: "Adaptive Bedroom Light Group"
-  unique_id: "002A9B6C1E6E4F4R5"
+  unique_id: "7F8E9D2A3B4C5E6F1"
   entities:
     - light.bedroom_accent_alpha
-    - light.bedroom_main_alpha_matter
     - light.bedroom_wall_alpha
+    - light.bedroom_main_alpha_matter
     - light.bedroom_nightstand_left_alpha_matter
     - light.bedroom_nightstand_right_alpha_matter
 
 - platform: group
   name: "Adaptive Desk Light Group"
-  unique_id: "00ALD7A1B502F823H"
+  unique_id: "A9B8C7D6E5F4A3B2C"
   entities:
-    - light.bedroom_desk_alpha_matter
     - light.bedroom_desk_corner_alpha
+    - light.bedroom_desk_alpha_matter
     - light.bedroom_desk_lightstrip_alpha_matter
     - light.bedroom_desk_wall_alpha_matter
 
 - platform: group
   name: "Adaptive Kitchen Light Group"
-  unique_id: "0002D3E4FQA60702"
+  unique_id: "3F7E8A9B2C4D5E6F7"
   entities:
     - light.kitchen_ceiling_alpha
     - light.kitchen_cupboards_lightstrip_alpha
@@ -33,7 +33,7 @@
 
 - platform: group
   name: "Adaptive Living Room Light Group"
-  unique_id: "0002F3A4B5C60704"
+  unique_id: "8D6F4A2E9C1B7E5A3"
   entities:
     - light.living_room_desk_alpha_matter
     - light.living_room_floorlamp_alpha_matter
@@ -43,7 +43,7 @@
 
 - platform: group
   name: "Adaptive Ensuite Light Group"
-  unique_id: "0002C3D4E5F60701"
+  unique_id: "B5A7E3F9D2C8A4B6E"
   entities:
     - light.ensuite_accent_alpha
     - light.ensuite_main_alpha_matter
@@ -51,14 +51,14 @@
 
 - platform: group
   name: "Adaptive Downstairs Light Group"
-  unique_id: "0002A3B4C5D60706"
+  unique_id: "6E9A4F2D8C5B7A3E1"
   entities:
     - light.downstairs_lightstrip_alpha
     - light.hallway_lightstrip_alpha
 
 - platform: group
   name: "Adaptive Upstairs Light Group"
-  unique_id: "0002A3B4C5D60707"
+  unique_id: "D4B8F1E6A9C3E7B2F"
   entities:
     - light.upstairs_lightstrip_alpha
     - light.hallway_lightstrip_alpha
