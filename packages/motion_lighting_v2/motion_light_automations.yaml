@@ -48,7 +48,7 @@ automation:
       - service: light.turn_on
         target: { entity_id: light.adaptive_bedroom_light_group }
         data: { transition: 2 }
-      - service: shell_command.update_room_config
+      - service: rest_command.room_db_update_config
         data:
           room_id: "bedroom"
           domain: "motion_lighting"
@@ -56,7 +56,7 @@ automation:
             {{ dict(room_config, **{
               'last_triggered': now().isoformat(),
               'trigger_count': (room_config.get('trigger_count', 0) | int) + 1
-            }) | tojson }}
+            }) }}
           schema_expected: 1
       - delay: { seconds: "{{ effective_timeout }}" }
       - service: light.turn_off
@@ -112,7 +112,7 @@ automation:
       - service: light.turn_on
         target: { entity_id: light.adaptive_upstairs_light_group }
         data: { transition: 2 }
-      - service: shell_command.update_room_config
+      - service: rest_command.room_db_update_config
         data:
           room_id: "upstairs"
           domain: "motion_lighting"
@@ -120,7 +120,7 @@ automation:
             {{ dict(room_config, **{
               'last_triggered': now().isoformat(),
               'trigger_count': (room_config.get('trigger_count', 0) | int) + 1
-            }) | tojson }}
+            }) }}
           schema_expected: 1
       - delay: { seconds: "{{ effective_timeout }}" }
       - service: light.turn_off
@@ -176,7 +176,7 @@ automation:
       - service: light.turn_on
         target: { entity_id: light.adaptive_downstairs_light_group }
         data: { transition: 2 }
-      - service: shell_command.update_room_config
+      - service: rest_command.room_db_update_config
         data:
           room_id: "downstairs"
           domain: "motion_lighting"
@@ -184,7 +184,7 @@ automation:
             {{ dict(room_config, **{
               'last_triggered': now().isoformat(),
               'trigger_count': (room_config.get('trigger_count', 0) | int) + 1
-            }) | tojson }}
+            }) }}
           schema_expected: 1
       - delay: { seconds: "{{ effective_timeout }}" }
       - service: light.turn_off
@@ -240,7 +240,7 @@ automation:
       - service: light.turn_on
         target: { entity_id: light.adaptive_kitchen_light_group }
         data: { transition: 2 }
-      - service: shell_command.update_room_config
+      - service: rest_command.room_db_update_config
         data:
           room_id: "kitchen"
           domain: "motion_lighting"
@@ -248,7 +248,7 @@ automation:
             {{ dict(room_config, **{
               'last_triggered': now().isoformat(),
               'trigger_count': (room_config.get('trigger_count', 0) | int) + 1
-            }) | tojson }}
+            }) }}
           schema_expected: 1
       - delay: { seconds: "{{ effective_timeout }}" }
       - service: light.turn_off
@@ -304,7 +304,7 @@ automation:
       - service: light.turn_on
         target: { entity_id: light.adaptive_living_room_light_group }
         data: { transition: 2 }
-      - service: shell_command.update_room_config
+      - service: rest_command.room_db_update_config
         data:
           room_id: "living_room"
           domain: "motion_lighting"
@@ -312,7 +312,7 @@ automation:
             {{ dict(room_config, **{
               'last_triggered': now().isoformat(),
               'trigger_count': (room_config.get('trigger_count', 0) | int) + 1
-            }) | tojson }}
+            }) }}
           schema_expected: 1
       - delay: { seconds: "{{ effective_timeout }}" }
       - service: light.turn_off
@@ -368,7 +368,7 @@ automation:
       - service: light.turn_on
         target: { entity_id: light.adaptive_ensuite_light_group }
         data: { transition: 2 }
-      - service: shell_command.update_room_config
+      - service: rest_command.room_db_update_config
         data:
           room_id: "ensuite"
           domain: "motion_lighting"
@@ -376,7 +376,7 @@ automation:
             {{ dict(room_config, **{
               'last_triggered': now().isoformat(),
               'trigger_count': (room_config.get('trigger_count', 0) | int) + 1
-            }) | tojson }}
+            }) }}
           schema_expected: 1
       - delay: { seconds: "{{ effective_timeout }}" }
       - service: light.turn_off
