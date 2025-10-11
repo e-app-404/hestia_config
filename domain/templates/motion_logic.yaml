@@ -82,7 +82,8 @@
           {'entity': 'binary_sensor.sanctum_motion_alpha',              'protocol': 'tplink', 'preference': 1, 'type': 'motion'},
           {'entity': 'binary_sensor.wardrobe_motion_beta',              'protocol': 'tplink', 'preference': 2, 'type': 'motion'},
           {'entity': 'binary_sensor.bedroom_security_cam_alpha_motion', 'protocol': 'wifi',   'preference': 3, 'type': 'motion'},
-          {'entity': 'binary_sensor.bedroom_ottoman_motion_proxy',      'protocol': 'proxy',  'preference': 4, 'type': 'vibration'}
+          {'entity': 'binary_sensor.bedroom_ottoman_motion_proxy',      'protocol': 'proxy',  'preference': 4, 'type': 'vibration'},
+          {'entity': 'binary_sensor.desk_motion_proxy',                 'protocol': 'proxy',  'preference': 5, 'type': 'vibration'}
         ] %}
         {{ preference_select(sources) == 'on' }}
       attributes:
@@ -100,7 +101,8 @@
             'binary_sensor.sanctum_motion_alpha',
             'binary_sensor.wardrobe_motion_beta',
             'binary_sensor.bedroom_security_cam_alpha_motion',
-            'binary_sensor.bedroom_ottoman_motion_proxy'
+            'binary_sensor.bedroom_ottoman_motion_proxy',
+            'binary_sensor.desk_motion_proxy'
           ] | tojson }}
         aggregation_strategy: "preference-based selection (motion-only)"
         active_source: >
@@ -109,13 +111,14 @@
             {'entity': 'binary_sensor.sanctum_motion_alpha','preference': 1},
             {'entity': 'binary_sensor.wardrobe_motion_beta','preference': 2},
             {'entity': 'binary_sensor.bedroom_security_cam_alpha_motion','preference': 3},
-            {'entity': 'binary_sensor.bedroom_ottoman_motion_proxy','preference': 4}
+            {'entity': 'binary_sensor.bedroom_ottoman_motion_proxy','preference': 4},
+            {'entity': 'binary_sensor.desk_motion_proxy','preference': 5}
           ] %}
           {{ get_active_source(sources) }}
-        source_count: "4"
+        source_count: "5"
         version: "2.5"
-        last_updated: "2025-10-06"
-        floor_id: "upstairs"
+        last_updated: "2025-10-11"
+        floor_id: "sanctum"
         area_id: "bedroom"
 
     - name: "Bedroom Motion Recent (Beta)"
@@ -141,7 +144,7 @@
         aggregation_strategy: "timeout-based extension"
         version: "2.4"
         last_updated: "2025-10-06"
-        floor_id: "upstairs"
+        floor_id: "sanctum"
         area_id: "bedroom"
 
     - name: "Ensuite Motion (Beta)"
