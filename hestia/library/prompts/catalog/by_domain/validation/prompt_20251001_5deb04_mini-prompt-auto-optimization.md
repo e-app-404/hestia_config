@@ -11,12 +11,14 @@ tags: []
 version: '1.0'
 source_path: batch5/mini-prompt-auto-optimization.md
 author: Unknown
-related: []
+related: 
+  - protocols:
+      - protocol_prompt_auto_optimization_v1
 last_updated: '2025-10-09T02:33:26.636721'
 redaction_log: []
 ---
 
-id: prompt_20250501_optimized_motion_presence_stack
+id: prompt_20250501_mini-prompt-auto-optimization
 tier: β
 domain: prompt_engineering
 type: inline_self_activating
