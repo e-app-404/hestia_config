@@ -62,7 +62,6 @@
     - light.downstairs_lightstrip_alpha
     - light.hallway_lightstrip_alpha
 
-# ── Hallway (Upstairs) ───────────────────────────────────────
 - platform: group
   name: "Adaptive Upstairs Light Group"
   unique_id: "0002A3B4C5D60707"
