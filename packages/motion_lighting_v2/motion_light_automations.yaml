@@ -35,7 +35,7 @@ automation:
       timeout: "{{ room_config.get('timeout', 120) | int }}"
       bypass: "{{ room_config.get('bypass', false) | bool }}"
       presence_multiplier: "{{ room_config.get('presence_timeout_multiplier', 1.0) | float }}"
-      presence_active: "{{ is_state('person.evert','home') }}"
+      presence_active: "{{ is_state('binary_sensor.bedroom_presence_beta','on') or is_state('person.evert','home') }}"
       effective_timeout: "{{ (timeout * presence_multiplier) | int if presence_active else timeout }}"
       illuminance_threshold: "{{ room_config.get('illuminance_threshold', 10) | int }}"
     condition:
