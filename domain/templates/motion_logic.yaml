@@ -90,8 +90,8 @@
         floor_id: "upstairs"
         area_id: "ensuite"
 
-    - name: "Wardrobe Motion (Beta)"
-      unique_id: "wardrobe_motion_beta"
+    - name: "Bedroom Wardrobe Motion (Beta)"
+      unique_id: "bedroom_wardrobe_motion_beta"
       device_class: motion
       state: |
         {% from 'template.library.jinja' import preference_select %}
