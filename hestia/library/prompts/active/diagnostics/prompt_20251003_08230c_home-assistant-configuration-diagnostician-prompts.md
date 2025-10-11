@@ -158,7 +158,7 @@ promptset:
       Preserve legacy diagnostic notes by mapping them to `evidence` and `alternatives_considered` fields.
 
   documentation:
-    - Reference: /mnt/data/promptset_schema.yaml
+    - Reference: /config/hestia/library/prompts/active/utilities/draft_template.promptset
     - Guidance: Follow ADR-0008 YAML normalization for any generated patches.
 
   operational_rules:
