@@ -73,8 +73,6 @@ adaptive_lighting:
     transition_until_sleep: false
     min_color_temp: 2700
     max_color_temp: 3500
-    min_color_temp: 2700
-    max_color_temp: 3500
     prefer_rgb_color: false
     detect_non_ha_changes: false
 
@@ -109,8 +107,6 @@ adaptive_lighting:
     transition_until_sleep: false
     min_brightness: 10
     max_brightness: 35
-    min_color_temp: 1000
-    max_color_temp: 1100
     only_once: true
     take_over_control: true
     min_color_temp: 2200
