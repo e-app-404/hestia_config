@@ -111,7 +111,7 @@ template:
           type: "watchdog"
           scope: "smartthings"
           role: "monitor"
-          area_id: "virtual"
+          area_id: "sysadmin"
           floor_id: "hestia"
 
   - sensor:
