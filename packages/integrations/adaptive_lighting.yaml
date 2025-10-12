@@ -42,7 +42,8 @@ adaptive_lighting:
     sleep_color_temp: 2200
     sleep_rgb_color: [255, 147, 44]
     sleep_transition: 1
-    transition_until_sleep: false
+    transition_until_sleep: 
+
   - name: kitchen
     lights: [ light.adaptive_kitchen_light_group ]
     only_once: true
