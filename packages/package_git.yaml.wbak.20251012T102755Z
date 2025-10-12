@@ -1,0 +1,23 @@
+---
+# ══════════════════════════════════════════════════════════════════
+# ⟫⟫ GIT  •  Various ◀
+# ⟫⟫ configuration.yaml  •  packages: !include_dir_named integrations
+# ⟫⟫ Tier: sigma  •  Domain: configuration  •  Created: 2025-09-04
+# ⟫⟫ TODO: Harden and strengthen package
+# ══════════════════════════════════════════════════════════════════
+
+shell_command:
+  git_push_config: "bash -lc 'REMOTE_NAME=origin /config/hestia/tools/ha_git_push.sh /config'"
+
+input_button:
+  git_push_now:
+    name: "Git: Push config now"
+
+automation:
+  - alias: "Git: push when button pressed"
+    id: git_push_button
+    trigger:
+      - trigger: state
+        entity_id: input_button.git_push_now
+    action:
+      - action: shell_command.git_push_config
