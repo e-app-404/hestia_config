@@ -1,12 +1,11 @@
 #═══════════════════════════════════════════════════════════════
 # ▶ SQL SENSORS: Default version ◀
 # Loader: !include_dir_merge_list domain/sensor
-# Schema: sql (platform format)
-# Info: https: //www.home-assistant.io/components/sensor.sql/
+# Schema: sql (integration format)
+# Info: https://www.home-assistant.io/integrations/sql/
 #═══════════════════════════════════════════════════════════════
 
-- platform: sql
-  name: "Recorder DB Size (MiB)"
+- name: "Recorder DB Size (MiB)"
   query: >
     SELECT ROUND(page_count * page_size / 1024.0 / 1024.0, 1) AS size
     FROM pragma_page_count(), pragma_page_size();

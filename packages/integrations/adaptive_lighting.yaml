@@ -17,6 +17,7 @@ adaptive_lighting:
     sleep_rgb_color: [207, 155, 119]
     sleep_transition: 1
     transition_until_sleep: false
+
   - name: desk
     lights: [ light.adaptive_desk_light_group ]
     only_once: true
@@ -29,6 +30,7 @@ adaptive_lighting:
     sleep_rgb_color: [255, 167, 87]
     sleep_transition: 1
     transition_until_sleep: false
+    
   - name: ensuite
     lights: [ light.adaptive_ensuite_light_group ]
     only_once: true
@@ -64,10 +66,10 @@ adaptive_lighting:
     sleep_rgb_color: [255, 138, 18]
     sleep_transition: 1
     transition_until_sleep: false
-    min_brightness: 15      # cap brightness lower
+    min_brightness: 15
     max_brightness: 35
-    min_color_temp: 400     # ~ 2630 K (warm)
-    max_color_temp: 450     # ~ 2220 K (very warm)
+    min_color_temp: 1000
+    max_color_temp: 1100
     only_once: true
     take_over_control: true
 
@@ -83,8 +85,8 @@ adaptive_lighting:
     transition_until_sleep: false
     min_brightness: 15
     max_brightness: 35
-    min_color_temp: 400
-    max_color_temp: 450
+    min_color_temp: 1000
+    max_color_temp: 1100
     only_once: true
     take_over_control: true
   - name: living_room
