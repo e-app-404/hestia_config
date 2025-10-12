@@ -37,7 +37,7 @@ logger:
 network_scanner:
   # Reduce startup impact by limiting scan frequency
   # Original configuration has 116 MAC mappings causing ~21 minute blocking
-  scan_interval: 300  # 5 minutes instead of default (reduces startup load)
+  #scan_interval: 300  # 5 minutes instead of default (reduces startup load)
   
   # Consider disabling during startup and re-enabling after initialization
   # This prevents the 1305978 second blocking timeout reported in logs
