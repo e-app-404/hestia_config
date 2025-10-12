@@ -1,0 +1,88 @@
+#════════════════════════════════════════════════════════════════════════════════════════
+# ▶ PLANT MONITORING PACKAGE ◀
+# Restores plant platform configuration for OpenPlantbook integration
+# Reference: ADR-0020 Error Resolution - Missing Config-state for Plant-device
+#════════════════════════════════════════════════════════════════════════════════════════
+
+# Plant platform configuration for Home Assistant plant monitoring
+# Required by OpenPlantbook integration for data upload functionality
+plant:
+  monstera:
+    # Sensor mappings corrected based on actual available entities
+    sensors:
+      # FIXED: Use soil_moisture sensor instead of humidity sensor
+      moisture: sensor.bedroom_monstera_soil_alpha_soil_moisture
+      battery: sensor.bedroom_monstera_soil_alpha_battery  
+      temperature: sensor.bedroom_monstera_soil_alpha_temperature
+      # Using bedroom TV illuminance as proxy for plant light exposure
+      brightness: sensor.bedroom_tv_alpha_illuminance
+    
+    # Plant care parameters for Monstera deliciosa variegata
+    min_moisture: 30      # 30% soil moisture minimum
+    max_moisture: 60      # 60% soil moisture maximum  
+    min_battery: 10       # 10% battery minimum for soil sensor
+    min_temperature: 18   # 18°C minimum temperature
+    max_temperature: 29   # 29°C maximum temperature
+    min_brightness: 4000  # 4000 lux minimum light
+    max_brightness: 10000 # 10000 lux maximum light
+    check_days: 3         # Check every 3 days
+
+# Template sensors for local plant health monitoring (ADR-0020)
+template:
+  - sensor:
+      - name: "Monstera Health Status"
+        unique_id: "monstera_health_status"
+        state: >-
+          {% set moisture = states('sensor.bedroom_monstera_soil_alpha_soil_moisture') | int(0) %}
+          {% set temp = states('sensor.bedroom_monstera_soil_alpha_temperature') | float(20) %}
+          {% set battery = states('sensor.bedroom_monstera_soil_alpha_battery') | int(100) %}
+          {% if moisture < 30 %}
+            needs_water
+          {% elif moisture > 60 %}
+            overwatered
+          {% elif temp < 18 %}
+            too_cold
+          {% elif temp > 29 %}
+            too_hot
+          {% elif battery < 10 %}
+            low_battery
+          {% else %}
+            healthy
+          {% endif %}
+        attributes:
+          moisture_pct: "{{ states('sensor.bedroom_monstera_soil_alpha_soil_moisture') }}"
+          temp_celsius: "{{ states('sensor.bedroom_monstera_soil_alpha_temperature') }}"
+          battery_pct: "{{ states('sensor.bedroom_monstera_soil_alpha_battery') }}"
+          last_check: "{{ now().isoformat() }}"
+          openplantbook_integration: "enabled"
+
+# Automation for OpenPlantbook error handling (ADR-0017 Fallback Logging)
+automation:
+  - id: openplantbook_error_handler
+    alias: "Plant: OpenPlantbook Error Handler"
+    description: "Handle OpenPlantbook integration failures gracefully"
+    trigger:
+      - platform: event
+        event_type: system_log_event
+        event_data:
+          name: custom_components.openplantbook.uploader
+    condition:
+      - condition: template
+        value_template: "{{ 'ERROR' in trigger.event.data.message }}"
+    action:
+      - service: system_log.write
+        data:
+          message: >
+            OpenPlantbook integration error detected: {{ trigger.event.data.message }}
+            Plant monitoring continues with local sensors.
+            Monstera status: {{ states('sensor.monstera_health_status') }}
+          level: warning
+          logger: "homeassistant.plant_monitoring"
+    mode: single
+
+# Input boolean to control OpenPlantbook data upload
+input_boolean:
+  enable_openplantbook_upload:
+    name: "Enable OpenPlantbook Data Upload"
+    initial: true
+    icon: mdi:cloud-upload
