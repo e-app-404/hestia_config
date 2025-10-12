@@ -12,11 +12,8 @@ homeassistant:
   # Optimize startup sequence per ADR-0014 memory management
   safe_mode: false
   
-  # Set reasonable timeout# ▶ STARTUP OPTIMIZATION CONFIGURATION ◀
-# Addresses startup blo - prevents indefinite hanging
-  
-  # Reduce memory pressure during startup per ADR-0014
-  external_url: !secret external_url_override
+  # Set reasonable timeouts for startup-blocking integrations (seconds)
+  startup_timeout: 60
   
 # Logger configuration to track startup performance
 logger:
