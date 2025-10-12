@@ -1,19 +1,27 @@
 #####
-# Enable communication with Google Assistant
-# https://www.home-assistant.io/integrations/google_assistant/
+# Google Assistant Integration (DISABLED - ADR-0020 Error Canonicalization)
+# Issue: sync_google() task blocking Home Assistant startup
+# Fix: Disabled until Google Assistant configuration can be properly validated
+# Reference: https://www.home-assistant.io/integrations/google_assistant/
 #####
 
+# DISABLED: google_assistant integration blocking startup
+# Enable only after verifying:
+# 1. Valid service account JSON exists and is readable
+# 2. Project ID is correctly configured in secrets.yaml
+# 3. Google Cloud project has proper API access enabled
+#
 # google_assistant:
-#  project_id: !secret google_pjid
-#  service_account: !include ../service_account_ga.json
-#  report_state: true
-#  exposed_domains:
-#    - switch
-#    - light
-#    - group
-#    - vacuum
-#    - camera
-#    - lock
-#  entity_config:
-#    group.all_automations:
-#      expose: false
+#   project_id: !secret google_pjid
+#   service_account: !include ../service_account_ga.json
+#   report_state: true
+#   exposed_domains:
+#     - switch
+#     - light
+#     - group
+#     - vacuum
+#     - camera
+#     - lock
+#   entity_config:
+#     group.all_automations:
+#       expose: false
