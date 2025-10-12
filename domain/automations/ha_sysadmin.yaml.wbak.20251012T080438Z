@@ -1,0 +1,167 @@
+# 1. Record Home Assistant restart time
+- id: record_ha_restart_time
+  alias: "Record HA Restart Time"
+  description: "Updates input_datetime helper with the exact restart time on Home Assistant startup."
+  mode: single
+  trigger:
+    - platform: homeassistant
+      event: start
+  action:
+    - action: input_datetime.set_datetime
+      target:
+        entity_id: input_datetime.last_ha_restart
+      data:
+        datetime: "{{ now().strftime('%Y-%m-%d %H:%M:%S') }}"
+
+# 2. Notify and set media state on Home Assistant start
+- id: d2d8775b-e666-4fb4-976d-02b4d9c5a396
+  alias: Home Assistant Start - Notify
+  description: "Notify all users when HA starts."
+  mode: single
+  trigger:
+    - platform: homeassistant
+      event: start
+  action:
+    - alias: Startup notification
+      action: script.notify_engine
+      continue_on_error: true
+      data:
+        who: "evert"
+        title: "HA started"
+        value1: "Home Assistant started at {{ now().strftime('%Y-%m-%d %H:%M:%S') }}"
+        group: ha
+        tag_id: "information"
+        importance_id: default
+        color: "green"
+        sticky: false
+        timeout_sec: 300
+
+    - action: tts.speak
+      target:
+        entity_id:
+          - tts.google_translate_en_com
+      data:
+        cache: true
+        media_player_entity_id: media_player.bedroom_google_home_mini_speaker
+        message: "Home Assistant successfully rebooted."
+        language: en-ca
+
+# 3. Count Home Assistant errors and warnings
+- id: c057ca2c-ab20-4fe0-a32b-5980c0990fb2
+  alias: "Count Home Assistant errors"
+  description: "Counts errors and warnings from Home Assistant system log."
+  mode: queued
+  max: 20
+  max_exceeded: silent
+  trigger:
+    - platform: event
+      event_type: system_log_event
+      event_data:
+        level: ERROR
+      id: error
+    - platform: event
+      event_type: system_log_event
+      event_data:
+        level: WARNING
+      id: warning
+  action:
+    - choose:
+        - conditions:
+            - condition: trigger
+              id: warning
+          sequence:
+            - action: counter.increment
+              target:
+                entity_id: counter.homeassistant_warnings
+        - conditions:
+            - condition: trigger
+              id: error
+          sequence:
+            - action: counter.increment
+              target:
+                entity_id: counter.homeassistant_errors
+
+# 4. Notify on Home Assistant shutdown
+- id: 2a93d8c4-5ad7-4bf3-842c-2b0940efe4a2
+  alias: Home Assistant Shutdown - Notify
+  description: "Notify Evert when HA is shutting down."
+  mode: single
+  trigger:
+    - platform: homeassistant
+      event: shutdown
+  action:
+    - alias: Shutdown notification
+      action: script.notify_engine
+      data:
+        who: "evert"
+        title: "HA shutdown"
+        value1: "Home Assistant shutting down at {{ now().strftime('%Y-%m-%d %H:%M:%S') }}"
+        group: ha
+        tag_id: "information"
+        importance_id: default
+        color: "green"
+        sticky: false
+        timeout_sec: 180
+
+    - action: tts.speak
+      target:
+        entity_id:
+          - tts.google_translate_en_com
+      data:
+        cache: true
+        media_player_entity_id: media_player.bedroom_google_home_mini_speaker
+        message: "Home Assistant will shut down at {{ now().strftime('%Y-%m-%d %H:%M:%S') }}"
+        language: en-ca
+
+- id: W3mPTGMiX7SeIb0r9yL3HCP18lLWIZQW
+  alias: Hestia Trash Reaches Threshold
+  trigger:
+    - platform: numeric_state
+      entity_id: sensor.hestia_trash_size
+      above: 512000  # ~500MB in KiB
+  action:
+    - service: notify.mobile_app_your_phone
+      data:
+        message: "Trash exceeded 500MB. Approve to empty?"
+    - wait_for_trigger:
+        - platform: state
+          entity_id: input_boolean.hestia_approve_trash
+          to: "on"
+      timeout: "24:00:00"
+    - choose:
+        - conditions: "{{ is_state('input_boolean.hestia_approve_trash','on') }}"
+          sequence:
+            - service: shell_command.hestia_empty_trash
+            - service: input_boolean.turn_off
+              target: { entity_id: input_boolean.hestia_approve_trash }
+
+- id: wI9fehuS06MVsRXqcdFHSri12G08I153
+  alias: Hestia Tmp Weekly Prune
+  trigger:
+    - platform: time
+      at: "03:30:00"
+  condition:
+    - condition: time
+      weekday: [sun]
+  action:
+    - service: notify.mobile_app_your_phone
+      data: { message: "Weekly tmp prune pending. Approve to proceed." }
+    - wait_for_trigger:
+        - platform: state
+          entity_id: input_boolean.hestia_approve_tmp
+          to: "on"
+      timeout: "24:00:00"
+    - choose:
+        - conditions: "{{ is_state('input_boolean.hestia_approve_tmp','on') }}"
+          sequence:
+            - service: shell_command.hestia_prune_tmp
+            - service: input_boolean.turn_off
+              target: { entity_id: input_boolean.hestia_approve_tmp }
+
+- id: pvCE6fsuA9pNCB9hhBzRQStt08hpDgaa
+  alias: Hestia On Shutdown - Prune Tmp
+  trigger: 
+    - platform: homeassistant
+      event: shutdown
+  action:
+    - service: shell_command.hestia_prune_tmp
