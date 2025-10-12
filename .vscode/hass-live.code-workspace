@@ -5,10 +5,6 @@
       "name": "HASS · Home Assistant Live Config ADR-0024 compliant"
     },
     {
-      "path": "/Volumes/addon_configs",
-      "name": "HASS · Add-on Configs"
-    },
-    {
       "path": "/Users/evertappels/actions-runner/Projects/HA-BB8/docs/ADR",
       "name": "HA BB8 Addon ADRs · ReadOnly",
       "settings": {
