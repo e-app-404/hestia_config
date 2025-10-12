@@ -37,8 +37,8 @@ accepted_tokens:
 
 requirements:
   - file_operations_must_use_write_broker: true
-  - path_validation_required: "/config only (ADR-0024 canonical)"
-  - sha256_verification_mandatory: true
+  - path_validation_required: "/config or /System/Volumes/Data/homeassistant only"
+  - md5_verification_mandatory: true
   - backup_creation_required: ".wbak.timestamp pattern"
   - audit_logging_required: "JSON format in operations/logs/"
 
