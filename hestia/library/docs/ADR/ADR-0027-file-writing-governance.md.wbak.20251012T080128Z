@@ -43,7 +43,7 @@ requirements:
   - audit_logging_required: "JSON format in operations/logs/"
 
 produces:
-  - verified_file_modifications: "SHA-256 before/after verification"
+  - verified_file_modifications: "MD5 before/after verification"
   - timestamped_backups: "Every change creates rollback point"
   - audit_trail_logs: "Complete operation history with diffs"
   - path_enforcement: "Prevents edits outside canonical locations"
