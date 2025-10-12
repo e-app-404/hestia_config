@@ -17,6 +17,10 @@ adaptive_lighting:
     sleep_rgb_color: [207, 155, 119]
     sleep_transition: 1
     transition_until_sleep: false
+    min_color_temp: 2700
+    max_color_temp: 4500
+    prefer_rgb_color: false
+    detect_non_ha_changes: true
 
   - name: desk
     lights: [ light.adaptive_desk_light_group ]
@@ -30,7 +34,11 @@ adaptive_lighting:
     sleep_rgb_color: [255, 167, 87]
     sleep_transition: 1
     transition_until_sleep: false
-    
+    min_color_temp: 2700
+    max_color_temp: 4500
+    prefer_rgb_color: true
+    detect_non_ha_changes: true
+
   - name: ensuite
     lights: [ light.adaptive_ensuite_light_group ]
     only_once: true
@@ -42,7 +50,11 @@ adaptive_lighting:
     sleep_color_temp: 2200
     sleep_rgb_color: [255, 147, 44]
     sleep_transition: 1
-    transition_until_sleep: 
+    transition_until_sleep: false
+    prefer_rgb_color: true
+    min_color_temp: 2700
+    max_color_temp: 4500
+    detect_non_ha_changes: true
 
   - name: kitchen
     lights: [ light.adaptive_kitchen_light_group ]
@@ -56,6 +68,12 @@ adaptive_lighting:
     sleep_rgb_color: [255, 166, 87]
     sleep_transition: 1
     transition_until_sleep: false
+    min_color_temp: 2700
+    max_color_temp: 3500
+    min_color_temp: 2700
+    max_color_temp: 3500
+    prefer_rgb_color: false
+    detect_non_ha_changes: false
 
   - name: hallway_downstairs
     lights: [ light.adaptive_downstairs_light_group ]
@@ -69,10 +87,12 @@ adaptive_lighting:
     transition_until_sleep: false
     min_brightness: 15
     max_brightness: 35
-    min_color_temp: 1000
-    max_color_temp: 1100
+    min_color_temp: 2700
+    max_color_temp: 3500
     only_once: true
     take_over_control: true
+    prefer_rgb_color: false
+    detect_non_ha_changes: false
 
   - name: hallway_upstairs
     lights: [ light.adaptive_upstairs_light_group ]
@@ -90,6 +110,11 @@ adaptive_lighting:
     max_color_temp: 1100
     only_once: true
     take_over_control: true
+    min_color_temp: 2700
+    max_color_temp: 3500
+    prefer_rgb_color: false
+    detect_non_ha_changes: false
+
   - name: living_room
     lights: [ light.adaptive_living_room_light_group ]
     only_once: true
@@ -102,3 +127,7 @@ adaptive_lighting:
     sleep_rgb_color: [207, 155, 119]
     sleep_transition: 1
     transition_until_sleep: false
+    min_color_temp: 2700
+    max_color_temp: 3500
+    prefer_rgb_color: true
+    detect_non_ha_changes: true
