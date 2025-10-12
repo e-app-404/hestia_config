@@ -116,3 +116,4 @@ template:
             {{ reg_src | length }}
         unit_of_measurement: "keys"
         icon: mdi:gate-buffer
+      
