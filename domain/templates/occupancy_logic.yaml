@@ -17,8 +17,8 @@
         {% set sources = [
           {'entity': 'binary_sensor.bedroom_occupancy_alpha_occupancy',      'protocol': 'mqtt',   'preference': 1, 'type': 'occupancy'},
           {'entity': 'binary_sensor.bedroom_wardrobe_occupancy_matter_alpha','protocol': 'matter', 'preference': 2, 'type': 'occupancy'},
-          {'entity': 'binary_sensor.wardrobe_occupancy_beta',                'protocol': 'beta',  'preference': 3, 'type': 'occupancy'},
-          {'entity': 'binary_sensor.desk_occupancy_beta', 'protocol': 'wifi',   'preference': 4, 'type': 'occupancy'}
+          {'entity': 'binary_sensor.desk_occupancy_beta',                    'protocol': 'wifi',   'preference': 4, 'type': 'occupancy'}, 
+          {'entity': 'binary_sensor.bedroom_motion_beta',                    'protocol': 'alias',  'preference': 5, 'type': 'motion'}
         ] %}
         {{ preference_select(sources) == 'on' }}
       attributes:
@@ -34,18 +34,18 @@
           {{ [
             'template.library.jinja',
             'binary_sensor.bedroom_occupancy_alpha_occupancy',
-            'binary_sensor.bedroom_wardrobe_occupancy_matter_alpha',
             'binary_sensor.wardrobe_occupancy_beta',
-            'binary_sensor.desk_presence_inferred'
+            'binary_sensor.desk_presence_inferred',
+            'binary_sensor.bedroom_motion_beta'
           ] | tojson }}
         aggregation_strategy: "preference-based selection (occupancy-only)"
         active_source: >
           {% from 'template.library.jinja' import get_active_source %}
           {% set sources = [
             {'entity': 'binary_sensor.bedroom_occupancy_alpha_occupancy','preference': 1},
-            {'entity': 'binary_sensor.bedroom_wardrobe_occupancy_matter_alpha','preference': 2},
             {'entity': 'binary_sensor.wardrobe_occupancy_beta','preference': 3},
-            {'entity': 'binary_sensor.desk_presence_inferred','preference': 4}
+            {'entity': 'binary_sensor.desk_presence_inferred','preference': 4},
+            {'entity': 'binary_sensor.bedroom_motion_beta','preference': 5}
           ] %}
           {{ get_active_source(sources) or 'unknown' }}
         source_count: "4"
