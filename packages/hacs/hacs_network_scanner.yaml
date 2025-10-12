@@ -5,7 +5,9 @@
 #═══════════════════════════════════════════════════════════════
 
 network_scanner:
-  # mac mapping format: MAC_ADDRESS ; ENTITY_ID_OR_NAME ; VENDOR_OR_TYPE
+  # STARTUP OPTIMIZATION: Add scan interval to prevent blocking initialization
+  # 116 MAC mappings were causing ~21 minute startup delay
+  scan_interval: 600  # 10 minutes - reduces startup load per ADR-0014  # mac mapping format: MAC_ADDRESS ; ENTITY_ID_OR_NAME ; VENDOR_OR_TYPE
   # Prefer full Home Assistant entity IDs when available (e.g. media_player.bedroom_apple_tv_alpha
   # or light.ensuite_lightstrip_alpha_matter). The component concatenates all mac_mapping_N
   # values into a newline-separated mapping string and expects at least three semicolon-separated

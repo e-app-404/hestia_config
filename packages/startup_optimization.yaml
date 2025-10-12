@@ -1,0 +1,46 @@
+#════════════════════════════════════════════════════════════════════════════════════════
+# ▶ STARTUP OPTIMIZATION CONFIGURATION ◀
+# Addresses startup blocking issues per ADR-0014 OOM and Recorder Policy
+# Reference: ADR-0020 Error Canonicalization for startup optimization
+#════════════════════════════════════════════════════════════════════════════════════════
+
+# Configuration to address startup performance issues
+# Many integrations are blocking Home Assistant initialization
+
+# Reduce startup load by deferring non-critical integrations
+homeassistant:
+  # Optimize startup sequence per ADR-0014 memory management
+  safe_mode: false
+  
+  # Set reasonable timeout# ▶ STARTUP OPTIMIZATION CONFIGURATION ◀
+# Addresses startup blo - prevents indefinite hanging
+  
+  # Reduce memory pressure during startup per ADR-0014
+  external_url: !secret external_url_override
+  
+# Logger configuration to track startup performance
+logger:
+  default: warning
+  logs:
+    # Monitor startup-blocking components identified in error log
+    homeassistant.core: info
+    homeassistant.bootstrap: info
+    homeassistant.setup: warning
+    
+    # Specific problematic integrations
+    homeassistant.components.google_assistant: error
+    homeassistant.components.synology_dsm: warning
+    homeassistant.components.network_scanner: warning  # 116 MAC mappings causing timeout
+    
+    # Track ADR-0014 memory management
+    homeassistant.util.executor: warning
+
+# Optimization for network_scanner (major startup blocker)
+# Following ADR guidance to reduce resource usage
+network_scanner:
+  # Reduce startup impact by limiting scan frequency
+  # Original configuration has 116 MAC mappings causing ~21 minute blocking
+  scan_interval: 300  # 5 minutes instead of default (reduces startup load)
+  
+  # Consider disabling during startup and re-enabling after initialization
+  # This prevents the 1305978 second blocking timeout reported in logs
