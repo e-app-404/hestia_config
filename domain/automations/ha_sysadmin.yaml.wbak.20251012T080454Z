@@ -144,13 +144,8 @@
     - condition: time
       weekday: [sun]
   action:
-    - action: script.notify_engine
-      data:
-        who: "evert"
-        title: "Hestia Maintenance"
-        value1: "Weekly tmp prune pending. Approve to proceed."
-        group: "hestia_maintenance"
-        tag_id: "tmp_prune"
+    - service: notify.mobile_app_your_phone
+      data: { message: "Weekly tmp prune pending. Approve to proceed." }
     - wait_for_trigger:
         - platform: state
           entity_id: input_boolean.hestia_approve_tmp
