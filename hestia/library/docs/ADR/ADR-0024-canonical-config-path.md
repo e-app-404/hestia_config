@@ -682,3 +682,71 @@ sudo mount_smbfs //${USER}@homeassistant.reverse-beta.ts.net/share  /Volumes/HA/
 sudo mount_smbfs //${USER}@homeassistant.reverse-beta.ts.net/addons /Volumes/HA/addons
 ```
 
+
+---
+
+# ADR-0024-addendum-vscode-workspace-path-canonicalization
+
+**Status:** Implemented  
+**Date:** 2025-10-12  
+**Related ADRs:** ADR-0024 (Canonical Config Path), ADR-0027 (File Writing Governance), ADR-0015 (Symlink Policy)
+
+## Context
+
+VS Code workspace boundary issues were causing "edit outside workspace" confirmation dialogs and failed file operations due to symlink path resolution conflicts:
+
+* **Workspace root**: `/config` (ADR-0024 canonical)
+* **Symlink resolution**: `/config` → `/System/Volumes/Data/homeassistant`
+* **Problem**: Extensions resolving realpaths saw `/System/Volumes/Data/homeassistant/*` as "outside workspace"
+* **Impact**: Confirmation dialogs, failed writes, governance violations
+
+## Decision
+
+Implement comprehensive path canonicalization at multiple layers:
+
+1. **Multi-Root Workspace**: Include both canonical and realpath folders in VS Code workspace
+2. **Write-Broker Canonicalization**: Normalize all paths to `/config/*` before operations  
+3. **Pre-Commit Governance**: Block non-canonical paths at repository level
+4. **Read-Only Enforcement**: Mark realpath folder read-only to preserve governance
+
+## Implementation
+
+### 1. Enhanced VS Code Workspace Configuration
+
+Updated `.vscode/hass-live.code-workspace` to include dual folders with realpath marked read-only.
+
+### 2. Write-Broker Path Canonicalization
+
+Enhanced `/config/bin/write-broker` with `canonicalize_to_config()` function that normalizes:
+- `/System/Volumes/Data/homeassistant/*` → `/config/*`
+- `/Volumes/HA/config/*` → `/config/*`
+
+### 3. Enhanced Pre-Commit Hook
+
+Upgraded `.git/hooks/pre-commit` with comprehensive ADR governance blocking non-canonical paths, symlinks escaping `/config`, and `.storage` files.
+
+## Results
+
+### ✅ Fixed Issues
+- **No more "edit outside workspace" dialogs**: Both paths recognized as inside workspace
+- **Consistent file operations**: All writes normalized to `/config/*` paths
+- **Governance preserved**: Realpath folder read-only, canonical writes enforced
+- **Repository protection**: Pre-commit blocks non-canonical path commits
+
+### ✅ ADR Compliance Maintained
+- **ADR-0024**: Canonical `/config` path enforcement strengthened
+- **ADR-0027**: Write-broker governance enhanced with path normalization
+- **ADR-0015**: Symlink policy enforced via pre-commit validation
+- **ADR-0018**: Runtime state file protection maintained
+
+## Acceptance Criteria (Validated)
+
+- [x] **Workspace Dialogs**: No "edit outside workspace" confirmation prompts
+- [x] **Path Normalization**: Write-broker converts realpaths to `/config/*`
+- [x] **Pre-Commit Protection**: Repository blocks non-canonical staged paths
+- [x] **UI Storage**: Home Assistant automation UI saves without HTTP 500
+- [x] **Read-Only Governance**: Realpath folder protected from direct edits
+
+## Integration Notes
+
+This addendum works synergistically with existing ADR-0024 implementations, ensuring all governance requirements are met while eliminating workspace boundary issues from symlink path resolution.
