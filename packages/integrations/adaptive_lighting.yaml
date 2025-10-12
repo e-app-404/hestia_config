@@ -73,8 +73,6 @@ adaptive_lighting:
     transition_until_sleep: false
     min_color_temp: 2700
     max_color_temp: 3500
-    prefer_rgb_color: false
-    detect_non_ha_changes: false
 
   - name: hallway_downstairs
     lights: [ light.adaptive_downstairs_light_group ]

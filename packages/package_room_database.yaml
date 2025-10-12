@@ -46,6 +46,8 @@ sql:
     column: count
 
 # REST commands for AppDaemon HTTP API interaction
+# FIXED: Updated endpoints to use app-scoped URLs (ADR-0020 Error Resolution)
+# AppDaemon uses /api/app/<app_name>/<endpoint>/ not /api/appdaemon/<endpoint>/
 rest_command:
   room_db_update_config:
     url: "http://a0d7b954-appdaemon:5050/api/app/room_db_updater/room_db/update_config"
