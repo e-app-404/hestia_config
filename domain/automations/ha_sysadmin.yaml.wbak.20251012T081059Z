@@ -169,13 +169,4 @@
     - platform: homeassistant
       event: shutdown
   action:
-    - action: tts.speak
-      target:
-        entity_id:
-          - tts.google_translate_en_com
-      data:
-        cache: true
-        media_player_entity_id: media_player.bedroom_google_home_mini_speaker
-        message: "Hestia maintenance: Performing automatic temporary file cleanup during shutdown."
-        language: en-ca
     - service: shell_command.hestia_prune_tmp
