@@ -96,11 +96,10 @@ Implement a comprehensive three-layer file writing governance system:
 
 Implement `/config/bin/write-broker` as the mandatory file editing tool with:
 
-**Core Features (mandatory):**
+**Core Features:**
 - **Path Enforcement**: Only allows writes under `/config` or `/System/Volumes/Data/homeassistant`
-- **SHA-256 Verification**: Prevents silent failures with before/after hash comparison
-- **Atomic + Durable**: Temp file write, `fsync`, then `mv` on same filesystem
-- **Concurrency Lock**: Per-target advisory lock to avoid concurrent edits
+- **MD5 Verification**: Prevents silent failures with before/after hash comparison  
+- **Atomic Operations**: Temp file pattern ensures no partial writes
 - **Audit Logging**: JSON logs in `/config/hestia/workspace/operations/logs/`
 - **Backup Creation**: Every change creates `.wbak.timestamp` files
 - **Diff Generation**: Unified diffs track exact changes
