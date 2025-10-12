@@ -39,4 +39,4 @@ shell_command:
   stp5_probe: "/config/hestia/tools/evidence/bb8_attest/stp5_probe.sh"
 
   # Legacy (keep existing)
-  ha_git_push: "/config/hestia/tools/ha_git_push.sh"
+  ha_git_push: "cd /config && /config/hestia/tools/ha_git_push.sh /config 2>/dev/null || true"
