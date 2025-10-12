@@ -83,7 +83,7 @@ Implement a comprehensive three-layer file writing governance system:
    - Enable `files.readonlyFromPermissions` for additional protection
 
 2. **Git Pre-Commit Path Enforcement**
-   - Block commits that reference non-canonical path segments or symlinks escaping `/config`
+   - Block commits containing files outside `/config` canonical path
    - Automated rejection with clear error messages
    - Zero-configuration enforcement for all repository operations
 
