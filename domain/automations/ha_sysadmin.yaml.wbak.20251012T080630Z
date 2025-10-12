@@ -120,7 +120,7 @@
       entity_id: sensor.hestia_trash_size
       above: 512000  # ~500MB in KiB
   action:
-    - action: script.notify_engine
+    - service: notify.mobile_app_your_phone
       data:
         message: "Trash exceeded 500MB. Approve to empty?"
     - wait_for_trigger:
