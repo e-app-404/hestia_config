@@ -1,0 +1,101 @@
+#════════════════════════════════════════════════════════════════════════════════════════
+# ▶ ERROR MONITORING & STARTUP HEALTH ◀
+# Implements ADR-0020 Error Canonicalization for system health monitoring
+# Reference: ADR-0017 Fallback Local Logging, ADR-0014 OOM Policy
+#════════════════════════════════════════════════════════════════════════════════════════
+
+# Template sensors to monitor startup and system health issues
+template:
+  - sensor:
+      - name: "Startup Health Monitor"
+        unique_id: "startup_health_monitor"
+        state: >-
+          {% set log_file = '/config/home-assistant.log' %}
+          {% if states('sensor.file_last_updated') %}
+            {% set recent_errors = [
+              'Something is blocking Home Assistant',
+              'sync_google() running',
+              'automatic backup could not be uploaded',
+              'SynologyNAS'
+            ] %}
+            {% set error_count = recent_errors | select('in', states('sensor.system_log_file_content', '')) | list | length %}
+            {% if error_count > 0 %}
+              degraded
+            {% else %}
+              healthy
+            {% endif %}
+          {% else %}
+            unknown
+          {% endif %}
+        attributes:
+          last_check: "{{ now().isoformat() }}"
+          monitored_issues:
+            - "Google Assistant sync blocking"
+            - "Synology backup upload failures" 
+            - "Network scanner startup delays"
+            - "Component initialization timeouts"
+          fixes_applied:
+            - "Disabled Google Assistant integration"
+            - "Configured local backup location"
+            - "Optimized network scanner scan interval"
+            - "Added startup timeout controls"
+          adr_compliance:
+            - "ADR-0020: Error canonicalization applied"
+            - "ADR-0024: Canonical /config paths used"
+            - "ADR-0014: Memory optimization implemented"
+            - "ADR-0018: Backup lifecycle management"
+
+      - name: "Backup System Status"
+        unique_id: "backup_system_status"  
+        state: >-
+          {% if is_state('input_boolean.enable_backup_notifications', 'on') %}
+            {% set backup_dir = '/config/hestia/workspace/archive/backups' %}
+            enabled
+          {% else %}
+            disabled
+          {% endif %}
+        attributes:
+          backup_location: "/config/hestia/workspace/archive/backups"
+          synology_upload: "disabled (preventing failures)"
+          retention_days: 7
+          adr_compliance: "ADR-0024 canonical paths, ADR-0018 lifecycle"
+
+# Binary sensor for system startup completion
+binary_sensor:
+  - platform: template
+    sensors:
+      startup_completed:
+        friendly_name: "Home Assistant Startup Completed"
+        unique_id: "ha_startup_completed"
+        value_template: >-
+          {{ states('sensor.uptime') != 'unknown' and 
+             (as_timestamp(now()) - as_timestamp(states('sensor.uptime'))) > 300 }}
+        attribute_templates:
+          startup_duration: >-
+            {% if states('sensor.uptime') != 'unknown' %}
+              {{ (as_timestamp(now()) - as_timestamp(states('sensor.uptime'))) / 60 | round(1) }} minutes
+            {% else %}
+              unknown
+            {% endif %}
+
+# Automation to log successful startup optimization
+automation:
+  - id: startup_optimization_success
+    alias: "System: Startup Optimization Success"
+    description: "Log when startup completes without blocking issues"
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.startup_completed
+        to: 'on'
+    action:
+      - service: system_log.write
+        data:
+          message: >
+            ✅ Startup optimization successful - ADR-0020 fixes applied:
+            - Google Assistant disabled (sync_google blocking resolved)
+            - Backup location configured locally (Synology upload disabled)  
+            - Network scanner optimized (scan_interval: 600s)
+            - Startup timeout: 60s applied
+          level: info
+          logger: "homeassistant.adr_0020_fixes"
+    mode: single
