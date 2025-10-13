@@ -11,7 +11,7 @@ adaptive_lighting:
     take_over_control: true
     initial_transition: 0.3
     transition: 2
-    sleep_brightness: 31
+    sleep_brightness: 30
     sleep_rgb_or_color_temp: rgb_color
     sleep_color_temp: 2200
     sleep_rgb_color: [47, 19, 229]
@@ -47,7 +47,7 @@ adaptive_lighting:
     take_over_control: true
     initial_transition: 0.3
     transition: 2
-    sleep_brightness: 15
+    sleep_brightness: 20
     sleep_rgb_or_color_temp: rgb_color
     sleep_color_temp: 2200
     sleep_rgb_color: [127, 11, 210]
@@ -78,7 +78,7 @@ adaptive_lighting:
     lights: [ light.adaptive_downstairs_light_group ]
     initial_transition: 0.8
     transition: 2
-    sleep_brightness: 10
+    sleep_brightness: 15
     sleep_rgb_or_color_temp: rgb_color
     sleep_color_temp: 2000
     sleep_rgb_color: [255, 138, 18]
@@ -97,7 +97,7 @@ adaptive_lighting:
     lights: [ light.adaptive_upstairs_light_group ]
     initial_transition: 0.5
     transition: 2
-    sleep_brightness: 10
+    sleep_brightness: 15
     sleep_rgb_or_color_temp: rgb_color
     sleep_color_temp: 1800
     sleep_rgb_color: [0, 8, 255]
