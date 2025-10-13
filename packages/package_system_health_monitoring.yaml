@@ -29,27 +29,9 @@ template:
           {% endif %}
         attributes:
           last_check: "{{ now().isoformat() }}"
-          monitored_issues: >-
-            {{ [
-              'Google Assistant sync blocking',
-              'Synology backup upload failures', 
-              'Network scanner startup delays',
-              'Component initialization timeouts'
-            ] | join(', ') }}
-          fixes_applied: >-
-            {{ [
-              'Disabled Google Assistant integration',
-              'Configured local backup location',
-              'Optimized network scanner scan interval',
-              'Added startup timeout controls'
-            ] | join(', ') }}
-          adr_compliance: >-
-            {{ [
-              'ADR-0020: Error canonicalization applied',
-              'ADR-0024: Canonical /config paths used',
-              'ADR-0014: Memory optimization implemented',
-              'ADR-0018: Backup lifecycle management'
-            ] | join(', ') }}
+          monitored_issues: "{{ 'Google Assistant sync blocking, Synology backup upload failures, Network scanner startup delays, Component initialization timeouts' }}"
+          fixes_applied: "{{ 'Disabled Google Assistant integration, Configured local backup location, Optimized network scanner scan interval, Added startup timeout controls' }}"
+          adr_compliance: "{{ 'ADR-0020: Error canonicalization applied, ADR-0024: Canonical /config paths used, ADR-0014: Memory optimization implemented, ADR-0018: Backup lifecycle management' }}"
 
       - name: "Backup System Status"
         unique_id: "backup_system_status"  
