@@ -34,7 +34,6 @@ logger:
 
 # Optimization for network_scanner (major startup blocker)
 # Following ADR guidance to reduce resource usage
-network_scanner:
   # Reduce startup impact by limiting scan frequency
   # Original configuration has 116 MAC mappings causing ~21 minute blocking
   #scan_interval: 300  # 5 minutes instead of default (reduces startup load)
