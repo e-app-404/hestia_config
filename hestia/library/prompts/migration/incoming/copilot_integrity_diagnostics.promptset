@@ -1,0 +1,212 @@
+# =====================================================================
+# promptset: copilot_integrity_diagnostics.promptset
+# version: 1.0
+# author: strategos (via Kybernetes governance assembly)
+# created: "2025-10-14"
+# description:
+#   Unified diagnostic and hardening promptset for Copilot-integrated
+#   workspaces. Validates file I/O persistence, Copilot configuration,
+#   workspace trust, Git visibility, and patch consistency.
+#   Built on the Future-facing Promptset Template (draft).
+# =====================================================================
+
+promptset:
+  id: copilot_integrity_diagnostics.promptset
+  version: 1.0
+  created: "2025-10-14"
+  description: |
+    Comprehensive multi-phase diagnostic suite for validating Copilot-integrated
+    Home Assistant or HESTIA environments. Runs read-only checks for filesystem
+    access, Copilot configuration, workspace mapping, and Git integration, then
+    enforces diff-only patch mode for deterministic edit behavior.
+  persona: strategos
+  purpose: |
+    Detect and eliminate false-positive Copilot edits; harden assumptions;
+    enforce consistency across workspace, configuration, and VCS layers.
+  legacy_compatibility: true
+  schema_version: 1.0
+
+  artifacts:
+    required:
+      - path: /mnt/data/system_instruction.yaml
+      - path: /mnt/data/architecture_doctrine.yaml
+    optional:
+      - path: /mnt/data/hades_config_index.yaml
+      - path: .workspace/governance_index.md
+
+  bindings:
+    protocols:
+      - prompt_optimization_first
+      - confidence_scoring_always
+      - phase_context_memory
+      - copilot_bridge_strict_v1
+    persona: strategos
+
+  retrieval_tags:
+    - governance
+    - audit
+    - copilot
+    - diagnostics
+    - hestia
+
+  operational_modes:
+    - governance_review_mode
+    - diagnostic_mode
+    - enforcement_mode
+
+  prompts:
+    - id: diagnostics.copilot_integrity_suite.v1
+      persona: strategos
+      label: "Copilot Diagnostics & Enforcement Suite v1"
+      mode: diagnostic_mode
+      protocols:
+        - prompt_optimization_first
+        - confidence_scoring_always
+        - copilot_bridge_strict_v1
+      bindings:
+        - /mnt/data/system_instruction.yaml
+      prompt: |
+        version: 1.0
+        Initiate full Copilot diagnostics and workspace verification suite.
+
+        Objective:
+        - Validate Copilot’s file write pipeline and configuration.
+        - Confirm Git workspace indexing and file persistence.
+        - Enforce diff-only patch output for file integrity compliance.
+
+      phases:
+
+        # ────────────────────────────────
+        # Phase 1: Filesystem & Write Integrity
+        # ────────────────────────────────
+        - name: file_write_integrity
+          persona: strategos
+          instructions: |
+            Verify Copilot can access and modify the correct /config workspace.
+            Confirm file presence, realpath consistency, and write permissions.
+
+            Execute the following checks:
+
+            ```bash
+            cd /config && pwd
+            ls -l configuration.yaml
+            stat custom_components/localtuya/humidifier.py
+            grep -n "isinstance(modes" custom_components/localtuya/humidifier.py
+            ```
+
+            Expected:
+            - Current directory: `/config`
+            - Files readable and non-empty
+            - `isinstance(modes)` found where patch expected
+
+          outputs:
+            - name: write_integrity_report.md
+              required: true
+              content: |
+                # Phase 1 Report — Filesystem Write Integrity
+                Summarize accessibility, ownership, and consistency findings.
+
+        # ────────────────────────────────
+        # Phase 2: Copilot Agent & IDE Configuration
+        # ────────────────────────────────
+        - name: copilot_agent_config
+          persona: strategos
+          instructions: |
+            Verify that Copilot’s IDE agent is in execution-enabled mode.
+            Confirm critical settings are set to true and workspace is trusted.
+
+            1️⃣ Open VS Code Settings → search “github.copilot”
+            2️⃣ Confirm JSON values (user or workspace settings):
+            ```json
+            {
+              "github.copilot.enable": true,
+              "github.copilot.inlineSuggest.enable": true,
+              "github.copilot.editing.enabled": true,
+              "github.copilot.editing.preview": false,
+              "workbench.trust.enabled": true
+            }
+            ```
+
+            If any are false, toggle to true and reload VS Code.
+          outputs:
+            - name: copilot_agent_config_report.md
+              required: true
+              content: |
+                # Phase 2 Report — Copilot Configuration & Policy
+                Record configuration flags and trust state. Flag deviations.
+
+        # ────────────────────────────────
+        # Phase 3: Git Visibility & Patch Tracking
+        # ────────────────────────────────
+        - name: git_patch_visibility
+          persona: strategos
+          instructions: |
+            Check whether Git tracks file changes applied by Copilot.
+
+            ```bash
+            cd /config && git status --porcelain
+            ```
+
+            If no output appears for expected files:
+            - Verify `.gitignore`
+            - If not initialized, run:
+              ```bash
+              git init && git add . && git commit -m "Initial commit"
+              ```
+
+            Confirm future Copilot edits appear in `git status` output.
+          outputs:
+            - name: git_visibility_report.md
+              required: true
+              content: |
+                # Phase 3 Report — Git Tracking Verification
+                Summarize repository state and file visibility status.
+
+        # ────────────────────────────────
+        # Phase 4: Patch Enforcement & Diff Validation
+        # ────────────────────────────────
+        - name: diff_enforcement
+          persona: strategos
+          instructions: |
+            Enforce diff-based patch application and reject narrative edits.
+
+            Require the following format for all Copilot-applied file modifications:
+
+            ```diff
+            --- a/custom_components/localtuya/humidifier.py
+            +++ b/custom_components/localtuya/humidifier.py
+            @@ -78,6 +78,13 @@
+            +   if isinstance(modes, list):
+            +       modes = {mode: mode.replace("_", " ").capitalize() for mode in modes}
+            +   elif isinstance(modes, dict):
+            +       modes = {
+            +           k: v if k else v.replace("_", " ").capitalize()
+            +           for k, v in modes.copy().items()
+            +       }
+            ```
+
+            Copilot must not produce empty “Replace String in File” claims.
+            All modifications must be applied via diff or complete file overwrite.
+          outputs:
+            - name: diff_enforcement_report.md
+              required: true
+              content: |
+                # Phase 4 Report — Diff Enforcement Validation
+                Confirm Copilot patch output meets unified diff standards.
+
+  # ────────────────────────────────
+  # Migration & Extensibility
+  # ────────────────────────────────
+  migration:
+    strategy: |
+      - Consolidate legacy single-phase diagnostics into multi-phase promptsets.
+      - Retain compatibility with older prompt schemas using legacy_compatibility: true.
+      - Use governance_review_mode to validate full chain execution.
+
+  extensibility:
+    - To extend, add new phases for CI/CD verification or post-patch validation.
+    - Future expansion: telemetry integration or policy enforcement tracking.
+
+  documentation:
+    - Reference: /mnt/data/promptset_schema.yaml
+    - For governance guidance, consult /mnt/data/promptset_docs.md
