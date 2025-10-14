@@ -961,3 +961,35 @@ patterns:
       - "AppDaemon App Development Documentation"
       - "AppDaemon File Organization Best Practices"
       - "Home Assistant AppDaemon Add-on File Structure Guide"
+
+  # --- BEGIN: Hestia error pattern — LocalTuya fused-line SyntaxError ---
+  - id: localtuya_humidifier_fused_line_syntaxerror
+    title: "LocalTuya: humidifier import fails with SyntaxError (fused statements)"
+    sources:
+      includes:
+        - "homeassistant.loader"
+        - "homeassistant.config_entries"
+    level: error
+    match:
+      any:
+        - regex: "Unexpected exception importing platform custom_components\\.localtuya\\.humidifier"
+        - regex: "SyntaxError: invalid syntax"
+        - regex: "/custom_components/localtuya/humidifier\\.py"
+    classify: integration_patch_required
+    cause: |
+      Multi-line replacement collapsed two Python statements into one line:
+      `modes = {}        self._available_modes = DictSelector(modes)` causing SyntaxError at import.
+    fix:
+      steps:
+        - "Split fused line; ensure newline at EOF."
+        - "Normalize modes (list/dict/else) then assign: `self._available_modes = DictSelector(modes)` at the outer indent."
+        - "Compile-check: `python3 -m py_compile custom_components/localtuya/humidifier.py`."
+        - "Restart Home Assistant."
+    verify:
+      - "No SyntaxError in logs for localtuya.humidifier"
+      - "Component loads; entity state available"
+    suppress:
+      when:
+        - "file: custom_components/localtuya/humidifier.py"
+        - "grep contains: '^\\s*self\\._available_modes = DictSelector\\(modes\\)$'"
+  # --- END: Hestia error pattern — LocalTuya fused-line SyntaxError ---

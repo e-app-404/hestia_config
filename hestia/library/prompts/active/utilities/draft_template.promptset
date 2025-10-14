@@ -3,6 +3,7 @@
 
 promptset:
   id: template.promptset.draft
+  load: false   # not loadable locally; external artifacts referenced
   version: 0.1
   created: "2025-09-05"
   description: |

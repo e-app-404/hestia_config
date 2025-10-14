@@ -7,9 +7,10 @@ promptset:
   author: "HESTIA System"
   
   # Metadata
-  tier: β
+  tier: beta
   domain: instructional
   status: candidate
+  load: false   # keep under active/ for illustration, but do not auto-load
   
   # Bindings reference primary canonical locations only
   bindings:
