@@ -507,6 +507,29 @@
         floor_id: "downstairs"
         area_id: "entrance"
 
+    - name: "Entrance Motion Recent (Beta)"
+      unique_id: entrance_motion_recent_beta
+      device_class: motion
+      delay_off:
+        minutes: 5
+      state: "{{ is_state('binary_sensor.entrance_motion_proxy','on') }}"
+      attributes:
+        tier: "β"
+        canonical_id: "entrance_motion_recent_β"
+        subsystem: "hermes"
+        module: "motion"
+        type: "delay_proxy"
+        role: "motion_timeout"
+        file: "/config/domain/templates/motion_logic.yaml"
+        delay_duration: "300s"
+        timeout_behavior: "delay_off"
+        upstream_sources: >
+          {{ ['binary_sensor.entrance_motion_proxy'] | tojson }}
+        version: "1.0"
+        last_updated: "2025-10-15"
+        floor_id: "downstairs"
+        area_id: "entrance"
+
     # ───────────────────────────────── KITCHEN / LIVING ─────────────────────
     - name: "Kitchen Motion (Beta)"
       unique_id: "kitchen_motion_beta"
@@ -623,5 +646,3 @@
         last_updated: "2025-10-06"
         floor_id: "downstairs"
         area_id: "living_room"
-
-    # ───────────────────────────── RECENT (delay_off) WRAPPERS ──────────────
