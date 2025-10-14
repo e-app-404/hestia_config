@@ -12,6 +12,11 @@ notes below to be productive quickly and avoid unsafe changes.
 - **Python paths**: Always use `/config` directly: `Path('/config/...')`
 - **VS Code**: Use workspace-relative paths (`${workspaceFolder}`) in configs
 
+> **Path Precedence (Workspace vs Runtime)**
+> - VS Code configs: prefer **`${workspaceFolder}`** for portability.
+> - Runtime scripts & HA paths: use **absolute `/config/...`** for correctness.
+> - Do not mix styles within the same script.
+
 ## Key Workspace Areas (per hestia_structure.md)
 
 - `hestia/config/` — Runtime YAML only (devices, network, preferences, registry, diagnostics)
@@ -50,17 +55,21 @@ notes below to be productive quickly and avoid unsafe changes.
 - **Path expansion**: Use `/config` directly, no expansion needed
 
 ### Prompt Library Tooling (ADR-0018, ADR-0026)
-- **Python venv location**: All prompt library CLI tools (e.g. `/config/bin/prompt-prep`) must use the operator's home directory venv (e.g. `~/hestia_venv`) and NOT `/config/.venv/`.
-- **Interpreter reference**: Update all wrappers/scripts to use `~/hestia_venv/bin/python` for ADR compliance and reproducibility.
-- **Required packages**: Ensure `pyyaml` and other dependencies are installed in the home venv.
-- **Document environment**: Specify Python version and venv location in README/operator docs.
+- **Two environments by design**:
+  - **HA code & dev inside this repo**: `/config/.venv` (workspace interpreter).
+  - **Prompt library / operator CLIs**: `~/hestia_venv` (home venv, reproducible).
+- **Wrappers**:
+  - Scripts under this repo that call prompt tooling must use `~/hestia_venv/bin/python` (not `/config/.venv`).
+  - HA integrations/tests inside the repo continue to use `/config/.venv`.
+- **Dependencies**: Ensure `pyyaml` et al. are installed in `~/hestia_venv`.
+- **Docs**: Clearly state interpreter per tool in READMEs.
 
 ## Workflows and Commands
 
 - **Python CLIs**: Published in `pyproject.toml` (e.g. `hestia-adr-lint`)
 - **Development**: Create venv under `~` (not under HA mount)
 - **Dry-run default**: Check `--help` for `--apply`/`--execute` flags before making changes
-- **Error patterns**: Reference `hestia/tools/error_patterns.yml` for known issues
+- **Error patterns**: Reference `hestia/library/error_patterns.yml` for known issues
 
 ## Security & Secrets (Critical)
 

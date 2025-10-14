@@ -13,8 +13,7 @@
     "git.countBadge": "off",
     "git.repositoryScanIgnoredFolders": [
       "share",
-      "zigbee2mqtt", 
-      "www",
+      "zigbee2mqtt",
       "tts",
       "hestia/workspace/archive/vault",
       "tmp",
@@ -48,7 +47,7 @@
       "**/*.pyc": true,
       "**/*.egg-info/**": true,
       "**/.trash/*": true,
-      "tmp/**": false,
+      "tmp/**": true,
       "hestia/workspace/cache/**": false,
       "hestia/workspace/archive/**": false,
       "zigbee2mqtt/**": true
@@ -119,7 +118,7 @@
     "files.readonlyInclude": {
       "**/.storage/**": true,
       "**/deps/**": true,
-      "**/.git/**": false,
+      "**/.git/**": true,
       "zigbee2mqtt/database.db": true,
       "zigbee2mqtt/state.json": true,
       "zigbee2mqtt/coordinator_backup.json": true,
