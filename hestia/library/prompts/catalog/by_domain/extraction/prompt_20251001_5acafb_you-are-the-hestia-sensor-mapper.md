@@ -43,14 +43,14 @@ These files typically contain a **flat list of sensor dictionaries**, not nested
 ### ✅ 2. **Avoid Parsing Tier from `name` Field**
 **Replace:**
 ```markdown
-Identify the tier based on Greek suffix (α, β, γ, δ, ε, ζ)
+Identify the tier based on Greek suffix (α, β, γ, δ, ε, ζ, η, μ, Ω)
 ```
 **With:**
 ```markdown
 Do not infer tier from the sensor `name` field due to Unicode limitations. Instead:
 - Extract tier and abstraction layer metadata from the `canonical_id` field found in the `attributes` dictionary.
 - The `canonical_id` format must follow: `room.function.layer_tier` (e.g., `bedroom.motion.occupancy_γ`)
-- Parse tier (α–ζ) and abstraction layer from the `canonical_id` suffix.
+- Parse tier (α–ζ, η, μ, Ω) and abstraction layer from the `canonical_id` suffix. (Full tier list in prompt_library_workflow.yaml)
 ```
 
 ---
