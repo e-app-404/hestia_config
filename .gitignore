@@ -5,6 +5,9 @@ home-assistant_v2.db*
 deps/
 .venv/
 tmp/
+
+# Hestia operational logs and temp
+hestia/workspace/operations/logs/
 *.db
 *.db-shm
 *.db-wal
