@@ -4,7 +4,7 @@
 
 - **Need a production promptset?** → `active/{category}/`
 - **Looking for a specific prompt?** → `catalog/by_domain/` (primary location)
-- **Browse by tier or persona?** → `catalog/by_tier/` or `catalog/by_persona/`
+- **Browse by tier or persona?** → `catalog/by_tier/` or `catalog/by_persona/` *(COPIES policy: STANDBY; copies paused; `by_domain/` is the single source)*
 - **Want to see historical evolution?** → `historical/YYYY/QX/isoweekNN/`
 - **Working on new prompts?** → `development/drafts/`
 
@@ -12,8 +12,8 @@
 
 - `active/`: Curated, production-ready promptsets
 - `catalog/by_domain/`: **Primary canonical location** for normalized prompts
-- `catalog/by_tier/`: Hard copies organized by Greek tier (α, β, γ, etc.)
-- `catalog/by_persona/`: Hard copies organized by persona
+- `catalog/by_tier/`: Hard copies organized by Greek tier *(STANDBY; paused)*
+- `catalog/by_persona/`: Hard copies organized by persona *(STANDBY; paused)*
 - `historical/`: Time-series archive (read-only)
 - `development/`: Experimental work-in-progress
 - `context/`: Supporting materials and seeds
@@ -32,7 +32,7 @@
 - **No symlinks** are used in this directory structure (per ADR-0015)
 - `by_tier/` and `by_persona/` contain **hard copies** for navigation
 - Always reference `by_domain/` for canonical source in promptsets
-- CI automation maintains consistency between primary and copies
+- **COPIES policy: STANDBY** — Copies are paused; `catalog/by_domain/` is the only canonical source. Any future copy-sync will be explicitly re-enabled and documented.
 
 ## Architecture Compliance
 
@@ -41,33 +41,38 @@
 - **ADR-0015**: Zero symlink dependencies (hard copies only)
 - **ADR-0018**: Proper workspace lifecycle management
 
-## Lifecycle Workflow
+## Lifecycle Workflow (current)
 
 ```
-incoming → migration/incoming
-         ↓
-normalize → migration/processed (MD + YAML frontmatter)
-         ↓
-catalog → catalog/by_domain/ (primary canonical location)
-         ↓
-replicate → catalog/by_tier/ + catalog/by_persona/ (hard copies)
-         ↓
-curate → active/ (production promptsets)
-         ↓
-archive → historical/YYYY/QX/isoweekNN/ (immutable)
+incoming  →  migration/incoming
+          ↓
+normalize →  migration/processed (MD + YAML frontmatter)
+          ↓
+catalog   →  catalog/by_domain/ (PRIMARY canonical location)
+          ↓
+curate    →  active/ (production promptsets)
+          ↓
+archive   →  historical/YYYY/QX/isoweekNN/ (immutable)
 ```
 
-## Tool References
+> Note: *Replication to `by_tier/` / `by_persona/` is paused (COPIES=STANDBY).*
+
+## Tool References (canonical tools root)
 
 - **Normalization**: `/config/hestia/tools/prompt_prep/prep_prompts.py`
 - **Validation**: `/config/hestia/tools/prompt_prep/validate_frontmatter.py`
 - **Catalog Placement**: `/config/hestia/tools/catalog/place_in_catalog.py`
-- **Copy Sync**: `/config/hestia/tools/catalog/sync_copies.py`
-- **Copy Validation**: `/config/hestia/tools/catalog/validate_copies.py`
+- **Copy Sync**: `/config/hestia/tools/catalog/sync_copies.py` *(STANDBY; paused)*
+- **Copy Validation**: `/config/hestia/tools/catalog/validate_copies.py` *(STANDBY; paused)*
+
+## Logs & Reports
+- **Automation logs** → `/config/hestia/library/prompts/logs/`
+- **Analytical reports & reviews** → `/config/hestia/library/prompts/reports/`
 
 ---
 
 **Document Version**: 1.0  
 **Created**: 2025-10-08  
 **Compliance**: PROMPT-LIB-CONSOLIDATION-V2  
-**Canonical Path**: `/config/hestia/library/prompts`
+**Canonical Path**: `/config/hestia/library/prompts`  
+**COPIES Policy**: STANDBY (paused; `by_domain/` = single source)
