@@ -19,7 +19,7 @@
         {{ value | int(-1) >= 0 }}
 
     - name: "Hestia Tmp Old Files"
-      command: 'find /config/tmp -type f -mtime +7 2>/dev/null | wc -l || echo "0"'
+      command: 'find /config/tmp -type f -mtime +7 2>/dev/null | wc -l | tr -d " " || echo "0"'
       unit_of_measurement: "files"
       state_class: measurement
       scan_interval: 3600
@@ -37,7 +37,7 @@
         {{ value != "Unknown" }}
 
     - name: "Hestia Git Status"
-      command: 'cd /config && git status --porcelain 2>/dev/null | wc -l || echo "-1"'
+      command: 'cd /config && git status --porcelain 2>/dev/null | wc -l | tr -d " " || echo "-1"'
       unit_of_measurement: "changes"
       state_class: measurement
       scan_interval: 1800
