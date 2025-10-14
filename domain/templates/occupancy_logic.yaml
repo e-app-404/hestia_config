@@ -254,7 +254,7 @@
         {% from 'template.library.jinja' import preference_select %}
         {% set sources = [
           {'entity': 'binary_sensor.desk_presence_inferred', 'protocol': 'gamma', 'preference': 1, 'type': 'occupancy'},
-          {'entity': 'binary_sensor.desk_motion_beta', 'protocol': 'wifi',  'preference': 2, 'type': 'occupancy'}
+          {'entity': 'binary_sensor.desk_motion_proxy', 'protocol': 'mqtt',  'preference': 2, 'type': 'occupancy'}
         ] %}
         {{ preference_select(sources) == 'on' }}
       attributes:
@@ -267,11 +267,12 @@
         file: "/config/domain/templates/occupancy_logic"
         protocols: "gamma(1)"
         upstream_sources: >
-          {{ [{'entity': 'binary_sensor.desk_presence_inferred', 'protocol': 'gamma', 'preference': 1, 'type': 'occupancy'}] | tojson }}
-        aggregation_strategy: "single-source desk occupancy"
+          {{ ['binary_sensor.desk_presence_inferred', 'binary_sensor.desk_motion_proxy'] | tojson }}
+        aggregation_strategy: "preference-based selection"
+        related_motion_recent_entity: "binary_sensor.desk_motion_recent_beta"
         source_count: "1"
         version: "1.1"
-        last_updated: "2025-09-20"
+        last_updated: "2025-10-15"
         area_id: "desk"
         floor_id: "bedroom"
 
