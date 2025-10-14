@@ -384,8 +384,7 @@ automation:
         target: { entity_id: light.adaptive_ensuite_light_group }
         data: { transition: 5 }
 
-
-  - alias: "Motion Lights Desk (SQL v1.5)"
+  - alias: "Motion Lights — Desk (SQL v1.5)"
     id: motion_lights_desk_sql_v15
     mode: restart
     trigger:
@@ -411,7 +410,7 @@ automation:
           {% if cfg is mapping %}
             {{ cfg }}
           {% elif cfg is string %}
-            {{ cfg | from_json %}
+            {{ cfg | from_json }}
           {% else %}
             {}
           {% endif %}
@@ -427,7 +426,6 @@ automation:
     condition:
       - condition: template
         value_template: "{{ not bypass }}"
-      # Note: Desk area uses bedroom illuminance sensor as fallback since no dedicated desk illuminance sensor exists
       - condition: template
         value_template: >
           {{ (states('sensor.bedroom_illuminance_beta') | float(9999)) < illuminance_threshold }}
@@ -449,7 +447,6 @@ automation:
       - service: light.turn_off
         target: { entity_id: light.adaptive_desk_light_group }
         data: { transition: 5 }
-
 
   # Blueprint-based Simple Motion Lighting Automations
   - alias: "Motion Lights — Wardrobe (Blueprint v1.0)"

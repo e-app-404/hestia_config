@@ -1044,3 +1044,51 @@ patterns:
     verify:
       - "Subsequent edits to files in /config proceed without the outside-workspace prompt (except truly sensitive cases)."
   # --- END: Hestia advisory pattern — Copilot outside-workspace/sensitive-file gate ---
+
+  # --- BEGIN: Hestia error pattern — Template missing closing brace ---
+  - id: template_missing_closing_brace
+    title: "Template: missing closing brace breaks template rendering"
+    category: "jinja_template"
+    description: "Template syntax errors due to missing closing braces in Jinja expressions"
+    error_format: "TemplateSyntaxError: unexpected end of template, expected '}'"
+    symptoms:
+      - "Template rendering failures in Home Assistant"
+      - "Automation execution errors with template conditions/variables"
+      - "Sensor template evaluation failures"
+      - "Purple syntax highlighting in editors for content after the error"
+    root_causes:
+      - "Missing closing brace }} in Jinja template expressions"
+      - "Incomplete template expressions during copy/paste operations"
+      - "Syntax errors introduced during template editing"
+    solution:
+      - "Add missing closing braces to complete template expressions"
+      - "Validate template syntax before deployment"
+      - "Use template testing tools to verify expression completeness"
+    examples:
+      bad: |
+        room_config: >-
+          {% if cfg is string %}
+            {{ cfg | from_json %}  # Missing closing brace
+          {% endif %}
+      good: |
+        room_config: >-
+          {% if cfg is string %}
+            {{ cfg | from_json }}  # Properly closed
+          {% endif %}
+    resolution_steps:
+      - "Identify template syntax errors from Home Assistant logs"
+      - "Check for missing closing braces in template expressions"
+      - "Test template syntax using Developer Tools > Template"
+      - "Validate YAML configuration after template fixes"
+    prevention_strategies:
+      - "Use editor syntax highlighting to catch template errors"
+      - "Test templates in Developer Tools before deployment"
+      - "Use template validation in CI/CD pipelines"
+    tooling:
+      detector: "grep -r '{{.*[^}]$' **/*.yaml - find incomplete template expressions"
+      validator: "Home Assistant Developer Tools > Template - test template syntax"
+    references:
+      - "Home Assistant Template Documentation"
+      - "Jinja2 Template Syntax Reference"
+      - "ADR-0020: Template Error Patterns"
+  # --- END: Hestia error pattern — Template missing closing brace ---
