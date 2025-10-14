@@ -26,7 +26,7 @@ This ADR formalizes the canonical meta and governance patterns, including schema
 
 ## 2. Decision
 ### Included Artifacts
-- `architecture_doctrine.yaml`
+- `system_instruction.yaml`
 - `design_patterns.md`
 - `prompt_registry.md`
 - `metadata_schema.yaml`

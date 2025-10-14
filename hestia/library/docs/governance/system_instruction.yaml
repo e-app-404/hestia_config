@@ -148,7 +148,7 @@ foundation:
           - conversation logs
           - validator_log.json
           - developer_guidelines.md
-        canonical_target: architecture_doctrine.yaml
+        canonical_target: system_instruction.yaml
       scaffold:
         use_metastructure: true
         reference_schema: architecture_doctrine metastructure (current)
@@ -904,14 +904,12 @@ startup_hooks:
           - protocol_self_awareness_v1
       - load_artifacts:
           - /mnt/data/system_instruction.yaml
-          - /mnt/data/architecture_doctrine.yaml
       - set_governance_review_mode:
           active: true
           emit_confidence_metrics: always
           workspace_hygiene_checks: true
           grounding_sources:
             - /mnt/data/system_instruction.yaml
-            - /mnt/data/architecture_doctrine.yaml
             - /mnt/data/hestia_reallocation_map.yaml
             - /mnt/data/hades_config_index.yaml
           scope:

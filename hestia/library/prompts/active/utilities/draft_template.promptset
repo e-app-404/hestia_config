@@ -56,7 +56,6 @@ promptset:
         - phase_context_memory
       bindings:
         - /mnt/data/system_instruction.yaml
-        - /mnt/data/architecture_doctrine.yaml
       prompt: |
         version: 1.0
         Activate governance review mode and load system_instruction.yaml for protocol enforcement.

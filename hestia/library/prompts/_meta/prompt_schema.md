@@ -38,7 +38,6 @@ A valid `.promptset` contains the following root-level blocks:
 artifacts:
   required:
     - path: /config/hestia/library/docs/governance/system_instruction.yaml
-    - path: /config/hestia/library/docs/governance/architecture_doctrine.yaml
   optional:
     - path: /config/.workspace/governance_index.md
     - path: /config/hestia/library/docs/governance/hades_config_index.yaml

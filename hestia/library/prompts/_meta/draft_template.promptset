@@ -18,7 +18,6 @@ promptset:
   artifacts:
     required:
       - path: /mnt/data/system_instruction.yaml
-      - path: /mnt/data/architecture_doctrine.yaml
     optional:
       - path: /mnt/data/hestia_reallocation_map.yaml
       - path: /mnt/data/hades_config_index.yaml
@@ -57,7 +56,6 @@ promptset:
         - phase_context_memory
       bindings:
         - /mnt/data/system_instruction.yaml
-        - /mnt/data/architecture_doctrine.yaml
       prompt: |
         version: 1.0
         Activate governance review mode and load system_instruction.yaml for protocol enforcement.
