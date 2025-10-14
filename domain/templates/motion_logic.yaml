@@ -327,6 +327,32 @@
         floor_id: "sanctum"
         area_id: "desk"
 
+    - name: "Desk Motion Recent (Beta)"
+      unique_id: desk_motion_recent_beta
+      device_class: motion
+      delay_off:
+        minutes: 2
+      state: "{{ is_state('binary_sensor.desk_motion_beta','on') }}"
+      attributes:
+        tier: "β"
+        canonical_id: "desk_motion_recent_β"
+        subsystem: "hermes"
+        module: "motion"
+        type: "delay_proxy"
+        role: "motion_timeout"
+        file: "/config/domain/templates/motion_logic.yaml"
+        delay_duration: "120s"
+        timeout_behavior: "delay_off"
+        upstream_sources: >
+          {{ ['binary_sensor.bedroom_wardrobe_motion_beta'] | tojson }}
+        downstream_consumers: >
+          {{ ['binary_sensor.wardrobe_occupancy_beta','sensor.wardrobe_motion_score_gamma'] | tojson }}
+        version: "2.2"
+        last_updated: "2025-10-06"
+        floor_id: "upstairs"
+        area_id: "bedroom"
+        subarea: "wardrobe"
+
     # ───────────────────────────────── HALLWAYS ──────────────────────────────
     - name: "Hallway Upstairs Motion (Beta)"
       unique_id: "hallway_upstairs_motion_beta"
