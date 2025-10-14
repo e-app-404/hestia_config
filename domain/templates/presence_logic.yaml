@@ -92,9 +92,9 @@
         {% set person_home = (states('person.evert') == 'home') %}
         {% set src = state_attr('person.evert','source') %}
         {% set via_src = src and states(src) == 'home' %}
-        {% set desk = is_state('binary_sensor.desk_presence_inferred','on') %}
+        {% set desk = is_state('binary_sensor.desk_occupancy_beta','on') %}
         {% set bed_occ = is_state('binary_sensor.bedroom_occupancy_beta','on') %}
-        {% set bed_motion = is_state('binary_sensor.bedroom_motion_beta','on') %}
+        {% set bed_motion = is_state('binary_sensor.bedroom_ottoman_motion_proxy','on') %}
         {% if person_home or via_src or desk or bed_occ or bed_motion %}on{% else %}off{% endif %}
       delay_off:
         minutes: 10
@@ -118,7 +118,7 @@
       icon: mdi:home-map-marker
       state: >-
         {% set present = (states('person.evert') == 'home') %}
-        {% set desk_inferred = is_state('binary_sensor.desk_presence_inferred', 'on') %}
+        {% set desk_inferred = is_state('binary_sensor.desk_occupancy_beta', 'on') %}
         {% if present or desk_inferred %}on{% else %}off{% endif %}
       attributes:
         area_id: "desk"
@@ -130,7 +130,7 @@
         area_type: "private"
         tier: "β"
         upstream_sources: >
-          {{ ["binary_sensor.desk_presence_inferred"] | tojson }}
+          {{ ["binary_sensor.desk_occupancy_beta"] | tojson }}
         reliability: excellent
         notes: |
           "Private area not used by other occupants"

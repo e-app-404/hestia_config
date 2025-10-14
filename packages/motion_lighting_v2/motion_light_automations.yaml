@@ -1,4 +1,3 @@
-
 automation:
   - alias: "Motion Lights — Bedroom (SQL v1.5)"
     id: motion_lights_bedroom_sql_v15

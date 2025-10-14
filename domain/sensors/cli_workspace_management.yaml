@@ -33,6 +33,8 @@
       scan_interval: 7200
       unique_id: hestia_workspace_total_size
       icon: mdi:folder-multiple
+      availability: >-
+        {{ value != "Unknown" }}
 
     - name: "Hestia Git Status"
       command: 'cd /config && git status --porcelain 2>/dev/null | wc -l || echo "-1"'
@@ -41,6 +43,8 @@
       scan_interval: 1800
       unique_id: hestia_git_uncommitted_changes
       icon: mdi:git
+      availability: >-
+        {{ value | int(-1) >= 0 }}
       value_template: >-
         {% if value | int == -1 %}
           unavailable
