@@ -29,7 +29,7 @@
         {{ value | int(-1) >= 0 }}
 
     - name: "Hestia Workspace Size"
-      command: 'du -sh /config 2>/dev/null | awk "{print $1}" || echo "Unknown"'
+      command: 'cd /config && du -sh . 2>/dev/null | awk "{print $1}" || echo "Unknown"'
       scan_interval: 7200
       unique_id: hestia_workspace_total_size
       icon: mdi:folder-multiple
