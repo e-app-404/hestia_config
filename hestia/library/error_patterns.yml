@@ -993,3 +993,54 @@ patterns:
         - "file: custom_components/localtuya/humidifier.py"
         - "grep contains: '^\\s*self\\._available_modes = DictSelector\\(modes\\)$'"
   # --- END: Hestia error pattern — LocalTuya fused-line SyntaxError ---
+
+  # --- BEGIN: Hestia error pattern — LocalTuya blocking import (warning) ---
+  - id: localtuya_blocking_import_warning
+    title: "LocalTuya: blocking import detected in event loop"
+    sources:
+      includes:
+        - "homeassistant.util.loop"
+    level: warning
+    match:
+      all:
+        - regex: "Detected blocking call to import_module"
+        - regex: "custom_components\\.localtuya"
+    classify: upstream_warning
+    cause: |
+      LocalTuya forwards platform setups triggering a synchronous import inside the event loop.
+      This is noisy but not setup-fatal.
+    fix:
+      steps:
+        - "Monitor occurrence count after updates."
+        - "If frequency >3 per startup, file upstream issue with integration version & HA core version."
+    verify:
+      - "Integration still sets up successfully."
+    suppress:
+      policy:
+        - "treat as informational unless coupled with import failure"
+  # --- END: Hestia error pattern — LocalTuya blocking import (warning) ---
+
+  # --- BEGIN: Hestia advisory pattern — Copilot outside-workspace/sensitive-file gate ---
+  - id: copilot_outside_workspace_sensitive_gate
+    title: "Copilot: edit blocked by outside-workspace or sensitive-file gate"
+    sources:
+      includes:
+        - "copilot"
+        - "vscode"
+        - "workspace"
+    level: info
+    match:
+      any:
+        - regex: "Allow edits to sensitive files\\?"
+        - regex: "outside of your workspace"
+    classify: workspace_root_mismatch
+    cause: |
+      Edits were issued from a virtual chat buffer or non-primary root; Copilot's approval gate triggers.
+    fix:
+      steps:
+        - "Anchor edit to a real file under /config (open editor + Copilot: Edit)."
+        - "Keep /config as single-root workspace; avoid virtual `vscode-chat-code-block://` anchors."
+        - "Optionally scope `chat.tools.edits.autoApprove` in .vscode to known-safe paths."
+    verify:
+      - "Subsequent edits to files in /config proceed without the outside-workspace prompt (except truly sensitive cases)."
+  # --- END: Hestia advisory pattern — Copilot outside-workspace/sensitive-file gate ---

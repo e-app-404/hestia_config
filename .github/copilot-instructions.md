@@ -105,7 +105,7 @@ notes below to be productive quickly and avoid unsafe changes.
 - `pyproject.toml` — Packaging and CLI entrypoints
 - `README.md` — Dev setup and run instructions  
 - `hestia/library/docs/ADR/` — Architecture decisions and patterns
-- `hestia/tools/error_patterns.yml` — Known error patterns and fixes
+- `hestia/library/error_patterns.yml` — Known error patterns and fixes
 
 ## Deprecated Paths (DO NOT USE)
 

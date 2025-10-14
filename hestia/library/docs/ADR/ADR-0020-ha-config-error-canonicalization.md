@@ -12,7 +12,7 @@ related:
   - ADR-0009 (ADR governance formatting)
   - ADR-0016 (Canonical HA edit root)
 references:
-  - hestia/tools/error_patterns.yml (Machine-readable error patterns)
+  - hestia/library/error_patterns.yml (Machine-readable error patterns)
   - hestia/tools/template_patcher/ (Template fixing tools)
   - custom_templates/template.library.jinja (Jinja macro library)
   - .githooks/pre-commit (Git hooks for validation)
@@ -42,7 +42,7 @@ Create a systematic approach to configuration error management with three compon
 
 ### 1. Machine-Readable Error Pattern Database
 
-Establish `hestia/tools/error_patterns.yml` as the canonical source of known error patterns:
+Establish `hestia/library/error_patterns.yml` as the canonical source of known error patterns:
 
 ```yaml
 error_patterns:
@@ -126,7 +126,7 @@ grep -r "{% macro.*[^-]%}" custom_templates/
 ## Implementation
 
 ### Phase 1: Error Pattern Database
-- ✅ Created `hestia/tools/error_patterns.yml` with jinja_whitespace_control pattern
+- ✅ Created `hestia/library/error_patterns.yml` with jinja_whitespace_control pattern
 - Document additional patterns as discovered
 - Establish pattern submission process
 
