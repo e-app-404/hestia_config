@@ -8,6 +8,10 @@ tmp/
 
 # Hestia operational logs and temp
 hestia/workspace/operations/logs/
+
+# Prompt library outputs
+hestia/library/prompts/logs/
+hestia/library/prompts/reports/
 *.db
 *.db-shm
 *.db-wal
