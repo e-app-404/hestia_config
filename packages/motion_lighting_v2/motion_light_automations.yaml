@@ -384,6 +384,71 @@ automation:
         target: { entity_id: light.adaptive_ensuite_light_group }
         data: { transition: 5 }
 
+  - alias: "Motion Lights — Desk (SQL v1.5)"
+    id: motion_lights_desk_sql_v15
+    mode: restart
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.desk_motion_proxy
+        to: "on"
+    variables:
+      _raw: "{{ state_attr('sensor.room_configs_motion_lighting','payload') }}"
+      _cfgs: >-
+        {% if _raw %}
+          {% set parsed = _raw | from_json %}
+          {% if parsed is mapping %}
+            {{ parsed }}
+          {% else %}
+            {}
+          {% endif %}
+        {% else %}
+          {}
+        {% endif %}
+      room_config: >-
+        {% if _cfgs and 'desk' in _cfgs %}
+          {% set cfg = _cfgs.desk %}
+          {% if cfg is mapping %}
+            {{ cfg }}
+          {% elif cfg is string %}
+            {{ cfg | from_json %}
+          {% else %}
+            {}
+          {% endif %}
+        {% else %}
+          {}
+        {% endif %}
+      timeout: "{{ room_config.get('timeout', 300) | int }}"
+      bypass: "{{ room_config.get('bypass', false) | bool }}"
+      presence_multiplier: "{{ room_config.get('presence_timeout_multiplier', 2.0) | float }}"
+      presence_active: "{{ is_state('binary_sensor.desk_presence_beta','on') or is_state('person.evert','home') }}"
+      effective_timeout: "{{ (timeout * presence_multiplier) | int if presence_active else timeout }}"
+      illuminance_threshold: "{{ room_config.get('illuminance_threshold', 20) | int }}"
+    condition:
+      - condition: template
+        value_template: "{{ not bypass }}"
+      # Note: Desk area uses bedroom illuminance sensor as fallback since no dedicated desk illuminance sensor exists
+      - condition: template
+        value_template: >
+          {{ (states('sensor.bedroom_illuminance_beta') | float(9999)) < illuminance_threshold }}
+    action:
+      - service: light.turn_on
+        target: { entity_id: light.adaptive_desk_light_group }
+        data: { transition: 2 }
+      - service: rest_command.room_db_update_config
+        data:
+          room_id: "desk"
+          domain: "motion_lighting"
+          config_data: >-
+            {{ dict(room_config, **{
+              'last_triggered': now().isoformat(),
+              'trigger_count': (room_config.get('trigger_count', 0) | int) + 1
+            }) }}
+          schema_expected: 1
+      - delay: { seconds: "{{ effective_timeout }}" }
+      - service: light.turn_off
+        target: { entity_id: light.adaptive_desk_light_group }
+        data: { transition: 5 }
+
   # Blueprint-based Simple Motion Lighting Automations
   - alias: "Motion Lights — Wardrobe (Blueprint v1.0)"
     id: motion_lights_wardrobe_blueprint_v10
