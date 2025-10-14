@@ -414,7 +414,7 @@ automation:
     mode: parallel
     trigger:
       - platform: time
-        at: "21:30:00"  # 9:30 PM
+        at: "21:30:00"
     action:
       - service: switch.turn_on
         target:
@@ -427,14 +427,14 @@ automation:
             - switch.adaptive_lighting_sleep_mode_hallway_upstairs
             - switch.adaptive_lighting_sleep_mode_living_room
         data:
-          transition: 30  # 30 second transition to sleep mode
+          transition: 30
 
   - alias: "Adaptive Lighting — Disable Sleep Mode (Morning)"
     id: adaptive_lighting_disable_sleep_mode_morning
     mode: parallel
     trigger:
       - platform: time
-        at: "07:00:00"  # 7:00 AM
+        at: "07:00:00"
     action:
       - service: switch.turn_off
         target:
@@ -447,20 +447,19 @@ automation:
             - switch.adaptive_lighting_sleep_mode_hallway_upstairs
             - switch.adaptive_lighting_sleep_mode_living_room
         data:
-          transition: 60  # 60 second transition from sleep mode
+          transition: 60
 
   - alias: "Adaptive Lighting — Late Night Sleep Mode (Deep Sleep)"
     id: adaptive_lighting_late_night_deep_sleep
     mode: parallel
     trigger:
       - platform: time
-        at: "23:00:00"  # 11:00 PM
+        at: "23:00:00"
     condition:
       - condition: state
         entity_id: switch.adaptive_lighting_sleep_mode_bedroom
         state: "on"
     action:
-      # Reduce brightness further for deep sleep
       - service: adaptive_lighting.set_manual_control
         target:
           entity_id:
@@ -475,7 +474,7 @@ automation:
             - light.adaptive_desk_light_group
         data:
           brightness_pct: 5
-          rgb_color: [20, 5, 50]  # Deep purple for minimal disruption
+          rgb_color: [20, 5, 50]
           transition: 10
 
   - alias: "Adaptive Lighting — Weekend Sleep Mode Extension"
@@ -483,16 +482,15 @@ automation:
     mode: single
     trigger:
       - platform: time
-        at: "07:00:00"  # Normal weekday wake time
+        at: "07:00:00"
     condition:
       - condition: time
         weekday:
           - sat
           - sun
     action:
-      # Keep sleep mode on during weekends until later
       - delay:
-          hours: 2  # Extend sleep mode until 9:00 AM on weekends
+          hours: 2
       - service: switch.turn_off
         target:
           entity_id:
@@ -504,4 +502,4 @@ automation:
             - switch.adaptive_lighting_sleep_mode_hallway_upstairs
             - switch.adaptive_lighting_sleep_mode_living_room
         data:
-          transition: 90  # Slower transition on weekends
+          transition: 90

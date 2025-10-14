@@ -4,7 +4,7 @@ title: AppDaemon & Room-DB Canonicalization (Endpoints, Entities, SQL Migration)
 slug: appdaemon-room-db-sql-migration
 date: 2025-10-12
 status: Proposed
-author: hestia-operator
+author: evert-appels
 related: [ADR-0024, ADR-0027, ADR-0019, ADR-0018, ADR-0009, ADR-0008]
 last_updated: 2025-10-12
 tags: [governance, appdaemon, room-db, endpoints, entities, migration, sql, validation]
@@ -36,12 +36,12 @@ references:
 
 ## Decision Summary (concise)
 
-* **Endpoints:** AppDaemon routes **must** use the app-scoped pattern `/api/app/<app_name>/<endpoint>/...`. For Room-DB the canonical base is **`/api/app/room_db_updater/room_db`** with subpaths for health, update, sync, and reads.
-* **HA Integration:** Home Assistant `rest_command` definitions **must** reference `hass_url()` and the canonical app-scoped routes; `/api/appdaemon/*` is **not** used for Room-DB operations.
-* **Entities:** Expose deterministic, namespaced entities for consumers (templates/automations) with clear `device_class` mappings and regeneration rules tied to Room-DB updates.
-* **Single Source of Truth:** The **SQL schema** holds authoritative room/zone configuration and telemetry. HA consumers read via AppDaemon APIs or generated entities derived from SQL.
-* **Writes & Governance:** Any configuration changes (files, schemas, rest_commands) **must** be performed via **write-broker** (ADR-0027) with SHA-256 verification, atomic write, backup, and audit log.
-* **Paths:** All paths resolve under the canonical `/config` root (ADR-0024). Non-canonical realpaths are read-only.
+- **Endpoints:** AppDaemon routes **must** use the app-scoped pattern `/api/app/<app_name>/<endpoint>/...`. For Room-DB the canonical base is **`/api/app/room_db_updater/room_db`** with subpaths for health, update, sync, and reads.
+- **HA Integration:** Home Assistant `rest_command` definitions **must** reference `hass_url()` and the canonical app-scoped routes; `/api/appdaemon/*` is **not** used for Room-DB operations.
+- **Entities:** Expose deterministic, namespaced entities for consumers (templates/automations) with clear `device_class` mappings and regeneration rules tied to Room-DB updates.
+- **Single Source of Truth:** The **SQL schema** holds authoritative room/zone configuration and telemetry. HA consumers read via AppDaemon APIs or generated entities derived from SQL.
+- **Writes & Governance:** Any configuration changes (files, schemas, rest_commands) **must** be performed via **write-broker** (ADR-0027) with SHA-256 verification, atomic write, backup, and audit log.
+- **Paths:** All paths resolve under the canonical `/config` root (ADR-0024). Non-canonical realpaths are read-only.
 
 ## API_ROUTES
 
@@ -296,11 +296,11 @@ rollback:
 
 ## ACCEPTANCE_CRITERIA
 
-* Health endpoint returns **200** at `/api/app/room_db_updater/room_db/health`.
-* `rest_command` calls using `hass_url()` to the canonical base return **2xx** and are logged by AppDaemon.
-* Canonical `roomdb_*` entities exist with correct `device_class` and required attributes.
-* All configuration writes were performed via **write-broker** with SHA-256 before/after, backup, and audit JSON.
-* `ha core check` passes.
+- Health endpoint returns **200** at `/api/app/room_db_updater/room_db/health`.
+- `rest_command` calls using `hass_url()` to the canonical base return **2xx** and are logged by AppDaemon.
+- Canonical `roomdb_*` entities exist with correct `device_class` and required attributes.
+- All configuration writes were performed via **write-broker** with SHA-256 before/after, backup, and audit JSON.
+- `ha core check` passes.
 
 
 ## STATUS_BLOCK
