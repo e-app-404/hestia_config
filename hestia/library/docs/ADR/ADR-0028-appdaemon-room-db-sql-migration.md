@@ -12,13 +12,26 @@ references:
   - tools: "/config/bin/write-broker"
   - configuration: "/config/packages/package_room_database.yaml, /config/appdaemon/apps/**"
   - logs: "/config/hestia/workspace/operations/logs/write_broker_*.json"
-  - index: "{appdaemon index}"
+  - index: "/config/hestia/config/index/appdaemon_index.yaml"
 ---
 
 # ADR-0028: AppDaemon & Room-DB Canonicalization (Endpoints, Entities, SQL Migration)
 
 ## Table of Contents
-{insert toc}
+
+- [Decision Summary (concise)](#decision-summary-concise)
+- [API_ROUTES](#api_routes)
+- [ENTITY_INTERFACE](#entity_interface)
+- [SQL_SCHEMA](#sql_schema)
+- [MIGRATION_PLAN](#migration_plan)
+- [GOVERNANCE_BLOCK](#governance_block)
+- [VALIDATION_SUITE](#validation_suite)
+- [ENFORCEMENT & DRIFT](#enforcement--drift)
+- [ROLLBACK](#rollback)
+- [ACCEPTANCE_CRITERIA](#acceptance_criteria)
+- [STATUS_BLOCK](#status_block)
+- [TOKEN_BLOCK](#token_block)
+- [CHANGELOG](#changelog)
 
 
 ## Decision Summary (concise)
