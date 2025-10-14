@@ -5,51 +5,53 @@
 # Purpose: Monitor HestiaOS workspace usage (trash size, old temp files)
 #═══════════════════════════════════════════════════════════════
 
-- platform: command_line
-  entities:
-    - name: "Hestia Trash Size"
-      command: 'du -s /config/.trash 2>/dev/null | awk "{print $1}" || echo "0"'
-      unit_of_measurement: "KiB"
-      device_class: data_size
-      state_class: measurement
-      scan_interval: 3600
-      unique_id: hestia_trash_size
-      icon: mdi:trash-can
-      availability: >-
-        {{ value | int(-1) >= 0 }}
+- sensor:
+    name: "Hestia Trash Size"
+    command: 'du -s /config/.trash 2>/dev/null | awk "{print $1}" || echo "0"'
+    unit_of_measurement: "KiB"
+    device_class: data_size
+    state_class: measurement
+    scan_interval: 3600
+    unique_id: hestia_trash_size
+    icon: mdi:trash-can
+    availability: >-
+      {{ value | int(-1) >= 0 }}
 
-    - name: "Hestia Tmp Old Files"
-      command: 'find /config/tmp -type f -mtime +7 2>/dev/null | wc -l | tr -d " " || echo "0"'
-      unit_of_measurement: "files"
-      state_class: measurement
-      scan_interval: 3600
-      unique_id: hestia_tmp_old_files
-      icon: mdi:file-clock
-      availability: >-
-        {{ value | int(-1) >= 0 }}
+- sensor:
+    name: "Hestia Tmp Old Files"
+    command: 'find /config/tmp -type f -mtime +7 2>/dev/null | wc -l | tr -d " " || echo "0"'
+    unit_of_measurement: "files"
+    state_class: measurement
+    scan_interval: 3600
+    unique_id: hestia_tmp_old_files
+    icon: mdi:file-clock
+    availability: >-
+      {{ value | int(-1) >= 0 }}
 
-    - name: "Hestia Workspace Size"
-      command: 'cd /config && du -sh . 2>/dev/null | awk "{print $1}" || echo "Unknown"'
-      scan_interval: 7200
-      unique_id: hestia_workspace_total_size
-      icon: mdi:folder-multiple
-      availability: >-
-        {{ value != "Unknown" }}
+- sensor:
+    name: "Hestia Workspace Size"
+    command: 'cd /config && du -sh . 2>/dev/null | awk "{print $1}" || echo "Unknown"'
+    scan_interval: 7200
+    unique_id: hestia_workspace_total_size
+    icon: mdi:folder-multiple
+    availability: >-
+      {{ value != "Unknown" }}
 
-    - name: "Hestia Git Status"
-      command: 'cd /config && git status --porcelain 2>/dev/null | wc -l | tr -d " " || echo "-1"'
-      unit_of_measurement: "changes"
-      state_class: measurement
-      scan_interval: 1800
-      unique_id: hestia_git_uncommitted_changes
-      icon: mdi:git
-      availability: >-
-        {{ value | int(-1) >= 0 }}
-      value_template: >-
-        {% if value | int == -1 %}
-          unavailable
-        {% elif value | int == 0 %}
-          clean
-        {% else %}
-          {{ value }}
-        {% endif %}
+- sensor:
+    name: "Hestia Git Status"
+    command: 'cd /config && git status --porcelain 2>/dev/null | wc -l | tr -d " " || echo "-1"'
+    unit_of_measurement: "changes"
+    state_class: measurement
+    scan_interval: 1800
+    unique_id: hestia_git_uncommitted_changes
+    icon: mdi:git
+    availability: >-
+      {{ value | int(-1) >= 0 }}
+    value_template: >-
+      {% if value | int == -1 %}
+        unavailable
+      {% elif value | int == 0 %}
+        clean
+      {% else %}
+        {{ value }}
+      {% endif %}

@@ -17,17 +17,19 @@ ha_platforms:
   - sensor
   - switch
 ha_integration_type: integration
+ha_integration_mode: yaml
 ha_codeowners:
   - '@gjohansson-ST'
 related:
   - docs: /docs/configuration/
     title: Configuration file
 ha_quality_scale: legacy
+tags: ["integration", "sensor", "binary_sensor", "cover", "notify", "switch", "utility", "command_line", "cli", "template", "templating", "yaml", "configuration", "platform"]]
 ---
 
 # Command-line Template Sensor
 
-The **Command line** {% term integration %} offers functionality that issues specific commands to get data or to control a device.
+The **Command line** integration offers functionality that issues specific commands to get data or to control a device.
 
 > Note: It's highly recommended to enclose the command in single quotes `'` as it ensures all characters can be used in the command and reduces the risk of unintentional escaping. To include a single quote in a command enclosed in single quotes, double it: `''`.
 
@@ -287,7 +289,7 @@ command_line:
 
 ## Troubleshooting
 
-As **Command line** {% term integration %} is a yaml only integration, turning on extended logging needs to be done by setting the logging information in your {% term "`configuration.yaml`" %} file.
+As **Command line** {% term integration %} is a yaml only integration, turning on extended logging needs to be done by setting the logging information in your `configuration.yaml` file.
 
 Entering this example in your configuration sets the default logging to info, and for `command_line` to debug. Once done, restart Home Assistant to enable.
 
@@ -305,7 +307,7 @@ logger:
 
 ## Binary sensor
 
-To use your Command binary sensor in your installation, add the following to your {% term "`configuration.yaml`" %} file:
+To use your Command binary sensor in your installation, add the following to your `configuration.yaml` file:
 
 ```yaml
 # Example configuration.yaml entry
@@ -320,7 +322,7 @@ command_line:
 
 A `command_line`cover platform that issues specific commands when it is moved up, down and stopped. It allows anyone to integrate any type of cover into Home Assistant that can be controlled from the command line.
 
-To enable a command line cover in your installation, add the following to your {% term "`configuration.yaml`" %} file:
+To enable a command line cover in your installation, add the following to your `configuration.yaml` file:
 
 ```yaml
 # Example configuration.yaml entry
@@ -336,7 +338,7 @@ command_line:
 
 The `command_line` platform allows you to use external tools for notifications from Home Assistant. The message will be passed in as STDIN.
 
-To enable those notifications in your installation, add the following to your {% term "`configuration.yaml`" %} file:
+To enable those notifications in your installation, add the following to your `configuration.yaml` file:
 
 ```yaml
 # Example configuration.yaml entry
@@ -349,7 +351,7 @@ To use notifications, please see the [getting started with automation page](/get
 
 ## Sensor
 
-To enable it, add the following lines to your {% term "`configuration.yaml`" %}:
+To enable it, add the following lines to your `configuration.yaml`:
 
 ```yaml
 # Example configuration.yaml entry
@@ -367,7 +369,7 @@ and off. This might very well become our most powerful platform as it allows
 anyone to integrate any type of switch into Home Assistant that can be
 controlled from the command line, including calling other scripts!
 
-To enable it, add the following lines to your {% term "`configuration.yaml`" %}:
+To enable it, add the following lines to your `configuration.yaml`:
 
 ```yaml
 # Example configuration.yaml entry
@@ -486,7 +488,7 @@ In this section you find some real-life examples of how to use this sensor.
 
 ### CPU temperature
 
-Thanks to the [`proc`](https://en.wikipedia.org/wiki/Procfs) file system, various details about a system can be retrieved. Here the CPU temperature is of interest. Add something similar to your {% term "`configuration.yaml`" %} file:
+Thanks to the [`proc`](https://en.wikipedia.org/wiki/Procfs) file system, various details about a system can be retrieved. Here the CPU temperature is of interest. Add something similar to your `configuration.yaml` file:
 
 ```yaml
 # Example configuration.yaml entry
@@ -501,7 +503,7 @@ command_line:
 
 ### Monitoring failed login attempts on Home Assistant
 
-If you'd like to know how many failed login attempts are made to Home Assistant, add the following to your {% term "`configuration.yaml`" %} file:
+If you'd like to know how many failed login attempts are made to Home Assistant, add the following to your `configuration.yaml` file:
 
 ```yaml
 # Example configuration.yaml entry
@@ -547,7 +549,7 @@ command_line:
 
 The example is doing the same as the [aREST sensor](/integrations/arest#sensor) but with an external Python script. It should give you an idea about interfacing with devices which are exposing a RESTful API.
 
-The one-line script to retrieve a value is shown below. Of course it would be possible to use this directly in the {% term "`configuration.yaml`" %} file but need extra care about the quotation marks.
+The one-line script to retrieve a value is shown below. Of course it would be possible to use this directly in the `configuration.yaml` file but need extra care about the quotation marks.
 
 ```bash
 python3 -c "import requests; print(requests.get('http://10.0.0.48/analog/2').json()['return_value'])"
@@ -563,7 +565,7 @@ response = get("http://10.0.0.48/analog/2")
 print(response.json()["return_value"])
 ```
 
-To use the script you need to add something like the following to your {% term "`configuration.yaml`" %} file.
+To use the script you need to add something like the following to your `configuration.yaml` file.
 
 ```yaml
 # Example configuration.yaml entry
