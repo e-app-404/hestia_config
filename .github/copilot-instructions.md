@@ -104,7 +104,7 @@ notes below to be productive quickly and avoid unsafe changes.
 - `/n/ha`, `~/hass` — DEPRECATED, use `/config` instead
 - `hestia/core/` — DEPRECATED, use `hestia/config/` instead
 - `hestia/docs/ADR/` — DEPRECATED, use `hestia/library/docs/ADR/` instead
-- '/tmp' — INCORRECT, use `.trash/` instead
+- `/tmp` — INCORRECT, use `tmp/` instead
 
 ## Copilot governance preamble (pin this tab):**  
 When assisting in this workspace, always consult `/config/.workspace/governance_index.md` first and treat its rules as authoritative. Cite the specific ADR(s) and section(s) when recommending changes. If a proposed action conflicts with ADR-0024 (canonical /config mount) or ADR-0022 (mount management), stop and ask for approval.
