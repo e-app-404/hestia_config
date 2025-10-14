@@ -13,7 +13,10 @@
     - light.bedroom_main_alpha_matter
     - light.bedroom_nightstand_left_alpha_matter
     - light.bedroom_nightstand_right_alpha_matter
-
+    - light.bedroom_main_alpha_matter
+    - light.bedroom_wall_alpha
+    - light.bedroom_entrance_alpha_matter
+    
 - platform: group
   name: "Adaptive Desk Light Group"
   unique_id: "adaptive_desk_light_group"
