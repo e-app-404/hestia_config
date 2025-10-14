@@ -73,7 +73,6 @@ promptset:
         - phase_context_memory
       bindings:
         - /mnt/data/system_instruction.yaml
-        - /mnt/data/architecture_doctrine.yaml
       prompt: |
         version: 1.0
         Activate governance review mode and load system_instruction.yaml for protocol enforcement.
@@ -120,6 +119,6 @@ promptset:
     - Specify artifact resolution order: required > optional > globs.
   documentation:
     - Reference: /mnt/data/promptset_schema.yaml
-    - For extended guidance, see /mnt/data/promptset_docs.md
+    - For extended guidance, see /config/hestia/library/docs/architecture/promptset_docs.md
     - Comments are limited to essential guidance; maintain extended docs separately.
 

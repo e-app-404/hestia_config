@@ -168,5 +168,5 @@ promptset:
 
   documentation:
     - Reference: /mnt/data/promptset_schema.yaml
-    - Extended guidance: /mnt/data/promptset_docs.md
+    - Extended guidance: /config/hestia/library/docs/architecture/promptset_docs.md
 

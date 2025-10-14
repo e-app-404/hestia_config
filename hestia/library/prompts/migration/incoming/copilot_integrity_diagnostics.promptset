@@ -208,4 +208,4 @@ promptset:
 
   documentation:
     - Reference: /mnt/data/promptset_schema.yaml
-    - For governance guidance, consult /mnt/data/promptset_docs.md
+    - For governance guidance, consult /config/hestia/library/docs/architecture/promptset_docs.md

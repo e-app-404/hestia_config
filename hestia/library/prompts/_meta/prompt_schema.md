@@ -130,7 +130,7 @@ extensibility:
 
 documentation:
   - Reference: /config/hestia/library/docs/promptset_schema.yaml
-  - This file: /config/hestia/library/docs/promptset_docs.md
+  - This file: /config/hestia/library/docs/architecture/promptset_docs.md
 ```
 
 ## ✅ Deployment & Validation

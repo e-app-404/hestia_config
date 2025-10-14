@@ -17,12 +17,11 @@ promptset:
   # Artifacts & Bindings
   artifacts:
     required:
-      - path: /mnt/data/system_instruction.yaml
+      - path: /config/hestia/library/docs/governance/system_instruction.yaml
+      - path: /config/hestia/library/docs/governance/persona_registry.yaml
     optional:
-      - path: /mnt/data/hestia_reallocation_map.yaml
-      - path: /mnt/data/hades_config_index.yaml
-    # Use glob patterns for extensibility (document precedence)
-    # - path: /mnt/data/**/*.yaml
+      - path: /config/hestia/library/docs/architecture/promptset_docs.md
+      # add more optional references here as needed
   bindings:
     protocols:
       - prompt_optimization_first
@@ -102,5 +101,5 @@ promptset:
     - Specify artifact resolution order: required > optional > globs.
   documentation:
     - Reference: /mnt/data/promptset_schema.yaml
-    - For extended guidance, see /mnt/data/promptset_docs.md
+    - For extended guidance, see /config/hestia/library/docs/architecture/promptset_docs.md
     - Comments are limited to essential guidance; maintain extended docs separately.

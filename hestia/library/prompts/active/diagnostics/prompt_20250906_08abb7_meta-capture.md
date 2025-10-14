@@ -41,7 +41,6 @@ promptset:
     required:
       - path: /mnt/data/system_instruction.yaml
     optional:
-      - path: /mnt/data/architecture_doctrine.yaml
       - path: /mnt/data/prompt_registry.md
       - path: /mnt/data/persona_registry.yaml
       - path: /mnt/data/prompt_tests.yaml
@@ -77,7 +76,6 @@ promptset:
         - protocol_phase_context_memory
       bindings:
         - /mnt/data/system_instruction.yaml
-        - /mnt/data/architecture_doctrine.yaml
       prompt: |
         version: 1.0
         Activate meta-capture mode. For every conversation turn:
@@ -168,5 +166,5 @@ promptset:
 
   documentation:
     - Reference: /mnt/data/promptset_schema.yaml
-    - Extended guidance: /mnt/data/promptset_docs.md
+    - Extended guidance: /config/hestia/library/docs/architecture/promptset_docs.md
 
