@@ -18,7 +18,6 @@ promptset:
   artifacts:
     required:
       - path: /mnt/data/system_instruction.yaml
-      - path: /mnt/data/architecture_doctrine.yaml
     optional:
       - path: /mnt/data/hestia_reallocation_map.yaml
       - path: /mnt/data/hades_config_index.yaml
