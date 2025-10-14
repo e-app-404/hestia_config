@@ -1,6 +1,6 @@
 #═══════════════════════════════════════════════════════════════
 # ▶ SENSOR: Hestia Workspace Management ◀
-# Loader: !include_dir_merge_list domain/sensor
+# Loader: !include_dir_merge_list domain/sensors
 # Schema: command_line (modern format)
 # Purpose: Monitor HestiaOS workspace usage (trash size, old temp files)
 #═══════════════════════════════════════════════════════════════
