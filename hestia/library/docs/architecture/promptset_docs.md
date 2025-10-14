@@ -4,34 +4,35 @@
 
 The HESTIA `.promptset` schema defines **multi-phase, protocol-bound GPT prompt workflows** for governance, diagnostics, validation, and controlled generation. It supports both **legacy single-phase** prompts and **modular, future-facing** configurations.
 
-All `.promptset` files should conform to the canonical schema and be located under: `/config/hestia/library/prompts/`
+All `.promptset` files must conform to the canonical schema and live under: `/config/hestia/library/prompts/`
 
-## 🧱 Promptset Structure
+## 🧱 Promptset Structure (all fields under `promptset:`)
 
 A valid `.promptset` contains the following root-level blocks:
 
-| Field                  | Type   | Required | Description                                        |
-|------------------------|--------|----------|----------------------------------------------------|
-| `promptset`            | object | ✅        | Root container for all fields                      |
-| `id`                   | string | ✅        | Unique identifier (snake_case recommended)         |
-| `version`              | string | ✅        | Semantic version                                   |
-| `created`              | date   | ✅        | Creation date                                      |
-| `description`          | string | ✅        | Human-readable summary                             |
-| `persona`              | string | ✅        | Persona expected to execute the promptset          |
-| `purpose`              | string | ✅        | Operational goal or scenario coverage              |
-| `legacy_compatibility` | bool   | ✅        | If true, supports older prompt systems             |
-| `schema_version`       | string | ✅        | Must match current validator schema (`1.0`)        |
-
-## 📂 Artifact Binding
+| Field                  | Type   | Req | Description                                        |
+|------------------------|--------|-----|----------------------------------------------------|  
+| `promptset`            | object | ✅ | Root container                                     |
+| `promptset.id`        | string | ✅ | Unique identifier (e.g., `example_promptset_v1`)   |
+| `promptset.version`   | string | ✅ | Semantic version (e.g., `1.0.0`)                   |
+| `promptset.created`   | date   | ✅ | Creation date                                      |
+| `promptset.description`| string| ✅ | Human-readable summary                             |
+| `promptset.persona`   | string | ✅ | Persona that executes                              |
+| `promptset.purpose`   | string | ✅ | Operational goal                                   |
+| `promptset.legacy_compatibility` | bool | ✅ | Legacy support switch                              |
+| `promptset.schema_version` | string | ✅ | Must be `"1.0"` (see JSON schema)                  |
+| `promptset.artifacts` | object | ✅ | Required/optional artifact lists                   |
+| `promptset.bindings`  | object | ✅ | Protocols/persona bindings                         |
+| `promptset.prompts`   | array  | ✅ | Prompt or phase definitions                        |## 📂 Artifact Binding (canonical paths)
 
 ```yaml
 artifacts:
   required:
     - path: /config/hestia/library/docs/governance/system_instruction.yaml
-    - path: /config/hestia/library/docs/governance/architecture_doctrine.yaml
   optional:
     - path: /config/.workspace/governance_index.md
-    - path: /config/hestia/library/docs/governance/hades_config_index.yaml
+    - path: /config/hestia/library/docs/governance/persona_registry.yaml
+    - path: /config/hestia/library/docs/architecture/promptset_docs.md
 ````
 
 * `required`: Must be present before promptset is activated
@@ -126,20 +127,17 @@ documentation:
 
 ## ✅ Deployment & Validation
 
-Place `.promptset` files into:
+**Activation rules**
+- Only promptsets under `/config/hestia/library/prompts/active/{category}/` are activation candidates.
+- **Nothing** under `migration/*` is executable.
+- Activation requires:
+  - All `required` artifacts resolve
+  - Persona exists in `/config/hestia/library/docs/governance/persona_registry.yaml`
+  - Structure validates against `/config/hestia/library/prompts/_meta/promptset_schema.yaml`
 
-`/config/hestia/library/prompts/migration/incoming/`
-
-They will activate if:
-
-* All `required` artifacts resolve
-* Persona is recognized in `persona_registry.yaml`
-* Structure is valid per schema
-
-Output artifacts and logs are placed at:
-
-* `prompt_validation_log.json` in `/config/hestia/library/prompts/migration/`
-* Markdown `.md` files in `/config/hestia/library/prompts/reports/`
+**Outputs**
+- **Automation logs** → `/config/hestia/library/prompts/logs/` (machine-readable, e.g., `prompt_validation_log.json`)
+- **Analytical reports** → `/config/hestia/library/prompts/reports/` (human-readable audits/reviews)
 
 ## 🧪 Example Use Cases
 
@@ -151,9 +149,10 @@ Output artifacts and logs are placed at:
 
 ## 📎 Related Schemas & References
 
-* `/config/hestia/library/prompts/_meta/draft_template.promptset`
+* `/config/hestia/library/prompts/_meta/promptset_schema.yaml`
 * `/config/hestia/library/docs/governance/system_instruction.yaml`
 * `/config/hestia/library/docs/governance/persona_registry.yaml`
+* **COPIES**: STANDBY — `catalog/by_domain/` is the single canonical source.
 
 ## 🛡 Governance Note
 

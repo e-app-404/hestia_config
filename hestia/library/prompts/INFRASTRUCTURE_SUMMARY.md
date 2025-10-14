@@ -1,8 +1,7 @@
 # Infrastructure Creation Summary
 
-## ✅ Complete Directory Structure Created
-
-New infrastructure successfully created at `/config/hestia/library/prompts-new/`
+## ✅ Directory Structure (live)
+Infrastructure is live at `/config/hestia/library/prompts/`
 
 ### Core Structure (48 directories total)
 - **8 main directories**: _meta, active, catalog, context, development, historical, migration, root
@@ -38,19 +37,19 @@ New infrastructure successfully created at `/config/hestia/library/prompts-new/`
 
 ### Multi-Axis Access Patterns
 - **by_domain/**: Primary canonical location (7 domains)
-- **by_tier/**: Greek tier classification (4 tiers: α, β, γ, Ω)  
-- **by_persona/**: Specialized archetypes (6 personas)
+- **by_tier/**: Greek tier classification *(STANDBY; paused)*  
+- **by_persona/**: Specialized archetypes *(STANDBY; paused)*
 
 ### Complete Workflow Support
 - **Migration pipeline**: incoming → processed → catalog → archive
 - **Development lifecycle**: drafts → testing → experimental → production
 - **Quality gates**: validation, review, compliance checking
 
-### Tool Integration
-- **Normalization**: prep_prompts.py (content-based slug generation)
-- **Validation**: validate_frontmatter.py (ADR-0009 compliance)
-- **Catalog management**: place_in_catalog.py, sync_copies.py, validate_copies.py
-- **CLI wrapper**: /config/bin/prompt-prep
+### Tool Integration (canonical paths)
+- **Normalization**: `/config/hestia/tools/prompt_prep/prep_prompts.py`
+- **Validation**: `/config/hestia/tools/prompt_prep/validate_frontmatter.py`
+- **Catalog management**: `/config/hestia/tools/catalog/place_in_catalog.py`, `/config/hestia/tools/catalog/sync_copies.py` *(STANDBY)*, `/config/hestia/tools/catalog/validate_copies.py` *(STANDBY)*
+- **Optional wrapper**: `/config/bin/prompt-prep` → delegates to tools above
 
 ## Migration Readiness
 
@@ -61,11 +60,10 @@ New infrastructure successfully created at `/config/hestia/library/prompts-new/`
 - ✅ **Compliance**: ADR alignment verified and documented
 
 ### Next Steps
-1. **Content migration**: Copy existing catalog to `migration/incoming/`
-2. **Validation**: Run prep tools on sample data  
-3. **Review**: Manual validation of normalized outputs
-4. **Cutover**: Rename `prompts-new` → `prompts`, backup existing
-5. **Activation**: Update tool paths and begin production use
+1. **Content ingestion**: Add new candidates to `migration/incoming/`
+2. **Validation**: Run prep/validate pipeline  
+3. **Review**: Examine logs under `prompts/logs/` and reports under `prompts/reports/`
+4. **Activation**: Place promptsets in `active/{category}/` after binding validation
 
 ## Benefits Delivered
 
@@ -82,7 +80,7 @@ New infrastructure successfully created at `/config/hestia/library/prompts-new/`
 
 ---
 
-**Status**: Infrastructure creation complete ✅  
-**Ready for**: Content migration and tool validation  
-**Compliance**: Full ADR and PROMPT-LIB-CONSOLIDATION-V2 alignment  
+**Status**: Live ✅  
+**Ready for**: Ongoing ingestion, validation, and activation  
+**Compliance**: ADR and PROMPT-LIB-CONSOLIDATION-V2 aligned  
 **Created**: 2025-10-08
