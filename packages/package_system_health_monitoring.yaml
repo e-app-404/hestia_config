@@ -9,28 +9,23 @@ template:
       - name: "Startup Health Monitor"
         unique_id: "startup_health_monitor"
         state: >-
-          {% set log_file = '/config/home-assistant.log' %}
-          {% if states('sensor.file_last_updated') %}
-            {% set recent_errors = [
-              'Something is blocking Home Assistant',
-              'sync_google() running',
-              'automatic backup could not be uploaded',
-              'SynologyNAS'
+          {% set body = states('sensor.system_log_file_content') | default('', true) %}
+          {% if body not in ['unknown', 'unavailable', ''] %}
+            {% set flags = [
+              'Something is blocking Home Assistant' in body,
+              'sync_google() running' in body,
+              'automatic backup could not be uploaded' in body,
+              'SynologyNAS' in body
             ] %}
-            {% set error_count = recent_errors | select('in', states('sensor.system_log_file_content', '')) | list | length %}
-            {% if error_count > 0 %}
-              degraded
-            {% else %}
-              healthy
-            {% endif %}
+            {{ 'degraded' if (flags | select('equalto', true) | list | length) > 0 else 'healthy' }}
           {% else %}
             unknown
           {% endif %}
         attributes:
           last_check: "{{ now().isoformat() }}"
-          monitored_issues: "{{ 'Google Assistant sync blocking, Synology backup upload failures, Network scanner startup delays, Component initialization timeouts' }}"
-          fixes_applied: "{{ 'Disabled Google Assistant integration, Configured local backup location, Optimized network scanner scan interval, Added startup timeout controls' }}"
-          adr_compliance: "{{ 'ADR-0020: Error canonicalization applied, ADR-0024: Canonical /config paths used, ADR-0014: Memory optimization implemented, ADR-0018: Backup lifecycle management' }}"
+          monitored_issues: "Google Assistant sync blocking, Synology backup upload failures, Network scanner startup delays, Component initialization timeouts"
+          fixes_applied: "Disabled Google Assistant integration, Configured local backup location, Optimized network scanner scan interval, Added startup timeout controls"
+          adr_compliance: "ADR-0020: Error canonicalization applied, ADR-0024: Canonical /config paths used, ADR-0014: Memory optimization implemented, ADR-0018: Backup lifecycle management"
 
       - name: "Backup System Status"
         unique_id: "backup_system_status"  
@@ -75,12 +70,12 @@ automation:
     action:
       - service: system_log.write
         data:
-          message: >
-            ✅ Startup optimization successful - ADR-0020 fixes applied:
-            - Google Assistant disabled (sync_google blocking resolved)
-            - Backup location configured locally (Synology upload disabled)
-            - Network scanner optimized (scan_interval: 600s)
-            - Startup timeout: 60s applied
+           message: >
+             ✅ Startup optimization successful - ADR-0020 fixes applied:
+             - Google Assistant disabled (sync_google blocking resolved)
+             - Backup location configured locally (Synology upload disabled)
+             - Network scanner optimized (scan_interval: 600s)
+             - Startup check window: 300s
           level: info
           logger: "homeassistant.adr_0020_fixes"
     mode: single
@@ -92,10 +87,10 @@ automation:
     trigger:
       - platform: homeassistant
         event: start
-    variables:
-      timeout_secs: 60
-      grace_secs: 10
-      check_after: "{{ timeout_secs + grace_secs }}"
+     variables:
+       timeout_secs: 300
+       grace_secs: 30
+       check_after: "{{ timeout_secs + grace_secs }}"
     action:
       - delay:
           seconds: "{{ check_after }}"
