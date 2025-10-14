@@ -58,7 +58,13 @@ automation:
               'trigger_count': (room_config.get('trigger_count', 0) | int) + 1
             }) }}
           schema_expected: 1
-      - delay: { seconds: "{{ effective_timeout }}" }
+      - wait_for_trigger:
+          - platform: state
+            entity_id: binary_sensor.bedroom_motion_beta
+            to: "off"
+            for:
+              seconds: "{{ effective_timeout }}"
+        continue_on_timeout: false
       - service: light.turn_off
         target: { entity_id: light.adaptive_bedroom_light_group }
         data: { transition: 5 }
@@ -122,7 +128,13 @@ automation:
               'trigger_count': (room_config.get('trigger_count', 0) | int) + 1
             }) }}
           schema_expected: 1
-      - delay: { seconds: "{{ effective_timeout }}" }
+      - wait_for_trigger:
+          - platform: state
+            entity_id: binary_sensor.hallway_upstairs_motion_beta
+            to: "off"
+            for:
+              seconds: "{{ effective_timeout }}"
+        continue_on_timeout: false
       - service: light.turn_off
         target: { entity_id: light.adaptive_upstairs_light_group }
         data: { transition: 5 }
@@ -186,7 +198,13 @@ automation:
               'trigger_count': (room_config.get('trigger_count', 0) | int) + 1
             }) }}
           schema_expected: 1
-      - delay: { seconds: "{{ effective_timeout }}" }
+      - wait_for_trigger:
+          - platform: state
+            entity_id: binary_sensor.hallway_downstairs_motion_beta
+            to: "off"
+            for:
+              seconds: "{{ effective_timeout }}"
+        continue_on_timeout: false
       - service: light.turn_off
         target: { entity_id: light.adaptive_downstairs_light_group }
         data: { transition: 5 }
@@ -250,7 +268,13 @@ automation:
               'trigger_count': (room_config.get('trigger_count', 0) | int) + 1
             }) }}
           schema_expected: 1
-      - delay: { seconds: "{{ effective_timeout }}" }
+      - wait_for_trigger:
+          - platform: state
+            entity_id: binary_sensor.kitchen_motion_beta
+            to: "off"
+            for:
+              seconds: "{{ effective_timeout }}"
+        continue_on_timeout: false
       - service: light.turn_off
         target: { entity_id: light.adaptive_kitchen_light_group }
         data: { transition: 5 }
@@ -314,7 +338,13 @@ automation:
               'trigger_count': (room_config.get('trigger_count', 0) | int) + 1
             }) }}
           schema_expected: 1
-      - delay: { seconds: "{{ effective_timeout }}" }
+      - wait_for_trigger:
+          - platform: state
+            entity_id: binary_sensor.living_room_motion_beta
+            to: "off"
+            for:
+              seconds: "{{ effective_timeout }}"
+        continue_on_timeout: false
       - service: light.turn_off
         target: { entity_id: light.adaptive_living_room_light_group }
         data: { transition: 5 }
@@ -378,7 +408,13 @@ automation:
               'trigger_count': (room_config.get('trigger_count', 0) | int) + 1
             }) }}
           schema_expected: 1
-      - delay: { seconds: "{{ effective_timeout }}" }
+      - wait_for_trigger:
+          - platform: state
+            entity_id: binary_sensor.ensuite_motion_beta
+            to: "off"
+            for:
+              seconds: "{{ effective_timeout }}"
+        continue_on_timeout: false
       - service: light.turn_off
         target: { entity_id: light.adaptive_ensuite_light_group }
         data: { transition: 5 }
