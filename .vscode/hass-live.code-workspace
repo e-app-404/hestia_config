@@ -3,28 +3,14 @@
     {
       "path": "/config",
       "name": "HASS · Home Assistant Live Config ADR-0024 compliant"
-    },
-    {
-      "path": "/Users/evertappels/actions-runner/Projects/HA-BB8/docs/ADR",
-      "name": "HA BB8 Addon ADRs · ReadOnly",
-      "settings": {
-        "files.readonlyFromPermissions": true
-      }
-    },
-    {
-      "path": "/Users/evertappels/actions-runner/Projects/omega_registry/project/docs/ADR", 
-      "name": "HA Omega Registry Addon ADRs · ReadOnly",
-      "settings": {
-        "files.readonlyFromPermissions": true
-      }
     }
   ],
   "settings": {
     "git.enabled": true,
     "git.autorefresh": false,
-    "git.autoRepositoryDetection": "openEditors",
+    "git.autoRepositoryDetection": "subFolders",
+    "git.openRepositoryInParentFolders": "always",
     "git.countBadge": "off",
-    "git.openRepositoryInParentFolders": "never",
     "git.repositoryScanIgnoredFolders": [
       "share",
       "zigbee2mqtt", 
@@ -156,11 +142,11 @@
     "security.workspace.trust.enabled": true,
     // ADR-0024 compliant environment variables
     "terminal.integrated.env.osx": {
-      "PATH": "/opt/homebrew/bin:${env:PATH}",
+      "WORKSPACE_ROOT": "/config",
       "CONFIG_ROOT": "/config",
-      "HA_CANONICAL_ROOT": "/config", 
+      "HA_CANONICAL_ROOT": "/config",
       "CONFIG_MOUNT": "/config",
-      "WORKSPACE_ROOT": "/Users/evertappels/actions-runner/Projects",
+      "PATH": "/opt/homebrew/bin:${env:PATH}",
       "PYTHONPATH": "/config:${env:PYTHONPATH}"
     },
     
@@ -169,13 +155,12 @@
       "path": "/bin/zsh",
       "args": ["-l"],
       "env": {
+        "WORKSPACE_ROOT": "/config",
         "CONFIG_ROOT": "/config",
         "CONFIG_MOUNT": "/config",
-        "WORKSPACE_ROOT": "/Users/evertappels/actions-runner/Projects",
         "PATH": "/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin"
       }
     },
-    
     // Split terminals start in workspace root
     "terminal.integrated.splitCwd": "workspaceRoot",
     
