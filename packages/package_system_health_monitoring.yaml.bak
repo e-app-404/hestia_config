@@ -68,12 +68,12 @@ binary_sensor:
         friendly_name: "Home Assistant Startup Completed"
         unique_id: "ha_startup_completed"
         value_template: >-
-          {{ states('sensor.uptime') != 'unknown' and 
-             (as_timestamp(now()) - as_timestamp(states('sensor.uptime'))) > 300 }}
+          {{ states('sensor.home_assistant_uptime_alpha') != 'unknown' and 
+             (as_timestamp(now()) - as_timestamp(states('sensor.home_assistant_uptime_alpha'))) > 300 }}
         attribute_templates:
           startup_duration: >-
-            {% if states('sensor.uptime') != 'unknown' %}
-              {{ (as_timestamp(now()) - as_timestamp(states('sensor.uptime'))) / 60 | round(1) }} minutes
+            {% if states('sensor.home_assistant_uptime_alpha') != 'unknown' %}
+              {{ (as_timestamp(now()) - as_timestamp(states('sensor.home_assistant_uptime_alpha'))) / 60 | round(1) }} minutes
             {% else %}
               unknown
             {% endif %}

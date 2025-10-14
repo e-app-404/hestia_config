@@ -13,28 +13,31 @@ homeassistant:
     - "/config/hestia/library/docs/governance/system_instruction"
     - "/config/hestia/config/diagnostics"
 
-# 🔧 UI-based automations (editable via GUI)
+# command-line sensors
+command_line: !include_dir_merge_list domain/command_line
+
+# UI-based automations (editable via GUI)
 automation ui: !include automations.yaml
 
-# 🔧 YAML-based automations (in domain folder)
+# YAML-based automations (in domain folder)
 automation manual: !include_dir_merge_list domain/automations/
 
-# 🔧 for callable scripts
+# for callable scripts
 script ui: !include scripts.yaml
 
-# 🔧 for callable scripts
+# for callable scripts
 script manual: !include_dir_merge_named domain/scripts/
 
-# 📥 all standalone sensors
+# all standalone sensors
 sensor: !include_dir_merge_list domain/sensors/
 
-# 📥 all standalone binary sensors
+# all standalone binary sensors
 binary_sensor: !include_dir_merge_list domain/binary_sensors/
 
-# 📥 all `sensor:` & `binary_sensor:` under `template`
+# all `sensor:` & `binary_sensor:` under `template`
 template: !include_dir_merge_list domain/templates/
 
-# 📥 helpers → file-per-domain
+# helpers → file-per-domain
 input_boolean: !include domain/helpers/input_boolean.yaml
 input_select: !include domain/helpers/input_select.yaml
 input_number: !include domain/helpers/input_number.yaml
