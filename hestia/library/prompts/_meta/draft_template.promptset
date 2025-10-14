@@ -17,10 +17,10 @@ promptset:
   # Artifacts & Bindings
   artifacts:
     required:
-      - path: /mnt/data/system_instruction.yaml
+      - path: /config/hestia/library/docs/governance/system_instruction.yaml
     optional:
-      - path: /mnt/data/hestia_reallocation_map.yaml
-      - path: /mnt/data/hades_config_index.yaml
+      - path: /config/hestia/config/index/appdaemon_index.yaml
+      - path: /config/hestia/config/index/manifest.yaml
     # Use glob patterns for extensibility (document precedence)
     # - path: /mnt/data/**/*.yaml
   bindings:
@@ -55,7 +55,7 @@ promptset:
         - confidence_scoring_always
         - phase_context_memory
       bindings:
-        - /mnt/data/system_instruction.yaml
+        - /config/hestia/library/docs/governance/system_instruction.yaml
       prompt: |
         version: 1.0
         Activate governance review mode and load system_instruction.yaml for protocol enforcement.

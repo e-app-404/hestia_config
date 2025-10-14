@@ -467,13 +467,13 @@ operator_workflow:
     running_normalization:
       command: |
         # Dry run first
-        python3 /config/tools/prompt_prep/prep_prompts.py \
+        python3 /config/hestia/tools/prompt_prep/prep_prompts.py \
           --source migration/incoming \
           --output migration/processed \
           --dry-run
         
         # Review output, then run for real
-        python3 /config/tools/prompt_prep/prep_prompts.py \
+        python3 /config/hestia/tools/prompt_prep/prep_prompts.py \
           --source migration/incoming \
           --output migration/processed
       
@@ -481,7 +481,7 @@ operator_workflow:
       command: |
         python3 /config/hestia/tools/prompt_prep/validate_frontmatter.py \
           --prep-dir migration/processed \
-          --report-path hestia/library/prompts/logs/validation_$(date +%Y%m%d_%H%M%S).json
+          --report-path logs/validation_$(date +%Y%m%d_%H%M%S).json
       
     placing_in_catalog:
       command: |
