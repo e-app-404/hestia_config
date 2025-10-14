@@ -44,7 +44,7 @@ storage_specification:
         action_required: manual_review
         
       reports:
-        path: migration/reports
+        path: hestia/library/prompts/logs
         purpose: "Validation reports and processing logs"
         allowed_formats: [".json", ".log", ".md"]
         write_access: automation_tools
@@ -481,7 +481,7 @@ operator_workflow:
       command: |
         python3 /config/tools/prompt_prep/validate_frontmatter.py \
           --prep-dir migration/processed \
-          --report-path migration/reports/validation_$(date +%Y%m%d_%H%M%S).json
+          --report-path hestia/library/prompts/logs/validation_$(date +%Y%m%d_%H%M%S).json
       
     placing_in_catalog:
       command: |

@@ -72,7 +72,7 @@ python3 /config/hestia/tools/prompt_prep/prep_prompts.py \
 ```bash
 python3 /config/hestia/tools/prompt_prep/validate_frontmatter.py \
   --prep-dir /config/hestia/library/prompts/migration/processed \
-  --report-path /config/hestia/library/prompts/migration/reports/validation_report_$(date +%Y%m%d_%H%M%S).json
+  --report-path /config/hestia/library/prompts/logs/validation_report_$(date +%Y%m%d_%H%M%S).json
 ```
 
 ## Quality Gates
