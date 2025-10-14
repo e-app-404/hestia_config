@@ -6,7 +6,6 @@ The HESTIA `.promptset` schema defines **multi-phase, protocol-bound GPT prompt 
 
 All `.promptset` files should conform to the canonical schema and be located under: `/config/hestia/library/prompts/`.
 
-
 ## 🧱 Promptset Structure
 
 A valid `.promptset` contains the following root-level blocks:
@@ -23,7 +22,6 @@ A valid `.promptset` contains the following root-level blocks:
 | `legacy_compatibility` | bool | ✅        | If true, supports older prompt systems |
 | `schema_version`   | string   | ✅        | Must match current validator schema (`1.0`) |
 
-
 ## 📂 Artifact Binding
 
 ```yaml
@@ -34,12 +32,11 @@ artifacts:
   optional:
     - path: .workspace/governance_index.md
     - path: /mnt/data/hades_config_index.yaml
-````
+```
 
 * `required`: Must be available in environment before promptset activation
 * `optional`: Used if present; non-fatal if missing
 * Paths may include globs (`**/*.yaml`) for auto-binding in future releases
-
 
 ## 🔐 Protocol Bindings
 
@@ -52,9 +49,9 @@ bindings:
   persona: strategos
 ```
 
-* Each promptset can bind to **enforced protocols** from `system_instruction.yaml`
-* These drive formatting, scoring, and behavioral compliance
-* Persona logic determines execution behavior, response authority, and context retention
+- Each promptset can bind to **enforced protocols** from `system_instruction.yaml`
+- These drive formatting, scoring, and behavioral compliance
+- Persona logic determines execution behavior, response authority, and context retention
 
 
 ## 🚦 Operational Modes
@@ -89,11 +86,10 @@ phases:
           ...
 ```
 
-* `name`: Internal ID
-* `persona`: Execution agent
-* `instructions`: Prompt body (shown to GPT/Copilot)
-* `outputs`: Artifact names + content emitted per phase
-
+- `name`: Internal ID
+- `persona`: Execution agent
+- `instructions`: Prompt body (shown to GPT/Copilot)
+- `outputs`: Artifact names + content emitted per phase
 
 ## 🧰 Migration Block
 
@@ -123,20 +119,18 @@ documentation:
 
 Place finalized promptsets in:
 
-```
-/config/hestia/library/prompts/active/
-```
+`/config/hestia/library/prompts/migration/incoming/`
 
 They are activated automatically if:
 
-* All `required` artifacts resolve
-* Persona constraints are met
-* Phases follow correct structure
+- All `required` artifacts resolve
+- Persona constraints are met
+- Phases follow correct structure
 
 Validator feedback is issued via:
 
-* `prompt_validation_log.json`
-* Phase-generated `.md` reports
+- `/config/hestia/library/prompts/migration/prompt_validation_log.json` (needs wiring)
+- Phase-generated `.md` reports
 
 
 ## 🧪 Example Use Cases
@@ -150,9 +144,9 @@ Validator feedback is issued via:
 
 ## 📎 Related Schemas
 
-* `promptset_schema.yaml`: Field type definitions + structural rules
-* `system_instruction.yaml`: Protocol registry and persona triggers
-* `persona_registry.yaml`: Role bindings and behavioral constraints
+- `/config/hestia/library/prompts/_meta/draft_template.promptset`: Field type definitions + structural rules
+- `/config/hestia/library/docs/governance/system_instruction.yaml`: Protocol registry and persona triggers
+- `/config/hestia/library/docs/governance/persona_registry.yaml`: Role bindings and behavioral constraints
 
 
 ## 🛡 Governance Note
