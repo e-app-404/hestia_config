@@ -442,7 +442,6 @@ automation:
               'trigger_count': (room_config.get('trigger_count', 0) | int) + 1
             }) }}
           schema_expected: 1
-      - delay: { seconds: "{{ effective_timeout }}" }
       - wait_for_trigger:
         - platform: state
           entity_id: binary_sensor.desk_motion_proxy
