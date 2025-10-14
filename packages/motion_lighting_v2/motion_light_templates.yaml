@@ -395,3 +395,69 @@ template:
             {% endif %}
           room_id: "ensuite"
           source: "room_database_sql"
+
+      - name: "Motion Timeout — Desk (SQL)"
+        unique_id: "motion_timeout_desk_sql_v15"
+        state: >-
+          {% set raw = state_attr('sensor.room_configs_motion_lighting','payload') %}
+          {% if raw %}
+            {% set parsed = raw | from_json %}
+            {% if parsed is mapping and 'desk' in parsed %}
+              {% set cfg = parsed.desk %}
+              {% if cfg is mapping %}
+                {{ cfg.get('timeout', 300) }}
+              {% elif cfg is string %}
+                {% set double_parsed = cfg | from_json %}
+                {{ double_parsed.get('timeout', 300) if double_parsed is mapping else 300 }}
+              {% else %}
+                300
+              {% endif %}
+            {% else %}
+              300
+            {% endif %}
+          {% else %}
+            300
+          {% endif %}
+        attributes:
+          bypass: >-
+            {% set raw = state_attr('sensor.room_configs_motion_lighting','payload') %}
+            {% if raw %}
+              {% set parsed = raw | from_json %}
+              {% if parsed is mapping and 'desk' in parsed %}
+                {% set cfg = parsed.desk %}
+                {% if cfg is mapping %}
+                  {{ cfg.get('bypass', false) }}
+                {% elif cfg is string %}
+                  {% set double_parsed = cfg | from_json %}
+                  {{ double_parsed.get('bypass', false) if double_parsed is mapping else false }}
+                {% else %}
+                  false
+                {% endif %}
+              {% else %}
+                false
+              {% endif %}
+            {% else %}
+              false
+            {% endif %}
+          last_triggered: >-
+            {% set raw = state_attr('sensor.room_configs_motion_lighting','payload') %}
+            {% if raw %}
+              {% set parsed = raw | from_json %}
+              {% if parsed is mapping and 'desk' in parsed %}
+                {% set cfg = parsed.desk %}
+                {% if cfg is mapping %}
+                  {{ cfg.get('last_triggered', '') }}
+                {% elif cfg is string %}
+                  {% set double_parsed = cfg | from_json %}
+                  {{ double_parsed.get('last_triggered', '') if double_parsed is mapping else '' }}
+                {% else %}
+                  ''
+                {% endif %}
+              {% else %}
+                ''
+              {% endif %}
+            {% else %}
+              ''
+            {% endif %}
+          room_id: "desk"
+          source: "room_database_sql"
