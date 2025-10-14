@@ -36,3 +36,5 @@ promptset:
     - Never reference by_tier/ or by_persona/ copies
     - Use absolute paths for reliability
     - Include proper metadata and versioning
+    - Canonical template for new promptsets:
+      /config/hestia/library/prompts/_meta/draft_template.promptset
