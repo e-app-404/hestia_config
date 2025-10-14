@@ -1,0 +1,39 @@
+- id: diagnostics.copilot.config_check.v1
+  persona: strategos
+  label: "Copilot Diagnostics — Agent + IDE Settings"
+  mode: custom_mode
+  protocols:
+    - prompt_optimization_first
+    - confidence_scoring_always
+    - phase_context_memory
+  bindings:
+    - /mnt/data/system_instruction.yaml
+  prompt: |
+    version: 1.0
+    Audit GitHub Copilot's configuration to detect edit blockers.
+
+    Please execute:
+    1. ✅ List Copilot settings
+    ```json
+    {
+      "command": "Open Settings (UI)",
+      "search": "github.copilot"
+    }
+    ```
+
+    2. ✅ Export as JSON (Settings → Export Settings)
+    Then inspect the following:
+
+    - `github.copilot.enable` → true
+    - `github.copilot.inlineSuggest.enable` → true
+    - `github.copilot.editing.enabled` → true
+    - `github.copilot.editing.preview` → false
+    - `workbench.trust.enabled` → true
+
+    If any setting is misaligned, instruct to toggle it via VS Code UI or `settings.json`.
+  phases:
+    - name: config_validation
+      persona: strategos
+      instructions: |
+        Ensure Copilot is not in preview-only or readonly mode.
+        Validate that workspace trust is enabled.
