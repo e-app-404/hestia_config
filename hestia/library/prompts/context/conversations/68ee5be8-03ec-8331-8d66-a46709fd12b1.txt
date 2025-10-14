@@ -2087,7 +2087,7 @@ notes below to be productive quickly and avoid unsafe changes.
 ## Common Error Patterns (ADR-0020)
 
 - **Template abs()**: Use `{{ value | abs }}` not `{{ abs(value) }}`
-- **Shell script paths**: Use `bash -lc '/config/tools/script.sh'` format
+- **Shell script paths**: Use `bash -lc '/config/hestia/tools/script.sh'` format
 - **Missing files**: Use `package_*` prefix for package files
 - **Registry errors**: Ensure `deleted_entities` exists in entity registry
 
