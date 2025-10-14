@@ -352,6 +352,9 @@ protocols:
         - user references Copilot
         - prompt involves code generation or validation via assistant
       enforcement:
+        - All Copilot-triggered responses must include a non-empty payload in code block or diff form
+        - Prohibit empty code fences or placeholder "Replace String" statements without content
+        - Require binary-verifiable confirmation steps (e.g., grep, sha256sum) if file mutation is claimed
         - Must use imperative, code-producing phrasing (e.g., "Write a script to…")
         - Inline sample data required for schema-sensitive tasks
         - Prohibit passive, narrative-style instruction framing
