@@ -148,6 +148,6 @@ promptset:
     - Specify artifact resolution order: required > optional > globs.
 
   documentation:
-    - Reference: /mnt/data/promptset_schema.yaml
+    - Reference: /config/hestia/library/prompts/_meta/promptset_schema.yaml
     - For extended guidance, see /config/hestia/library/docs/architecture/promptset_docs.md
     - Comments are limited to essential guidance; maintain extended docs separately.

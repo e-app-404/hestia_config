@@ -207,5 +207,5 @@ promptset:
     - Future expansion: telemetry integration or policy enforcement tracking.
 
   documentation:
-    - Reference: /mnt/data/promptset_schema.yaml
+    - Reference: /config/hestia/library/prompts/_meta/promptset_schema.yaml
     - For governance guidance, consult /config/hestia/library/docs/architecture/promptset_docs.md

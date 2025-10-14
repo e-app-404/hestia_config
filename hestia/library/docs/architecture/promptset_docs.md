@@ -121,8 +121,8 @@ extensibility:
   - Integrate validation schema from promptset_schema.yaml
 
 documentation:
-  - Reference: /config/hestia/library/docs/promptset_schema.yaml
-  - This file: /config/hestia/library/docs/promptset_docs.md
+  - Reference: /config/hestia/library/prompts/_meta/promptset_schema.yaml
+  - This file: /config/hestia/library/docs/architecture/promptset_docs.md
 ```
 
 ## ✅ Deployment & Validation

@@ -167,6 +167,6 @@ promptset:
     - Add additional output bindings for domain-specific config repositories.
 
   documentation:
-    - Reference: /mnt/data/promptset_schema.yaml
+    - Reference: /config/hestia/library/prompts/_meta/promptset_schema.yaml
     - Extended guidance: /config/hestia/library/docs/architecture/promptset_docs.md
 
