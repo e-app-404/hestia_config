@@ -9,7 +9,7 @@ persona: kybernetes
 status: candidate
 tags: [template, example, documentation]
 version: "1.0"
-source_path: "templates/example_template.md"
+source_path: "development/drafts/example_prompt_template.md"
 author: "HESTIA System"
 related: []
 last_updated: 2025-10-08T00:00:00+01:00
@@ -21,13 +21,12 @@ redaction_log: []
 This is an example of a properly normalized prompt file with ADR-0009 compliant YAML frontmatter.
 
 ## Purpose
-
 Demonstrate the standard structure and metadata format for all prompts in the HESTIA library.
 
 ## Required Elements
 
 ### YAML Frontmatter
-- All 15 required fields per ADR-0009
+- All required metadata fields per ADR-0009
 - Proper tier, domain, and persona classification
 - ISO 8601 timestamp format
 - Semantic tags for discovery
@@ -39,11 +38,8 @@ Demonstrate the standard structure and metadata format for all prompts in the HE
 - Proper markdown formatting
 
 ## Usage
+Create and iterate new prompts here before normalization and catalog placement.
 
-This template can be copied and modified for new prompt development in the `development/drafts/` directory before normalization.
-
-## Compliance Notes
-
-- ✅ ADR-0009: Complete YAML frontmatter
-- ✅ ADR-0015: No symlink dependencies
-- ✅ PROMPT-LIB-CONSOLIDATION-V2: Content-based slug generation
+## References
+- Canonical promptset template: `/config/hestia/library/prompts/_meta/draft_template.promptset`
+- Promptset docs: `/config/hestia/library/docs/architecture/promptset_docs.md`
