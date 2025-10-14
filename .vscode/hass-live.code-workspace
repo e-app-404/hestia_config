@@ -118,7 +118,7 @@
     "files.readonlyInclude": {
       "**/.storage/**": true,
       "**/deps/**": true,
-      "**/.git/**": true,
+      "**/.git/**": false,
       "zigbee2mqtt/database.db": true,
       "zigbee2mqtt/state.json": true,
       "zigbee2mqtt/coordinator_backup.json": true,
