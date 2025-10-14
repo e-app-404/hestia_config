@@ -1,6 +1,8 @@
 ---
 title: Command line
 description: Instructions on how to integrate the command line utility within Home Assistant.
+tags: ["home-assistant", "rest", "restful", "sensor", "binary-sensor", "api", "http", "json"]
+original_date: "2022-01-01"
 ha_category:
   - Binary sensor
   - Cover
@@ -132,13 +134,13 @@ command_line:
         icon:
           description: Defines a template for the icon of the entity.
           required: false
-          type: template          
+          type: template
         unique_id:
           description: An ID that uniquely identifies this cover. Set this to a unique value to allow customization through the UI.
           required: false
           type: string
         value_template:
-          description: if specified, `command_state` will ignore the result code of the command but the template evaluating will indicate the position of the cover. For example, if your `command_state` returns a string "open", using `value_template` as in the example configuration above will allow you to translate that into the valid state `100`.
+          description: If specified, `command_state` will ignore the result code of the command but the template evaluating will indicate the position of the cover. For example, if your `command_state` returns a string "open", using `value_template` as in the example configuration above will allow you to translate that into the valid state `100`.
           required: false
           type: template
         availability:
@@ -180,7 +182,7 @@ command_line:
           required: true
           type: template
         command_timeout:
-          description: Defines number of seconds for command timeout
+          description: Defines number of seconds for command timeout.
           required: false
           type: integer
           default: 15
@@ -233,14 +235,6 @@ command_line:
           required: false
           type: integer
           default: 60
-        device_class:
-          description: Sets the class of the device, changing the device state and icon that is displayed on the UI (see below). It does not set the `unit_of_measurement`.
-          required: false
-          type: device_class
-        state_class:
-          description: "The [state_class](https://developers.home-assistant.io/docs/core/entity/sensor#available-state-classes) of the sensor. This will display the value based on the **Number Format** defined in the user profile."
-          required: false
-          type: string
     switch:
       description: Switch platform.
       required: false
@@ -299,7 +293,7 @@ As **Command line** {% term integration %} is a yaml only integration, turning o
 
 Entering this example in your configuration sets the default logging to info, and for `command_line` to debug. Once done, restart Home Assistant to enable.
 
-{% raw %}
+```yaml
 ```yaml
 # Set logging
 logger:
@@ -307,7 +301,6 @@ logger:
   logs:
     homeassistant.components.command_line: debug
 ```
-{% endraw%}
 
 {% note %}
 
@@ -321,7 +314,6 @@ While `command` is accepting a template for `sensor` and `binary_sensor`, it's o
 
 To use your Command binary sensor in your installation, add the following to your {% term "`configuration.yaml`" %} file:
 
-{% raw %}
 ```yaml
 # Example configuration.yaml entry
 command_line:
@@ -330,7 +322,6 @@ command_line:
   - binary_sensor:
       command: "echo 1"
 ```
-{% endraw%}
 
 ## Cover
 
@@ -338,7 +329,6 @@ A `command_line`cover platform that issues specific commands when it is moved up
 
 To enable a command line cover in your installation, add the following to your {% term "`configuration.yaml`" %} file:
 
-{% raw %}
 ```yaml
 # Example configuration.yaml entry
 command_line:
@@ -348,7 +338,6 @@ command_line:
       command_stop: move_command stop garage
       name: Garage
 ```
-{% endraw%}
 
 ## Notify
 
@@ -356,14 +345,12 @@ The `command_line` platform allows you to use external tools for notifications f
 
 To enable those notifications in your installation, add the following to your {% term "`configuration.yaml`" %} file:
 
-{% raw %}
 ```yaml
 # Example configuration.yaml entry
 command_line:
   - notify:
       command: "espeak -vmb/mb-us1"
 ```
-{% endraw%}
 
 To use notifications, please see the [getting started with automation page](/getting-started/automation/).
 
@@ -371,7 +358,6 @@ To use notifications, please see the [getting started with automation page](/get
 
 To enable it, add the following lines to your {% term "`configuration.yaml`" %}:
 
-{% raw %}
 ```yaml
 # Example configuration.yaml entry
 command_line:
@@ -380,7 +366,6 @@ command_line:
   - sensor:
       command: SENSOR_COMMAND_2
 ```
-{% endraw%}
 
 ## Switch
 
@@ -391,7 +376,6 @@ controlled from the command line, including calling other scripts!
 
 To enable it, add the following lines to your {% term "`configuration.yaml`" %}:
 
-{% raw %}
 ```yaml
 # Example configuration.yaml entry
 command_line:
@@ -400,7 +384,6 @@ command_line:
       command_on: switch_command on kitchen
       command_off: switch_command off kitchen
 ```
-{% endraw%}
 
 {% note %}
 
