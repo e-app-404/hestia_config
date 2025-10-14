@@ -34,32 +34,25 @@ The Command line integration offers functionality that issues specific commands 
 - **`availability` (template, optional, default: true)**: Defines a template to get the available state of the entity
 - **`scan_interval` (integer, optional, default: 60)**: Define time in seconds between each update
 
-cover map (Optional)
-Cover platform.
+### Cover platform.
 
-command_close string Required, default: true
-The action to close the cover.
+- **`cover` (map, optional)**: Cover platform configuration
+- **`command_close` (string, required, default: true)**: The action to close the cover.
 
-command_open string Required, default: true
-The command to open the cover.
+- **`command_open` (string, required, default: true)**: The command to open the cover.
 
-command_state string (Optional)
-If given, this will act as a sensor that runs in the background and updates the state of the cover. If the command returns a 0 the indicates the cover is fully closed, whereas a 100 indicates the cover is fully open.
+- **`command_state` (string, optional)**: If given, this will act as a sensor that runs in the background and updates the state of the cover. If the command returns a 0 the indicates the cover is fully closed, whereas a 100 indicates the cover is fully open.
 
-command_stop string Required, default: true
-The action to stop the cover.
+- **`command_stop` (string, required, default: true)**: The action to stop the cover.
 
-command_timeout integer (Optional, default: 15)
-Defines number of seconds for command timeout.
+- **`command_timeout` (integer, optional, default: 15)**: Defines number of seconds for command timeout.
 
-device_class string (Optional)
-Sets the class of the device, changing the device state and icon that is displayed on the frontend.
+- **`device_class` (string, optional)**: Sets the class of the device, changing the device state and icon that is displayed on the frontend.
 
-name string Required
+- **`name` (string, required)**: The name used to display the cover in the frontend.
 The name used to display the cover in the frontend.
 
-icon template (Optional)
-Defines a template for the icon of the entity.
+- **`icon` (template, optional)**: Defines a template for the icon of the entity.
 
 unique_id string (Optional)
 An ID that uniquely identifies this cover. Set this to a unique value to allow customization through the UI.
