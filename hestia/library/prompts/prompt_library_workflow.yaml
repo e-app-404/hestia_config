@@ -43,10 +43,10 @@ storage_specification:
         read_access: [human_operator, automation_tools]
         action_required: manual_review
         
-      reports:
-        path: hestia/library/prompts/logs
-        purpose: "Validation reports and processing logs"
-        allowed_formats: [".json", ".log", ".md"]
+      logs:
+        path: logs
+        purpose: "Automation logs (machine-readable)"
+        allowed_formats: [".json", ".log"]
         write_access: automation_tools
         read_access: [human_operator, automation_tools]
         retention: "90_days"
@@ -424,21 +424,21 @@ operator_workflow:
       - stage: 5_normalization
         location: migration/processed
         action: "Run prep_prompts.py to normalize"
-        command: "python3 /config/tools/prompt_prep/prep_prompts.py --source migration/incoming --output migration/processed"
+        command: "python3 /config/hestia/tools/prompt_prep/prep_prompts.py --source migration/incoming --output migration/processed"
         validation: automatic
         status: normalized
         
       - stage: 6_validation
         location: migration/processed
         action: "Validate frontmatter compliance"
-        command: "python3 /config/tools/prompt_prep/validate_frontmatter.py --prep-dir migration/processed"
+        command: "python3 /config/hestia/tools/prompt_prep/validate_frontmatter.py --prep-dir migration/processed"
         validation: automatic
         status: validated
         
       - stage: 7_catalog_placement
         location: catalog/by_domain/{domain}
         action: "Place in canonical catalog location"
-        command: "python3 /config/tools/catalog/place_in_catalog.py --processed-dir migration/processed --catalog-root catalog"
+        command: "python3 /config/hestia/tools/catalog/place_in_catalog.py --processed-dir migration/processed --catalog-root catalog"
         validation: automatic
         status: cataloged
         
@@ -479,13 +479,13 @@ operator_workflow:
       
     validating_output:
       command: |
-        python3 /config/tools/prompt_prep/validate_frontmatter.py \
+        python3 /config/hestia/tools/prompt_prep/validate_frontmatter.py \
           --prep-dir migration/processed \
           --report-path hestia/library/prompts/logs/validation_$(date +%Y%m%d_%H%M%S).json
       
     placing_in_catalog:
       command: |
-        python3 /config/tools/catalog/place_in_catalog.py \
+        python3 /config/hestia/tools/catalog/place_in_catalog.py \
           --processed-dir migration/processed \
           --catalog-root catalog
   
@@ -528,15 +528,15 @@ enforcement:
   
   ci_pipeline:
     - check: symlink_detection
-      command: "git ls-files -s /config/hestia/library/prompts | awk '$1==120000{exit 1}'"
+      command: "git ls-files -s -- hestia/library/prompts | awk '$1 ~ /^120/ { exit 1 }'"
       on_failure: "Block merge"
       
     - check: frontmatter_validation
-      command: "python3 /config/tools/prompt_prep/validate_frontmatter.py"
+      command: "python3 /config/hestia/tools/prompt_prep/validate_frontmatter.py"
       on_failure: "Block merge"
       
     - check: binding_validation
-      command: "python3 /config/tools/catalog/validate_bindings.py"
+      command: "python3 /config/hestia/tools/catalog/validate_bindings.py"
       on_failure: "Block merge"
       status: active_when_promptsets_present
   

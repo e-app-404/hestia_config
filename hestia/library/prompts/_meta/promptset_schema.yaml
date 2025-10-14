@@ -1,5 +1,8 @@
 $schema: "http://json-schema.org/draft-07/schema#"
 title: HESTIA Promptset Specification
+date: 2025-10-08
+version: 1.0
+description: Schema for defining HESTIA promptsets with metadata, bindings, and prompts.
 type: object
 required:
   - promptset
