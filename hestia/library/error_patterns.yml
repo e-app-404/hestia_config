@@ -1260,9 +1260,9 @@ patterns:
       - "Validate complex shell commands in terminal first"
       - "Follow consistent escaping patterns across all command sensors"
     shell_escaping_patterns:
-      awk_field_extraction: "awk '\''{print $1}'\''  # Correct escaping for YAML"
+      awk_field_extraction: "Use proper quote nesting for awk commands in YAML"
       simple_commands: "command_name args  # No special escaping needed"
-      complex_pipes: "cmd1 | cmd2 | awk '\''{print $1}'\'' || echo 'fallback'"
+      complex_pipes: "cmd1 | cmd2 | awk_pattern || echo 'fallback'"
     tooling:
       test_command: "sh -lc 'your_command_here' # Test exact sensor execution"
       validator: "Compare terminal output vs sensor state values"
