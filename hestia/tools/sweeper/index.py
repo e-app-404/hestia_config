@@ -61,7 +61,7 @@ class WorkspaceIndexer:
         self.log_rotation_count = self.sweeper_config['log_rotation_count']
         
         # Initialize file registry
-        self.file_registry: List[FileRecord] = []
+        self.file_registry: list[FileRecord] = []
         self.stats = {
             'total_files': 0,
             'legacy_backups': 0,
@@ -71,7 +71,7 @@ class WorkspaceIndexer:
             'scan_duration_seconds': 0
         }
 
-    def _load_config(self) -> Dict:
+    def _load_config(self) -> dict:
         """Load configuration from hestia.toml"""
         try:
             with open(self.config_path, 'r') as f:
@@ -96,10 +96,10 @@ class WorkspaceIndexer:
 
     def discover_workspace_files(self) -> None:
         """Scan workspace using configurable scope patterns"""
-        start_time = datetime.now(timezone.utc)
+        start_time = datetime.now(UTC)
         self.logger.info(f"Starting workspace scan with {len(self.scope_patterns)} patterns")
         
-        discovered_files: Set[str] = set()
+        discovered_files: set[str] = set()
         
         for pattern in self.scope_patterns:
             self.logger.debug(f"Scanning pattern: {pattern}")
@@ -117,7 +117,7 @@ class WorkspaceIndexer:
                     self._classify_file(file_path)
         
         self.stats['total_files'] = len(discovered_files)
-        self.stats['scan_duration_seconds'] = (datetime.now(timezone.utc) - start_time).total_seconds()
+        self.stats['scan_duration_seconds'] = (datetime.now(UTC) - start_time).total_seconds()
         
         self.logger.info(f"Discovered {self.stats['total_files']} files in {self.stats['scan_duration_seconds']:.2f}s")
 
@@ -125,8 +125,8 @@ class WorkspaceIndexer:
         """Classify a discovered file and add to registry"""
         try:
             stat_info = file_path.stat()
-            modified_time = datetime.fromtimestamp(stat_info.st_mtime, timezone.utc)
-            age_days = (datetime.now(timezone.utc) - modified_time).days
+            modified_time = datetime.fromtimestamp(stat_info.st_mtime, UTC)
+            age_days = (datetime.now(UTC) - modified_time).days
             
             # Determine file category and compliance
             file_category, file_type = self._categorize_file(file_path)
@@ -245,7 +245,7 @@ class WorkspaceIndexer:
         vault_path = self.config['paths']['vault']['backups']
         return str(file_path).startswith(vault_path)
 
-    def generate_file_index(self) -> Dict:
+    def generate_file_index(self) -> dict:
         """Generate comprehensive file index with metadata"""
         timestamp = datetime.now(timezone.utc).isoformat()
         
@@ -289,7 +289,7 @@ class WorkspaceIndexer:
         content = json.dumps([asdict(r) for r in self.file_registry], sort_keys=True)
         return hashlib.sha256(content.encode()).hexdigest()[:16]
 
-    def save_index_log(self, output_path: Optional[str] = None) -> str:
+    def save_index_log(self, output_path: str | None = None) -> str:
         """Save file index to structured log file"""
         if not output_path:
             # Use configured log location with date substitution
