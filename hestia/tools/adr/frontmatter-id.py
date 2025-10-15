@@ -26,6 +26,10 @@ ADR_DIR = Path("/config/hestia/library/docs/ADR")
 
 def load_meta_config():
     """Load the canonical meta-structure configuration"""
+    if not toml:
+        print("WARNING: toml module not available, using default validation")
+        return {"fields": {"id": {"pattern": r"^ADR-\d{4}$", "required": True, "type": "string"}}}
+
     try:
         return toml.load(META_CONFIG_PATH)
     except Exception as e:

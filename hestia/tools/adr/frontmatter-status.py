@@ -19,14 +19,14 @@ ADR_DIR = Path("/config/hestia/library/docs/ADR")
 # Canonical status values from meta-structure
 ALLOWED_STATUS_VALUES = [
     "Draft",
-    "Proposed", 
+    "Proposed",
     "Accepted",
     "Implemented",
     "Amended",
     "Deprecated",
     "Superseded",
     "Rejected",
-    "Withdrawn"
+    "Withdrawn",
 ]
 
 # Status aliases for normalization
@@ -45,7 +45,7 @@ def extract_status_from_content(content):
         r"(?i)\*\*status\*\*[:\s]*([^\n]+)",  # Bold status
         r"(?i)status:\s*([^\n]+)",  # Simple status line
     ]
-    
+
     for pattern in patterns:
         match = re.search(pattern, content, re.MULTILINE)
         if match:
@@ -57,15 +57,15 @@ def validate_field(field_value):
     """Validate status field according to meta-structure rules"""
     if not field_value:
         return False, "Status field is missing"
-    
+
     if not isinstance(field_value, str):
         return False, "Status must be a string"
-    
+
     # Check if it's a valid status value (including aliases)
     normalized_status = normalize_field(field_value)
     if normalized_status not in ALLOWED_STATUS_VALUES:
         return False, f"Status must be one of: {', '.join(ALLOWED_STATUS_VALUES)}"
-    
+
     return True, "Valid"
 
 
@@ -73,10 +73,10 @@ def normalize_field(field_value):
     """Normalize status field value"""
     if not isinstance(field_value, str):
         return field_value
-    
+
     # Trim and title case
     normalized = field_value.strip().title()
-    
+
     # Apply aliases
     return STATUS_ALIASES.get(normalized, normalized)
 
@@ -87,17 +87,17 @@ def generate_field(filename, content):
     content_status = extract_status_from_content(content)
     if content_status:
         return normalize_field(content_status)
-    
+
     # Analyze file location for default status
     if "/deprecated/" in str(filename):
         return "Superseded"
-    
+
     # Check content for decision indicators
     if re.search(r"(?i)we\s+(will|shall|decide|adopt)", content):
         return "Accepted"
     elif re.search(r"(?i)(proposed|proposal|should|consider)", content):
         return "Proposed"
-    
+
     # Default to Draft
     return "Draft"
 
@@ -105,38 +105,38 @@ def generate_field(filename, content):
 def process_adr_file(file_path, dry_run=False, backup=False, validate_only=False):
     """Process single ADR file for status field"""
     print(f"Processing STATUS field in {file_path.name}")
-    
+
     try:
         content = file_path.read_text(encoding="utf-8")
     except Exception as e:
         print(f"  ERROR: Could not read file: {e}")
         return False
-    
+
     if not content.startswith("---"):
         print("  SKIP: No YAML frontmatter found")
         return True
-    
+
     try:
         # Split content into frontmatter and body
         parts = content.split("---", 2)
         if len(parts) < 3:
             print("  ERROR: Invalid YAML frontmatter structure")
             return False
-        
+
         yaml_content = parts[1]
         body_content = parts[2]
         frontmatter = yaml.safe_load(yaml_content) or {}
-        
+
     except Exception as e:
         print(f"  ERROR: Could not parse YAML frontmatter: {e}")
         return False
-    
+
     # Check current status value
     current_status = frontmatter.get("status")
-    
+
     # Validate current value
     is_valid, validation_msg = validate_field(current_status)
-    
+
     if current_status:
         print(f"  Current STATUS: {current_status}")
         if is_valid:
@@ -150,32 +150,32 @@ def process_adr_file(file_path, dry_run=False, backup=False, validate_only=False
             print(f"  WARNING: {validation_msg}")
     else:
         print("  MISSING: Status field not found")
-    
+
     # Generate/fix the status
     if current_status and is_valid:
         normalized_status = normalize_field(current_status)
     else:
         normalized_status = generate_field(file_path, body_content)
-    
+
     print(f"  PROPOSED: Set status to '{normalized_status}'")
-    
+
     if validate_only:
         print("  VALIDATE-ONLY: No changes made")
         return not is_valid
-    
+
     if dry_run:
         print("  DRY-RUN: Would update status field")
         return True
-    
+
     # Update the frontmatter
     frontmatter["status"] = normalized_status
-    
+
     # Backup if requested
     if backup:
         backup_path = file_path.with_suffix(".md.bk.status")
         backup_path.write_text(content, encoding="utf-8")
         print(f"  BACKUP: Created {backup_path.name}")
-    
+
     # Write updated content
     try:
         new_yaml = yaml.dump(
@@ -196,27 +196,27 @@ def process_files(file_paths, dry_run, backup, validate_only):
         file_paths = sorted(ADR_DIR.glob("ADR-*.md"))
     else:
         file_paths = [Path(p) for p in file_paths]
-    
+
     if not file_paths:
         print("No ADR files found to process")
         return 0
-    
+
     print(f"Processing {len(file_paths)} files for STATUS field validation/updates")
-    
+
     success_count = 0
     error_count = 0
-    
+
     for file_path in file_paths:
         if process_adr_file(file_path, dry_run, backup, validate_only):
             success_count += 1
         else:
             error_count += 1
-    
+
     print("\nSUMMARY - STATUS Field Processing:")
     print(f"  Success: {success_count}")
     print(f"  Errors: {error_count}")
     print(f"  Total: {len(file_paths)}")
-    
+
     return error_count
 
 
@@ -226,9 +226,9 @@ def main():
     parser.add_argument("--dry-run", action="store_true", help="Show changes without applying")
     parser.add_argument("--backup", action="store_true", help="Create backup before changes")
     parser.add_argument("--validate-only", action="store_true", help="Only validate, no changes")
-    
+
     args = parser.parse_args()
-    
+
     return process_files(args.files, args.dry_run, args.backup, args.validate_only)
 
 

@@ -215,6 +215,95 @@ processor_pattern = "frontmatter-{field}.py"
 backup_directory = "/config/hestia/workspace/archive/adr_backups"
 log_directory = "/config/hestia/workspace/operations/logs/adr_processing"
 
+# Rendering configuration for governance index generation
+[rendering]
+# Output file specifications
+output_files = [
+    { path = "/config/.workspace/governance_index.json", format = "json" },
+    { path = "/config/.workspace/governance_index.md", format = "markdown" }
+]
+
+# Record structure for ADR display in governance index
+[rendering.record]
+# Core fields displayed for each ADR record (in order)
+display_fields = [
+    "id",
+    "title", 
+    "slug",
+    "status",
+    "date",
+    "decision",
+    "related",
+    "supersedes",
+    "last_updated"
+]
+
+# Field display specifications
+[rendering.record.fields]
+id = { required = true, display_name = "ID", max_length = 10 }
+title = { required = true, display_name = "Title", max_length = 80, strip_adr_prefix = true }
+slug = { required = true, display_name = "Slug", max_length = 60 }
+status = { required = true, display_name = "Status", max_length = 20 }
+date = { required = true, display_name = "Date", format = "YYYY-MM-DD" }
+decision = { required = true, display_name = "Decision", max_length = 150, append_ellipsis = true }
+related = { required = false, display_name = "References", format = "array", separator = ", " }
+supersedes = { required = false, display_name = "Supersedes", format = "array", separator = ", " }
+last_updated = { required = true, display_name = "Last Updated", format = "YYYY-MM-DD" }
+
+# JSON-specific rendering configuration
+[rendering.record.json]
+# Additional metadata for JSON output
+include_metadata = [
+    "path", "filename", "tags", "superseded_by", "priority", 
+    "is_deprecated", "last_modified"
+]
+# JSON structure preferences
+sort_keys = false
+indent_spaces = 2
+preserve_field_order = true
+
+# Markdown-specific rendering configuration  
+[rendering.record.md]
+# Grouping and organization for markdown
+status_groups = [
+    { name = "🟢 Active ADRs", statuses = ["Accepted", "Implemented"], icon = "✅" },
+    { name = "🔄 Proposed ADRs", statuses = ["Proposed"], icon = "🔄" },
+    { name = "📝 Draft & Pending ADRs", statuses = ["Draft", "Pending"], icon = "📝" },
+    { name = "🗂️ Superseded ADRs", statuses = ["Superseded", "Deprecated"], icon = "🗂️" }
+]
+
+# Display formatting for markdown
+title_format = "#### {id}: {title_clean}"
+metadata_format = "**Status**: {status} | **Date**: {date} | **Priority**: {priority}"
+decision_format = "**Decision**: {decision_preview}"
+path_format = "**Path**: `{path}`"
+
+# Hot rules configuration
+[rendering.hot_rules]
+# Rules for identifying critical ADRs
+critical_keywords = ["mount", "path", "config", "governance", "file writing"]
+critical_statuses = ["Accepted", "Implemented"]
+max_rules = 5
+default_rules = [
+    "ADR-0024: Single canonical config mount → `/config` only; no dual SMB mounts.",
+    "ADR-0022: Mount management via LaunchAgent; preflight before writes.",
+    "ADR-0018: Workspace lifecycle policies with backup patterns and hygiene.",
+    "Path contracts: prefer container paths over host aliases; avoid `/Volumes/...` in tooling."
+]
+
+# Statistics configuration
+[rendering.statistics]
+# Metrics to calculate and display
+include_counts = ["total_adrs", "by_status", "by_year", "deprecated_count"]
+status_icons = [
+    { status = "Accepted", icon = "✅" },
+    { status = "Implemented", icon = "✅" },
+    { status = "Proposed", icon = "🔄" },
+    { status = "Draft", icon = "📝" },
+    { status = "Pending", icon = "⏳" },
+    { status = "Superseded", icon = "🗂️" }
+]
+
 # Integration points
 [integration]
 governance_index_trigger = true
@@ -222,3 +311,16 @@ knowledge_base_update = true
 git_commit_hook = false  # Future enhancement
 pre_commit_validation = true
 ci_pipeline_integration = false  # Future enhancement
+
+# Tool responsibilities mapping
+[integration.tool_responsibilities]
+frontmatter_update = [
+    "field_validation", "field_normalization", "field_generation", 
+    "content_modification", "orchestration"
+]
+adr_index = [
+    "record_collection", "template_rendering", "output_generation"
+]
+field_processors = [
+    "individual_field_processing", "validation_rules", "normalization_logic"
+]
