@@ -62,9 +62,9 @@ vault_keep_latest_count = 5
 reports_ttl_days = 90
 
 [backup.locations]
-in_place = "same_directory"  # Next to original file
+in_place = "same_directory"
 vault_long_term = "/config/hestia/workspace/archive/vault/backups"
-staging = "/config/.trash"  # Temporary holding before deletion
+staging = "/config/.trash"
 
 [naming]
 backup_canonical = "{basename}.bk.{utc_timestamp}Z"
@@ -79,49 +79,33 @@ date_only = "YYYY-MM-DD"
 batch_date = "YYYYMMDD"
 
 [retention]
-# In-place backups (created during file operations)
 in_place_backups = { ttl_days = 7, auto_prune = true, location = "same_directory" }
-
-# Trash directory cleanup
 trash = { ttl_days = 14, auto_prune = true, location = "/config/.trash" }
-
-# Vault backups (long-term storage)
 vault_backups = { keep_latest = 5, auto_prune = true, location = "/config/hestia/workspace/archive/vault/backups" }
-
-# Generated reports and outputs
 reports = { ttl_days = 90, auto_prune = true, location = "/config/hestia/reports", keep_latest_per_tool = 3 }
-
-# Quarantine (manual review only)
 quarantine = { ttl_days = -1, auto_prune = false, location = "/config/.quarantine" }
-
-# Release artifacts (never auto-pruned)
 artifacts = { ttl_days = -1, auto_prune = false, location = "/config/artifacts", require_manifest = true }
 
-# Automation and sweeper configuration
 [automation]
 sweeper_enabled = true
-sweeper_schedule = "daily"  # cron: 0 2 * * *
+sweeper_schedule = "daily"
 sweeper_script = "/config/hestia/tools/backup_sweeper.py"
 pre_commit_hooks = true
 ci_enforcement = true
 
-# Sweeper behavior
 [automation.sweeper]
 dry_run_default = false
 verbose_logging = true
-error_handling = "continue"  # continue | stop | warn
+error_handling = "continue"
 backup_before_deletion = true
 log_location = "/config/hestia/reports/{date}/sweeper__{timestamp}__cleanup.log"
 
-# Parallel processing
 [automation.sweeper.performance]
 max_workers = 4
 batch_size = 100
 enable_parallel = true
 
-# File validation and guardrails
 [validation]
-# Banned path prefixes (never allow in git)
 banned_prefixes = [
     ".storage/",
     ".cloud/", 
@@ -135,14 +119,12 @@ banned_prefixes = [
     "artifacts/"
 ]
 
-# Required file extensions for different operations
 [validation.extensions]
 backup_files = [".bk.*"]
-archive_blobs = [".tar.gz", ".tgz", ".zip", ".bundle"]  # banned from git tracking
+archive_blobs = [".tar.gz", ".tgz", ".zip", ".bundle"]
 config_files = [".yaml", ".yml", ".toml", ".json"]
 documentation = [".md", ".rst", ".txt"]
 
-# CI/CD enforcement rules
 [validation.ci]
 include_scan_enabled = true
 hard_fail_on_storage = true
@@ -151,29 +133,25 @@ legacy_allowlist_path = "/config/.github/adr0018_allowlist.txt"
 grace_period_mode = true
 enforcement_after = "2025-10-27T00:00:00Z"
 
-# File operation safety
 [safety]
 atomic_writes = true
 backup_before_modify = true
-file_permissions = "0600"  # for sensitive files
+file_permissions = "0600"
 verify_checksums = true
 rollback_on_failure = true
 
-# Reporting and monitoring
 [reporting]
 enable_batch_logging = true
 report_location = "/config/hestia/reports"
 index_file = "/config/hestia/reports/_index.jsonl"
 metadata_required = true
 
-# Report structure
 [reporting.structure]
 base_path = "/config/hestia/reports"
 date_structure = "{YYYY}/{MM}/{DD}"
 batch_structure = "{utc_timestamp}__{tool}__{label}"
-metadata_format = "frontmatter"  # frontmatter | json | yaml
+metadata_format = "frontmatter"
 
-# Required metadata fields
 [reporting.metadata]
 required_fields = [
     "tool", "script", "created_at", "batch_id", 
@@ -181,21 +159,18 @@ required_fields = [
 ]
 timestamp_format = "iso8601_utc"
 
-# Integration points
 [integration]
 git_hooks = true
 pre_commit_validation = true
 ci_cd_integration = true
-notification_system = false  # future enhancement
+notification_system = false
 
-# External system integration
 [integration.external]
 governance_index_trigger = true
 knowledge_base_update = true
-git_commit_hook = false  # future enhancement
-api_endpoints = false  # future enhancement
+git_commit_hook = false
+api_endpoints = false
 
-# ADR system configuration
 [adr]
 library_path = "/config/hestia/library/docs/ADR"
 meta_config = "/config/hestia/config/meta/adr.toml"
@@ -203,14 +178,12 @@ index_output = "/config/.workspace/governance_index.md"
 backup_on_update = true
 validate_frontmatter = true
 
-# ADR processing
 [adr.processing]
 frontmatter_processor = "/config/hestia/tools/adr/frontmatter_update.py"
 index_renderer = "/config/bin/adr-index.py"
 backup_format = "{basename}.bk.{utc_timestamp}Z"
 field_processors_path = "/config/hestia/tools/adr"
 
-# ADR validation rules
 [adr.validation]
 required_frontmatter = [
     "id", "title", "slug", "status", "date", 
@@ -225,21 +198,18 @@ status_transitions = [
     "Draft → Superseded"
 ]
 
-# Security and access control
 [security]
 sensitive_file_permissions = "0600"
 backup_file_permissions = "0600"
 quarantine_permissions = "0700"
 vault_permissions = "0750"
 
-# Sensitive paths (extra protection)
 [security.sensitive_paths]
 vault = "/config/hestia/workspace/archive/vault"
 secrets = "/config/secrets*"
 storage = "/config/.storage"
 quarantine = "/config/.quarantine"
 
-# Performance and resource limits
 [performance]
 max_file_size_mb = 100
 max_batch_size = 1000
@@ -247,35 +217,30 @@ parallel_processing = true
 max_workers = 4
 memory_limit_mb = 512
 
-# Monitoring thresholds
 [performance.thresholds]
 large_file_warning_mb = 10
 batch_size_warning = 500
 processing_time_warning_seconds = 30
 disk_usage_warning_percent = 85
 
-# Error handling and recovery
 [error_handling]
-default_mode = "continue"  # continue | stop | warn
+default_mode = "continue"
 backup_on_error = true
 detailed_logging = true
 rollback_on_critical = true
 
-# Error categories and responses
 [error_handling.categories]
 file_not_found = { mode = "warn", continue = true }
 permission_denied = { mode = "stop", backup = true }
 disk_full = { mode = "stop", cleanup = true }
 corruption_detected = { mode = "quarantine", notify = true }
 
-# Cleanup and maintenance schedules
 [maintenance]
 daily_sweeper = { enabled = true, time = "02:00", timezone = "UTC" }
 weekly_reports = { enabled = true, day = "Sunday", time = "01:00" }
 monthly_vault_audit = { enabled = true, day = 1, time = "00:30" }
 quarterly_index_rebuild = { enabled = true, month = [1, 4, 7, 10], day = 15 }
 
-# Maintenance operations
 [maintenance.operations]
 prune_expired_backups = true
 cleanup_trash = true
@@ -284,7 +249,6 @@ update_indexes = true
 verify_vault_integrity = true
 generate_health_report = true
 
-# Feature flags and experimental features
 [features]
 experimental_parallel_processing = false
 beta_api_endpoints = false
@@ -292,7 +256,6 @@ advanced_deduplication = false
 compressed_backups = false
 encrypted_vault = false
 
-# Development and debugging
 [debug]
 verbose_logging = false
 dry_run_mode = false
@@ -300,31 +263,23 @@ trace_file_operations = false
 preserve_temp_files = false
 debug_output_path = "/config/.trash/debug"
 
-# Environment-specific overrides
 [environment]
 production = true
 ci_cd = false
 development = false
 testing = false
 
-# Environment-specific settings
 [environment.overrides]
-# In CI/CD, disable interactive prompts and enable strict validation
 ci_cd_overrides = { interactive = false, strict_validation = true, fail_fast = true }
-
-# In development, enable more verbose logging and relaxed validation
 dev_overrides = { verbose_logging = true, relaxed_validation = true, dry_run_default = true }
 
-# Version and compatibility
 [compatibility]
 min_python_version = "3.10"
 config_format_version = "1.0"
 adr_format_version = "2025.10"
 last_migration = "2025-10-15"
 
-# Deprecated settings (for migration tracking)
 [deprecated]
-# Settings that are being phased out
 old_backup_formats = ["*.bak", "*.bak-*"]
 legacy_paths = ["/tmp", "~/hass", "/n/ha", "/private/var/ha_real"]
 deprecated_since = "2025-10-15"
