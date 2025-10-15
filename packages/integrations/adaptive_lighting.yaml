@@ -11,7 +11,7 @@ adaptive_lighting:
     take_over_control: true
     initial_transition: 0.3
     transition: 2
-    sleep_brightness: 30
+    sleep_brightness: 50
     sleep_rgb_or_color_temp: rgb_color
     sleep_color_temp: 2200
     sleep_rgb_color: [47, 19, 229]
