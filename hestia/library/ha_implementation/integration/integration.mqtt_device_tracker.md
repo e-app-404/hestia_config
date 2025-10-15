@@ -6,9 +6,7 @@ ha_category:
 ha_iot_class: Configurable
 ha_release: 0.7.3
 ha_domain: mqtt
-related:
-  - docs: hestia/library/ha_implementation/integration/integration.device_tracker.md
-    title: Device Tracker Integration Guide
+source: https://github.com/home-assistant/home-assistant.io/blob/current/source/_integrations/device_tracker.mqtt.markdown
 ---
 
 The `mqtt` device tracker integration allows you to define new device_trackers through [manual YAML configuration](#yaml-configuration) in {% term "`configuration.yaml`" %} and also to automatically discover device_trackers [using the MQTT Discovery protocol](#using-the-discovery-protocol).

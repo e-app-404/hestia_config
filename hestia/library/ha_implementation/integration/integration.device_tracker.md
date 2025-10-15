@@ -7,6 +7,7 @@ ha_release: 0.7
 ha_quality_scale: internal
 ha_domain: device_tracker
 ha_integration_type: entity
+source: https://github.com/home-assistant/home-assistant.io/blob/current/source/_integrations/device_tracker.markdown
 ---
 
 # Home Assistant Device Tracker Integration

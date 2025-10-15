@@ -1248,7 +1248,7 @@ patterns:
         # Correct awk escaping with proper quote handling
         command: >-
           sh -lc '
-            du -sh . | awk '\''{print $1}'\'' || echo "Unknown"  
+            du -sh . 2>/dev/null | awk "{print \\$1}" || echo "Unknown"
           '
         # Result: Returns "1.2G" as expected
     resolution_steps:
