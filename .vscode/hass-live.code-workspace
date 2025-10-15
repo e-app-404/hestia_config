@@ -115,6 +115,7 @@
     },
     "window.title": "HA Live — ${rootName} — ${activeEditorShort}",
     "makefile.configureOnOpen": false,
+    "files.autoSaveWorkspaceFilesOnly": true,
     "files.readonlyInclude": {
       "**/.storage/**": true,
       "**/deps/**": true,
@@ -128,7 +129,9 @@
       "**/*.db-shm": true,
       ".HA_VERSION": true,
       ".uuid": true,
-      "influx.cookie": true
+      "influx.cookie": true,
+      "/System/Volumes/Data/homeassistant/**": true,
+      "/Volumes/HA/**": true
     },
     
     // ===== ADR-0024 TERMINAL CONFIGURATION =====
@@ -138,7 +141,6 @@
     "terminal.integrated.profiles.osx": {
       "zsh": { "path": "/bin/zsh", "args": ["-l"] }
     },
-    "security.workspace.trust.enabled": true,
     // ADR-0024 compliant environment variables
     "terminal.integrated.env.osx": {
       "WORKSPACE_ROOT": "/config",
