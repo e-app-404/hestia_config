@@ -7,7 +7,7 @@ Configuration-driven workspace lifecycle management for backup files with modula
 The Hestia Backup Sweeper System implements ADR-0018 workspace lifecycle policies through a 5-component modular pipeline:
 
 1. **index.py** - Workspace scanner and file discovery
-2. **naming_convention.py** - Naming standards enforcement  
+2. **naming_convention.py** - Naming standards enforcement
 3. **sweeper.py** - File lifecycle management with TTL cleanup
 4. **vault_warden.py** - Vault retention management
 5. **sweeper_report.py** - Comprehensive reporting
@@ -48,7 +48,7 @@ python /config/hestia/tools/sweeper/index.py \
   --config=/config/hestia/config/system/hestia.toml \
   --dry-run
 
-# 2. Naming Standardization  
+# 2. Naming Standardization
 python /config/hestia/tools/sweeper/naming_convention.py \
   --config=/config/hestia/config/system/hestia.toml \
   --index-file=/path/to/index.log \
@@ -202,7 +202,7 @@ Individual components can be used in pre-commit hooks for validation.
 This system implements:
 
 - **ADR-0018**: Workspace lifecycle policies with backup patterns and hygiene
-- **ADR-0024**: Canonical config path (`/config` only, no dual SMB mounts)  
+- **ADR-0024**: Canonical config path (`/config` only, no dual SMB mounts)
 - **ADR-0027**: File writing governance with atomic operations and safety
 
 ## Support

@@ -379,17 +379,18 @@ def main():
         # Perform workspace scan
         indexer.discover_workspace_files()
 
-        # Generate and save results
-        if not args.dry_run:
-            log_path = indexer.save_index_log(args.output)
-            print(f"✅ Index completed: {log_path}")
-        else:
-            index_data = indexer.generate_file_index()
+        # Generate and save results (save log even in dry-run for pipeline communication)
+        log_path = indexer.save_index_log(args.output)
+        index_data = indexer.generate_file_index()
+        
+        if args.dry_run:
             print("🔍 Dry-run results:")
             print(f"  Total files: {index_data['statistics']['total_files']}")
             print(f"  Legacy backups: {index_data['statistics']['legacy_backups']}")
             print(f"  Canonical backups: {index_data['statistics']['canonical_backups']}")
             print(f"  Files requiring action: {index_data['summary']['files_requiring_action']}")
+        else:
+            print(f"✅ Index completed: {log_path}")
 
         return 0
 
