@@ -1135,9 +1135,15 @@ patterns:
       - "Enable YAML schema validation in editor"
       - "Regular configuration validation checks"
     tooling:
-      find_command: "grep -r 'platform:' packages/ --include='*.yaml' | grep -v 'device:'"
-      fix_command: "sed -i 's/platform:/trigger:/g' file.yaml"
+      find_command: "grep -r -A3 -B3 'platform:' packages/ --include='*.yaml' | grep -E '(trigger:|automation:)'"
+      fix_command: "# ONLY change platform: to trigger: within automation trigger sections, NOT sensor platforms"
       validator: "/config/bin/config-validate /config"
+    critical_warning: |
+      ⚠️  DO NOT BLINDLY REPLACE ALL 'platform:' WITH 'trigger:' ⚠️
+      - sensor: platform: snmp     ← CORRECT (sensor platform)
+      - automation trigger: state  ← CORRECT (trigger type)  
+      - trigger: snmp              ← WRONG (not a valid trigger type)
+      Only change 'platform:' to 'trigger:' in automation trigger definitions.
     references:
       - "Home Assistant 2023.4 breaking changes documentation"
       - "ADR-0020: Error canonicalization patterns"

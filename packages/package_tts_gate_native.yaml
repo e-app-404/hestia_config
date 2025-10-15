@@ -12,7 +12,7 @@
 
 script:
   tts_gate_native:
-    alias: "TTS – Gate/Throttle (Native)"
+    alias: "TTS Gate/Throttle (Native)"
     description: "Speak only if this key hasn't exceeded repeats within cooldown. Uses native HA components only."
     mode: parallel
     max: 10
