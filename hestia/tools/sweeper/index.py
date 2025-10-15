@@ -19,8 +19,7 @@ import toml
 import argparse
 import logging
 from pathlib import Path
-from datetime import datetime, timezone
-from typing import Dict, List, Set, Optional, NamedTuple
+from datetime import datetime, UTC
 from dataclasses import dataclass, asdict
 from glob import glob
 import re
