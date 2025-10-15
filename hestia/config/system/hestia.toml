@@ -99,11 +99,34 @@ verbose_logging = true
 error_handling = "continue"
 backup_before_deletion = true
 log_location = "/config/hestia/reports/{date}/sweeper__{timestamp}__cleanup.log"
+log_rotation_count = 30
+workspace_scan_recursive = true
+scope_patterns = [
+    "/config/**/*.bak*",
+    "/config/**/*.bk.*",
+    "/config/**/*backup*",
+    "/config/**/*_restore*"
+]
 
 [automation.sweeper.performance]
 max_workers = 4
 batch_size = 100
 enable_parallel = true
+
+[automation.sweeper.components]
+base_path = "/config/hestia/tools/sweeper"
+index_scanner = "index.py"
+naming_standardizer = "naming_convention.py"
+file_processor = "sweeper.py"
+vault_manager = "vault_warden.py"
+report_generator = "sweeper_report.py"
+
+[automation.sweeper.naming_rules]
+scope_validation_required = true
+before_patterns = ["*.bak", "*.bak-*", "*_backup*", "*_restore*"]
+after_pattern = "{basename}.bk.{utc_timestamp}Z"
+guardrail_regex = "^[a-zA-Z0-9._-]+\\.(bak|backup|restore)"
+recursive_folder_paths = ["/config"]
 
 [validation]
 banned_prefixes = [
