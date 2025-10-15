@@ -48,6 +48,62 @@ This repository (Hestia) is a collection of operator tooling, configuration arti
 - **Reports**: Write to `hestia/workspace/operations/logs/<use-case>/<UTC>__<tool>__<label>.log`
 - **Atomic operations**: Use `os.replace()` for safe file updates
 
+## Workspace Index & Discovery System 📋
+
+### Automated Indices (/.workspace/)
+
+- **governance_index.json** — ADR governance with hot rules and compliance tracking
+- **config_index.json** — Configuration artifact scanning and categorization
+- **knowledge_base_index.json** — Documentation and guide discovery with 79+ documents
+
+### Manual Indices (/hestia/config/index/)
+
+- **manifest.yaml** — Core workspace artifact registry with tools, diagnostics, network configs
+- **appdaemon_index.yaml** — AppDaemon component tracking and endpoint management
+
+### Index Usage Patterns
+
+- **ADR lookup**: Query `governance_index.json` for current hot rules and compliance requirements
+- **Config discovery**: Use `config_index.json` for finding configuration artifacts by category
+- **Documentation search**: Browse `knowledge_base_index.json` by category (guides, automation, integration)
+- **Tool inventory**: Reference `manifest.yaml` tools section for available workspace utilities
+
+### Discovery Strategies
+
+- **Problem-solving**: Start with governance_index for ADR constraints, then config_index for artifacts
+- **Integration work**: Use knowledge_base_index for HA integration docs and guides
+- **Tool development**: Check manifest.yaml for existing tools and avoid duplication
+- **Cross-referencing**: Automated indices complement manual indices for comprehensive coverage
+
+## Reporting & Monitoring Infrastructure 📊
+
+### Report Structure
+
+- **Location**: `/config/hestia/reports/<YYYY-MM-DD>/<tool>__<timestamp>__<type>.log`
+- **Format**: Frontmatter+JSON structured logging with metadata and compliance tracking
+- **Index**: Automatic catalog maintenance in `/config/hestia/reports/_index.jsonl`
+
+### Report Types
+
+- **Execution logs**: Tool runtime with input/output tracking and error details
+- **Health reports**: Workspace health scoring with executive summaries and recommendations
+- **Compliance reports**: ADR compliance validation with governance metadata
+- **Comprehensive reports**: Full pipeline results with metrics and operational insights
+
+### Health Scoring System
+
+- **Workspace health**: Numerical score (0-100) based on file organization and compliance
+- **Success rates**: Tool execution success tracking with failure analysis
+- **Recommendations**: Actionable suggestions for workspace improvement
+- **Trend tracking**: Historical health metrics via report index querying
+
+### Monitoring Patterns
+
+- **Query recent reports**: `cat /config/hestia/reports/_index.jsonl | jq -s 'sort_by(.created_at) | .[-5:]'`
+- **Health monitoring**: Regular backup sweeper dry-runs for workspace health assessment
+- **Compliance tracking**: ADR compliance validation in all tool outputs
+- **Executive summaries**: High-level workspace status in comprehensive reports
+
 ## Code Quality & Formatting Standards
 
 ### YAML/Config Normalization (ADR-0008)
@@ -274,10 +330,13 @@ This repository (Hestia) is a collection of operator tooling, configuration arti
 - **ADR-0008**: Syntax-aware normalization & determinism rules
 - **ADR-0009**: ADR governance and formatting policy
 - **ADR-0014**: Recorder policy, OOM guard & repo guardrails
-- **ADR-0018**: Workspace lifecycle policy
+- **ADR-0018**: Workspace lifecycle policy (backup sweeper compliance)
 - **ADR-0020**: HA configuration error canonicalization
+- **ADR-0022**: Mount keychain credentials and telemetry system
 - **ADR-0024**: Canonical config path (supersedes ADR-0016)
 - **ADR-0026**: Workspace environment operations
+- **ADR-0027**: File writing governance and path enforcement system
+- **ADR-0028**: AppDaemon & Room-DB canonicalization (proposed)
 
 ## AI Assistant Safety Guidelines 🛡️
 
@@ -301,6 +360,15 @@ This repository (Hestia) is a collection of operator tooling, configuration arti
 - **ACK tokens**: Scripts may require environment variables (per ADR governance)
 - Prefer changes that add tests, docs, or non-destructive refactors
 
+### Maintenance Session Tracking
+
+- **Session logs**: `/config/hestia/config/system/maintenance_log.conf`
+- **Structured documentation**: Actions, metrics, knowledge capture, and confidence levels
+- **Historical audit**: Complete trail of major workspace changes and tool creation
+- **Operational context**: Reference previous sessions for understanding system evolution
+- **Tool genealogy**: Track creation and evolution of workspace utilities
+- **Confidence tracking**: Technical, operational, and documentation confidence per session
+
 ## Quick Reference Files 📚
 
 ### Essential Reading
@@ -311,6 +379,22 @@ This repository (Hestia) is a collection of operator tooling, configuration arti
 - [Governance Index](/config/.workspace/governance_index.md) — Current rules and hot ADRs
 - `hestia/library/error_patterns.yml` — Known error patterns and fixes
 
+### Workspace Index Files
+
+- **Automated Indices** (`/.workspace/`):
+  - `governance_index.json` — 25 ADRs with hot rules and compliance tracking
+  - `config_index.json` — Configuration artifact discovery and categorization
+  - `knowledge_base_index.json` — 79 documents across guides, automation, integration
+- **Manual Indices** (`/hestia/config/index/`):
+  - `manifest.yaml` — Core workspace registry (tools, diagnostics, network)
+  - `appdaemon_index.yaml` — AppDaemon components and endpoints (pending enhancement)
+
+### Configuration & System Files
+
+- `/config/hestia/config/system/hestia.toml` — Central configuration with ADR compliance
+- `/config/hestia/config/system/maintenance_log.conf` — Session tracking and operational history
+- `/config/hestia/reports/_index.jsonl` — Report catalog with health scoring and metrics
+
 ### Vault & Secret Management
 
 - `hestia/workspace/archive/vault/templates/` — Secret template patterns
@@ -318,7 +402,26 @@ This repository (Hestia) is a collection of operator tooling, configuration arti
 
 ### Tools & Utilities
 
+#### Core Workspace Tools
+
+- **write-broker** — File writing governance enforcement with atomic operations
+- **backup_sweeper.py** — Automated backup cleanup with 5-component modular pipeline
+- **phantom_entity_cleanup.sh** — Entity registry maintenance and orphan resolution
+- **template_patcher/** — Jinja template validation and automated fixes
+- **adr/** — ADR governance, formatting validation, and compliance checking
+- **workspace_manager.sh** — Complete workspace lifecycle management
+
+#### Specialized Utilities
+
+- **entity_duplicate_cleaner.sh** — Mobile device entity deduplication and takeover
+- **backup_validator.sh** — Backup integrity checking and validation
+- **lint_paths.sh** — Path compliance validation per ADR-0024
+- **fix_path_drift.sh** — Automated path standardization and drift correction
+
+#### Legacy & Development Tools
+
 - `hestia/tools/*` — CLI helpers; test in venv before edits
 - `bin/` — Workspace executables and validation tools
+- `tools/legacy/` — Deprecated tools maintained for reference
 
 If anything here is unclear or you need more detail on a subcomponent, specify the area (e.g. `vault templates`, `jinja patterns`, `workspace structure`, `ADR linter`) and I will provide file-level examples and expanded guidance.
