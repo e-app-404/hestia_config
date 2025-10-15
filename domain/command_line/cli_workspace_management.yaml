@@ -37,7 +37,7 @@
     name: "Hestia Workspace Size"
     command: >-
       sh -lc '
-        cd /config && du -sh . 2>/dev/null | awk "{print $1}" || echo "Unknown"
+        cd /config && du -sh . 2>/dev/null | awk '\''{print $1}'\'' || echo "Unknown"
       '
     scan_interval: 7200
     unique_id: hestia_workspace_total_size
