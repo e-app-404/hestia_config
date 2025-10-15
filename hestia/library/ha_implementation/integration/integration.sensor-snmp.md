@@ -15,6 +15,7 @@ ha_platforms:
   - switch
 ha_integration_type: integration
 ha_quality_scale: legacy
+source: https://github.com/home-assistant/home-assistant.io/blob/current/source/_integrations/snmp.markdown
 ---
 
 # Home Assistant SNMP Integration

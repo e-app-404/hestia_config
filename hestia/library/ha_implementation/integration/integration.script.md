@@ -9,19 +9,16 @@ ha_codeowners:
   - "@home-assistant/core"
 ha_domain: script
 ha_integration_type: system
+source: https://github.com/home-assistant/home-assistant.io/blob/current/source/_integrations/script.markdown
 ---
 
 The script integration allows users to specify a sequence of actions to be executed by Home Assistant. These are run when you turn the script on. The script integration will create an entity for each script and allow them to be controlled via actions.
 
-Scripts can be created via YAML configuration (described below) or via {% my scripts title="the UI" %}.
-
-{% my scripts badge %}
+Scripts can be created via YAML configuration (described below) or via UI.
 
 ## Configuration
 
-The sequence of actions is specified using the [Home Assistant Script Syntax](/getting-started/scripts/).
-
-{% raw %}
+The sequence of actions is specified using the `Home Assistant Script Syntax`.
 
 ```yaml
 # Example configuration.yaml entry
@@ -34,13 +31,10 @@ script:
           message: "Current temperature is {{ states('sensor.temperature') }}"
 ```
 
-{% endraw %}
+> important:
+> Script names (e.g., `message_temperature` in the example above) are not allowed to contain capital letters, or dash (minus) characters, i.e., `-`. The preferred way to separate words for better readability is to use underscore (`_`) characters.
 
-{% important %}
-Script names (e.g., `message_temperature` in the example above) are not allowed to contain capital letters, or dash (minus) characters, i.e., `-`. The preferred way to separate words for better readability is to use underscore (`_`) characters.
-{% endimportant %}
-
-{% configuration %}
+```yaml
 alias:
 description: Friendly name for the script.
 required: false
@@ -118,7 +112,7 @@ sequence:
 description: The sequence of actions to be performed in the script.
 required: true
 type: list
-{% endconfiguration %}
+```
 
 ### Script modes
 
@@ -147,8 +141,6 @@ To configure a script to accept variables using the UI, the variables can be add
 
 Using the variables in the script requires the use of templates:
 
-{% raw %}
-
 ```yaml
 # Example configuration.yaml entry
 script:
@@ -171,11 +163,9 @@ script:
           message: "{{ message }}"
 ```
 
-{% endraw %}
+Aside from the automation editor UI, variables can be passed to scripts within the action data. This can be used either by calling the script directly or the generic `script.turn_on` action. The difference is described in [Waiting for Script to Complete](#waiting-for-script-to-complete). All action data will be made available as variables in templates, even if not specified as fields in the script.
 
-Aside from the automation editor UI, variables can be passed to scripts within the action data. This can be used either by calling the script directly or the generic `script.turn_on` action. The difference is described in [Waiting for Script to Complete](#waiting-for-script-to-complete). All action data will be made available as variables in templates, even if not specified as fields in the script. This example shows how to call the script directly:
-
-{% raw %}
+This example shows how to call the script directly:
 
 ```yaml
 # Example configuration.yaml entry
@@ -192,11 +182,7 @@ automation:
         message: "The light is on!"
 ```
 
-{% endraw %}
-
 This example shows using `script.turn_on` action:
-
-{% raw %}
 
 ```yaml
 # Example configuration.yaml entry
@@ -216,17 +202,11 @@ automation:
           message: "The light is on!"
 ```
 
-{% endraw %}
-
-{% note %}
-
-Script variables that may be used by templates include the following:
-
-- those provided from the configuration as fields
-- those that are passed as data when started from an action,
-- the `this` variable the value of which is a dictionary of the current script's state.
-
-{% endnote %}
+> note: Script variables that may be used by templates include the following:
+>
+> - those provided from the configuration as fields
+> - those that are passed as data when started from an action,
+> - the `this` variable the value of which is a dictionary of the current script's state.
 
 ### Waiting for Script to Complete
 
@@ -263,9 +243,7 @@ script:
 
 {% endraw %}
 
-### Full configuration
-
-{% raw %}
+### Full configuration example
 
 ```yaml
 script:
@@ -310,11 +288,3 @@ script:
         target:
           entity_id: "{{ turn_on_entity }}"
 ```
-
-{% endraw %}
-
-## Video tutorial
-
-This video tutorial explains how scripts work, how to use fields in scripts, and how to use response variables in scripts.
-
-<lite-youtube videoid="vD_xckjQxRk" videotitle="Mastering Scripts in Home Assistant: A Comprehensive Guide" posterquality="maxresdefault"></lite-youtube>
