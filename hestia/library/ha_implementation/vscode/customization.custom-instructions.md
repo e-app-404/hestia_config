@@ -48,9 +48,76 @@ To reference specific context in your instructions, such as files or URLs, you c
 ## Custom instructions examples
 The following examples demonstrate how to use custom instructions. For more community-contributed examples, see the Awesome Copilot repository.
 
-- [Example: General coding guidelines](example.general-coding-guidelines.md)
-- [Example: Language-specific coding guidelines](example.language-specific-coding-guidelines.md)
-- [Example: Documentation writing guidelines](example.documentation-writing-guidelines.md)
+### Example: General coding guidelines
+
+```markdown
+---
+applyTo: "**"
+---
+# Project general coding standards
+
+## Naming Conventions
+- Use PascalCase for component names, interfaces, and type aliases
+- Use camelCase for variables, functions, and methods
+- Prefix private class members with underscore (_)
+- Use ALL_CAPS for constants
+
+## Error Handling
+- Use try/catch blocks for async operations
+- Implement proper error boundaries in React components
+- Always log errors with contextual information
+```
+
+### Example: Language-specific coding guidelines
+
+```markdown
+---
+applyTo: "**/*.ts,**/*.tsx"
+---
+# Project coding standards for TypeScript and React
+
+Apply the [general coding guidelines](./general-coding.instructions.md) to all code.
+
+## TypeScript Guidelines
+- Use TypeScript for all new code
+- Follow functional programming principles where possible
+- Use interfaces for data structures and type definitions
+- Prefer immutable data (const, readonly)
+- Use optional chaining (?.) and nullish coalescing (??) operators
+
+## React Guidelines
+- Use functional components with hooks
+- Follow the React hooks rules (no conditional hooks)
+- Use React.FC type for components with children
+- Keep components small and focused
+- Use CSS modules for component styling
+```
+
+### Example: Documentation writing guidelines
+
+```markdown
+---
+applyTo: "docs/**/*.md"
+---
+# Project documentation writing guidelines
+
+## General Guidelines
+- Write clear and concise documentation.
+- Use consistent terminology and style.
+- Include code examples where applicable.
+
+## Grammar
+* Use present tense verbs (is, open) instead of past tense (was, opened).
+* Write factual statements and direct commands. Avoid hypotheticals like "could" or "would".
+* Use active voice where the subject performs the action.
+* Write in second person (you) to speak directly to readers.
+
+## Markdown Guidelines
+- Use headings to organize content.
+- Use bullet points for lists.
+- Include links to related resources.
+- Use code blocks for code snippets.
+```
 
 ## Use a .github/copilot-instructions.md file
 Define your custom instructions in a single .github/copilot-instructions.md Markdown file in the root of your workspace. VS Code applies the instructions in this file automatically to all chat requests within this workspace.
