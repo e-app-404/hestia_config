@@ -72,6 +72,14 @@ This repository (Hestia) is a collection of operator tooling, configuration arti
 - **Path expansion**: Use `/config` directly, no expansion needed
 - **AI output compliance**: Must use Python ≥ 3.10 syntax; no outdated patterns
 
+### Python Environment Management
+
+- **Workspace venv**: `/config/.venv` (primary development environment)
+- **Package availability**: `toml` package installed for configuration parsing
+- **Environment setup**: Use `configure_python_environment` for workspace initialization
+- **Tool dependencies**: Individual tools specify their interpreter requirements in documentation
+- **Configuration parsing**: All tools can access `hestia.toml` via `import toml`
+
 ### Prompt Library Tooling (ADR-0018, ADR-0026)
 
 - **Two environments by design**:
@@ -80,6 +88,37 @@ This repository (Hestia) is a collection of operator tooling, configuration arti
 - **Wrappers**: Scripts under this repo that call prompt tooling must use `~/hestia_venv/bin/python` (not `/config/.venv`)
 - **Dependencies**: Ensure `pyyaml` et al. are installed in `~/hestia_venv`
 - **Documentation**: Clearly state interpreter per tool in READMEs
+
+## Configuration Management System (hestia.toml) ⚙️
+
+### Centralized Configuration
+
+- **Primary config**: `/config/hestia/config/system/hestia.toml`
+- **Schema versioning**: `config_schema_version` with update tracking
+- **ADR compliance**: Built-in compliance metadata and validation
+- **Tool integration**: All automation tools read from hestia.toml sections
+
+### Configuration Sections
+
+- **[meta]**: Version control, schema tracking, and compliance ADRs
+- **[paths]**: Canonical path definitions and workspace roots
+- **[sweeper]**: Backup sweeper configuration (patterns, retention, reports)
+- **[maintenance]**: Automated maintenance schedules and policies
+- **[compliance]**: ADR tracking and governance validation
+
+### Usage Patterns
+
+- **Tool configuration**: Tools read their config sections via `toml.load()`
+- **Path management**: All tools use `paths.config_root` for consistency
+- **Compliance tracking**: Automated ADR compliance validation in tool outputs
+- **Version control**: Schema evolution with backward compatibility
+
+### Integration Requirements
+
+- **All new tools** must integrate with hestia.toml configuration
+- **Configuration changes** must update schema version
+- **ADR compliance** must be declared in tool metadata
+- **Path references** must use canonical paths from config
 
 ## Security & Vault Management (CRITICAL) 🔒
 
@@ -103,6 +142,35 @@ This repository (Hestia) is a collection of operator tooling, configuration arti
 - Do not remove vault placeholders or alter `vault://` schema
 - All secret paths and patterns must remain exactly as defined by the codebase
 
+### File Writing Governance (ADR-0027) 🔒
+
+#### Write-Broker System
+
+- **Governed operations**: Use `/config/bin/write-broker` for all file modifications
+- **Atomic operations**: All file changes must use atomic replace patterns (`os.replace()`)
+- **Backup-before-modify**: Required for all configuration changes
+- **Path enforcement**: Three-layer governance (validation, atomic ops, audit trails)
+
+#### Usage Patterns
+
+- **Replace operation**: `write-broker replace --file <path> --search <old> --replace <new> --commit --msg <message>`
+- **Validation mode**: Add `--dry-run` flag to preview changes
+- **Rollback support**: All changes create automatic backups for restoration
+- **Audit trail**: Complete operation logging with commit messages and timestamps
+
+#### Governance Layers
+
+1. **Validation Layer**: Pre-flight path and content validation
+2. **Atomic Operations**: Guaranteed atomic file modifications
+3. **Audit Trail**: Complete operation history with rollback capabilities
+
+#### Integration Requirements
+
+- **All automation tools** must use write-broker for file modifications
+- **Manual edits** should follow atomic operation patterns
+- **Backup verification** required before destructive operations
+- **Path compliance** with ADR-0024 canonical path standards
+
 ## Development Workflows & CLI Tools
 
 ### Python CLIs & Entrypoints
@@ -124,6 +192,46 @@ This repository (Hestia) is a collection of operator tooling, configuration arti
 - **Shell script paths**: Use `bash -lc '/config/tools/script.sh'` format
 - **Missing files**: Use `package_*` prefix for package files
 - **Registry errors**: Ensure `deleted_entities` exists in entity registry
+
+## Backup Sweeper Automation System (ADR-0018, ADR-0024, ADR-0027) 🧹
+
+### Architecture Overview
+
+- **Main orchestrator**: `/config/hestia/tools/backup_sweeper.py`
+- **5-component modular pipeline**: Sequential execution with shared log communication
+- **Configuration-driven**: All parameters from `/config/hestia/config/system/hestia.toml`
+- **Safety-first**: Atomic operations, dry-run validation, backup-before-modify
+
+### Component Pipeline
+
+1. **index.py** — Workspace scanner with pattern-based file discovery and classification
+2. **naming_convention.py** — Naming standards enforcement with regex guardrails
+3. **sweeper.py** — TTL-based file lifecycle management with configurable retention
+4. **vault_warden.py** — Vault retention manager with basename grouping and keep-N-latest
+5. **sweeper_report.py** — Comprehensive reporting with health scoring and ADR compliance
+
+### Usage Patterns
+
+- **Preview operations**: `python /config/hestia/tools/backup_sweeper.py --dry-run`
+- **Execute cleanup**: `python /config/hestia/tools/backup_sweeper.py`
+- **Validate setup**: `python /config/hestia/tools/backup_sweeper.py --validate-only`
+- **Component help**: `python /config/hestia/tools/sweeper/<component>.py --help`
+
+### Key Features
+
+- **Pipeline orchestration**: Subprocess management with graceful failure recovery
+- **Structured logging**: Frontmatter+JSON format with batch tracking and compliance metadata
+- **Health scoring**: Workspace health metrics with executive summaries and recommendations
+- **Report indexing**: Automatic catalog maintenance in `/config/hestia/reports/_index.jsonl`
+- **Configuration validation**: Pre-flight checks for all components and settings
+
+### Safety Guardrails
+
+- **Atomic file operations**: All modifications use atomic replace patterns
+- **Backup-before-modify**: Creates backups before any file changes
+- **Dry-run validation**: Complete preview mode without file modifications
+- **Component isolation**: Independent component execution with isolated error handling
+- **Rollback support**: All operations reversible via backup restoration
 
 ## Home Assistant Integration Patterns
 
