@@ -1020,6 +1020,85 @@ automation:
     action:
       - action: script.plex_route_and_open_app
 
+  - alias: "Bedroom HiFi Light — Universal Media Sync"
+    id: bedroom_hifi_light_universal_v1
+    mode: restart
+    trigger:
+      - platform: state
+        entity_id: media_player.bedroom_universal
+      - platform: state
+        entity_id: media_player.bedroom_universal
+        attribute: active_child
+      - platform: state
+        entity_id:
+          - binary_sensor.bedroom_presence_beta
+          - binary_sensor.bedroom_occupancy_beta
+
+    variables:
+      univ_state: "{{ states('media_player.bedroom_universal') }}"
+      active_child: "{{ state_attr('media_player.bedroom_universal', 'active_child') or '' }}"
+      presence_on: >-
+        {{ is_state('binary_sensor.bedroom_presence_beta','on')
+           or is_state('binary_sensor.bedroom_motion_beta','on') }}
+      src: >-
+        {% set a = active_child %}
+        {% if 'playstation_4' in a %}ps
+        {% elif 'apple_tv_alpha_plex' in a %}atv_plex
+        {% elif 'apple_tv_alpha' in a %}atv
+        {% elif 'bedroom_tv_alpha' in a %}tv
+        {% else %}other{% endif %}
+
+    action:
+      - choose:
+          - conditions:
+              - condition: template
+                value_template: >
+                  {{ univ_state in ['off','standby','unknown','unavailable'] or not presence_on }}
+            sequence:
+              - service: light.turn_off
+                target:
+                  entity_id: light.group_hifi_area_lights
+                data:
+                  transition: 0.6
+
+          - conditions:
+              - condition: template
+                value_template: "{{ src == 'ps' }}"
+            sequence:
+              - service: light.turn_on
+                target: { entity_id: light.group_hifi_area_lights }
+                data: { hs_color: [220, 100], brightness_pct: 60, transition: 0.3 }
+
+          - conditions:
+              - condition: template
+                value_template: "{{ src == 'atv_plex' }}"
+            sequence:
+              - service: light.turn_on
+                target: { entity_id: light.group_hifi_area_lights }
+                data: { hs_color: [280, 100], brightness_pct: 55, transition: 0.3 }
+
+          - conditions:
+              - condition: template
+                value_template: "{{ src == 'atv' }}"
+            sequence:
+              - service: light.turn_on
+                target: { entity_id: light.group_hifi_area_lights }
+                data: { hs_color: [180, 95], brightness_pct: 60, transition: 0.3 }
+
+          - conditions:
+              - condition: template
+                value_template: "{{ src == 'tv' }}"
+            sequence:
+              - service: light.turn_on
+                target: { entity_id: light.group_hifi_area_lights }
+                data: { hs_color: [120, 100], brightness_pct: 50, transition: 0.3 }
+
+        default:
+          - service: light.turn_on
+            target: { entity_id: light.group_hifi_area_lights }
+            data: { hs_color: [120, 90], brightness_pct: 50, transition: 0.3 }
+
+
 # ═══ INTEGRATION: UNIVERSAL MEDIA PLAYER ═══
 media_player:
   - platform: universal
