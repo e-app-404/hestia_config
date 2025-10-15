@@ -32,6 +32,7 @@
     "python.analysis.typeCheckingMode": "basic",
     "ruff.importStrategy": "useBundled",
     "ruff.configuration": "pyproject.toml",
+    "ruff.lineLength": 100,
     "files.exclude": {
       "**/__pycache__": true,
       "**/*.db": true,
@@ -113,6 +114,9 @@
       "source.organizeImports.ruff": "explicit",
       "source.fixAll.ruff": "explicit"
     },
+    
+    // ADR-0024: Enable Copilot instruction files for workspace
+    "github.copilot.chat.codeGeneration.useInstructionFiles": true,
     "window.title": "HA Live — ${rootName} — ${activeEditorShort}",
     "makefile.configureOnOpen": false,
     "files.autoSaveWorkspaceFilesOnly": true,
