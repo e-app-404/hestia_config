@@ -7,31 +7,10 @@
 # ══════════════════════════════════════════════════════════════════
 
 homeassistant:
-  customize:
-    sensor.gs724t_sys_name:
+  customize_glob:
+    sensor.gs724t_*:
       icon: mdi:ethernet
-    sensor.gs724t_sys_uptime_seconds:
-      icon: mdi:ethernet
-    sensor.gs724t_if_count:
-      icon: mdi:ethernet
-    sensor.gs724t_port1_oper_status_raw:
-      icon: mdi:ethernet
-    sensor.gs724t_port2_oper_status_raw:
-      icon: mdi:ethernet
-    sensor.gs724t_port1_in_octets:
-      icon: mdi:ethernet
-    sensor.gs724t_port1_out_octets:
-      icon: mdi:ethernet
-    sensor.gs724t_ifname_1:
-      icon: mdi:ethernet
-    sensor.gs724t_ifname_2:
-      icon: mdi:ethernet
-    sensor.gs724t_port1_in_Bps:
-      icon: mdi:ethernet
-    sensor.gs724t_port1_out_Bps:
-      icon: mdi:ethernet
-    sensor.gs724t_sys_name_v3:
-      icon: mdi:ethernet
+# TODO: verify correct yaml syntax for customze
 
 sensor:
   - platform: snmp
@@ -45,7 +24,7 @@ sensor:
   - platform: snmp
     name: gs724t_sys_uptime_seconds
     host: !secret snmp_netgear_host
-    community: !secret snmp_netgear_v2c_rgio
+    community: !secret snmp_netgear_v2c_ro
     version: "2c"
     baseoid: 1.3.6.1.2.1.1.3.0 # sysUpTime.0 (hundredths of a second)
     value_template: "{{ (value | int(0) / 100) | int }}"
