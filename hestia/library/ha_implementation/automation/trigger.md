@@ -1,39 +1,10 @@
-Triggers are what starts the processing of an {% term automation %} rule. When _any_ of the automation's triggers becomes true (trigger _fires_), Home Assistant will validate the [conditions](/docs/automation/condition/), if any, and call the [action](/docs/automation/action/).
-
 ---
 title: "Automation Trigger"
 description: "All the different ways how automations can be triggered."
 related:
   - docs: /voice_control/custom_sentences/#adding-a-custom-sentence-to-trigger-an-automation
     title: Adding a custom sentence to trigger an automation
-
-An {% term automation %} can be triggered by an {% term event %}, a certain {% term entity %} {% term state %}, at a given time, and more. These can be specified directly or more flexible via templates. It is also possible to specify multiple triggers for one automation.
-
-- [Trigger ID](#trigger-id)
-- [Trigger variables](#trigger-variables)
-- [Event trigger](#event-trigger)
-- [Home Assistant trigger](#home-assistant-trigger)
-- [MQTT trigger](#mqtt-trigger)
-- [Numeric state trigger](#numeric-state-trigger)
-- [State trigger](#state-trigger)
-
 ---
-
-title: "Automation Trigger"
-authors: "Hestia / Home Assistant docs"
-source: "Local Hestia copy"
-slug: "automation-trigger"
-tags: ["home-assistant", "automation"]
-original_date: "2025-10-15"
-last_updated: "2025-10-15"
-url: ""
-related:
-
-- docs: /voice_control/custom_sentences/#adding-a-custom-sentence-to-trigger-an-automation
-
----
-
-# Automation Trigger
 
 Triggers are what starts the processing of an {% term automation %} rule. When _any_ of the automation's triggers becomes true (trigger _fires_), Home Assistant will validate the [conditions](/docs/automation/condition/), if any, and call the [action](/docs/automation/action/).
 
@@ -76,6 +47,17 @@ This video tutorial explains how trigger IDs work.
 ```yaml
 automation:
   triggers:
+    - trigger: event
+      event_type: "MY_CUSTOM_EVENT"
+      id: "custom_event"
+    - trigger: mqtt
+      topic: "living_room/switch/ac"
+      id: "ac_on"
+    - trigger: state  # This trigger will be assigned id="2"
+      entity_id:
+        - device_tracker.paulus
+        - device_tracker.anne_therese
+      to: "home"
 ```
 
 ## Trigger variables
@@ -86,10 +68,22 @@ The first variant allows you to define variables that will be set when the trigg
 
 The second variant is setting variables that are available when attaching a trigger when the trigger can contain templated values. These are defined using the `trigger_variables` key at an automation level. These variables can only contain [limited templates](/docs/configuration/templating/#limited-templates). The triggers will not re-apply if the value of the template changes. Trigger variables are a feature meant to support using blueprint inputs in triggers.
 
+{% raw %}
+
 ```yaml
 automation:
   trigger_variables:
+    my_event: example_event
+  triggers:
+    - trigger: event
+      # Able to use `trigger_variables`
+      event_type: "{{ my_event }}"
+      # These variables are evaluated and set when this trigger is triggered
+      variables:
+        name: "{{ trigger.event.data.name }}"
 ```
+
+{% endraw %}
 
 ## Event trigger
 
@@ -100,6 +94,16 @@ Events can be fired by integrations or via the API. There is no limitation to th
 ```yaml
 automation:
   triggers:
+    - trigger: event
+      event_type: "MY_CUSTOM_EVENT"
+      # optional
+      event_data:
+        mood: happy
+      context:
+        user_id:
+        # any of these will match
+          - "MY_USER_ID"
+          - "ANOTHER_USER_ID"
 ```
 
 It is also possible to listen for multiple events at once. This is useful for
@@ -108,39 +112,30 @@ event that contain no, or similar, data and contexts.
 ```yaml
 automation:
   triggers:
+    - trigger: event
+      event_type:
+        - automation_reloaded
+        - scene_reloaded
 ```
 
 It's also possible to use [limited templates](/docs/configuration/templating/#limited-templates) in the `event_type`, `event_data` and `context` options.
 
-> **Important**: The `event_type`, `event_data` and `context` templates are only evaluated when setting up the trigger, they will not be reevaluated for every event.
+{% important %}
+The `event_type`, `event_data` and `context` templates are only evaluated when setting up the trigger, they will not be reevaluated for every event.
+{% endimportant %}
+
+{% raw %}
 
 ```yaml
 automation:
   trigger_variables:
-```
-
-## Home Assistant trigger
-
-Fires when Home Assistant starts up or shuts down.
-
-```yaml
-automation:
+    sub_event: ABC
+    node: ac
+    value: on
   triggers:
+    - trigger: event
+      event_type: "{{ 'MY_CUSTOM_EVENT_' ~ sub_event }}"
 ```
-
-> **Note**: Automations triggered by the `shutdown` event have 20 seconds to run, after which they are stopped to continue with the shutdown.
-
-## MQTT trigger
-
-/_ Lines 160-1240 omitted _/
-trigger*variables:
-sub_event: ABC
-node: ac
-value: on
-triggers: - trigger: event
-event_type: "{{ 'MY_CUSTOM_EVENT*' ~ sub_event }}"
-
-````
 
 {% endraw %}
 
@@ -154,7 +149,7 @@ automation:
     - trigger: homeassistant
       # Event can also be 'shutdown'
       event: start
-````
+```
 
 {% note %}
 Automations triggered by the `shutdown` event have 20 seconds to run, after which they are stopped to continue with the shutdown.
@@ -369,7 +364,7 @@ In general, the state trigger fires when the state of any of given entities **ch
 - If only the `entity_id` is given, the trigger fires for **all** state changes, even if only a state attribute changed.
 - If at least one of `from`, `to`, `not_from`, or `not_to` are given, the trigger fires on any matching state change, but not if only an attribute changed.
   - To trigger on all state changes, but not on changed attributes, set at least one of `from`, `to`, `not_from`, or `not_to` to `null`.
-- Use of the `for` option doesn't survive a Home Assistant restart or the reload of automations.
+- Use of the `for` option doesn't survive a Home Assistant restart or the reload of automations. 
   - During restart or reload, automations that were awaiting `for` the trigger to pass, are reset.
   - If for your use case this is undesired, you could consider using the automation to set an [`input_datetime`](/integrations/input_datetime) to the desired time and then use that [`input_datetime`](/integrations/input_datetime) as an automation trigger to perform the desired actions at the set time.
 
@@ -422,7 +417,7 @@ automation:
       to:
 ```
 
-If you want to trigger on all state changes _except_ specific ones, use `not_from` or `not_to` The `not_from` and `not_to` options are the counter parts of `from` and `to`. They can be used to trigger on state changes that are **not** the specified state.
+If you want to trigger on all state changes *except* specific ones, use `not_from` or `not_to`  The `not_from` and `not_to` options are the counter parts of `from` and `to`. They can be used to trigger on state changes that are **not** the specified state.
 
 ```yaml
 automation:
@@ -551,7 +546,7 @@ Use quotes around your values for `from` and `to` to avoid the YAML parser from 
 
 Fires when the sun is setting or rising, i.e., when the sun elevation reaches 0°.
 
-An optional time offset can be given to have it fire a set time before or after the sun event (e.g., 45 minutes before sunset). A negative value makes it fire before sunrise or sunset, a positive value afterwards. The offset needs to be specified in number of seconds, or in a hh:mm:ss format.
+An optional time offset can be given to have it fire a set time before or after the sun event (e.g.,  45 minutes before sunset). A negative value makes it fire before sunrise or sunset, a positive value afterwards. The offset needs to be specified in number of seconds, or in a hh:mm:ss format.
 
 {% tip %}
 Since the duration of twilight is different throughout the year, it is recommended to use [sun elevation triggers][sun_elevation_trigger] instead of `sunset` or `sunrise` with a time offset to trigger automations during dusk or dawn.
@@ -700,9 +695,9 @@ A string that represents a time to fire on each day. Can be specified as `HH:MM`
 ```yaml
 automation:
   - triggers:
-      - trigger: time
-        # 24-hour time format. This trigger will fire at 3:32 PM
-        at: "15:32:00"
+    - trigger: time
+      # 24-hour time format. This trigger will fire at 3:32 PM
+      at: "15:32:00"
 ```
 
 ### Input datetime
@@ -809,7 +804,7 @@ blueprint:
   input:
     alarm:
       name: Alarm
-      selector:
+      selector: 
         text:
     hour:
       name: Hour
@@ -824,8 +819,8 @@ blueprint:
   trigger:
     - platform: time
       at:
-        - "sensor.{{ my_alarm | slugify }}_time"
-        - "{{ my_hour }}:30:00"
+      - "sensor.{{ my_alarm | slugify }}_time"
+      - "{{ my_hour }}:30:00"
 ```
 
 {% endraw %}
@@ -835,7 +830,6 @@ blueprint:
 Time triggers can be filtered to fire only on specific days of the week using the `weekday` option. This allows you to create automations that only run on certain days, such as weekdays or weekends.
 
 The `weekday` option accepts:
-
 - A single weekday as a string: `"mon"`, `"tue"`, `"wed"`, `"thu"`, `"fri"`, `"sat"`, `"sun"`
 - A list of weekdays using the expanded format
 
@@ -1197,7 +1191,7 @@ blueprint:
   input:
     input_boolean:
       name: Boolean
-      selector:
+      selector: 
         boolean:
     input_number:
       name: Number

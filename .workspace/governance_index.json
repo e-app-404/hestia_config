@@ -217,6 +217,20 @@
     "decision": ""
   },
   {
+    "path": "/config/hestia/library/docs/ADR/ADR-0027-file-writing-governance.md",
+    "title": "ADR-0027: File Writing Governance and Path Enforcement System",
+    "status": "Accepted",
+    "date": "2025-10-12",
+    "tags": [
+      "ADR-0008",
+      "ADR-0009",
+      "ADR-0018",
+      "ADR-0024",
+      "ADR-0027"
+    ],
+    "decision": "Implement a comprehensive three-layer file writing governance system:"
+  },
+  {
     "path": "/config/hestia/library/docs/ADR/ADR-0019-remote-topology-mirror-policy.md",
     "title": "on NAS host, in bare repo; run as repo owner (e.g., gituser)",
     "status": "Accepted",
@@ -316,6 +330,22 @@
     "decision": "When the primary Home Assistant config mount (the operator's `root config` mount) is unavailable, tooling and scripts MUST write fallback logs to the operator's local directory: `/Users/evertappels/Projects/HomeAssistant/logs` This location is to be used only as a last-resort fallback when the canonical logging or config locations are unreachable."
   },
   {
+    "path": "/config/hestia/library/docs/ADR/ADR-0028-appdaemon-room-db-sql-migration.md",
+    "title": "ADR-0028: AppDaemon & Room-DB Canonicalization (Endpoints, Entities, SQL Migration)",
+    "status": "Proposed",
+    "date": "2025-10-12",
+    "tags": [
+      "ADR-0008",
+      "ADR-0009",
+      "ADR-0018",
+      "ADR-0019",
+      "ADR-0024",
+      "ADR-0027",
+      "ADR-0028"
+    ],
+    "decision": ""
+  },
+  {
     "path": "/config/hestia/library/docs/ADR/architecture_POA.md",
     "title": "Architecture POA for Hestia Metadata Schema",
     "status": "",
@@ -342,9 +372,11 @@
       "ADR-0014",
       "ADR-0015",
       "ADR-0016",
+      "ADR-0018",
       "ADR-0019",
       "ADR-0022",
-      "ADR-0024"
+      "ADR-0024",
+      "ADR-0027"
     ],
     "decision": "* Keep **`homeassistant.local` \u2192 `/config`** as the **only** writable config mount. * **Block** automatic mounts of the Tailscale host to `/Volumes/HA/{config,share,addons}` in normal operation. * Allow **manual, temporary** mounts of `share`/`addons` for ad-hoc use; tools/automations **must not** reference them. * Enforce a `/config` **preflight** before any write. * Editors/agents/workflows **must reference `/config` only** (workspace updated). * Keychain hygiene: keep creds for `homeassistant.local`; remove `homeassistant.reverse-beta.ts.net` to prevent auto-remounts."
   }

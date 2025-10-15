@@ -1,17 +1,7 @@
-title: "Understanding automations"
 ---
 title: "Understanding automations"
-authors: "Hestia / Home Assistant docs"
-source: "Local Hestia copy"
-slug: "automation-basics"
-tags: ["home-assistant", "automation"]
-original_date: "2025-10-15"
-last_updated: "2025-10-15"
-url: ""
-
+description: "A breakdown of what an automation consists of."
 ---
-
-# Understanding automations
 
 All {% term automations %} are made up of a {% term trigger %} and an {% term action %}. Optionally combined with a {% term condition %}. Take for example the automation:
 
@@ -31,7 +21,8 @@ The second part is the [condition](/docs/automation/condition/). Conditions are 
 
 The third part is the [action](/docs/automation/action/), which will be performed when an automation is triggered and all conditions are met. For example, it can turn a light on, set the temperature on your thermostat or activate a scene.
 
-> **Note**: The difference between a trigger and a condition can be confusing as they are very similar.
+{% note %}
+The difference between a trigger and a condition can be confusing as they are very similar.
 
 Triggers require an event to happen for the conditions to be evaluated using current state information.
 
@@ -39,22 +30,24 @@ Event: Arrive home \
 Condition: After Sunset? \
 Action: Turn lights on
 
+{% endnote %}
+
 ## Exploring the internal state
 
 Automations interact directly with the internal state of Home Assistant, so you'll need to familiarize yourself with it. Home Assistant exposes its current state via the developer tools. These are available at the bottom of the sidebar in the frontend. **{% my developer_states title="Developer Tools > States" %}** will show all currently available states. An entity can be anything. A light, a switch, a person and even the sun. A state consists of the following parts:
 
-| Name       | Description                                            | Example             |
-| ---------- | ------------------------------------------------------ | ------------------- |
-| Entity ID  | Unique identifier for the entity.                      | `light.living_room` |
-| State      | The current state of the device.                       | `off`               |
-| Attributes | Extra data related to the device and/or current state. | `brightness`        |
+| Name | Description | Example |
+| ---- | ----- | ---- |
+| Entity ID | Unique identifier for the entity. | `light.living_room`
+| State | The current state of the device. | `off`
+| Attributes | Extra data related to the device and/or current state. | `brightness`
 
 State changes can be used as the source of triggers and the current state can be used in conditions.
 
-To explore the available _actions_ open the {% my developer_services title="**Developer tools** > **Actions**" %}. _Actions_ allow changing anything. For example, turn on a light, run a script, or enable a scene. Each _action_ has a domain and a name. For example, the _action_ {% my developer_call_service service="light.turn_on" %} is capable of turning on any light in your system. Parameters can be passed to an _action_ to indicate, for example, which device to activate or which color to use.
+To explore the available *actions* open the {% my developer_services title="**Developer tools** > **Actions**" %}. *Actions* allow changing anything. For example, turn on a light, run a script, or enable a scene. Each *action* has a domain and a name. For example, the *action* {% my developer_call_service service="light.turn_on" %} is capable of turning on any light in your system. Parameters can be passed to an *action* to indicate, for example, which device to activate or which color to use.
 
 ## Creating automations
 
 Now that you've got a sneak peek of what is possible, it's time to get your feet wet and create your first automation.
 
-### [Using the automation editor »](/docs/automation/editor/)
+### [Using the automation editor &raquo;](/docs/automation/editor/)
