@@ -91,7 +91,7 @@ def extract_decision_summary(content):
     return "Architectural decision documented in this ADR."
 
 
-def update_adr_frontmatter(file_path, dry_run=False, backup=False):
+def update_adr_frontmatter(file_path, dry_run=False, backup=False, dates_only=False):
     """Update a single ADR file's frontmatter"""
     print(f"\nProcessing {file_path.name}...")
 
@@ -122,58 +122,73 @@ def update_adr_frontmatter(file_path, dry_run=False, backup=False):
         print(f"  ERROR: Could not parse YAML frontmatter: {e}")
         return False
 
-    # Check what's missing
-    missing_fields = []
-    updates_needed = []
+    # Handle dates-only mode
+    if dates_only:
+        today = datetime.now().strftime("%Y-%m-%d")
+        if "last_updated" in frontmatter and frontmatter["last_updated"] != today:
+            new_frontmatter = frontmatter.copy()
+            new_frontmatter["last_updated"] = today
+            updates_needed = [f"last_updated: {today}"]
+            print(f"  UPDATE: last_updated -> {today}")
+        else:
+            print("  OK: last_updated already current")
+            return True
+    else:
+        # Check what's missing
+        missing_fields = []
+        updates_needed = []
 
-    for field in REQUIRED_FIELDS:
-        if field not in frontmatter:
-            missing_fields.append(field)
+        for field in REQUIRED_FIELDS:
+            if field not in frontmatter:
+                missing_fields.append(field)
 
-    if not missing_fields:
-        print("  OK: All required fields present")
-        return True
+        if not missing_fields:
+            print("  OK: All required fields present")
+            return True
 
-    print(f"  MISSING: {', '.join(missing_fields)}")
+        print(f"  MISSING: {', '.join(missing_fields)}")
 
-    # Generate missing fields
-    new_frontmatter = frontmatter.copy()
+        # Generate missing fields
+        new_frontmatter = frontmatter.copy()
+        updates_needed = []
 
-    # Generate ID from filename if missing
-    if "id" in missing_fields:
-        id_match = re.search(r"ADR-(\d+)", file_path.name)
-        if id_match:
-            new_frontmatter["id"] = f"ADR-{id_match.group(1)}"
-            updates_needed.append(f"id: {new_frontmatter['id']}")
+        # Generate ID from filename if missing
+        if "id" in missing_fields:
+            id_match = re.search(r"ADR-(\d+)", file_path.name)
+            if id_match:
+                new_frontmatter["id"] = f"ADR-{id_match.group(1)}"
+                updates_needed.append(f"id: {new_frontmatter['id']}")
 
-    # Generate slug if missing
-    if "slug" in missing_fields and "title" in frontmatter:
-        new_frontmatter["slug"] = generate_slug(frontmatter["title"])
-        updates_needed.append(f"slug: {new_frontmatter['slug']}")
+        # Generate slug if missing
+        if "slug" in missing_fields and "title" in frontmatter:
+            new_frontmatter["slug"] = generate_slug(frontmatter["title"])
+            updates_needed.append(f"slug: {new_frontmatter['slug']}")
 
-    # Add empty arrays for related/supersedes if missing
-    if "related" in missing_fields:
-        new_frontmatter["related"] = []
-        updates_needed.append("related: []")
+        # Add empty arrays for related/supersedes if missing
+        if "related" in missing_fields:
+            new_frontmatter["related"] = []
+            updates_needed.append("related: []")
 
-    if "supersedes" in missing_fields:
-        new_frontmatter["supersedes"] = []
-        updates_needed.append("supersedes: []")
+        if "supersedes" in missing_fields:
+            new_frontmatter["supersedes"] = []
+            updates_needed.append("supersedes: []")
 
-    # Update last_updated to current date
-    if "last_updated" in missing_fields or "last_updated" in frontmatter:
-        new_frontmatter["last_updated"] = datetime.now().strftime("%Y-%m-%d")
-        updates_needed.append(f"last_updated: {new_frontmatter['last_updated']}")
+        # Update last_updated to current date
+        today = datetime.now().strftime("%Y-%m-%d")
+        if "last_updated" in missing_fields or "last_updated" in frontmatter:
+            new_frontmatter["last_updated"] = today
+            updates_needed.append(f"last_updated: {new_frontmatter['last_updated']}")
 
-    # Generate decision summary if missing
-    if "decision" in missing_fields:
-        decision_summary = extract_decision_summary(body_content)
-        new_frontmatter["decision"] = decision_summary
-        updates_needed.append(f'decision: "{decision_summary[:50]}..."')
+        # Generate decision summary if missing
+        if "decision" in missing_fields:
+            decision_summary = extract_decision_summary(body_content)
+            new_frontmatter["decision"] = decision_summary
+            updates_needed.append(f'decision: "{decision_summary[:50]}..."')
 
-    if updates_needed:
-        print(f"  UPDATES: {'; '.join(updates_needed)}")
+        if updates_needed:
+            print(f"  UPDATES: {'; '.join(updates_needed)}")
 
+    # Common logic for both modes
     if dry_run:
         print("  DRY-RUN: Would update file")
         return True
@@ -244,6 +259,8 @@ def main():
 
     if args.dry_run:
         print("DRY-RUN MODE: No files will be modified")
+    elif args.update_dates_only:
+        print("DATES-ONLY MODE: Only updating last_updated fields")
 
     adr_files = sorted(ADR_DIR.glob("ADR-*.md"))
     if not adr_files:
@@ -256,7 +273,9 @@ def main():
     error_count = 0
 
     for adr_file in adr_files:
-        if update_adr_frontmatter(adr_file, dry_run=args.dry_run, backup=args.backup):
+        if update_adr_frontmatter(
+            adr_file, dry_run=args.dry_run, backup=args.backup, dates_only=args.update_dates_only
+        ):
             success_count += 1
         else:
             error_count += 1

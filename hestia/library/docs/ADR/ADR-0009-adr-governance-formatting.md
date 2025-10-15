@@ -1,42 +1,46 @@
 ---
 id: ADR-0009
-title: "ADR Governance, Redaction, and Formatting Policy"
+title: ADR Governance, Redaction, and Formatting Policy
 slug: adr-governance-redaction-formatting-policy
 status: Accepted
 related:
-  - ADR-0001
-  - ADR-0004
-  - ADR-0008
-  - ADR-0017
-  - ADR-0018
+- ADR-0001
+- ADR-0004
+- ADR-0008
+- ADR-0017
+- ADR-0018
 supersedes: []
-last_updated: 2025-10-15
+last_updated: '2025-10-15'
 date: 2025-09-13
-decision: "All ADRs must comply with standardized structure, formatting, and machine-parseability requirements including mandatory frontmatter fields, token blocks, and redaction procedures."
-author: "Evert Appels"
+decision: All ADRs must comply with standardized structure, formatting, and machine-parseability
+  requirements including mandatory frontmatter fields, token blocks, and redaction
+  procedures.
+author: Evert Appels
 tags:
-  [
-    "governance",
-    "formatting",
-    "redaction",
-    "tokens",
-    "automation",
-    "adr",
-    "policy",
-    "metadata",
-  ]
+- governance
+- formatting
+- redaction
+- tokens
+- automation
+- adr
+- policy
+- metadata
 rollout:
   include_scan:
     phase_A:
-      {
-        mode: report,
-        start: "2025-09-25T00:00:00+01:00",
-        end: "2025-09-27T00:00:00+01:00",
-      }
-    phase_B: { mode: fail, start: "2025-09-27T00:00:01+01:00" }
+      mode: report
+      start: '2025-09-25T00:00:00+01:00'
+      end: '2025-09-27T00:00:00+01:00'
+    phase_B:
+      mode: fail
+      start: '2025-09-27T00:00:01+01:00'
 ci_policy:
-  include_scan: { mode: fail, start: "2025-09-27T00:00:01+01:00" }
-  packaging: { deterministic: true, manifest: sha256 }
+  include_scan:
+    mode: fail
+    start: '2025-09-27T00:00:01+01:00'
+  packaging:
+    deterministic: true
+    manifest: sha256
 ---
 
 # ADR-0009: ADR Governance, Redaction, and Formatting Policy
