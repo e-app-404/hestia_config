@@ -1,263 +1,208 @@
 ---
-mode: "agent"
-model: "Claude Sonnet 4"
-tools: ["search/codebase"]
-description: "Analyze Home Assistant integration configurations against documentation and generate prioritized patch plans"
+mode: 'agent'
+model: 'Claude Sonnet 4'
+tools: ['search/codebase']
+description: 'Streamlined Home Assistant integration configuration analyzer with prioritized patch plan generation'
 ---
 
-# Home Assistant Integration Configuration Analyzer
+# Home Assistant Integration Analyzer v2
 
-<!--
-Promptset Metadata (for compatibility with draft_template.promptset):
-- Version: 1.0
-- Created: 2025-10-15
-- Persona: ha_integration_analyst
-- Protocols: [prompt_optimization_first, confidence_scoring_always, phase_context_memory]
-- Bindings: Integration documentation, YAML configuration files
+<!-- 
+Streamlined version v2 addressing critical issues from v1:
+- Fixed JavaScript syntax and variable handling
+- Simplified 5-phase to 3-step process
+- Improved error handling and validation
+- Clearer priority definitions with specific indicators
 -->
 
 ## Objective
 
-Systematically analyze Home Assistant integration configurations by comparing them against canonical documentation to identify improvements across priority levels and generate actionable patch plans.
+Analyze Home Assistant integration configurations against documentation to identify improvements and generate actionable patch plans with clear priorities.
 
 ## Input Requirements
 
-Before proceeding, ensure you have access to:
+Please provide these three inputs to begin analysis:
 
-1. **Integration Knowledge Page**: `${input:integration_doc_path:Path to integration documentation (e.g., integration.sensor-snmp.md)}`
-2. **Configuration YAML File**: `${input:config_yaml_path:Path to configuration file (e.g., package_netgear_gs724t.yaml)}`
-3. **Topic Identifier**: `${input:topic:Topic name for patch plan file naming (e.g., netgear_gs724t)}`
+1. **Integration Documentation**: `${input:integration_doc_path:Full path to integration documentation file}`
+2. **Configuration File**: `${input:config_yaml_path:Full path to YAML configuration file to analyze}`  
+3. **Analysis Topic**: `${input:topic:Short identifier for this analysis (e.g., netgear_snmp)}`
 
-## Analysis Framework
+## Pre-Flight Validation
 
-### Phase 1: Documentation Ingestion & Parsing
+Before starting analysis, I will verify:
 
-1. **Load Integration Documentation**
+1. **File Accessibility**:
+   - Integration documentation exists and is readable at specified path
+   - Configuration YAML file exists and is accessible
+   - Output directory `/config/hestia/workspace/cache/patch_plans/` is writable
 
-   - Parse the integration knowledge page at `${integration_doc_path}`
-   - Extract configuration parameters, valid values, examples, and best practices
-   - Identify required vs optional parameters
-   - Note version-specific requirements and deprecated features
-   - Catalog error handling patterns and security recommendations
+2. **Error Handling**:
+   - If files are missing, I'll provide clear guidance on locating correct paths
+   - If permissions are insufficient, I'll suggest resolution steps
+   - If file formats are invalid, I'll explain requirements
 
-2. **Build Reference Schema**
-   - Create internal mapping of valid configuration options
-   - Document parameter relationships and dependencies
-   - Establish baseline for comparison analysis
+## Streamlined Analysis Process
 
-### Phase 2: Configuration Analysis
+### Step 1: Analyze & Compare
 
-1. **Load Current Configuration**
+**Load Documentation**:
+- Parse integration documentation from `${input:integration_doc_path}`
+- Extract configuration parameters, valid values, and best practices
+- Identify required vs optional parameters and version requirements
+- Build reference schema for comparison
 
-   - Parse the YAML configuration file at `${config_yaml_path}`
-   - Extract all integration-specific configurations
-   - Map current parameters to documentation schema
+**Load Configuration**:
+- Parse YAML configuration from `${input:config_yaml_path}`
+- Extract integration-specific configurations
+- Map current parameters to documentation schema
+- Identify discrepancies and improvement opportunities
 
-2. **Systematic Comparison**
-   - Validate each parameter against documentation
-   - Check for missing required parameters
-   - Identify deprecated or invalid syntax
-   - Assess security and performance implications
+### Step 2: Classify & Prioritize
 
-### Phase 3: Priority-Based Issue Classification
-
-Classify all identified issues using this priority framework:
+I will categorize all issues using this refined priority framework:
 
 #### CRITICAL Priority
+**Definition**: Configuration errors preventing functionality or causing Home Assistant load failures.
+**Key Indicators**: Missing required parameters, invalid values, syntax errors, security vulnerabilities
+**Impact**: Integration completely broken or Home Assistant won't start
 
-**Definition**: Configuration errors that prevent the integration from functioning or cause Home Assistant to fail loading the configuration.
+#### HIGH Priority  
+**Definition**: Functional configuration that significantly underperforms or lacks important capabilities.
+**Key Indicators**: Missing error handling, inefficient polling, missing security features, poor UI integration
+**Impact**: Integration works but with major limitations or performance issues
 
-**Examples to identify**:
+#### MEDIUM Priority
+**Definition**: Missing best practices that impact maintainability, monitoring, or integration completeness.
+**Key Indicators**: Missing unique_id, suboptimal naming, missing derived sensors, hardcoded values
+**Impact**: Technical debt that affects future maintenance or monitoring capabilities
 
-- Missing required parameters
-- Invalid parameter values that cause validation errors
-- Syntax errors in YAML structure
-- Version incompatibility issues
-- Security vulnerabilities (plaintext secrets, etc.)
+#### LOW Priority
+**Definition**: Cosmetic improvements enhancing user experience without functional impact.
+**Key Indicators**: Icon assignments, comment additions, formatting consistency, UI presentation
+**Impact**: Aesthetic enhancements only
 
-**Output Format**:
+**Output Format for Each Issue**:
+```markdown
+### [PRIORITY]: [Issue Description]
 
-````markdown
-### CRITICAL: [Issue Description]
-
-**Problem**: [Specific issue explanation]
-
-**Impact**: [What breaks/fails to work]
+**Problem**: [Clear explanation of the issue]
+**Impact**: [What doesn't work or works suboptimally]  
+**Solution**: [Specific fix required]
 
 **Before**:
-
 ```yaml
-# Current problematic configuration
+# Current configuration
 ```
-````
 
 **After**:
-
 ```yaml
-# Fixed configuration
+# Improved configuration  
 ```
 
 **Validation**: [How to verify the fix works]
 
-````
+### Step 3: Generate & Present
 
-#### HIGH Priority
-**Definition**: Configuration is functional but significantly suboptimal, preventing Home Assistant from fully deploying capabilities or causing performance/reliability issues.
+**Create Patch Plan File**:
+- Generate comprehensive patch plan using current date in YYYYMMDD format
+- Save to `/config/hestia/workspace/cache/patch_plans/[YYYYMMDD]_${input:topic}_patch_plan.md`
+- Include all classified issues with before/after examples
 
-**Examples to identify**:
-- Missing optional parameters that significantly improve functionality
-- Inefficient polling intervals or resource usage
-- Incomplete error handling (missing `accept_errors`, `default_value`)
-- Security improvements (SNMP v2c → v3 upgrades)
-- Missing state classes or device classes for proper UI integration
+**Present Executive Summary**:
+- Display overview of findings and priorities
+- Highlight critical and high priority issues requiring immediate attention
+- Request user validation before implementation
 
-**Output Format**: [Same structure as CRITICAL]
+## Patch Plan Template Structure
 
-#### MEDIUM Priority
-**Definition**: Configuration works correctly but has gaps that could negatively impact related functionalities, monitoring, or future maintenance without immediate runtime effects.
+When generating the patch plan, I'll create a file with these sections:
 
-**Examples to identify**:
-- Missing unique_id parameters preventing UI customization
-- Suboptimal sensor naming or organization
-- Missing template sensors for derived values
-- Incomplete group definitions for logical organization
-- Missing device_class assignments affecting UI presentation
-- Hardcoded values that should use secrets or variables
-
-**Output Format**: [Same structure as CRITICAL]
-
-#### LOW Priority
-**Definition**: Aesthetic or organizational improvements that enhance code maintainability, UI presentation, or documentation without affecting functionality.
-
-**Examples to identify**:
-- Inconsistent naming conventions
-- Missing friendly_name attributes
-- Suboptimal icon assignments
-- Missing comments or documentation
-- Code organization and formatting improvements
-- UI presentation enhancements (better units, descriptions)
-
-**Output Format**: [Same structure as CRITICAL]
-
-### Phase 4: Patch Plan Generation
-
-Generate comprehensive remediation plan using this structure:
-
-#### Patch Plan Template
-```markdown
+<!-- Patch Plan Template Structure starts here -->
 # Home Assistant Integration Patch Plan
 
-**Date**: ${new Date().toISOString().split('T')[0].replace(/-/g, '')}
-**Topic**: ${topic}
-**Integration**: [Integration name from analysis]
-**Configuration File**: `${config_yaml_path}`
-**Documentation Reference**: `${integration_doc_path}`
+**Date**: [Current date in YYYYMMDD format]
+**Topic**: [Analysis topic from input]
+**Integration**: [Integration name identified from analysis]
+**Configuration File**: [Path from input parameter]
+**Documentation Reference**: [Path from input parameter]
 
 ## Executive Summary
-
-[2-3 sentence summary of findings and impact]
+[2-3 sentence overview of findings and recommended actions]
 
 ## Analysis Results
-
-**Total Issues Found**: [Count by priority]
+**Issues Found**: [Total count by priority]
 - CRITICAL: [count] issues
-- HIGH: [count] issues
+- HIGH: [count] issues  
 - MEDIUM: [count] issues
 - LOW: [count] issues
 
-## Detailed Findings
+## Priority Issues
+[All classified issues using the format above]
 
-[Insert all classified issues using the priority format above]
+## Implementation Roadmap
+### Immediate (Critical Issues)
+- [ ] [Brief description of each critical fix]
 
-## Implementation Plan
+### This Week (High Priority)  
+- [ ] [Brief description of each high priority improvement]
 
-### Phase 1: Critical Fixes (Immediate)
-- [ ] [Issue 1 - brief description]
-- [ ] [Issue 2 - brief description]
+### This Month (Medium Priority)
+- [ ] [Brief description of each medium priority enhancement]
 
-### Phase 2: High Priority (Within 1 week)
-- [ ] [Issue 1 - brief description]
-- [ ] [Issue 2 - brief description]
+### Future (Low Priority)
+- [ ] [Brief description of each low priority polish item]
 
-### Phase 3: Medium Priority (Within 1 month)
-- [ ] [Issue 1 - brief description]
-- [ ] [Issue 2 - brief description]
+## Validation Steps
+1. **Configuration Check**: Run `${workspaceFolder}/bin/config-validate ${workspaceFolder}`
+2. **Integration Test**: Restart Home Assistant and verify entity loading
+3. **Functional Test**: [Integration-specific validation steps]
 
-### Phase 4: Low Priority (As time permits)
-- [ ] [Issue 1 - brief description]
-- [ ] [Issue 2 - brief description]
-
-## Testing & Validation
-
-1. **Configuration Validation**
-   - Run: `/config/bin/config-validate /config`
-   - Verify: No configuration errors reported
-
-2. **Integration Testing**
-   - Restart Home Assistant
-   - Verify: All entities load correctly
-   - Check: Entity states update as expected
-
-3. **Functional Testing**
-   - [Integration-specific tests based on analysis]
-
-## Rollback Plan
-
-**Backup Commands**:
-```bash
-cp ${config_yaml_path} ${config_yaml_path}.backup.$(date +%Y%m%d_%H%M%S)
-````
-
-**Restore Commands**:
-
-```bash
-cp ${config_yaml_path}.backup.[timestamp] ${config_yaml_path}
-```
+## Backup & Rollback
+**Backup**: `cp [config-file] [config-file].backup.[YYYYMMDD_HHMMSS]`
+**Restore**: `cp [config-file].backup.[timestamp] [config-file]`
 
 ## References
+- Documentation: [Integration documentation path]
+- Error Patterns: error_patterns.yml
+<!-- Patch Plan Template Structure ends here -->
 
-- Integration Documentation: `${integration_doc_path}`
-- Home Assistant Configuration Reference: [relevant links]
-- Error Patterns: `/config/hestia/library/error_patterns.yml`
+## Error Pattern Integration
 
----
+During analysis, I will cross-reference findings against known error patterns in:
+- `/config/hestia/library/error_patterns.yml`
 
-_Generated by Home Assistant Integration Analyzer v1.0_
+This ensures I leverage existing knowledge of common issues and their solutions.
 
+## Quality Assurance Standards
+
+For every recommendation, I will ensure:
+
+- **Accuracy**: All suggestions are validated against official Home Assistant documentation
+- **Syntax**: All "After" examples use correct YAML syntax and follow best practices
+- **Completeness**: Each issue includes clear problem description, impact assessment, and specific solution
+- **Actionability**: Implementation steps are concrete and testable
+
+## Usage Instructions
+
+1. **Start Analysis**: Provide the three required input parameters
+2. **Review Validation**: Confirm all files are accessible 
+3. **Monitor Progress**: I'll provide status updates for each step
+4. **Review Results**: Examine the generated patch plan and executive summary
+5. **Approve Implementation**: Validate recommendations before applying changes
+
+## Example Usage
+
+To analyze a Netgear SNMP configuration:
+```
+/ha_integration_analyzer integration_doc_path:/config/hestia/library/ha_implementation/integration/integration.sensor-snmp.md config_yaml_path:/config/packages/package_netgear_gs724t.yaml topic:netgear_snmp
 ```
 
-### Phase 5: File Operations & Output
+## Ready to Begin
 
-1. **Generate Patch Plan File**
-   - Create file at: `/config/hestia/workspace/cache/patch_plans/${new Date().toISOString().split('T')[0].replace(/-/g, '')}_${topic}_patch_plan.md`
-   - Use the patch plan template above with all analysis results
+I'm ready to perform your Home Assistant integration analysis. Please provide the three required input parameters:
 
-2. **Present for Review**
-   - Display executive summary
-   - Highlight critical and high priority issues
-   - Request validation before implementation
+1. Integration documentation path
+2. Configuration YAML file path  
+3. Analysis topic identifier
 
-## Execution Instructions
-
-1. **Validate Inputs**: Confirm both file paths exist and are accessible
-2. **Run Analysis**: Execute all phases systematically
-3. **Generate Output**: Create patch plan file with timestamp
-4. **Present Results**: Show summary and request approval
-
-## Quality Assurance
-
-- Cross-reference all findings against official Home Assistant documentation
-- Ensure all "After" examples are syntactically correct and follow best practices
-- Validate that patch plan is actionable with specific steps
-- Include proper backup and rollback procedures
-
-## Usage Example
-
-```
-
-/ha_integration_analyzer integration_doc_path:/config/hestia/library/ha_implementation/integration/integration.sensor-snmp.md config_yaml_path:/config/packages/package_netgear_gs724t.yaml topic:netgear_gs724t_snmp
-
-```
-
-Ready to begin analysis. Please provide the required input parameters or run the command above with your specific file paths and topic identifier.
-```
+Once provided, I'll validate file access and begin the streamlined 3-step analysis process.
