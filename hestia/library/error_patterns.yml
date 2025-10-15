@@ -1093,6 +1093,183 @@ patterns:
       - "ADR-0020: Template Error Patterns"
   # --- END: Hestia error pattern — Template missing closing brace ---
 
+  - name: "command_line_sensor_availability_template_scope_error"
+    category: "command_line_sensor_configuration"
+    description: "Command line sensors failing to load due to availability templates referencing unavailable 'value' variable"
+    error_format: "Template variable 'value' is not available in availability template context"
+    symptoms:
+      - "Command line sensors not appearing in entity registry"
+      - "Sensors defined in configuration but not loading"
+      - "Silent failures during Home Assistant startup"
+      - "Template evaluation errors during sensor initialization"
+    root_causes:
+      - "Using 'value' variable in availability templates before command execution"
+      - "Misunderstanding template variable scope in command_line platform"
+      - "Availability templates execute before command runs, so 'value' is undefined"
+      - "Copy-paste errors from value_template into availability template"
+    solution:
+      - "Remove availability templates that reference 'value' variable"
+      - "Use value_template with proper defaults instead of availability checks"
+      - "Let Home Assistant handle availability automatically"
+      - "Move validation logic to value_template where 'value' is available"
+    examples:
+      bad: |
+        command_line:
+        - sensor:
+            name: "My Sensor"
+            command: 'echo "123"'
+            availability: >-
+              {{ value | int(-1) >= 0 }}  # ERROR: 'value' not available here
+      good: |
+        command_line:
+        - sensor:
+            name: "My Sensor"
+            command: 'echo "123"'
+            value_template: "{{ value | default('0') | trim }}"  # 'value' available here
+    resolution_steps:
+      - "Identify sensors not loading by checking entity registry"
+      - "Remove availability templates that reference 'value' variable"
+      - "Add proper value_template with default fallbacks"
+      - "Restart Home Assistant to reload sensor configuration"
+      - "Verify sensors appear in entity registry and have valid states"
+    prevention_strategies:
+      - "Use value_template for validation, not availability template"
+      - "Test sensor loading after configuration changes"
+      - "Follow patterns from working command_line sensor examples"
+    tooling:
+      detector: "Check if configured sensors are missing from entity registry"
+      validator: "grep -r 'availability:.*value' domain/command_line/"
+    references:
+      - "Home Assistant Command Line Integration Documentation"
+      - "Template Variable Scope in Home Assistant"
+
+  - name: "command_line_sensor_numeric_state_validation_error"
+    category: "command_line_sensor_configuration"
+    description: "Command line sensors with numeric indicators failing due to non-numeric state values"
+    error_format: "ValueError: Sensor [entity_id] has device class '[class]', state class 'measurement' unit '[unit]' and suggested precision 'None' thus indicating it has a numeric value; however, it has the non-numeric value: '[value]' (<class 'str'>)"
+    symptoms:
+      - "Sensors failing to load with ValueError about non-numeric values"
+      - "Entity registry errors for sensors with device_class and state_class"
+      - "Sensors with numeric indicators (units, device classes) returning text values"
+    root_causes:
+      - "Commands returning full output instead of extracted numeric values"
+      - "Incorrect awk field extraction in shell commands"
+      - "State_class measurement used with non-numeric template outputs"
+      - "Device_class data_size used with text-based value templates"
+    solution:
+      - "Fix command output extraction to return only numeric values"
+      - "Properly escape awk field selectors: \\$1 or '\''{print $1}'\'''"
+      - "Remove state_class from sensors that return non-numeric states"
+      - "Use int() filter in value_template for numeric conversion"
+    examples:
+      bad: |
+        # Issue 1: Command returns full output "1084        /config/.trash"
+        - sensor:
+            command: 'du -s /config/.trash | awk "{print $1}"'  # Wrong escaping
+            device_class: data_size
+            state_class: measurement
+            
+        # Issue 2: Non-numeric state with numeric indicators  
+        - sensor:
+            command: 'git status --porcelain | wc -l'
+            state_class: measurement
+            unit_of_measurement: "changes"
+            value_template: >-
+              {% if value | int == 0 %}
+                clean  # ERROR: Non-numeric value with measurement state_class
+              {% endif %}
+      good: |
+        # Fix 1: Proper awk escaping and numeric conversion
+        - sensor:
+            command: 'du -s /config/.trash | awk '\''{print $1}'\'' || echo "0"'
+            device_class: data_size  
+            state_class: measurement
+            value_template: "{{ value | default('0') | trim | int(0) }}"
+            
+        # Fix 2: Remove state_class for text-based status sensors
+        - sensor:
+            command: 'git status --porcelain | wc -l'
+            # No state_class or unit_of_measurement for text outputs
+            value_template: >-
+              {% if value | int == 0 %}
+                clean
+              {% endif %}
+    resolution_steps:
+      - "Identify failing sensors from Home Assistant error logs"
+      - "Check if command output includes unwanted text (paths, labels)"
+      - "Fix awk field extraction with proper escaping"
+      - "Remove state_class from sensors returning non-numeric states"
+      - "Add int() conversion in value_template for numeric sensors"
+      - "Test sensor states after configuration fixes"
+    prevention_strategies:
+      - "Test command output manually before using in sensors" 
+      - "Use state_class measurement only for truly numeric sensors"
+      - "Always include proper fallback values in commands"
+      - "Validate sensor states match expected data types"
+    tooling:
+      detector: "grep 'ValueError.*non-numeric value' home-assistant.log"
+      command_test: "Test commands: sh -lc 'your_command_here'"
+      validator: "/config/bin/config-validate /config"
+    references:
+      - "Home Assistant Command Line Sensor Documentation"
+      - "Home Assistant Sensor Device Classes and State Classes"
+
+  - name: "command_line_sensor_shell_escaping_error"
+    category: "command_line_sensor_configuration"
+    description: "Command line sensors failing due to improper shell command escaping in YAML"
+    error_format: "Command returns fallback value 'Unknown' instead of expected output"
+    symptoms:
+      - "Sensors returning fallback values instead of command output"
+      - "Commands that work in terminal failing in Home Assistant"
+      - "Awk field extraction not working in sensor commands"
+      - "Shell commands returning error exit codes"
+    root_causes:
+      - "Incorrect escaping of shell command components in YAML"
+      - "Awk field selectors not properly escaped for YAML context"
+      - "Single quotes vs double quotes escaping conflicts"
+      - "Complex shell commands not formatted correctly for sh -lc wrapper"
+    solution:
+      - "Use proper awk escaping: awk '\''{print $1}'\'' for field extraction"
+      - "Test commands with sh -lc wrapper to match sensor execution"
+      - "Escape shell special characters correctly for YAML context"
+      - "Use multi-line YAML format for complex shell commands"
+    examples:
+      bad: |
+        # Wrong awk escaping causes command failure
+        command: >-
+          sh -lc '
+            du -sh . | awk "{print \\$1}" || echo "Unknown"
+          '
+        # Result: Returns "Unknown" instead of size
+      good: |
+        # Correct awk escaping with proper quote handling
+        command: >-
+          sh -lc '
+            du -sh . | awk '\''{print $1}'\'' || echo "Unknown"  
+          '
+        # Result: Returns "1.2G" as expected
+    resolution_steps:
+      - "Test sensor command manually with sh -lc wrapper"
+      - "Fix awk field extraction using proper quote escaping"
+      - "Verify command returns expected output, not fallback value"
+      - "Update sensor configuration with corrected command"
+      - "Test sensor state updates after configuration reload"
+    prevention_strategies:
+      - "Always test commands with sh -lc before using in sensors"
+      - "Use working command_line.yaml sensors as reference patterns"
+      - "Validate complex shell commands in terminal first"
+      - "Follow consistent escaping patterns across all command sensors"
+    shell_escaping_patterns:
+      awk_field_extraction: "awk '\''{print $1}'\''  # Correct escaping for YAML"
+      simple_commands: "command_name args  # No special escaping needed"
+      complex_pipes: "cmd1 | cmd2 | awk '\''{print $1}'\'' || echo 'fallback'"
+    tooling:
+      test_command: "sh -lc 'your_command_here' # Test exact sensor execution"
+      validator: "Compare terminal output vs sensor state values"
+    references:
+      - "Shell Command Escaping in YAML"
+      - "Home Assistant Command Line Integration Examples"
+
   - name: "automation_legacy_platform_trigger_syntax"
     category: "automation_configuration"
     description: "Legacy 'platform:' syntax in automation triggers - should use 'trigger:' instead"
