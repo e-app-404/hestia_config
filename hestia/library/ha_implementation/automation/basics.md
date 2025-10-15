@@ -4,6 +4,7 @@ description: "A breakdown of what an automation consists of."
 ---
 
 ---
+
 title: "Understanding automations"
 authors: "Hestia / Home Assistant docs"
 source: "Local Hestia copy"
@@ -12,6 +13,7 @@ tags: ["home-assistant", "automation"]
 original_date: "2025-10-15"
 last_updated: "2025-10-15"
 url: ""
+
 ---
 
 # Understanding automations
@@ -46,15 +48,15 @@ Action: Turn lights on
 
 Automations interact directly with the internal state of Home Assistant, so you'll need to familiarize yourself with it. Home Assistant exposes its current state via the developer tools. These are available at the bottom of the sidebar in the frontend. **{% my developer_states title="Developer Tools > States" %}** will show all currently available states. An entity can be anything. A light, a switch, a person and even the sun. A state consists of the following parts:
 
-| Name | Description | Example |
-| ---- | ----- | ---- |
-| Entity ID | Unique identifier for the entity. | `light.living_room` |
-| State | The current state of the device. | `off` |
-| Attributes | Extra data related to the device and/or current state. | `brightness` |
+| Name       | Description                                            | Example             |
+| ---------- | ------------------------------------------------------ | ------------------- |
+| Entity ID  | Unique identifier for the entity.                      | `light.living_room` |
+| State      | The current state of the device.                       | `off`               |
+| Attributes | Extra data related to the device and/or current state. | `brightness`        |
 
 State changes can be used as the source of triggers and the current state can be used in conditions.
 
-To explore the available *actions* open the {% my developer_services title="**Developer tools** > **Actions**" %}. *Actions* allow changing anything. For example, turn on a light, run a script, or enable a scene. Each *action* has a domain and a name. For example, the *action* {% my developer_call_service service="light.turn_on" %} is capable of turning on any light in your system. Parameters can be passed to an *action* to indicate, for example, which device to activate or which color to use.
+To explore the available _actions_ open the {% my developer_services title="**Developer tools** > **Actions**" %}. _Actions_ allow changing anything. For example, turn on a light, run a script, or enable a scene. Each _action_ has a domain and a name. For example, the _action_ {% my developer_call_service service="light.turn_on" %} is capable of turning on any light in your system. Parameters can be passed to an _action_ to indicate, for example, which device to activate or which color to use.
 
 ## Creating automations
 

@@ -4,6 +4,7 @@ description: "Automations can test conditions when invoked."
 ---
 
 ---
+
 title: "Automation conditions"
 authors: "Hestia / Home Assistant docs"
 source: "Local Hestia copy"
@@ -12,6 +13,7 @@ tags: ["home-assistant", "automation"]
 original_date: "2025-10-15"
 last_updated: "2025-10-15"
 url: ""
+
 ---
 
 # Automation conditions
@@ -32,13 +34,13 @@ Example of using condition:
       to: "on"
   condition:
     - or:
-      - condition: numeric_state
-        entity_id: sun.sun
-        attribute: elevation
-        below: 4
-      - condition: numeric_state
-        entity_id: sensor.office_lux_sensor
-        below: 10
+        - condition: numeric_state
+          entity_id: sun.sun
+          attribute: elevation
+          below: 4
+        - condition: numeric_state
+          entity_id: sensor.office_lux_sensor
+          below: 10
   action:
     - service: scene.turn_on
       target:

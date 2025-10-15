@@ -2,7 +2,9 @@
 title: "Automation actions"
 description: "Automations result in action."
 ---
+
 ---
+
 title: "Automation actions"
 authors: "Hestia / Home Assistant docs"
 source: "Local Hestia copy"
@@ -11,6 +13,7 @@ tags: ["home-assistant", "automation"]
 original_date: "2025-10-15"
 last_updated: "2025-10-15"
 url: ""
+
 ---
 
 # Automation actions
@@ -24,8 +27,8 @@ You can also perform the action to activate [a scene](/integrations/scene/) whic
 ```yaml
 # Example: change the light in the kitchen and living room to 150 brightness and color red.
 - triggers:
-  - platform: sun
-    event: sunset
+    - platform: sun
+      event: sunset
   actions:
     - service: light.turn_on
       target:
@@ -36,18 +39,15 @@ You can also perform the action to activate [a scene](/integrations/scene/) whic
         brightness: 150
         rgb_color: [255, 0, 0]
 
-# Example: notify on mobile device
-- triggers:
-  - platform: sun
-    event: sunset
-    offset: -00:30
-  variables:
-    notification_action: notify.paulus_iphone
-  actions:
-    - service: "{{ notification_action }}"
-      data:
-        message: "Beautiful sunset!"
-    - delay: "00:00:35"
+      title: "Automation actions"
+      authors: "Hestia / Home Assistant docs"
+      source: "Local Hestia copy"
+      slug: "automation-actions"
+      tags: ["home-assistant", "automation"]
+      original_date: "2025-10-15"
+      last_updated: "2025-10-15"
+      url: ""
+      ---
     - service: notify.notify
       data:
         message: "Oh wow you really missed something great."
