@@ -1,34 +1,24 @@
 ---
 id: ADR-0017
-title: Fallback local logging path for HA tooling (non-repo, cross-platform)
-slug: fallback-local-logging-path-for-ha-tooling-non-repo-cross-platform
-status: Pending Validation
-related:
-- ADR-0016
-- ADR-0008
-- ADR-0009
-supersedes: []
-last_updated: '2025-10-15'
+title: "Fallback local logging path for HA tooling (non-repo, cross-platform)"
 date: 2025-09-25
+author: "Evert Appels"
+status: Pending Validation
+related: ["ADR-0016", "ADR-0008", "ADR-0009"]
 decision:
-  summary: When ${HA_MOUNT} is not writable, tooling writes to an OS-specific local
-    path outside the repo, with strict perms.
-  precedence: Logs MUST NOT be written under ${HA_MOUNT} or the repo root.
-author: Evert Appels
+  summary: "When ${HA_MOUNT} is not writable, tooling writes to an OS-specific local path outside the repo, with strict perms."
+  precedence: "Logs MUST NOT be written under ${HA_MOUNT} or the repo root."
 policy:
-  macOS: $HOME/Library/Logs/Hestia
-  linux: ${XDG_STATE_HOME:-$HOME/.local/state}/hestia/logs
-  windows: '%LOCALAPPDATA%\Hestia\Logs'
+  macOS: "$HOME/Library/Logs/Hestia"
+  linux: "${XDG_STATE_HOME:-$HOME/.local/state}/hestia/logs"
+  windows: "%LOCALAPPDATA%\\Hestia\\Logs"
 security:
-  perms: 0700 (owner-only) on POSIX; private ACL on Windows
+  perms: "0700 (owner-only) on POSIX; private ACL on Windows"
 acceptance:
-- Simulate mount-down; tooling writes to the OS path and creates it with correct perms.
-- CI packaging proves logs are excluded from artifacts.
-enforcement_protocols:
-- validation_first_design
-- hestia_config_protocols
-- file_delivery_integrity_v2
-- include_scan_v2
+  - "Simulate mount-down; tooling writes to the OS path and creates it with correct perms."
+  - "CI packaging proves logs are excluded from artifacts."
+enforcement_protocols: [validation_first_design, hestia_config_protocols, file_delivery_integrity_v2, include_scan_v2]
+last_updated: 2024-06-10
 ---
 
 # ADR-0017 — Fallback local logging path for Home Assistant tooling (non-repo, cross-platform)

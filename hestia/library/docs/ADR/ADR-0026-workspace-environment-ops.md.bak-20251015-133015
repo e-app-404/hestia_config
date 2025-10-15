@@ -1,30 +1,31 @@
 ---
 id: ADR-0026
-title: Workspace Operations & Environment Management
+title: "Workspace Operations & Environment Management"
+date: 2025-10-06
 slug: workspace-environment-ops
 status: Accepted
-related:
-- ADR-0009
-- ADR-0024
-- ADR-0030
-supersedes: []
-last_updated: '2025-10-15'
-date: 2025-10-06
-decision: Architectural decision documented in this ADR.
 author:
-- Evert Appels
-- Strategos (Executive Project Strategist)
+  - Evert Appels
+  - Strategos (Executive Project Strategist)
+related:
+  - ADR-0009
+  - ADR-0024
+  - ADR-0030
+supersedes: []
+last_updated: 2025-10-06
 tags:
-- operations
-- environment
-- venv
-- governance
-- security
-- recovery
-- tooling
-- macos
-- ci-cd
-- diagnostics
+  [
+    "operations",
+    "environment",
+    "venv",
+    "governance",
+    "security",
+    "recovery",
+    "tooling",
+    "macos",
+    "ci-cd",
+    "diagnostics",
+  ]
 ---
 
 # 1. Context

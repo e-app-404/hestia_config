@@ -1,31 +1,30 @@
 ---
 id: ADR-0015
-title: Symlink Policy for Hestia Config Workspace
-slug: symlink-policy-for-hestia-config-workspace
-status: Accepted
-related:
-- ADR-0001
-- ADR-0004
-- ADR-0008
-- ADR-0009
-- ADR-0010
-- ADR-0012
-- ADR-0013
-- ADR-0014
-supersedes: []
-last_updated: '2025-10-15'
+title: "Symlink Policy for Hestia Config Workspace"
 date: 2025-09-21
-decision: Disallow symlinks in the HA runtime configuration tree, require direct imports
-  for HA-loaded artifacts, allow symlinks only in designated non-runtime areas with
-  guardrails.
+status: Accepted
 author:
-- Evert Appels
-- GPT-5 Strategos
+  - "Evert Appels"
+  - "GPT-5 Strategos"
+related:
+  [
+    "ADR-0001",
+    "ADR-0004",
+    "ADR-0008",
+    "ADR-0009",
+    "ADR-0010",
+    "ADR-0012",
+    "ADR-0013",
+    "ADR-0014",
+  ]
+supersedes: []
+last_updated: 2025-09-25
 policy:
-  tracked_symlinks_in_repo: forbidden
-  symlinks_outside_repo_root: allowed, local-only, not tracked
+  tracked_symlinks_in_repo: "forbidden"
+  symlinks_outside_repo_root: "allowed, local-only, not tracked"
 validation_hooks:
-- ADR-0016 repo hygiene checks (no tracked symlinks, no nested .git)
+  - "ADR-0016 repo hygiene checks (no tracked symlinks, no nested .git)"
+decision: "Disallow symlinks in the HA runtime configuration tree, require direct imports for HA-loaded artifacts, allow symlinks only in designated non-runtime areas with guardrails."
 ---
 
 # ADR-0015: Symlink Policy for Hestia Config Workspace

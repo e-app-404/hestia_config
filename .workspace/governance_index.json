@@ -1,7 +1,7 @@
 {
   "governance_index": {
     "version": 2,
-    "generated_at": "2025-10-15T12:17:52",
+    "generated_at": "2025-10-15T12:33:11",
     "total_adrs": 28,
     "statistics": {
       "by_status": {
@@ -38,7 +38,7 @@
         "superseded_by": [],
         "priority": 4,
         "is_deprecated": false,
-        "last_modified": "2025-10-04"
+        "last_modified": "2025-10-15"
       },
       {
         "path": "/config/hestia/library/docs/ADR/ADR-0024-canonical-config-path.md",
@@ -67,7 +67,7 @@
         ],
         "priority": 4,
         "is_deprecated": false,
-        "last_modified": "2025-10-12"
+        "last_modified": "2025-10-15"
       },
       {
         "path": "/config/hestia/library/docs/ADR/ADR-0027-file-writing-governance.md",
@@ -87,7 +87,7 @@
         "superseded_by": [],
         "priority": 4,
         "is_deprecated": false,
-        "last_modified": "2025-10-12"
+        "last_modified": "2025-10-15"
       },
       {
         "path": "/config/hestia/library/docs/ADR/ADR-0021-motion-occupancy-presence-signals.md",
@@ -103,7 +103,7 @@
         "superseded_by": [],
         "priority": 4,
         "is_deprecated": false,
-        "last_modified": "2025-10-05"
+        "last_modified": "2025-10-15"
       },
       {
         "path": "/config/hestia/library/docs/ADR/ADR-0023-operator-priority-merge-resolution.md",
@@ -123,7 +123,7 @@
         "superseded_by": [],
         "priority": 4,
         "is_deprecated": false,
-        "last_modified": "2025-10-04"
+        "last_modified": "2025-10-15"
       },
       {
         "path": "/config/hestia/library/docs/ADR/ADR-0026-workspace-environment-ops.md",
@@ -163,7 +163,7 @@
         "superseded_by": [],
         "priority": 3,
         "is_deprecated": false,
-        "last_modified": "2025-10-01"
+        "last_modified": "2025-10-15"
       },
       {
         "path": "/config/hestia/library/docs/ADR/ADR-0028-appdaemon-room-db-sql-migration.md",
@@ -185,7 +185,7 @@
         "superseded_by": [],
         "priority": 3,
         "is_deprecated": false,
-        "last_modified": "2025-10-14"
+        "last_modified": "2025-10-15"
       },
       {
         "path": "/config/hestia/library/docs/ADR/ADR-0004-area-hierarchy.md",
@@ -202,7 +202,7 @@
         "superseded_by": [],
         "priority": 3,
         "is_deprecated": false,
-        "last_modified": "2025-10-04"
+        "last_modified": "2025-10-15"
       },
       {
         "path": "/config/hestia/library/docs/ADR/ADR-0003-tier-definitions.md",
@@ -218,7 +218,7 @@
         "superseded_by": [],
         "priority": 3,
         "is_deprecated": false,
-        "last_modified": "2025-10-01"
+        "last_modified": "2025-10-15"
       },
       {
         "path": "/config/hestia/library/docs/ADR/ADR-0006-decay-propagation.md",
@@ -234,7 +234,7 @@
         "superseded_by": [],
         "priority": 3,
         "is_deprecated": false,
-        "last_modified": "2025-10-04"
+        "last_modified": "2025-10-15"
       },
       {
         "path": "/config/hestia/library/docs/ADR/ADR-0005-entity-sensor-logic-signal.md",
@@ -250,7 +250,7 @@
         "superseded_by": [],
         "priority": 3,
         "is_deprecated": false,
-        "last_modified": "2025-10-04"
+        "last_modified": "2025-10-15"
       },
       {
         "path": "/config/hestia/library/docs/ADR/ADR-0020-ha-config-error-canonicalization.md",
@@ -269,7 +269,7 @@
         "superseded_by": [],
         "priority": 3,
         "is_deprecated": false,
-        "last_modified": "2025-10-14"
+        "last_modified": "2025-10-15"
       },
       {
         "path": "/config/hestia/library/docs/ADR/ADR-0002-jinja-patterns.md",
@@ -285,7 +285,7 @@
         "superseded_by": [],
         "priority": 3,
         "is_deprecated": false,
-        "last_modified": "2025-10-01"
+        "last_modified": "2025-10-15"
       },
       {
         "path": "/config/hestia/library/docs/ADR/ADR-0007-meta-governance-schema.md",
@@ -301,7 +301,7 @@
         "superseded_by": [],
         "priority": 3,
         "is_deprecated": false,
-        "last_modified": "2025-10-14"
+        "last_modified": "2025-10-15"
       },
       {
         "path": "/config/hestia/library/docs/ADR/ADR-0014-oom-and-recorder-policy.md",
@@ -339,7 +339,7 @@
         "superseded_by": [],
         "priority": 3,
         "is_deprecated": false,
-        "last_modified": "2025-10-04"
+        "last_modified": "2025-10-15"
       },
       {
         "path": "/config/hestia/library/docs/ADR/ADR-0013-extracted-config-merge.md",
@@ -436,7 +436,7 @@
         "superseded_by": [],
         "priority": 3,
         "is_deprecated": false,
-        "last_modified": "2025-10-01"
+        "last_modified": "2025-10-15"
       },
       {
         "path": "/config/hestia/library/docs/ADR/ADR-0018-workspace-lifecycle-policy.md",
@@ -455,7 +455,7 @@
         "superseded_by": [],
         "priority": 2,
         "is_deprecated": false,
-        "last_modified": "2025-10-01"
+        "last_modified": "2025-10-15"
       },
       {
         "path": "/config/hestia/library/docs/ADR/ADR-000x-template.md",
@@ -471,7 +471,7 @@
         "superseded_by": [],
         "priority": 0,
         "is_deprecated": false,
-        "last_modified": "2025-10-01"
+        "last_modified": "2025-10-15"
       },
       {
         "path": "/config/hestia/library/docs/ADR/ADR-0017-fallback-local-logging.md",
@@ -490,7 +490,7 @@
         "superseded_by": [],
         "priority": 0,
         "is_deprecated": false,
-        "last_modified": "2025-10-04"
+        "last_modified": "2025-10-15"
       },
       {
         "path": "/config/hestia/library/docs/ADR/deprecated/ADR-0016-canonical-ha-smb-mount.md",

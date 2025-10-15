@@ -1,24 +1,13 @@
 ---
 id: ADR-0001
-title: Templated TTS YAML Snippet
-slug: templated-tts-yaml-snippet
-status: Accepted
-related: []
-supersedes: []
-last_updated: '2025-10-15'
+title: "Templated TTS YAML Snippet"
 date: 2025-09-11
-decision: 'Standardize TTS YAML actions using templated structure with media_player_entity_id, message, and language parameters for consistent automated assistant usage.'
-author: Evert Appels
-tags:
-- architecture
-- tts
-- yaml
-- template
-- adr
-- text-to-speech
-- media_player
-- automation
-- jinja
+author: "Evert Appels"
+status: Accepted
+last_updated: 2025-09-15
+tags: ["architecture", "tts", "yaml", "template", "adr", "text-to-speech", "media_player", "automation", "jinja"]
+supersedes: []
+related: []
 ---
 
 # ADR-0001: Templated TTS YAML Snippet

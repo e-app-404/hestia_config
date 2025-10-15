@@ -1,31 +1,18 @@
 ---
 id: ADR-0027
-title: File Writing Governance and Path Enforcement System
-slug: file-writing-governance-and-path-enforcement-system
-status: Accepted
-related:
-- ADR-0024
-- ADR-0009
-- ADR-0018
-- ADR-0008
-supersedes: []
-last_updated: '2025-10-15'
+title: "File Writing Governance and Path Enforcement System"
 date: 2025-10-12
-decision: 'Implement a comprehensive three-layer file writing governance system:'
+status: Accepted
 author: hestia-operator
-tags:
-- governance
-- file-operations
-- path-enforcement
-- audit-trail
-- write-verification
-- atomic-operations
-- backup-strategy
+related: [ADR-0024, ADR-0009, ADR-0018, ADR-0008]
+supersedes: []
+last_updated: 2025-10-12
+tags: [governance, file-operations, path-enforcement, audit-trail, write-verification, atomic-operations, backup-strategy]
 workspace_allocation:
-  tools: /config/bin/write-broker, /config/.git/hooks/pre-commit
-  configuration: /config/.vscode/settings.json, /config/.vscode/tasks.json
-  logs: /config/hestia/workspace/operations/logs/write_broker_*.json
-  backups: '*.wbak.YYYYMMDDTHHMMSSZ pattern throughout /config'
+  tools: "/config/bin/write-broker, /config/.git/hooks/pre-commit"
+  configuration: "/config/.vscode/settings.json, /config/.vscode/tasks.json"
+  logs: "/config/hestia/workspace/operations/logs/write_broker_*.json"
+  backups: "*.wbak.YYYYMMDDTHHMMSSZ pattern throughout /config"
 ---
 
 # ADR-0027: File Writing Governance and Path Enforcement System

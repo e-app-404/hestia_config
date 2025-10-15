@@ -2,33 +2,17 @@
 id: ADR-0028
 title: AppDaemon & Room-DB Canonicalization (Endpoints, Entities, SQL Migration)
 slug: appdaemon-room-db-sql-migration
-status: Proposed
-related:
-- ADR-0024
-- ADR-0027
-- ADR-0019
-- ADR-0018
-- ADR-0009
-- ADR-0008
-supersedes: []
-last_updated: '2025-10-15'
 date: 2025-10-12
-decision: summary-concise)
+status: Proposed
 author: evert-appels
-tags:
-- governance
-- appdaemon
-- room-db
-- endpoints
-- entities
-- migration
-- sql
-- validation
+related: [ADR-0024, ADR-0027, ADR-0019, ADR-0018, ADR-0009, ADR-0008]
+last_updated: 2025-10-12
+tags: [governance, appdaemon, room-db, endpoints, entities, migration, sql, validation]
 references:
-- tools: /config/bin/write-broker
-- configuration: /config/packages/package_room_database.yaml, /config/appdaemon/apps/**
-- logs: /config/hestia/workspace/operations/logs/write_broker_*.json
-- index: /config/hestia/config/index/appdaemon_index.yaml
+  - tools: "/config/bin/write-broker"
+  - configuration: "/config/packages/package_room_database.yaml, /config/appdaemon/apps/**"
+  - logs: "/config/hestia/workspace/operations/logs/write_broker_*.json"
+  - index: "/config/hestia/config/index/appdaemon_index.yaml"
 ---
 
 # ADR-0028: AppDaemon & Room-DB Canonicalization (Endpoints, Entities, SQL Migration)

@@ -1,33 +1,21 @@
 ---
 id: ADR-0013
-title: Source→Core Config Merge via extracted_config (Meta-Capture Pipeline)
-slug: sourcecore-config-merge-via-extracted_config-meta-capture-pipeline
-status: Accepted
-related:
-- ADR-0007
-- ADR-0008
-- ADR-0009
-- ADR-0010
-- ADR-0016
-supersedes: []
-last_updated: '2025-10-15'
+title: "Source→Core Config Merge via extracted_config (Meta-Capture Pipeline)"
 date: 2025-09-20
-decision: Adopt a deterministic, token-guided merge pipeline for captured config snippets
-  into canonical core configuration, ensuring idempotency, auditability, and safety.
+status: Accepted
 author:
-- Platform / Home-Ops
-- GitHub Copilot (assisted)
-- Strategos
-tags:
-- meta-capture
-- configuration
-- merge
-- governance
-- secrets
+  - "Platform / Home-Ops"
+  - "GitHub Copilot (assisted)"
+  - "Strategos"
+related: ["ADR-0007", "ADR-0008", "ADR-0009", "ADR-0010", "ADR-0016"]
+supersedes: []
+last_updated: 2025-09-30
+tags: ["meta-capture", "configuration", "merge", "governance", "secrets"]
 acceptance_criteria:
-- 'Idempotent merge: same inputs ⇒ byte-identical outputs'
-- 'Stable ordering: maps sorted consistently; lists deterministic'
-- 'Artifacts: human-readable diff + rollback bundle emitted'
+  - "Idempotent merge: same inputs ⇒ byte-identical outputs"
+  - "Stable ordering: maps sorted consistently; lists deterministic"
+  - "Artifacts: human-readable diff + rollback bundle emitted"
+decision: "Adopt a deterministic, token-guided merge pipeline for captured config snippets into canonical core configuration, ensuring idempotency, auditability, and safety."
 ---
 
 # ADR-0013 — Source→Core Config Merge via `extracted_config` (Meta-Capture Pipeline)

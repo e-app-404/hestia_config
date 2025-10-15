@@ -1,33 +1,26 @@
 ---
 id: ADR-0024
-title: Canonical Home Assistant Config Path (Single-Source-of-Truth)
+title: "Canonical Home Assistant Config Path (Single-Source-of-Truth)"
 slug: canonical-config-path
-status: Implemented
-related: []
-supersedes:
-- ADR-0016
-- ADR-0010
-- ADR-0012
-last_updated: '2025-10-15'
-date: 2025-10-05
-decision: '**The canonical and only supported Home Assistant configuration root is
-  `/config`** across all environments (Home Assistant Host/Supervisor/Core, macOS
-  operator workstation, containers, and CI/CD including GitHub Actions).'
 authors: Strategos GPT
+status: Implemented
+date: 2025-10-05
+last_updated: 2025-10-06
 implementation_date: 2025-10-05
+supersedes:
+  - ADR-0016  # operator mount path & aliases
+  - ADR-0010  # workspace shape & autofs mounts
+  - ADR-0012  # workspace taxonomy with ~/hass
 amends:
-- ADR-0015
-- ADR-0019
-- ADR-0014
-- ADR-0022
+  - ADR-0015  # symlink policy & workspace
+  - ADR-0019  # remote topology mirror policy
+  - ADR-0014  # recorder/db storage locations
+  - ADR-0022  # keychain creds & telemetry paths
 superseded_by: null
-implementation_notes: 'Successfully implemented using macOS synthetic.conf entries.
-
+implementation_notes: |
+  Successfully implemented using macOS synthetic.conf entries.
   Current setup uses symlink fallback (functional equivalent).
-
   All development workflows operational and validated.
-
-  '
 ---
 
 ## Table of Contents
@@ -47,7 +40,7 @@ implementation_notes: 'Successfully implemented using macOS synthetic.conf entri
 
 ## 1. Decision
 
-decision: 'Establish /config as the single canonical Home Assistant configuration mount, blocking dual SMB mounts and legacy path aliases for operational simplicity.' All tools, scripts, documentation, examples, and templates **MUST** reference `/config` as the Home Assistant root. Any other path names (e.g., `~/hass`, `/homeassistant`, `/n/ha`, `/Volumes/HA/Config`, actions-runner workdirs) are considered implementation details and **MUST NOT** appear in application logic or normative documentation.
+**The canonical and only supported Home Assistant configuration root is `/config`** across all environments (Home Assistant Host/Supervisor/Core, macOS operator workstation, containers, and CI/CD including GitHub Actions). All tools, scripts, documentation, examples, and templates **MUST** reference `/config` as the Home Assistant root. Any other path names (e.g., `~/hass`, `/homeassistant`, `/n/ha`, `/Volumes/HA/Config`, actions-runner workdirs) are considered implementation details and **MUST NOT** appear in application logic or normative documentation.
 
 ## 2. Status & Rationale
 

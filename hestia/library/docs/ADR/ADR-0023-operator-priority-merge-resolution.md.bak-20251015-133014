@@ -1,34 +1,21 @@
 ---
-id: ADR-0023
-title: Operator Priority Resolution for Workspace Merge Conflicts
-slug: operator-priority-resolution-for-workspace-merge-conflicts
-status: Accepted
-related:
-- 'ADR-0016: Canonical HA edit root & non-interactive SMB mount'
-- 'ADR-0019: Remote topology mirror policy'
-- 'ADR-0013: Source→Core Config Merge via extracted_config'
-- 'ADR-0012: Four-Pillar Workspace Architecture'
-supersedes: []
-last_updated: '2025-10-15'
+title: "Operator Priority Resolution for Workspace Merge Conflicts"
 date: 2025-10-04
-decision: '### 3.1 Operator Priority Principle **The active workspace (development
-  branch) takes precedence over main branch content during merge conflict resolution.**
-  This principle applies to: - Automation logic and YAML configurations - ADR documentation
-  and architectural decisions - Operational scripts and deployment pipelines - Testing
-  infrastructure and validation tools - Workspace organization and tooling enhancements'
+last_updated: 2025-10-04T00:00:00Z
+status: Accepted
 author:
-- Evert Appels
+  - "Evert Appels"
+related:
+  - "ADR-0016: Canonical HA edit root & non-interactive SMB mount"
+  - "ADR-0019: Remote topology mirror policy"
+  - "ADR-0013: Source→Core Config Merge via extracted_config"
+  - "ADR-0012: Four-Pillar Workspace Architecture"
 requires:
-- Active workspace development branch
-- Main branch with potential staleness
-- Merge conflict resolution capability
-tags:
-- merge-strategy
-- operator-priority
-- workspace-governance
-- conflict-resolution
-notes: Canonicalizes the merge strategy that prioritizes active development workspace
-  over potentially stale main branch content
+  - "Active workspace development branch"
+  - "Main branch with potential staleness"
+  - "Merge conflict resolution capability"
+tags: ["merge-strategy", "operator-priority", "workspace-governance", "conflict-resolution"]
+notes: "Canonicalizes the merge strategy that prioritizes active development workspace over potentially stale main branch content"
 ---
 
 # ADR-0023: Operator Priority Resolution for Workspace Merge Conflicts

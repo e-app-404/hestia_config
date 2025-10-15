@@ -1,21 +1,13 @@
 ---
 id: ADR-0006
-title: Decay and Propagation Logic Contract
-slug: decay-and-propagation-logic-contract
+title: "Decay and Propagation Logic Contract"
+date: 2025-09-11
 status: Accepted
 related: []
 supersedes: []
-last_updated: '2025-10-15'
-date: 2025-09-11
-decision: '### Included Artifacts - `domain/automations/decay_automation.yaml` - Related
-  sensors, binary_sensors, and templates in all domains'
-tags:
-- architecture
-- adr
-- decay
-- propagation
-- contract
-author: Evert Appels
+last_updated: 2025-09-11
+tags: ["architecture", "adr", "decay", "propagation", "contract"]
+author: "Evert Appels"
 ---
 
 # ADR-0006: Decay and Propagation Logic Contract
