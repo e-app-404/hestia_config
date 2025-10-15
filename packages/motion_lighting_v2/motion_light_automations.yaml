@@ -3,7 +3,7 @@ automation:
     id: motion_lights_bedroom_sql_v15
     mode: restart
     trigger:
-      - platform: state
+      - trigger: state
         entity_id: binary_sensor.bedroom_motion_beta
         to: "on"
     variables:
@@ -45,10 +45,10 @@ automation:
         value_template: >
           {{ (states('sensor.bedroom_illuminance_beta') | float(9999)) < illuminance_threshold }}
     action:
-      - service: light.turn_on
+      - action: light.turn_on
         target: { entity_id: light.adaptive_bedroom_light_group }
         data: { transition: 2 }
-      - service: rest_command.room_db_update_config
+      - action: rest_command.room_db_update_config
         data:
           room_id: "bedroom"
           domain: "motion_lighting"
@@ -59,13 +59,13 @@ automation:
             }) }}
           schema_expected: 1
       - wait_for_trigger:
-          - platform: state
+          - trigger: state
             entity_id: binary_sensor.bedroom_motion_beta
             to: "off"
             for:
               seconds: "{{ effective_timeout }}"
         continue_on_timeout: false
-      - service: light.turn_off
+      - action: light.turn_off
         target: { entity_id: light.adaptive_bedroom_light_group }
         data: { transition: 5 }
 
@@ -73,7 +73,7 @@ automation:
     id: motion_lights_upstairs_sql_v15
     mode: restart
     trigger:
-      - platform: state
+      - trigger: state
         entity_id: binary_sensor.hallway_upstairs_motion_beta
         to: "on"
     variables:
@@ -115,10 +115,10 @@ automation:
      #   value_template: >
      #     {{ (states('sensor.hallway_upstairs_illuminance_beta') | float(9999)) < illuminance_threshold }}
     action:
-      - service: light.turn_on
+      - action: light.turn_on
         target: { entity_id: light.adaptive_upstairs_light_group }
         data: { transition: 2 }
-      - service: rest_command.room_db_update_config
+      - action: rest_command.room_db_update_config
         data:
           room_id: "upstairs"
           domain: "motion_lighting"
@@ -129,13 +129,13 @@ automation:
             }) }}
           schema_expected: 1
       - wait_for_trigger:
-          - platform: state
+          - trigger: state
             entity_id: binary_sensor.hallway_upstairs_motion_beta
             to: "off"
             for:
               seconds: "{{ effective_timeout }}"
         continue_on_timeout: false
-      - service: light.turn_off
+      - action: light.turn_off
         target: { entity_id: light.adaptive_upstairs_light_group }
         data: { transition: 5 }
 
@@ -143,7 +143,7 @@ automation:
     id: motion_lights_downstairs_sql_v15
     mode: restart
     trigger:
-      - platform: state
+      - trigger: state
         entity_id: binary_sensor.hallway_downstairs_motion_beta
         to: "on"
     variables:
@@ -185,10 +185,10 @@ automation:
     #    value_template: >
     #      {{ (states('sensor.hallway_downstairs_illuminance_beta') | float(9999)) < illuminance_threshold }}
     action:
-      - service: light.turn_on
+      - action: light.turn_on
         target: { entity_id: light.adaptive_downstairs_light_group }
         data: { transition: 2 }
-      - service: rest_command.room_db_update_config
+      - action: rest_command.room_db_update_config
         data:
           room_id: "downstairs"
           domain: "motion_lighting"
@@ -199,13 +199,13 @@ automation:
             }) }}
           schema_expected: 1
       - wait_for_trigger:
-          - platform: state
+          - trigger: state
             entity_id: binary_sensor.hallway_downstairs_motion_beta
             to: "off"
             for:
               seconds: "{{ effective_timeout }}"
         continue_on_timeout: false
-      - service: light.turn_off
+      - action: light.turn_off
         target: { entity_id: light.adaptive_downstairs_light_group }
         data: { transition: 5 }
 
@@ -213,7 +213,7 @@ automation:
     id: motion_lights_kitchen_sql_v15
     mode: restart
     trigger:
-      - platform: state
+      - trigger: state
         entity_id: binary_sensor.kitchen_motion_beta
         to: "on"
     variables:
@@ -255,10 +255,10 @@ automation:
      #   value_template: >
      #     {{ (states('sensor.kitchen_illuminance_beta') | float(9999)) < illuminance_threshold }}
     action:
-      - service: light.turn_on
+      - action: light.turn_on
         target: { entity_id: light.adaptive_kitchen_light_group }
         data: { transition: 2 }
-      - service: rest_command.room_db_update_config
+      - action: rest_command.room_db_update_config
         data:
           room_id: "kitchen"
           domain: "motion_lighting"
@@ -269,13 +269,13 @@ automation:
             }) }}
           schema_expected: 1
       - wait_for_trigger:
-          - platform: state
+          - trigger: state
             entity_id: binary_sensor.kitchen_motion_beta
             to: "off"
             for:
               seconds: "{{ effective_timeout }}"
         continue_on_timeout: false
-      - service: light.turn_off
+      - action: light.turn_off
         target: { entity_id: light.adaptive_kitchen_light_group }
         data: { transition: 5 }
 
@@ -283,7 +283,7 @@ automation:
     id: motion_lights_living_room_sql_v15
     mode: restart
     trigger:
-      - platform: state
+      - trigger: state
         entity_id: binary_sensor.living_room_motion_beta
         to: "on"
     variables:
@@ -325,10 +325,10 @@ automation:
         value_template: >
           {{ (states('sensor.living_room_illuminance_beta') | float(9999)) < illuminance_threshold }}
     action:
-      - service: light.turn_on
+      - action: light.turn_on
         target: { entity_id: light.adaptive_living_room_light_group }
         data: { transition: 2 }
-      - service: rest_command.room_db_update_config
+      - action: rest_command.room_db_update_config
         data:
           room_id: "living_room"
           domain: "motion_lighting"
@@ -339,13 +339,13 @@ automation:
             }) }}
           schema_expected: 1
       - wait_for_trigger:
-          - platform: state
+          - trigger: state
             entity_id: binary_sensor.living_room_motion_beta
             to: "off"
             for:
               seconds: "{{ effective_timeout }}"
         continue_on_timeout: false
-      - service: light.turn_off
+      - action: light.turn_off
         target: { entity_id: light.adaptive_living_room_light_group }
         data: { transition: 5 }
 
@@ -353,7 +353,7 @@ automation:
     id: motion_lights_ensuite_sql_v15
     mode: restart
     trigger:
-      - platform: state
+      - trigger: state
         entity_id: binary_sensor.ensuite_motion_beta
         to: "on"
     variables:
@@ -395,10 +395,10 @@ automation:
         value_template: >
           {{ (states('sensor.ensuite_illuminance_beta') | float(9999)) < illuminance_threshold }}
     action:
-      - service: light.turn_on
+      - action: light.turn_on
         target: { entity_id: light.adaptive_ensuite_light_group }
         data: { transition: 2 }
-      - service: rest_command.room_db_update_config
+      - action: rest_command.room_db_update_config
         data:
           room_id: "ensuite"
           domain: "motion_lighting"
@@ -409,13 +409,13 @@ automation:
             }) }}
           schema_expected: 1
       - wait_for_trigger:
-          - platform: state
+          - trigger: state
             entity_id: binary_sensor.ensuite_motion_beta
             to: "off"
             for:
               seconds: "{{ effective_timeout }}"
         continue_on_timeout: false
-      - service: light.turn_off
+      - action: light.turn_off
         target: { entity_id: light.adaptive_ensuite_light_group }
         data: { transition: 5 }
 
@@ -423,7 +423,7 @@ automation:
     id: motion_lights_desk_sql_v15
     mode: restart
     trigger:
-      - platform: state
+      - trigger: state
         entity_id: binary_sensor.desk_motion_proxy
         to: "on"
     variables:
@@ -465,10 +465,10 @@ automation:
         value_template: >
           {{ (states('sensor.bedroom_illuminance_beta') | float(9999)) < illuminance_threshold }}
     action:
-      - service: light.turn_on
+      - action: light.turn_on
         target: { entity_id: light.adaptive_desk_light_group }
         data: { transition: 2 }
-      - service: rest_command.room_db_update_config
+      - action: rest_command.room_db_update_config
         data:
           room_id: "desk"
           domain: "motion_lighting"
@@ -479,13 +479,13 @@ automation:
             }) }}
           schema_expected: 1
       - wait_for_trigger:
-        - platform: state
+        - trigger: state
           entity_id: binary_sensor.desk_motion_proxy
           to: "off"
           for:
             seconds: "{{ effective_timeout }}"
         continue_on_timeout: false
-      - service: light.turn_off
+      - action: light.turn_off
         target: { entity_id: light.adaptive_desk_light_group }
         data: { transition: 5 }
 
@@ -518,10 +518,10 @@ automation:
     id: adaptive_lighting_enable_sleep_mode_evening
     mode: parallel
     trigger:
-      - platform: time
+      - trigger: time
         at: "21:30:00"
     action:
-      - service: switch.turn_on
+      - action: switch.turn_on
         target:
           entity_id:
             - switch.adaptive_lighting_sleep_mode_bedroom
@@ -538,10 +538,10 @@ automation:
     id: adaptive_lighting_disable_sleep_mode_morning
     mode: parallel
     trigger:
-      - platform: time
+      - trigger: time
         at: "07:00:00"
     action:
-      - service: switch.turn_off
+      - action: switch.turn_off
         target:
           entity_id:
             - switch.adaptive_lighting_sleep_mode_bedroom
@@ -558,21 +558,21 @@ automation:
     id: adaptive_lighting_late_night_deep_sleep
     mode: parallel
     trigger:
-      - platform: time
+      - trigger: time
         at: "23:00:00"
     condition:
       - condition: state
         entity_id: switch.adaptive_lighting_sleep_mode_bedroom
         state: "on"
     action:
-      - service: adaptive_lighting.set_manual_control
+      - action: adaptive_lighting.set_manual_control
         target:
           entity_id:
             - switch.adaptive_lighting_bedroom
             - switch.adaptive_lighting_desk
         data:
           manual_control: false
-      - service: light.turn_on
+      - action: light.turn_on
         target:
           entity_id:
             - light.adaptive_bedroom_light_group
@@ -586,7 +586,7 @@ automation:
     id: adaptive_lighting_weekend_sleep_extension
     mode: single
     trigger:
-      - platform: time
+      - trigger: time
         at: "07:00:00"
     condition:
       - condition: time
@@ -596,7 +596,7 @@ automation:
     action:
       - delay:
           hours: 2
-      - service: switch.turn_off
+      - action: switch.turn_off
         target:
           entity_id:
             - switch.adaptive_lighting_sleep_mode_bedroom

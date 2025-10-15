@@ -15,11 +15,11 @@ script:
       segment_id: "{{ room_config.get('segment_id', 1) | int }}"
       base_topic: "{{ states('input_text.valetudo_base_topic') }}"
     sequence:
-      - service: mqtt.publish
+      - action: mqtt.publish
         data:
           topic: "{{ base_topic }}/MapSegmentationCapability/action/start_segment_action"
           payload: "{{ {'action':'clean','segment_ids':[segment_id],'iterations':1,'customOrder':true} | tojson }}"
-      - service: rest_command.room_db_update_config
+      - action: rest_command.room_db_update_config
         data:
           room_id: "{{ room }}"
           domain: "vacuum_control"
@@ -28,7 +28,7 @@ script:
               'last_cleaned': now().isoformat(),
               'needs_cleaning': false
             }) | tojson }}
-      - service: persistent_notification.create
+      - action: persistent_notification.create
         data:
           title: "Vacuum Control"
           message: "Started cleaning {{ room }} (segment {{ segment_id }})"

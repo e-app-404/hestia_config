@@ -1093,7 +1093,7 @@ automation:
             data: { hs_color: [120, 90], brightness_pct: 50, transition: 0.3 }
 
 media_player:
-  - platform: universal
+  - trigger: universal
     name: Bedroom Universal
     unique_id: "bedroom_universal_media_20250904"
     children:
@@ -1216,7 +1216,7 @@ media_player:
         data:
           is_volume_muted: "{{ is_volume_muted }}"
 
-  - platform: universal
+  - trigger: universal
     name: Sanctum SONOS
     unique_id: "sanctum_universal_sonos_20250904"
     children:
