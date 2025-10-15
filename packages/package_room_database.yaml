@@ -2,6 +2,30 @@
 # Consolidates SQL sensors, REST commands, shell commands, and recorder policies
 # Used by AppDaemon room_db_updater app for centralized room configuration
 
+# REST commands for AppDaemon HTTP API interaction
+# FIXED: Updated endpoints to use app-scoped URLs (ADR-0020 Error Resolution)
+# Prefer /api/appdaemon/<endpoint>; if health check fails in your setup, switch to /api/app/<app_name>/<endpoint>/
+rest_command:
+  room_db_update_config:
+    url: "http://a0d7b954-appdaemon:5050/api/appdaemon/room_db/update_config"
+    method: POST
+    content_type: "application/json"
+    timeout: 20
+    payload: >
+      {
+        "room_id": "{{ room_id }}",
+        "domain": "{{ domain }}",
+        "config_data": {{ config_data | tojson }},
+        "schema_expected": {{ schema_expected|default(1) }}
+      }
+      
+  room_db_health:
+    url: "http://a0d7b954-appdaemon:5050/api/appdaemon/room_db/health"
+    method: GET
+    timeout: 10
+    headers:
+      accept: application/json
+
 # SQL sensors for reading room configurations from SQLite database
 sql:
   - name: "Room Configs — Motion Lighting"
@@ -44,30 +68,6 @@ sql:
       WHERE config_domain = 'vacuum_control'
         AND json_extract(config_data, '$.needs_cleaning') = 1;
     column: count
-
-# REST commands for AppDaemon HTTP API interaction
-# FIXED: Updated endpoints to use app-scoped URLs (ADR-0020 Error Resolution)
-# Prefer /api/appdaemon/<endpoint>; if health check fails in your setup, switch to /api/app/<app_name>/<endpoint>/
-rest_command:
-  room_db_update_config:
-    url: "http://a0d7b954-appdaemon:5050/api/appdaemon/room_db/update_config"
-    method: POST
-    content_type: "application/json"
-    timeout: 20
-    payload: >
-      {
-        "room_id": "{{ room_id }}",
-        "domain": "{{ domain }}",
-        "config_data": {{ config_data | tojson }},
-        "schema_expected": {{ schema_expected|default(1) }}
-      }
-      
-  room_db_health:
-    url: "http://a0d7b954-appdaemon:5050/api/appdaemon/room_db/health"
-    method: GET
-    timeout: 10
-    headers:
-      accept: application/json
 
 # Shell commands for direct SQLite database operations (fallback/emergency use)
 shell_command:
