@@ -74,12 +74,12 @@ class WorkspaceIndexer:
     def _load_config(self) -> dict:
         """Load configuration from hestia.toml"""
         try:
-            with open(self.config_path, 'r') as f:
+            with open(self.config_path) as f:
                 return toml.load(f)
         except FileNotFoundError:
-            raise FileNotFoundError(f"Configuration file not found: {self.config_path}")
+            raise FileNotFoundError(f"Configuration file not found: {self.config_path}") from None
         except toml.TomlDecodeError as e:
-            raise ValueError(f"Invalid TOML configuration: {e}")
+            raise ValueError(f"Invalid TOML configuration: {e}") from e
 
     def setup_logging(self) -> None:
         """Configure logging based on configuration"""
@@ -229,9 +229,8 @@ class WorkspaceIndexer:
         
         # Check each retention category
         for category, policy in self.retention_config.items():
-            if 'location' in policy:
-                if policy['location'] in str_path:
-                    return policy.get('ttl_days', -1)
+            if 'location' in policy and policy['location'] in str_path:
+                return policy.get('ttl_days', -1)
         
         # Default to in-place backup TTL
         return self.backup_config['retention']['in_place_ttl_days']
@@ -247,7 +246,7 @@ class WorkspaceIndexer:
 
     def generate_file_index(self) -> dict:
         """Generate comprehensive file index with metadata"""
-        timestamp = datetime.now(timezone.utc).isoformat()
+        timestamp = datetime.now(UTC).isoformat()
         
         index_data = {
             'metadata': {
@@ -270,10 +269,18 @@ class WorkspaceIndexer:
             'statistics': self.stats,
             'file_registry': [asdict(record) for record in self.file_registry],
             'summary': {
-                'files_requiring_action': len([r for r in self.file_registry if r.action_required != 'no_action']),
-                'naming_violations': len([r for r in self.file_registry if not r.naming_compliant]),
-                'expired_candidates': len([r for r in self.file_registry if r.action_required == 'cleanup_expired']),
-                'vault_management_needed': len([r for r in self.file_registry if r.vault_eligible])
+                'files_requiring_action': len([
+                    r for r in self.file_registry if r.action_required != 'no_action'
+                ]),
+                'naming_violations': len([
+                    r for r in self.file_registry if not r.naming_compliant
+                ]),
+                'expired_candidates': len([
+                    r for r in self.file_registry if r.action_required == 'cleanup_expired'
+                ]),
+                'vault_management_needed': len([
+                    r for r in self.file_registry if r.vault_eligible
+                ])
             }
         }
         
@@ -281,7 +288,7 @@ class WorkspaceIndexer:
 
     def _generate_batch_id(self) -> str:
         """Generate unique batch ID for this scan"""
-        timestamp = datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ')
+        timestamp = datetime.now(UTC).strftime('%Y%m%dT%H%M%SZ')
         return f"index_scan_{timestamp}"
 
     def _calculate_content_hash(self) -> str:
@@ -293,8 +300,8 @@ class WorkspaceIndexer:
         """Save file index to structured log file"""
         if not output_path:
             # Use configured log location with date substitution
-            date_str = datetime.now(timezone.utc).strftime('%Y-%m-%d')
-            timestamp = datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ')
+            date_str = datetime.now(UTC).strftime('%Y-%m-%d')
+            timestamp = datetime.now(UTC).strftime('%Y%m%dT%H%M%SZ')
             
             log_template = self.sweeper_config['log_location']
             output_path = log_template.format(date=date_str, timestamp=timestamp)
