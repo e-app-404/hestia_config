@@ -1,0 +1,511 @@
+hestia_config_index:
+  version: 2
+  generated_at: '2025-10-15T11:58:58'
+  root_hint: /config/hestia/config
+  total_files: 46
+  statistics:
+    by_category:
+      hestia: 46
+    by_format:
+      yaml: 37
+      unknown: 8
+      toml: 1
+    total_size_bytes: 364701
+    total_lines: 9389
+  artifacts:
+    hestia:
+    - path: /config/hestia/config/system/addons.conf
+      filename: addons.conf
+      title: Addons
+      description: ''
+      file_format: yaml
+      tags:
+      - hestia
+      - yaml
+      last_modified: '2025-10-08T15:26:39.831222'
+      file_size: 1312
+    - path: /config/hestia/config/diagnostics/alert_thresholds.yaml
+      filename: alert_thresholds.yaml
+      title: alert_thresholds
+      description: 'Placeholder for alert thresholds used by diagnostics. Define severity
+        levels,
+
+        thresholds for latency, packet loss, and service availability.'
+      file_format: yaml
+      tags:
+      - alerts
+      - diagnostics
+      - hestia
+      - placeholder
+      - yaml
+      last_modified: '2025-10-05T17:23:29.046227'
+      file_size: 600
+    - path: /config/hestia/config/devices/broadlink.conf
+      filename: broadlink.conf
+      title: Broadlink
+      description: ''
+      file_format: yaml
+      tags:
+      - hestia
+      - yaml
+      last_modified: '2025-09-30T03:25:26.647591'
+      file_size: 15879
+    - path: /config/hestia/config/system/cli.conf
+      filename: cli.conf
+      title: cli.conf
+      description: extracted_config (cli)
+      file_format: unknown
+      tags:
+      - hestia
+      - unknown
+      last_modified: '2025-10-09T00:29:09.849984'
+      file_size: 8047
+    - path: /config/hestia/config/devices/climate.conf
+      filename: climate.conf
+      title: Climate
+      description: ''
+      file_format: yaml
+      tags:
+      - hestia
+      - yaml
+      last_modified: '2025-10-03T09:49:26.377118'
+      file_size: 18958
+    - path: /config/hestia/config/network/cloudflare.conf
+      filename: cloudflare.conf
+      title: Cloudflare
+      description: ''
+      file_format: yaml
+      tags:
+      - hestia
+      - yaml
+      last_modified: '2025-10-06T19:20:23.303253'
+      file_size: 4526
+    - path: /config/hestia/config/devices/devices.conf
+      filename: devices.conf
+      title: devices.conf
+      description: extracted_config (devices)
+      file_format: yaml
+      tags:
+      - hestia
+      - yaml
+      last_modified: '2025-09-30T03:25:26.695063'
+      file_size: 367
+    - path: /config/hestia/config/network/dns.topology.yaml
+      filename: dns.topology.yaml
+      title: Dns.Topology
+      description: ''
+      file_format: yaml
+      tags:
+      - hestia
+      - yaml
+      last_modified: '2025-10-05T17:23:29.773331'
+      file_size: 719
+    - path: /config/hestia/config/diagnostics/git_mirror_sync.diag.yaml
+      filename: git_mirror_sync.diag.yaml
+      title: Git Mirror Sync.Diag
+      description: ''
+      file_format: yaml
+      tags:
+      - hestia
+      - yaml
+      last_modified: '2025-10-03T06:36:47.660663'
+      file_size: 1319
+    - path: /config/hestia/config/diagnostics/git_push_logger_pipeline.yaml
+      filename: git_push_logger_pipeline.yaml
+      title: Git Push Logger Pipeline
+      description: ''
+      file_format: yaml
+      tags:
+      - hestia
+      - yaml
+      last_modified: '2025-10-05T17:23:29.167203'
+      file_size: 9333
+    - path: /config/hestia/config/diagnostics/glances.yaml
+      filename: glances.yaml
+      title: glances
+      description: 'Placeholder YAML for the Glances diagnostics integration. Replace
+        with a
+
+        canonical mapping or a small adapter that exposes Glances metrics to the
+
+        diagnostics system.'
+      file_format: yaml
+      tags:
+      - diagnostics
+      - glances
+      - hestia
+      - placeholder
+      - yaml
+      last_modified: '2025-10-05T17:23:29.332711'
+      file_size: 571
+    - path: /config/hestia/config/diagnostics/glances_ha_tailscale_context.yaml
+      filename: glances_ha_tailscale_context.yaml
+      title: Glances Ha Tailscale Context
+      description: ''
+      file_format: unknown
+      tags:
+      - hestia
+      - unknown
+      last_modified: '2025-10-07T14:52:22.899601'
+      file_size: 5194
+    - path: /config/hestia/config/diagnostics/hass_mount_status.consolidated.yaml
+      filename: hass_mount_status.consolidated.yaml
+      title: Hass Mount Status.Consolidated
+      description: ''
+      file_format: yaml
+      tags:
+      - hestia
+      - yaml
+      last_modified: '2025-10-03T07:55:13.970007'
+      file_size: 2584
+    - path: /config/hestia/config/diagnostics/hass_mount_status.yaml
+      filename: hass_mount_status.yaml
+      title: Hass Mount Status
+      description: ''
+      file_format: yaml
+      tags:
+      - hestia
+      - yaml
+      last_modified: '2025-10-02T19:44:21.437219'
+      file_size: 5849
+    - path: /config/hestia/config/diagnostics/hass_mount_status_current.yaml
+      filename: hass_mount_status_current.yaml
+      title: Hass Mount Status Current
+      description: ''
+      file_format: yaml
+      tags:
+      - hestia
+      - yaml
+      last_modified: '2025-10-02T20:10:42.374197'
+      file_size: 2555
+    - path: /config/hestia/config/diagnostics/archive/hass_mount_status_current_2.yaml.2025-10-03.yaml
+      filename: hass_mount_status_current_2.yaml.2025-10-03.yaml
+      title: Hass Mount Status Current 2.Yaml.2025 10 03
+      description: ''
+      file_format: yaml
+      tags:
+      - hestia
+      - yaml
+      last_modified: '2025-10-03T07:55:13.878741'
+      file_size: 2463
+    - path: /config/hestia/config/system/hestia_workspace.conf
+      filename: hestia_workspace.conf
+      title: Hestia Workspace
+      description: ''
+      file_format: yaml
+      tags:
+      - hestia
+      - yaml
+      last_modified: '2025-10-09T00:29:10.398615'
+      file_size: 9877
+    - path: /config/hestia/config/devices/hifi.conf
+      filename: hifi.conf
+      title: PRIORITY ORDER (first non‑idle child wins)
+      description: keep in sync with Universal
+      file_format: yaml
+      tags:
+      - hestia
+      - yaml
+      last_modified: '2025-09-30T03:25:26.814308'
+      file_size: 9671
+    - path: /config/hestia/config/system/homeassistant.conf
+      filename: homeassistant.conf
+      title: Homeassistant
+      description: ''
+      file_format: unknown
+      tags:
+      - hestia
+      - unknown
+      last_modified: '2025-10-08T15:26:29.315974'
+      file_size: 985
+    - path: /config/hestia/config/devices/illuminance.conf
+      filename: illuminance.conf
+      title: Illuminance
+      description: ''
+      file_format: yaml
+      tags:
+      - hestia
+      - yaml
+      last_modified: '2025-10-03T11:53:00.856933'
+      file_size: 3903
+    - path: /config/hestia/config/devices/lighting.conf
+      filename: lighting.conf
+      title: Lighting
+      description: ''
+      file_format: yaml
+      tags:
+      - hestia
+      - yaml
+      last_modified: '2025-10-05T12:26:06.486924'
+      file_size: 33531
+    - path: /config/hestia/config/devices/localtuya.conf
+      filename: localtuya.conf
+      title: Localtuya
+      description: ''
+      file_format: unknown
+      tags:
+      - hestia
+      - unknown
+      last_modified: '2025-09-30T15:05:45.695793'
+      file_size: 26215
+    - path: /config/hestia/config/preferences/lovelace.conf
+      filename: lovelace.conf
+      title: Lovelace
+      description: ''
+      file_format: yaml
+      tags:
+      - hestia
+      - yaml
+      last_modified: '2025-10-01T16:14:22.365207'
+      file_size: 6068
+    - path: /config/hestia/config/system/maintenance_log.conf
+      filename: maintenance_log.conf
+      title: maintenance_log.conf
+      description: Session-based maintenance tracking
+      file_format: yaml
+      tags:
+      - hestia
+      - yaml
+      last_modified: '2025-10-12T08:53:06.408652'
+      file_size: 71413
+    - path: /config/hestia/config/devices/media.conf
+      filename: media.conf
+      title: '⟫⟫ File: /config/hestia/core/config/devices/media'
+      description: ''
+      file_format: unknown
+      tags:
+      - hestia
+      - unknown
+      last_modified: '2025-09-30T03:25:21.975044'
+      file_size: 3947
+    - path: /config/hestia/config/devices/motion.conf
+      filename: motion.conf
+      title: Motion
+      description: ''
+      file_format: yaml
+      tags:
+      - hestia
+      - yaml
+      last_modified: '2025-10-05T12:26:06.578591'
+      file_size: 14142
+    - path: /config/hestia/config/preferences/motion_timeout.conf
+      filename: motion_timeout.conf
+      title: DEPRECATED. CONTENT MIGRATED AND MERGED WITH devices/motion
+      description: ''
+      file_format: unknown
+      tags:
+      - hestia
+      - unknown
+      last_modified: '2025-10-05T11:34:43.241141'
+      file_size: 173
+    - path: /config/hestia/config/system/mqtt.conf
+      filename: mqtt.conf
+      title: Mqtt
+      description: ''
+      file_format: yaml
+      tags:
+      - hestia
+      - yaml
+      last_modified: '2025-10-08T15:26:56.801833'
+      file_size: 334
+    - path: /config/hestia/config/network/nas.conf
+      filename: nas.conf
+      title: Nas
+      description: ''
+      file_format: yaml
+      tags:
+      - hestia
+      - yaml
+      last_modified: '2025-10-03T06:51:50.218692'
+      file_size: 1218
+    - path: /config/hestia/config/devices/nas.conf
+      filename: nas.conf
+      title: Nas
+      description: ''
+      file_format: yaml
+      tags:
+      - hestia
+      - yaml
+      last_modified: '2025-09-30T03:25:27.123065'
+      file_size: 5580
+    - path: /config/hestia/config/network/netgear.conf
+      filename: netgear.conf
+      title: Netgear
+      description: ''
+      file_format: yaml
+      tags:
+      - hestia
+      - yaml
+      last_modified: '2025-10-03T06:51:55.513236'
+      file_size: 357
+    - path: /config/hestia/config/devices/netgear.conf
+      filename: netgear.conf
+      title: Netgear
+      description: ''
+      file_format: yaml
+      tags:
+      - hestia
+      - yaml
+      last_modified: '2025-10-03T09:48:47.905430'
+      file_size: 8363
+    - path: /config/hestia/config/network/network.conf
+      filename: network.conf
+      title: Network
+      description: ''
+      file_format: unknown
+      tags:
+      - hestia
+      - unknown
+      last_modified: '2025-10-06T19:21:47.968916'
+      file_size: 4245
+    - path: /config/hestia/config/diagnostics/network_probes.yaml
+      filename: network_probes.yaml
+      title: Network Probes
+      description: Define active probes/targets for network diagnostics and SLAs.
+      file_format: yaml
+      tags:
+      - hestia
+      - yaml
+      last_modified: '2025-10-05T17:23:29.441619'
+      file_size: 1541
+    - path: /config/hestia/config/devices/presence.conf
+      filename: presence.conf
+      title: Presence
+      description: ''
+      file_format: yaml
+      tags:
+      - hestia
+      - yaml
+      last_modified: '2025-10-05T02:44:22.558742'
+      file_size: 20241
+    - path: /config/hestia/config/system/relationships.conf
+      filename: relationships.conf
+      title: relationships.conf
+      description: system graph (device → service → port, hostname ↔ IP)
+      file_format: unknown
+      tags:
+      - hestia
+      - unknown
+      last_modified: '2025-10-08T15:29:13.604606'
+      file_size: 2157
+    - path: /config/hestia/config/registry/room_registry.yaml
+      filename: room_registry.yaml
+      title: Room Registry
+      description: ''
+      file_format: yaml
+      tags:
+      - hestia
+      - yaml
+      last_modified: '2025-10-05T17:23:29.921954'
+      file_size: 26290
+    - path: /config/hestia/config/registry/rooms_registry.yaml
+      filename: rooms_registry.yaml
+      title: Rooms Registry
+      description: ''
+      file_format: yaml
+      tags:
+      - hestia
+      - yaml
+      last_modified: '2025-10-05T17:23:30.000967'
+      file_size: 13633
+    - path: /config/hestia/config/storage/samba.yaml
+      filename: samba.yaml
+      title: samba
+      description: 'Canonical Samba/SMB configuration manifest. This document is the
+        machine-
+
+        consumable representation of Samba global settings and individual shares.
+
+        Use the `apply_strategos` preview tooling to render a linted `smb.conf` for
+
+        validation (`hestia/tools/apply_strategos/apply_strategos_05_samba_preview.py`).'
+      file_format: yaml
+      tags:
+      - hestia
+      - samba
+      - storage
+      - yaml
+      last_modified: '2025-10-05T17:23:30.097028'
+      file_size: 2913
+    - path: /config/hestia/config/preview/smb.conf
+      filename: smb.conf
+      title: Smb
+      description: ''
+      file_format: toml
+      tags:
+      - hestia
+      - toml
+      last_modified: '2025-09-30T03:24:02.550725'
+      file_size: 388
+    - path: /config/hestia/config/system/suggested_commands.conf
+      filename: suggested_commands.conf
+      title: Suggested Commands
+      description: ''
+      file_format: yaml
+      tags:
+      - hestia
+      - yaml
+      last_modified: '2025-10-08T15:29:57.739919'
+      file_size: 1122
+    - path: /config/hestia/config/diagnostics/tailscale_reverse_proxy.diag.yaml
+      filename: tailscale_reverse_proxy.diag.yaml
+      title: Tailscale Reverse Proxy.Diag
+      description: ''
+      file_format: yaml
+      tags:
+      - hestia
+      - yaml
+      last_modified: '2025-10-03T06:37:12.585346'
+      file_size: 2544
+    - path: /config/hestia/config/diagnostics/tailscale_serve_proxy_check.diag.yaml
+      filename: tailscale_serve_proxy_check.diag.yaml
+      title: Tailscale Serve Proxy Check.Diag
+      description: ''
+      file_format: yaml
+      tags:
+      - hestia
+      - yaml
+      last_modified: '2025-10-03T06:38:19.705373'
+      file_size: 1951
+    - path: /config/hestia/config/system/transient_state.conf
+      filename: transient_state.conf
+      title: transient_state.conf
+      description: session meta-capture (transient_state)
+      file_format: yaml
+      tags:
+      - hestia
+      - yaml
+      last_modified: '2025-10-08T15:27:50.525948'
+      file_size: 2976
+    - path: /config/hestia/config/devices/valetudo.conf
+      filename: valetudo.conf
+      title: Valetudo
+      description: ''
+      file_format: yaml
+      tags:
+      - hestia
+      - yaml
+      last_modified: '2025-10-07T17:49:23.278292'
+      file_size: 6575
+    - path: /config/hestia/config/system/zigbee.conf
+      filename: zigbee.conf
+      title: Zigbee
+      description: ''
+      file_format: yaml
+      tags:
+      - hestia
+      - yaml
+      last_modified: '2025-10-08T15:27:09.383600'
+      file_size: 2072
+  metadata:
+    retrieval_hints:
+    - 'Prefer category order: system → diagnostics → network → devices when troubleshooting.'
+    - For device-specific issues, check devices/ category first.
+    - For network/connectivity issues, prioritize network/ and diagnostics/ categories.
+    - System-wide configurations are in system/ category.
+    - Registry files contain canonical mappings and relationships.
+    validation_expectations:
+    - YAML files must parse with yaml.safe_load_all
+    - CONF files should follow category-specific patterns
+    - All paths must exist and be readable
+    - Tags should follow lowercase, underscore-separated convention
