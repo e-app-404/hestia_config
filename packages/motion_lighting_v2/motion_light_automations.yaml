@@ -1,3 +1,6 @@
+# ═════════════════════════════════════
+# ⟫⟫ Motion Light SQL Automations  ◀
+# ═════════════════════════════════════
 automation:
   - alias: "Motion Lights — Bedroom (SQL v1.5)"
     id: motion_lights_bedroom_sql_v15
@@ -489,7 +492,8 @@ automation:
         target: { entity_id: light.adaptive_desk_light_group }
         data: { transition: 5 }
 
-  # Blueprint-based Simple Motion Lighting Automations
+  # ══════════════════════════════════════════════════════
+  # ⟫⟫ Blueprint-based Simple Motion Lighting Automations  
   - alias: "Motion Lights — Wardrobe (Blueprint v1.0)"
     id: motion_lights_wardrobe_blueprint_v10
     use_blueprint:
@@ -509,102 +513,3 @@ automation:
         light_target:
           entity_id: light.group_ottoman_light
         no_motion_wait: 45
-
-  # ═════════════════════════════════════════════════════════════════════════════
-  # ⟫⟫ Adaptive Lighting Sleep Mode Scheduler (Fixed Times)  ◀
-  # ═════════════════════════════════════════════════════════════════════════════
-
-  - alias: "Adaptive Lighting — Enable Sleep Mode (Evening)"
-    id: adaptive_lighting_enable_sleep_mode_evening
-    mode: parallel
-    trigger:
-      - trigger: time
-        at: "21:30:00"
-    action:
-      - action: switch.turn_on
-        target:
-          entity_id:
-            - switch.adaptive_lighting_sleep_mode_bedroom
-            - switch.adaptive_lighting_sleep_mode_desk
-            - switch.adaptive_lighting_sleep_mode_ensuite
-            - switch.adaptive_lighting_sleep_mode_kitchen
-            - switch.adaptive_lighting_sleep_mode_hallway_downstairs
-            - switch.adaptive_lighting_sleep_mode_hallway_upstairs
-            - switch.adaptive_lighting_sleep_mode_living_room
-        data:
-          transition: 30
-
-  - alias: "Adaptive Lighting — Disable Sleep Mode (Morning)"
-    id: adaptive_lighting_disable_sleep_mode_morning
-    mode: parallel
-    trigger:
-      - trigger: time
-        at: "07:00:00"
-    action:
-      - action: switch.turn_off
-        target:
-          entity_id:
-            - switch.adaptive_lighting_sleep_mode_bedroom
-            - switch.adaptive_lighting_sleep_mode_desk
-            - switch.adaptive_lighting_sleep_mode_ensuite
-            - switch.adaptive_lighting_sleep_mode_kitchen
-            - switch.adaptive_lighting_sleep_mode_hallway_downstairs
-            - switch.adaptive_lighting_sleep_mode_hallway_upstairs
-            - switch.adaptive_lighting_sleep_mode_living_room
-        data:
-          transition: 60
-
-  - alias: "Adaptive Lighting — Late Night Sleep Mode (Deep Sleep)"
-    id: adaptive_lighting_late_night_deep_sleep
-    mode: parallel
-    trigger:
-      - trigger: time
-        at: "23:00:00"
-    condition:
-      - condition: state
-        entity_id: switch.adaptive_lighting_sleep_mode_bedroom
-        state: "on"
-    action:
-      - action: adaptive_lighting.set_manual_control
-        target:
-          entity_id:
-            - switch.adaptive_lighting_bedroom
-            - switch.adaptive_lighting_desk
-        data:
-          manual_control: false
-      - action: light.turn_on
-        target:
-          entity_id:
-            - light.adaptive_bedroom_light_group
-            - light.adaptive_desk_light_group
-        data:
-          brightness_pct: 5
-          rgb_color: [20, 5, 50]
-          transition: 10
-
-  - alias: "Adaptive Lighting — Weekend Sleep Mode Extension"
-    id: adaptive_lighting_weekend_sleep_extension
-    mode: single
-    trigger:
-      - trigger: time
-        at: "07:00:00"
-    condition:
-      - condition: time
-        weekday:
-          - sat
-          - sun
-    action:
-      - delay:
-          hours: 2
-      - action: switch.turn_off
-        target:
-          entity_id:
-            - switch.adaptive_lighting_sleep_mode_bedroom
-            - switch.adaptive_lighting_sleep_mode_desk
-            - switch.adaptive_lighting_sleep_mode_ensuite
-            - switch.adaptive_lighting_sleep_mode_kitchen
-            - switch.adaptive_lighting_sleep_mode_hallway_downstairs
-            - switch.adaptive_lighting_sleep_mode_hallway_upstairs
-            - switch.adaptive_lighting_sleep_mode_living_room
-        data:
-          transition: 90
