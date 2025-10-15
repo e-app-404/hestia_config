@@ -1,11 +1,5 @@
 ---
 title: "Automation modes"
-description: "How to use and configure automation modes."
----
-
----
-
-title: "Automation modes"
 authors: "Hestia / Home Assistant docs"
 source: "Local Hestia copy"
 slug: "automation-modes"

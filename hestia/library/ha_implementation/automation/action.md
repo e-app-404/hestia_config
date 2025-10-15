@@ -1,10 +1,5 @@
----
 title: "Automation actions"
-description: "Automations result in action."
 ---
-
----
-
 title: "Automation actions"
 authors: "Hestia / Home Assistant docs"
 source: "Local Hestia copy"

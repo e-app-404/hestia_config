@@ -1,11 +1,5 @@
 ---
 title: "Automation conditions"
-description: "Automations can test conditions when invoked."
----
-
----
-
-title: "Automation conditions"
 authors: "Hestia / Home Assistant docs"
 source: "Local Hestia copy"
 slug: "automation-conditions"

@@ -4,7 +4,6 @@ description: "How to use the various automation actions."
 ---
 
 ---
-
 title: "Automation actions (services)"
 authors: "Hestia / Home Assistant docs"
 source: "Local Hestia copy"
@@ -13,7 +12,6 @@ tags: ["home-assistant", "automation", "services"]
 original_date: "2025-10-15"
 last_updated: "2025-10-15"
 url: ""
-
 ---
 
 # Automation actions (services)

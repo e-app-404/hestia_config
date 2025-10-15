@@ -1,10 +1,5 @@
----
 title: "Understanding automations"
-description: "A breakdown of what an automation consists of."
 ---
-
----
-
 title: "Understanding automations"
 authors: "Hestia / Home Assistant docs"
 source: "Local Hestia copy"
