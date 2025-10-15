@@ -1,7 +1,7 @@
 ---
 mode: "agent"
 model: "Claude Sonnet 4"
-tools: ['edit', 'runNotebooks', 'search', 'new', 'runCommands', 'runTasks', 'usages', 'vscodeAPI', 'problems', 'changes', 'testFailure', 'openSimpleBrowser', 'fetch', 'githubRepo', 'extensions', 'todos', 'runTests']
+tools: ['edit', 'search', 'new', 'runCommands', 'problems', 'changes', 'fetch', 'githubRepo']
 description: "Streamlined Home Assistant integration configuration analyzer with prioritized patch plan generation"
 ---
 
