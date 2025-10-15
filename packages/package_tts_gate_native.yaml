@@ -34,9 +34,9 @@ script:
         selector: { entity: { domain: media_player } }
       tts_entity:
         name: TTS engine
-        description: "TTS entity to use"
+        description: "TTS service to use (e.g., tts.google_translate)"
         required: true
-        selector: { entity: { domain: tts } }
+        selector: { text: { multiline: false } }
       volume:
         name: Volume
         description: "Volume level (0..1)"

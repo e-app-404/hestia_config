@@ -1092,3 +1092,163 @@ patterns:
       - "Jinja2 Template Syntax Reference"
       - "ADR-0020: Template Error Patterns"
   # --- END: Hestia error pattern — Template missing closing brace ---
+
+  - name: "automation_legacy_platform_trigger_syntax"
+    category: "automation_configuration"
+    description: "Legacy 'platform:' syntax in automation triggers - should use 'trigger:' instead"
+    error_format: "String does not match the pattern of \"LEGACY_SYNTAX^\". Legacy syntax, use \"trigger: [type]\" instead."
+    symptoms:
+      - "YAML schema validation errors in automation triggers"
+      - "VS Code linter showing legacy syntax warnings"
+      - "Configuration validation failures"
+    root_causes:
+      - "Using deprecated 'platform:' key in trigger definitions"
+      - "Old automation syntax from pre-2023.4 Home Assistant versions"
+      - "Copy-paste from outdated documentation or examples"
+    solution:
+      - "Replace 'platform:' with 'trigger:' in all automation trigger definitions"
+      - "Update trigger syntax to modern format"
+      - "Validate configuration after changes"
+    examples:
+      incorrect: |
+        trigger:
+          - platform: state
+            entity_id: binary_sensor.startup_completed
+            to: 'on'
+          - platform: homeassistant
+            event: start
+      correct: |
+        trigger:
+          - trigger: state
+            entity_id: binary_sensor.startup_completed
+            to: 'on'
+          - trigger: homeassistant
+            event: start
+    resolution_steps:
+      - "Find all instances of 'platform:' in automation triggers"
+      - "Replace 'platform:' with 'trigger:' maintaining same indentation"
+      - "Keep all other trigger properties unchanged"
+      - "Run Home Assistant configuration check"
+      - "Restart Home Assistant to apply changes"
+    prevention_strategies:
+      - "Use modern Home Assistant documentation for automation examples"
+      - "Enable YAML schema validation in editor"
+      - "Regular configuration validation checks"
+    tooling:
+      find_command: "grep -r 'platform:' packages/ --include='*.yaml' | grep -v 'device:'"
+      fix_command: "sed -i 's/platform:/trigger:/g' file.yaml"
+      validator: "/config/bin/config-validate /config"
+    references:
+      - "Home Assistant 2023.4 breaking changes documentation"
+      - "ADR-0020: Error canonicalization patterns"
+
+  - name: "automation_legacy_service_action_syntax"
+    category: "automation_action"
+    description: "Legacy 'service:' syntax in automation actions - should use 'action:' instead"
+    error_format: "String does not match the pattern of \"LEGACY_SYNTAX^\". Legacy syntax, use \"action: [service_name]\" instead."
+    symptoms:
+      - "YAML schema validation errors in automation actions"
+      - "VS Code linter showing legacy syntax warnings"
+      - "Script execution warnings about deprecated syntax"
+    root_causes:
+      - "Using deprecated 'service:' key in action definitions"
+      - "Old automation syntax from pre-2023.7 Home Assistant versions"
+      - "Outdated script and automation examples"
+    solution:
+      - "Replace 'service:' with 'action:' in all automation and script actions"
+      - "Update action syntax to modern format"
+      - "Maintain all other action properties unchanged"
+    examples:
+      incorrect: |
+        sequence:
+          - service: light.turn_off
+            target:
+              entity_id: light.group_hifi_area_lights
+          - service: notify.notify
+            data:
+              message: "Action completed"
+      correct: |
+        sequence:
+          - action: light.turn_off
+            target:
+              entity_id: light.group_hifi_area_lights
+          - action: notify.notify
+            data:
+              message: "Action completed"
+    resolution_steps:
+      - "Find all instances of 'service:' in automation and script actions"
+      - "Replace 'service:' with 'action:' maintaining same indentation"
+      - "Keep all other action properties (target, data, etc.) unchanged"
+      - "Test automation execution after changes"
+      - "Validate configuration and restart Home Assistant"
+    prevention_strategies:
+      - "Use current Home Assistant documentation for action examples"
+      - "Enable YAML schema validation to catch legacy syntax"
+      - "Regular configuration audits for deprecated syntax"
+    tooling:
+      find_command: "grep -r 'service:' packages/ --include='*.yaml' | grep -v 'platform: template'"
+      fix_command: "sed -i 's/service:/action:/g' file.yaml"
+      validator: "/config/bin/config-validate /config"
+    references:
+      - "Home Assistant 2023.7 breaking changes documentation"
+      - "Script and automation action syntax modernization"
+
+  - name: "script_selector_invalid_domain"
+    category: "script_configuration"
+    description: "Invalid domain specified in script field selectors causing validation errors"
+    error_format: "Property '[domain]' is not allowed for entity selector"
+    symptoms:
+      - "Script field validation errors in configuration check"
+      - "UI not displaying script fields properly"
+      - "Service call parameter validation failures"
+    root_causes:
+      - "Using non-existent or invalid domains in entity selectors"
+      - "Mixing integration names with actual entity domains"
+      - "Incorrect domain names like 'tts' instead of valid entity domains"
+    solution:
+      - "Use valid entity domains in selectors (media_player, light, switch, etc.)"
+      - "For TTS, use 'tts' as service domain, not entity selector domain"
+      - "Consult Home Assistant entity domain list for valid options"
+    examples:
+      incorrect: |
+        fields:
+          media_player:
+            selector: { entity: { domain: media_player } }
+          tts_service:
+            selector: { entity: { domain: tts } }
+      correct: |
+        fields:
+          media_player:
+            selector: { entity: { domain: media_player } }
+          tts_service:
+            selector: { select: { options: ["tts.google_translate", "tts.amazon_polly"] } }
+      alternative_correct: |
+        fields:
+          media_player:
+            selector: { entity: { domain: media_player } }
+          tts_service:
+            selector: { text: {} }
+            description: "TTS service name (e.g., tts.google_translate)"
+    resolution_steps:
+      - "Review all script field selectors for valid domain usage"
+      - "Replace invalid domains with appropriate selector types"
+      - "For TTS services, use text input or select from known TTS integrations"
+      - "Test script field display in Home Assistant UI"
+      - "Validate script execution with corrected selectors"
+    prevention_strategies:
+      - "Reference Home Assistant selector documentation when creating fields"
+      - "Test script field UI display after configuration changes"
+      - "Use entity registry to verify available domains"
+    valid_domains:
+      - "media_player: Media player entities"
+      - "light: Light entities"
+      - "switch: Switch entities"
+      - "sensor: Sensor entities"
+      - "binary_sensor: Binary sensor entities"
+      - "Note: 'tts' is a service domain, not an entity domain"
+    tooling:
+      validator: "Developer Tools > Services - check available TTS services"
+      entity_check: "Developer Tools > States - review entity domains"
+    references:
+      - "Home Assistant selector documentation"
+      - "Entity domain reference documentation"

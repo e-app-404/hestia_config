@@ -1059,7 +1059,7 @@ automation:
               - condition: template
                 value_template: "{{ src == 'ps' }}"
             sequence:
-              - service: light.turn_on
+              - action: light.turn_on
                 target: { entity_id: light.group_hifi_area_lights }
                 data:
                   { hs_color: [220, 100], brightness_pct: 60, transition: 0.3 }
@@ -1067,7 +1067,7 @@ automation:
               - condition: template
                 value_template: "{{ src == 'atv_plex' }}"
             sequence:
-              - service: light.turn_on
+              - action: light.turn_on
                 target: { entity_id: light.group_hifi_area_lights }
                 data:
                   { hs_color: [280, 100], brightness_pct: 55, transition: 0.3 }
@@ -1075,7 +1075,7 @@ automation:
               - condition: template
                 value_template: "{{ src == 'atv' }}"
             sequence:
-              - service: light.turn_on
+              - action: light.turn_on
                 target: { entity_id: light.group_hifi_area_lights }
                 data:
                   { hs_color: [180, 95], brightness_pct: 60, transition: 0.3 }
@@ -1083,12 +1083,12 @@ automation:
               - condition: template
                 value_template: "{{ src == 'tv' }}"
             sequence:
-              - service: light.turn_on
+              - action: light.turn_on
                 target: { entity_id: light.group_hifi_area_lights }
                 data:
                   { hs_color: [120, 100], brightness_pct: 50, transition: 0.3 }
         default:
-          - service: light.turn_on
+          - action: light.turn_on
             target: { entity_id: light.group_hifi_area_lights }
             data: { hs_color: [120, 90], brightness_pct: 50, transition: 0.3 }
 

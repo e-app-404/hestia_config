@@ -64,7 +64,7 @@ automation:
     alias: "System: Startup Optimization Success"
     description: "Log when startup completes without blocking issues"
     trigger:
-      - platform: state
+      - trigger: state
         entity_id: binary_sensor.startup_completed
         to: 'on'
     action:
@@ -85,7 +85,7 @@ automation:
     description: "Log when startup does not complete within the expected timeout (blocking issues likely)"
     mode: single
     trigger:
-      - platform: homeassistant
+      - trigger: homeassistant
         event: start
     variables:
       timeout_secs: 300
