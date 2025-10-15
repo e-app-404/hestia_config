@@ -203,4 +203,4 @@ files:
 - Use the editor play button to test your prompts and refine them based on the
   results.
 
-_last_updated: "2025-10-15"_
+_Last updated: 2025-10-15_

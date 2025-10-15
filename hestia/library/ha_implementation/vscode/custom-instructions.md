@@ -268,11 +268,4 @@ To sync your user instructions files, enable Settings Sync for prompt and instru
 - Reuse and reference instructions files in your prompt files and chat modes
   to keep them clean and focused, and to avoid duplicating instructions.
 
-## Related Topics
-
-- [Customize AI responses overview](../ai-responses-overview)
-- [Create reusable prompt files](../prompt-files)
-- [Create custom chat modes](../chat-modes)
-- [Get started with chat in VS Code](../chat-getting-started)
-- [Configure tools in chat](../chat-tools)
-- [Community contributed instructions, prompts, and chat modes](../community-contributions)
+_Last updated: 2025-10-15_
