@@ -17,7 +17,13 @@ ha_integration_type: integration
 ha_quality_scale: legacy
 ---
 
+# Home Assistant SNMP Integration
+
+## Overview
+
 Many routers, Wi-Fi access points, printers, and other network-connected devices support the [Simple Network Management Protocol (SNMP)](https://en.wikipedia.org/wiki/Simple_Network_Management_Protocol). This is a standardized method for monitoring/managing network-connected devices. SNMP uses a tree-like hierarchy where each node is an object. Many of these objects contain continuously updated lists of metrics like network interfaces throughput, disk activity, active devices on the network, toner levels, and such.
+
+## Home Assistant Device Types Supported
 
 There is currently support for the following device types within Home Assistant:
 
@@ -32,7 +38,7 @@ There is currently support for the following device types within Home Assistant:
 
 ## Presence detection
 
-The following OIDs refer to the current MAC Address table from various common router brands. These reflect all recent devices seen on the network. However, since devices are usually not removed from these internal tables until after a predefined timeout (typically in a range of 5-15 minutes after they were last active on the network, depending on the specific manufacturer's implementation), this is less effective for [device tracking](/integrations/device_tracker/) than desirable. If near-realtime values are needed, it is recommended to use [Ping](/integrations/ping) or [Nmap](/integrations/nmap_tracker) integrations instead.
+The following OIDs refer to the current MAC Address table from various common router brands. These reflect all recent devices seen on the network. However, since devices are usually not removed from these internal tables until after a predefined timeout (typically in a range of 5-15 minutes after they were last active on the network, depending on the specific manufacturer's implementation), this is less effective for [device tracking](//config/hestia/library/ha_implementation/integration/integration.device_tracker.md/) than desirable. If near-realtime values are needed, it is recommended to use [Ping](/integrations/ping) or [Nmap](/integrations/nmap_tracker) integrations instead.
 
 | Brand    | Device/Firmware                  | OID                                             |
 | -------- | -------------------------------- | ----------------------------------------------- |
@@ -102,7 +108,7 @@ required: inclusive
 type: string
 ```
 
-See the [device tracker integration page](/integrations/device_tracker/) for instructions how to configure the people to be tracked.
+See the [device tracker integration page](/config/hestia/library/ha_implementation/integration/integration.device_tracker.md) for instructions how to configure the people to be tracked.
 
 {% include integrations/using_templates.md %}
 
@@ -120,7 +126,7 @@ sensor:
     baseoid: 1.3.6.1.4.1.2021.10.1.3.1
 ```
 
-{% configuration %}
+```yaml
 accept_errors:
 description: "Determines whether the sensor should start and keep working even if the SNMP host is unreachable or not responding. This allows the sensor to be initialized properly even if, for example, your printer is not on when you start Home Assistant."
 required: false
@@ -212,7 +218,7 @@ description: "Version of SNMP protocol, `1`, `2c` or `3`. Version `2c` or higher
 required: false
 type: string
 default: '1'
-{% endconfiguration %}
+```
 
 Valid values for `auth_protocol`:
 
@@ -256,8 +262,6 @@ According to the most common SNMP standard, the uptime of a device is accessible
 
 To create a sensor that displays the uptime for your printer in minutes, you can use this configuration:
 
-{% raw %}
-
 ```yaml
 # Example configuration.yaml entry
 sensor:
@@ -269,8 +273,6 @@ sensor:
     unit_of_measurement: "minutes"
     value_template: "{{((value | int) / 6000) | int}}"
 ```
-
-{% endraw %}
 
 The `accept_errors` option will allow the sensor to work even if the printer is not on when Home Assistant is first started: the sensor will just display a `-` instead of a minute count.
 
@@ -292,7 +294,7 @@ switch:
     baseoid: 1.3.6.1.4.1.19865.1.2.1.4.0
 ```
 
-{% configuration %}
+```yaml
 baseoid:
 description: The SNMP BaseOID which to poll for the state of the switch.
 required: true
@@ -367,9 +369,9 @@ type: string
 vartype:
 description: The SNMP vartype for the `payload_on` and `payload_off` commands as defined in [RFC1902](https://tools.ietf.org/html/rfc1902.html).
 required: false
-type: string  
+type: string
  default: 'none'
-{% endconfiguration %}
+```
 
 You should check with your device's vendor to find out the correct OID and what values turn the switch on and off.
 
@@ -406,7 +408,7 @@ Valid values for `vartype`:
 - **TimeTicks**
 - **Unsigned32**
 
-Complete examples:
+## Complete YAML examples:
 
 ```yaml
 switch:

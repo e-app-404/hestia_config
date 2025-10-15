@@ -15,7 +15,7 @@ The device tracker allows you to track devices in Home Assistant. This can happe
 
 ## Configuring a `device_tracker` platform
 
-To get started add the following lines to your {% term "`configuration.yaml`" %} (example for NETGEAR):
+To get started add the following lines to your `configuration.yaml` (example for NETGEAR):
 
 ```yaml
 # Example configuration.yaml entry for NETGEAR device
@@ -37,13 +37,9 @@ The following optional parameters can be used with any platform:
 | `interval_seconds` | 12      | Seconds between each scan for new devices. This only applies to local device trackers, not applications that push updates.                                                                                                                                                                                                                                                                                                                                                                                               |
 | `consider_home`    | 180     | Seconds to wait till marking someone as not home after not being seen. This parameter is most useful for households with Apple iOS devices that go into sleep mode while still at home to conserve battery life. iPhones will occasionally drop off the network and then re-appear. `consider_home` helps prevent false alarms in presence detection when using IP scanners such as Nmap. `consider_home` accepts various time representations, (e.g., the following all represents 3 minutes: `180`, `0:03`, `0:03:00`) |
 
-{% note %}
+> Note that setting `track_new_devices: false` will still result in new devices being recorded in `known_devices.yaml`, but they won't be tracked (`track: false`).
 
-Note that setting `track_new_devices: false` will still result in new devices being recorded in `known_devices.yaml`, but they won't be tracked (`track: false`).
-
-{% endnote %}
-
-In the {% term "`configuration.yaml`" %}, the extended example from above would look like the following sample:
+In the `configuration.yaml`, the extended example from above would look like the following sample:
 
 ```yaml
 # Example configuration.yaml entry for NETGEAR device
@@ -62,11 +58,7 @@ Multiple device trackers can be used in parallel, such as [Owntracks](/integrati
 
 ## `known_devices.yaml`
 
-{% warning %}
-
-As of 0.94 `known_devices.yaml` is being phased out and no longer used by all trackers. Depending on the integration you use this section may no longer apply. This includes OwnTracks, GeoFency, GPSLogger, Locative and Huawei LTE.
-
-{% endwarning %}
+> Warning: As of 0.94 `known_devices.yaml` is being phased out and no longer used by all trackers. Depending on the integration you use this section may no longer apply. This includes OwnTracks, GeoFency, GPSLogger, Locative and Huawei LTE.
 
 Once `device_tracker` is enabled, a file will be created in your configuration dir named `known_devices.yaml`. Edit this file to adjust which devices to be tracked.
 
@@ -80,11 +72,7 @@ devicename:
   track: true
 ```
 
-{% important %}
-
-In the example above, `devicename` refers to the detected name of the device.  For example, with `nmap`, this will be the MAC address (with byte separators omitted).
-
-{% endimportant %}
+> Important: In the example above, `devicename` refers to the detected name of the device. For example, with `nmap`, this will be the MAC address (with byte separators omitted).
 
 | Parameter       | Default                       | Description                                                                                                                                                                                                                                                                                                                                     |
 | --------------- | ----------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -93,7 +81,7 @@ In the example above, `devicename` refers to the detected name of the device.  F
 | `picture`       | None                          | A picture that you can use to easily identify the person or device. You can also save the image file in a folder "www" in the same location (can be obtained from developer tools) where you have your `configuration.yaml` file and just use `picture: /local/favicon-192x192.png`. The path 'local' is mapped to the 'www' folder you create. |
 | `icon`          | mdi:account                   | An icon for this device (use as an alternative to `picture`).                                                                                                                                                                                                                                                                                   |
 | `gravatar`      | None                          | An email address for the device's owner. If provided, it will override `picture`.                                                                                                                                                                                                                                                               |
-| `track`         | [uses platform setting]       | If  `yes`/`on`/`true` then the device will be tracked. Otherwise its location and state will not update. The `track` setting only applies for devices that were configured directly in YAML.                                                                                                                                                    |
+| `track`         | [uses platform setting]       | If `yes`/`on`/`true` then the device will be tracked. Otherwise its location and state will not update. The `track` setting only applies for devices that were configured directly in YAML.                                                                                                                                                     |
 | `consider_home` | [uses platform setting]       | Seconds to wait till marking someone as not home after not being seen. Allows you to override the global `consider_home` setting from the platform configuration on a per device level. The `consider_home` setting only applies for devices that were configured directly in YAML.                                                             |
 
 ## The state of a tracked device
