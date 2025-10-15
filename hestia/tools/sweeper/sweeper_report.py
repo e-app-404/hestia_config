@@ -394,6 +394,10 @@ class SweeperReportGenerator:
 
     def update_report_index(self, report_path: str) -> None:
         """Update report index with new report entry"""
+        if not self.summary_stats:
+            self.logger.warning("No summary stats available for index update")
+            return
+            
         try:
             index_path = Path(self.reporting_config['index_file'])
             index_path.parent.mkdir(parents=True, exist_ok=True)
