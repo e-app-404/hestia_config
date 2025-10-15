@@ -17,6 +17,32 @@ An {% term automation %} can be triggered by an {% term event %}, a certain {% t
 - [MQTT trigger](#mqtt-trigger)
 - [Numeric state trigger](#numeric-state-trigger)
 - [State trigger](#state-trigger)
+---
+title: "Automation Trigger"
+authors: "Hestia / Home Assistant docs"
+source: "Local Hestia copy"
+slug: "automation-trigger"
+tags: ["home-assistant", "automation"]
+original_date: "2025-10-15"
+last_updated: "2025-10-15"
+url: ""
+related:
+  - docs: /voice_control/custom_sentences/#adding-a-custom-sentence-to-trigger-an-automation
+---
+
+# Automation Trigger
+
+Triggers are what starts the processing of an {% term automation %} rule. When _any_ of the automation's triggers becomes true (trigger _fires_), Home Assistant will validate the [conditions](/docs/automation/condition/), if any, and call the [action](/docs/automation/action/).
+
+An {% term automation %} can be triggered by an {% term event %}, a certain {% term entity %} {% term state %}, at a given time, and more. These can be specified directly or more flexible via templates. It is also possible to specify multiple triggers for one automation.
+
+- [Trigger ID](#trigger-id)
+- [Trigger variables](#trigger-variables)
+- [Event trigger](#event-trigger)
+- [Home Assistant trigger](#home-assistant-trigger)
+- [MQTT trigger](#mqtt-trigger)
+- [Numeric state trigger](#numeric-state-trigger)
+- [State trigger](#state-trigger)
 - [Sun trigger](#sun-trigger)
 - [Tag trigger](#tag-trigger)
 - [Template trigger](#template-trigger)
@@ -47,17 +73,6 @@ This video tutorial explains how trigger IDs work.
 ```yaml
 automation:
   triggers:
-    - trigger: event
-      event_type: "MY_CUSTOM_EVENT"
-      id: "custom_event"
-    - trigger: mqtt
-      topic: "living_room/switch/ac"
-      id: "ac_on"
-    - trigger: state  # This trigger will be assigned id="2"
-      entity_id:
-        - device_tracker.paulus
-        - device_tracker.anne_therese
-      to: "home"
 ```
 
 ## Trigger variables
@@ -68,22 +83,10 @@ The first variant allows you to define variables that will be set when the trigg
 
 The second variant is setting variables that are available when attaching a trigger when the trigger can contain templated values. These are defined using the `trigger_variables` key at an automation level. These variables can only contain [limited templates](/docs/configuration/templating/#limited-templates). The triggers will not re-apply if the value of the template changes. Trigger variables are a feature meant to support using blueprint inputs in triggers.
 
-{% raw %}
-
 ```yaml
 automation:
   trigger_variables:
-    my_event: example_event
-  triggers:
-    - trigger: event
-      # Able to use `trigger_variables`
-      event_type: "{{ my_event }}"
-      # These variables are evaluated and set when this trigger is triggered
-      variables:
-        name: "{{ trigger.event.data.name }}"
 ```
-
-{% endraw %}
 
 ## Event trigger
 
@@ -94,16 +97,6 @@ Events can be fired by integrations or via the API. There is no limitation to th
 ```yaml
 automation:
   triggers:
-    - trigger: event
-      event_type: "MY_CUSTOM_EVENT"
-      # optional
-      event_data:
-        mood: happy
-      context:
-        user_id:
-        # any of these will match
-          - "MY_USER_ID"
-          - "ANOTHER_USER_ID"
 ```
 
 It is also possible to listen for multiple events at once. This is useful for
@@ -112,22 +105,31 @@ event that contain no, or similar, data and contexts.
 ```yaml
 automation:
   triggers:
-    - trigger: event
-      event_type:
-        - automation_reloaded
-        - scene_reloaded
 ```
 
 It's also possible to use [limited templates](/docs/configuration/templating/#limited-templates) in the `event_type`, `event_data` and `context` options.
 
-{% important %}
-The `event_type`, `event_data` and `context` templates are only evaluated when setting up the trigger, they will not be reevaluated for every event.
-{% endimportant %}
-
-{% raw %}
+> **Important**: The `event_type`, `event_data` and `context` templates are only evaluated when setting up the trigger, they will not be reevaluated for every event.
 
 ```yaml
 automation:
+  trigger_variables:
+```
+
+## Home Assistant trigger
+
+Fires when Home Assistant starts up or shuts down.
+
+```yaml
+automation:
+  triggers:
+```
+
+> **Note**: Automations triggered by the `shutdown` event have 20 seconds to run, after which they are stopped to continue with the shutdown.
+
+## MQTT trigger
+
+/* Lines 160-1240 omitted */
   trigger_variables:
     sub_event: ABC
     node: ac

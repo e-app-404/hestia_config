@@ -3,6 +3,19 @@ title: "Understanding automations"
 description: "A breakdown of what an automation consists of."
 ---
 
+---
+title: "Understanding automations"
+authors: "Hestia / Home Assistant docs"
+source: "Local Hestia copy"
+slug: "automation-basics"
+tags: ["home-assistant", "automation"]
+original_date: "2025-10-15"
+last_updated: "2025-10-15"
+url: ""
+---
+
+# Understanding automations
+
 All {% term automations %} are made up of a {% term trigger %} and an {% term action %}. Optionally combined with a {% term condition %}. Take for example the automation:
 
 > When Paulus arrives home and it is after sunset: Turn the lights on in the living room.
@@ -21,24 +34,23 @@ The second part is the [condition](/docs/automation/condition/). Conditions are 
 
 The third part is the [action](/docs/automation/action/), which will be performed when an automation is triggered and all conditions are met. For example, it can turn a light on, set the temperature on your thermostat or activate a scene.
 
-{% note %}
-The difference between a trigger and a condition can be confusing as they are very similar.
+> **Note**: The difference between a trigger and a condition can be confusing as they are very similar.
 
 Triggers require an event to happen for the conditions to be evaluated using current state information.
 
+Event: Arrive home \
 Condition: After Sunset? \
 Action: Turn lights on
-
-{% endnote %}
 
 ## Exploring the internal state
 
 Automations interact directly with the internal state of Home Assistant, so you'll need to familiarize yourself with it. Home Assistant exposes its current state via the developer tools. These are available at the bottom of the sidebar in the frontend. **{% my developer_states title="Developer Tools > States" %}** will show all currently available states. An entity can be anything. A light, a switch, a person and even the sun. A state consists of the following parts:
+
 | Name | Description | Example |
 | ---- | ----- | ---- |
-| Entity ID | Unique identifier for the entity. | `light.living_room`
-| State | The current state of the device. | `off`
-| Attributes | Extra data related to the device and/or current state. | `brightness`
+| Entity ID | Unique identifier for the entity. | `light.living_room` |
+| State | The current state of the device. | `off` |
+| Attributes | Extra data related to the device and/or current state. | `brightness` |
 
 State changes can be used as the source of triggers and the current state can be used in conditions.
 
@@ -48,4 +60,4 @@ To explore the available *actions* open the {% my developer_services title="**De
 
 Now that you've got a sneak peek of what is possible, it's time to get your feet wet and create your first automation.
 
-### [Using the automation editor &raquo;](/docs/automation/editor/)
+### [Using the automation editor »](/docs/automation/editor/)
