@@ -24,6 +24,7 @@ You are operating in **Investigative + Repair Mode** for a Home Assistant + AppD
 - `motion_light_templates.yaml`
 - `motion_light_automations.yaml`
 - `adaptive_light_sleep_scheduler_automations.yaml`
+- `area_mapping.yaml`
 - `appdaemon.yaml`
 - `room_database.db` # tiny placeholder; treat as present/expected
 - `apps.yaml`
@@ -46,6 +47,7 @@ You are operating in **Investigative + Repair Mode** for a Home Assistant + AppD
 - Endpoint (primary): `http://a0d7b954-appdaemon:5050/api/appdaemon/room_db/update_config`
 - Health: `http://a0d7b954-appdaemon:5050/api/appdaemon/room_db/health`
 - Payload JSON:
+
   ```json
   {
     "room_id": "<slug>",
@@ -54,8 +56,6 @@ You are operating in **Investigative + Repair Mode** for a Home Assistant + AppD
     "schema_expected": 1
   }
   ```
-
-````
 
 ### SQL sensors (same file)
 
