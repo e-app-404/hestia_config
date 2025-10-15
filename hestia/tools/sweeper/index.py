@@ -118,7 +118,7 @@ class WorkspaceIndexer:
                     self._classify_file(file_path)
 
         self.stats["total_files"] = len(discovered_files)
-        self.stats["scan_duration_seconds"] = (datetime.now(UTC) - start_time).total_seconds()
+        self.stats["scan_duration_seconds"] = int((datetime.now(UTC) - start_time).total_seconds())
 
         self.logger.info(
             f"Discovered {self.stats['total_files']} files in {self.stats['scan_duration_seconds']:.2f}s"
@@ -382,7 +382,7 @@ def main():
         # Generate and save results (save log even in dry-run for pipeline communication)
         log_path = indexer.save_index_log(args.output)
         index_data = indexer.generate_file_index()
-        
+
         if args.dry_run:
             print("🔍 Dry-run results:")
             print(f"  Total files: {index_data['statistics']['total_files']}")
