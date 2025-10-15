@@ -273,7 +273,9 @@ class BackupSweeperOrchestrator:
 
     def display_pipeline_summary(self) -> None:
         """Display pipeline execution summary"""
-        duration = (self.pipeline_stats['end_time'] - self.pipeline_stats['start_time']).total_seconds()
+        duration = (
+            self.pipeline_stats['end_time'] - self.pipeline_stats['start_time']
+        ).total_seconds()
         
         print("\n" + "="*60)
         print("BACKUP SWEEPER PIPELINE SUMMARY")

@@ -49,13 +49,13 @@ class FileLifecycleManager:
     def __init__(self, config_path: str = "/config/hestia/config/system/hestia.toml"):
         self.config_path = Path(config_path)
         self.config = self._load_config()
-        self.setup_logging()
         
-        # Extract configuration sections
+        # Extract configuration sections first
         self.retention_config = self.config['retention']
         self.safety_config = self.config['safety']
         self.error_handling = self.config['error_handling']
         self.sweeper_config = self.config['automation']['sweeper']
+        self.setup_logging()
         self.paths_config = self.config['paths']
         
         # Initialize operation tracking
