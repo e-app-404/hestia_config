@@ -38,11 +38,17 @@ automation:
       - delay: 300  # seconds (=5 minutes)
 ```
 
-## Example queued
 
 Sometimes an automation is doing an action on a device that does not support multiple simultaneous actions. In such cases, a queue can be used. In that case, the automation will be executed once it's current invocation and queue are done.
-
+authors: "Home Assistant Team"
+source: "Home Assistant Documentation"
+slug: "automation-modes"
+tags: ["home-assistant", "ops", "integration"]
+original_date: "2021-03-11"
+last_updated: "2025-10-15"
+url: "https://www.home-assistant.io/docs/automation/modes/"
 ```yaml
+# Automation modes
 automation:
   - mode: queued
     max: 25

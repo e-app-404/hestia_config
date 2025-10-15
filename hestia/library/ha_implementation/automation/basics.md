@@ -26,7 +26,6 @@ The difference between a trigger and a condition can be confusing as they are ve
 
 Triggers require an event to happen for the conditions to be evaluated using current state information.
 
-Event: Arrive home \
 Condition: After Sunset? \
 Action: Turn lights on
 
@@ -35,7 +34,6 @@ Action: Turn lights on
 ## Exploring the internal state
 
 Automations interact directly with the internal state of Home Assistant, so you'll need to familiarize yourself with it. Home Assistant exposes its current state via the developer tools. These are available at the bottom of the sidebar in the frontend. **{% my developer_states title="Developer Tools > States" %}** will show all currently available states. An entity can be anything. A light, a switch, a person and even the sun. A state consists of the following parts:
-
 | Name | Description | Example |
 | ---- | ----- | ---- |
 | Entity ID | Unique identifier for the entity. | `light.living_room`

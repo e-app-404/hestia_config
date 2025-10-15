@@ -91,15 +91,15 @@
       "!secret",
       "!env_var"
     ],
-      "yaml.schemas": {
+    "yaml.schemas": {
       "https://json.schemastore.org/home-assistant.json": [
         "configuration.yaml",
-        "**/automations.yaml", 
+        "**/automations.yaml",
         "**/scripts.yaml",
         "**/scenes.yaml",
         "**/blueprints/**/*.yaml",
         "**/domain/templates/**/*.yaml",
-        "**/domain/automations/**/*.yaml", 
+        "**/domain/automations/**/*.yaml",
         "**/domain/scripts/**/*.yaml",
         "**/domain/groups/**/*.yaml",
         "**/domain/sensors/**/*.yaml",
@@ -114,7 +114,7 @@
       "source.organizeImports.ruff": "explicit",
       "source.fixAll.ruff": "explicit"
     },
-    
+
     // ADR-0024: Enable Copilot instruction files for workspace
     "github.copilot.chat.codeGeneration.useInstructionFiles": true,
     "window.title": "HA Live — ${rootName} — ${activeEditorShort}",
@@ -137,9 +137,9 @@
       "/System/Volumes/Data/homeassistant/**": true,
       "/Volumes/HA/**": true
     },
-    
+
     // ===== ADR-0024 TERMINAL CONFIGURATION =====
-    
+
     "terminal.integrated.cwd": "/config",
     "terminal.integrated.defaultProfile.osx": "zsh",
     "terminal.integrated.profiles.osx": {
@@ -154,7 +154,7 @@
       "PATH": "/opt/homebrew/bin:${env:PATH}",
       "PYTHONPATH": "/config:${env:PYTHONPATH}"
     },
-    
+
     // Clean automation profile for tasks
     "terminal.integrated.automationProfile.osx": {
       "path": "/bin/zsh",
@@ -168,10 +168,10 @@
     },
     // Split terminals start in workspace root
     "terminal.integrated.splitCwd": "workspaceRoot",
-    
+
     // Use clean environment inheritance
     "terminal.integrated.inheritEnv": true,
-  
+
     "workbench.editor.pinnedTabsOnSeparateRow": true,
     "workbench.startupEditor": "none",
     "window.openFilesInNewWindow": "off"

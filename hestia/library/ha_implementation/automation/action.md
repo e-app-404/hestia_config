@@ -11,10 +11,8 @@ You can also perform the action to activate [a scene](/integrations/scene/) whic
 
 {% raw %}
 
-```yaml
 automation:
   # Change the light in the kitchen and living room to 150 brightness and color red.
-  triggers:
     - trigger: sun
       event: sunset
   actions:
@@ -65,7 +63,6 @@ automation:
       conditions:
         - condition: numeric_state
           entity_id: sun.sun
-          attribute: elevation
           below: 4
         - condition: state
           entity_id: sensor.office_illuminance
