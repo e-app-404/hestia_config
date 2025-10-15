@@ -9,4 +9,7 @@ homeassistant:
   longitude: -0.1289665
   time_zone: "Europe/London"
   unit_system: metric
-
+  # Optimize startup sequence per ADR-0014 memory management
+  safe_mode: false
+  # Set reasonable timeouts for startup-blocking integrations (seconds)
+  startup_timeout: 60

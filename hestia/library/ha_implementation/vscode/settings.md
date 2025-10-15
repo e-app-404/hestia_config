@@ -108,39 +108,37 @@ Some settings can only be edited in `settings.json` such as **Workbench: Color C
 
 > **Tip**: If you prefer to always work directly with `settings.json`, you can set `workbench.settings.editor` to `json`. Then, **Code > Settings > Settings** and the keybinding `⌘,` always open the `settings.json` file and not the Setting editor UI.
 
-Settings file locations
-User settings.json location
+### Settings File Locations
+
+#### User settings.json Location
+
 Depending on your platform, the user settings file is located here:
 
-Windows %APPDATA%\Code\User\settings.json
-macOS $HOME/Library/Application\ Support/Code/User/settings.json
-Linux $HOME/.config/Code/User/settings.json
-Workspace settings.json location
-The workspace settings file is located under the .vscode folder in your root folder. When you add a Workspace Settings settings.json file to your project or source control, the settings for the project will be shared by all users of that project.
+- **Windows**: `%APPDATA%\Code\User\settings.json`
+- **macOS**: `$HOME/Library/Application\ Support/Code/User/settings.json`
+- **Linux**: `$HOME/.config/Code/User/settings.json`
 
-The File Explorer displaying settings.json under the .vscode folder
+#### Workspace settings.json Location
 
-Note
+The workspace settings file is located under the `.vscode` folder in your root folder. When you add a Workspace Settings `settings.json` file to your project or source control, the settings for the project will be shared by all users of that project.
 
-For a Multi-root Workspace, workspace settings are located inside the workspace configuration file.
+> **Note**: For a Multi-root Workspace, workspace settings are located inside the workspace configuration file.
 
-Reset settings
-You can always reset a setting to the default value by hovering over a setting to show the gear icon, clicking on the gear icon, and then selecting the Reset Setting action.
+## Reset Settings
 
-While you can reset settings individually via the Settings editor, you can reset all changed settings by opening settings.json and deleting the entries between the braces {}. Be careful since there is no way to recover your previous setting values.
+You can always reset a setting to the default value by hovering over a setting to show the gear icon, clicking on the gear icon, and then selecting the **Reset Setting** action.
 
-Language specific editor settings
-One way to customize language-specific settings is by opening the Settings editor, pressing on the filter button, and selecting the language option to add a language filter. Alternatively, one can directly type a language filter of the form @lang:languageId into the search widget. The settings that show up will be configurable for that specific language, and will show the setting value specific to that language, if applicable.
+While you can reset settings individually via the Settings editor, you can reset all changed settings by opening `settings.json` and deleting the entries between the braces `{}`. Be careful since there is no way to recover your previous setting values.
 
-When you modify a setting while there is a language filter in place, the setting is configured in the given scope for that language. For example, when modifying the user-scope diffEditor.codeLens setting while there is a @lang:css filter in the search widget, the Settings editor saves the new value to the CSS-specific section of the user settings file.
+## Language-Specific Editor Settings
 
-Editing the CSS-specific user-scoped diffEditor.codeLens setting in the Settings editor
+One way to customize language-specific settings is by opening the Settings editor, pressing on the filter button, and selecting the language option to add a language filter. Alternatively, one can directly type a language filter of the form `@lang:languageId` into the search widget. The settings that show up will be configurable for that specific language, and will show the setting value specific to that language, if applicable.
 
-Note
+When you modify a setting while there is a language filter in place, the setting is configured in the given scope for that language. For example, when modifying the user-scope `diffEditor.codeLens` setting while there is a `@lang:css` filter in the search widget, the Settings editor saves the new value to the CSS-specific section of the user settings file.
 
-If you enter more than one language filter in the search widget, the current behavior is that only the first language filter will be used.
+> **Note**: If you enter more than one language filter in the search widget, the current behavior is that only the first language filter will be used.
 
-Another way to customize your editor by language is by running the global command Preferences: Configure Language Specific Settings (command ID: workbench.action.configureLanguageBasedSettings) from the Command Palette (⇧⌘P) which opens the language picker. Select the language you want. Then, the Settings editor opens with a language filter for the selected language, which allows you to modify language-specific settings for that language. Though, if you have the workbench.settings.editor setting set to json, then the settings.json file opens with a new language entry where you can add applicable settings.
+Another way to customize your editor by language is by running the global command **Preferences: Configure Language Specific Settings** (command ID: `workbench.action.configureLanguageBasedSettings`) from the Command Palette (`⇧⌘P`) which opens the language picker. Select the language you want. Then, the Settings editor opens with a language filter for the selected language, which allows you to modify language-specific settings for that language. Though, if you have the `workbench.settings.editor` setting set to `json`, then the `settings.json` file opens with a new language entry where you can add applicable settings.
 
 Configure language-specific settings command typed up in the Command Palette
 
@@ -176,88 +174,105 @@ The following example can be pasted into a settings JSON file to customize edito
     "editor.acceptSuggestionOnEnter": "off"
   }
 }
-You can use IntelliSense in settings.json to help you find language-specific settings. All editor settings and some non-editor settings are supported. Some languages have default language-specific settings already set, which you can review in defaultSettings.json by running the Preferences: Open Default Settings command.
+You can use IntelliSense in `settings.json` to help you find language-specific settings. All editor settings and some non-editor settings are supported. Some languages have default language-specific settings already set, which you can review in `defaultSettings.json` by running the **Preferences: Open Default Settings** command.
 
-Multiple language-specific editor settings
-You can configure language specific editor settings for multiple languages at once. The following example shows how you can customize settings for javascript and typescript languages together in your settings.json file:
+### Multiple Language-Specific Editor Settings
 
+You can configure language specific editor settings for multiple languages at once. The following example shows how you can customize settings for javascript and typescript languages together in your `settings.json` file:
+
+```json
 "[javascript][typescript]": {
   "editor.maxTokenizationLineLength": 2500
 }
-Profile settings
+```
+## Profile Settings
+
 You can use profiles in VS Code to create sets of customizations and quickly switch between them. For example, they are a great way to customize VS Code for a specific programming language.
 
 When you switch to a profile, the user settings are scoped to only that profile. When you switch to another profile, the user settings of that other profile are applied. This way, you can have different settings for different profiles.
 
 The user settings JSON file for a profile is located in the following directory:
 
-Windows %APPDATA%\Code\User\profiles\<profile ID>\settings.json
-macOS $HOME/Library/Application\ Support/Code/User/profiles/<profile ID>/settings.json
-Linux $HOME/.config/Code/User/profiles/<profile ID>/settings.json
-The <profile ID> is the unique identifier of the profile. For each profile that overrides settings, there will be a corresponding profile settings file.
+- **Windows**: `%APPDATA%\Code\User\profiles\<profile ID>\settings.json`
+- **macOS**: `$HOME/Library/Application\ Support/Code/User/profiles/<profile ID>/settings.json`
+- **Linux**: `$HOME/.config/Code/User/profiles/<profile ID>/settings.json`
 
-Note
+The `<profile ID>` is the unique identifier of the profile. For each profile that overrides settings, there will be a corresponding profile settings file.
 
-The settings.json file for a profile is only created when you modify a setting for that profile.
+> **Note**: The `settings.json` file for a profile is only created when you modify a setting for that profile.
 
-When you're using a non-default profile, you can access the settings.json file that is associated with the default profile by using the Preferences: Open Application Settings (JSON) command in the Command Palette (⇧⌘P).
+When you're using a non-default profile, you can access the `settings.json` file that is associated with the default profile by using the **Preferences: Open Application Settings (JSON)** command in the Command Palette (`⇧⌘P`).
 
-Settings precedence
+## Settings Precedence
+
 Configurations can be overridden at multiple levels by the different setting scopes. In the following list, later scopes override earlier scopes:
 
-Default settings - This scope represents the default unconfigured setting values.
-User settings - Apply globally to all VS Code instances.
-Remote settings - Apply to a remote machine opened by a user.
-Workspace settings - Apply to the open folder or workspace.
-Workspace Folder settings - Apply to a specific folder of a multi-root workspace.
-Language-specific default settings - These are language-specific default values that can be contributed by extensions.
-Language-specific user settings - Same as User settings, but specific to a language.
-Language-specific remote settings - Same as Remote settings, but specific to a language.
-Language-specific workspace settings - Same as Workspace settings, but specific to a language.
-Language-specific workspace folder settings - Same as Workspace Folder settings, but specific to a language.
-Policy settings - Set by the system administrator, these values always override other setting values.
+1. **Default settings** - This scope represents the default unconfigured setting values.
+2. **User settings** - Apply globally to all VS Code instances.
+3. **Remote settings** - Apply to a remote machine opened by a user.
+4. **Workspace settings** - Apply to the open folder or workspace.
+5. **Workspace Folder settings** - Apply to a specific folder of a multi-root workspace.
+6. **Language-specific default settings** - These are language-specific default values that can be contributed by extensions.
+7. **Language-specific user settings** - Same as User settings, but specific to a language.
+8. **Language-specific remote settings** - Same as Remote settings, but specific to a language.
+9. **Language-specific workspace settings** - Same as Workspace settings, but specific to a language.
+10. **Language-specific workspace folder settings** - Same as Workspace Folder settings, but specific to a language.
+11. **Policy settings** - Set by the system administrator, these values always override other setting values.
 Setting values can be of various types:
 
-String - "files.autoSave": "afterDelay"
-Boolean - "editor.minimap.enabled": true
-Number - "files.autoSaveDelay": 1000
-Array - "editor.rulers": []
-Object - "search.exclude": { "**/node_modules": true, "**/bower_components": true }
+- **String** - `"files.autoSave": "afterDelay"`
+- **Boolean** - `"editor.minimap.enabled": true`
+- **Number** - `"files.autoSaveDelay": 1000`
+- **Array** - `"editor.rulers": []`
+- **Object** - `"search.exclude": { "**/node_modules": true, "**/bower_components": true }`
+
 Values with primitive types and Array types are overridden, meaning a configured value in a scope that takes precedence over another scope is used instead of the value in the other scope. But, values with Object types are merged.
 
-For example, workbench.colorCustomizations takes an Object that specifies a group of UI elements and their desired colors. If your user settings set the editor backgrounds to blue and green:
+For example, `workbench.colorCustomizations` takes an Object that specifies a group of UI elements and their desired colors. If your user settings set the editor backgrounds to blue and green:
 
-  "workbench.colorCustomizations": {
-    "editor.background": "#000088",
-    "editor.selectionBackground": "#008800"
-  }
+```json
+"workbench.colorCustomizations": {
+  "editor.background": "#000088",
+  "editor.selectionBackground": "#008800"
+}
+```
+
 And your open workspace settings set the editor foreground to red:
 
-  "workbench.colorCustomizations": {
-    "editor.foreground": "#880000",
-    "editor.selectionBackground": "#00FF00"
-  }
+```json
+"workbench.colorCustomizations": {
+  "editor.foreground": "#880000",
+  "editor.selectionBackground": "#00FF00"
+}
+```
+
 The result, when that workspace is open, is the combination of those two color customizations, as if you had specified:
 
-  "workbench.colorCustomizations": {
-    "editor.background": "#000088",
-    "editor.selectionBackground": "#00FF00",
-    "editor.foreground": "#880000"
-  }
-If there are conflicting values, such as editor.selectionBackground in the example above, the usual override behavior occurs, with workspace values taking precedence over user values, and language-specific values taking precedence over non-language-specific values.
+```json
+"workbench.colorCustomizations": {
+  "editor.background": "#000088",
+  "editor.selectionBackground": "#00FF00",
+  "editor.foreground": "#880000"
+}
+```
 
-Note about multiple language specific settings
-If you are using multiple language-specific settings, be aware that language-specific settings are merged and precedence is set based on the full language string (for example "[typescript][javascript]") and not the individual language IDs (typescript and javascript). This means that for example, a "[typescript][javascript]" workspace setting will not override a "[javascript]" user setting.
+If there are conflicting values, such as `editor.selectionBackground` in the example above, the usual override behavior occurs, with workspace values taking precedence over user values, and language-specific values taking precedence over non-language-specific values.
 
-Settings and security
+### Note About Multiple Language Specific Settings
+
+If you are using multiple language-specific settings, be aware that language-specific settings are merged and precedence is set based on the full language string (for example `"[typescript][javascript]"`) and not the individual language IDs (`typescript` and `javascript`). This means that for example, a `"[typescript][javascript]"` workspace setting will not override a `"[javascript]"` user setting.
+
+## Settings and Security
+
 Some settings allow you to specify an executable that VS Code will run to perform certain operations. For example, you can choose which shell the Integrated Terminal should use. For enhanced security, such settings can only be defined in user settings and not at workspace scope.
 
 Here is the list of settings not supported in workspace settings:
 
-git.path
-terminal.external.windowsExec
-terminal.external.osxExec
-terminal.external.linuxExec
+- `git.path`
+- `terminal.external.windowsExec`
+- `terminal.external.osxExec`
+- `terminal.external.linuxExec`
+
 The first time you open a workspace that defines any of these settings, VS Code will warn you and then always ignore the values after that.
 
 Settings Sync

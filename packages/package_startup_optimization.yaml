@@ -7,30 +7,16 @@
 # Configuration to address startup performance issues
 # Many integrations are blocking Home Assistant initialization
 
+# moved to /config/packages/integrations/logger.yaml
+
 # Reduce startup load by deferring non-critical integrations
-homeassistant:
+# moved to /config/packages/integrations/homeassistant.yaml
+#homeassistant:
   # Optimize startup sequence per ADR-0014 memory management
-  safe_mode: false
-  
+#  safe_mode: false
   # Set reasonable timeouts for startup-blocking integrations (seconds)
-  startup_timeout: 60
+#  startup_timeout: 60
   
-# Logger configuration to track startup performance
-logger:
-  default: warning
-  logs:
-    # Monitor startup-blocking components identified in error log
-    homeassistant.core: info
-    homeassistant.bootstrap: info
-    homeassistant.setup: warning
-    
-    # Specific problematic integrations
-    homeassistant.components.google_assistant: error
-    homeassistant.components.synology_dsm: warning
-    homeassistant.components.network_scanner: warning  # 116 MAC mappings causing timeout
-    
-    # Track ADR-0014 memory management
-    homeassistant.util.executor: warning
 
 # Optimization for network_scanner (major startup blocker)
 # Following ADR guidance to reduce resource usage
