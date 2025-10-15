@@ -1,8 +1,8 @@
 {
-  "generated": "2025-10-15T11:39:47",
-  "total_documents": 76,
+  "generated": "2025-10-15T11:41:48",
+  "total_documents": 77,
   "categories": {
-    "guides": 12,
+    "guides": 13,
     "playbooks": 7,
     "ha_addon": 4,
     "ha_automation": 9,
@@ -111,6 +111,22 @@
       "source": "community.home-assistant.io",
       "file_size": 4574,
       "word_count": 625
+    },
+    {
+      "path": "/config/hestia/library/docs/guides/knowledge_base_indexing_system.md",
+      "relative_path": "hestia/library/docs/guides/knowledge_base_indexing_system.md",
+      "title": "Knowledge Base Indexing System",
+      "category": "guides",
+      "content_type": "blueprint",
+      "author": "",
+      "date": "",
+      "last_updated": "",
+      "summary": "Knowledge Base Indexing System",
+      "tags": [],
+      "slug": "",
+      "source": "",
+      "file_size": 4666,
+      "word_count": 594
     },
     {
       "path": "/config/hestia/library/docs/guides/mqtt_discovery_comprehensive_analysis.md",
