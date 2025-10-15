@@ -1,7 +1,7 @@
 # ════════════════════════════════════════════════════════════════
 # ▶ INTEGRATION: Command Line Sensors ◀
 # File: /config/domain/shell_commands/git_push_logger.sh
-# Loader: packages  •  Domain: integration  •  Last Updated: 2025-08-06
+# Loader: packages  •  Domain: command_line  •  Last Updated: 2025-08-06
 # ════════════════════════════════════════════════════════════════
 
 command_line:
@@ -70,8 +70,6 @@ command_line:
       scan_interval: 600
       command_timeout: 30
       value_template: "{{ value | default('unknown') | trim }}"
-
-  # Ensure no duplicate unique_id values exist for sensors and binary_sensors.
 
   # ──  Debugging (Cloudflare Tunnel) ─────────────────────────────
 
