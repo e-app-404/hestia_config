@@ -239,16 +239,54 @@ display_fields = [
 ]
 
 # Field display specifications
-[rendering.record.fields]
-id = { required = true, display_name = "ID", max_length = 10 }
-title = { required = true, display_name = "Title", max_length = 80, strip_adr_prefix = true }
-slug = { required = true, display_name = "Slug", max_length = 60 }
-status = { required = true, display_name = "Status", max_length = 20 }
-date = { required = true, display_name = "Date", format = "YYYY-MM-DD" }
-decision = { required = true, display_name = "Decision", max_length = 150, append_ellipsis = true }
-related = { required = false, display_name = "References", format = "array", separator = ", " }
-supersedes = { required = false, display_name = "Supersedes", format = "array", separator = ", " }
-last_updated = { required = true, display_name = "Last Updated", format = "YYYY-MM-DD" }
+[rendering.record.fields.id]
+required = true
+display_name = "ID"
+max_length = 10
+
+[rendering.record.fields.title]
+required = true
+display_name = "Title"
+max_length = 80
+strip_adr_prefix = true
+
+[rendering.record.fields.slug]
+required = true
+display_name = "Slug"
+max_length = 60
+
+[rendering.record.fields.status]
+required = true
+display_name = "Status"
+max_length = 20
+
+[rendering.record.fields.date]
+required = true
+display_name = "Date"
+format = "YYYY-MM-DD"
+
+[rendering.record.fields.decision]
+required = true
+display_name = "Decision"
+max_length = 150
+append_ellipsis = true
+
+[rendering.record.fields.related]
+required = false
+display_name = "References"
+format = "array"
+separator = ", "
+
+[rendering.record.fields.supersedes]
+required = false
+display_name = "Supersedes"
+format = "array"
+separator = ", "
+
+[rendering.record.fields.last_updated]
+required = true
+display_name = "Last Updated"
+format = "YYYY-MM-DD"
 
 # JSON-specific rendering configuration
 [rendering.record.json]
@@ -265,12 +303,26 @@ preserve_field_order = true
 # Markdown-specific rendering configuration  
 [rendering.record.md]
 # Grouping and organization for markdown
-status_groups = [
-    { name = "🟢 Active ADRs", statuses = ["Accepted", "Implemented"], icon = "✅" },
-    { name = "🔄 Proposed ADRs", statuses = ["Proposed"], icon = "🔄" },
-    { name = "📝 Draft & Pending ADRs", statuses = ["Draft", "Pending"], icon = "📝" },
-    { name = "🗂️ Superseded ADRs", statuses = ["Superseded", "Deprecated"], icon = "🗂️" }
-]
+
+[[rendering.record.md.status_groups]]
+name = "🟢 Active ADRs"
+statuses = ["Accepted", "Implemented"]
+icon = "✅"
+
+[[rendering.record.md.status_groups]]
+name = "🔄 Proposed ADRs"
+statuses = ["Proposed"]
+icon = "🔄"
+
+[[rendering.record.md.status_groups]]
+name = "📝 Draft & Pending ADRs"
+statuses = ["Draft", "Pending"]
+icon = "📝"
+
+[[rendering.record.md.status_groups]]
+name = "🗂️ Superseded ADRs"
+statuses = ["Superseded", "Deprecated"]
+icon = "🗂️"
 
 # Display formatting for markdown
 title_format = "#### {id}: {title_clean}"
