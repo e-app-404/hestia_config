@@ -12,7 +12,6 @@ description = "Hestia workspace lifecycle and automation configuration"
 maintainer = "hestia-core"
 compliance_adrs = ["ADR-0018", "ADR-0024", "ADR-0027"]
 
-# Canonical path definitions (ADR-0024)
 [paths]
 config_root = "/config"
 workspace_root = "/config/hestia/workspace"
@@ -20,7 +19,6 @@ adr_library = "/config/hestia/library/docs/ADR"
 tools_root = "/config/hestia/tools"
 meta_config = "/config/hestia/config/meta"
 
-# Workspace directory structure (ADR-0018)
 [paths.workspace]
 trash = "/config/.trash"
 quarantine = "/config/.quarantine"
@@ -34,13 +32,11 @@ backups = "/config/hestia/workspace/archive/vault/backups"
 bundles = "/config/hestia/workspace/archive/vault/bundles"
 deprecated = "/config/hestia/workspace/archive/vault/deprecated"
 
-# Git-ignored paths (never tracked)
 [paths.gitignored]
 runtime_state = [".storage", ".cloud", ".venv*", "deps", "__pycache__", ".mypy_cache"]
 workspace_temp = [".trash", ".quarantine", "artifacts", "hestia/reports"]
 backups = ["*.bk.*", "*.bak*"]
 
-# Backup file management (ADR-0018 compliance)
 [backup]
 canonical_format = "{basename}.bk.{timestamp}Z"
 timestamp_format = "YYYYMMDDTHHMMSSZ"
@@ -48,7 +44,6 @@ timestamp_timezone = "UTC"
 file_permissions = "0600"
 atomic_writes = true
 
-# Legacy backup patterns (for migration/detection)
 [backup.legacy_patterns]
 patterns = [
     "*.bak", 
@@ -60,34 +55,29 @@ patterns = [
 migration_required = true
 grace_period_expires = "2025-10-27T00:00:00Z"
 
-# Backup retention policies
 [backup.retention]
 in_place_ttl_days = 7
 trash_ttl_days = 14
 vault_keep_latest_count = 5
 reports_ttl_days = 90
 
-# Backup locations by type
 [backup.locations]
 in_place = "same_directory"  # Next to original file
 vault_long_term = "/config/hestia/workspace/archive/vault/backups"
 staging = "/config/.trash"  # Temporary holding before deletion
 
-# File naming conventions
 [naming]
 backup_canonical = "{basename}.bk.{utc_timestamp}Z"
 report_batch = "{date}/{utc_timestamp}__{tool}__{label}"
 bundle_release = "{label}__{utc_timestamp}__{tag}.tgz"
 quarantine = "{reason}__{utc_timestamp}__{original_name}"
 
-# Timestamp formats
 [naming.timestamps]
 utc_compact = "YYYYMMDDTHHMMSSZ"
 utc_iso = "YYYY-MM-DDTHH:MM:SSZ"
 date_only = "YYYY-MM-DD"
 batch_date = "YYYYMMDD"
 
-# Retention policies by file type
 [retention]
 # In-place backups (created during file operations)
 in_place_backups = { ttl_days = 7, auto_prune = true, location = "same_directory" }
