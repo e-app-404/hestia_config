@@ -70,7 +70,7 @@ command_line:
           description: The payload that represents enabled state.
           required: false
           type: string
-          default: 'ON'
+          default: "ON"
         unique_id:
           description: An ID that uniquely identifies this binary sensor. Set this to a unique value to allow customization through the UI.
           required: false
@@ -79,7 +79,7 @@ command_line:
           description: The payload that represents disabled state.
           required: false
           type: string
-          default: 'OFF'
+          default: "OFF"
         value_template:
           description: Defines a [template](/docs/configuration/templating/#processing-incoming-data) to extract a value from the payload.
           required: false
@@ -289,7 +289,7 @@ command_line:
 
 ## Troubleshooting
 
-As **Command line** {% term integration %} is a yaml only integration, turning on extended logging needs to be done by setting the logging information in your `configuration.yaml` file.
+As **Command line** integration is a yaml only integration, turning on extended logging needs to be done by setting the logging information in your `configuration.yaml` file.
 
 Entering this example in your configuration sets the default logging to info, and for `command_line` to debug. Once done, restart Home Assistant to enable.
 
@@ -381,7 +381,7 @@ command_line:
 ```
 
 > note: A note on `name` for `cover` and `switch`:
-  
+
 The use of `friendly_name` and `object_id` has been deprecated and the slugified `name` will also be used as identifier.
 
 Use `unique_id` to enable changing the name from the UI and if required, use the slugified `name` as identifier.
@@ -433,7 +433,7 @@ An alternative solution could look like this:
 command_line:
   - binary_sensor:
       name: Printer
-      command: 'ping -W 1 -c 1 192.168.1.10 > /dev/null 2>&1 && echo success || echo fail'
+      command: "ping -W 1 -c 1 192.168.1.10 > /dev/null 2>&1 && echo success || echo fail"
       device_class: connectivity
       payload_on: "success"
       payload_off: "fail"
@@ -458,7 +458,7 @@ A binary command line sensor can check this:
 ```yaml
 command_line:
   - binary_sensor:
-      command: '/bin/systemctl is-active home-assistant@rock64.service'
+      command: "/bin/systemctl is-active home-assistant@rock64.service"
       payload_on: "active"
       payload_off: "inactive"
 ```

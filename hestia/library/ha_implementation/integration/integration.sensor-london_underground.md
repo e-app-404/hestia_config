@@ -15,7 +15,7 @@ ha_quality_scale: legacy
 
 # Home Assistant London Underground Sensor Integration
 
-The `london_underground` {% term integration %} will display the status of London underground lines, as well as the Overground and DLR.
+The `london_underground` integration will display the status of London underground lines, as well as the Overground and DLR.
 
 To enable this integration, add it to your `configuration.yaml` file.
 
