@@ -31,16 +31,16 @@ decision: "Disallow symlinks in the HA runtime configuration tree, require direc
 
 ## Table of Contents
 
-1. Context
-2. Decision
-3. Scope
-4. Rationale
-5. Rules & Guardrails
-6. Enforcement & Automation
-7. Migration & Remediation Plan
-8. Consequences
-9. Redaction & Governance Notes
-10. Machine-Parseable Blocks
+1. [Context](#1-context)
+2. [Decision](#2-decision)
+3. [Scope](#3-scope)
+4. [Rationale](#4-rationale)
+5. [Rules & Guardrails](#5-rules--guardrails)
+6. [Enforcement & Automation](#6-enforcement--automation)
+7. [Migration & Remediation Plan](#7-migration--remediation-plan)
+8. [Consequences](#8-consequences)
+9. [Redaction & Governance Notes](#9-redaction--governance-notes)
+10. [Machine-Parseable Blocks](#10-machine-parseable-blocks)
 
 ## 1. Context
 

@@ -22,23 +22,23 @@ decision: "Adopt a deterministic, token-guided merge pipeline for captured confi
 
 ## Table of Contents
 
-1. Context
-2. Decision
-3. Scope
-4. Methodology
-5. Functional & Non-Functional Requirements
-6. Emitted Tokens (Governance Annotations)
-7. Expected I/O
-8. Merge Rules (Deterministic)
-9. Tooling & Runtime Behavior (incl. Copilot)
-10. Security & Compliance
-11. Rollout Plan
-12. Consequences
-13. Examples
-14. Acceptance Criteria
-15. Enforcement & Compliance with ADR-0009
-16. Open Questions
-17. TOKEN_BLOCK
+1. [Context](#1-context)
+2. [Decision](#2-decision)
+3. [Scope](#3-scope)
+4. [Methodology](#4-methodology)
+5. [Functional & Non-Functional Requirements](#5-functional--non-functional-requirements)
+6. [Emitted Tokens (Governance Annotations)](#6-emitted-tokens-governance-annotations)
+7. [Expected I/O](#7-expected-io)
+8. [Merge Rules (Deterministic)](#8-merge-rules-deterministic)
+9. [Tooling & Runtime Behavior (incl. Copilot)](#9-tooling--runtime-behavior-incl-github-copilot)
+10. [Security & Compliance](#10-security--compliance)
+11. [Rollout Plan](#11-rollout-plan)
+12. [Consequences](#12-consequences)
+13. [Examples](#13-examples)
+14. [Acceptance Criteria](#14-acceptance-criteria)
+15. [Enforcement & Compliance with ADR-0009](#15-enforcement--compliance-with-adr-0009)
+16. [Open Questions](#16-open-questions)
+17. [TOKEN_BLOCK](#17-token_block)
 
 ## 1) Context
 
