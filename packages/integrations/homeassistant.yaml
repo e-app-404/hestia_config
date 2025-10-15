@@ -1,7 +1,10 @@
-############
-# Configuration of Home Assistant. Contains the settings that
-# did not make it into the configuration.yaml.
-# https://www.home-assistant.io/docs/configuration/splitting_configuration/
+#═══════════════════════════════════════════════════════════════════
+# ▶ HACS custom integration network_scanner ◀
+# Loader: !include domain/rest/rest.yaml
+# Schema: rest
+# Home Assistant settings beyond configuration.yaml defined here.
+# related: /config/hestia/library/ha_implementation/homeassistant/ha.split-configuration.md
+#═══════════════════════════════════════════════════════════════════
 
 homeassistant:
   name: "Hestia"

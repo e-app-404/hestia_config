@@ -87,10 +87,10 @@ automation:
     trigger:
       - platform: homeassistant
         event: start
-     variables:
-       timeout_secs: 300
-       grace_secs: 30
-       check_after: "{{ timeout_secs + grace_secs }}"
+    variables:
+      timeout_secs: 300
+      grace_secs: 30
+      check_after: "{{ timeout_secs + grace_secs }}"
     action:
       - delay:
           seconds: "{{ check_after }}"

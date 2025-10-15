@@ -275,43 +275,38 @@ Here is the list of settings not supported in workspace settings:
 
 The first time you open a workspace that defines any of these settings, VS Code will warn you and then always ignore the values after that.
 
-Settings Sync
-You can share your user settings across your VS Code instances with the Settings Sync feature. This feature lets you share settings, keyboard shortcuts, and installed extensions across your VS Code installs on various machines. You can enable Settings Sync via the Backup and Sync Settings command on the right of the Settings editor or on the Accounts Activity Bar context menu.
+## Settings Sync
 
-Turn on Settings Sync command in the Accounts Activity Bar menu
+You can share your user settings across your VS Code instances with the Settings Sync feature. This feature lets you share settings, keyboard shortcuts, and installed extensions across your VS Code installs on various machines. You can enable Settings Sync via the **Backup and Sync Settings** command on the right of the Settings editor or on the Accounts Activity Bar context menu.
 
-You can learn more about turning on and configuring Settings Sync in the Settings Sync user guide.
+> **Note**: VS Code does not synchronize your extensions to or from a remote window, such as when you're connected to SSH, a development container (devcontainer), or WSL.
 
-Note
+## Feature Lifecycle
 
-VS Code does not synchronize your extensions to or from a remote window, such as when you're connected to SSH, a development container (devcontainer), or WSL.
-
-Feature lifecycle
 Features and their corresponding settings can be in one of the following states. Depending on the state, you might be cautious about using the feature or setting in your workflow.
 
-Experimental - Exploratory features available for early adopters. These features might change or be removed in the future. In the Settings editor, these settings have an Experimental label. You can also search experimental settings by entering @tag:experimental in the search box.
+- **Experimental** - Exploratory features available for early adopters. These features might change or be removed in the future. In the Settings editor, these settings have an **Experimental** label. You can also search experimental settings by entering `@tag:experimental` in the search box.
 
-Settings editor filtered with '@tag:experimental' showing experimental settings.
+- **Preview** - Preview features and settings have the final functionality but might still be iterated on for stability and polishing. Usually, preview features are disabled by default. In the Settings editor, these settings have a **Preview** label. You can also search preview settings by entering `@tag:preview` in the search box.
 
-Preview - Preview features and settings have the final functionality but might still be iterated on for stability and polishing. Usually, preview features are disabled by default. In the Settings editor, these settings have an Preview label. You can also search preview settings by entering @tag:preview in the search box.
+- **Stable** - The feature is stable and fully supported in VS Code.
 
-Settings editor filtered with '@tag:preview' showing preview settings.
+Experimental and preview features enable you to try out new features and provide feedback.
 
-Stable - The feature is stable and fully supported in VS Code.
+## Common Questions
 
-Experimental and preview features enable you to try out new features and provide feedback. Share your feedback in our VS Code issues.
+### VS Code says "Unable to write settings."
 
-VS Code default settings reference
-Synchronize settings across machines
-Common questions
-VS Code says "Unable to write settings."
-If you try to change a setting (for example turning on Auto Save or selecting a new Color Theme) and you see "Unable to write into user settings. Please open user settings to correct errors/warnings in it and try again.", it means your settings.json file is ill-formed or has errors. The error can be as simple as a missing comma or incorrect setting value. Open the settings.json file with the Preferences: Open User Settings (JSON) command in the Command Palette (⇧⌘P) and you should see the error highlighted with red squiggles.
+If you try to change a setting (for example turning on Auto Save or selecting a new Color Theme) and you see "Unable to write into user settings. Please open user settings to correct errors/warnings in it and try again.", it means your `settings.json` file is ill-formed or has errors. The error can be as simple as a missing comma or incorrect setting value. Open the `settings.json` file with the **Preferences: Open User Settings (JSON)** command in the Command Palette (`⇧⌘P`) and you should see the error highlighted with red squiggles.
 
-How can I reset my user settings?
-The easiest way to reset VS Code back to the default settings is to clear your user settings.json file. You can open the settings.json file with the Preferences: Open User Settings (JSON) command in the Command Palette (⇧⌘P). Once the file is open in an editor, delete everything between the two curly braces {}, save the file, and VS Code will go back to using the default values.
+### How can I reset my user settings?
 
-When does it make sense to use workspace settings?
+The easiest way to reset VS Code back to the default settings is to clear your user `settings.json` file. You can open the `settings.json` file with the **Preferences: Open User Settings (JSON)** command in the Command Palette (`⇧⌘P`). Once the file is open in an editor, delete everything between the two curly braces `{}`, save the file, and VS Code will go back to using the default values.
+
+### When does it make sense to use workspace settings?
+
 If you're using a workspace that needs custom settings but you don't want to apply them to your other VS Code projects. A good example is language-specific linting rules.
 
-Where can I find extension settings?
-In general, VS Code extensions store their settings in your user or workspaces settings files and they are available through the Settings editor UI (Preferences: Open Settings (UI) command) or via IntelliSense in your settings.json file (Preferences: Open User Settings (JSON) command). Searching by the extension name (for example gitlens or python) can help filter down settings to just those contributed by an extension.
+### Where can I find extension settings?
+
+In general, VS Code extensions store their settings in your user or workspaces settings files and they are available through the Settings editor UI (**Preferences: Open Settings (UI)** command) or via IntelliSense in your `settings.json` file (**Preferences: Open User Settings (JSON)** command). Searching by the extension name (for example `gitlens` or `python`) can help filter down settings to just those contributed by an extension.
