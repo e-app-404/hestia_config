@@ -33,12 +33,13 @@ class BackupSweeperOrchestrator:
     def __init__(self, config_path: str = "/config/hestia/config/system/hestia.toml"):
         self.config_path = Path(config_path)
         self.config = self._load_config()
-        self.setup_logging()
         
-        # Extract configuration
+        # Extract configuration first (before setup_logging which uses it)
         self.sweeper_config = self.config['automation']['sweeper']
         self.components_config = self.sweeper_config['components']
         self.base_path = Path(self.components_config['base_path'])
+        
+        self.setup_logging()
         
         # Component paths
         self.components = {
@@ -252,12 +253,18 @@ class BackupSweeperOrchestrator:
         
         # Pipeline completion
         self.pipeline_stats['end_time'] = datetime.now(UTC)
-        duration = (self.pipeline_stats['end_time'] - self.pipeline_stats['start_time']).total_seconds()
+        duration = (
+            self.pipeline_stats['end_time'] - self.pipeline_stats['start_time']
+        ).total_seconds()
         
         if all_successful:
-            self.logger.info(f"✅ Backup sweeper pipeline completed successfully in {duration:.2f}s")
+            self.logger.info(
+                f"✅ Backup sweeper pipeline completed successfully in {duration:.2f}s"
+            )
         else:
-            self.logger.warning(f"⚠️ Backup sweeper pipeline completed with errors in {duration:.2f}s")
+            self.logger.warning(
+                f"⚠️ Backup sweeper pipeline completed with errors in {duration:.2f}s"
+            )
         
         # Display summary
         self.display_pipeline_summary()
@@ -278,12 +285,12 @@ class BackupSweeperOrchestrator:
         print(f"Components failed: {len(self.pipeline_stats['components_failed'])}")
         
         if self.pipeline_stats['components_executed']:
-            print(f"\n✅ Successful components:")
+            print("\n✅ Successful components:")
             for component in self.pipeline_stats['components_executed']:
                 print(f"  - {component}")
         
         if self.pipeline_stats['components_failed']:
-            print(f"\n❌ Failed components:")
+            print("\n❌ Failed components:")
             for component in self.pipeline_stats['components_failed']:
                 print(f"  - {component}")
         
