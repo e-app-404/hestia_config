@@ -306,7 +306,7 @@ automation:
   - alias: "Sunrise Light Sequence Before Sonos Alarm"
     id: sonos_sunrise_light_rampup
     trigger:
-      - trigger: template
+      - platform: template
         value_template: |
           {% set alarm = states('input_datetime.sonos_alarm_time') %}
           {% if alarm not in ['unknown', 'unavailable', None, ''] %}

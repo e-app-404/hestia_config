@@ -43,7 +43,7 @@ template:
           adr_compliance: "ADR-0024 canonical paths, ADR-0018 lifecycle"
 
 binary_sensor:
-  - trigger: template
+  - platform: template
     sensors:
       startup_completed:
         friendly_name: "Home Assistant Startup Completed"

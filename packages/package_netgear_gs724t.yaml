@@ -34,7 +34,7 @@ homeassistant:
       icon: mdi:ethernet
 
 sensor:
-  - trigger: snmp
+  - platform: snmp
     name: gs724t_sys_name
     host: !secret snmp_netgear_host
     community: !secret snmp_netgear_v2c_ro
@@ -42,17 +42,17 @@ sensor:
     baseoid: 1.3.6.1.2.1.1.5.0 # sysName.0
     scan_interval: 300
 
-  - trigger: snmp
+  - platform: snmp
     name: gs724t_sys_uptime_seconds
     host: !secret snmp_netgear_host
-    community: !secret snmp_netgear_v2c_ro
+    community: !secret snmp_netgear_v2c_rgio
     version: "2c"
     baseoid: 1.3.6.1.2.1.1.3.0 # sysUpTime.0 (hundredths of a second)
     value_template: "{{ (value | int(0) / 100) | int }}"
     unit_of_measurement: "s"
     scan_interval: 60
 
-  - trigger: snmp
+  - platform: snmp
     name: gs724t_if_count
     host: !secret snmp_netgear_host
     community: !secret snmp_netgear_v2c_ro
@@ -61,7 +61,7 @@ sensor:
     scan_interval: 600
 
   # ---- Link status (oper) for selected ports -------------------
-  - trigger: snmp
+  - platform: snmp
     name: gs724t_port1_oper_status_raw
     host: !secret snmp_netgear_host
     community: !secret snmp_netgear_v2c_ro
@@ -69,7 +69,7 @@ sensor:
     baseoid: 1.3.6.1.2.1.2.2.1.8.1 # ifOperStatus.1 (1=up,2=down,...)
     scan_interval: 30
 
-  - trigger: snmp
+  - platform: snmp
     name: gs724t_port2_oper_status_raw
     host: !secret snmp_netgear_host
     community: !secret snmp_netgear_v2c_ro
@@ -78,7 +78,7 @@ sensor:
     scan_interval: 30
 
   # ---- 64-bit octet counters for uplink (Port 1) ---------------
-  - trigger: snmp
+  - platform: snmp
     name: gs724t_port1_in_octets
     host: !secret snmp_netgear_host
     community: !secret snmp_netgear_v2c_ro
@@ -87,7 +87,7 @@ sensor:
     unit_of_measurement: "B"
     scan_interval: 30
 
-  - trigger: snmp
+  - platform: snmp
     name: gs724t_port1_out_octets
     host: !secret snmp_netgear_host
     community: !secret snmp_netgear_v2c_ro
@@ -97,7 +97,7 @@ sensor:
     scan_interval: 30
 
   # ---- Friendly ifName labels (sanity map) ---------------------
-  - trigger: snmp
+  - platform: snmp
     name: gs724t_ifname_1
     host: !secret snmp_netgear_host
     community: !secret snmp_netgear_v2c_ro
@@ -105,7 +105,7 @@ sensor:
     baseoid: 1.3.6.1.2.1.31.1.1.1.1.1 # ifName.1
     scan_interval: 600
 
-  - trigger: snmp
+  - platform: snmp
     name: gs724t_ifname_2
     host: !secret snmp_netgear_host
     community: !secret snmp_netgear_v2c_ro
@@ -114,14 +114,14 @@ sensor:
     scan_interval: 600
 
   # ---- Derivatives: compute B/s from octets --------------------
-  - trigger: derivative
+  - platform: derivative
     name: gs724t_port1_in_Bps
     source: sensor.gs724t_port1_in_octets
     unit_time: s
     time_window: "00:05:00"
     round: 0
 
-  - trigger: derivative
+  - platform: derivative
     name: gs724t_port1_out_Bps
     source: sensor.gs724t_port1_out_octets
     unit_time: s
@@ -129,7 +129,7 @@ sensor:
     round: 0
 
 binary_sensor:
-  - trigger: template
+  - platform: template
     sensors:
       gs724t_port1_link:
         friendly_name: "GS724T Port 1 Link"
@@ -140,7 +140,7 @@ binary_sensor:
         value_template: "{{ states('sensor.gs724t_port2_oper_status_raw') | int(0) == 1 }}"
         device_class: connectivity
 
-  - trigger: group
+  - platform: group
     name: "GS724T Link (any)"
     device_class: connectivity
     all: false
@@ -148,7 +148,7 @@ binary_sensor:
       - binary_sensor.gs724t_port1_link
       - binary_sensor.gs724t_port2_link
 
-  - trigger: group
+  - platform: group
     name: "GS724T Link (all)"
     device_class: connectivity
     all: true
