@@ -4,7 +4,21 @@ title: "OOM Mitigation & Recorder Policy"
 version: v2 (canonical-path + guardrails)
 date: 2025-09-18
 status: Accepted
-tags: ["performance", "memory", "oom", "recorder", "database", "policy", "automation", "guardrails", "ci", "hestia", "configuration", "sql"]
+tags:
+  [
+    "performance",
+    "memory",
+    "oom",
+    "recorder",
+    "database",
+    "policy",
+    "automation",
+    "guardrails",
+    "ci",
+    "hestia",
+    "configuration",
+    "sql",
+  ]
 related:
   - ADR-0010
   - ADR-0012
@@ -12,8 +26,8 @@ last_updated: 2025-09-25
 references:
   - .github/workflows/ha-governance.yml
 author: Strategos (governance)
-supersedes: []
-
+decision: "Adopt a **single, canonical recorder configuration** with short retention and strict excludes, enforce **OOM sentinel**, and implement **repo-level guardrails** to make the policy machine-checkable."
+supersedes: ["ADR-0014.v1"]
 ---
 
 # ADR-0014: Recorder Policy, OOM Guard & Repo Guardrails (v2)
@@ -64,7 +78,7 @@ Adopt a **single, canonical recorder configuration** with short retention and st
 
 ## Operational Policy (Effective YAML)
 
-*This YAML **lives only** at `packages/integrations/recorder.yaml`.*
+_This YAML **lives only** at `packages/integrations/recorder.yaml`._
 
 ```yaml
 recorder:
@@ -85,7 +99,7 @@ recorder:
       - updater
       - zone
     event_types:
-      - call_service         # keep 'automation_triggered' (DO NOT exclude)
+      - call_service # keep 'automation_triggered' (DO NOT exclude)
     entity_globs:
       - sensor.sun*
       - sensor.time*

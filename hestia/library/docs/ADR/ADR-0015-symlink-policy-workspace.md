@@ -6,7 +6,17 @@ status: Accepted
 author:
   - "Evert Appels"
   - "GPT-5 Strategos"
-related: ["ADR-0001", "ADR-0004", "ADR-0008", "ADR-0009", "ADR-0010", "ADR-0012", "ADR-0013", "ADR-0014"]
+related:
+  [
+    "ADR-0001",
+    "ADR-0004",
+    "ADR-0008",
+    "ADR-0009",
+    "ADR-0010",
+    "ADR-0012",
+    "ADR-0013",
+    "ADR-0014",
+  ]
 supersedes: []
 last_updated: 2025-09-25
 policy:
@@ -14,6 +24,7 @@ policy:
   symlinks_outside_repo_root: "allowed, local-only, not tracked"
 validation_hooks:
   - "ADR-0016 repo hygiene checks (no tracked symlinks, no nested .git)"
+decision: "Disallow symlinks in the HA runtime configuration tree, require direct imports for HA-loaded artifacts, allow symlinks only in designated non-runtime areas with guardrails."
 ---
 
 # ADR-0015: Symlink Policy for Hestia Config Workspace
@@ -31,24 +42,22 @@ validation_hooks:
 9. Redaction & Governance Notes
 10. Machine-Parseable Blocks
 
----
-
 ## 1. Context
 
-Historic attempts to use filesystem symlinks inside the Home Assistant (HA) `/config` tree (especially at the repo root or HA-loaded directories) have repeatedly caused issues with HA’s file watcher, backup/snapshot integrity, Samba/NAS clients, and cross-platform tooling. We also maintain a strict separation between **authoring/tooling* - and **runtime-loaded configuration**. This ADR formalizes a project-wide symlink policy, defaulting to **no symlinks in HA-loaded config paths**, with narrowly-defined exceptions elsewhere.
+Historic attempts to use filesystem symlinks inside the Home Assistant (HA) `/config` tree (especially at the repo root or HA-loaded directories) have repeatedly caused issues with HA’s file watcher, backup/snapshot integrity, Samba/NAS clients, and cross-platform tooling. We also maintain a strict separation between **authoring/tooling\* - and **runtime-loaded configuration**. This ADR formalizes a project-wide symlink policy, defaulting to **no symlinks in HA-loaded config paths\*\*, with narrowly-defined exceptions elsewhere.
 
-A specific driver for this ADR is the desire to reference shared Jinja macros without creating a root-level symlink. The **canonical* - macro library is:
+A specific driver for this ADR is the desire to reference shared Jinja macros without creating a root-level symlink. The \*_canonical_ - macro library is:
 
- - `/config/custom_templates/template.library.jinja`
+- `/config/custom_templates/template.library.jinja`
 
 …and **MUST** - be imported directly from that path rather than via symlinks.
 
 ## 2. Decision
 
- - Disallow symlinks in the HA runtime configuration tree (the **deny-list** - below), including the config root.
- - Require direct, canonical imports/paths for any HA-loaded artifacts (e.g., Jinja, packages, Lovelace), with the canonical macro location set to `/config/custom_templates/template.library.jinja`.
- - Allow symlinks **only** - in designated non-runtime areas (the **allow-list** - below) for developer workflows and large-data artifacts, subject to guardrails.
- - Provide automated enforcement in pre-commit and CI to block prohibited symlinks and to verify canonical imports for templates.
+- Disallow symlinks in the HA runtime configuration tree (the **deny-list** - below), including the config root.
+- Require direct, canonical imports/paths for any HA-loaded artifacts (e.g., Jinja, packages, Lovelace), with the canonical macro location set to `/config/custom_templates/template.library.jinja`.
+- Allow symlinks **only** - in designated non-runtime areas (the **allow-list** - below) for developer workflows and large-data artifacts, subject to guardrails.
+- Provide automated enforcement in pre-commit and CI to block prohibited symlinks and to verify canonical imports for templates.
 
 ## 3. Scope
 
@@ -58,10 +67,10 @@ A specific driver for this ADR is the desire to reference shared Jinja macros wi
 
 ## 4. Rationale
 
- - **Stability**: HA’s file watcher and reload mechanisms behave inconsistently with symlinks.
- - **Integrity**: Snapshots/tarballs and Samba shares may dereference or miss symlinked content, leading to broken backups or duplicate material.
- - **Determinism**: Symlinks blur boundaries between authoring and runtime config, undermining auditability and normalization rules (see ADR-0008).
- - **Portability**: Cross-platform paths and ACLs differ; symlinks often degrade the experience on NAS/SMB clients.
+- **Stability**: HA’s file watcher and reload mechanisms behave inconsistently with symlinks.
+- **Integrity**: Snapshots/tarballs and Samba shares may dereference or miss symlinked content, leading to broken backups or duplicate material.
+- **Determinism**: Symlinks blur boundaries between authoring and runtime config, undermining auditability and normalization rules (see ADR-0008).
+- **Portability**: Cross-platform paths and ACLs differ; symlinks often degrade the experience on NAS/SMB clients.
 
 ## 5. Rules & Guardrails
 
@@ -76,6 +85,7 @@ A specific driver for this ADR is the desire to reference shared Jinja macros wi
   - `/config/lovelace/` and `/config/ui-lovelace*/`
   - `/config/automations*/`, `/config/scripts*/`, `/config/scenes*/`
   - Any directory referenced by HA `!include` or `template:` loaders
+
 - `/vault` (including `backups/`, `tarballs/`, and `storage/`) to preserve archival integrity
 
 ### 5.2 Allow-list (symlinks permitted with guardrails)
@@ -83,7 +93,7 @@ A specific driver for this ADR is the desire to reference shared Jinja macros wi
 - `/tools/**`, `/deploy/**`, `/work/**`, `/docs/**`, `/diagnostics/**`, `/config/meta/**`
 - Guardrails for allowed locations:
 
-  - Symlinks must be **relative* - (no absolute paths) and must not escape the repository root.
+  - Symlinks must be \*_relative_ - (no absolute paths) and must not escape the repository root.
   - No symlinks may point into any deny-listed path.
   - No symlink chains > 1 hop (no nested chains).
   - Do not symlink files that are consumed by HA at runtime, even if placed in an allow-listed folder.
@@ -96,11 +106,12 @@ A specific driver for this ADR is the desire to reference shared Jinja macros wi
   ```jinja
   {%- from 'custom_templates/template.library.jinja' import <macro_a>, <macro_b> -%}
   ```
- - No alternate symlinked entry points (e.g., root-level `template.library.jinja`) are allowed.
+
+- No alternate symlinked entry points (e.g., root-level `template.library.jinja`) are allowed.
 
 ### 5.4 Exception process
 
- - Exceptions are rare and **time-bound**. A PR seeking an exception must include a fenced YAML **`SYMLINK_EXCEPTION`* - block (see Machine-Parseable Blocks) describing justification, duration, and rollback plan. Approval by repository maintainers is required. Exceptions are logged and expire automatically.
+- Exceptions are rare and **time-bound**. A PR seeking an exception must include a fenced YAML \*_`SYMLINK_EXCEPTION`_ - block (see Machine-Parseable Blocks) describing justification, duration, and rollback plan. Approval by repository maintainers is required. Exceptions are logged and expire automatically.
 
 ## 6. Enforcement & Automation
 
@@ -130,6 +141,7 @@ A specific driver for this ADR is the desire to reference shared Jinja macros wi
     done < <(git ls-files -s)
     exit $status
     ```
+
 - **CI check**: replicate pre-commit logic; additionally verify that no symlink target points into a deny-listed subtree.
 - **Template import linter**: scan for imports of `template.library.jinja` and ensure they use `custom_templates/template.library.jinja`.
 
@@ -140,24 +152,26 @@ A specific driver for this ADR is the desire to reference shared Jinja macros wi
    ```bash
    git ls-files -s | awk '$1==120000{print $4}'
    ```
+
 2. **Remove** - symlinks found under deny-listed paths; replace with real files where needed.
-3. **Rewrite Jinja imports**  - to the canonical path:
+3. **Rewrite Jinja imports** - to the canonical path:
 
    ```bash
    rg -l "template\.library\.jinja" config | xargs sd \
      "from '.*template\.library\.jinja'" \
      "from 'custom_templates/template.library.jinja'"
    ```
+
 4. **Add pre-commit/CI hooks** - and re-run to confirm no violations.
 
 ## 8. Consequences
 
- - Slight duplication in authoring workflows (copy over symlink) in exchange for higher determinism and safer snapshots.
- - Clear separation of authoring vs runtime config simplifies audits, diffs, and incident response.
+- Slight duplication in authoring workflows (copy over symlink) in exchange for higher determinism and safer snapshots.
+- Clear separation of authoring vs runtime config simplifies audits, diffs, and incident response.
 
 ## 9. Redaction & Governance Notes
 
- - This ADR follows `ADR-0009` governance and formatting. No sensitive material is included. Any future exception blocks will be time-bound and machine-parseable for automated redaction/export.
+- This ADR follows `ADR-0009` governance and formatting. No sensitive material is included. Any future exception blocks will be time-bound and machine-parseable for automated redaction/export.
 
 ## 10. Machine-Parseable Blocks
 

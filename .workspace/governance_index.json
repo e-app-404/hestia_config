@@ -1,7 +1,7 @@
 {
   "governance_index": {
     "version": 2,
-    "generated_at": "2025-10-15T12:14:43",
+    "generated_at": "2025-10-15T12:17:52",
     "total_adrs": 28,
     "statistics": {
       "by_status": {
@@ -319,7 +319,7 @@
         "superseded_by": [],
         "priority": 3,
         "is_deprecated": false,
-        "last_modified": "2025-10-11"
+        "last_modified": "2025-10-15"
       },
       {
         "path": "/config/hestia/library/docs/ADR/ADR-0019-remote-topology-mirror-policy.md",
@@ -360,7 +360,7 @@
         "superseded_by": [],
         "priority": 3,
         "is_deprecated": false,
-        "last_modified": "2025-10-04"
+        "last_modified": "2025-10-15"
       },
       {
         "path": "/config/hestia/library/docs/ADR/ADR-0011-switch-modeling-and-validation.md",
@@ -368,7 +368,7 @@
         "title": "Switch Modeling & Validation (Netgear GS724T v3 and Similar)",
         "status": "Accepted",
         "date": "2025-09-12",
-        "decision": "Adopt a canonical **Switch Model** with deterministic artifacts and strict validation. Treat the Netgear backup as the source of truth, transformed into normalized outputs: 1) `switch.conf` — human-re...",
+        "decision": "Adopt a canonical **Switch Model** with deterministic artifacts and strict validation. Treat the Netgear backup as the source of truth, transformed into normalized outputs: 1. `switch.conf` — human-re...",
         "tags": [
           "ADR-0008",
           "ADR-0011"
@@ -377,7 +377,7 @@
         "superseded_by": [],
         "priority": 3,
         "is_deprecated": false,
-        "last_modified": "2025-10-05"
+        "last_modified": "2025-10-15"
       },
       {
         "path": "/config/hestia/library/docs/ADR/ADR-0015-symlink-policy-workspace.md",
@@ -402,7 +402,7 @@
         "superseded_by": [],
         "priority": 3,
         "is_deprecated": false,
-        "last_modified": "2025-10-01"
+        "last_modified": "2025-10-15"
       },
       {
         "path": "/config/hestia/library/docs/ADR/ADR-0008-normalization-and-determinism-rules.md",
@@ -410,7 +410,7 @@
         "title": "Syntax-Aware Normalization & Determinism Rules for Config Artifacts",
         "status": "Accepted",
         "date": "2025-09-12",
-        "decision": "Adopt a **syntax-aware** normalization profile and a **deterministic packaging** process that together guarantee: 1) Byte-stable outputs for identical inputs, 2) Minimal diffs (whitespace and ordering...",
+        "decision": "Adopt a **syntax-aware** normalization profile and a **deterministic packaging** process that together guarantee: 1. Byte-stable outputs for identical inputs, 2. Minimal diffs (whitespace and ordering...",
         "tags": [
           "ADR-0001",
           "ADR-0008",
@@ -420,7 +420,7 @@
         "superseded_by": [],
         "priority": 3,
         "is_deprecated": false,
-        "last_modified": "2025-10-04"
+        "last_modified": "2025-10-15"
       },
       {
         "path": "/config/hestia/library/docs/ADR/ADR-0001-tts-yaml.md",

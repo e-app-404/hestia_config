@@ -1,8 +1,8 @@
 {
-  "generated": "2025-10-15T12:09:08",
-  "total_documents": 78,
+  "generated": "2025-10-15T12:18:54",
+  "total_documents": 79,
   "categories": {
-    "guides": 14,
+    "guides": 15,
     "playbooks": 7,
     "ha_addon": 4,
     "ha_automation": 9,
@@ -41,7 +41,7 @@
       "tags": [],
       "slug": "",
       "source": "",
-      "file_size": 6976,
+      "file_size": 6980,
       "word_count": 867
     },
     {
@@ -83,6 +83,22 @@
       "source": "",
       "file_size": 5432,
       "word_count": 684
+    },
+    {
+      "path": "/config/hestia/library/docs/guides/enhanced_governance_index_system.md",
+      "relative_path": "hestia/library/docs/guides/enhanced_governance_index_system.md",
+      "title": "Enhanced Governance Index System",
+      "category": "guides",
+      "content_type": "guide",
+      "author": "",
+      "date": "",
+      "last_updated": "",
+      "summary": "Enhanced Governance Index System",
+      "tags": [],
+      "slug": "",
+      "source": "",
+      "file_size": 7297,
+      "word_count": 907
     },
     {
       "path": "/config/hestia/library/docs/guides/governance_digest_ADR_reference.md",
