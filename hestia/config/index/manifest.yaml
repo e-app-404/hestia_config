@@ -66,6 +66,42 @@ hades_config_index:
         title: null
         tags: ["tailscale", "diagnostics"]
 
+    tools:
+      - path: "/config/hestia/tools/backup_sweeper.py"
+        file: "backup_sweeper.py"
+        title: "Backup Sweeper Pipeline Orchestrator"
+        tags: ["automation", "backup", "sweeper", "orchestrator"]
+
+      - path: "/config/hestia/tools/sweeper/index.py"
+        file: "index.py"
+        title: "Workspace File Discovery Engine"
+        tags: ["sweeper", "indexer", "scanner"]
+
+      - path: "/config/hestia/tools/sweeper/naming_convention.py"
+        file: "naming_convention.py"
+        title: "Naming Standards Enforcement"
+        tags: ["sweeper", "naming", "standardization"]
+
+      - path: "/config/hestia/tools/sweeper/sweeper.py"
+        file: "sweeper.py"
+        title: "File Lifecycle Management"
+        tags: ["sweeper", "lifecycle", "ttl", "cleanup"]
+
+      - path: "/config/hestia/tools/sweeper/vault_warden.py"
+        file: "vault_warden.py"
+        title: "Vault Retention Manager"
+        tags: ["sweeper", "vault", "retention"]
+
+      - path: "/config/hestia/tools/sweeper/sweeper_report.py"
+        file: "sweeper_report.py"
+        title: "Comprehensive Reporting Engine"
+        tags: ["sweeper", "reporting", "health", "compliance"]
+
+      - path: "/config/hestia/tools/sweeper/README.md"
+        file: "README.md"
+        title: "Backup Sweeper System Documentation"
+        tags: ["documentation", "sweeper", "usage"]
+
   # Metadata sections (not validated as artifacts)
   metadata:
     retrieval_hints:
