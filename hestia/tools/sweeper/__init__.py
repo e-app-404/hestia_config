@@ -4,7 +4,7 @@ Configuration-driven workspace lifecycle management for backup files
 
 Components:
 - index.py: Workspace scanner and file discovery
-- naming_convention.py: Naming standards enforcement  
+- naming_convention.py: Naming standards enforcement
 - sweeper.py: File lifecycle management with TTL cleanup
 - vault_warden.py: Vault retention management
 - sweeper_report.py: Comprehensive reporting system
