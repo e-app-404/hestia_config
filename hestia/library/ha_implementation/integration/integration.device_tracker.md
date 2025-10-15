@@ -9,9 +9,9 @@ ha_domain: device_tracker
 ha_integration_type: entity
 ---
 
-The device tracker allows you to track devices in Home Assistant. This can happen by querying your wireless router or by having applications push location info.
+# Home Assistant Device Tracker Integration
 
-{% include integrations/building_block_integration.md %}
+The device tracker allows you to track devices in Home Assistant. This can happen by querying your wireless router or by having applications push location info.
 
 ## Configuring a `device_tracker` platform
 
