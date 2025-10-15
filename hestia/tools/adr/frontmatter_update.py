@@ -234,6 +234,9 @@ def main():
     parser.add_argument(
         "--backup", action="store_true", help="Create backup files before modification"
     )
+    parser.add_argument(
+        "--update-dates-only", action="store_true", help="Only update last_updated field to today"
+    )
     args = parser.parse_args()
 
     print("ADR Frontmatter Standardization Tool")
