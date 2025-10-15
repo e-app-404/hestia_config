@@ -115,7 +115,7 @@ class FileLifecycleManager:
         str_path = str(file_path)
         
         # Check each retention category by location
-        for category, policy in self.retention_config.items():
+        for _category, policy in self.retention_config.items():
             if 'location' in policy:
                 location = policy['location']
                 if location == 'same_directory':
@@ -403,7 +403,8 @@ class FileLifecycleManager:
                 ]),
                 'bytes_freed_mb': round(self.stats['bytes_freed'] / 1024 / 1024, 2),
                 'error_rate_percent': round(
-                    (self.stats['errors_encountered'] / max(self.stats['files_processed'], 1)) * 100, 
+                    (self.stats['errors_encountered'] / 
+                     max(self.stats['files_processed'], 1)) * 100, 
                     2
                 )
             }
