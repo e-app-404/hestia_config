@@ -1181,7 +1181,10 @@ patterns:
       good: |
         # Fix 1: Proper awk escaping and numeric conversion
         - sensor:
-            command: 'du -s /config/.trash | awk '\''{print $1}'\'' || echo "0"'
+            command: >-
+              sh -lc '
+                du -s /config/.trash | awk "{print \\$1}" || echo "0"
+              '
             device_class: data_size  
             state_class: measurement
             value_template: "{{ value | default('0') | trim | int(0) }}"
