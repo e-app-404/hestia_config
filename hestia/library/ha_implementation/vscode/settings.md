@@ -64,63 +64,49 @@ Settings are represented in groups, so that you can navigate to related settings
 
 > **Note**: VS Code extensions can also add their own custom settings, and those settings are visible under an **Extensions** section.
 
-Settings editor filters
+### Settings Editor Filters
+
 The Settings editor search bar has several filters to make it easier to manage your settings. To the right of the search bar is a filter button with a funnel icon that provides options to easily add a filter to the search bar.
 
-Modified settings
-To check which settings you have configured, there is a @modified filter in the search bar. A setting shows up under this filter if its value differs from the default value, or if its value is explicitly set in the respective settings JSON file.
+#### Modified Settings
+
+To check which settings you have configured, there is a `@modified` filter in the search bar. A setting shows up under this filter if its value differs from the default value, or if its value is explicitly set in the respective settings JSON file.
 
 This filter can be useful if you have forgotten whether you configured a setting, or if the editor is not behaving as you expect because you accidentally configured a setting.
 
-Settings editor with @modified filter showing changed settings
+#### Other Filters
 
-Other filters
-There are several other handy filters to help with searching through settings. Type the @ symbol in the search bar to discover the different filters.
-
-Setting editor @ tag filter dropdown
+There are several other handy filters to help with searching through settings. Type the `@` symbol in the search bar to discover the different filters.
 
 Here are some of the filters available:
 
-@ext - Settings specific to an extension. You provide the extension ID such as @ext:ms-python.python.
-@feature - Settings specific to a Features subgroup. For example, @feature:explorer shows settings of the File Explorer.
-@id - Find a setting based on the setting ID. For example, @id:workbench.activityBar.visible.
-@lang - Apply a language filter based on a language ID. For example, @lang:typescript. See Language-specific editor settings for more details.
-@tag - Settings specific to a system of VS Code. For example, @tag:workspaceTrust for settings related to Workspace Trust, or @tag:accessibility for settings related to accessibility.
-The search bar remembers your settings search queries and supports Undo/Redo (⌘Z/⇧⌘Z). You can quickly clear a search term or filter with the Clear Settings Search Input button at the right of the search bar.
+- `@ext` - Settings specific to an extension. You provide the extension ID such as `@ext:ms-python.python`.
+- `@feature` - Settings specific to a Features subgroup. For example, `@feature:explorer` shows settings of the File Explorer.
+- `@id` - Find a setting based on the setting ID. For example, `@id:workbench.activityBar.visible`.
+- `@lang` - Apply a language filter based on a language ID. For example, `@lang:typescript`.
+- `@tag` - Settings specific to a system of VS Code. For example, `@tag:workspaceTrust` for settings related to Workspace Trust, or `@tag:accessibility` for settings related to accessibility.
 
-Clear Settings Search Input button in the right of the Settings editor
+The search bar remembers your settings search queries and supports Undo/Redo (`⌘Z`/`⇧⌘Z`). You can quickly clear a search term or filter with the **Clear Settings Search Input** button at the right of the search bar.
 
-Extension settings
-Installed VS Code extensions can also contribute their own settings, which you can review under the Extensions section of the Settings editor.
+## Extension Settings
 
-C++ extension settings in the Settings editor
+Installed VS Code extensions can also contribute their own settings, which you can review under the **Extensions** section of the Settings editor.
 
-You can also review an extension's settings from the Extensions view (⇧⌘X) by selecting the extension and reviewing the Feature Contributions tab.
+You can also review an extension's settings from the Extensions view (`⇧⌘X`) by selecting the extension and reviewing the **Feature Contributions** tab.
 
-Python extension Settings list under Feature Contributions tab
+## Settings JSON File
 
-Extension authors can learn more about adding custom settings in the configuration contribution point documentation.
+VS Code stores setting values in a `settings.json` file. The Settings editor is the user interface that enables you to review and modify setting values that are stored in a `settings.json` file.
 
-Settings JSON file
-VS Code stores setting values in a settings.json file. The Settings editor is the user interface that enables you to review and modify setting values that are stored in a settings.json file.
+You can also review and edit the `settings.json` file directly by opening it in the editor with the **Preferences: Open User Settings (JSON)** or **Preferences: Open Workspace Settings (JSON)** command in the Command Palette (`⇧⌘P`).
 
-You can also review and edit the settings.json file directly by opening it in the editor with the Preferences: Open User Settings (JSON) or Preferences: Open Workspace Settings (JSON) command in the Command Palette (⇧⌘P).
+Settings are written as JSON by specifying the setting ID and value. You can quickly copy the corresponding JSON name-value pair for a setting by selecting the setting's gear icon in the Settings editor, and then selecting the **Copy Setting as JSON** action.
 
-Settings are written as JSON by specifying the setting ID and value. You can quickly copy the corresponding JSON name-value pair for a setting by selecting the setting's gear icon in the Settings editor, and then selecting the Copy Setting as JSON action.
+The `settings.json` file has full IntelliSense with smart completions for settings and values and description hovers. Errors due to incorrect setting names or JSON formatting are also highlighted.
 
-User settings.json open in the editor
+Some settings can only be edited in `settings.json` such as **Workbench: Color Customizations** and show an **Edit in settings.json** link in the Settings editor.
 
-The settings.json file has full IntelliSense with smart completions for settings and values and description hovers. Errors due to incorrect setting names or JSON formatting are also highlighted.
-
-IntelliSense for settings.json open in the editor
-
-Some settings can only be edited in settings.json such as Workbench: Color Customizations and show an Edit in settings.json link in the Settings editor.
-
-Workbench: Color Customizations setting with Edit in settings.json link
-
-Tip
-
-If you prefer to always work directly with settings.json, you can set workbench.settings.editor to json. Then, Code > Settings > Settings and the keybinding ⌘, always open the settings.json file and not the Setting editor UI.
+> **Tip**: If you prefer to always work directly with `settings.json`, you can set `workbench.settings.editor` to `json`. Then, **Code > Settings > Settings** and the keybinding `⌘,` always open the `settings.json` file and not the Setting editor UI.
 
 Settings file locations
 User settings.json location
