@@ -118,7 +118,7 @@ Based on analysis, the following ADRs need updates:
 ### Execution Plan
 
 1. **Create backup** of entire ADR directory
-2. **Process each ADR file** systematically:
+2. **Process each ADR file** systematically (`/config/hestia/tools/adr/frontmatter_update.py`):
    - Parse existing frontmatter
    - Generate missing fields
    - Update YAML block

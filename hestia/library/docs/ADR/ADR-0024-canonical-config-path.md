@@ -5,29 +5,31 @@ slug: canonical-config-path
 status: Implemented
 related: []
 supersedes:
-- ADR-0016
-- ADR-0010
-- ADR-0012
-last_updated: '2025-10-15'
+  - ADR-0016
+  - ADR-0010
+  - ADR-0012
+last_updated: "2025-10-15"
 date: 2025-10-05
-decision: '**The canonical and only supported Home Assistant configuration root is
+decision:
+  "**The canonical and only supported Home Assistant configuration root is
   `/config`** across all environments (Home Assistant Host/Supervisor/Core, macOS
-  operator workstation, containers, and CI/CD including GitHub Actions).'
+  operator workstation, containers, and CI/CD including GitHub Actions)."
 authors: Strategos GPT
 implementation_date: 2025-10-05
 amends:
-- ADR-0015
-- ADR-0019
-- ADR-0014
-- ADR-0022
+  - ADR-0015
+  - ADR-0019
+  - ADR-0014
+  - ADR-0022
 superseded_by: null
-implementation_notes: 'Successfully implemented using macOS synthetic.conf entries.
+implementation_notes:
+  "Successfully implemented using macOS synthetic.conf entries.
 
   Current setup uses symlink fallback (functional equivalent).
 
   All development workflows operational and validated.
 
-  '
+  "
 ---
 
 ## Table of Contents
@@ -124,6 +126,7 @@ Out-of-scope:
    sudo mkdir -p /System/Volumes/Data/homeassistant
    sudo chown "$USER":staff /System/Volumes/Data/homeassistant
    ```
+
 2. Define root-visible entries via `/etc/synthetic.conf`:
 
    ```text
@@ -132,11 +135,13 @@ Out-of-scope:
    # optional convenience alias
    homeassistant\thomeassistant
    ```
+
 3. Materialize the synthetic entries:
 
    ```bash
    sudo automount -vc   # or reboot
    ```
+
 4. Mount the HA share at login (LaunchAgent mounts to the **Data path**, not `$HOME`):
 
    ```bash
@@ -191,9 +196,9 @@ steps:
 name: ADR-0024 Canonical Guard
 on:
   push:
-    branches: [ "**" ]
+    branches: ["**"]
   pull_request:
-    branches: [ "**" ]
+    branches: ["**"]
 
 jobs:
   guard-linux-container:
@@ -231,26 +236,26 @@ jobs:
 **Path validation hooks (.pre-commit-config.yaml):**
 
 ```yaml
-  - repo: local
-    hooks:
-      - id: lint-paths
-        name: lint-paths
-        entry: tools/lint_paths.sh
-        language: system
-        pass_filenames: false
-        files: '^(config|scripts|packages|custom_components|\.devcontainer|\.vscode)/'
-      - id: ha-path-guard
-        name: HA Path Guard
-        entry: bin/require-config-root --mode=RO
-        language: system
-        pass_filenames: false
-        always_run: true
-      - id: adr0024-path-lint
-        name: ADR-0024 Path Lint
-        entry: tools/lint_paths.sh
-        language: system
-        pass_filenames: false
-        stages: [commit, push]
+- repo: local
+  hooks:
+    - id: lint-paths
+      name: lint-paths
+      entry: tools/lint_paths.sh
+      language: system
+      pass_filenames: false
+      files: '^(config|scripts|packages|custom_components|\.devcontainer|\.vscode)/'
+    - id: ha-path-guard
+      name: HA Path Guard
+      entry: bin/require-config-root --mode=RO
+      language: system
+      pass_filenames: false
+      always_run: true
+    - id: adr0024-path-lint
+      name: ADR-0024 Path Lint
+      entry: tools/lint_paths.sh
+      language: system
+      pass_filenames: false
+      stages: [commit, push]
 ```
 
 ### 6.6 VS Code Development Integration
@@ -271,7 +276,7 @@ jobs:
     },
     {
       "label": "ADR-0024: Lint Paths",
-      "type": "shell", 
+      "type": "shell",
       "command": "${workspaceFolder}/tools/lint_paths.sh",
       "options": {
         "env": { "CONFIG_ROOT": "/config" }
@@ -286,9 +291,7 @@ jobs:
 ```json
 {
   "image": "ghcr.io/home-assistant/home-assistant:dev",
-  "mounts": [
-    "source=${localWorkspaceFolder},target=/config,type=bind"
-  ],
+  "mounts": ["source=${localWorkspaceFolder},target=/config,type=bind"],
   "containerEnv": {
     "CONFIG_ROOT": "/config"
   }
@@ -328,6 +331,7 @@ If a critical blocker arises, temporarily re-enable a transitional symlink `/hom
 **Last Updated:** October 6, 2025 (comprehensive tooling suite completed)
 
 **Setup Details:**
+
 - **Path Resolution:** `/config` → `/System/Volumes/Data/homeassistant` (hybrid synthetic configuration)
 - **Mount Target:** SMB share mounted at `/System/Volumes/Data/homeassistant`
 - **LaunchAgent:** `com.hestia.mount.homeassistant.plist` (loaded and functional)
@@ -336,6 +340,7 @@ If a critical blocker arises, temporarily re-enable a transitional symlink `/hom
 - **Environment Validation:** `bin/vscode-env-smoke` (VS Code environment testing)
 
 **Comprehensive Tooling Suite:**
+
 - **Path Linter:** `tools/lint_paths.sh` with ripgrep support and exclusion patterns
 - **Path Drift Fix:** `tools/fix_path_drift.sh` automated remediation with backups
 - **CI/CD Pipeline:** `.github/workflows/ha-canonical-guard.yml` with container and macOS validation
@@ -345,30 +350,32 @@ If a critical blocker arises, temporarily re-enable a transitional symlink `/hom
 
 ### Validation Results
 
-| Component | Status | Notes |
-|-----------|--------|-------|
-| Path Resolution | ✅ PASS | Python `Path('/config')` works correctly |
-| Development Tools | ✅ PASS | Template patcher, VS Code tasks operational |
-| LaunchAgent | ✅ PASS | Auto-mount at login functional |
-| Guard Scripts | ✅ PASS | Runtime validation working with RO/RW modes |
-| Legacy Cleanup | ✅ PASS | No conflicting environment variables |
-| Core Workflows | ✅ PASS | All development operations confirmed |
-| Path Linting | ✅ PASS | Ripgrep-based linter detecting 200+ legacy references |
-| CI/CD Pipeline | ✅ PASS | GitHub Actions workflow with container/macOS validation |
-| VS Code Integration | ✅ PASS | Tasks and devcontainer operational |
-| Pre-commit Hooks | ✅ PASS | Automated path validation on commit/push |
-| Environment Testing | ✅ PASS | VS Code environment validation functional |
-| Automated Remediation | ✅ PASS | Path drift fix tool with backup functionality |
+| Component             | Status  | Notes                                                   |
+| --------------------- | ------- | ------------------------------------------------------- |
+| Path Resolution       | ✅ PASS | Python `Path('/config')` works correctly                |
+| Development Tools     | ✅ PASS | Template patcher, VS Code tasks operational             |
+| LaunchAgent           | ✅ PASS | Auto-mount at login functional                          |
+| Guard Scripts         | ✅ PASS | Runtime validation working with RO/RW modes             |
+| Legacy Cleanup        | ✅ PASS | No conflicting environment variables                    |
+| Core Workflows        | ✅ PASS | All development operations confirmed                    |
+| Path Linting          | ✅ PASS | Ripgrep-based linter detecting 200+ legacy references   |
+| CI/CD Pipeline        | ✅ PASS | GitHub Actions workflow with container/macOS validation |
+| VS Code Integration   | ✅ PASS | Tasks and devcontainer operational                      |
+| Pre-commit Hooks      | ✅ PASS | Automated path validation on commit/push                |
+| Environment Testing   | ✅ PASS | VS Code environment validation functional               |
+| Automated Remediation | ✅ PASS | Path drift fix tool with backup functionality           |
 
 ### Implementation Notes
 
 **Hybrid Synthetic Configuration:** The final implementation uses a hybrid synthetic entry approach:
+
 - Synthetic chain: `/config` → `/homeassistant` → `/System/Volumes/Data/homeassistant`
 - Provides full ADR-0024 compliance with native APFS integration
 - Maintains backward compatibility while achieving canonical path goals
 - Performance equivalent to pure firmlink for development purposes
 
 **LaunchAgent Configuration:**
+
 ```xml
 <key>ProgramArguments</key>
 <array>
@@ -384,13 +391,13 @@ If a critical blocker arises, temporarily re-enable a transitional symlink `/hom
 # Health check (comprehensive path validation)
 bin/config-health /config
 
-# Path resolution test  
+# Path resolution test
 python3 -c "from pathlib import Path; print(Path('/config').resolve())"
 
 # Guard script test (read-only mode)
 bin/require-config-root --mode=RO
 
-# Guard script test (read-write mode) 
+# Guard script test (read-write mode)
 bin/require-config-root --mode=RW
 
 # VS Code environment validation
@@ -406,18 +413,21 @@ tools/fix_path_drift.sh
 ### Key Implementation Insights
 
 **Symlink vs Firmlink Trade-offs:**
+
 - Symlinks provide identical functionality for development workflows
 - APFS firmlinks require clean `/config` namespace (no existing paths)
 - Both approaches resolve to identical real paths for Python/shell operations
 - Performance difference negligible for typical HA development tasks
 
 **LaunchAgent Best Practices:**
+
 - Target Data volume path (`/System/Volumes/Data/homeassistant`) for stability
-- Use NetworkState-aware KeepAlive for SMB mount resilience  
+- Use NetworkState-aware KeepAlive for SMB mount resilience
 - Centralized logging to `~/Library/Logs/hestia.mount.*`
 - 60-second retry interval balances responsiveness and resource usage
 
 **Development Workflow Compatibility:**
+
 - VS Code tasks work seamlessly with `/config` references
 - Python `pathlib.Path('/config')` resolves correctly
 - Template patchers and validation scripts operational
@@ -591,6 +601,7 @@ print(f'Directory accessible: {config_path.is_dir()}')
 print('VS Code environment: OK')
 "
 ```
+
 ---
 
 ## Changelog
@@ -614,19 +625,19 @@ print('VS Code environment: OK')
 
 Dual SMB mounts were active to the HA config storage:
 
-* `//…@homeassistant.local/config` → `/config` (via `synthetic.conf`)
-* `//…@homeassistant.reverse-beta.ts.net/config` → `/Volumes/HA/config` (plus `share`, `addons`)
+- `//…@homeassistant.local/config` → `/config` (via `synthetic.conf`)
+- `//…@homeassistant.reverse-beta.ts.net/config` → `/Volumes/HA/config` (plus `share`, `addons`)
 
 Both were writable, causing path ambiguity, ENOENTs, and "phantom edits." Governance requires a single canonical runtime path.
 
 ## Decision
 
-* Keep **`homeassistant.local` → `/config`** as the **only** writable config mount.
-* **Block** automatic mounts of the Tailscale host to `/Volumes/HA/{config,share,addons}` in normal operation.
-* Allow **manual, temporary** mounts of `share`/`addons` for ad-hoc use; tools/automations **must not** reference them.
-* Enforce a `/config` **preflight** before any write.
-* Editors/agents/workflows **must reference `/config` only** (workspace updated).
-* Keychain hygiene: keep creds for `homeassistant.local`; remove `homeassistant.reverse-beta.ts.net` to prevent auto-remounts.
+- Keep **`homeassistant.local` → `/config`** as the **only** writable config mount.
+- **Block** automatic mounts of the Tailscale host to `/Volumes/HA/{config,share,addons}` in normal operation.
+- Allow **manual, temporary** mounts of `share`/`addons` for ad-hoc use; tools/automations **must not** reference them.
+- Enforce a `/config` **preflight** before any write.
+- Editors/agents/workflows **must reference `/config` only** (workspace updated).
+- Keychain hygiene: keep creds for `homeassistant.local`; remove `homeassistant.reverse-beta.ts.net` to prevent auto-remounts.
 
 ## Implementation Notes
 
@@ -669,15 +680,15 @@ LaunchAgent guard (excerpt):
 
 ## Acceptance Criteria (binary)
 
-* `mount` shows **one** smbfs line: `//…@homeassistant.local/config on /config`.
-* `smbutil statshares -a` lists only `config` from `homeassistant.local`.
-* Writing `/config/.ha-acceptance.<ts>` succeeds and is immediately visible.
-* No ENOENT related to config path for 24h.
+- `mount` shows **one** smbfs line: `//…@homeassistant.local/config on /config`.
+- `smbutil statshares -a` lists only `config` from `homeassistant.local`.
+- Writing `/config/.ha-acceptance.<ts>` succeeds and is immediately visible.
+- No ENOENT related to config path for 24h.
 
 ## Consequences
 
-* Stable, single-source writes; simpler troubleshooting.
-* Workflows referencing `/Volumes/HA/*` must migrate to `/config` (or use temporary, manual mounts).
+- Stable, single-source writes; simpler troubleshooting.
+- Workflows referencing `/Volumes/HA/*` must migrate to `/config` (or use temporary, manual mounts).
 
 ## Rollback
 
@@ -688,7 +699,6 @@ sudo mount_smbfs //${USER}@homeassistant.reverse-beta.ts.net/config /Volumes/HA/
 sudo mount_smbfs //${USER}@homeassistant.reverse-beta.ts.net/share  /Volumes/HA/share
 sudo mount_smbfs //${USER}@homeassistant.reverse-beta.ts.net/addons /Volumes/HA/addons
 ```
-
 
 ---
 
@@ -702,17 +712,17 @@ sudo mount_smbfs //${USER}@homeassistant.reverse-beta.ts.net/addons /Volumes/HA/
 
 VS Code workspace boundary issues were causing "edit outside workspace" confirmation dialogs and failed file operations due to symlink path resolution conflicts:
 
-* **Workspace root**: `/config` (ADR-0024 canonical)
-* **Symlink resolution**: `/config` → `/System/Volumes/Data/homeassistant`
-* **Problem**: Extensions resolving realpaths saw `/System/Volumes/Data/homeassistant/*` as "outside workspace"
-* **Impact**: Confirmation dialogs, failed writes, governance violations
+- **Workspace root**: `/config` (ADR-0024 canonical)
+- **Symlink resolution**: `/config` → `/System/Volumes/Data/homeassistant`
+- **Problem**: Extensions resolving realpaths saw `/System/Volumes/Data/homeassistant/*` as "outside workspace"
+- **Impact**: Confirmation dialogs, failed writes, governance violations
 
 ## Decision
 
 Implement comprehensive path canonicalization at multiple layers:
 
 1. **Multi-Root Workspace**: Include both canonical and realpath folders in VS Code workspace
-2. **Write-Broker Canonicalization**: Normalize all paths to `/config/*` before operations  
+2. **Write-Broker Canonicalization**: Normalize all paths to `/config/*` before operations
 3. **Pre-Commit Governance**: Block non-canonical paths at repository level
 4. **Read-Only Enforcement**: Mark realpath folder read-only to preserve governance
 
@@ -725,6 +735,7 @@ Updated `.vscode/hass-live.code-workspace` to include dual folders with realpath
 ### 2. Write-Broker Path Canonicalization
 
 Enhanced `/config/bin/write-broker` with `canonicalize_to_config()` function that normalizes:
+
 - `/System/Volumes/Data/homeassistant/*` → `/config/*`
 - `/Volumes/HA/config/*` → `/config/*`
 
@@ -735,12 +746,14 @@ Upgraded `.git/hooks/pre-commit` with comprehensive ADR governance blocking non-
 ## Results
 
 ### ✅ Fixed Issues
+
 - **No more "edit outside workspace" dialogs**: Both paths recognized as inside workspace
 - **Consistent file operations**: All writes normalized to `/config/*` paths
 - **Governance preserved**: Realpath folder read-only, canonical writes enforced
 - **Repository protection**: Pre-commit blocks non-canonical path commits
 
 ### ✅ ADR Compliance Maintained
+
 - **ADR-0024**: Canonical `/config` path enforcement strengthened
 - **ADR-0027**: Write-broker governance enhanced with path normalization
 - **ADR-0015**: Symlink policy enforced via pre-commit validation
