@@ -68,7 +68,7 @@ automation:
         entity_id: binary_sensor.startup_completed
         to: 'on'
     action:
-      - service: system_log.write
+      - action: system_log.write
         data:
           message: >
             ✅ Startup optimization successful - ADR-0020 fixes applied:
@@ -100,7 +100,7 @@ automation:
                 value_template: >
                   {{ states('binary_sensor.startup_completed') != 'on' }}
             sequence:
-              - service: system_log.write
+              - action: system_log.write
                 data:
                   level: error
                   logger: "homeassistant.adr_0020_fixes"

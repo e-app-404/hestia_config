@@ -76,7 +76,8 @@
     },
     "explorer.excludeGitIgnore": false,
     "files.associations": {
-      "*.yaml": "home-assistant"
+      "*.yaml": "home-assistant",
+      "*.yml": "home-assistant"
     },
     "yaml.schemaStore.enable": true,
     "yaml.schemaStore.url": "https://www.schemastore.org/api/json/catalog.json",

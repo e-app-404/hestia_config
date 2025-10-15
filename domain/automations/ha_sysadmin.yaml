@@ -118,7 +118,7 @@
   trigger:
     - platform: numeric_state
       entity_id: sensor.hestia_trash_size
-      above: 512000  # ~500MB in KiB
+      above: 512000
   action:
     - action: script.notify_engine
       data:
@@ -159,13 +159,13 @@
     - choose:
         - conditions: "{{ is_state('input_boolean.hestia_approve_tmp','on') }}"
           sequence:
-            - service: shell_command.hestia_prune_tmp
+            - action: shell_command.hestia_prune_tmp
             - service: input_boolean.turn_off
               target: { entity_id: input_boolean.hestia_approve_tmp }
 
 - id: pvCE6fsuA9pNCB9hhBzRQStt08hpDgaa
   alias: Hestia On Shutdown - Prune Tmp
-  trigger: 
+  trigger:
     - platform: homeassistant
       event: shutdown
   action:
@@ -178,4 +178,4 @@
         media_player_entity_id: media_player.bedroom_google_home_mini_speaker
         message: "Hestia maintenance: Performing automatic temporary file cleanup during shutdown."
         language: en-ca
-    - service: shell_command.hestia_prune_tmp
+    - action: shell_command.hestia_prune_tmp

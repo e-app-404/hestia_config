@@ -803,7 +803,6 @@ script:
               name: Radio Script
               message: "Unknown station selected: {{ station }}"
 
-  # ⟫⟫ MEDIA LOGIC  •  PLAYSTATION 4
   ps4_prepare_av:
     alias: "PS4: Prepare AV (A3/B3)"
     mode: single
