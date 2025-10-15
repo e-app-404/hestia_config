@@ -13,6 +13,7 @@ The current ha_integration_analyzer prompt template has solid conceptual foundat
 ## Analysis Results
 
 **Total Issues Found**: 11 issues identified across priority levels
+
 - CRITICAL: 3 issues (JavaScript syntax, variable inconsistency, recursive templates)
 - HIGH: 3 issues (missing error handling, overly complex structure, ambiguous priorities)
 - MEDIUM: 3 issues (hard-coded paths, missing error pattern integration, limited tool use)
@@ -27,14 +28,18 @@ The current ha_integration_analyzer prompt template has solid conceptual foundat
 **Impact**: Date calculations appear as literal strings, breaking file naming and timestamps.
 
 **Before**:
+
 ```markdown
 **Date**: ${new Date().toISOString().split('T')[0].replace(/-/g, '')}
+
 - Create file at: `/config/hestia/workspace/cache/patch_plans/${new Date().toISOString().split('T')[0].replace(/-/g, '')}_${topic}_patch_plan.md`
 ```
 
 **After**:
+
 ```markdown
 **Date**: [Generate current date in YYYYMMDD format]
+
 - Create file at: `/config/hestia/workspace/cache/patch_plans/[YYYYMMDD]_${input:topic}_patch_plan.md`
 ```
 
@@ -47,17 +52,19 @@ The current ha_integration_analyzer prompt template has solid conceptual foundat
 **Impact**: Variable resolution failures and execution errors.
 
 **Before**:
+
 ```markdown
 - Parse the integration knowledge page at `${integration_doc_path}`
 - Parse the YAML configuration file at `${config_yaml_path}`
-**Topic**: ${topic}
+  **Topic**: ${topic}
 ```
 
 **After**:
+
 ```markdown
 - Parse the integration knowledge page at `${input:integration_doc_path}`
 - Parse the YAML configuration file at `${input:config_yaml_path}`
-**Topic**: ${input:topic}
+  **Topic**: ${input:topic}
 ```
 
 **Validation**: All variables use consistent VS Code input format with proper placeholders.
@@ -69,12 +76,16 @@ The current ha_integration_analyzer prompt template has solid conceptual foundat
 **Impact**: Template generation fails or produces malformed output.
 
 **Before**:
-```markdown
+
+````markdown
 #### Patch Plan Template
+
 ```markdown
 **Configuration File**: `${config_yaml_path}`
 ```
-```
+````
+
+````
 
 **After**:
 ```markdown
@@ -82,7 +93,7 @@ The current ha_integration_analyzer prompt template has solid conceptual foundat
 When generating the patch plan, include these sections with actual values substituted:
 - Configuration File: [Path from input parameter]
 - Documentation Reference: [Path from input parameter]
-```
+````
 
 **Validation**: Template generates clean patch plans without circular references.
 
@@ -93,16 +104,21 @@ When generating the patch plan, include these sections with actual values substi
 **Impact**: Silent failures with unclear error messages when files don't exist.
 
 **Before**:
+
 ```markdown
 ## Execution Instructions
+
 1. **Validate Inputs**: Confirm both file paths exist and are accessible
 ```
 
 **After**:
+
 ```markdown
 ## Pre-Flight Validation
+
 Before starting analysis, verify:
-1. **File Accessibility**: 
+
+1. **File Accessibility**:
    - Check integration documentation exists at specified path
    - Verify configuration YAML file is readable
    - Confirm write access to patch plan output directory
@@ -118,25 +134,34 @@ Before starting analysis, verify:
 **Impact**: Users may skip important steps or abandon the process.
 
 **Before**:
+
 ```markdown
 ### Phase 1: Documentation Ingestion & Parsing
-### Phase 2: Configuration Analysis  
+
+### Phase 2: Configuration Analysis
+
 ### Phase 3: Priority-Based Issue Classification
+
 ### Phase 4: Patch Plan Generation
+
 ### Phase 5: File Operations & Output
 ```
 
 **After**:
+
 ```markdown
 ### Step 1: Analyze & Compare
+
 - Load and parse both documentation and configuration files
 - Identify discrepancies and improvement opportunities
 
 ### Step 2: Classify & Prioritize
+
 - Categorize issues by impact level (Critical → Low)
 - Generate specific recommendations with before/after examples
 
 ### Step 3: Generate & Present
+
 - Create timestamped patch plan file
 - Present executive summary for user validation
 ```
@@ -150,21 +175,27 @@ Before starting analysis, verify:
 **Impact**: Inconsistent issue classification across different analyses.
 
 **Before**:
+
 ```markdown
 #### MEDIUM Priority
+
 **Definition**: Configuration works correctly but has gaps that could negatively impact related functionalities, monitoring, or future maintenance without immediate runtime effects.
 
-#### LOW Priority  
+#### LOW Priority
+
 **Definition**: Aesthetic or organizational improvements that enhance code maintainability, UI presentation, or documentation without affecting functionality.
 ```
 
 **After**:
+
 ```markdown
 #### MEDIUM Priority
+
 **Definition**: Missing best practices that impact maintainability, monitoring, or integration completeness but don't affect core functionality.
 **Key Indicators**: Missing unique_id, suboptimal naming, missing derived sensors, hardcoded values
 
 #### LOW Priority
+
 **Definition**: Cosmetic improvements that enhance user experience or code organization without functional impact.
 **Key Indicators**: Icon assignments, comment additions, formatting consistency, UI presentation tweaks
 ```
@@ -174,24 +205,28 @@ Before starting analysis, verify:
 ## Implementation Plan
 
 ### Phase 1: Critical Fixes (Immediate)
+
 - [ ] Replace all JavaScript expressions with clear placeholder instructions
 - [ ] Standardize variable references to VS Code input format throughout
 - [ ] Restructure patch plan template to avoid circular references
 - [ ] Add comprehensive input validation requirements
 
 ### Phase 2: High Priority (Within 1 week)
+
 - [ ] Simplify 5-phase structure to 3-step process
 - [ ] Clarify priority definitions with specific indicators
 - [ ] Add error handling and fallback procedures
 - [ ] Create decision gates between major steps
 
 ### Phase 3: Medium Priority (Within 1 month)
+
 - [ ] Replace hard-coded paths with workspace-relative references
 - [ ] Integrate with existing error pattern knowledge base
 - [ ] Add support for additional VS Code tools
 - [ ] Create modular sections for different integration types
 
 ### Phase 4: Low Priority (As time permits)
+
 - [ ] Condense verbose documentation sections
 - [ ] Add multiple usage scenario examples
 - [ ] Create quick-start guide for common use cases
@@ -200,11 +235,13 @@ Before starting analysis, verify:
 ## Testing & Validation
 
 1. **Syntax Validation**
+
    - Test prompt template with VS Code prompt file parser
    - Verify all input variables resolve correctly
    - Confirm no JavaScript expressions remain
 
 2. **Execution Testing**
+
    - Run prompt with sample SNMP documentation and configuration
    - Verify patch plan file creation with proper naming
    - Test error handling with invalid file paths
@@ -217,11 +254,13 @@ Before starting analysis, verify:
 ## Rollback Plan
 
 **Backup Commands**:
+
 ```bash
 cp /config/hestia/library/prompts/development/drafts/ha_integration_analyzer.prompt.md /config/hestia/library/prompts/development/drafts/ha_integration_analyzer.prompt.md.backup.20251015
 ```
 
 **Restore Commands**:
+
 ```bash
 cp /config/hestia/library/prompts/development/drafts/ha_integration_analyzer.prompt.md.backup.20251015 /config/hestia/library/prompts/development/drafts/ha_integration_analyzer.prompt.md
 ```
@@ -229,9 +268,11 @@ cp /config/hestia/library/prompts/development/drafts/ha_integration_analyzer.pro
 ## Implementation Files
 
 ### Primary Implementation
+
 - `/config/hestia/library/prompts/development/drafts/ha_integration_analyzer_v2.prompt.md` (new streamlined version)
 
 ### Supporting Documentation
+
 - `/config/hestia/library/prompts/development/README.md` (usage guide)
 - `/config/hestia/library/prompts/development/examples/` (sample analyses)
 
@@ -250,4 +291,5 @@ cp /config/hestia/library/prompts/development/drafts/ha_integration_analyzer.pro
 - Promptset Template: `/config/hestia/library/prompts/_meta/draft_template.promptset`
 
 ---
-*Generated by Home Assistant Integration Analyzer Patch Plan v1.0*
+
+_Generated by Home Assistant Integration Analyzer Patch Plan v1.0_
