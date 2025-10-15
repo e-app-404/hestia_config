@@ -1,7 +1,7 @@
 ---
 # Document style and canonical frontmatter for hestia/workspace/operations/guides/ha_implementation
 
-This file provides a canonical YAML frontmatter template and a short Markdown style guide for files in this folder. Apply the frontmatter block to the top of every Markdown document in this directory.
+This file provides a canonical YAML frontmatter template and a short Markdown style guide for files in /config/hestia/library/ha_implementation. Apply the frontmatter block to the top of every Markdown document in this directory.
 
 ## Canonical frontmatter
 
