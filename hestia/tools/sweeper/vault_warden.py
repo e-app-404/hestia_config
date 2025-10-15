@@ -16,7 +16,6 @@ import argparse
 import hashlib
 import json
 import logging
-import os
 import shutil
 import sys
 from collections import defaultdict
@@ -158,7 +157,9 @@ class VaultRetentionManager:
             self.basename_groups[basename].append(file_record)
         
         self.stats['basename_groups_found'] = len(self.basename_groups)
-        self.logger.info(f"Found {len(vault_files)} vault files in {len(self.basename_groups)} basename groups")
+        vault_count = len(vault_files)
+        group_count = len(self.basename_groups)
+        self.logger.info(f"Found {vault_count} vault files in {group_count} basename groups")
 
     def should_manage_vault_file(self, file_record: dict) -> bool:
         """Determine if file should be managed by vault retention"""
@@ -271,7 +272,9 @@ class VaultRetentionManager:
                         operation.destination = "deleted"
                         self.stats['files_removed'] += 1
                         self.stats['bytes_freed'] += operation.size_bytes
-                        self.logger.info(f"Removed excess vault file: {file_path.name} (rank {i + 1})")
+                        self.logger.info(
+                            f"Removed excess vault file: {file_path.name} (rank {i + 1})"
+                        )
                     else:
                         operation.status = "remove_failed"
                         operation.error_message = "Failed to remove file"
@@ -295,14 +298,17 @@ class VaultRetentionManager:
         # Group files by basename
         self.group_files_by_basename(file_registry)
         
-        self.logger.info(f"Processing vault retention for {len(self.basename_groups)} basename groups")
+        group_count = len(self.basename_groups)
+        self.logger.info(f"Processing vault retention for {group_count} basename groups")
         
         for basename, file_group in self.basename_groups.items():
             if dry_run:
                 sorted_files = self.sort_files_by_age(file_group)
                 files_to_remove = len(sorted_files) - self.keep_latest_count
                 if files_to_remove > 0:
-                    self.logger.info(f"Would remove {files_to_remove} files from group '{basename}'")
+                    self.logger.info(
+                        f"Would remove {files_to_remove} files from group '{basename}'"
+                    )
                 self.stats['files_processed'] += len(file_group)
             else:
                 group_operations = self.manage_basename_group(basename, file_group)
@@ -352,10 +358,10 @@ class VaultRetentionManager:
                         total_size += size
                         
                         # Check naming compliance
-                        if not file_path.name.endswith('.bk.' + 'Z'):
-                            if not any(pattern in file_path.name.lower() 
-                                     for pattern in ['bak', 'backup', 'restore']):
-                                integrity_report['orphaned_backups'].append(str(file_path))
+                        if (not file_path.name.endswith('.bk.' + 'Z') and 
+                            not any(pattern in file_path.name.lower() 
+                                   for pattern in ['bak', 'backup', 'restore'])):
+                            integrity_report['orphaned_backups'].append(str(file_path))
                         
                     except OSError:
                         continue
@@ -546,7 +552,7 @@ def main():
             # Show integrity report if requested
             if args.verify_integrity:
                 integrity = report['integrity_report']
-                print(f"\n🔍 Vault Integrity:")
+                print("\n🔍 Vault Integrity:")
                 print(f"  Location exists: {integrity['vault_location_exists']}")
                 print(f"  Permissions correct: {integrity['vault_permissions_correct']}")
                 print(f"  Total size: {integrity['total_vault_size_mb']} MB")
