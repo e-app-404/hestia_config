@@ -10,7 +10,7 @@
     name: "Hestia Trash Size"
     command: >-
       sh -lc '
-        du -s /config/.trash 2>/dev/null | awk "{print $1}" || echo "0"
+        du -s /config/.trash 2>/dev/null | awk "{print \$1}" || echo "0"
       '
     unit_of_measurement: "KiB"
     device_class: data_size
@@ -18,7 +18,7 @@
     scan_interval: 3600
     unique_id: hestia_trash_size
     icon: mdi:trash-can
-    value_template: "{{ value | default('0') | trim }}"
+    value_template: "{{ value | default('0') | trim | int(0) }}"
 
 - sensor:
     name: "Hestia Tmp Old Files"
@@ -50,8 +50,6 @@
       sh -lc '
         cd /config && git status --porcelain 2>/dev/null | wc -l | tr -d " " || echo "-1"
       '
-    unit_of_measurement: "changes"
-    state_class: measurement
     scan_interval: 1800
     unique_id: hestia_git_uncommitted_changes
     icon: mdi:git
