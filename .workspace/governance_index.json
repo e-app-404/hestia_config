@@ -1,383 +1,569 @@
-[
-  {
-    "path": "/config/hestia/library/docs/ADR/ADR-0026-workspace-environment-ops.md",
-    "title": "1. Context",
-    "status": "Accepted",
-    "date": "2025-10-06",
-    "tags": [
-      "ADR-0009",
-      "ADR-0024",
-      "ADR-0026",
-      "ADR-0030"
+{
+  "governance_index": {
+    "version": 2,
+    "generated_at": "2025-10-15T12:14:43",
+    "total_adrs": 28,
+    "statistics": {
+      "by_status": {
+        "Accepted": 21,
+        "Proposed": 2,
+        "Draft": 1,
+        "Pending": 1,
+        "Superseded": 3
+      },
+      "by_year": {
+        "2025": 28
+      },
+      "deprecated_count": 3
+    },
+    "hot_rules": [
+      "ADR-0024: Single canonical config mount → `/config` only; no dual SMB mounts.",
+      "ADR-0022: Mount management via LaunchAgent; preflight before writes.",
+      "ADR-0018: Workspace lifecycle policies with backup patterns and hygiene.",
+      "Path contracts: prefer container paths over host aliases; avoid `/Volumes/...` in tooling."
     ],
-    "decision": ""
-  },
-  {
-    "path": "/config/hestia/library/docs/ADR/ADR-0001-tts-yaml.md",
-    "title": "ADR-0001: Templated TTS YAML Snippet",
-    "status": "Accepted",
-    "date": "2025-09-11",
-    "tags": [
-      "ADR-0001"
-    ],
-    "decision": ""
-  },
-  {
-    "path": "/config/hestia/library/docs/ADR/ADR-0002-jinja-patterns.md",
-    "title": "ADR-0002: Home Assistant Jinja Pattern Normalization",
-    "status": "Accepted",
-    "date": "2025-09-11",
-    "tags": [
-      "ADR-0002"
-    ],
-    "decision": ""
-  },
-  {
-    "path": "/config/hestia/library/docs/ADR/ADR-0003-tier-definitions.md",
-    "title": "ADR-0003: Canonical Tier Definitions for Home Assistant Entity Architecture",
-    "status": "Accepted",
-    "date": "2025-09-11",
-    "tags": [
-      "ADR-0003"
-    ],
-    "decision": ""
-  },
-  {
-    "path": "/config/hestia/library/docs/ADR/ADR-0004-area-hierarchy.md",
-    "title": "ADR-0004: Canonical Area Hierarchy & Spatial Relationship Contract",
-    "status": "Accepted",
-    "date": "2025-09-11",
-    "tags": [
-      "ADR-0004",
-      "ADR-0021"
-    ],
-    "decision": ""
-  },
-  {
-    "path": "/config/hestia/library/docs/ADR/ADR-0005-entity-sensor-logic-signal.md",
-    "title": "ADR-0005: Entity Registry, Sensor Matrix, Logic Path Index, and Signal Emitters Contract",
-    "status": "Accepted",
-    "date": "2025-09-11",
-    "tags": [
-      "ADR-0005"
-    ],
-    "decision": ""
-  },
-  {
-    "path": "/config/hestia/library/docs/ADR/ADR-0006-decay-propagation.md",
-    "title": "ADR-0006: Decay and Propagation Logic Contract",
-    "status": "Accepted",
-    "date": "2025-09-11",
-    "tags": [
-      "ADR-0006"
-    ],
-    "decision": ""
-  },
-  {
-    "path": "/config/hestia/library/docs/ADR/ADR-0007-meta-governance-schema.md",
-    "title": "ADR-0007: Meta/Governance Patterns and Schema Definitions Contract",
-    "status": "Accepted",
-    "date": "2025-09-11",
-    "tags": [
-      "ADR-0007"
-    ],
-    "decision": ""
-  },
-  {
-    "path": "/config/hestia/library/docs/ADR/ADR-0008-normalization-and-determinism-rules.md",
-    "title": "ADR-0008: Syntax-Aware Normalization & Determinism Rules for Config Artifacts",
-    "status": "Accepted",
-    "date": "2025-09-12",
-    "tags": [
-      "ADR-0001",
-      "ADR-0008",
-      "ADR-0013"
-    ],
-    "decision": "Adopt a **syntax-aware** normalization profile and a **deterministic packaging** process that together guarantee: 1) Byte-stable outputs for identical inputs, 2) Minimal diffs (whitespace and ordering normalized), 3) A single canonical SHA256 for each release."
-  },
-  {
-    "path": "/config/hestia/library/docs/ADR/ADR-0009-adr-governance-formatting.md",
-    "title": "ADR-0009: ADR Governance, Redaction, and Formatting Policy",
-    "status": "Accepted",
-    "date": "2025-09-13",
-    "tags": [
-      "ADR-0001",
-      "ADR-0004",
-      "ADR-0008",
-      "ADR-0009",
-      "ADR-0017",
-      "ADR-0018"
-    ],
-    "decision": ""
-  },
-  {
-    "path": "/config/hestia/library/docs/ADR/ADR-0011-switch-modeling-and-validation.md",
-    "title": "ADR-0011: Switch Modeling & Validation (Netgear GS724T v3 and Similar)",
-    "status": "Approved",
-    "date": "2025-09-12",
-    "tags": [
-      "ADR-0008",
-      "ADR-0011"
-    ],
-    "decision": "Adopt a canonical **Switch Model** with deterministic artifacts and strict validation. Treat the Netgear backup as the source of truth, transformed into normalized outputs: 1) `switch.conf` \u2014 human-readable summary (sections: management, vlans, ports, lags, stp, acls). 2) `vlans.conf` \u2014 VLAN table: ```yaml vlans: - vlan_id: 1 name: default role: default subnet: null # optional notes: \"\" ``` 3) `ports.csv` \u2014 per-port mapping with columns: ```pgsql port,mode,pvid,tagged,untagged,lag,description 1,trunk,1,\"[10,20]\",\"[]\",,Uplink to Router"
-  },
-  {
-    "path": "/config/hestia/library/docs/ADR/ADR-0013-extracted-config-merge.md",
-    "title": "ADR-0013 \u2014 Source\u2192Core Config Merge via `extracted_config` (Meta-Capture Pipeline)",
-    "status": "Accepted",
-    "date": "2025-09-20",
-    "tags": [
-      "ADR-0007",
-      "ADR-0008",
-      "ADR-0009",
-      "ADR-0010",
-      "ADR-0013",
-      "ADR-0016"
-    ],
-    "decision": ""
-  },
-  {
-    "path": "/config/hestia/library/docs/ADR/ADR-0014-oom-and-recorder-policy.md",
-    "title": "ADR-0014: Recorder Policy, OOM Guard & Repo Guardrails (v2)",
-    "status": "Accepted",
-    "date": "2025-09-18",
-    "tags": [
-      "ADR-0010",
-      "ADR-0012",
-      "ADR-0014"
-    ],
-    "decision": "Adopt a **single, canonical recorder configuration** with short retention and strict excludes, enforce **OOM sentinel**, and implement **repo-level guardrails** to make the policy machine-checkable."
-  },
-  {
-    "path": "/config/hestia/library/docs/ADR/ADR-0015-symlink-policy-workspace.md",
-    "title": "ADR-0015: Symlink Policy for Hestia Config Workspace",
-    "status": "Accepted",
-    "date": "2025-09-21",
-    "tags": [
-      "ADR-0001",
-      "ADR-0004",
-      "ADR-0008",
-      "ADR-0009",
-      "ADR-0010",
-      "ADR-0012",
-      "ADR-0013",
-      "ADR-0014",
-      "ADR-0015",
-      "ADR-0016",
-      "`ADR-0009`"
-    ],
-    "decision": ""
-  },
-  {
-    "path": "/config/hestia/library/docs/ADR/ADR-0020-ha-config-error-canonicalization.md",
-    "title": "ADR-0020 \u2014 Home Assistant Configuration Error Canonicalization",
-    "status": "Accepted",
-    "date": "2025-09-30",
-    "tags": [
-      "ADR-0002",
-      "ADR-0009",
-      "ADR-0016",
-      "ADR-0020"
-    ],
-    "decision": "Create a systematic approach to configuration error management with three components:"
-  },
-  {
-    "path": "/config/hestia/library/docs/ADR/ADR-0021-motion-occupancy-presence-signals.md",
-    "title": "ADR-0021 \u2014 Motion, Occupancy, and Presence Signal Architecture (beta abstractions)",
-    "status": "Accepted",
-    "date": "2025-10-03",
-    "tags": [
-      "ADR-0021"
-    ],
-    "decision": ""
-  },
-  {
-    "path": "/config/hestia/library/docs/ADR/ADR-0022-hass-mount-keychain-creds-telemetry.md",
-    "title": "ADR-0022: Home Assistant Mount Keychain Credentials and Telemetry System",
-    "status": "Accepted",
-    "date": "2025-10-04",
-    "tags": [
-      "ADR-0009",
-      "ADR-0022"
-    ],
-    "decision": ""
-  },
-  {
-    "path": "/config/hestia/library/docs/ADR/ADR-0023-operator-priority-merge-resolution.md",
-    "title": "ADR-0023: Operator Priority Resolution for Workspace Merge Conflicts",
-    "status": "Accepted",
-    "date": "2025-10-04",
-    "tags": [
-      "ADR-0012",
-      "ADR-0013",
-      "ADR-0016",
-      "ADR-0019",
-      "ADR-0023"
-    ],
-    "decision": ""
-  },
-  {
-    "path": "/config/hestia/library/docs/ADR/ADR-0027-file-writing-governance.md",
-    "title": "ADR-0027: File Writing Governance and Path Enforcement System",
-    "status": "Accepted",
-    "date": "2025-10-12",
-    "tags": [
-      "ADR-0008",
-      "ADR-0009",
-      "ADR-0018",
-      "ADR-0024",
-      "ADR-0027"
-    ],
-    "decision": "Implement a comprehensive three-layer file writing governance system:"
-  },
-  {
-    "path": "/config/hestia/library/docs/ADR/ADR-0019-remote-topology-mirror-policy.md",
-    "title": "on NAS host, in bare repo; run as repo owner (e.g., gituser)",
-    "status": "Accepted",
-    "date": "2025-09-28",
-    "tags": [
-      "ADR-0015",
-      "ADR-0017",
-      "ADR-0018",
-      "ADR-0019",
-      "ADR-0023"
-    ],
-    "decision": "1) **Source of truth** = `github/main`. 2) **NAS mirror** is **pull-only** (no dev pushes). It is updated by **fetching from GitHub**, not by direct developer force-pushes. 3) All risky ref moves (force updates, history surgery) **must**: - create **backup branch + tag** first, - be recorded with a **receipt** in `hestia/reports/<YYYYMMDD>/...`, - follow ADR-0017 commands (one-at-a-time). 4) CI gates (ADR-0018) are required on PRs into `main`: - `hygiene-gate / gate` - `ADR-0018 Extra Guards / guards` - `ADR Frontmatter Verify / verify`"
-  },
-  {
-    "path": "/config/hestia/library/docs/ADR/ADR-0018-workspace-lifecycle-policy.md",
-    "title": "1) Purpose",
-    "status": "Proposed (Ready to adopt)",
-    "date": "2025-09-26",
-    "tags": [
-      "ADR-0008",
-      "ADR-0009",
-      "ADR-0012",
-      "ADR-0018"
-    ],
-    "decision": ""
-  },
-  {
-    "path": "/config/hestia/library/docs/ADR/ADR-000x-template.md",
-    "title": "ADR-000x: Example Policy",
-    "status": "Draft",
-    "date": "2025-08-27",
-    "tags": [
-      "ADR-000"
-    ],
-    "decision": ""
-  },
-  {
-    "path": "/config/hestia/library/docs/ADR/deprecated/ADR-0010-workspace-shape-and-autofs.md",
-    "title": "ADR-0010: Workspace Shape (amended by ADR-0016)",
-    "status": "Superseded",
-    "date": "2025-09-11",
-    "tags": [
-      "ADR-0008",
-      "ADR-0009",
-      "ADR-0010",
-      "ADR-0011",
-      "ADR-0012",
-      "ADR-0013",
-      "ADR-0015",
-      "ADR-0016",
-      "ADR-0024"
-    ],
-    "decision": "1) **Neutral macOS path (operator convenience only):** On macOS, the Home Assistant `config` share is mounted at **`/n/ha`** via **autofs** (direct map in `/etc/auto_master` referencing `/etc/auto_smb`). 2) **Portability rule (scripts & docs):** - Repo **scripts/Makefiles** MUST NOT hardcode `/n/ha`. Use a parameterized root: `HA_ROOT` defaulting to `/config`. - Example: `ROOT=\"${HA_ROOT:-/config}\"`. - Cross-platform docs use repo-relative or `/config` paths. `/n/ha` is permitted **only** in macOS-specific operator guides. - Canonical template entrypoint remains: `/config/custom"
-  },
-  {
-    "path": "/config/hestia/library/docs/ADR/deprecated/ADR-0012-workspace-folder-taxonomy.md",
-    "title": "ADR-0012: Four-Pillar Workspace Architecture",
-    "status": "Superseded",
-    "date": "2025-09-19",
-    "tags": [
-      "ADR-0008",
-      "ADR-0009",
-      "ADR-0010",
-      "ADR-0012",
-      "ADR-0016",
-      "ADR-0024"
-    ],
-    "decision": ""
-  },
-  {
-    "path": "/config/hestia/library/docs/ADR/deprecated/ADR-0016-canonical-ha-smb-mount.md",
-    "title": "ADR-0016 \u2014 Canonical HA edit root & non\u2011interactive SMB mount",
-    "status": "Superseded",
-    "date": "2025-09-24",
-    "tags": [
-      "ADR-0009",
-      "ADR-0010",
-      "ADR-0015",
-      "ADR-0016",
-      "ADR-0017",
-      "ADR-0023",
-      "ADR-0024"
-    ],
-    "decision": ""
-  },
-  {
-    "path": "/config/hestia/library/docs/ADR/ADR-0017-fallback-local-logging.md",
-    "title": "ADR-0017 \u2014 Fallback local logging path for Home Assistant tooling (non-repo, cross-platform)",
-    "status": "Pending Validation",
-    "date": "2025-09-25",
-    "tags": [
-      "ADR-0008",
-      "ADR-0009",
-      "ADR-0016",
-      "ADR-0017"
-    ],
-    "decision": "When the primary Home Assistant config mount (the operator's `root config` mount) is unavailable, tooling and scripts MUST write fallback logs to the operator's local directory: `/Users/evertappels/Projects/HomeAssistant/logs` This location is to be used only as a last-resort fallback when the canonical logging or config locations are unreachable."
-  },
-  {
-    "path": "/config/hestia/library/docs/ADR/ADR-0028-appdaemon-room-db-sql-migration.md",
-    "title": "ADR-0028: AppDaemon & Room-DB Canonicalization (Endpoints, Entities, SQL Migration)",
-    "status": "Proposed",
-    "date": "2025-10-12",
-    "tags": [
-      "ADR-0008",
-      "ADR-0009",
-      "ADR-0018",
-      "ADR-0019",
-      "ADR-0024",
-      "ADR-0027",
-      "ADR-0028"
-    ],
-    "decision": ""
-  },
-  {
-    "path": "/config/hestia/library/docs/ADR/architecture_POA.md",
-    "title": "Architecture POA for Hestia Metadata Schema",
-    "status": "",
-    "date": "",
-    "tags": [],
-    "decision": ""
-  },
-  {
-    "path": "/config/hestia/library/docs/ADR/hestia_structure.md",
-    "title": "Hestia Content Strategy: Final Structure & Purpose",
-    "status": "",
-    "date": "",
-    "tags": [],
-    "decision": ""
-  },
-  {
-    "path": "/config/hestia/library/docs/ADR/ADR-0024-canonical-config-path.md",
-    "title": "name<TAB>relative-path-under-/System/Volumes/Data",
-    "status": "Implemented",
-    "date": "2025-10-05",
-    "tags": [
-      "ADR-0010",
-      "ADR-0012",
-      "ADR-0014",
-      "ADR-0015",
-      "ADR-0016",
-      "ADR-0018",
-      "ADR-0019",
-      "ADR-0022",
-      "ADR-0024",
-      "ADR-0027"
-    ],
-    "decision": "* Keep **`homeassistant.local` \u2192 `/config`** as the **only** writable config mount. * **Block** automatic mounts of the Tailscale host to `/Volumes/HA/{config,share,addons}` in normal operation. * Allow **manual, temporary** mounts of `share`/`addons` for ad-hoc use; tools/automations **must not** reference them. * Enforce a `/config` **preflight** before any write. * Editors/agents/workflows **must reference `/config` only** (workspace updated). * Keychain hygiene: keep creds for `homeassistant.local`; remove `homeassistant.reverse-beta.ts.net` to prevent auto-remounts."
+    "adrs": [
+      {
+        "path": "/config/hestia/library/docs/ADR/ADR-0022-hass-mount-keychain-creds-telemetry.md",
+        "filename": "ADR-0022-hass-mount-keychain-creds-telemetry.md",
+        "title": "ADR-0022: Home Assistant Mount Keychain Credentials and Telemetry System",
+        "status": "Accepted",
+        "date": "2025-10-04",
+        "decision": "",
+        "tags": [
+          "ADR-0009",
+          "ADR-0022"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "priority": 4,
+        "is_deprecated": false,
+        "last_modified": "2025-10-04"
+      },
+      {
+        "path": "/config/hestia/library/docs/ADR/ADR-0024-canonical-config-path.md",
+        "filename": "ADR-0024-canonical-config-path.md",
+        "title": "Canonical Home Assistant Config Path (Single-Source-of-Truth)",
+        "status": "Accepted",
+        "date": "2025-10-05",
+        "decision": "* Keep **`homeassistant.local` → `/config`** as the **only** writable config mount. * **Block** automatic mounts of the Tailscale host to `/Volumes/HA/{config,share,addons}` in normal operation. * All...",
+        "tags": [
+          "ADR-0010",
+          "ADR-0012",
+          "ADR-0014",
+          "ADR-0015",
+          "ADR-0016",
+          "ADR-0018",
+          "ADR-0019",
+          "ADR-0022",
+          "ADR-0024",
+          "ADR-0027"
+        ],
+        "supersedes": [
+          "ADR-0016"
+        ],
+        "superseded_by": [
+          "ADR-0024"
+        ],
+        "priority": 4,
+        "is_deprecated": false,
+        "last_modified": "2025-10-12"
+      },
+      {
+        "path": "/config/hestia/library/docs/ADR/ADR-0027-file-writing-governance.md",
+        "filename": "ADR-0027-file-writing-governance.md",
+        "title": "File Writing Governance and Path Enforcement System",
+        "status": "Accepted",
+        "date": "2025-10-12",
+        "decision": "Implement a comprehensive three-layer file writing governance system:",
+        "tags": [
+          "ADR-0008",
+          "ADR-0009",
+          "ADR-0018",
+          "ADR-0024",
+          "ADR-0027"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "priority": 4,
+        "is_deprecated": false,
+        "last_modified": "2025-10-12"
+      },
+      {
+        "path": "/config/hestia/library/docs/ADR/ADR-0021-motion-occupancy-presence-signals.md",
+        "filename": "ADR-0021-motion-occupancy-presence-signals.md",
+        "title": "Motion, Occupancy, and Presence Signal Architecture (beta abstractions)",
+        "status": "Accepted",
+        "date": "2025-10-03",
+        "decision": "",
+        "tags": [
+          "ADR-0021"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "priority": 4,
+        "is_deprecated": false,
+        "last_modified": "2025-10-05"
+      },
+      {
+        "path": "/config/hestia/library/docs/ADR/ADR-0023-operator-priority-merge-resolution.md",
+        "filename": "ADR-0023-operator-priority-merge-resolution.md",
+        "title": "Operator Priority Resolution for Workspace Merge Conflicts",
+        "status": "Accepted",
+        "date": "2025-10-04",
+        "decision": "",
+        "tags": [
+          "ADR-0012",
+          "ADR-0013",
+          "ADR-0016",
+          "ADR-0019",
+          "ADR-0023"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "priority": 4,
+        "is_deprecated": false,
+        "last_modified": "2025-10-04"
+      },
+      {
+        "path": "/config/hestia/library/docs/ADR/ADR-0026-workspace-environment-ops.md",
+        "filename": "ADR-0026-workspace-environment-ops.md",
+        "title": "Workspace Operations & Environment Management",
+        "status": "Accepted",
+        "date": "2025-10-06",
+        "decision": "",
+        "tags": [
+          "ADR-0009",
+          "ADR-0024",
+          "ADR-0026",
+          "ADR-0030"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "priority": 4,
+        "is_deprecated": false,
+        "last_modified": "2025-10-15"
+      },
+      {
+        "path": "/config/hestia/library/docs/ADR/ADR-0009-adr-governance-formatting.md",
+        "filename": "ADR-0009-adr-governance-formatting.md",
+        "title": "ADR Governance, Redaction, and Formatting Policy",
+        "status": "Accepted",
+        "date": "2025-09-13",
+        "decision": "",
+        "tags": [
+          "ADR-0001",
+          "ADR-0004",
+          "ADR-0008",
+          "ADR-0009",
+          "ADR-0017",
+          "ADR-0018"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "priority": 3,
+        "is_deprecated": false,
+        "last_modified": "2025-10-01"
+      },
+      {
+        "path": "/config/hestia/library/docs/ADR/ADR-0028-appdaemon-room-db-sql-migration.md",
+        "filename": "ADR-0028-appdaemon-room-db-sql-migration.md",
+        "title": "AppDaemon & Room-DB Canonicalization (Endpoints, Entities, SQL Migration)",
+        "status": "Proposed",
+        "date": "2025-10-12",
+        "decision": "",
+        "tags": [
+          "ADR-0008",
+          "ADR-0009",
+          "ADR-0018",
+          "ADR-0019",
+          "ADR-0024",
+          "ADR-0027",
+          "ADR-0028"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "priority": 3,
+        "is_deprecated": false,
+        "last_modified": "2025-10-14"
+      },
+      {
+        "path": "/config/hestia/library/docs/ADR/ADR-0004-area-hierarchy.md",
+        "filename": "ADR-0004-area-hierarchy.md",
+        "title": "Canonical Area Hierarchy & Spatial Relationship Contract",
+        "status": "Accepted",
+        "date": "2025-09-11",
+        "decision": "",
+        "tags": [
+          "ADR-0004",
+          "ADR-0021"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "priority": 3,
+        "is_deprecated": false,
+        "last_modified": "2025-10-04"
+      },
+      {
+        "path": "/config/hestia/library/docs/ADR/ADR-0003-tier-definitions.md",
+        "filename": "ADR-0003-tier-definitions.md",
+        "title": "Canonical Tier Definitions for Home Assistant Entity Architecture",
+        "status": "Accepted",
+        "date": "2025-09-11",
+        "decision": "",
+        "tags": [
+          "ADR-0003"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "priority": 3,
+        "is_deprecated": false,
+        "last_modified": "2025-10-01"
+      },
+      {
+        "path": "/config/hestia/library/docs/ADR/ADR-0006-decay-propagation.md",
+        "filename": "ADR-0006-decay-propagation.md",
+        "title": "Decay and Propagation Logic Contract",
+        "status": "Accepted",
+        "date": "2025-09-11",
+        "decision": "",
+        "tags": [
+          "ADR-0006"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "priority": 3,
+        "is_deprecated": false,
+        "last_modified": "2025-10-04"
+      },
+      {
+        "path": "/config/hestia/library/docs/ADR/ADR-0005-entity-sensor-logic-signal.md",
+        "filename": "ADR-0005-entity-sensor-logic-signal.md",
+        "title": "Entity Registry, Sensor Matrix, Logic Path Index, and Signal Emitters Contract",
+        "status": "Accepted",
+        "date": "2025-09-11",
+        "decision": "",
+        "tags": [
+          "ADR-0005"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "priority": 3,
+        "is_deprecated": false,
+        "last_modified": "2025-10-04"
+      },
+      {
+        "path": "/config/hestia/library/docs/ADR/ADR-0020-ha-config-error-canonicalization.md",
+        "filename": "ADR-0020-ha-config-error-canonicalization.md",
+        "title": "Home Assistant Configuration Error Canonicalization",
+        "status": "Accepted",
+        "date": "2025-09-30",
+        "decision": "Create a systematic approach to configuration error management with three components:",
+        "tags": [
+          "ADR-0002",
+          "ADR-0009",
+          "ADR-0016",
+          "ADR-0020"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "priority": 3,
+        "is_deprecated": false,
+        "last_modified": "2025-10-14"
+      },
+      {
+        "path": "/config/hestia/library/docs/ADR/ADR-0002-jinja-patterns.md",
+        "filename": "ADR-0002-jinja-patterns.md",
+        "title": "Home Assistant Jinja Pattern Normalization",
+        "status": "Accepted",
+        "date": "2025-09-11",
+        "decision": "",
+        "tags": [
+          "ADR-0002"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "priority": 3,
+        "is_deprecated": false,
+        "last_modified": "2025-10-01"
+      },
+      {
+        "path": "/config/hestia/library/docs/ADR/ADR-0007-meta-governance-schema.md",
+        "filename": "ADR-0007-meta-governance-schema.md",
+        "title": "Meta/Governance Patterns and Schema Definitions Contract",
+        "status": "Accepted",
+        "date": "2025-09-11",
+        "decision": "",
+        "tags": [
+          "ADR-0007"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "priority": 3,
+        "is_deprecated": false,
+        "last_modified": "2025-10-14"
+      },
+      {
+        "path": "/config/hestia/library/docs/ADR/ADR-0014-oom-and-recorder-policy.md",
+        "filename": "ADR-0014-oom-and-recorder-policy.md",
+        "title": "OOM Mitigation & Recorder Policy",
+        "status": "Accepted",
+        "date": "2025-09-18",
+        "decision": "Adopt a **single, canonical recorder configuration** with short retention and strict excludes, enforce **OOM sentinel**, and implement **repo-level guardrails** to make the policy machine-checkable.",
+        "tags": [
+          "ADR-0010",
+          "ADR-0012",
+          "ADR-0014"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "priority": 3,
+        "is_deprecated": false,
+        "last_modified": "2025-10-11"
+      },
+      {
+        "path": "/config/hestia/library/docs/ADR/ADR-0019-remote-topology-mirror-policy.md",
+        "filename": "ADR-0019-remote-topology-mirror-policy.md",
+        "title": "Remote Topology & Mirror Policy (GitHub ⇄ NAS ⇄ Local)",
+        "status": "Accepted",
+        "date": "2025-09-28",
+        "decision": "1) **Source of truth** = `github/main`. 2) **NAS mirror** is **pull-only** (no dev pushes). It is updated by **fetching from GitHub**, not by direct developer force-pushes. 3) All risky ref moves (for...",
+        "tags": [
+          "ADR-0015",
+          "ADR-0017",
+          "ADR-0018",
+          "ADR-0019",
+          "ADR-0023"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "priority": 3,
+        "is_deprecated": false,
+        "last_modified": "2025-10-04"
+      },
+      {
+        "path": "/config/hestia/library/docs/ADR/ADR-0013-extracted-config-merge.md",
+        "filename": "ADR-0013-extracted-config-merge.md",
+        "title": "Source→Core Config Merge via extracted_config (Meta-Capture Pipeline)",
+        "status": "Accepted",
+        "date": "2025-09-20",
+        "decision": "",
+        "tags": [
+          "ADR-0007",
+          "ADR-0008",
+          "ADR-0009",
+          "ADR-0010",
+          "ADR-0013",
+          "ADR-0016"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "priority": 3,
+        "is_deprecated": false,
+        "last_modified": "2025-10-04"
+      },
+      {
+        "path": "/config/hestia/library/docs/ADR/ADR-0011-switch-modeling-and-validation.md",
+        "filename": "ADR-0011-switch-modeling-and-validation.md",
+        "title": "Switch Modeling & Validation (Netgear GS724T v3 and Similar)",
+        "status": "Accepted",
+        "date": "2025-09-12",
+        "decision": "Adopt a canonical **Switch Model** with deterministic artifacts and strict validation. Treat the Netgear backup as the source of truth, transformed into normalized outputs: 1) `switch.conf` — human-re...",
+        "tags": [
+          "ADR-0008",
+          "ADR-0011"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "priority": 3,
+        "is_deprecated": false,
+        "last_modified": "2025-10-05"
+      },
+      {
+        "path": "/config/hestia/library/docs/ADR/ADR-0015-symlink-policy-workspace.md",
+        "filename": "ADR-0015-symlink-policy-workspace.md",
+        "title": "Symlink Policy for Hestia Config Workspace",
+        "status": "Accepted",
+        "date": "2025-09-21",
+        "decision": "",
+        "tags": [
+          "ADR-0001",
+          "ADR-0004",
+          "ADR-0008",
+          "ADR-0009",
+          "ADR-0010",
+          "ADR-0012",
+          "ADR-0013",
+          "ADR-0014",
+          "ADR-0015",
+          "ADR-0016"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "priority": 3,
+        "is_deprecated": false,
+        "last_modified": "2025-10-01"
+      },
+      {
+        "path": "/config/hestia/library/docs/ADR/ADR-0008-normalization-and-determinism-rules.md",
+        "filename": "ADR-0008-normalization-and-determinism-rules.md",
+        "title": "Syntax-Aware Normalization & Determinism Rules for Config Artifacts",
+        "status": "Accepted",
+        "date": "2025-09-12",
+        "decision": "Adopt a **syntax-aware** normalization profile and a **deterministic packaging** process that together guarantee: 1) Byte-stable outputs for identical inputs, 2) Minimal diffs (whitespace and ordering...",
+        "tags": [
+          "ADR-0001",
+          "ADR-0008",
+          "ADR-0013"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "priority": 3,
+        "is_deprecated": false,
+        "last_modified": "2025-10-04"
+      },
+      {
+        "path": "/config/hestia/library/docs/ADR/ADR-0001-tts-yaml.md",
+        "filename": "ADR-0001-tts-yaml.md",
+        "title": "Templated TTS YAML Snippet",
+        "status": "Accepted",
+        "date": "2025-09-11",
+        "decision": "",
+        "tags": [
+          "ADR-0001"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "priority": 3,
+        "is_deprecated": false,
+        "last_modified": "2025-10-01"
+      },
+      {
+        "path": "/config/hestia/library/docs/ADR/ADR-0018-workspace-lifecycle-policy.md",
+        "filename": "ADR-0018-workspace-lifecycle-policy.md",
+        "title": "Workspace hygiene, lifecycle & quarantine policy",
+        "status": "Proposed",
+        "date": "2025-09-26",
+        "decision": "",
+        "tags": [
+          "ADR-0008",
+          "ADR-0009",
+          "ADR-0012",
+          "ADR-0018"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "priority": 2,
+        "is_deprecated": false,
+        "last_modified": "2025-10-01"
+      },
+      {
+        "path": "/config/hestia/library/docs/ADR/ADR-000x-template.md",
+        "filename": "ADR-000x-template.md",
+        "title": "Example Policy",
+        "status": "Draft",
+        "date": "2025-08-27",
+        "decision": "",
+        "tags": [
+          "ADR-000"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "priority": 0,
+        "is_deprecated": false,
+        "last_modified": "2025-10-01"
+      },
+      {
+        "path": "/config/hestia/library/docs/ADR/ADR-0017-fallback-local-logging.md",
+        "filename": "ADR-0017-fallback-local-logging.md",
+        "title": "Fallback local logging path for HA tooling (non-repo, cross-platform)",
+        "status": "Pending",
+        "date": "2025-09-25",
+        "decision": "When the primary Home Assistant config mount (the operator's `root config` mount) is unavailable, tooling and scripts MUST write fallback logs to the operator's local directory: `/Users/evertappels/Pr...",
+        "tags": [
+          "ADR-0008",
+          "ADR-0009",
+          "ADR-0016",
+          "ADR-0017"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "priority": 0,
+        "is_deprecated": false,
+        "last_modified": "2025-10-04"
+      },
+      {
+        "path": "/config/hestia/library/docs/ADR/deprecated/ADR-0016-canonical-ha-smb-mount.md",
+        "filename": "ADR-0016-canonical-ha-smb-mount.md",
+        "title": "Canonical HA edit root & non-interactive SMB mount",
+        "status": "Superseded",
+        "date": "2025-09-24",
+        "decision": "",
+        "tags": [
+          "ADR-0009",
+          "ADR-0010",
+          "ADR-0015",
+          "ADR-0016",
+          "ADR-0017",
+          "ADR-0023",
+          "ADR-0024"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "priority": -1,
+        "is_deprecated": true,
+        "last_modified": "2025-10-05"
+      },
+      {
+        "path": "/config/hestia/library/docs/ADR/deprecated/ADR-0012-workspace-folder-taxonomy.md",
+        "filename": "ADR-0012-workspace-folder-taxonomy.md",
+        "title": "Four-Pillar Workspace Architecture",
+        "status": "Superseded",
+        "date": "2025-09-19",
+        "decision": "",
+        "tags": [
+          "ADR-0008",
+          "ADR-0009",
+          "ADR-0010",
+          "ADR-0012",
+          "ADR-0016",
+          "ADR-0024"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "priority": -1,
+        "is_deprecated": true,
+        "last_modified": "2025-10-05"
+      },
+      {
+        "path": "/config/hestia/library/docs/ADR/deprecated/ADR-0010-workspace-shape-and-autofs.md",
+        "filename": "ADR-0010-workspace-shape-and-autofs.md",
+        "title": "Workspace Shape (amended by ADR-0016)",
+        "status": "Superseded",
+        "date": "2025-09-11",
+        "decision": "1) **Neutral macOS path (operator convenience only):** On macOS, the Home Assistant `config` share is mounted at **`/n/ha`** via **autofs** (direct map in `/etc/auto_master` referencing `/etc/auto_smb...",
+        "tags": [
+          "ADR-0008",
+          "ADR-0009",
+          "ADR-0010",
+          "ADR-0011",
+          "ADR-0012",
+          "ADR-0013",
+          "ADR-0015",
+          "ADR-0016",
+          "ADR-0024"
+        ],
+        "supersedes": [
+          "ADR-0016"
+        ],
+        "superseded_by": [
+          "ADR-0012",
+          "ADR-0015"
+        ],
+        "priority": -1,
+        "is_deprecated": true,
+        "last_modified": "2025-10-05"
+      }
+    ]
   }
-]
+}

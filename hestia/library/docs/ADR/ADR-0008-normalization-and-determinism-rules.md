@@ -9,6 +9,7 @@ related: ["ADR-0013"]
 supersedes: ["ADR-0001"]
 last_updated: 2025-09-12
 tags: ["architecture", "adr", "normalization", "determinism", "yaml", "json", "ini", "xml", "csv", "packaging"]
+decision: "Adopt a **syntax-aware** normalization profile and a **deterministic packaging** process that together guarantee: 1) Byte-stable outputs for identical inputs, 2) Minimal diffs (whitespace and ordering normalized), 3) A single canonical SHA256 for each release."
 ---
 
 # ADR-0008: Syntax-Aware Normalization & Determinism Rules for Config Artifacts

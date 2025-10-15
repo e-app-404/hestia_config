@@ -7,8 +7,9 @@ This system automatically indexes configuration files across the Hestia configur
 The configuration indexer scans `/config/hestia/config/` recursively for configuration files, excluding the `/config/hestia/config/index/` directory itself to avoid circular references.
 
 **Supported file formats:**
+
 - `.conf` - Configuration files (various formats)
-- `.yaml`/`.yml` - YAML configuration files  
+- `.yaml`/`.yml` - YAML configuration files
 - `.toml` - TOML configuration files
 - `.ini` - INI configuration files
 
@@ -17,7 +18,7 @@ The configuration indexer scans `/config/hestia/config/` recursively for configu
 Configuration files are automatically categorized based on their directory location:
 
 - **`devices/`** - Hardware device integrations and configurations
-- **`diagnostics/`** - Monitoring, health checks, and diagnostic configurations  
+- **`diagnostics/`** - Monitoring, health checks, and diagnostic configurations
 - **`network/`** - Network infrastructure and connectivity configs
 - **`preferences/`** - User interface and system preference configurations
 - **`preview/`** - Generated configuration previews (non-runtime)
@@ -28,19 +29,24 @@ Configuration files are automatically categorized based on their directory locat
 ## Generated Outputs
 
 ### JSON Index (`/config/.workspace/config_index.json`)
+
 Machine-readable index with complete metadata:
+
 - File paths and categorization
 - Content analysis (format detection, size, line count)
 - Metadata extraction (titles, descriptions, tags)
 - Statistics by category and format
 - Generated timestamp
 
-### YAML Index (`/config/.workspace/config_index.yaml`) 
+### YAML Index (`/config/.workspace/config_index.yaml`)
+
 YAML format of the same data (only generated if PyYAML is available)
 
 ### Markdown Index (`/config/.workspace/config_index.md`)
+
 Human-readable catalog organized by category with:
-- Configuration file titles and descriptions  
+
+- Configuration file titles and descriptions
 - File paths for easy navigation
 - Format identification (YAML, CONF, TOML, etc.)
 - Tag summaries
@@ -49,6 +55,7 @@ Human-readable catalog organized by category with:
 ## Usage
 
 ### Command Line
+
 ```bash
 # Run indexer directly
 /config/bin/config-index
@@ -58,17 +65,20 @@ python3 /config/bin/config-index.py
 ```
 
 ### VS Code Tasks
+
 The indexer integrates with VS Code tasks (see `.vscode/tasks.json`):
 
 - **Config Index: Refresh** - Manual index regeneration
-- **Config Index: Watch and Refresh** - Automatic background monitoring  
+- **Config Index: Watch and Refresh** - Automatic background monitoring
 - **Config Index: Full Setup & Watch** - Combined setup task
 
 ### Automatic Updates
+
 The watch task monitors `/config/hestia/config/` for changes to:
+
 - `.conf` files
 - `.yaml`/`.yml` files
-- `.toml` files  
+- `.toml` files
 - `.ini` files
 
 When changes are detected (excluding `/index/` subdirectory), the index is automatically regenerated.
@@ -78,19 +88,23 @@ When changes are detected (excluding `/index/` subdirectory), the index is autom
 The indexer performs sophisticated content analysis:
 
 ### Format Detection
+
 - **YAML**: Detects YAML content with proper parsing when PyYAML available
 - **TOML**: Identifies TOML structure markers `[section]`
 - **INI**: Detects key=value configuration patterns
 - **Text**: Fallback for unrecognized formats
 
 ### Metadata Extraction
+
 - **Titles**: From YAML frontmatter, comment headers, or filenames
 - **Descriptions**: From purpose comments, YAML metadata, or content analysis
 - **Tags**: From explicit tag fields, comments, categories, and formats
 - **Statistics**: File size, word count, line count, modification dates
 
 ### Example Metadata Processing
+
 For a file like `/config/hestia/config/devices/netgear.conf`:
+
 - **Category**: `devices` (from directory)
 - **Format**: `yaml` (detected from content)
 - **Title**: Extracted from `# Netgear` comment or filename
@@ -100,6 +114,7 @@ For a file like `/config/hestia/config/devices/netgear.conf`:
 ## Integration with Other Systems
 
 This configuration indexing system complements:
+
 - **ADR Governance Index** (`/config/bin/adr-index.py`) - Architecture decisions
 - **Knowledge Base Index** (`/config/bin/kb-index`) - Documentation and guides
 - **VS Code Prompt Files** - Agent mode templates can reference indexed configs
@@ -111,7 +126,7 @@ This configuration indexing system complements:
 /config/
 ├── bin/
 │   ├── config-index.py          # Main indexer script
-│   └── config-index             # Quick wrapper script  
+│   └── config-index             # Quick wrapper script
 ├── .workspace/
 │   ├── config_index.json        # JSON output
 │   ├── config_index.yaml        # YAML output (if PyYAML available)
@@ -119,7 +134,7 @@ This configuration indexing system complements:
 ├── hestia/config/               # Source directory (scanned)
 │   ├── devices/                 # Device configurations
 │   ├── diagnostics/             # Monitoring and health checks
-│   ├── network/                 # Network infrastructure 
+│   ├── network/                 # Network infrastructure
 │   ├── system/                  # System-level configs
 │   └── ...                      # Other categories
 └── .vscode/
@@ -128,18 +143,21 @@ This configuration indexing system complements:
 
 ## Maintenance & Troubleshooting
 
-### Dependencies  
+### Dependencies
+
 - **Python 3.x** - Required
 - **PyYAML** - Optional (enables full YAML parsing and YAML output)
 
 ### Error Handling
+
 - Graceful handling of unreadable files
 - Format detection fallbacks for unknown content types
 - Warning messages for parsing failures
 - Continues processing even if individual files fail
 
 ### Manual Maintenance
-```bash  
+
+```bash
 # Refresh index manually
 /config/bin/config-index
 
@@ -156,6 +174,7 @@ find /config/hestia/config -name "*.conf" -o -name "*.yaml" -o -name "*.toml" | 
 ## Current Statistics
 
 As of the last generation:
+
 - **Total Files**: 46 configuration files
 - **Categories**: 8 categories (devices, diagnostics, network, preferences, preview, registry, storage, system)
 - **Formats**: YAML (37), Unknown (8), TOML (1)
@@ -164,6 +183,7 @@ As of the last generation:
 ## Examples
 
 ### Searching the Index
+
 ```bash
 # Find device configurations
 grep -i "devices" /config/.workspace/config_index.md
@@ -176,6 +196,7 @@ jq '.hestia_config_index.statistics.by_category' /config/.workspace/config_index
 ```
 
 ### Using in Automation
+
 ```bash
 # Get all YAML files in diagnostics category
 jq -r '.hestia_config_index.artifacts.diagnostics[] | select(.file_format == "yaml") | .path' /config/.workspace/config_index.json

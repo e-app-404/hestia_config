@@ -5,16 +5,27 @@ date: 2025-10-06
 slug: workspace-environment-ops
 status: Accepted
 author:
-- Evert Appels
-- Strategos (Executive Project Strategist)
+  - Evert Appels
+  - Strategos (Executive Project Strategist)
 related:
-- ADR-0009
-- ADR-0024
-- ADR-0030
+  - ADR-0009
+  - ADR-0024
+  - ADR-0030
 supersedes: []
 last_updated: 2025-10-06
-tags: ["operations","environment","venv","governance","security","recovery","tooling","macos","ci-cd","diagnostics"]
-
+tags:
+  [
+    "operations",
+    "environment",
+    "venv",
+    "governance",
+    "security",
+    "recovery",
+    "tooling",
+    "macos",
+    "ci-cd",
+    "diagnostics",
+  ]
 ---
 
 # 1. Context
@@ -260,6 +271,7 @@ Single authoritative `.code-workspace` with:
 ## 9.1 Environment Bootstrap
 
 **Governance Environment Setup:**
+
 ```bash
 # Automated via Makefile (recommended)
 make venv  # Creates .venv_ha_governance and installs requirements
@@ -273,6 +285,7 @@ pip install -r requirements-dev.txt
 ```
 
 **ADR Linter Setup (External Venv):**
+
 ```bash
 # Install in user home (NOT under /config)
 python3 -m venv ~/.venv/hestia-adr
@@ -294,7 +307,7 @@ hestia-adr-lint /config/hestia/library/docs/ADR --format human
 
 **Common Issues & Solutions:**
 
-* **Virtual Environment Activation Errors**: 
+- **Virtual Environment Activation Errors**:
   - **Problem**: `command not found: uname` or PATH corruption
   - **Root Cause**: Virtual environment created with legacy paths during ADR-0024 migration
   - **Solution**: Fix activation script paths:
@@ -306,11 +319,11 @@ hestia-adr-lint /config/hestia/library/docs/ADR --format human
     # To: export VIRTUAL_ENV=/System/Volumes/Data/homeassistant/.venv_ha_governance
     ```
 
-- **Broken add-on deps**: Rebuild container; ensure `requirements.txt` copied into build context
-- **Schema errors**: Run `yamllint` and HA config check via `make lint config-validate`
-- **Path drift**: Run `hestia_neutralize_runner.sh` and `root_hygiene_check.sh`
-- **ADR linter issues**: Ensure installed in external venv (`~/.venv/hestia-adr`), not under `/config`
-- **Makefile target failures**: Verify `.venv_ha_governance` exists and is properly configured
+* **Broken add-on deps**: Rebuild container; ensure `requirements.txt` copied into build context
+* **Schema errors**: Run `yamllint` and HA config check via `make lint config-validate`
+* **Path drift**: Run `hestia_neutralize_runner.sh` and `root_hygiene_check.sh`
+* **ADR linter issues**: Ensure installed in external venv (`~/.venv/hestia-adr`), not under `/config`
+* **Makefile target failures**: Verify `.venv_ha_governance` exists and is properly configured
 
 ## 9.3 Maintenance & Hygiene Automation
 
@@ -371,21 +384,23 @@ ALLOWED_FILES="configuration.yaml scenes.yaml scripts.yaml automations.yaml cust
 **Migration Pattern**: Executable scripts in `domain/shell_commands/` → Declarative YAML in `packages/integrations/shell_command.yaml`
 
 **Benefits Achieved**:
+
 - **Canonical Path Compliance**: All commands use `/config/hestia/tools/` paths per ADR-0024
 - **Configuration as Code**: Shell commands now follow Home Assistant declarative patterns
 - **Simplified Maintenance**: Single YAML file vs. scattered executable scripts
 - **Backup Integration**: Commands included in standard backup/restore procedures
 
 **Implementation Template**:
+
 ```yaml
 # packages/integrations/shell_command.yaml
 shell_command:
   # System tools
   git_push_logger: "/config/hestia/tools/system/git_push_logger.sh"
-  
+
   # Operations tools
   addons_runtime_fetch: "/config/hestia/tools/ops/addons_runtime_fetch.sh"
-  
+
   # Evidence/verification tools
   ha_bb8_verification: "/config/hestia/tools/evidence/ha_bb8_verification.sh"
 ```
