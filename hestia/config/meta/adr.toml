@@ -347,14 +347,30 @@ default_rules = [
 [rendering.statistics]
 # Metrics to calculate and display
 include_counts = ["total_adrs", "by_status", "by_year", "deprecated_count"]
-status_icons = [
-    { status = "Accepted", icon = "✅" },
-    { status = "Implemented", icon = "✅" },
-    { status = "Proposed", icon = "🔄" },
-    { status = "Draft", icon = "📝" },
-    { status = "Pending", icon = "⏳" },
-    { status = "Superseded", icon = "🗂️" }
-]
+
+[[rendering.statistics.status_icons]]
+status = "Accepted"
+icon = "✅"
+
+[[rendering.statistics.status_icons]]
+status = "Implemented" 
+icon = "✅"
+
+[[rendering.statistics.status_icons]]
+status = "Proposed"
+icon = "🔄"
+
+[[rendering.statistics.status_icons]]
+status = "Draft"
+icon = "📝"
+
+[[rendering.statistics.status_icons]]
+status = "Pending"
+icon = "⏳"
+
+[[rendering.statistics.status_icons]]
+status = "Superseded"
+icon = "🗂️"
 
 # Integration points
 [integration]
