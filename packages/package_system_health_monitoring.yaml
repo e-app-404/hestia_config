@@ -39,7 +39,7 @@ template:
         attributes:
           backup_location: "/config/hestia/workspace/archive/backups"
           synology_upload: "disabled (preventing failures)"
-          retention_days: 7
+          retention_days: "7"
           adr_compliance: "ADR-0024 canonical paths, ADR-0018 lifecycle"
 
 binary_sensor:
