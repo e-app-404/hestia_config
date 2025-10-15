@@ -1,8 +1,8 @@
 {
-  "generated": "2025-10-15T11:41:48",
-  "total_documents": 77,
+  "generated": "2025-10-15T12:09:08",
+  "total_documents": 78,
   "categories": {
-    "guides": 13,
+    "guides": 14,
     "playbooks": 7,
     "ha_addon": 4,
     "ha_automation": 9,
@@ -27,6 +27,22 @@
       "source": "",
       "file_size": 37363,
       "word_count": 3196
+    },
+    {
+      "path": "/config/hestia/library/docs/guides/configuration_index_system.md",
+      "relative_path": "hestia/library/docs/guides/configuration_index_system.md",
+      "title": "Configuration Index System",
+      "category": "guides",
+      "content_type": "guide",
+      "author": "",
+      "date": "",
+      "last_updated": "",
+      "summary": "Configuration Index System",
+      "tags": [],
+      "slug": "",
+      "source": "",
+      "file_size": 6976,
+      "word_count": 867
     },
     {
       "path": "/config/hestia/library/docs/guides/dsm_configure-synology-nas-git-server.md",
@@ -125,7 +141,7 @@
       "tags": [],
       "slug": "",
       "source": "",
-      "file_size": 4666,
+      "file_size": 4681,
       "word_count": 594
     },
     {
