@@ -70,12 +70,12 @@ automation:
     action:
       - service: system_log.write
         data:
-           message: >
-             ✅ Startup optimization successful - ADR-0020 fixes applied:
-             - Google Assistant disabled (sync_google blocking resolved)
-             - Backup location configured locally (Synology upload disabled)
-             - Network scanner optimized (scan_interval: 600s)
-             - Startup check window: 300s
+          message: >
+            ✅ Startup optimization successful - ADR-0020 fixes applied:
+            - Google Assistant disabled (sync_google blocking resolved)
+            - Backup location configured locally (Synology upload disabled)
+            - Network scanner optimized (scan_interval: 600s)
+            - Startup check window: 300s
           level: info
           logger: "homeassistant.adr_0020_fixes"
     mode: single
