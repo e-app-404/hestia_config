@@ -450,6 +450,11 @@ def main():
         action='store_true',
         help='Update the report index with new report entry'
     )
+    parser.add_argument(
+        '--dry-run',
+        action='store_true',
+        help='Generate report without updating index (ignored for compatibility)'
+    )
     
     args = parser.parse_args()
     
