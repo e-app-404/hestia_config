@@ -27,11 +27,11 @@ template:
           file: "/config/packages/package_universal_media.yaml"
           subarea_id: "hifi_configuration"
           area_id: "bedroom"
-          floor_id: "sanctum"    
+          floor_id: "sanctum"
           domain: "orpheus"
-          module: "virtual_matrix"    
+          module: "virtual_matrix"
           role: "convenience"
-          type: "selector"  
+          type: "selector"
 
       - name: "Bedroom TV Status"
         unique_id: "bedroom_tv_status_beta"
@@ -49,7 +49,7 @@ template:
           tier: "β"
           subarea_id: "hifi_configuration"
           area_id: "bedroom"
-          floor_id: "sanctum"          
+          floor_id: "sanctum"
           canonical_id: "bedroom_tv_status_β"
           subsystem: "orpheus"
           module: "television"
@@ -137,7 +137,7 @@ template:
           domain: "status"
           subarea_id: "hifi_configuration"
           area_id: "bedroom"
-          floor_id: "sanctum"          
+          floor_id: "sanctum"
           file: "/config/packages/package_universal_media.yaml"
 
       - name: "Media Player STANDBY Diagnostic"
@@ -1021,12 +1021,12 @@ automation:
     id: bedroom_universal_media_accent_light_sync_v1
     mode: restart
     trigger:
-      - platform: state
+      - trigger: state
         entity_id: media_player.bedroom_universal
-      - platform: state
+      - trigger: state
         entity_id: media_player.bedroom_universal
         attribute: active_child
-      - platform: state
+      - trigger: state
         entity_id:
           - binary_sensor.bedroom_presence_beta
           - binary_sensor.bedroom_occupancy_beta
@@ -1050,7 +1050,7 @@ automation:
                 value_template: >
                   {{ univ_state in ['off','standby','unknown','unavailable'] or not presence_on }}
             sequence:
-              - service: light.turn_off
+              - action: light.turn_off
                 target:
                   entity_id: light.group_hifi_area_lights
                 data:
@@ -1061,28 +1061,32 @@ automation:
             sequence:
               - service: light.turn_on
                 target: { entity_id: light.group_hifi_area_lights }
-                data: { hs_color: [220, 100], brightness_pct: 60, transition: 0.3 }
+                data:
+                  { hs_color: [220, 100], brightness_pct: 60, transition: 0.3 }
           - conditions:
               - condition: template
                 value_template: "{{ src == 'atv_plex' }}"
             sequence:
               - service: light.turn_on
                 target: { entity_id: light.group_hifi_area_lights }
-                data: { hs_color: [280, 100], brightness_pct: 55, transition: 0.3 }
+                data:
+                  { hs_color: [280, 100], brightness_pct: 55, transition: 0.3 }
           - conditions:
               - condition: template
                 value_template: "{{ src == 'atv' }}"
             sequence:
               - service: light.turn_on
                 target: { entity_id: light.group_hifi_area_lights }
-                data: { hs_color: [180, 95], brightness_pct: 60, transition: 0.3 }
+                data:
+                  { hs_color: [180, 95], brightness_pct: 60, transition: 0.3 }
           - conditions:
               - condition: template
                 value_template: "{{ src == 'tv' }}"
             sequence:
               - service: light.turn_on
                 target: { entity_id: light.group_hifi_area_lights }
-                data: { hs_color: [120, 100], brightness_pct: 50, transition: 0.3 }
+                data:
+                  { hs_color: [120, 100], brightness_pct: 50, transition: 0.3 }
         default:
           - service: light.turn_on
             target: { entity_id: light.group_hifi_area_lights }
