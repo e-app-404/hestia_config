@@ -11,8 +11,13 @@ import re
 import sys
 from pathlib import Path
 
-import toml
 import yaml
+
+# Try to import toml, fallback if not available
+try:
+    import toml
+except ImportError:
+    toml = None
 
 SCRIPT_DIR = Path(__file__).parent
 META_CONFIG_PATH = Path("/config/hestia/config/meta/adr.toml")
