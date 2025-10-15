@@ -1158,7 +1158,7 @@ patterns:
       - "Device_class data_size used with text-based value templates"
     solution:
       - "Fix command output extraction to return only numeric values"
-      - "Properly escape awk field selectors: \\$1 or '\''{print $1}'\'''"
+      - "Properly escape awk field selectors using appropriate quote handling"
       - "Remove state_class from sensors that return non-numeric states"
       - "Use int() filter in value_template for numeric conversion"
     examples:
@@ -1229,7 +1229,7 @@ patterns:
       - "Single quotes vs double quotes escaping conflicts"
       - "Complex shell commands not formatted correctly for sh -lc wrapper"
     solution:
-      - "Use proper awk escaping: awk '\''{print $1}'\'' for field extraction"
+      - "Use proper awk escaping patterns for field extraction"
       - "Test commands with sh -lc wrapper to match sensor execution"
       - "Escape shell special characters correctly for YAML context"
       - "Use multi-line YAML format for complex shell commands"
