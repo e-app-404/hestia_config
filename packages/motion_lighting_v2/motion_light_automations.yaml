@@ -60,7 +60,7 @@ automation:
           schema_expected: 1
       - wait_for_trigger:
           - trigger: state
-            entity_id: binary_sensor.bedroom_motion_beta
+            entity_id: binary_sensor.bedroom_occupancy_beta
             to: "off"
             for:
               seconds: "{{ effective_timeout }}"
@@ -85,7 +85,7 @@ automation:
           {% if cfg is mapping %}
             {{ cfg }}
           {% elif cfg is string %}
-            {{ cfg | from_json %}}
+            {{ cfg | from_json }}
           {% else %}
             {}
           {% endif %}
@@ -261,7 +261,7 @@ automation:
           schema_expected: 1
       - wait_for_trigger:
           - trigger: state
-            entity_id: binary_sensor.kitchen_motion_beta
+            entity_id: binary_sensor.kitchen_occupancy_beta
             to: "off"
             for:
               seconds: "{{ effective_timeout }}"
@@ -328,7 +328,7 @@ automation:
           schema_expected: 1
       - wait_for_trigger:
           - trigger: state
-            entity_id: binary_sensor.living_room_motion_beta
+            entity_id: binary_sensor.living_room_occupancy_beta
             to: "off"
             for:
               seconds: "{{ effective_timeout }}"
@@ -395,7 +395,7 @@ automation:
           schema_expected: 1
       - wait_for_trigger:
           - trigger: state
-            entity_id: binary_sensor.ensuite_motion_beta
+            entity_id: binary_sensor.ensuite_occupancy_beta
             to: "off"
             for:
               seconds: "{{ effective_timeout }}"
@@ -462,7 +462,7 @@ automation:
           schema_expected: 1
       - wait_for_trigger:
         - trigger: state
-          entity_id: binary_sensor.desk_motion_proxy
+          entity_id: binary_sensor.desk_occupancy_beta
           to: "off"
           for:
             seconds: "{{ effective_timeout }}"
