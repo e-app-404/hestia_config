@@ -45,10 +45,10 @@ automation:
         value_template: >
           {{ (states('sensor.bedroom_illuminance_beta') | float(9999)) < illuminance_threshold }}
     action:
-      - action: light.turn_on
+      - service: light.turn_on
         target: { entity_id: light.adaptive_bedroom_light_group }
         data: { transition: 2 }
-      - action: rest_command.room_db_update_config
+      - service: rest_command.room_db_update_config
         data:
           room_id: "bedroom"
           domain: "motion_lighting"
@@ -65,7 +65,7 @@ automation:
             for:
               seconds: "{{ effective_timeout }}"
         continue_on_timeout: false
-      - action: light.turn_off
+      - service: light.turn_off
         target: { entity_id: light.adaptive_bedroom_light_group }
         data: { transition: 5 }
 
@@ -112,10 +112,10 @@ automation:
      #   value_template: >
      #     {{ (states('sensor.hallway_upstairs_illuminance_beta') | float(9999)) < illuminance_threshold }}
     action:
-      - action: light.turn_on
+      - service: light.turn_on
         target: { entity_id: light.adaptive_upstairs_light_group }
         data: { transition: 2 }
-      - action: rest_command.room_db_update_config
+      - service: rest_command.room_db_update_config
         data:
           room_id: "upstairs"
           domain: "motion_lighting"
@@ -132,7 +132,7 @@ automation:
             for:
               seconds: "{{ effective_timeout }}"
         continue_on_timeout: false
-      - action: light.turn_off
+      - service: light.turn_off
         target: { entity_id: light.adaptive_upstairs_light_group }
         data: { transition: 5 }
 
@@ -179,10 +179,10 @@ automation:
     #    value_template: >
     #      {{ (states('sensor.hallway_downstairs_illuminance_beta') | float(9999)) < illuminance_threshold }}
     action:
-      - action: light.turn_on
+      - service: light.turn_on
         target: { entity_id: light.adaptive_downstairs_light_group }
         data: { transition: 2 }
-      - action: rest_command.room_db_update_config
+      - service: rest_command.room_db_update_config
         data:
           room_id: "downstairs"
           domain: "motion_lighting"
@@ -199,7 +199,7 @@ automation:
             for:
               seconds: "{{ effective_timeout }}"
         continue_on_timeout: false
-      - action: light.turn_off
+      - service: light.turn_off
         target: { entity_id: light.adaptive_downstairs_light_group }
         data: { transition: 5 }
 
@@ -246,10 +246,10 @@ automation:
      #   value_template: >
      #     {{ (states('sensor.kitchen_illuminance_beta') | float(9999)) < illuminance_threshold }}
     action:
-      - action: light.turn_on
+      - service: light.turn_on
         target: { entity_id: light.adaptive_kitchen_light_group }
         data: { transition: 2 }
-      - action: rest_command.room_db_update_config
+      - service: rest_command.room_db_update_config
         data:
           room_id: "kitchen"
           domain: "motion_lighting"
@@ -266,7 +266,7 @@ automation:
             for:
               seconds: "{{ effective_timeout }}"
         continue_on_timeout: false
-      - action: light.turn_off
+      - service: light.turn_off
         target: { entity_id: light.adaptive_kitchen_light_group }
         data: { transition: 5 }
 
@@ -313,10 +313,10 @@ automation:
         value_template: >
           {{ (states('sensor.living_room_illuminance_beta') | float(9999)) < illuminance_threshold }}
     action:
-      - action: light.turn_on
+      - service: light.turn_on
         target: { entity_id: light.adaptive_living_room_light_group }
         data: { transition: 2 }
-      - action: rest_command.room_db_update_config
+      - service: rest_command.room_db_update_config
         data:
           room_id: "living_room"
           domain: "motion_lighting"
@@ -333,7 +333,7 @@ automation:
             for:
               seconds: "{{ effective_timeout }}"
         continue_on_timeout: false
-      - action: light.turn_off
+      - service: light.turn_off
         target: { entity_id: light.adaptive_living_room_light_group }
         data: { transition: 5 }
 
@@ -380,10 +380,10 @@ automation:
         value_template: >
           {{ (states('sensor.ensuite_illuminance_beta') | float(9999)) < illuminance_threshold }}
     action:
-      - action: light.turn_on
+      - service: light.turn_on
         target: { entity_id: light.adaptive_ensuite_light_group }
         data: { transition: 2 }
-      - action: rest_command.room_db_update_config
+      - service: rest_command.room_db_update_config
         data:
           room_id: "ensuite"
           domain: "motion_lighting"
@@ -400,7 +400,7 @@ automation:
             for:
               seconds: "{{ effective_timeout }}"
         continue_on_timeout: false
-      - action: light.turn_off
+      - service: light.turn_off
         target: { entity_id: light.adaptive_ensuite_light_group }
         data: { transition: 5 }
 
@@ -447,10 +447,10 @@ automation:
         value_template: >
           {{ (states('sensor.desk_illuminance_beta') | float(9999)) < illuminance_threshold }}
     action:
-      - action: light.turn_on
+      - service: light.turn_on
         target: { entity_id: light.adaptive_desk_light_group }
         data: { transition: 2 }
-      - action: rest_command.room_db_update_config
+      - service: rest_command.room_db_update_config
         data:
           room_id: "desk"
           domain: "motion_lighting"
@@ -467,28 +467,6 @@ automation:
           for:
             seconds: "{{ effective_timeout }}"
         continue_on_timeout: false
-      - action: light.turn_off
+      - service: light.turn_off
         target: { entity_id: light.adaptive_desk_light_group }
         data: { transition: 5 }
-
-  # ══════════════════════════════════════════════════════
-  # ⟫⟫ Blueprint-based Simple Motion Lighting Automations
-  - alias: "Motion Lights — Wardrobe (Blueprint v1.0)"
-    id: motion_lights_wardrobe_blueprint_v10
-    use_blueprint:
-      path: homeassistant/motion_light.yaml
-      input:
-        motion_entity: binary_sensor.bedroom_wardrobe_motion_beta
-        light_target:
-          entity_id: light.group_wardrobe_light
-        no_motion_wait: 120
-
-  - alias: "Motion Lights — Ottoman (Blueprint v1.0)"
-    id: motion_lights_ottoman_blueprint_v10
-    use_blueprint:
-      path: homeassistant/motion_light.yaml
-      input:
-        motion_entity: binary_sensor.bedroom_ottoman_motion_proxy
-        light_target:
-          entity_id: light.group_ottoman_light
-        no_motion_wait: 45
