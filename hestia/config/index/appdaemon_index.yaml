@@ -62,8 +62,8 @@ appdaemon_index:
         - "Rate limiting and input validation"
         - "Canonical room validation against area mapping"
       api_endpoints:
-        - "/api/appdaemon/room_db/health"
-        - "/api/appdaemon/room_db/update_config"
+        - "/api/app/room_db_updater/room_db/health"
+        - "/api/app/room_db_updater/room_db/update_config"
       database_file: "/Volumes/addon_configs/a0d7b954_appdaemon/room_database.db"
       
     - path: "/Volumes/addon_configs/a0d7b954_appdaemon/apps/spotify_mood_lights_sync.py"

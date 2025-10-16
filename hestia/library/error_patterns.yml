@@ -1441,6 +1441,74 @@ patterns:
 
   - name: "appdaemon_rest_endpoint_404_error"
     category: "appdaemon_rest_api"
+    description: "AppDaemon REST endpoint returns 404 'App Not Found' despite correct app registration"
+    error_format: "Error. Url: http://a0d7b954-appdaemon:5050/api/app/room_db_updater/[endpoint]. Status code 404"
+    symptoms:
+      - "REST commands returning 404 status with 'App Not Found' message"
+      - "AppDaemon app running successfully but endpoints inaccessible"
+      - "Home Assistant logs showing repeated 404 errors for REST commands"
+      - "Motion lighting automations failing to update room configurations"
+    root_causes:
+      - "Mismatch between endpoint registration names and REST command URLs"
+      - "AppDaemon register_endpoint() creates different URL paths than expected"
+      - "URL construction: /api/app/<app_name>/<endpoint_name> requires exact matching"
+      - "Endpoint names with slashes or prefixes create nested URL paths"
+    solution:
+      - "Match REST command URLs exactly to registered endpoint patterns"
+      - "Use simple endpoint names without slashes in register_endpoint()"
+      - "Update package_room_database.yaml URLs to match actual endpoints"
+      - "Add diagnostic logging to confirm endpoint registration"
+    examples:
+      problematic_registration: |
+        # AppDaemon app registration
+        self.register_endpoint(self.update_config, "room_db/update_config")
+        # Creates: /api/app/room_db_updater/room_db/update_config
+        
+        # But REST command calls:
+        url: "http://a0d7b954-appdaemon:5050/api/app/room_db_updater/update_config"
+        # Missing room_db/ prefix → 404 error
+      corrected_urls: |
+        # Correct REST command URLs to match registered endpoints:
+        rest_command:
+          room_db_update_config:
+            url: "http://a0d7b954-appdaemon:5050/api/app/room_db_updater/room_db/update_config"
+          room_db_health:
+            url: "http://a0d7b954-appdaemon:5050/api/app/room_db_updater/room_db/health"
+    resolution_steps:
+      - "Examine AppDaemon logs for app initialization messages"
+      - "Check endpoint registration names in room_db_updater.py"
+      - "Match REST command URLs to actual registered endpoint paths"
+      - "Test endpoints with curl before updating REST commands"
+      - "Restart Home Assistant to reload REST command configuration"
+      - "Validate with Developer Tools service calls"
+    diagnostic_commands:
+      log_analysis: "grep -i 'appdaemon\\|rest_command\\|room_db' /config/home-assistant.log*"
+      url_validation: "grep -A 5 'rest_command:' /config/packages/package_room_database.yaml"
+      endpoint_test: "curl -v http://a0d7b954-appdaemon:5050/api/app/room_db_updater/room_db/health"
+    success_indicators:
+      - "REST commands return status 200 instead of 404"
+      - "Health endpoint returns JSON with status: healthy"
+      - "Room configuration updates succeed in database"
+      - "Motion lighting automations update room configs successfully"
+      - "No more 404 errors in Home Assistant logs"
+    prevention_strategies:
+      - "Always test AppDaemon endpoints with curl before Home Assistant integration"
+      - "Use consistent naming patterns for endpoint registration"
+      - "Document URL patterns clearly in app configuration"
+      - "Include endpoint URL examples in AppDaemon app documentation"
+    related_files:
+      - "room_db_updater.py - AppDaemon app with endpoint registration"
+      - "package_room_database.yaml - REST command definitions"
+      - "apps.yaml - AppDaemon app configuration"
+      - "motion_light_automations.yaml - Uses REST commands for config updates"
+    tooling:
+      prompt_file: "/config/.github/prompts/fix-appdaemon-rest-404.prompt.md"
+      detector: "grep 'Status code 404.*appdaemon' /config/home-assistant.log"
+      validator: "Test REST commands via Developer Tools > Services"
+    references:
+      - "AppDaemon API Documentation - register_endpoint() method"
+      - "Home Assistant REST Command Integration Documentation"
+      - "ADR-0020: Home Assistant Configuration Error Canonicalization"
     description: "AppDaemon REST endpoint calls failing with 404 due to incorrect URL structure"
     error_format: "WARNING AppDaemon: API Call to system: status: 404, App Not Found"
     symptoms:
