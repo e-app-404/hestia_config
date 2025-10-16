@@ -4,100 +4,6 @@
 # Schema: list of template blocks (sensor, binary_sensor)
 #══════════════════════════════════════════════════════════════════════════════
 
-- sensor:
-    - name: "Evert Home Status"
-      unique_id: "evert_home_status"
-      icon: mdi:account-check
-      state: >
-        {% if states('person.evert') == 'home' %}
-          Home
-        {% else %}
-          Away
-        {% endif %}
-      attributes:
-        module: "zone_tracking"
-        person_entity: "person.evert"
-        rationale: "Indicates if person.evert is currently in the Home zone"
-        raw_state: "{{ states('person.evert') }}"
-        role: "zone_affiliation"
-        subsystem: "perseus"
-        tier: "γ"
-        type: "presence_state"
-        zone_reference: "home"
-        last_updated: "2025-10-16"
-        upstream_sources: >-
-          {{ ["person.evert"] | tojson }}
-        source_count: "1"
-        downstream_consumers: >-
-          {{ ["sensor.evert_current_location", "sensor.evert_last_known_zone", "binary_sensor.bedroom_presence_beta", "binary_sensor.desk_presence_beta", "binary_sensor.living_room_presence_beta", "binary_sensor.ensuite_presence_beta"] | tojson }}
-
-- sensor:
-    - name: "Evert Current Location"
-      unique_id: "evert_current_location"
-      icon: mdi:map-marker-radius
-      state: >
-        {% set zone = states('person.evert') %}
-        {% if zone == 'not_home' %}
-          Away
-        {% else %}
-          {{ zone | title }}
-        {% endif %}
-      attributes:
-        module: "zone_tracking"
-        person_entity: "person.evert"
-        rationale: "Shows the last known zone or Away if outside defined zones"
-        raw_state: "{{ states('person.evert') }}"
-        role: "zone_tracking"
-        subsystem: "perseus"
-        tier: "γ"
-        type: "current_zone"
-        last_updated: "2025-10-16"
-        upstream_sources: >-
-          {{ ["person.evert"] | tojson }}
-        source_count: "1"
-        downstream_consumers: >-
-          {{ ["sensor.evert_last_known_zone"] | tojson }}
-
-    - name: "Evert Last Known Zone"
-      unique_id: "evert_last_known_zone"
-      state: >
-        {% set zone_id = states('person.evert') %}
-        {% if zone_id == 'not_home' %}
-          Away
-        {% else %}
-          {{ state_attr('zone.' ~ zone_id, 'friendly_name') or zone_id | title }}
-        {% endif %}
-      icon: >
-        {% set zone_id = states('person.evert') %}
-        {% if zone_id == 'not_home' %}
-          mdi:map-marker-off
-        {% else %}
-          {{ state_attr('zone.' ~ zone_id, 'icon') or 'mdi:map-marker' }}
-        {% endif %}
-      attributes:
-        module: "zone_tracking"
-        person_entity: "person.evert"
-        rationale: >
-          Resolves person.evert's state to the friendly name of a zone entity,
-          or 'Away' if outside all zones.
-        raw_state: "{{ states('person.evert') }}"
-        friendly_zone: >
-          {% set zone_id = states('person.evert') %}
-          {% if zone_id == 'not_home' %}
-            Away
-          {% else %}
-            {{ state_attr('zone.' ~ zone_id, 'friendly_name') or zone_id | title }}
-          {% endif %}
-        role: "zone_tracking"
-        subsystem: "perseus"
-        tier: "γ"
-        type: "last_known_zone"
-        last_updated: "2025-10-16"
-        upstream_sources: >-
-          {{ ["person.evert"] | tojson }}
-        source_count: "1"
-
-
 - binary_sensor:
     - name: "Bedroom Presence (Beta)"
       unique_id: "bedroom_presence_beta"
@@ -181,27 +87,6 @@
           {{ ["person.evert"] | tojson }}
         source_count: "1"
 
-
-    - name: "Kitchen Presence (Beta)"
-      unique_id: "kitchen_presence_beta"
-      icon: mdi:home-map-marker
-      state: "off"
-      attributes:
-        area_id: "kitchen"
-        floor_id: "downstairs"
-        module: "presence_inference"
-        persons: ""
-        strategy: "always_false"
-        area_type: "shared"
-        subsystem: "hermes"
-        tier: "β"
-        reliability: poor
-        notes: |
-          "Common area used by untracked occupant - never rely on this sensor for blocking"
-        last_updated: "2025-10-16"
-        source_count: "0"
-
-
     - name: "Ensuite Presence (Beta)"
       unique_id: "ensuite_presence_beta"
       icon: mdi:home-map-marker
@@ -251,7 +136,6 @@
         last_updated: "2025-10-16"
         source_count: "0"
 
-
     - name: "Hallway Upstairs Presence (Beta)"
       unique_id: "hallway_upstairs_presence_beta"
       state: "off"
@@ -271,3 +155,21 @@
         last_updated: "2025-10-16"
         source_count: "0"
 
+    - name: "Kitchen Presence (Beta)"
+      unique_id: "kitchen_presence_beta"
+      icon: mdi:home-map-marker
+      state: "off"
+      attributes:
+        area_id: "kitchen"
+        floor_id: "downstairs"
+        module: "presence_inference"
+        persons: ""
+        strategy: "always_false"
+        area_type: "shared"
+        subsystem: "hermes"
+        tier: "β"
+        reliability: poor
+        notes: |
+          "Common area used by untracked occupant - never rely on this sensor for blocking"
+        last_updated: "2025-10-16"
+        source_count: "0"

@@ -4,7 +4,10 @@
 
 ## Quick Start
 
-**✅ Configuration is already integrated into `/config/hestia/config/system/hestia.toml`**
+**✅ Configuration is fully integrated into `/config/hestia/config/system/hestia.toml`**  
+**✅ VSCode Tasks are available workspace-wide**  
+**✅ CLI commands documented in `/config/hestia/config/system/cli.conf`**  
+**✅ Tracked in workspace manifest and relationship graph**
 
 ### Option 1: CLI (Recommended)
 
@@ -51,7 +54,20 @@ python lineage_guardian/lineage_report.py --graph ./.artifacts/graph.json --viol
 - **Documentation**: `/config/hestia/library/docs/guides/development/lineage_guardian_copilot_guide.md`
 - **VSCode Tasks**: Integrated into main workspace `/.vscode/tasks.json`
 - **Workspace Index**: Tracked in `/config/hestia/config/index/manifest.yaml`
+- **CLI Commands**: Documented in `/config/hestia/config/system/cli.conf` → `lineage_guardian_management`
+- **Service Registry**: Mapped in `/config/hestia/config/system/relationships.conf`
+- **Workspace Allocation**: Defined in `/config/hestia/config/system/hestia_workspace.conf`
 - **Logging**: Follows ADR-0018 patterns → `/config/hestia/workspace/operations/logs/lineage/`
+
+### Workspace Integration Status
+
+**✅ Fully Integrated** — All components are now in canonical locations:
+
+- **Tool Location**: `/config/hestia/tools/lineage_guardian/` (ADR-0024 compliant)
+- **Configuration**: Centralized in `hestia.toml` with comprehensive settings
+- **CLI Access**: Direct CLI wrapper + VSCode tasks + documented commands
+- **Governance**: Tracked in workspace manifest and service relationships
+- **Content Allocation**: Proper workspace rules in `hestia_workspace.conf`
 
 ## Safety & Guardrails
 
@@ -72,3 +88,12 @@ Use this guide to:
 - Implement ruamel.yaml-based safe merges in `lineage_corrector.py`
 - Add comprehensive unit tests
 - Expand entity parsing capabilities
+
+## Recent Workspace Changes (2025-10-16)
+
+- **Configuration Integration**: Complete `hestia.toml` configuration with scheduler settings
+- **VSCode Tasks**: Added workspace-wide tasks for full pipeline, scanner-only, and documentation
+- **CLI Documentation**: Added comprehensive `lineage_guardian_management` section to `cli.conf`
+- **Service Mapping**: Added to `relationships.conf` with integration points tracking
+- **Workspace Allocation**: Defined content allocation rules in `hestia_workspace.conf`
+- **Manifest Tracking**: All components registered in workspace `manifest.yaml`
