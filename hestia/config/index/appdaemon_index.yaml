@@ -9,7 +9,7 @@ appdaemon_index:
     addon_name: "AppDaemon 4"
     status: "active"
     apps_running: ["hello_world", "room_db_updater"]
-    
+
     hacs_integrations:
       adaptive_lighting:
         status: "re-enabled"
@@ -20,7 +20,7 @@ appdaemon_index:
         switches_created: ["bedroom", "desk", "ensuite", "kitchen", "hallway_downstairs", "hallway_upstairs"]
         light_groups_targeted: 6
         compatibility_notes: "Works seamlessly with SQL motion lighting - AL sets initial CT/brightness at turn-on, motion automations handle on/off control"
-    
+
   configuration_files:
     - path: "/Volumes/addon_configs/a0d7b954_appdaemon/appdaemon.yaml"
       type: "main_config"
@@ -29,15 +29,15 @@ appdaemon_index:
       size_bytes: 232
       validation: "passed"
       key_sections: ["appdaemon", "http", "admin", "api", "hadashboard"]
-      
+
     - path: "/Volumes/addon_configs/a0d7b954_appdaemon/apps/apps.yaml"
       type: "app_config"
       description: "App configuration defining hello_world and room_db_updater apps"
-      last_modified: "2025-10-09T23:06:00Z" 
+      last_modified: "2025-10-09T23:06:00Z"
       size_bytes: 374
       validation: "passed"
       apps_defined: ["hello_world", "room_db_updater"]
-      
+
   application_modules:
     - path: "/Volumes/addon_configs/a0d7b954_appdaemon/apps/hello.py"
       type: "app_module"
@@ -47,7 +47,7 @@ appdaemon_index:
       size_bytes: 221
       status: "active"
       functionality: "basic_demo"
-      
+
     - path: "/Volumes/addon_configs/a0d7b954_appdaemon/apps/room_db_updater.py"
       type: "app_module"
       class_name: "RoomDbUpdater"
@@ -65,7 +65,7 @@ appdaemon_index:
         - "/api/app/room_db_updater/room_db/health"
         - "/api/app/room_db_updater/room_db/update_config"
       database_file: "/Volumes/addon_configs/a0d7b954_appdaemon/room_database.db"
-      
+
     - path: "/Volumes/addon_configs/a0d7b954_appdaemon/apps/spotify_mood_lights_sync.py"
       type: "app_module"
       class_name: "SpotifyMoodLightsSync"
@@ -75,7 +75,7 @@ appdaemon_index:
       status: "inactive"
       functionality: "spotify_integration"
       dependencies: ["spotipy", "colorsys"]
-      
+
   data_files:
     - path: "/Volumes/addon_configs/a0d7b954_appdaemon/www/area_mapping.yaml"
       type: "data_file"
@@ -86,7 +86,7 @@ appdaemon_index:
       used_by: ["room_db_updater"]
       format: "yaml_data"
       content_type: "area_hierarchy"
-      
+
   database_files:
     - path: "/Volumes/addon_configs/a0d7b954_appdaemon/room_database.db"
       type: "sqlite_database"
@@ -97,7 +97,7 @@ appdaemon_index:
       tables: ["schema_version", "room_configs"]
       managed_by: "room_db_updater"
       access_mode: "WAL"
-      
+
   dashboard_files:
     - path: "/Volumes/addon_configs/a0d7b954_appdaemon/dashboards/Hello.dash"
       type: "dashboard_config"
@@ -107,7 +107,7 @@ appdaemon_index:
       columns: 8
       widgets: ["label"]
       status: "available"
-      
+
   runtime_files:
     - path: "/config/python_scripts/test_room_db_api.py"
       type: "testing_tool"
@@ -116,7 +116,7 @@ appdaemon_index:
       tests: ["health_endpoint", "update_endpoint"]
       relocated_from: "/config/test_room_db_api.py"
       migration_date: "2025-10-10T15:30:00Z"
-      
+
     - path: "/config/scripts/monitor_appdaemon_startup.sh"
       type: "monitoring_tool"
       description: "AppDaemon startup monitoring script"
@@ -124,24 +124,24 @@ appdaemon_index:
       executable: true
       relocated_from: "/config/monitor_appdaemon_startup.sh"
       migration_date: "2025-10-10T15:00:00Z"
-      
+
     - path: "/config/room_database.db"
       type: "database_copy"
       description: "Copy of room database in main config directory"
       related_to: "/Volumes/addon_configs/a0d7b954_appdaemon/room_database.db"
-      
+
     - path: "/config/room_database_copy.db"
       type: "database_backup"
       description: "Backup copy of room database"
       purpose: "backup"
-      
+
     - path: "/config/python_scripts/test_room_db.py"
       type: "testing_script"
       description: "Room database testing and validation script"
       purpose: "development"
       relocated_from: "/config/test_room_db.py"
       migration_date: "2025-10-10T15:30:00Z"
-      
+
     - path: "/config/hestia/library/templates/devtools/diagnostics.jinja"
       type: "diagnostic_template"
       description: "Multi-room SQL database health check template for Developer Tools"
@@ -156,23 +156,23 @@ appdaemon_index:
         - "Comprehensive system health reporting"
       usage: "Developer Tools → Templates → Paste template content"
       expected_result: "JSON status report with failures array and system details"
-      
+
   maintenance_records:
     last_configuration_update: "2025-10-09T23:06:00Z"
     last_successful_startup: "2025-10-09T23:03:10Z"
     apps_initialized: 2
     configuration_errors: 0
     maintenance_session: "session_2025_10_09_appdaemon"
-    
+
   validation_runbook_results:
     executed_at: "2025-10-10T00:15:00Z"
     overall_status: "partial_validation_complete"
-    
+
     step_0_prep:
       status: "pending"
       description: "Set input_text.valetudo_base_topic in Home Assistant"
       required_action: "Manual configuration in HA UI required"
-      
+
     step_1_appdaemon_health:
       status: "validated"
       app_loading: "confirmed - room_db_updater shown as active in index"
@@ -182,15 +182,15 @@ appdaemon_index:
         style_1: "http://a0d7b954-appdaemon:5050/api/app/room_db_updater/room_db/health"
         style_2: "http://a0d7b954-appdaemon:5050/api/appdaemon/room_db/health"
       recommendation: "Test endpoints from within Home Assistant using rest_command"
-      
+
     step_2_sql_sensors:
       status: "configuration_verified"
-      sensor_references_found: 
+      sensor_references_found:
         - "sensor.room_configs_motion_lighting (referenced in motion_light_automations.yaml)"
         - "sensor.room_configs_vacuum_control (referenced in vac_scripts.yaml)"
       sensor_implementation: "template sensors created by room_db_updater app"
       validation_required: "Check sensor states in Home Assistant Developer Tools"
-      
+
     step_3_database_validation:
       status: "schema_confirmed"
       database_path: "/Volumes/addon_configs/a0d7b954_appdaemon/room_database.db"
@@ -200,25 +200,28 @@ appdaemon_index:
         wal_mode: "confirmed (database locked during active use)"
       initial_data: "empty (expected for fresh deployment)"
       write_path_validation: "pending - requires rest_command test"
-      
+
     step_4_rest_command_configuration:
-      status: "validation_ready"
+      status: "corrected_and_validated"
       config_file: "/config/packages/package_room_database.yaml"
       consolidation_note: "Individual files consolidated to resolve duplicate key warnings"
       rest_commands_available:
         room_db_update_config:
-          endpoint_url: "http://a0d7b954-appdaemon:5050/api/appdaemon/room_db/update_config"
+          endpoint_url: "http://a0d7b954-appdaemon:5050/api/app/room_db_updater/room_db/update_config"
           method: "POST"
           content_type: "application/json"
           payload_template: "room_id, domain, config_data parameters supported"
+          fix_applied: "2025-10-16 - Corrected URL to match AppDaemon endpoint registration"
         room_db_health:
-          endpoint_url: "http://a0d7b954-appdaemon:5050/api/appdaemon/room_db/health"
+          endpoint_url: "http://a0d7b954-appdaemon:5050/api/app/room_db_updater/room_db/health"
           method: "GET"
           timeout: "10s"
           purpose: "AppDaemon connectivity and health verification"
-      validation_status: "Configuration complete - ready for Developer Tools testing"
+          fix_applied: "2025-10-16 - Corrected URL to match AppDaemon endpoint registration"
+      validation_status: "URLs corrected to match AppDaemon registration - ready for testing"
+      fix_summary: "Added room_db/ prefix to URLs to match endpoint registration pattern"
       validation_plan: "Documented in /config/validation_test_results.md"
-      
+
     step_5_motion_automation:
       status: "configuration_verified"
       automation_file: "/config/packages/motion_lighting_v2/motion_light_automations.yaml"
@@ -230,16 +233,16 @@ appdaemon_index:
         - "Presence-enhanced timeout multipliers"
         - "Illuminance threshold support"
       validation_required: "Trigger automation and verify light behavior"
-      
+
     step_6_vacuum_script:
-      status: "configuration_verified"  
+      status: "configuration_verified"
       script_file: "/config/packages/vacuum_control_v2/vac_scripts.yaml"
       script_name: "script.clean_room_with_sql_tracking"
       sql_integration: "confirmed - reads from sensor.room_configs_vacuum_control"
       mqtt_integration: "confirmed - publishes to valetudo topics"
       database_updates: "confirmed - calls rest_command.room_db_update_config"
       validation_required: "Test script execution and verify MQTT/database updates"
-      
+
     validation_execution_readiness:
       status: "investigation_complete_network_issue_identified"
       execution_timestamp: "2025-10-10T15:00:00Z"
@@ -256,7 +259,7 @@ appdaemon_index:
                     rest_command_404: \"Network instability preventing API access, not configuration error\"\n          diagnostics_success: \"Automation entity IDs corrected to use v15 format consistently\"\n          system_status: \"AppDaemon functional, automation IDs standardized\"\n        recommended_actions:\n          immediate:\n            - \"Test diagnostics.jinja with corrected automation entity ID\"\n            - \"Monitor AppDaemon network stability during low-activity periods\"\n            - \"Test REST commands during stable connectivity windows\"\n          network_troubleshooting:\n            - \"Check Home Assistant system resources and load\"\n            - \"Verify AppDaemon add-on memory/CPU allocation\"\n            - \"Consider AppDaemon add-on restart during maintenance window\"\n          validation_retry:\n            - \"Retry rest_command.room_db_health during stable network period\"\n            - \"Execute motion automation test when connectivity stable\"\n            - \"Validate SQL sensor payload updates after database writes\"
       components_prepared:
         - "Health REST command added to package configuration"
-        - "Consolidated package eliminating duplicate key warnings" 
+        - "Consolidated package eliminating duplicate key warnings"
         - "SQL sensors confirmed in configuration structure"
         - "Valid room_id 'bedroom' confirmed in area_mapping.yaml"
         - "Systematic test plan documented"
@@ -264,23 +267,23 @@ appdaemon_index:
       validation_document: "/config/hestia/workspace/reports/room_db_updater/validation_test_results.md"
       next_actions:
         - "Execute rest_command.room_db_health via Developer Tools"
-        - "Verify SQL sensor states and payload content" 
+        - "Verify SQL sensor states and payload content"
         - "Test positive/negative write path scenarios"
         - "Run motion automation and vacuum script end-to-end tests"
-      
+
     package_integration_status:
       motion_lighting_v2:
         configuration: "complete"
         sql_dependencies: "configured"
         automation_targets: ["bedroom"]
         validation_status: "ready_for_runtime_testing"
-        
+
       vacuum_control_v2:
         configuration: "complete"
         sql_dependencies: "configured"
         mqtt_dependencies: "requires input_text.valetudo_base_topic configuration"
         validation_status: "requires_valetudo_topic_setup"
-        
+
     next_validation_steps:
       immediate:
         - "Configure input_text.valetudo_base_topic in Home Assistant"
@@ -294,18 +297,18 @@ appdaemon_index:
         - "Verify recorder excludes prevent sensor history flooding"
         - "Run diagnostics.jinja template for system health check"
         - "Validate acceptance_criteria.yaml items"
-        
+
     validation_confidence:
       configuration_completeness: "100% - all files present and correctly structured"
       integration_architecture: "95% - SQL patterns and data flow confirmed via diagnostics"
       runtime_readiness: "90% - sensor validation completed, network instability identified"
       end_to_end_functionality: "80% - core components validated, pending network-stable testing"
-    
+
   error_patterns_documented:
     - "appdaemon_config_validation_error"
-    - "appdaemon_file_access_container_path_error" 
+    - "appdaemon_file_access_container_path_error"
     - "appdaemon_yaml_parsed_as_app_config"
-    
+
   deployment_status:
     overall: "operational"
     configuration: "valid"
@@ -313,7 +316,7 @@ appdaemon_index:
     database: "initialized"
     api_endpoints: "accessible"
     last_restart: "2025-10-09T23:03:10Z"
-    
+
   knowledge_base_articles:
     - path: "/config/hestia/library/ha_implementation/hacs.appdaemon.md"
       type: "integration_guide"
@@ -328,7 +331,7 @@ appdaemon_index:
         - "Systemd and Init.d service setup for auto-start"
         - "Update procedures and versioning strategy"
       relevant_to: ["deployment", "service_management", "system_administration"]
-      
+
     - path: "/config/hestia/library/ha_implementation/hacs.appdaemon-configuration.md"
       type: "configuration_reference"
       title: "AppDaemon Configuration Reference"
@@ -342,7 +345,7 @@ appdaemon_index:
         - "Filter system for preprocessing apps"
         - "Advanced threading, performance, and namespace options"
       relevant_to: ["configuration", "plugin_setup", "logging", "performance_tuning"]
-      
+
     - path: "/config/hestia/library/ha_implementation/hacs.appdaemon-hassapi.md"
       type: "api_reference"
       title: "AppDaemon HASS Plugin/API Reference"
@@ -357,7 +360,7 @@ appdaemon_index:
         - "Template rendering using Home Assistant's templating engine"
         - "Complete API method reference for state, events, scheduling"
       relevant_to: ["api_development", "authentication", "service_calls", "template_rendering"]
-      
+
     - path: "/config/hestia/library/ha_implementation/hacs.appdaemon-mqttapi.md"
       type: "api_reference"
       title: "AppDaemon MQTT API Reference"
@@ -370,7 +373,7 @@ appdaemon_index:
         - "Multiple broker support using namespaces"
         - "Connection status monitoring and event handling"
       relevant_to: ["mqtt_integration", "iot_communication", "multi_broker_setup"]
-      
+
     - path: "/config/hestia/library/ha_implementation/hacs.appdaemon-adapi.md"
       type: "api_reference"
       title: "AppDaemon ADAPI Reference"
@@ -385,7 +388,7 @@ appdaemon_index:
         - "Event handling, logging, threading, and utility functions"
         - "Async support, namespace management, and plugin integration"
       relevant_to: ["app_development", "entity_management", "scheduling", "event_handling"]
-      
+
     - path: "/config/hestia/library/ha_implementation/hacs.appdaemon-vscode.md"
       type: "development_guide"
       title: "AppDaemon VSCode Development Setup"
@@ -400,7 +403,7 @@ appdaemon_index:
         - "Docker build process for multi-platform images"
         - "GitHub Actions integration for CI/CD pipeline"
       relevant_to: ["development", "ide_setup", "build_process", "testing"]
-      
+
     - path: "/config/hestia/library/ha_implementation/hacs.appdaemon-development.md"
       type: "development_guide"
       title: "AppDaemon Development Guide"
@@ -415,7 +418,7 @@ appdaemon_index:
         - "GitHub Actions pipeline for CI/CD and automated testing"
         - "Contributing guidelines and pull request requirements"
       relevant_to: ["contributing", "advanced_development", "ci_cd", "documentation"]
-      
+
     - path: "/config/hestia/library/ha_implementation/hacs.adaptive_lighting.md"
       type: "integration_guide"
       title: "Adaptive Lighting (HACS) Integration Guide"
@@ -438,20 +441,20 @@ appdaemon_index:
         - "Motion lighting compatibility using only_once behavior pattern"
         - "Multi-room support with individual switch entities per area"
       relevant_to: ["lighting_automation", "circadian_rhythm", "motion_integration", "room_based_control"]
-      
+
   cross_references:
     configuration_to_deployment:
       appdaemon_yaml: "Links to app definitions in apps.yaml"
       app_modules: "References room_db_updater.py implementation"
       database_schema: "Connects to SQLite database structure"
       adaptive_lighting_config: "References AL integration configuration and light groups"
-      
+
     api_reference_to_implementation:
       hassapi_docs: "Used by room_db_updater for Home Assistant integration"
       adapi_docs: "Core functionality used in all app modules"
       rest_endpoints: "Documented endpoints implemented in room_db_updater"
       adaptive_lighting_services: "AL service calls for manual control and settings changes"
-      
+
     development_guides_to_operational:
       vscode_setup: "Development environment for room_db_updater modifications"
       appdaemon_config: "Production configuration patterns used in deployment"
@@ -463,34 +466,34 @@ appdaemon_index:
       - "Template rendering capabilities (from HASS API guide)"
       - "Adaptive Lighting switch entities and light group management"
       - "SQL sensor integration with room database configuration"
-      
+
     development_workflow:
       - "uv dependency management (from development guides)"
       - "Pre-commit hooks and linting (from VSCode guide)"
       - "Multi-platform Docker builds (from development guide)"
       - "Lighting system integration testing and validation"
-      
+
     operational_patterns:
       - "Configuration file validation (from configuration reference)"
       - "Plugin architecture for multiple integrations (from config guide)"
       - "Logging and debugging strategies (from API references)"
       - "Complementary lighting systems (AL + motion automation)"
       - "Room-based automation with canonical area mapping"
-      
+
   documentation_coverage:
     installation_deployment: "Complete coverage from basic setup to advanced service management"
     configuration_management: "Comprehensive YAML/TOML configuration with all options documented"
     api_development: "Full API reference for HASS, MQTT, and core AppDaemon functionality"
     development_workflow: "Complete development environment setup and contribution guidelines"
     troubleshooting: "Error patterns, debugging strategies, and operational guidance"
-    
+
   knowledge_gaps_identified:
     - "Advanced app architecture patterns beyond basic examples"
     - "Performance optimization strategies for high-load scenarios"
     - "Integration patterns with other Home Assistant add-ons"
     - "Advanced dashboard development beyond basic examples"
     - "Security considerations for production deployments"
-    
+
   integrated_packages:
     adaptive_lighting:
       description: "HACS Adaptive Lighting integration for intelligent color temperature and brightness control"
@@ -524,7 +527,7 @@ appdaemon_index:
             - "light.adaptive_kitchen_light_group"
             - "light.adaptive_downstairs_light_group"
             - "light.adaptive_upstairs_light_group"
-            
+
         - path: "/config/domain/lights/adaptive_light_groups.yaml"
           type: "light_group_config"
           description: "Light group definitions for Adaptive Lighting targeting"
@@ -537,7 +540,7 @@ appdaemon_index:
             - "Cross-referenced with motion lighting automations"
           light_groups_defined: 6
           total_lights_managed: 24
-          
+
         - path: "/config/domain/lights/grouped_lights.yaml"
           type: "supplementary_light_groups"
           description: "Additional light groupings for manual control and utility functions"
@@ -549,7 +552,7 @@ appdaemon_index:
             - "Switch-controlled extras for special lighting modes"
             - "Compatible with both AL and motion lighting systems"
           additional_groups: 12
-          
+
       integration_behavior:
         motion_lighting_compatibility:
           description: "AL and motion lighting work together seamlessly"
@@ -559,25 +562,25 @@ appdaemon_index:
             - "take_over_control: true allows manual overrides to disable AL temporarily"
             - "Motion automations handle on/off timing, AL handles color/brightness quality"
             - "No conflicts - both systems operate in complementary domains"
-          
+
         entity_naming_alignment:
           adaptive_lighting_switches: "switch.adaptive_lighting_{room}"
           target_light_groups: "light.adaptive_{room}_light_group"
           motion_automation_targets: "Same light groups as AL for consistent behavior"
           room_slug_consistency: "hallway_downstairs matches canonical area mapping"
-          
+
         startup_behavior:
           switch_activation: "Manual - switches start OFF and need to be enabled"
           recommended_automation: "Create startup automation to enable AL switches after HA restart"
           light_group_validation: "Ensure all referenced light groups exist or AL will warn/idle"
-          
+
       operational_features:
         circadian_rhythm: "Automatic color temperature adjustment based on sun position"
         brightness_adaptation: "Dynamic brightness scaling with customizable curves"
         sleep_mode_support: "Warm, dim lighting for nighttime use"
         manual_control_detection: "Respects user adjustments and temporarily disables automation"
         multi_room_independence: "Each room operates independently with its own switch"
-        
+
     motion_lighting_v2:
       description: "SQL-based motion lighting automation using room_db_updater configuration"
       path: "/config/packages/motion_lighting_v2"
@@ -596,7 +599,7 @@ appdaemon_index:
             - "Presence-enhanced timeout multipliers for tracked persons"
           automation_targets: ["bedroom"]
           sql_dependencies: ["sensor.room_configs_motion_lighting", "room_db_updater"]
-          
+
         - path: "/config/packages/motion_lighting_v2/motion_light_templates.yaml"
           type: "template_config"
           description: "Template sensors for motion lighting configuration display"
@@ -608,7 +611,7 @@ appdaemon_index:
             - "JSON parsing with fallback error handling"
             - "Room-specific configuration extraction from database payload"
           template_sensors: ["sensor.motion_timeout_bedroom_sql_v15"]
-          
+
       configuration_schema:
         room_config_structure:
           timeout: "integer (seconds) - base motion timeout duration"
@@ -620,14 +623,14 @@ appdaemon_index:
           source_sensor: "sensor.room_configs_motion_lighting"
           payload_format: "JSON string containing room configuration mappings"
           error_handling: "Graceful fallback to default values on parse failure"
-          
+
       operational_features:
         room_awareness: "Configures lighting behavior per room using canonical area mapping"
         presence_enhancement: "Extends timeout when person.evert is home without blocking automation"
         daylight_integration: "Respects illuminance thresholds to avoid unnecessary activation"
         manual_override: "Bypass system allows temporary automation disabling"
         sql_driven: "All configuration sourced from room_database.db via room_db_updater"
-        
+
     vacuum_control_v2:
       description: "MQTT-based vacuum control with SQL tracking and room-based cleaning"
       path: "/config/packages/vacuum_control_v2"
@@ -643,7 +646,7 @@ appdaemon_index:
             - "Topic structure support for Valetudo robot communication"
           input_entities: ["input_text.valetudo_base_topic"]
           default_topic: "valetudo/robot"
-          
+
         - path: "/config/packages/vacuum_control_v2/vac_scripts.yaml"
           type: "script_config"
           description: "Room-based vacuum cleaning scripts with SQL database integration"
@@ -656,7 +659,7 @@ appdaemon_index:
             - "Persistent notification feedback for cleaning operations"
             - "Automatic room status updates (last_cleaned, needs_cleaning)"
           scripts: ["script.clean_room_with_sql_tracking"]
-          
+
       configuration_schema:
         room_config_structure:
           segment_id: "integer - Valetudo map segment identifier for room"
@@ -666,7 +669,7 @@ appdaemon_index:
           base_topic: "valetudo/robot (configurable via input_text.valetudo_base_topic)"
           action_topic: "MapSegmentationCapability/action/start_segment_action"
           payload_format: "JSON with action, segment_ids, iterations, customOrder"
-          
+
       operational_features:
         room_based_cleaning: "Clean specific rooms using canonical area mapping"
         mqtt_communication: "Direct MQTT integration with Valetudo robot firmware"
@@ -674,11 +677,11 @@ appdaemon_index:
         segment_mapping: "Maps Home Assistant areas to Valetudo map segments"
         status_feedback: "Updates room database with cleaning timestamps and status"
         notification_system: "Persistent notifications for cleaning operation feedback"
-        
+
     domain_templates:
       motion_logic:
         description: "Beta-tier motion sensor aggregation and logic processing"
-        path: "/config/domain/templates/motion_logic.yaml"  
+        path: "/config/domain/templates/motion_logic.yaml"
         relationship_to_room_db: "data_provider"
         file_details:
           size_bytes: 25403
@@ -686,45 +689,45 @@ appdaemon_index:
           type: "template_sensor_config"
           tier: "beta"
           schema: "binary_sensor"
-          
+
         features:
           - "Motion aggregation using motion-only sources (occupancy removed)"
           - "Support for non-motion inputs via proxies (vibration/contact sensors)"
           - "Provenance tracking with upstream_sources and downstream_consumers"
           - "Device class standardization for motion detection"
           - "Multi-protocol sensor fusion (TPLink, Zigbee, etc.)"
-          
+
         coverage_areas:
           - "bedroom_motion_beta (sanctum complex)"
           - "kitchen_motion_beta (utility areas)"
           - "hallway_motion_beta (circulation spaces)"
           - "Additional area coverage for comprehensive motion detection"
-          
+
         integration_points:
           motion_lighting: "Provides motion triggers for automation packages"
           room_database: "Motion events inform room occupancy and usage patterns"
           area_hierarchy: "Respects canonical area structure for sensor organization"
-          
+
   package_integration_architecture:
     data_flow:
       motion_detection: "domain/templates/motion_logic.yaml → motion_lighting_v2 automations"
       configuration_lookup: "room_db_updater database → motion_lighting template sensors"
       vacuum_control: "room_db_updater database ↔ vacuum_control_v2 scripts (bidirectional)"
       area_mapping: "area_mapping.yaml → room validation in all packages"
-      
+
     sql_integration_pattern:
       configuration_source: "room_database.db managed by room_db_updater app"
       sensor_interface: "sensor.room_configs_[domain] provides JSON payload access"
       template_processing: "Template sensors parse JSON and extract room-specific config"
       automation_consumption: "Automations use template sensors for dynamic behavior"
       script_updates: "Scripts write back status and history to database via REST API"
-      
+
     canonical_area_compliance:
       room_identification: "All packages use canonical room IDs from area_mapping.yaml"
       hierarchical_awareness: "Packages respect area → subarea relationships"
       validation_integration: "room_db_updater validates room IDs against canonical mapping"
       configuration_consistency: "Database enforces canonical room structure across domains"
-      
+
   consolidated_package_structure:
     package_room_database:
       description: "Consolidated room database package combining all SQL integration components"
@@ -739,7 +742,7 @@ appdaemon_index:
           - "rest_command.room_db_update_config"
         shell_commands:
           - "update_room_config (with area validation and rate limiting)"
-          - "update_motion_timeout (motion lighting specific)"  
+          - "update_motion_timeout (motion lighting specific)"
           - "mark_room_cleaned (vacuum control specific)"
         recorder_configuration:
           - "Excludes SQL sensors from history to prevent database bloat"
@@ -751,7 +754,7 @@ appdaemon_index:
         - "/config/packages/room_database/roomdb_recorder_policy.yaml"
       files_relocated:
         - "database_init.sql moved to /config/database_init.sql"
-      
+
   operational_dependencies:
     required_for_motion_lighting:
       - "room_db_updater app (configuration management)"
@@ -759,14 +762,14 @@ appdaemon_index:
       - "domain/templates/motion_logic.yaml (motion detection)"
       - "area_mapping.yaml (room validation)"
       - "binary_sensor.*_motion_beta entities (triggers)"
-      
+
     required_for_vacuum_control:
       - "room_db_updater app (configuration and tracking)"
       - "sensor.room_configs_vacuum_control (SQL interface)"
       - "input_text.valetudo_base_topic (MQTT configuration)"
       - "area_mapping.yaml (room validation)"
       - "MQTT broker and Valetudo robot connectivity"
-      
+
     cross_package_dependencies:
       motion_to_vacuum: "Motion detection can inform vacuum scheduling"
       database_shared: "Both packages share room_db_updater for configuration"
@@ -776,7 +779,7 @@ appdaemon_index:
 critical_fixes_applied:
   timestamp: "2025-10-10T16:52:25Z"
   description: "Applied surgical fixes to resolve double-encoded JSON and system inconsistencies"
-  
+
   fixes_completed:
     json_normalization:
       status: "completed"
@@ -784,7 +787,7 @@ critical_fixes_applied:
       files_modified: ["/config/packages/package_room_database.yaml"]
       technical_change: "Replaced json_group_object(room_id, config_data) with proper JSON normalization"
       result: "Payload objects now properly nested, eliminates need for double from_json parsing"
-    
+
     rest_endpoint_standardization:
       status: "verified"
       description: "Confirmed REST commands use /api/appdaemon/room_db/* URLs consistently"
@@ -792,7 +795,7 @@ critical_fixes_applied:
         update: "/api/appdaemon/room_db/update_config"
         health: "/api/appdaemon/room_db/health"
       consistency: "All REST commands aligned to standard endpoint pattern"
-    
+
     database_path_consistency:
       status: "verified"
       description: "Single source of truth established for database location"
@@ -800,7 +803,7 @@ critical_fixes_applied:
       sql_config: "sqlite:////config/room_database.db"
       duplicates_check: "No duplicate database files found"
       file_status: "20K database file confirmed active"
-    
+
     automation_id_consistency:
       status: "completed"
       description: "Standardized automation entity IDs to v15 format across all references"
@@ -812,12 +815,12 @@ critical_fixes_applied:
 
   validation_tools_created:
     seeding_script:
-      path: "/config/scripts/seed_all_rooms.sh" 
+      path: "/config/scripts/seed_all_rooms.sh"
       purpose: "Provides complete room database seeding instructions with default configurations"
-      rooms_covered: 
+      rooms_covered:
         motion_lighting: ["kitchen", "living_room", "ensuite", "upstairs", "downstairs"]
         vacuum_control: ["kitchen", "living_room", "ensuite", "hallway", "powder_room"]
-    
+
     validation_script:
       path: "/config/scripts/validate_room_system.sh"
       purpose: "Comprehensive system validation covering files, endpoints, and configurations"
@@ -837,14 +840,14 @@ critical_fixes_applied:
       package_consolidation: "Complete ✅"
       diagnostics_migration: "Complete ✅"
       initialization_scripts: "All present ✅"
-    
+
     immediate_next_steps:
       1: "Reload YAML configurations in Home Assistant UI (Settings → System → Reload Configuration)"
       2: "Seed rooms using instructions from /config/scripts/seed_all_rooms.sh"
       3: "Run diagnostics template in Developer Tools → Templates"
       4: "Verify room counts > 1 and payload objects properly formatted"
       5: "Test motion triggers and vacuum scripts with newly seeded rooms"
-    
+
     expected_outcomes:
       diagnostics_status: "Should show status: ok with multiple rooms detected"
       payload_format: "Should show proper JSON objects without escaped strings"

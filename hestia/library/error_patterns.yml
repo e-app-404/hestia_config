@@ -1463,7 +1463,7 @@ patterns:
         # AppDaemon app registration
         self.register_endpoint(self.update_config, "room_db/update_config")
         # Creates: /api/app/room_db_updater/room_db/update_config
-        
+
         # But REST command calls:
         url: "http://a0d7b954-appdaemon:5050/api/app/room_db_updater/update_config"
         # Missing room_db/ prefix → 404 error
