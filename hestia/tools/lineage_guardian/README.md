@@ -8,18 +8,20 @@
    `/config/hestia/config/system/hestia.toml`
 2. (Optional) Create venv & install:
    ```bash
+   cd /config/hestia/tools/lineage_guardian
    python -m venv .venv && source .venv/bin/activate
    pip install -r requirements.txt
    ```
 3. Run the pipeline (dry-run safe):
    ```bash
+   cd /config/hestia/tools/lineage_guardian
    python lineage_guardian/graph_scanner.py --output ./.artifacts/graph.json --template-dir /config/domain/templates/ --verbose
    python lineage_guardian/lineage_validator.py --graph-file ./.artifacts/graph.json --output ./.artifacts/violations.json --verbose
    python lineage_guardian/lineage_corrector.py --violations-file ./.artifacts/violations.json --plan-dir ./.artifacts/_plan
    python lineage_guardian/graph_integrity_checker.py --graph-file ./.artifacts/graph.json --output ./.artifacts/integrity.json
    python lineage_guardian/lineage_report.py --graph ./.artifacts/graph.json --violations ./.artifacts/violations.json --integrity ./.artifacts/integrity.json --outdir ./.artifacts/report
    ```
-4. Or in VSCode: **Terminal → Run Task → Lineage: Full Pipeline (dry-run)**
+4. Or open `/config/hestia/tools/lineage_guardian` in VSCode: **Terminal → Run Task → Lineage: Full Pipeline (dry-run)**
 
 ## What's inside
 

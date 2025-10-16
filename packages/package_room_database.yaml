@@ -18,7 +18,7 @@ rest_command:
         "config_data": {{ config_data | tojson }},
         "schema_expected": {{ schema_expected|default(1) }}
       }
-      
+
   room_db_health:
     url: "http://a0d7b954-appdaemon:5050/api/appdaemon/room_db/health"
     method: GET

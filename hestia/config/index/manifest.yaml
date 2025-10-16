@@ -102,6 +102,31 @@ hades_config_index:
         title: "Backup Sweeper System Documentation"
         tags: ["documentation", "sweeper", "usage"]
 
+      - path: "/config/hestia/tools/lineage_guardian/lineage_guardian/lineage_guardian.py"
+        file: "lineage_guardian.py"
+        title: "Entity Lineage Validation Pipeline Orchestrator"
+        tags: ["automation", "lineage", "validation", "orchestrator"]
+
+      - path: "/config/hestia/tools/lineage_guardian/lineage_guardian/graph_scanner.py"
+        file: "graph_scanner.py"
+        title: "YAML Template Entity Graph Scanner"
+        tags: ["lineage", "scanner", "graph", "yaml"]
+
+      - path: "/config/hestia/tools/lineage_guardian/lineage_guardian/lineage_validator.py"
+        file: "lineage_validator.py"
+        title: "Entity Lineage Metadata Validator"
+        tags: ["lineage", "validation", "metadata"]
+
+      - path: "/config/hestia/tools/lineage_guardian/lineage_guardian/lineage_corrector.py"
+        file: "lineage_corrector.py"
+        title: "Non-destructive Lineage Correction Planner"
+        tags: ["lineage", "correction", "planning"]
+
+      - path: "/config/hestia/tools/lineage_guardian/README.md"
+        file: "README.md"
+        title: "Lineage Guardian System Documentation"
+        tags: ["documentation", "lineage", "usage"]
+
   # Metadata sections (not validated as artifacts)
   metadata:
     retrieval_hints:

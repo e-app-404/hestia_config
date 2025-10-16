@@ -4,7 +4,8 @@
 enabled = true
 schedule_cron = "0 3 * * *"
 verbose_logging = true
-log_location = "/config/hestia/reports/{date}/lineage__{timestamp}__validation.log"
+log_location = "/config/hestia/workspace/operations/logs/{date}/lineage__{timestamp}__validation.log"
+tool_location = "/config/hestia/tools/lineage_guardian"
 
 [automation.lineage_guardian.scanner]
 template_directory = "/config/domain/templates/"
