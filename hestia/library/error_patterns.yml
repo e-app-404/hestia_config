@@ -1439,6 +1439,56 @@ patterns:
       - "Home Assistant selector documentation"
       - "Entity domain reference documentation"
 
+  - name: "appdaemon_rest_endpoint_404_error"
+    category: "appdaemon_rest_api"
+    description: "AppDaemon REST endpoint calls failing with 404 due to incorrect URL structure"
+    error_format: "WARNING AppDaemon: API Call to system: status: 404, App Not Found"
+    symptoms:
+      - "REST commands returning 404 errors with 'App Not Found' message"
+      - "AppDaemon endpoints not accessible despite successful app initialization"
+      - "HTML error responses instead of expected JSON from API calls"
+      - "Integration tests failing for AppDaemon HTTP API endpoints"
+    root_causes:
+      - "Using incorrect endpoint URL pattern for app-scoped endpoints"
+      - "REST commands pointing to /api/appdaemon/ instead of /api/app/<app_name>/"
+      - "Misunderstanding AppDaemon endpoint registration and URL routing"
+      - "Copy-paste errors from different AppDaemon configuration examples"
+    solution:
+      - "Use /api/app/<app_name>/<endpoint_name> URL pattern for registered endpoints"
+      - "Update all REST command URLs to include proper app name in path"
+      - "Verify endpoint registration matches expected URL structure"
+      - "Test endpoint accessibility after URL corrections"
+    examples:
+      bad: |
+        rest_command:
+          app_health:
+            url: "http://a0d7b954-appdaemon:5050/api/appdaemon/health"
+            # Results in 404 - no app name in URL path
+      good: |
+        rest_command:
+          app_health:
+            url: "http://a0d7b954-appdaemon:5050/api/app/room_db_updater/health"
+            # Success - includes app name in URL path
+    resolution_steps:
+      - "Identify all REST commands pointing to AppDaemon endpoints"
+      - "Update URLs from /api/appdaemon/ to /api/app/<app_name>/ pattern"
+      - "Verify app name matches the class name in AppDaemon apps.yaml"
+      - "Test REST command execution after URL corrections"
+      - "Check AppDaemon logs for successful API calls instead of 404 warnings"
+    prevention_strategies:
+      - "Document correct AppDaemon endpoint URL patterns for team reference"
+      - "Use consistent URL structure across all AppDaemon REST integrations"
+      - "Test REST endpoints immediately after AppDaemon app deployment"
+      - "Include endpoint testing in AppDaemon app development workflow"
+    tooling:
+      endpoint_test: "curl http://a0d7b954-appdaemon:5050/api/app/<app_name>/<endpoint> - test endpoint accessibility"
+      log_monitoring: "grep 'API Call.*404.*App Not Found' /addon_configs/*/appdaemon.log - monitor for 404 errors"
+      app_validation: "Check AppDaemon logs for successful app initialization and endpoint registration"
+    references:
+      - "AppDaemon HTTP API Documentation"
+      - "AppDaemon App Development Guide"
+      - "Home Assistant REST Command Integration"
+
   - name: "automation_template_sensor_reference_mismatch"
     category: "automation_template"
     description: "Automation template errors due to referencing SQL sensors that return JSON strings instead of parsed dictionaries"
