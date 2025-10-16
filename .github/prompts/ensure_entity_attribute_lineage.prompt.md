@@ -9,22 +9,33 @@ tools: ["search", "edit", "changes"]
 
 You are in **Cross-File Lineage Enrichment** mode.
 
-# TARGET FILES (scan + edit)
+## Scope (only edit these files)
 
-FILES:
+Reference and modify these Home Assistant template files:
 
-- "domain/templates/presence_logic.yaml"
-- "domain/templates/occupancy_logic.yaml"
-- "domain/templates/motion_logic.yaml"
-- "domain/templates/desk_presence_inferred.yaml"
-- "domain/templates/ensuite_presence_inferred.yaml"
-- "domain/templates/illuminance_logic.yaml"
+- `domain/templates/motion_logic.yaml`
+- `domain/templates/mqtt_native.yaml`
+- `domain/templates/occupancy_logic.yaml`
 
-# TODAY (date string, no time)
+<!--
+- `domain/templates/tracking_logic.yaml`
+- `domain/templates/humidity_logic.yaml`
+- `domain/templates/temperature_logic.yaml`
+- `domain/templates/illuminance_decay.yaml`
+- `domain/templates/mqtt_native.yaml`
+- `domain/templates/motion_logic.yaml`
+- `domain/templates/desk_presence_inferred.yaml`
+- `domain/templates/ensuite_presence_inferred.yaml`
+- `domain/templates/illuminance_logic.yaml`
+- `domain/templates/presence_logic.yaml`
+- `domain/templates/occupancy_logic.yaml`
+-->
 
-TODAY: "<YYYY-MM-DD>"
+## TODAY (date string, no time)
 
-# OBJECTIVE
+TODAY: "2025-10-16"
+
+## OBJECTIVE
 
 Discover cross-file lineage and **append** (non-destructively) to each entity’s `attributes:`:
 
@@ -33,16 +44,16 @@ Discover cross-file lineage and **append** (non-destructively) to each entity’
 - `source_count:` equals the number of **entity IDs** in `upstream_sources` (exclude macros/includes like `"template.library.jinja"`)
 - `last_updated:` set to TODAY **only if** the entity’s upstream or downstream is changed
 
-# SCOPE & GUARDRails
+## SCOPE & GUARDRails
 
 - Edit **multiple files**, but **only** within per-entity blocks (template `binary_sensor:` / `sensor:` list items with `name:` or `unique_id:`).
 - **Per-entity write-backs only.** Never add file-level comments or headers.
 - **Non-destructive merge policy:** preserve existing arrays and order; **append** new items (deduped). Do not remove existing lineage entries.
 - Keep 2-space indentation, LF newlines, and do not alter `state:` logic.
-- Only valid HA domains in arrays (binary*sensor.*, sensor.*, light.*, person.*, switch.\*, input*\*).
+- Only valid HA domains in arrays (binary*sensor.*, sensor._, light._, person._, switch.\*, input_\*).
   Macro/include filenames (e.g., `"template.library.jinja"`) are allowed **only** in `upstream_sources`, but they **do not** count toward `source_count`.
 
-# HOW TO EXTRACT LINEAGE
+## HOW TO EXTRACT LINEAGE
 
 For each entity in every FILE:
 
@@ -59,21 +70,21 @@ For each entity in every FILE:
    - Add these consumer entity IDs to this entity’s `downstream_consumers`.
    - Do not include the entity itself; if present, remove and record an anomaly in the log.
 
-# WRITE-BACK RULES (PER-ENTITY)
+## WRITE-BACK RULES (PER-ENTITY)
 
 - If `attributes:` exists, **merge** keys; else create `attributes:`.
 - Arrays must be **Jinja JSON**:
 
-```
-
+```jinja2
 upstream_sources: >-
-{{ ['binary_sensor.foo','sensor.bar','template.library.jinja'] | tojson }}
+  {{ ['binary_sensor.foo','sensor.bar','template.library.jinja'] | tojson }}
 downstream_consumers: >-
-{{ ['binary_sensor.baz'] | tojson }}
+  {{ ['binary_sensor.baz'] | tojson }}
 
 ```
 
-- **Merging policy**:
+### Merging policy
+
 - Read existing arrays (if present). Treat them as sets for dedupe.
 - Keep existing items in their current order.
 - Append new items (sorted A→Z for _just_ the newly-added tail).
@@ -81,7 +92,7 @@ downstream_consumers: >-
 - `source_count:` must exactly match the number of **entity IDs** in `upstream_sources` (exclude macros). Keep prior quoting style (if quoted, keep quoted).
 - `last_updated:` → set to TODAY **only if** upstream/downstream changed for that entity; otherwise do not touch it.
 
-# VALIDATION
+## VALIDATION
 
 - Deduplicate arrays; filter to valid domains for entity IDs; allow macro/include filenames only in upstream.
 - If zero upstreams, write:
@@ -89,7 +100,7 @@ downstream_consumers: >-
 - `source_count: "0"`
 - If you discover consumers in other files, add them to the producer’s `downstream_consumers` in the producer’s file (and, if the consumer’s upstream is missing this producer, append there too—non-destructively).
 
-# OUTPUT (STRICT)
+## OUTPUT (STRICT)
 
 Emit **exactly two sections** and nothing else:
 
@@ -111,14 +122,14 @@ Emit **exactly two sections** and nothing else:
     }
   - `anomalies`: e.g., ["SELF_IN_DOWNSTREAM_REMOVED","INVALID_ENTITY_ID('…')","MACRO_NOT_COUNTED"]
 
-# HARD BLOCKERS
+## HARD BLOCKERS
 
 - Do **not** add any file-level comment like:
 - "Updated upstream_sources for entities in this file"
 - Do **not** overwrite existing arrays; always merge/dedupe/append.
 - Do **not** change `state:` blocks.
 
-# EXECUTION PLAN
+## EXECUTION PLAN
 
 1. Load all FILES; index entities (capture domain, unique_id, name, file path).
 2. For each entity, parse `state:` to extract upstream + macros; record evidence (file+line).
@@ -127,12 +138,4 @@ Emit **exactly two sections** and nothing else:
 5. Recompute `source_count` and `last_updated` where appropriate.
 6. Output Unified Diffs and Machine Findings Log.
 
-# BEGIN
-
-```
-
-**Tips**
-
-- Set `TODAY` before running.
-- If Copilot struggles with all six files at once, run in two batches (e.g., three files at a time) with the same prompt—the merge policy is idempotent.
-```
+## BEGIN

@@ -8,7 +8,7 @@
 # - The tracked_entities list can be expanded to include tuples like (entity, weight) or (entity, confidence).
 # - Later enhancements could add logic for zone filtering, last_seen logic, or entity device_class.
 # - Wrapping the logic in a macro or a Python script is viable for dynamic or weighted states.
-  
+
 - sensor:
     - name: "Any Home Presence"
       unique_id: any_home_presence
@@ -37,48 +37,141 @@
         {% endif %}
       attributes:
         file: "/config/domain/templates/tracking_logic.yaml"
-        source_count: "1"
+        source_count: "11"
+        upstream_sources: >-
+          {{ [
+            'device_tracker.macbook',
+            'device_tracker.everts_apple_watch',
+            'device_tracker.iphone11',
+            'device_tracker.iphone14',
+            'device_tracker.ephone_uk',
+            'device_tracker.nintendo_switch',
+            'device_tracker.wallet',
+            'device_tracker.keys',
+            'device_tracker.backpack',
+            'device_tracker.ephone',
+            'device_tracker.iphone8'
+          ] | tojson }}
+        downstream_consumers: {{ [] | tojson }}
+        last_updated: "2025-10-16"
 
     - name: "Macbook Presence"
       unique_id: macbook_presence
       state: "{{ 'Home' if is_state('device_tracker.macbook', 'home') else 'Away' }}"
+      attributes:
+        file: "/config/domain/templates/tracking_logic.yaml"
+        source_count: "1"
+        upstream_sources: >-
+          {{ ['device_tracker.macbook'] | tojson }}
+        downstream_consumers: {{ [] | tojson }}
+        last_updated: "2025-10-16"
 
     - name: "Apple_Watch Presence"
       unique_id: apple_watch_presence
       state: "{{ 'Home' if is_state('device_tracker.everts_apple_watch', 'home') else 'Away' }}"
+      attributes:
+        file: "/config/domain/templates/tracking_logic.yaml"
+        source_count: "1"
+        upstream_sources: >-
+          {{ ['device_tracker.everts_apple_watch'] | tojson }}
+        downstream_consumers: {{ [] | tojson }}
+        last_updated: "2025-10-16"
 
     - name: "iPhone11 Presence"
       unique_id: iphone11_presence
       state: "{{ 'Home' if is_state('device_tracker.iphone11', 'home') else 'Away' }}"
+      attributes:
+        file: "/config/domain/templates/tracking_logic.yaml"
+        source_count: "1"
+        upstream_sources: >-
+          {{ ['device_tracker.iphone11'] | tojson }}
+        downstream_consumers: {{ [] | tojson }}
+        last_updated: "2025-10-16"
 
     - name: "iPhone14 Presence"
       unique_id: iphone14_presence
       state: "{{ 'Home' if is_state('device_tracker.iphone14', 'home') else 'Away' }}"
+      attributes:
+        file: "/config/domain/templates/tracking_logic.yaml"
+        source_count: "1"
+        upstream_sources: >-
+          {{ ['device_tracker.iphone14'] | tojson }}
+        downstream_consumers: {{ [] | tojson }}
+        last_updated: "2025-10-16"
 
     - name: "ePhone-Uk Presence"
       unique_id: ephone_uk_presence
       state: "{{ 'Home' if is_state('device_tracker.ephone_uk', 'home') else 'Away' }}"
+      attributes:
+        file: "/config/domain/templates/tracking_logic.yaml"
+        source_count: "1"
+        upstream_sources: >-
+          {{ ['device_tracker.ephone_uk'] | tojson }}
+        downstream_consumers: {{ [] | tojson }}
+        last_updated: "2025-10-16"
 
     - name: "Nintendo_Switch Presence"
       unique_id: nintendo_switch_presence
       state: "{{ 'Home' if is_state('device_tracker.nintendo_switch', 'home') else 'Away' }}"
+      attributes:
+        file: "/config/domain/templates/tracking_logic.yaml"
+        source_count: "1"
+        upstream_sources: >-
+          {{ ['device_tracker.nintendo_switch'] | tojson }}
+        downstream_consumers: {{ [] | tojson }}
+        last_updated: "2025-10-16"
 
     - name: "Wallet Presence"
       unique_id: wallet_presence
       state: "{{ 'Home' if is_state('device_tracker.wallet', 'home') else 'Away' }}"
+      attributes:
+        file: "/config/domain/templates/tracking_logic.yaml"
+        source_count: "1"
+        upstream_sources: >-
+          {{ ['device_tracker.wallet'] | tojson }}
+        downstream_consumers: {{ [] | tojson }}
+        last_updated: "2025-10-16"
 
     - name: "Keys Presence"
       unique_id: keys_presence
       state: "{{ 'Home' if is_state('device_tracker.keys', 'home') else 'Away' }}"
+      attributes:
+        file: "/config/domain/templates/tracking_logic.yaml"
+        source_count: "1"
+        upstream_sources: >-
+          {{ ['device_tracker.keys'] | tojson }}
+        downstream_consumers: {{ [] | tojson }}
+        last_updated: "2025-10-16"
 
     - name: "Backpack Presence"
       unique_id: backpack_presence
       state: "{{ 'Home' if is_state('device_tracker.backpack', 'home') else 'Away' }}"
+      attributes:
+        file: "/config/domain/templates/tracking_logic.yaml"
+        source_count: "1"
+        upstream_sources: >-
+          {{ ['device_tracker.backpack'] | tojson }}
+        downstream_consumers: {{ [] | tojson }}
+        last_updated: "2025-10-16"
 
     - name: "ePhone Presence"
       unique_id: ephone_presence
       state: "{{ 'Home' if is_state('device_tracker.ephone', 'home') else 'Away' }}"
+      attributes:
+        file: "/config/domain/templates/tracking_logic.yaml"
+        source_count: "1"
+        upstream_sources: >-
+          {{ ['device_tracker.ephone'] | tojson }}
+        downstream_consumers: {{ [] | tojson }}
+        last_updated: "2025-10-16"
 
     - name: "iPhone8 Presence"
       unique_id: iphone8_presence
       state: "{{ 'Home' if is_state('device_tracker.iphone8', 'home') else 'Away' }}"
+      attributes:
+        file: "/config/domain/templates/tracking_logic.yaml"
+        source_count: "1"
+        upstream_sources: >-
+          {{ ['device_tracker.iphone8'] | tojson }}
+        downstream_consumers: {{ [] | tojson }}
+        last_updated: "2025-10-16"
