@@ -1,5 +1,7 @@
-  # ══════════════════════════════════════════════════════
-  # ⟫⟫ Blueprint-based Simple Motion Lighting Automations
+
+# ══════════════════════════════════════════════════════
+# ⟫⟫ Blueprint-based Simple Motion Lighting Automations
+automation:
   - alias: "Motion Lights — Wardrobe (Blueprint v1.0)"
     id: motion_lights_wardrobe_blueprint_v10
     use_blueprint:

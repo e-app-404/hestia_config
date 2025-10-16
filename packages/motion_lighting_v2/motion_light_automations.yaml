@@ -85,7 +85,7 @@ automation:
           {% if cfg is mapping %}
             {{ cfg }}
           {% elif cfg is string %}
-            {{ cfg | from_json %}
+            {{ cfg | from_json %}}
           {% else %}
             {}
           {% endif %}
