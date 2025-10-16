@@ -1,4 +1,15 @@
-# Bubble Card
+---
+title: "Bubble Card - Minimalist and Customizable Card Collection"
+authors: "@Clooos"
+source: "https://github.com/Clooos/Bubble-Card"
+slug: "bubble-card"
+tags: ["home-assistant", "lovelace", "cards", "bubble", "popup", "minimalist"]
+original_date: "2023-01-01"
+last_updated: "2025-10-16"
+url: "https://github.com/Clooos/Bubble-Card"
+---
+
+# Bubble Card - Minimalist and Customizable Card Collection
 
 Bubble Card is a minimalist and customizable card collection for Home Assistant with a nice pop-up touch... and a Module Store!
 
@@ -24,8 +35,6 @@ Bubble Card is a minimalist and customizable card collection for Home Assistant 
 - [Help](#help)
 - [Donate](#donate)
 - [References](#references)
-
-<br>
 
 ## Configuration
 
@@ -62,21 +71,7 @@ All options can be configured in the Home Assistant editor. But you can find mor
 
 </details>
 
-<br>
-
 ---
-
-<br>
-
-[![Bubble-Card---Youtube-github](https://github.com/user-attachments/assets/643aa16a-3fc9-4770-8269-62ec01db49b3)](https://www.youtube.com/watch?v=0hSQOlBxKKI)
-
-**Check out this [video](https://www.youtube.com/watch?v=0hSQOlBxKKI) to learn about Bubble Card and its capabilities.** My YouTube channel is quite new and focuses on tutorials about Home Assistant and Bubble Card. Don’t hesitate to subscribe to help increase my channel’s visibility. Thank you in advance!
-
-<br>
-
----
-
-<br>
 
 ## Pop-up
 
@@ -251,11 +246,7 @@ cards:
 
 </details>
 
-<br>
-
 ---
-
-<br>
 
 ## Horizontal buttons stack
 
@@ -334,11 +325,7 @@ auto_order: true
 
 </details>
 
-<br>
-
 ---
-
-<br>
 
 ## Button
 
@@ -2416,33 +2403,7 @@ icon_container_color:
           include_none: true
 ```
 
-<br>
-
-</details>
-
-More examples can be found in the Module Store, or [here](https://github.com/Clooos/Bubble-Card/discussions/categories/share-your-modules).
-
-<br>
-
----
-
-<br>
-
-## Help
-
-Feel free to open an issue if something is not working as expected.
-
-[![GitHub Issues](https://img.shields.io/badge/GitHub-Issues-green?logo=github)](https://github.com/Clooos/Bubble-Card/issues)
-
-Got questions or thoughts about Bubble Card? Want to share your dashboards or discoveries? You can go on the Home Assistant forum, on the Bubble Card subreddit or on the GitHub Discussions section.
-
-[![Home Assistant Community Forum](https://img.shields.io/badge/Home%20Assistant-Community%20Forum-blue?logo=home-assistant)](https://community.home-assistant.io/t/bubble-card-a-minimalist-card-collection-for-home-assistant-with-a-nice-pop-up-touch/609678) [![Reddit Page](https://img.shields.io/badge/Reddit-r/BubbleCard-orange?logo=reddit)](https://www.reddit.com/r/BubbleCard/) [![GitHub Discussions](https://img.shields.io/badge/GitHub-Discussions-lightgrey?logo=github)](https://github.com/Clooos/Bubble-Card/discussions)
-
-<br>
-
----
-
-<br>
+> note: More examples can be found in the Module Store, or [here](https://github.com/Clooos/Bubble-Card/discussions/categories/share-your-modules).
 
 ## References
 
@@ -2454,15 +2415,3 @@ Got questions or thoughts about Bubble Card? Want to share your dashboards or di
 - [HACS - Home Assistant Community Store](https://hacs.xyz/)
 - [CSS Box Shadow Documentation](https://developer.mozilla.org/fr/docs/Web/CSS/box-shadow)
 - [CSS Border Documentation](https://developer.mozilla.org/fr/docs/Web/CSS/border)
-
-## Donate
-
-I dedicate most of my spare time to making this project the best it can be. So if you appreciate my work, any donation would be a great way to show your support 🍻
-
-[![Buy me a beer](https://img.shields.io/badge/Donate-Buy%20me%20a%20beer-yellow?logo=buy-me-a-coffee)](https://www.buymeacoffee.com/clooos) [![PayPal](https://img.shields.io/badge/Donate-PayPal-blue?logo=paypal)](https://www.paypal.com/donate/?business=MRVBV9PLT9ZPL&no_recurring=0&item_name=Hi%2C+I%27m+Clooos+the+creator+of+Bubble+Card.+Thank+you+for+supporting+me+and+my+passion.+You+are+awesome%21+%F0%9F%8D%BB&currency_code=EUR) [![Patreon Clooos](https://img.shields.io/badge/Patreon-Clooos-orange?logo=patreon)](https://www.patreon.com/Clooos)
-
-<br>
-
-Thank you everyone for your support, you all are my greatest motivation!
-
-<p align="right"><a href="#top"><img src="https://cdn-icons-png.flaticon.com/512/892/892692.png" height="50px"></a></p>
