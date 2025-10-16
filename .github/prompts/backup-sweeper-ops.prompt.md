@@ -12,8 +12,9 @@ Execute the complete Backup Sweeper pipeline for workspace lifecycle management,
 ## Mission
 
 Run the end-to-end Backup Sweeper automation pipeline to:
+
 1. **Scan workspace** for backup files and lifecycle violations
-2. **Standardize naming** according to canonical patterns 
+2. **Standardize naming** according to canonical patterns
 3. **Execute cleanup** with TTL-based retention policies
 4. **Manage vault** with keep-N-latest strategies
 5. **Generate comprehensive reports** with health scoring and recommendations
@@ -36,12 +37,14 @@ Run the end-to-end Backup Sweeper automation pipeline to:
 ## Workflow
 
 ### 1. Pre-flight Validation
+
 - Verify `/config/hestia/config/system/hestia.toml` exists and is valid
 - Check tool components under `/config/hestia/tools/sweeper/`
 - Validate write permissions and canonical path compliance
 - Confirm backup storage locations are accessible
 
 ### 2. Pipeline Execution
+
 Execute the backup sweeper orchestrator with proper configuration:
 
 ```bash
@@ -54,7 +57,9 @@ python hestia/tools/backup_sweeper.py \
 ```
 
 ### 3. Component Analysis
+
 Monitor each pipeline component:
+
 - **index.py**: Workspace scanning and file discovery
 - **naming_convention.py**: Naming standards enforcement
 - **sweeper.py**: TTL-based cleanup execution
@@ -62,13 +67,16 @@ Monitor each pipeline component:
 - **sweeper_report.py**: Health scoring and reporting
 
 ### 4. Report Review
+
 Analyze generated reports:
+
 - **Location**: `/config/hestia/reports/{YYYY-MM-DD}/sweeper__{timestamp}__cleanup.log`
 - **Index**: `/config/hestia/reports/_index.jsonl`
 - **Health Score**: Workspace health metrics (0-100)
 - **Recommendations**: Actionable improvement suggestions
 
 ### 5. Validation & Monitoring
+
 - Verify report index is updated
 - Check health score trends
 - Validate compliance with governance ADRs
@@ -77,6 +85,7 @@ Analyze generated reports:
 ## Output Expectations
 
 ### Success Criteria
+
 - Pipeline completes all 5 components successfully
 - Health report generated with current workspace score
 - Report index updated with batch metadata
@@ -84,6 +93,7 @@ Analyze generated reports:
 - Backup operations follow atomic patterns
 
 ### Report Structure
+
 - **Frontmatter**: Tool metadata, batch ID, compliance tracking
 - **Executive Summary**: Health score, processed counts, recommendations
 - **Component Results**: Per-component execution logs with metrics
@@ -91,7 +101,9 @@ Analyze generated reports:
 - **Operational Insights**: Trend analysis and workspace improvement suggestions
 
 ### Failure Handling
+
 If any component fails:
+
 1. **Capture error logs** and component state
 2. **Check rollback requirements** for any partial operations
 3. **Generate failure report** with diagnostic information

@@ -2,7 +2,7 @@
 mode: "agent"
 model: "Claude Sonnet 4"
 description: "Execute Hestia Lineage Guardian pipeline for entity relationship validation and correction"
-tools: ["runCommands", "runTasks", "edit", "search", "problems", "files"]
+tools: ["runCommands", "runTasks", "edit", "search", "problems"]
 ---
 
 # Hestia Lineage Guardian Operations
@@ -12,6 +12,7 @@ Execute the complete Lineage Guardian pipeline for Home Assistant template entit
 ## Mission
 
 Run the end-to-end Lineage Guardian automation pipeline to:
+
 1. **Scan templates** for entity relationships and lineage metadata
 2. **Validate lineage** against declared vs actual entity references
 3. **Generate correction plans** for lineage violations (non-destructive)
@@ -36,12 +37,14 @@ Run the end-to-end Lineage Guardian automation pipeline to:
 ## Workflow
 
 ### 1. Environment Setup
+
 - Verify tool installation at `/config/hestia/tools/lineage_guardian/`
 - Check configuration in `hestia.toml` under `[automation.lineage_guardian]`
 - Validate Python environment and dependencies
 - Confirm template directory accessibility and scope
 
 ### 2. Graph Scanning Phase
+
 Execute entity relationship discovery:
 
 ```bash
@@ -55,7 +58,8 @@ python lineage_guardian/graph_scanner.py \
 
 **Expected Output**: Entity relationship graph with source→target mappings
 
-### 3. Lineage Validation Phase  
+### 3. Lineage Validation Phase
+
 Validate declared vs actual entity relationships:
 
 ```bash
@@ -69,6 +73,7 @@ python lineage_guardian/lineage_validator.py \
 **Expected Output**: Lineage violations and metadata inconsistencies
 
 ### 4. Correction Planning Phase
+
 Generate non-destructive correction plans:
 
 ```bash
@@ -82,6 +87,7 @@ python lineage_guardian/lineage_corrector.py \
 **Expected Output**: Correction plan files (no actual modifications)
 
 ### 5. Graph Integrity Check
+
 Perform bidirectional consistency validation:
 
 ```bash
@@ -96,6 +102,7 @@ python lineage_guardian/graph_integrity_checker.py \
 **Expected Output**: Graph integrity analysis with health scores
 
 ### 6. Comprehensive Reporting
+
 Generate actionable reports:
 
 ```bash
@@ -111,6 +118,7 @@ python lineage_guardian/lineage_report.py \
 **Expected Output**: Markdown reports with executive summaries and action items
 
 ### 7. Optional: Apply Corrections
+
 If `apply=true` and corrections are approved:
 
 ```bash
@@ -128,14 +136,16 @@ python lineage_guardian/lineage_corrector.py \
 ## Output Expectations
 
 ### Success Criteria
+
 - All 5 pipeline components execute successfully
-- Entity relationship graph generated with complete mappings  
+- Entity relationship graph generated with complete mappings
 - Lineage violations identified and categorized
 - Correction plans generated (non-destructive by default)
 - Graph integrity score calculated with recommendations
 - Comprehensive report produced with actionable insights
 
 ### Report Structure
+
 - **Executive Summary**: Health score, violation count, critical issues
 - **Graph Analysis**: Entity relationship mappings and dependency chains
 - **Violation Details**: Specific lineage inconsistencies with file locations
@@ -144,10 +154,11 @@ python lineage_guardian/lineage_corrector.py \
 - **Technical Details**: File-level analysis and correction specifications
 
 ### Artifact Organization
+
 ```
 .artifacts/
 ├── graph.json              # Entity relationship graph
-├── violations.json         # Lineage validation violations  
+├── violations.json         # Lineage validation violations
 ├── integrity.json          # Graph integrity analysis
 ├── _plan/                 # Correction plan files (dry-run)
 │   ├── {template_file}.plan.yaml
@@ -160,7 +171,9 @@ python lineage_guardian/lineage_corrector.py \
 ```
 
 ### Error Handling
+
 If any component fails:
+
 1. **Preserve artifacts** from successful components
 2. **Generate partial report** with available data
 3. **Identify failure point** and provide troubleshooting guidance
@@ -199,10 +212,11 @@ If any component fails:
 ## Advanced Options
 
 ### CLI Wrapper Usage
+
 For simplified execution:
 
 ```bash
-cd /config/hestia/tools/lineage_guardian  
+cd /config/hestia/tools/lineage_guardian
 python lineage_guardian_cli.py \
   --mode ${mode} \
   --template-dir ${template_dir} \
@@ -211,15 +225,19 @@ python lineage_guardian_cli.py \
 ```
 
 ### VS Code Task Integration
+
 Use workspace tasks for integrated execution:
+
 - **"Lineage Guardian: Full Pipeline (dry-run)"**
 - **"Lineage Guardian: Scanner Only"**
 - **"Lineage Guardian: Open Documentation"**
 
 ### Component-Specific Execution
+
 Run individual components for targeted analysis:
+
 - **Scanner**: Entity relationship discovery only
-- **Validator**: Lineage violation identification only  
+- **Validator**: Lineage violation identification only
 - **Corrector**: Correction plan generation only
 - **Integrity**: Graph consistency analysis only
 - **Reporter**: Report generation from existing artifacts
