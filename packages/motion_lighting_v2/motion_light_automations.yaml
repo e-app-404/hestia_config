@@ -105,7 +105,7 @@ automation:
           {% if cfg is mapping %}
             {{ cfg }}
           {% elif cfg is string %}
-            {{ cfg | from_json }}
+            {{ cfg | from_json %}
           {% else %}
             {}
           {% endif %}
@@ -114,8 +114,8 @@ automation:
         {% endif %}
       timeout: "{{ room_config.get('timeout', 120) | int }}"
       bypass: "{{ room_config.get('bypass', false) | bool }}"
-      presence_multiplier: "{{ room_config.get('presence_timeout_multiplier', 0.8) | float }}"
-      occupancy_entity: "binary_sensor.ensuite_occupancy_beta"
+      presence_multiplier: "{{ room_config.get('presence_timeout_multiplier', 1.0) | float }}"
+      occupancy_entity: "binary_sensor.hallway_upstairs_occupancy_beta"
       occupancy_on: >
         {% set e = occupancy_entity %}
         {% if e and states(e) in ['on','off','unknown','unavailable'] %}
@@ -269,8 +269,15 @@ automation:
       timeout: "{{ room_config.get('timeout', 120) | int }}"
       bypass: "{{ room_config.get('bypass', false) | bool }}"
       presence_multiplier: "{{ room_config.get('presence_timeout_multiplier', 1.0) | float }}"
-      presence_active: "{{ is_state('person.evert','home') }}"
-      effective_timeout: "{{ (timeout * presence_multiplier) | int if presence_active else timeout }}"
+      occupancy_entity: "binary_sensor.kitchen_occupancy_beta"
+      occupancy_on: >
+        {% set e = occupancy_entity %}
+        {% if e and states(e) in ['on','off','unknown','unavailable'] %}
+          {{ is_state(e, 'on') }}
+        {% else %}
+          {{ is_state('person.evert','home') }}
+        {% endif %}
+      effective_timeout: "{{ (timeout * presence_multiplier) | int if occupancy_on else timeout }}"
       illuminance_threshold: "{{ room_config.get('illuminance_threshold', 10) | int }}"
     condition:
       - condition: template
@@ -339,8 +346,15 @@ automation:
       timeout: "{{ room_config.get('timeout', 120) | int }}"
       bypass: "{{ room_config.get('bypass', false) | bool }}"
       presence_multiplier: "{{ room_config.get('presence_timeout_multiplier', 1.0) | float }}"
-      presence_active: "{{ is_state('person.evert','home') }}"
-      effective_timeout: "{{ (timeout * presence_multiplier) | int if presence_active else timeout }}"
+      occupancy_entity: "binary_sensor.living_room_occupancy_beta"
+      occupancy_on: >
+        {% set e = occupancy_entity %}
+        {% if e and states(e) in ['on','off','unknown','unavailable'] %}
+          {{ is_state(e, 'on') }}
+        {% else %}
+          {{ is_state('person.evert','home') }}
+        {% endif %}
+      effective_timeout: "{{ (timeout * presence_multiplier) | int if occupancy_on else timeout }}"
       illuminance_threshold: "{{ room_config.get('illuminance_threshold', 10) | int }}"
     condition:
       - condition: template
@@ -408,9 +422,16 @@ automation:
         {% endif %}
       timeout: "{{ room_config.get('timeout', 120) | int }}"
       bypass: "{{ room_config.get('bypass', false) | bool }}"
-      presence_multiplier: "{{ room_config.get('presence_timeout_multiplier', 1.0) | float }}"
-      presence_active: "{{ is_state('person.evert','home') }}"
-      effective_timeout: "{{ (timeout * presence_multiplier) | int if presence_active else timeout }}"
+      presence_multiplier: "{{ room_config.get('presence_timeout_multiplier', 0.8) | float }}"
+      occupancy_entity: "binary_sensor.ensuite_occupancy_beta"
+      occupancy_on: >
+        {% set e = occupancy_entity %}
+        {% if e and states(e) in ['on','off','unknown','unavailable'] %}
+          {{ is_state(e, 'on') }}
+        {% else %}
+          {{ is_state('person.evert','home') }}
+        {% endif %}
+      effective_timeout: "{{ (timeout * presence_multiplier) | int if occupancy_on else timeout }}"
       illuminance_threshold: "{{ room_config.get('illuminance_threshold', 10) | int }}"
     condition:
       - condition: template
