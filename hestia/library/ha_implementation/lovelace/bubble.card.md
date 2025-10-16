@@ -2,9 +2,28 @@
 
 Bubble Card is a minimalist and customizable card collection for Home Assistant with a nice pop-up touch... and a Module Store!
 
-## Table of contents
+## Table of Contents
 
-**[`Configuration`](#configuration)** **[`Pop-up`](#pop-up)** **[`Horizontal buttons stack`](#horizontal-buttons-stack)** **[`Button`](#button)** **[`Media player`](#media-player)** **[`Cover`](#cover)** **[`Select`](#select)** **[`Climate`](#climate)** **[`Calendar`](#calendar)** **[`Separator`](#separator)** **[`Empty column`](#empty-column)** **[`Sub-buttons`](#sub-buttons)** **[`Card layouts`](#card-layouts)** **[`Actions`](#tap-double-tap-and-hold-actions)** **[`Styling`](#styling)** **[`Templates`](#templates)** **[`Modules`](#modules)** **[`Help`](#help)** **[`Donate`](#donate)**
+- [Configuration](#configuration)
+- [Pop-up](#pop-up)
+- [Horizontal Buttons Stack](#horizontal-buttons-stack)
+- [Button](#button)
+- [Media Player](#media-player)
+- [Cover](#cover)
+- [Select](#select)
+- [Climate](#climate)
+- [Calendar](#calendar)
+- [Separator](#separator)
+- [Empty Column](#empty-column)
+- [Sub-buttons](#sub-buttons)
+- [Card Layouts](#card-layouts)
+- [Actions](#tap-double-tap-and-hold-actions)
+- [Styling](#styling)
+- [Templates](#templates)
+- [Modules](#modules)
+- [Help](#help)
+- [Donate](#donate)
+- [References](#references)
 
 <br>
 
@@ -2424,6 +2443,17 @@ Got questions or thoughts about Bubble Card? Want to share your dashboards or di
 ---
 
 <br>
+
+## References
+
+- [Bubble Card GitHub Repository](https://github.com/Clooos/Bubble-Card)
+- [Home Assistant Community Forum Discussion](https://community.home-assistant.io/t/bubble-card-a-minimalist-card-collection-for-home-assistant-with-a-nice-pop-up-touch/609678)
+- [Reddit Community - r/BubbleCard](https://www.reddit.com/r/BubbleCard/)
+- [GitHub Discussions](https://github.com/Clooos/Bubble-Card/discussions)
+- [Home Assistant Lovelace Cards Documentation](https://www.home-assistant.io/lovelace/)
+- [HACS - Home Assistant Community Store](https://hacs.xyz/)
+- [CSS Box Shadow Documentation](https://developer.mozilla.org/fr/docs/Web/CSS/box-shadow)
+- [CSS Border Documentation](https://developer.mozilla.org/fr/docs/Web/CSS/border)
 
 ## Donate
 

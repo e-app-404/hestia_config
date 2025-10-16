@@ -1,4 +1,41 @@
-# Radar Card
+---
+title: "Radar Card - Device Location Tracking on Polar Chart"
+authors: "@timmaurice"
+source: "https://github.com/timmaurice/lovelace-radar-card"
+slug: "radar-card"
+tags:
+  ["home-assistant", "lovelace", "cards", "radar", "device-tracker", "location"]
+original_date: "2022-01-01"
+last_updated: "2025-10-16"
+url: "https://github.com/timmaurice/lovelace-radar-card"
+---
+
+# Radar Card - Device Location Tracking on Polar Chart
+
+[![hacs_badge](https://img.shields.io/badge/HACS-Custom-41BDF5.svg?style=flat-square)](https://github.com/hacs/integration)
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/timmaurice/lovelace-radar-card?style=flat-square)
+[![GH-downloads](https://img.shields.io/github/downloads/timmaurice/lovelace-radar-card/total?style=flat-square)](https://github.com/timmaurice/lovelace-radar-card/releases)
+[![GH-last-commit](https://img.shields.io/github/last-commit/timmaurice/lovelace-radar-card.svg?style=flat-square)](https://github.com/timmaurice/lovelace-radar-card/commits/master)
+[![GH-code-size](https://img.shields.io/github/languages/code-size/timmaurice/lovelace-radar-card.svg?style=flat-square)](https://github.com/timmaurice/lovelace-radar-card)
+![GitHub](https://img.shields.io/github/license/timmaurice/lovelace-radar-card?style=flat-square)
+
+## Table of Contents
+
+- [Features](#features)
+  - [Flexible Plotting](#flexible-plotting)
+  - [Dynamic Radar Display](#dynamic-radar-display)
+  - [Rich Interactivity](#rich-interactivity)
+  - [Deep Customization](#deep-customization)
+- [Languages](#languages)
+- [Installation](#installation)
+  - [HACS (Recommended)](#hacs-recommended)
+  - [Manual Installation](#manual-installation)
+- [Configuration](#configuration)
+  - [Main Configuration](#main-configuration)
+  - [Entity Configuration](#entity-configuration-within-entities-list)
+  - [Examples](#examples)
+- [Development](#development)
+- [References](#references)
 
 ## Features
 
@@ -28,6 +65,50 @@
 - Configure legend position (`bottom`, `left`, `right`) and optionally show distances within it.
 
 ![Radar Card Screenshot](https://raw.githubusercontent.com/timmaurice/lovelace-radar-card/main/screenshot.png)
+
+## Languages
+
+This card is available in the following languages:
+
+- English
+- German
+- French
+- Polish
+
+<details>
+<summary>Contributing Translations</summary>
+
+If you would like to contribute a new translation:
+
+1.  Fork the repository on GitHub.
+2.  Copy the `src/translation/en.json` file and rename it to your language code (e.g., `es.json` for Spanish).
+3.  Translate all the values in the new file.
+4.  Submit a pull request with your changes.
+
+</details>
+
+## Installation
+
+### HACS (Recommended)
+
+This card is available in the [Home Assistant Community Store (HACS)](https://hacs.xyz/).
+
+<a href="https://my.home-assistant.io/redirect/hacs_repository/?owner=timmaurice&repository=lovelace-radar-card&category=plugin" target="_blank" rel="noreferrer noopener"><img src="https://my.home-assistant.io/badges/hacs_repository.svg" alt="Open your Home Assistant instance and open a repository inside the Home Assistant Community Store." /></a>
+
+### Manual Installation
+
+<details>
+<summary>Manual Installation</summary>
+
+1.  Download the `radar-card.js` file from the latest release.
+2.  Place it in your `config/www` directory.
+3.  Add the resource reference to your Lovelace configuration under `Settings` -> `Dashboards` -> `...` -> `Resources`.
+    - URL: `/local/radar-card.js`
+    - Resource Type: `JavaScript Module`
+
+You can now add the card to your dashboard.
+
+</details>
 
 ## Configuration
 
@@ -76,7 +157,9 @@ Each entry in the `entities` list can be a simple string or an object with more 
 | `name`   | string | (entity friendly name) | An override for the entity name shown in the tooltip. |
 | `color`  | string | (from `entity_color`)  | An override for the entity point color.               |
 
-### Examples
+### Configuration Examples
+
+#### Basic Example
 
 ```yaml
 type: custom:radar-card
@@ -141,5 +224,13 @@ entities:
 4.  In your Home Assistant instance, you will need to configure Lovelace to use the local development version of the card from `dist/radar-card.js`.
 </details>
 
----
+## References
 
+- [Radar Card GitHub Repository](https://github.com/timmaurice/lovelace-radar-card)
+- [Home Assistant Lovelace Cards Documentation](https://www.home-assistant.io/lovelace/)
+- [HACS - Home Assistant Community Store](https://hacs.xyz/)
+- [Home Assistant Device Tracker Integration](https://www.home-assistant.io/integrations/device_tracker/)
+- [Home Assistant Person Integration](https://www.home-assistant.io/integrations/person/)
+- [Home Assistant Zone Integration](https://www.home-assistant.io/integrations/zone/)
+
+---
