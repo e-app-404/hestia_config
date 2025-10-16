@@ -21,7 +21,6 @@
         upstream_sources: >-
           {{ ["sensor.macbook_displays"] | tojson }}
         source_count: "1"
-        downstream_consumers: {{ [] | tojson }}
 
     - name: "MacBook HP32 Monitor Active"
       unique_id: "macbook_hp32_monitor_active"
@@ -39,7 +38,6 @@
         upstream_sources: >-
           {{ ["sensor.macbook_displays"] | tojson }}
         source_count: "1"
-        downstream_consumers: {{ [] | tojson }}
 
     - name: "MacBook Bedroom TV (AirPlay) Active"
       unique_id: "macbook_bedroom_tv_airplay_active"
@@ -57,7 +55,6 @@
         upstream_sources: >-
           {{ ["sensor.macbook_displays"] | tojson }}
         source_count: "1"
-        downstream_consumers: {{ [] | tojson }}
 
     - name: "MacBook Apple TV Bedroom TV (AirPlay) Active"
       unique_id: "macbook_appletv_bedroom_airplay_active"
@@ -75,7 +72,6 @@
         upstream_sources: >-
           {{ ["sensor.macbook_displays"] | tojson }}
         source_count: "1"
-        downstream_consumers: {{ [] | tojson }}
 
     - name: "Desk Presence Inferred"
       unique_id: "desk_presence_inferred"
@@ -143,7 +139,6 @@
         upstream_sources: >-
           {{ ["sensor.macbook_connection_type", "sensor.macbook_ssid"] | tojson }}
         source_count: "2"
-        downstream_consumers: {{ [] | tojson }}
         role: "inference"
         type: "proxy"
         subsystem: "soteria"
