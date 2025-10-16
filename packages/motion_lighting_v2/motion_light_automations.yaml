@@ -13,10 +13,7 @@ automation:
       _raw: "{{ state_attr('sensor.room_configs_motion_lighting_dict','payload') }}"
       _cfgs: >-
         {% if _raw is mapping %}
-            {{ _raw }}
-          {% else %}
-            {}
-          {% endif %}
+          {{ _raw }}
         {% else %}
           {}
         {% endif %}
@@ -160,10 +157,7 @@ automation:
       _raw: "{{ state_attr('sensor.room_configs_motion_lighting_dict','payload') }}"
       _cfgs: >-
         {% if _raw is mapping %}
-            {{ _raw }}
-          {% else %}
-            {}
-          {% endif %}
+          {{ _raw }}
         {% else %}
           {}
         {% endif %}
@@ -235,10 +229,7 @@ automation:
       _raw: "{{ state_attr('sensor.room_configs_motion_lighting_dict','payload') }}"
       _cfgs: >-
         {% if _raw is mapping %}
-            {{ _raw }}
-          {% else %}
-            {}
-          {% endif %}
+          {{ _raw }}
         {% else %}
           {}
         {% endif %}
@@ -310,10 +301,7 @@ automation:
       _raw: "{{ state_attr('sensor.room_configs_motion_lighting_dict','payload') }}"
       _cfgs: >-
         {% if _raw is mapping %}
-            {{ _raw }}
-          {% else %}
-            {}
-          {% endif %}
+          {{ _raw }}
         {% else %}
           {}
         {% endif %}
@@ -385,10 +373,7 @@ automation:
       _raw: "{{ state_attr('sensor.room_configs_motion_lighting_dict','payload') }}"
       _cfgs: >-
         {% if _raw is mapping %}
-            {{ _raw }}
-          {% else %}
-            {}
-          {% endif %}
+          {{ _raw }}
         {% else %}
           {}
         {% endif %}
@@ -460,10 +445,7 @@ automation:
       _raw: "{{ state_attr('sensor.room_configs_motion_lighting_dict','payload') }}"
       _cfgs: >-
         {% if _raw is mapping %}
-            {{ _raw }}
-          {% else %}
-            {}
-          {% endif %}
+          {{ _raw }}
         {% else %}
           {}
         {% endif %}
