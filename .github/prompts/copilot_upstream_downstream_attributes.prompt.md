@@ -81,8 +81,9 @@ In the same six files, for each entity **E**, find all other entities whose `sta
 ## Attribute write-back rules
 
 - Merge into existing `attributes:`; do not remove unrelated keys
-- Arrays must be **Jinja JSON**:
+- Arrays must be valid, non-empty **Jinja JSON**:
 
+  This is good:
   ```yaml
   upstream_sources: >-
     {{ ['entity.one', 'entity.two'] | tojson }}
@@ -90,15 +91,16 @@ In the same six files, for each entity **E**, find all other entities whose `sta
     {{ ['entity.three'] | tojson }}
   ```
 
+  These are bad:
+  ```yaml
+  upstream_sources: {{ ['entity.one', 'entity.two'] | tojson }}
+  downstream_consumers: >-
+    {{ [] | tojson }}
+  ```
+
 - `source_count:` = count of **entity IDs** in `upstream_sources` (exclude macro filenames). Preserve existing type (quoted stays quoted; if absent, create a quoted string).
 - Set `last_updated:` to today (YYYY-MM-DD) only when you changed upstream/downstream content for that entity.
-- Do not include an empty array:
 
-Bad example:
-```yaml
-downstream_consumers: >-
-          {{ [] | tojson }}
-```
 ## House style & safety
 
 - 2-space indent, UTF-8, LF; keep existing order outside `attributes:`
