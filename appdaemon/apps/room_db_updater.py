@@ -25,9 +25,14 @@ class RoomDbUpdater(hassapi.Hass):
         self._validate_config()
         self._init_database()
         
-        # Register endpoints
-        self.register_endpoint(self.update_config, "room_db/update_config")
-        self.register_endpoint(self.health_check, "room_db/health")
+        # Register endpoints - use simple names, AppDaemon builds full path
+        self.log("Registering health endpoint")
+        self.register_endpoint(self.health_check, "health")
+        self.log(f"Registered: /api/app/room_db_updater/health")
+        
+        self.log("Registering update_config endpoint")
+        self.register_endpoint(self.update_config, "update_config")
+        self.log(f"Registered: /api/app/room_db_updater/update_config")
         self.log("RoomDbUpdater initialized")
 
     def _init_database(self):
