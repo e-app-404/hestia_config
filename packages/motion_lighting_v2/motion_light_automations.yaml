@@ -89,13 +89,8 @@ automation:
     variables:
       _raw: "{{ state_attr('sensor.room_configs_motion_lighting_dict','payload') }}"
       _cfgs: >-
-        {% if _raw %}
-          {% set parsed = _raw | from_json %}
-          {% if parsed is mapping %}
-            {{ parsed }}
-          {% else %}
-            {}
-          {% endif %}
+        {% if _raw is mapping %}
+          {{ _raw }}
         {% else %}
           {}
         {% endif %}
@@ -515,7 +510,7 @@ automation:
         value_template: "{{ not bypass }}"
       - condition: template
         value_template: >
-          {{ (states('sensor.bedroom_illuminance_beta') | float(9999)) < illuminance_threshold }}
+          {{ (states('sensor.desk_illuminance_beta') | float(9999)) < illuminance_threshold }}
     action:
       - action: light.turn_on
         target: { entity_id: light.adaptive_desk_light_group }
