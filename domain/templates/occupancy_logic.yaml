@@ -496,8 +496,6 @@
         description: "Aggregated occupancy for main upstairs areas"
         last_updated: "2025-09-20"
 
-
-
     - name: "Merged Home Occupancy (Eta)"
       unique_id: "merged_home_occupancy_eta"
       device_class: occupancy

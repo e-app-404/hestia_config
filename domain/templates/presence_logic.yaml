@@ -96,8 +96,7 @@
         upstream_sources: >-
           {{ ["person.evert"] | tojson }}
         source_count: "1"
-        downstream_consumers: >-
-          {{ [] | tojson }}
+
 
 - binary_sensor:
     - name: "Bedroom Presence (Beta)"
@@ -130,8 +129,7 @@
         upstream_sources: >-
           {{ ["person.evert", "binary_sensor.desk_occupancy_beta", "binary_sensor.bedroom_occupancy_beta", "binary_sensor.bedroom_ottoman_motion_proxy"] | tojson }}
         source_count: "4"
-        downstream_consumers: >-
-          {{ [] | tojson }}
+
 
     - name: "Desk Presence (Beta)"
       unique_id: "desk_presence_beta"
@@ -152,8 +150,6 @@
         upstream_sources: >-
           {{ ["person.evert", "binary_sensor.desk_occupancy_beta"] | tojson }}
         source_count: "2"
-        downstream_consumers: >-
-          {{ [] | tojson }}
         reliability: excellent
         notes: |
           "Private area not used by other occupants"
@@ -184,8 +180,7 @@
         upstream_sources: >-
           {{ ["person.evert"] | tojson }}
         source_count: "1"
-        downstream_consumers: >-
-          {{ [] | tojson }}
+
 
     - name: "Kitchen Presence (Beta)"
       unique_id: "kitchen_presence_beta"
@@ -204,11 +199,8 @@
         notes: |
           "Common area used by untracked occupant - never rely on this sensor for blocking"
         last_updated: "2025-10-16"
-        upstream_sources: >-
-          {{ [] | tojson }}
         source_count: "0"
-        downstream_consumers: >-
-          {{ [] | tojson }}
+
 
     - name: "Ensuite Presence (Beta)"
       unique_id: "ensuite_presence_beta"
@@ -238,8 +230,7 @@
         upstream_sources: >-
           {{ ["person.evert"] | tojson }}
         source_count: "1"
-        downstream_consumers: >-
-          {{ [] | tojson }}
+
 
     - name: "Hallway Downstairs Presence (Beta)"
       unique_id: "hallway_downstairs_presence_beta"
@@ -258,11 +249,8 @@
         notes: |
           "Common area used by untracked occupant - never rely on this sensor for blocking"
         last_updated: "2025-10-16"
-        upstream_sources: >-
-          {{ [] | tojson }}
         source_count: "0"
-        downstream_consumers: >-
-          {{ [] | tojson }}
+
 
     - name: "Hallway Upstairs Presence (Beta)"
       unique_id: "hallway_upstairs_presence_beta"
@@ -281,8 +269,5 @@
         notes: |
           "Common area used by untracked occupant - never rely on this sensor for blocking"
         last_updated: "2025-10-16"
-        upstream_sources: >-
-          {{ [] | tojson }}
         source_count: "0"
-        downstream_consumers: >-
-          {{ [] | tojson }}
+
