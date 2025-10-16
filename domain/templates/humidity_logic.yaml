@@ -31,8 +31,7 @@
       attributes:
         upstream_sources: >-
           {{ ['sensor.merged_bedroom_humidity_eta', 'sensor.merged_living_room_humidity_eta', 'sensor.merged_kitchen_humidity_eta', 'sensor.ensuite_humidity_eta'] | tojson }}
-        downstream_consumers: >-
-          {{ [] | tojson }}
+
         area_id: "home"
         tier: "η"
         canonical_id: "merged_home_humidity_η"

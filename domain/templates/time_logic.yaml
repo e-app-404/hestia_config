@@ -135,8 +135,7 @@
         tier: "β"
         upstream_sources: >-
           {{ ["sensor.current_time_legacy"] | tojson }}
-        downstream_consumers: >-
-          {{ [] | tojson }}
+
         file: "/config/domain/templates/time_logic.yaml"
 
 - trigger:

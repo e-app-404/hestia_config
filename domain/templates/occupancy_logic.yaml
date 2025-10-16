@@ -332,7 +332,7 @@
         {% from 'template.library.jinja' import preference_select %}
         {% set sources = [
           {'entity': 'binary_sensor.bedroom_ottoman_alpha_vibration', 'protocol': 'mqtt', 'preference': 1, 'type': 'vibration'},
-          {'entity': 'binary_sensor.bedroom_ottoman_motion_beta', 'protocol': 'logic', 'preference': 2, 'type': 'motion'}
+          {'entity': 'binary_sensor.bedroom_ottoman_motion_proxy', 'protocol': 'logic', 'preference': 2, 'type': 'motion'}
         ] %}
         {{ preference_select(sources) == 'on' }}
       attributes:
@@ -345,7 +345,7 @@
         file: "/config/domain/templates/occupancy_logic"
         protocols: "MQTT(1), Logic(2)"
         upstream_sources: >
-          {{ ['binary_sensor.bedroom_ottoman_alpha_vibration', 'binary_sensor.bedroom_ottoman_motion_beta'] | tojson }}
+          {{ ['binary_sensor.bedroom_ottoman_alpha_vibration', 'binary_sensor.bedroom_ottoman_motion_proxy'] | tojson }}
         aggregation_strategy: "single-source standardized bed occupancy"
         source_count: "1"
         last_updated: "2025-09-20"

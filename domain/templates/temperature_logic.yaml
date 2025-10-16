@@ -154,8 +154,7 @@
       attributes:
         upstream_sources: >
           {{ ['sensor.bedroom_temperature_beta','sensor.living_room_temperature_beta','sensor.kitchen_temperature_beta','sensor.ensuite_temperature_beta'] | tojson}}
-        downstream_consumers: >-
-          {{ [] | tojson }}
+
         area_id: "home"
         tier: "η"
         canonical_id: "merged_home_temperature_η"
