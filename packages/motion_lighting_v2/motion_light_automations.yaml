@@ -10,7 +10,7 @@ automation:
         entity_id: binary_sensor.bedroom_motion_beta
         to: "on"
     variables:
-      _raw: "{{ state_attr('sensor.room_configs_motion_lighting','payload') }}"
+      _raw: "{{ state_attr('sensor.room_configs_motion_lighting_dict','payload') }}"
       _cfgs: >-
         {% if _raw %}
           {% set parsed = _raw | from_json %}
@@ -87,7 +87,7 @@ automation:
         entity_id: binary_sensor.hallway_upstairs_motion_beta
         to: "on"
     variables:
-      _raw: "{{ state_attr('sensor.room_configs_motion_lighting','payload') }}"
+      _raw: "{{ state_attr('sensor.room_configs_motion_lighting_dict','payload') }}"
       _cfgs: >-
         {% if _raw %}
           {% set parsed = _raw | from_json %}
@@ -164,7 +164,7 @@ automation:
         entity_id: binary_sensor.hallway_downstairs_motion_beta
         to: "on"
     variables:
-      _raw: "{{ state_attr('sensor.room_configs_motion_lighting','payload') }}"
+      _raw: "{{ state_attr('sensor.room_configs_motion_lighting_dict','payload') }}"
       _cfgs: >-
         {% if _raw %}
           {% set parsed = _raw | from_json %}
@@ -241,7 +241,7 @@ automation:
         entity_id: binary_sensor.kitchen_motion_beta
         to: "on"
     variables:
-      _raw: "{{ state_attr('sensor.room_configs_motion_lighting','payload') }}"
+      _raw: "{{ state_attr('sensor.room_configs_motion_lighting_dict','payload') }}"
       _cfgs: >-
         {% if _raw %}
           {% set parsed = _raw | from_json %}
@@ -318,7 +318,7 @@ automation:
         entity_id: binary_sensor.living_room_motion_beta
         to: "on"
     variables:
-      _raw: "{{ state_attr('sensor.room_configs_motion_lighting','payload') }}"
+      _raw: "{{ state_attr('sensor.room_configs_motion_lighting_dict','payload') }}"
       _cfgs: >-
         {% if _raw %}
           {% set parsed = _raw | from_json %}
@@ -395,7 +395,7 @@ automation:
         entity_id: binary_sensor.ensuite_motion_beta
         to: "on"
     variables:
-      _raw: "{{ state_attr('sensor.room_configs_motion_lighting','payload') }}"
+      _raw: "{{ state_attr('sensor.room_configs_motion_lighting_dict','payload') }}"
       _cfgs: >-
         {% if _raw %}
           {% set parsed = _raw | from_json %}
@@ -469,10 +469,10 @@ automation:
     mode: restart
     trigger:
       - trigger: state
-        entity_id: binary_sensor.desk_motion_proxy
+        entity_id: binary_sensor.desk_motion_beta
         to: "on"
     variables:
-      _raw: "{{ state_attr('sensor.room_configs_motion_lighting','payload') }}"
+      _raw: "{{ state_attr('sensor.room_configs_motion_lighting_dict','payload') }}"
       _cfgs: >-
         {% if _raw %}
           {% set parsed = _raw | from_json %}

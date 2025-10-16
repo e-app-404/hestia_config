@@ -15,7 +15,7 @@ template:
             {% else %}
               {{ raw }}
             {% endif %}
-            
+
       - name: "Room Configs Vacuum Control Dict"
         unique_id: room_configs_vacuum_control_dict
         state: "ok"

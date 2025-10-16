@@ -11,9 +11,10 @@ Compliance: ADR-0024 (canonical paths)
 """
 
 import json
-import sqlite3
 import os
-from datetime import datetime, UTC
+import sqlite3
+from datetime import UTC, datetime
+
 import appdaemon.plugins.hass.hassapi as hass
 
 
@@ -23,7 +24,7 @@ class RoomDbUpdater(hass.Hass):
         self.db_path = "/config/room_database.db"
         self._validate_config()
         self._init_database()
-        
+
         # Register endpoints - NO leading slash for register_endpoint
         # AppDaemon will mount at /api/appdaemon/<name>
         self.register_endpoint(self.update_config, "room_db_update_config")
@@ -34,7 +35,7 @@ class RoomDbUpdater(hass.Hass):
         """Validate configuration and database path"""
         if not os.path.exists("/config"):
             raise ValueError("Config directory not found")
-        
+
         # Ensure database directory exists
         os.makedirs(os.path.dirname(self.db_path), exist_ok=True)
 
@@ -62,11 +63,11 @@ class RoomDbUpdater(hass.Hass):
     def update_config(self, data):
         """
         Update room configuration endpoint
-        
+
         Expected POST data:
         {
             "room_id": "bedroom",
-            "domain": "motion_lighting", 
+            "domain": "motion_lighting",
             "config_data": {...}
         }
         """
@@ -95,25 +96,28 @@ class RoomDbUpdater(hass.Hass):
 
             # Update database
             timestamp = datetime.now(UTC).isoformat()
-            
+
             with sqlite3.connect(self.db_path) as conn:
-                conn.execute("""
-                    INSERT OR REPLACE INTO room_configs 
+                conn.execute(
+                    """
+                    INSERT OR REPLACE INTO room_configs
                     (room_id, config_domain, config_data, created_at, updated_at)
-                    VALUES (?, ?, ?, 
-                            COALESCE((SELECT created_at FROM room_configs 
+                    VALUES (?, ?, ?,
+                            COALESCE((SELECT created_at FROM room_configs
                                     WHERE room_id=? AND config_domain=?), ?),
                             ?)
-                """, (room_id, domain, config_json, room_id, domain, timestamp, timestamp))
+                """,
+                    (room_id, domain, config_json, room_id, domain, timestamp, timestamp),
+                )
                 conn.commit()
 
             self.log(f"Updated config: {room_id}/{domain}")
-            
+
             return {
                 "status": "success",
                 "room_id": room_id,
                 "domain": domain,
-                "timestamp": timestamp
+                "timestamp": timestamp,
             }, 200
 
         except json.JSONDecodeError as e:
@@ -138,7 +142,7 @@ class RoomDbUpdater(hass.Hass):
                 "status": "healthy",
                 "database": "connected",
                 "config_count": config_count,
-                "timestamp": datetime.now(UTC).isoformat()
+                "timestamp": datetime.now(UTC).isoformat(),
             }, 200
 
         except Exception as e:
@@ -146,5 +150,5 @@ class RoomDbUpdater(hass.Hass):
             return {
                 "status": "unhealthy",
                 "error": str(e),
-                "timestamp": datetime.now(UTC).isoformat()
+                "timestamp": datetime.now(UTC).isoformat(),
             }, 500
