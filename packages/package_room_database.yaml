@@ -7,7 +7,7 @@
 # Prefer /api/appdaemon/<endpoint>; if health check fails in your setup, switch to /api/app/<app_name>/<endpoint>/
 rest_command:
   room_db_update_config:
-    url: "http://a0d7b954-appdaemon:5050/api/app/room_db_updater/update_config"
+    url: "http://localhost:5050/api/app/room_db_updater/update_config"
     method: POST
     content_type: "application/json"
     timeout: 20
@@ -20,12 +20,12 @@ rest_command:
       }
 
   room_db_health:
-    url: "http://a0d7b954-appdaemon:5050/api/app/room_db_updater/health"
+    url: "http://localhost:5050/api/app/room_db_updater/health"
     method: GET
     timeout: 10
-    
+
   room_db_test:
-    url: "http://a0d7b954-appdaemon:5050/api/app/room_db_updater/test"
+    url: "http://localhost:5050/api/app/room_db_updater/test"
     method: GET
     timeout: 10
     headers:

@@ -41,7 +41,7 @@ class RoomDbUpdater(hassapi.Hass):
         self.log(f"App name for URL construction: {self.name}")
         self.log(f"Expected health URL: /api/app/{self.name}/health")
         self.log(f"Expected update_config URL: /api/app/{self.name}/update_config")
-        
+
         # Register test endpoint for debugging
         self.register_endpoint(self.test_endpoint, "test")
         self.log(f"Test endpoint registered: /api/app/{self.name}/test")
