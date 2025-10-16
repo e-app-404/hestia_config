@@ -49,13 +49,11 @@ Record each consumer’s `entity_id` under `downstream_consumers`. Deduplicate.
 - If `attributes:` exists: **merge** or insert keys; do not remove unrelated attributes
 - If missing: create `attributes:` and add the keys
 - **Formatting for arrays** must be Jinja JSON, e.g.:
-```
-
+```yaml
 upstream_sources: >-
-{{ ['binary_sensor.foo', 'sensor.bar'] | tojson }}
+  {{ ['binary_sensor.foo', 'sensor.bar'] | tojson }}
 downstream_consumers: >-
-{{ ['binary_sensor.baz'] | tojson }}
-
+  {{ ['binary_sensor.baz'] | tojson }}
 ```
 - `source_count:` must reflect **only the number of entity IDs in upstream_sources** (exclude macro/include filenames). Preserve existing type (if it was quoted, keep quoted; if numeric, keep numeric). If absent, create as a quoted string.
 - `last_updated:` set to **today in ISO** (YYYY-MM-DD) **only if** you changed any upstream/downstream content for that entity. Otherwise leave as-is.
@@ -71,13 +69,15 @@ downstream_consumers: >-
 ## Output requirements (STRICT)
 1) Emit **unified diffs** for each changed file (one diff block per file).
 2) Then emit a **Machine Findings Log** (newline-delimited JSON objects), where each line has:
- - code: one of ["UPSTREAM_ADDED","UPSTREAM_UPDATED","DOWNSTREAM_ADDED","COUNT_FIXED","TIMESTAMP_UPDATED","NO_CHANGE","ANOMALY"]
- - file, entity_id (unique_id if present else a stable slug), changes: {keys_modified:[...]}
- - evidence: {upstream:[{ref, line?}], downstream:[{ref, line?}]}
- - anomalies? e.g., unresolved dynamic reference, invalid entity domain, etc.
+   - `code`: one of ["UPSTREAM_ADDED","UPSTREAM_UPDATED","DOWNSTREAM_ADDED","COUNT_FIXED","TIMESTAMP_UPDATED","NO_CHANGE","ANOMALY"]
+   - `file`, `entity_id` (unique_id if present else a stable slug), `changes`: {keys_modified:[...]}
+   - `evidence`: {upstream:[{ref, line?}], downstream:[{ref, line?}]}
+   - `anomalies`: e.g., unresolved dynamic reference, invalid entity domain, etc.
 
 Example log line:
-{"code":"UPSTREAM_UPDATED","file":"/config/domain/templates/motion_logic.yaml","entity_id":"binary_sensor.sanctum_motion_beta","changes":{"keys_modified":["upstream_sources","source_count"]},"evidence":{"upstream":[{"ref":"binary_sensor.bedroom_motion_beta","line":42},{"ref":"binary_sensor.ensuite_motion_beta","line":43}]}, "anomalies":[]}
+```json
+{"code":"UPSTREAM_UPDATED","file":"domain/templates/motion_logic.yaml","entity_id":"binary_sensor.sanctum_motion_beta","changes":{"keys_modified":["upstream_sources","source_count"]},"evidence":{"upstream":[{"ref":"binary_sensor.bedroom_motion_beta","line":42},{"ref":"binary_sensor.ensuite_motion_beta","line":43}]},"anomalies":[]}
+```
 
 ## Reference shape (illustrative)
 - If macro used: include "template.library.jinja" in `upstream_sources` but not in `source_count`
