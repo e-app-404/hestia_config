@@ -1,17 +1,44 @@
 ---
-id:
-title:
-slug:
-date:
-description:
-related:
+title: "Auto-Entities Lovelace Card"
+authors: "Thomas Lovén (auto-entities), Hestia Documentation Team"
+source: "auto-entities HACS integration documentation"
+slug: "auto-entities-lovelace-card"
+tags: ["home-assistant", "lovelace", "cards", "auto-entities", "filtering"]
+original_date: "2021-01-01"
+last_updated: "2025-10-16"
+url: "https://github.com/thomasloven/lovelace-auto-entities"
 ---
 
-# auto-entities
+# Auto-Entities Lovelace Card
 
-Automatically populate lovelace cards with entities matching certain criteria.
+Automatically populate Lovelace cards with entities matching certain criteria using advanced filtering and sorting capabilities.
+
+## Table of Contents
+
+- [Usage](#usage)
+  - [Basic Configuration](#basic-configuration)
+  - [Configuration Options](#configuration-options)
+  - [Filters](#filters)
+  - [Template Filter](#template-filter)
+- [How It Works](#how-it-works)
+- [Matching Rules](#matching-rules)
+  - [Wildcards](#wildcards)
+  - [Regular Expressions](#regular-expressions)
+  - [Numerical Comparison](#numerical-comparison)
+  - [Time Since Event](#time-since-event)
+  - [Repeating Options](#repeating-options)
+  - [Object Attributes](#object-attributes)
+  - [Stringification](#stringification)
+- [Sorting Entities](#sorting-entities)
+- [Entity Options](#entity-options)
+- [Examples](#examples)
+  - [Basic Examples](#basic-examples)
+  - [Advanced Examples](#advanced-examples)
+  - [Template Examples](#template-examples)
 
 ## Usage
+
+### Basic Configuration
 
 ```yaml
 type: custom:auto-entities
@@ -28,12 +55,13 @@ filter:
   exclude:
     - <filter>
     - <filter>
-
 show_empty: <show_empty>
 else: <else>
 unique: <unique>
 sort: <sort_method>
 ```
+
+### Configuration Options
 
 | Option                 | Type                             | Description                                                                                                           | Default         |
 | ---------------------- | -------------------------------- | --------------------------------------------------------------------------------------------------------------------- | --------------- |
@@ -53,7 +81,7 @@ sort: <sort_method>
 
 ### Filters
 
-The two main filter sections `include` and `exclude` each takes a list of filters.
+The two main filter sections `include` and `exclude` each take a list of filters.
 
 Each filter has a set of rules and will match entities which match **ALL** rules:
 
@@ -79,40 +107,41 @@ Each filter has a set of rules and will match entities which match **ALL** rules
 | `last_updated`        | Time since last update (defaults to minutes)                                                                                                                                                                                | `< 15`, `> 2 d ago`                                  |
 | `entity_category`     | [Entity category](https://developers.home-assistant.io/docs/core/entity#generic-properties)                                                                                                                                 | `config`, `diagnostic`                               |
 |                       |                                                                                                                                                                                                                             |                                                      |
-| `not`                 | Matche entities that do _not_ match a filter                                                                                                                                                                                |
+| `not`                 | Matches entities that do _not_ match a filter                                                                                                                                                                               |
 | `or`                  | Matches any in a list of filters                                                                                                                                                                                            |
 | `and`                 | Matches all in a list of filters                                                                                                                                                                                            |
 
-Special options:
-| Option | Description |
-|-----------|-------------|
-| `options` | Map of configuration options to apply to the entity when passed to the card
-| `type` | If a `type` is given, the filter is handled as a complete entity description and passed along directly to the card
-| `sort` | [Sort config](#sorting-entities) applied to entities in _this filter only_
+**Special Options:**
 
-### Template filter
+| Option    | Description                                                                                                        |
+| --------- | ------------------------------------------------------------------------------------------------------------------ |
+| `options` | Map of configuration options to apply to the entity when passed to the card                                        |
+| `type`    | If a `type` is given, the filter is handled as a complete entity description and passed along directly to the card |
+| `sort`    | [Sort config](#sorting-entities) applied to entities in _this filter only_                                         |
 
-The filter section `template` takes a jinja template which evaluates to a list of entities or entity objects.
+### Template Filter
 
-## How it works
+The filter section `template` takes a Jinja template which evaluates to a list of entities or entity objects.
+
+## How It Works
 
 `auto-entities` creates a list of entities by:
 
-1. Including every entity given in `entities:` (this allow nesting of `auto-entities`if you'd want to do that for some reason...)
+1. Including every entity given in `entities:` (this allows nesting of `auto-entities` if you'd want to do that for some reason...)
 2. Include every entity listed in a `filter.template` evaluation
-3. Include all entities that matches **ALL** options of **ANY** filter in the `filter.include` section. The same entity may be included several times by different filters.
-4. Remove all entities that matches **ALL** options on **ANY** filter in the `filter.exclude` section.
+3. Include all entities that match **ALL** options of **ANY** filter in the `filter.include` section. The same entity may be included several times by different filters.
+4. Remove all entities that match **ALL** options on **ANY** filter in the `filter.exclude` section.
 
 It then creates a card based on the configuration given in `card:`, and fills in `entities:` of that card with the entities from above.
 
-The list of entities added to the card will be on the form:
+The list of entities added to the card will be in the form:
 
-```
+```yaml
 - entity: <entity_id>
   <options>
 ```
 
-## Matching rules
+## Matching Rules
 
 ### Wildcards
 
@@ -125,9 +154,9 @@ filter:
     - entity_id: "sensor.temperature_*_max"
 ```
 
-### Regular expressions
+### Regular Expressions
 
-Any filter option can use [javascript Regular Expressions](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions) for string comparison. To do this, enclose the regex in `/`. Also make sure to quote the string:
+Any filter option can use [JavaScript Regular Expressions](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions) for string comparison. To do this, enclose the regex in `/`. Also make sure to quote the string:
 
 ```yaml
 filter:
@@ -136,7 +165,7 @@ filter:
     - entity_id: "/sensor.temperature_4[abd]/"
 ```
 
-### Numerical comparison
+### Numerical Comparison
 
 Any filter option dealing with numerical quantities can use comparison operators if specified as a string (must be quoted):
 
@@ -154,7 +183,7 @@ filter:
 
 > **Note**: Since `>` has a special function in yaml, the quotation marks are mandatory. `"> 25"`
 
-### Time since an event
+### Time Since Event
 
 Any filter option dealing with an event time can filter entities by time elapsed since that event:
 
@@ -169,7 +198,7 @@ filter:
 
 All the numeric comparison operators are available.
 
-### Repeating options
+### Repeating Options
 
 Any option can be used more than once by appending a number or string to the option name:
 
@@ -191,7 +220,7 @@ filter:
 
 The two filters above together match entities where the state is below 100 **OR** above 200.
 
-### Object attributes
+### Object Attributes
 
 Some entity attributes actually contain several values. One example is `hs_color` for a light, which has one value for Hue and one for Saturation. Such values can be stepped into using keys or indexes separated by a colon (`:`):
 
@@ -217,7 +246,7 @@ filter:
 
 The example above matches any entity that has a `entity_id` attribute - i.e. all kinds of group entities.
 
-## Sorting entities
+## Sorting Entities
 
 Entities can be sorted, either on a filter-by-filter basis by adding a `sort:` option to the filter, or all at once after all filters have been applied using the `sort:` option of `auto-entities` itself.
 
@@ -235,7 +264,9 @@ sort:
   ip: <ip>
 ```
 
-- `method:` **Required** One of `domain`, `entity_id`, `name`, `device`, `area`, `state`, `attribute`, `last_changed` `last_updated` or `last_triggered`.
+**Configuration Options:**
+
+- `method:` **Required** One of `domain`, `entity_id`, `name`, `device`, `area`, `state`, `attribute`, `last_changed`, `last_updated` or `last_triggered`.
 - `reverse:` Set to `true` to reverse the order. Default: `false`.
 - `ignore_case:` Set to `true` to make the sort case-insensitive. Default: `false`.
 - `numeric:` Set to `true` to sort by numeric value. Default: `false` except for `last_changed`, `last_updated` and `last_triggered` sorting methods.
@@ -243,7 +274,7 @@ sort:
 - `attribute:` Attribute to sort by if `method: attribute`. Can be an _object attribute_ as above (e.g. `attribute: rgb_color:2`)
 - `first` and `count` can be used to only display `<count>` entities, starting with the `<first>` (starts with 0).
 
-## Entity options
+## Entity Options
 
 In the `options:` option of the filters, the string `this.entity_id` will be replaced with the matched entity_id. Useful for service calls - see below.
 
