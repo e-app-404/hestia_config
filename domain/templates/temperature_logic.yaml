@@ -17,14 +17,18 @@
         tier: "β"
         canonical_id: "bedroom_temperature_β"
         area_id: "bedroom"
+        upstream_sources: >-
+          {{ ['sensor.merged_bedroom_temperature_eta'] | tojson }}
+        downstream_consumers: >-
+          {{ ['sensor.merged_home_temperature_eta'] | tojson }}
         source_count: "1"
+        last_updated: "2025-10-16"
         data_quality: "{{ state_attr('sensor.merged_bedroom_temperature_eta', 'data_quality') }}"
         sources: "{{ state_attr('sensor.merged_bedroom_temperature_eta', 'sources') }}"
         subsystem: "aether"
         is_multi_source: "false"
         is_validated: true
         version: "1.1"
-        last_updated: "2025-07-17"
         role: "measurement"
         type: "temperature"
         module: "room_temperature"
@@ -43,14 +47,18 @@
         tier: "β"
         canonical_id: "living_room_temperature_β"
         area_id: "living_room"
+        upstream_sources: >-
+          {{ ['sensor.merged_living_room_temperature_eta'] | tojson }}
+        downstream_consumers: >-
+          {{ ['sensor.merged_home_temperature_eta'] | tojson }}
         source_count: "1"
+        last_updated: "2025-10-16"
         data_quality: "{{ state_attr('sensor.merged_living_room_temperature_eta', 'data_quality') }}"
         sources: "{{ state_attr('sensor.merged_living_room_temperature_eta', 'sources') }}"
         subsystem: "aether"
         is_multi_source: "true"
         is_validated: true
         version: "1.1"
-        last_updated: "2025-07-17"
         role: "measurement"
         type: "temperature"
         module: "room_temperature"
@@ -69,14 +77,18 @@
         tier: "β"
         canonical_id: "kitchen_temperature_β"
         area_id: "kitchen"
+        upstream_sources: >-
+          {{ ['sensor.merged_kitchen_temperature_eta'] | tojson }}
+        downstream_consumers: >-
+          {{ ['sensor.merged_home_temperature_eta'] | tojson }}
         source_count: "1"
+        last_updated: "2025-10-16"
         data_quality: "{{ state_attr('sensor.merged_kitchen_temperature_eta', 'data_quality') }}"
         sources: "{{ state_attr('sensor.merged_kitchen_temperature_eta', 'sources') }}"
         subsystem: "aether"
         is_multi_source: "false"
         is_validated: true
         version: "1.1"
-        last_updated: "2025-07-17"
         role: "measurement"
         type: "temperature"
         module: "room_temperature"
@@ -95,14 +107,18 @@
         tier: "β"
         canonical_id: "ensuite_temperature_β"
         area_id: "ensuite"
+        upstream_sources: >-
+          {{ ['sensor.merged_ensuite_temperature_eta'] | tojson }}
+        downstream_consumers: >-
+          {{ ['sensor.merged_home_temperature_eta'] | tojson }}
         source_count: "1"
+        last_updated: "2025-10-16"
         data_quality: "{{ state_attr('sensor.merged_ensuite_temperature_eta', 'data_quality') }}"
         sources: "{{ state_attr('sensor.merged_ensuite_temperature_eta', 'sources') }}"
         subsystem: "aether"
         is_multi_source: "false"
         is_validated: true
         version: "1.1"
-        last_updated: "2025-07-17"
         role: "measurement"
         type: "temperature"
         module: "room_temperature"
@@ -138,12 +154,14 @@
       attributes:
         upstream_sources: >
           {{ ['sensor.bedroom_temperature_beta','sensor.living_room_temperature_beta','sensor.kitchen_temperature_beta','sensor.ensuite_temperature_beta'] | tojson}}
+        downstream_consumers: >-
+          {{ [] | tojson }}
         area_id: "home"
         tier: "η"
         canonical_id: "merged_home_temperature_η"
         file: "/config/domain/templates/temperature_logic.yaml"
         date_created: "2025-04-26"
-        last_updated: "2025-07-17"
+        last_updated: "2025-10-16"
         is_multi_source: "true"
         source_count: "4"
         data_quality: "excellent"
@@ -185,12 +203,14 @@
             'climate.bedroom_climate_trv_left_alpha.current_temperature',
             'climate.bedroom_climate_trv_right_alpha.current_temperature'
           ] | tojson }}
+        downstream_consumers: >-
+          {{ ['sensor.bedroom_temperature_beta'] | tojson }}
         area_id: "bedroom"
         tier: "η"
         canonical_id: "merged_bedroom_temperature_η"
         file: "/config/domain/templates/temperature_logic.yaml"
         date_created: "2025-04-26"
-        last_updated: "2025-07-17"
+        last_updated: "2025-10-16"
         is_multi_source: "true"
         source_count: "5"
         data_quality: "excellent"
@@ -227,12 +247,14 @@
             'sensor.living_room_multipurpose_alpha_temperature',
             'climate.living_room_climate_trv_alpha.current_temperature'
           ] | tojson }}
+        downstream_consumers: >-
+          {{ ['sensor.living_room_temperature_beta'] | tojson }}
         area_id: "living_room"
         tier: "η"
         canonical_id: "merged_living_room_temperature_η"
         file: "/config/domain/templates/temperature_logic.yaml"
         date_created: "2025-04-26"
-        last_updated: "2025-07-17"
+        last_updated: "2025-10-16"
         is_multi_source: "true"
         source_count: "3"
         data_quality: "excellent"
@@ -267,12 +289,14 @@
             'sensor.kitchen_ambient_climate_alpha_temperature',
             'climate.kitchen_climate_trv_alpha.current_temperature'
           ] | tojson }}
+        downstream_consumers: >-
+          {{ ['sensor.kitchen_temperature_beta'] | tojson }}
         area_id: "kitchen"
         tier: "η"
         canonical_id: "merged_kitchen_temperature_η"
         file: "/config/domain/templates/temperature_logic.yaml"
         date_created: "2025-04-26"
-        last_updated: "2025-07-17"
+        last_updated: "2025-10-16"
         is_multi_source: "false"
         source_count: "2"
         data_quality: "good"
@@ -305,12 +329,14 @@
       attributes:
         upstream_sources: >
           {{ ['sensor.ensuite_climate_matter_alpha_temperature', 'sensor.ensuite_climate_alpha_temperature'] | tojson }}
+        downstream_consumers: >-
+          {{ ['sensor.ensuite_temperature_beta'] | tojson }}
         area_id: "ensuite"
         tier: "η"
         canonical_id: "merged_ensuite_temperature_η"
         file: "/config/domain/templates/temperature_logic.yaml"
         date_created: "2025-04-26"
-        last_updated: "2025-07-17"
+        last_updated: "2025-10-16"
         is_multi_source: "true"
         source_count: "2"
         data_quality: "excellent"
