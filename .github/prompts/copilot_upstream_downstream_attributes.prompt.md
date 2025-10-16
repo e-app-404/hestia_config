@@ -21,7 +21,7 @@ For each sensor defined in the files below, parse Jinja in `state:` (and templat
 
 Reference and modify these Home Assistant template files:
 
-- `domain/templates/occupancy_logic.yaml`
+- `domain/templates/illuminance_logic.yaml`
 
 <!--
 - `domain/templates/motion_logic.yaml`

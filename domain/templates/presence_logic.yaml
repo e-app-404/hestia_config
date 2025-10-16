@@ -24,7 +24,12 @@
         tier: "γ"
         type: "presence_state"
         zone_reference: "home"
-        last_updated: "{{ now().isoformat() }}"
+        last_updated: "2025-10-16"
+        upstream_sources: >-
+          {{ ["person.evert"] | tojson }}
+        source_count: "1"
+        downstream_consumers: >-
+          {{ ["sensor.evert_current_location", "sensor.evert_last_known_zone", "binary_sensor.bedroom_presence_beta", "binary_sensor.desk_presence_beta", "binary_sensor.living_room_presence_beta", "binary_sensor.ensuite_presence_beta"] | tojson }}
 
 - sensor:
     - name: "Evert Current Location"
@@ -46,7 +51,12 @@
         subsystem: "perseus"
         tier: "γ"
         type: "current_zone"
-        last_updated: "{{ now().isoformat() }}"
+        last_updated: "2025-10-16"
+        upstream_sources: >-
+          {{ ["person.evert"] | tojson }}
+        source_count: "1"
+        downstream_consumers: >-
+          {{ ["sensor.evert_last_known_zone"] | tojson }}
 
     - name: "Evert Last Known Zone"
       unique_id: "evert_last_known_zone"
@@ -82,7 +92,12 @@
         subsystem: "perseus"
         tier: "γ"
         type: "last_known_zone"
-        last_updated: "{{ now().isoformat() }}"
+        last_updated: "2025-10-16"
+        upstream_sources: >-
+          {{ ["person.evert"] | tojson }}
+        source_count: "1"
+        downstream_consumers: >-
+          {{ [] | tojson }}
 
 - binary_sensor:
     - name: "Bedroom Presence (Beta)"
@@ -111,8 +126,13 @@
         description: |
           # Presence is on if: person.evert is home OR their tracker says home
           # OR desk presence is inferred OR bedroom occupancy/motion is active.
+        last_updated: "2025-10-16"
+        upstream_sources: >-
+          {{ ["person.evert", "binary_sensor.desk_occupancy_beta", "binary_sensor.bedroom_occupancy_beta", "binary_sensor.bedroom_ottoman_motion_proxy"] | tojson }}
+        source_count: "4"
+        downstream_consumers: >-
+          {{ [] | tojson }}
 
-    # DESK PRESENCE (BETA)
     - name: "Desk Presence (Beta)"
       unique_id: "desk_presence_beta"
       icon: mdi:home-map-marker
@@ -129,13 +149,16 @@
         subsystem: "hermes"
         area_type: "private"
         tier: "β"
-        upstream_sources: >
-          {{ ["binary_sensor.desk_occupancy_beta"] | tojson }}
+        upstream_sources: >-
+          {{ ["person.evert", "binary_sensor.desk_occupancy_beta"] | tojson }}
+        source_count: "2"
+        downstream_consumers: >-
+          {{ [] | tojson }}
         reliability: excellent
         notes: |
           "Private area not used by other occupants"
+        last_updated: "2025-10-16"
 
-    # LIVING ROOM PRESENCE (BETA)
     - name: "Living Room Presence (Beta)"
       unique_id: "living_room_presence_beta"
       icon: mdi:home-map-marker
@@ -157,8 +180,13 @@
         reliability: poor
         notes: |
           "Common area used by untracked occupant - never rely on this sensor for blocking"
+        last_updated: "2025-10-16"
+        upstream_sources: >-
+          {{ ["person.evert"] | tojson }}
+        source_count: "1"
+        downstream_consumers: >-
+          {{ [] | tojson }}
 
-    # KITCHEN PRESENCE (BETA) - Always False (Untracked Housemate Area)
     - name: "Kitchen Presence (Beta)"
       unique_id: "kitchen_presence_beta"
       icon: mdi:home-map-marker
@@ -175,8 +203,13 @@
         reliability: poor
         notes: |
           "Common area used by untracked occupant - never rely on this sensor for blocking"
+        last_updated: "2025-10-16"
+        upstream_sources: >-
+          {{ [] | tojson }}
+        source_count: "0"
+        downstream_consumers: >-
+          {{ [] | tojson }}
 
-    # ENSUITE PRESENCE (BETA) - Always False (Untracked Housemate Area)
     - name: "Ensuite Presence (Beta)"
       unique_id: "ensuite_presence_beta"
       icon: mdi:home-map-marker
@@ -201,8 +234,13 @@
         reliability: excellent
         notes: |
           "Private area not used by other occupants"
+        last_updated: "2025-10-16"
+        upstream_sources: >-
+          {{ ["person.evert"] | tojson }}
+        source_count: "1"
+        downstream_consumers: >-
+          {{ [] | tojson }}
 
-    # HALLWAY DOWNSTAIRS PRESENCE (BETA) - Always False (Common Area)
     - name: "Hallway Downstairs Presence (Beta)"
       unique_id: "hallway_downstairs_presence_beta"
       state: "off"
@@ -219,8 +257,13 @@
         reliability: poor
         notes: |
           "Common area used by untracked occupant - never rely on this sensor for blocking"
+        last_updated: "2025-10-16"
+        upstream_sources: >-
+          {{ [] | tojson }}
+        source_count: "0"
+        downstream_consumers: >-
+          {{ [] | tojson }}
 
-    # HALLWAY UPSTAIRS PRESENCE (BETA) - Always False (Common Area)
     - name: "Hallway Upstairs Presence (Beta)"
       unique_id: "hallway_upstairs_presence_beta"
       state: "off"
@@ -237,3 +280,9 @@
         reliability: poor
         notes: |
           "Common area used by untracked occupant - never rely on this sensor for blocking"
+        last_updated: "2025-10-16"
+        upstream_sources: >-
+          {{ [] | tojson }}
+        source_count: "0"
+        downstream_consumers: >-
+          {{ [] | tojson }}

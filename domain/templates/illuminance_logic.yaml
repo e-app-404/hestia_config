@@ -17,6 +17,10 @@
         tier: "β"
         canonical_id: "living_room_illuminance_β"
         area_id: "living_room"
+        upstream_sources: >-
+          {{ ['sensor.living_room_multipurpose_alpha_illuminance'] | tojson }}
+        downstream_consumers: >-
+          {{ ['sensor.merged_home_illuminance_eta'] | tojson }}
         source_count: "1"
         data_quality: "{{ state_attr('sensor.living_room_multipurpose_alpha_illuminance', 'data_quality') }}"
         sources: "{{ state_attr('sensor.living_room_multipurpose_alpha_illuminance', 'sources') }}"
@@ -24,7 +28,7 @@
         is_multi_source: "false"
         is_validated: true
         version: "1.2"
-        last_updated: "2025-08-04"
+        last_updated: "2025-10-16"
         role: "alias"
         type: "standardized_sensor"
         module: "illuminance"
@@ -45,6 +49,10 @@
         canonical_id: "bedroom_illuminance_β"
         area_id: "bedroom"
         floor_id: "sanctum"
+        upstream_sources: >-
+          {{ ['sensor.bedroom_illuminance_alpha_illuminance'] | tojson }}
+        downstream_consumers: >-
+          {{ ['sensor.merged_home_illuminance_eta'] | tojson }}
         source_count: "1"
         data_quality: "{{ state_attr('sensor.bedroom_illuminance_alpha_illuminance', 'data_quality') }}"
         sources: "{{ state_attr('sensor.bedroom_illuminance_alpha_illuminance', 'sources') }}"
@@ -52,7 +60,7 @@
         is_multi_source: "false"
         is_validated: true
         version: "1.0"
-        last_updated: "2025-08-06"
+        last_updated: "2025-10-16"
         role: "alias"
         type: "standardized_sensor"
         module: "illuminance"
@@ -73,6 +81,10 @@
         canonical_id: "ensuite_illuminance_β"
         area_id: "ensuite"
         floor_id: "sanctum"
+        upstream_sources: >-
+          {{ ['sensor.ensuite_motion_alpha_illuminance'] | tojson }}
+        downstream_consumers: >-
+          {{ ['sensor.merged_home_illuminance_eta'] | tojson }}
         source_count: "1"
         data_quality: "{{ state_attr('sensor.ensuite_motion_alpha_illuminance', 'data_quality') }}"
         sources: "{{ state_attr('sensor.ensuite_motion_alpha_illuminance', 'sources') }}"
@@ -80,7 +92,7 @@
         is_multi_source: "false"
         is_validated: true
         version: "1.0"
-        last_updated: "2025-10-07"
+        last_updated: "2025-10-16"
         role: "alias"
         type: "standardized_sensor"
         module: "illuminance"
@@ -113,14 +125,16 @@
           0
         {% endif %}
       attributes:
-        upstream_sources: >
-          {{ ['sensor.bedroom_illuminance_beta','sensor.living_room_illuminance_beta','sensor.ensuite_illuminance_beta'] | tojson }}
+        upstream_sources: >-
+          {{ ['sensor.bedroom_illuminance_beta', 'sensor.living_room_illuminance_beta', 'sensor.ensuite_illuminance_beta'] | tojson }}
+        downstream_consumers: >-
+          {{ [] | tojson }}
         area_id: "home"
         tier: "η"
         canonical_id: "merged_home_illuminance_η"
         file: "/config/domain/templates/illuminance_logic.yaml"
         date_created: "2025-04-26"
-        last_updated: "2025-08-06"
+        last_updated: "2025-10-16"
         is_multi_source: "true"
         source_count: "3"
         data_quality: "excellent"
