@@ -82,7 +82,7 @@
         {% from 'template.library.jinja' import preference_select %}
         {% set sources = [
           {'entity': 'binary_sensor.sanctum_motion_alpha',              'protocol': 'tplink', 'preference': 1, 'type': 'motion'},
-          {'entity': 'binary_sensor.wardrobe_motion_beta',              'protocol': 'tplink', 'preference': 2, 'type': 'motion'},
+          {'entity': 'binary_sensor.bedroom_wardrobe_motion_beta',      'protocol': 'tplink', 'preference': 2, 'type': 'motion'},
           {'entity': 'binary_sensor.bedroom_security_cam_alpha_motion', 'protocol': 'wifi',   'preference': 3, 'type': 'motion'},
           {'entity': 'binary_sensor.bedroom_ottoman_motion_proxy',      'protocol': 'proxy',  'preference': 4, 'type': 'vibration'},
           {'entity': 'binary_sensor.desk_motion_proxy',                 'protocol': 'proxy',  'preference': 5, 'type': 'vibration'}
@@ -98,15 +98,15 @@
         file: "/config/domain/templates/motion_logic.yaml"
         protocols: "TP-Link(1,2), Wi-Fi(3)"
         upstream_sources: >-
-          {{ ['template.library.jinja','binary_sensor.sanctum_motion_alpha','binary_sensor.wardrobe_motion_beta','binary_sensor.bedroom_security_cam_alpha_motion','binary_sensor.bedroom_ottoman_motion_proxy','binary_sensor.desk_motion_proxy'] | tojson }}
+          {{ ['template.library.jinja','binary_sensor.sanctum_motion_alpha','binary_sensor.bedroom_wardrobe_motion_beta','binary_sensor.bedroom_security_cam_alpha_motion','binary_sensor.bedroom_ottoman_motion_proxy','binary_sensor.desk_motion_proxy'] | tojson }}
         downstream_consumers: >-
-          {{ ['binary_sensor.bedroom_motion_recent_beta','binary_sensor.bedroom_occupancy_beta'] | tojson }}
+          {{ ['binary_sensor.bedroom_motion_recent_beta','binary_sensor.bedroom_occupancy_beta','binary_sensor.sanctum_motion_beta'] | tojson }}
         aggregation_strategy: "preference-based selection (motion-only)"
         active_source: >
           {% from 'template.library.jinja' import get_active_source %}
           {% set sources = [
             {'entity': 'binary_sensor.sanctum_motion_alpha','preference': 1},
-            {'entity': 'binary_sensor.wardrobe_motion_beta','preference': 2},
+            {'entity': 'binary_sensor.bedroom_wardrobe_motion_beta','preference': 2},
             {'entity': 'binary_sensor.bedroom_security_cam_alpha_motion','preference': 3},
             {'entity': 'binary_sensor.bedroom_ottoman_motion_proxy','preference': 4},
             {'entity': 'binary_sensor.desk_motion_proxy','preference': 5}
@@ -284,8 +284,8 @@
         file: "/config/domain/templates/motion_logic.yaml"
         upstream_sources: >
           {{ ['binary_sensor.bedroom_ottoman_alpha_vibration'] | tojson }}
-        downstream_consumers: >
-          {{ ['binary_sensor.bedroom_motion_beta','binary_sensor.bedroom_motion_recent_beta','sensor.bedroom_last_activity','hestia.config.devices.motion_index'] | tojson }}
+        downstream_consumers: >-
+          {{ ['binary_sensor.bedroom_motion_beta','binary_sensor.bedroom_motion_recent_beta','sensor.bedroom_last_activity','hestia.config.devices.motion_index','binary_sensor.bedroom_presence_beta'] | tojson }}
         aggregation_strategy: "vibration→motion pulse"
         source_count: "1"
         version: "1.1"
@@ -315,8 +315,8 @@
         file: "/config/domain/templates/motion_logic.yaml"
         upstream_sources: >
           {{ ['binary_sensor.desk_presence_inferred'] | tojson }}
-        downstream_consumers: >
-          {{ ['automation.motion_lights_desk','hestia.config.devices.motion_index'] | tojson }}
+        downstream_consumers: >-
+          {{ ['binary_sensor.desk_motion_recent_beta','binary_sensor.bedroom_motion_beta','automation.motion_lights_desk','hestia.config.devices.motion_index','binary_sensor.desk_occupancy_beta'] | tojson }}
         aggregation_strategy: "composite→motion pulse"
         source_count: "1"
         version: "1.1"

@@ -294,8 +294,7 @@
         aggregation_strategy: "preference-based selection"
         related_motion_recent_entity: "binary_sensor.desk_motion_recent_beta"
         source_count: "1"
-        version: "1.1"
-        last_updated: "2025-10-15"
+        last_updated: "2025-10-16"
         area_id: "desk"
         floor_id: "bedroom"
 
@@ -322,7 +321,6 @@
           {{ ['binary_sensor.bedroom_wardrobe_occupancy_matter_alpha', 'binary_sensor.bedroom_wardrobe_motion_beta'] | tojson }}
         aggregation_strategy: "single-source standardized wardrobe occupancy"
         source_count: "1"
-        version: "1.1"
         last_updated: "2025-09-20"
         area_id: "wardrobe"
         floor_id: "bedroom"
@@ -350,7 +348,6 @@
           {{ ['binary_sensor.bedroom_ottoman_alpha_vibration', 'binary_sensor.bedroom_ottoman_motion_beta'] | tojson }}
         aggregation_strategy: "single-source standardized bed occupancy"
         source_count: "1"
-        version: "1.1"
         last_updated: "2025-09-20"
         area_id: "ottoman"
         floor_id: "bedroom"
@@ -393,7 +390,7 @@
         related_motion_entity: "binary_sensor.sanctum_motion_beta"
         related_motion_recent_entity: "binary_sensor.sanctum_motion_recent_beta"
         version: "1.1"
-        last_updated: "2025-09-20"
+        last_updated: "2025-10-16"
         floor_id: "upstairs"
         area_id: "sanctum"
 

@@ -40,8 +40,8 @@
         created: "2024-09-03"
         file: "/config/domain/templates/mqtt_native.yaml"
         upstream_sources: >-
-          {{ ['zigbee2mqtt/ensuite_motion_alpha'] | tojson }}
-        source_count: "1"
+          {{ [] | tojson }}
+        source_count: "0"
         downstream_consumers: >-
           {{ ['binary_sensor.ensuite_motion_beta'] | tojson }}
         protocols: "mqtt"
