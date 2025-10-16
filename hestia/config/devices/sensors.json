@@ -5,25 +5,31 @@
       "preferred": "binary_sensor.bedroom_motion_beta"
     },
     "occupancy": {
-      "all": ["binary_sensor.bedroom_occupancy_beta", "binary_sensor.bedroom_occupancy_alpha_occupancy", "binary_sensor.bedroom_wardrobe_occupancy_matter_alpha", "binary_sensor.desk_occupancy_beta"],
+      "all": ["binary_sensor.bedroom_occupancy_beta", "binary_sensor.bedroom_occupancy_alpha_occupancy", "binary_sensor.bedroom_wardrobe_occupancy_matter_alpha", "binary_sensor.desk_occupancy_beta", "binary_sensor.evert_in_bed", "binary_sensor.evert_health_biometrics_sleep_eta"],
       "preferred": "binary_sensor.bedroom_occupancy_beta"
     },
     "presence": {
-      "all": ["binary_sensor.bedroom_presence_beta", "person.evert"],
+      "all": ["binary_sensor.bedroom_presence_beta", "person.evert", "sensor.any_home_presence", "sensor.macbook_presence", "sensor.apple_watch_presence", "sensor.iphone11_presence", "sensor.iphone14_presence", "sensor.ephone_uk_presence", "sensor.nintendo_switch_presence", "sensor.wallet_presence", "sensor.keys_presence", "sensor.backpack_presence", "sensor.ephone_presence", "sensor.iphone8_presence", "binary_sensor.macbook_bedroom_tv_airplay_active", "binary_sensor.macbook_appletv_bedroom_airplay_active", "binary_sensor.evert_at_home"],
       "preferred": "binary_sensor.bedroom_presence_beta"
     },
     "illuminance": {
-      "all": ["sensor.bedroom_illuminance_beta", "sensor.bedroom_illuminance_alpha_illuminance"],
+      "all": ["sensor.bedroom_illuminance_beta", "sensor.bedroom_illuminance_alpha_illuminance", "sensor.bedroom_tv_illuminance_decay_delta"],
       "preferred": "sensor.bedroom_illuminance_beta"
     },
-    "proxies": ["binary_sensor.bedroom_ottoman_motion_proxy", "binary_sensor.desk_motion_proxy"],
+    "proxies": ["binary_sensor.bedroom_ottoman_motion_proxy", "binary_sensor.desk_motion_proxy", "sensor.bedroom_tv_illuminance_decay_delta", "binary_sensor.evert_in_bed", "binary_sensor.evert_asleep"],
     "sources": {
       "binary_sensor.bedroom_motion_beta": [{"file": "/config/domain/templates/motion_logic.yaml", "line": 61}],
       "binary_sensor.bedroom_occupancy_beta": [{"file": "/config/domain/templates/occupancy_logic.yaml", "line": 21}],
       "binary_sensor.bedroom_presence_beta": [{"file": "/config/domain/templates/presence_logic.yaml", "line": 50}],
-      "sensor.bedroom_illuminance_beta": [{"file": "/config/domain/templates/illuminance_logic.yaml", "line": 32}]
+      "sensor.bedroom_illuminance_beta": [{"file": "/config/domain/templates/illuminance_logic.yaml", "line": 32}],
+      "sensor.bedroom_tv_illuminance_decay_delta": [{"file": "/config/domain/templates/illuminance_decay.yaml", "line": 8}],
+      "sensor.any_home_presence": [{"file": "/config/domain/templates/tracking_logic.yaml", "line": 13}],
+      "binary_sensor.macbook_bedroom_tv_airplay_active": [{"file": "/config/domain/templates/desk_presence_inferred.yaml", "line": 31}],
+      "binary_sensor.evert_in_bed": [{"file": "/config/domain/templates/health_logic.yaml", "line": 186}],
+      "binary_sensor.evert_asleep": [{"file": "/config/domain/templates/health_logic.yaml", "line": 203}],
+      "binary_sensor.evert_at_home": [{"file": "/config/domain/templates/health_logic.yaml", "line": 221}]
     },
-    "notes": ["Multiple motion sources aggregated via preference_select"]
+    "notes": ["Multiple motion sources aggregated via preference_select", "TV illuminance decay sensor for lighting persistence", "Health biometrics for sleep/bed occupancy tracking", "AirPlay presence detection for bedroom TV"]
   },
   "ensuite": {
     "motion": {
@@ -42,14 +48,16 @@
       "all": ["sensor.ensuite_illuminance_beta", "sensor.ensuite_motion_alpha_illuminance"],
       "preferred": "sensor.ensuite_illuminance_beta"
     },
-    "proxies": [],
+    "proxies": ["binary_sensor.ensuite_motion_real_time"],
     "sources": {
       "binary_sensor.ensuite_motion_beta": [{"file": "/config/domain/templates/motion_logic.yaml", "line": 135}],
       "binary_sensor.ensuite_occupancy_beta": [{"file": "/config/domain/templates/occupancy_logic.yaml", "line": 96}],
       "binary_sensor.ensuite_presence_beta": [{"file": "/config/domain/templates/presence_logic.yaml", "line": 124}],
-      "sensor.ensuite_illuminance_beta": [{"file": "/config/domain/templates/illuminance_logic.yaml", "line": 65}]
+      "sensor.ensuite_illuminance_beta": [{"file": "/config/domain/templates/illuminance_logic.yaml", "line": 65}],
+      "binary_sensor.ensuite_motion_real_time": [{"file": "/config/domain/templates/mqtt_native.yaml", "line": 12}],
+      "binary_sensor.ensuite_shower_occupancy_epsilon": [{"file": "/config/domain/templates/ensuite_presence_inferred.yaml", "line": 8}]
     },
-    "notes": []
+    "notes": ["Real-time motion via MQTT trigger", "Shower occupancy composite sensor"]
   },
   "desk": {
     "motion": {
@@ -61,21 +69,24 @@
       "preferred": "binary_sensor.desk_occupancy_beta"
     },
     "presence": {
-      "all": ["binary_sensor.desk_presence_beta", "binary_sensor.desk_presence_inferred", "person.evert"],
+      "all": ["binary_sensor.desk_presence_beta", "binary_sensor.desk_presence_inferred", "person.evert", "binary_sensor.macbook_retina_display_active", "binary_sensor.macbook_hp32_monitor_active", "binary_sensor.desk_macbook_recent_connectivity"],
       "preferred": "binary_sensor.desk_presence_beta"
     },
     "illuminance": {
       "all": [],
       "preferred": null
     },
-    "proxies": ["binary_sensor.desk_motion_proxy", "binary_sensor.desk_presence_inferred"],
+    "proxies": ["binary_sensor.desk_motion_proxy", "binary_sensor.desk_presence_inferred", "binary_sensor.desk_macbook_recent_connectivity"],
     "sources": {
       "binary_sensor.desk_motion_proxy": [{"file": "/config/domain/templates/motion_logic.yaml", "line": 262}],
       "binary_sensor.desk_occupancy_beta": [{"file": "/config/domain/templates/occupancy_logic.yaml", "line": 214}],
       "binary_sensor.desk_presence_beta": [{"file": "/config/domain/templates/presence_logic.yaml", "line": 74}],
-      "binary_sensor.desk_presence_inferred": [{"file": "/config/domain/templates/desk_presence_inferred.yaml", "line": 57}]
+      "binary_sensor.desk_presence_inferred": [{"file": "/config/domain/templates/desk_presence_inferred.yaml", "line": 57}],
+      "binary_sensor.macbook_retina_display_active": [{"file": "/config/domain/templates/desk_presence_inferred.yaml", "line": 10}],
+      "binary_sensor.macbook_hp32_monitor_active": [{"file": "/config/domain/templates/desk_presence_inferred.yaml", "line": 23}],
+      "binary_sensor.desk_macbook_recent_connectivity": [{"file": "/config/domain/templates/desk_presence_inferred.yaml", "line": 122}]
     },
-    "notes": ["Desk presence inferred from MacBook connectivity and display state"]
+    "notes": ["Desk presence inferred from MacBook connectivity and display state", "Multiple MacBook display sensors for presence detection"]
   },
   "kitchen": {
     "motion": {
@@ -179,6 +190,31 @@
     },
     "notes": []
   },
+  "home": {
+    "motion": {
+      "all": [],
+      "preferred": null
+    },
+    "occupancy": {
+      "all": ["binary_sensor.merged_home_occupancy_eta", "binary_sensor.zone_downstairs_occupancy_beta", "binary_sensor.zone_upstairs_occupancy_beta", "binary_sensor.sanctum_occupancy_beta", "binary_sensor.merged_hallways_occupancy_eta"],
+      "preferred": "binary_sensor.merged_home_occupancy_eta"
+    },
+    "presence": {
+      "all": ["sensor.any_home_presence"],
+      "preferred": "sensor.any_home_presence"
+    },
+    "illuminance": {
+      "all": ["sensor.merged_home_illuminance_eta"],
+      "preferred": "sensor.merged_home_illuminance_eta"
+    },
+    "proxies": [],
+    "sources": {
+      "binary_sensor.merged_home_occupancy_eta": [{"file": "/config/domain/templates/occupancy_logic.yaml", "line": 309}],
+      "sensor.any_home_presence": [{"file": "/config/domain/templates/tracking_logic.yaml", "line": 13}],
+      "sensor.merged_home_illuminance_eta": [{"file": "/config/domain/templates/illuminance_logic.yaml", "line": 84}]
+    },
+    "notes": ["Home-level aggregated sensors from multiple rooms"]
+  },
   "_anomalies": [
     {"type": "NO_ILLUMINANCE", "room": "desk", "note": "No illuminance sensors found"},
     {"type": "NO_ILLUMINANCE", "room": "kitchen", "note": "No illuminance sensors found"},
@@ -186,6 +222,12 @@
     {"type": "NO_ILLUMINANCE", "room": "hallway_upstairs", "note": "No illuminance sensors found"},
     {"type": "ALWAYS_FALSE_PRESENCE", "room": "kitchen", "entity": "binary_sensor.kitchen_presence_beta", "note": "Hardcoded to 'off' state"},
     {"type": "ALWAYS_FALSE_PRESENCE", "room": "hallway_downstairs", "entity": "binary_sensor.hallway_downstairs_presence_beta", "note": "Hardcoded to 'off' state"},
-    {"type": "ALWAYS_FALSE_PRESENCE", "room": "hallway_upstairs", "entity": "binary_sensor.hallway_upstairs_presence_beta", "note": "Hardcoded to 'off' state"}
+    {"type": "ALWAYS_FALSE_PRESENCE", "room": "hallway_upstairs", "entity": "binary_sensor.hallway_upstairs_presence_beta", "note": "Hardcoded to 'off' state"},
+    {"type": "AGGREGATED_ONLY", "room": "home", "note": "Home-level aggregated occupancy/presence/illuminance only - no individual room sensors"},
+    {"type": "DEVICE_TRACKER_PRESENCE", "room": "bedroom", "note": "Multiple device tracker presence sensors found in tracking_logic.yaml"},
+    {"type": "HEALTH_BIOMETRICS", "room": "bedroom", "note": "Sleep/bed occupancy via health biometrics sensors"},
+    {"type": "MACBOOK_DISPLAYS", "room": "desk", "note": "MacBook display sensors for presence inference"},
+    {"type": "COMMENTED_OUT", "file": "/config/domain/templates/trends.yaml", "note": "Entire file commented out - no active sensors"},
+    {"type": "EMPTY_FILE", "file": "/config/domain/templates/system_monitoring.yaml", "note": "Contains only empty object {}"}
   ]
 }
