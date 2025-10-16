@@ -1,8 +1,6 @@
 ---
 description: "Migrate AppDaemon configurations to canonical /addon_configs paths and deprecate legacy /config/appdaemon directory"
 mode: "agent"
-tools: ["file_system", "workspace"]
-model: "gpt-4"
 ---
 
 # Migrate AppDaemon to Canonical /addon_configs Paths

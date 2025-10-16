@@ -1,154 +1,183 @@
-#!/usr/bin/env python3
-"""
-Room Database Updater - AppDaemon Integration
-Provides REST endpoints for updating room configurations in SQLite database
-
-Endpoints:
-- POST /api/appdaemon/room_db_update_config
-- GET /api/appdaemon/room_db_health
-
-Compliance: ADR-0024 (canonical paths)
-"""
-
 import json
 import os
+import re
 import sqlite3
-from datetime import UTC, datetime
+import time
 
-import appdaemon.plugins.hass.hassapi as hass
+import yaml
+from appdaemon.plugins.hass import hassapi
 
+ROOM_ID_RE = re.compile(r"^[a-z0-9_]+$")
 
-class RoomDbUpdater(hass.Hass):
+class RoomDbUpdater(hassapi.Hass):
     def initialize(self):
-        """Initialize the room database updater"""
-        self.db_path = "/config/room_database.db"
+        self.db_path = self.args.get("db_path", "/config/room_database.db")
+        self.schema_expected = int(self.args.get("schema_expected", 1))
+        self.canonical_mapping_file = self.args.get("canonical_mapping_file")
+        self.allowed_domains = set(self.args.get("allowed_domains", ["motion_lighting","vacuum_control","shared"]))
+        self.max_config_size_bytes = int(self.args.get("max_config_size_bytes", 4096))
+        self.write_rate_limit_seconds = int(self.args.get("write_rate_limit_seconds", 2))
+
+        self._last_write = {}  # key: (domain), value: last_ts
+        self._canonical_rooms = None  # Cache for canonical rooms
+        
+        # Validate configuration and initialize database
         self._validate_config()
         self._init_database()
-
-        # Register endpoints - NO leading slash for register_endpoint
-        # AppDaemon will mount at /api/appdaemon/<name>
-        self.register_endpoint(self.update_config, "room_db_update_config")
-        self.register_endpoint(self.health_check, "room_db_health")
+        
+        # Register endpoints
+        self.register_endpoint(self.update_config, "room_db/update_config")
+        self.register_endpoint(self.health_check, "room_db/health")
         self.log("RoomDbUpdater initialized")
 
-    def _validate_config(self):
-        """Validate configuration and database path"""
-        if not os.path.exists("/config"):
-            raise ValueError("Config directory not found")
-
-        # Ensure database directory exists
-        os.makedirs(os.path.dirname(self.db_path), exist_ok=True)
-
     def _init_database(self):
-        """Initialize database schema if needed"""
+        """Initialize database schema if not exists"""
+        conn = sqlite3.connect(self.db_path)
         try:
-            with sqlite3.connect(self.db_path) as conn:
-                conn.execute("""
-                    CREATE TABLE IF NOT EXISTS room_configs (
-                        id INTEGER PRIMARY KEY AUTOINCREMENT,
-                        room_id TEXT NOT NULL,
-                        config_domain TEXT NOT NULL,
-                        config_data TEXT NOT NULL,
-                        created_at TEXT NOT NULL,
-                        updated_at TEXT NOT NULL,
-                        UNIQUE(room_id, config_domain)
-                    )
-                """)
-                conn.commit()
-                self.log("Database schema initialized")
-        except Exception as e:
-            self.log(f"Database initialization failed: {e}", level="ERROR")
-            raise
-
-    def update_config(self, data):
-        """
-        Update room configuration endpoint
-
-        Expected POST data:
-        {
-            "room_id": "bedroom",
-            "domain": "motion_lighting",
-            "config_data": {...}
-        }
-        """
-        try:
-            # Parse request data
-            if isinstance(data, str):
-                request_data = json.loads(data)
-            else:
-                request_data = data
-
-            # Validate required fields
-            required_fields = ["room_id", "domain", "config_data"]
-            for field in required_fields:
-                if field not in request_data:
-                    return {"error": f"Missing required field: {field}"}, 400
-
-            room_id = request_data["room_id"]
-            domain = request_data["domain"]
-            config_data = request_data["config_data"]
-
-            # Serialize config_data to JSON if it's not already a string
-            if isinstance(config_data, (dict, list)):
-                config_json = json.dumps(config_data)
-            else:
-                config_json = str(config_data)
-
-            # Update database
-            timestamp = datetime.now(UTC).isoformat()
-
-            with sqlite3.connect(self.db_path) as conn:
-                conn.execute(
-                    """
-                    INSERT OR REPLACE INTO room_configs
-                    (room_id, config_domain, config_data, created_at, updated_at)
-                    VALUES (?, ?, ?,
-                            COALESCE((SELECT created_at FROM room_configs
-                                    WHERE room_id=? AND config_domain=?), ?),
-                            ?)
-                """,
-                    (room_id, domain, config_json, room_id, domain, timestamp, timestamp),
+            cur = conn.cursor()
+            # Create schema_version table
+            cur.execute("""
+                CREATE TABLE IF NOT EXISTS schema_version (
+                    version INTEGER PRIMARY KEY
                 )
-                conn.commit()
-
-            self.log(f"Updated config: {room_id}/{domain}")
-
-            return {
-                "status": "success",
-                "room_id": room_id,
-                "domain": domain,
-                "timestamp": timestamp,
-            }, 200
-
-        except json.JSONDecodeError as e:
-            self.log(f"JSON decode error: {e}", level="ERROR")
-            return {"error": f"Invalid JSON: {e}"}, 400
-        except sqlite3.Error as e:
-            self.log(f"Database error: {e}", level="ERROR")
-            return {"error": f"Database error: {e}"}, 500
+            """)
+            # Create room_configs table
+            cur.execute("""
+                CREATE TABLE IF NOT EXISTS room_configs (
+                    room_id TEXT,
+                    config_domain TEXT,
+                    config_data TEXT,
+                    updated_at TIMESTAMP,
+                    PRIMARY KEY (room_id, config_domain)
+                )
+            """)
+            # Insert schema version if not exists
+            cur.execute("INSERT OR IGNORE INTO schema_version (version) VALUES (?)", 
+                       (self.schema_expected,))
+            conn.commit()
+            self.log(f"Database initialized at {self.db_path}")
         except Exception as e:
-            self.log(f"Unexpected error: {e}", level="ERROR")
-            return {"error": f"Internal server error: {e}"}, 500
+            self.error(f"Database initialization failed: {e}")
+            raise
+        finally:
+            conn.close()
+
+    def _validate_config(self):
+        """Validate configuration on startup"""
+        if not self.canonical_mapping_file or not os.path.exists(self.canonical_mapping_file):
+            raise FileNotFoundError(f"Canonical mapping file not found: {self.canonical_mapping_file}")
+        
+        if not self.allowed_domains:
+            raise ValueError("No allowed domains configured")
+            
+        self.log(f"Config validation passed - domains: {self.allowed_domains}")
+
+    def _load_canonical_mapping(self):
+        """Load and cache the canonical mapping"""
+        if self._canonical_rooms is None:
+            with open(self.canonical_mapping_file) as f:
+                amap = yaml.safe_load(f) or {}
+            # Extract room IDs from nodes
+            nodes = amap.get("nodes", [])
+            self._canonical_rooms = {node["id"] for node in nodes if node.get("type") in ["area", "subarea"]}
+            self.log(f"Loaded {len(self._canonical_rooms)} canonical rooms")
+        return self._canonical_rooms
+
+    def _validate_room(self, room_id: str):
+        if not ROOM_ID_RE.match(room_id or ""):
+            raise ValueError("Invalid room_id slug")
+        
+        canonical_rooms = self._load_canonical_mapping()
+        if room_id not in canonical_rooms:
+            raise ValueError(f"room_id '{room_id}' not in canonical mapping. Available rooms: {sorted(canonical_rooms)}")
+
+    def _schema_ok(self, cur):
+        cur.execute("SELECT version FROM schema_version")
+        row = cur.fetchone()
+        if not row:
+            raise RuntimeError("SCHEMA_VERSION_TABLE_MISSING")
+        v = int(row[0])
+        if v != self.schema_expected:
+            raise RuntimeError("SCHEMA_VERSION_MISMATCH")
+
+    def _rate_limit(self, domain: str):
+        now = time.monotonic()
+        last = self._last_write.get(domain, 0.0)
+        if now - last < self.write_rate_limit_seconds:
+            raise RuntimeError("WRITE_RATE_LIMIT")
+        self._last_write[domain] = now
 
     def health_check(self, data):
         """Health check endpoint"""
         try:
-            # Test database connection
-            with sqlite3.connect(self.db_path) as conn:
-                cursor = conn.execute("SELECT COUNT(*) FROM room_configs")
-                config_count = cursor.fetchone()[0]
-
+            conn = sqlite3.connect(self.db_path)
+            cur = conn.cursor()
+            self._schema_ok(cur)
+            conn.close()
+            canonical_rooms = self._load_canonical_mapping()
             return {
-                "status": "healthy",
-                "database": "connected",
-                "config_count": config_count,
-                "timestamp": datetime.now(UTC).isoformat(),
-            }, 200
-
+                "status": "healthy", 
+                "db_path": self.db_path,
+                "canonical_rooms_count": len(canonical_rooms),
+                "allowed_domains": list(self.allowed_domains)
+            }
         except Exception as e:
-            self.log(f"Health check failed: {e}", level="ERROR")
-            return {
-                "status": "unhealthy",
-                "error": str(e),
-                "timestamp": datetime.now(UTC).isoformat(),
-            }, 500
+            return {"status": "unhealthy", "error": str(e)}
+
+    def update_config(self, data):
+        """Enhanced update_config with better error handling"""
+        try:
+            # Validate input data structure
+            required_fields = ["room_id", "domain", "config_data"]
+            missing = [f for f in required_fields if f not in data]
+            if missing:
+                raise ValueError(f"Missing required fields: {missing}")
+                
+            room_id = data.get("room_id")
+            domain = data.get("domain")
+            cfg = data.get("config_data")
+            
+            if domain not in self.allowed_domains:
+                raise ValueError(f"Domain '{domain}' not allowed. Allowed domains: {list(self.allowed_domains)}")
+                
+            self._validate_room(room_id)
+            
+            cfg_json = json.dumps(cfg, separators=(",", ":"))
+            if len(cfg_json.encode("utf-8")) > self.max_config_size_bytes:
+                raise ValueError(f"Config too large: {len(cfg_json.encode('utf-8'))} bytes > {self.max_config_size_bytes}")
+                
+            self._rate_limit(domain)
+
+            conn = sqlite3.connect(self.db_path)
+            cur = conn.cursor()
+            try:
+                self._schema_ok(cur)
+                conn.execute("BEGIN IMMEDIATE")
+                cur.execute(
+                    "INSERT OR REPLACE INTO room_configs (room_id, config_domain, config_data, updated_at) VALUES (?,?,?, datetime('now'))",
+                    (room_id, domain, cfg_json)
+                )
+                conn.commit()
+                self.log(f"Successfully updated config for room '{room_id}', domain '{domain}'")
+            except Exception:
+                conn.rollback()
+                raise
+            finally:
+                conn.close()
+            return {"status": "ok", "room_id": room_id, "domain": domain}
+            
+        except (ValueError, FileNotFoundError) as e:
+            self.log(f"Validation error: {e}", level="WARNING")
+            return {"status": "error", "error": str(e)}
+        except sqlite3.Error as e:
+            self.error(f"Database error: {e}")
+            self.call_service("persistent_notification/create", 
+                             title="Room DB Database Error", 
+                             message=f"Database operation failed: {str(e)}")
+            return {"status": "error", "error": "Database operation failed"}
+        except Exception as e:
+            self.error(f"Unexpected error in update_config: {e}")
+            self.call_service("persistent_notification/create", 
+                             title="Room DB Update Failed", 
+                             message=f"Unexpected error: {str(e)}")
+            return {"status": "error", "error": "Internal server error"}

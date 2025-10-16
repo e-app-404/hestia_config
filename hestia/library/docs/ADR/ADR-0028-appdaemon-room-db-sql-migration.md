@@ -26,7 +26,7 @@ tags:
 - validation
 references:
 - tools: /config/bin/write-broker
-- configuration: /config/packages/package_room_database.yaml, /config/appdaemon/apps/**
+- configuration: /config/packages/package_room_database.yaml, /addon_configs/a0d7b954_appdaemon/apps/**
 - logs: /config/hestia/workspace/operations/logs/write_broker_*.json
 - index: /config/hestia/config/index/appdaemon_index.yaml
 ---
@@ -78,8 +78,8 @@ validation:
     - POST "{{ hass_url('/api/app/room_db_updater/room_db/sync') }}"
 notes:
   runtime_names:
-    app_name: "room_db_updater"     # confirm in /config/appdaemon/apps/**
-    endpoint_group: "room_db"       # confirm in /config/appdaemon/apps/**
+    app_name: "room_db_updater"     # confirm in /addon_configs/a0d7b954_appdaemon/apps/**
+    endpoint_group: "room_db"       # confirm in /addon_configs/a0d7b954_appdaemon/apps/**
 ```
 
 ## ENTITY_INTERFACE

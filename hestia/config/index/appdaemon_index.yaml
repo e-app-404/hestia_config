@@ -157,6 +157,17 @@ appdaemon_index:
       usage: "Developer Tools → Templates → Paste template content"
       expected_result: "JSON status report with failures array and system details"
 
+  legacy_deprecated:
+    - path: "/config/appdaemon/"
+      type: "deprecated_directory"
+      description: "DEPRECATED: Legacy AppDaemon configuration directory"
+      deprecation_date: "2025-10-16"
+      removal_date: "2025-11-01"
+      canonical_location: "/Volumes/addon_configs/a0d7b954_appdaemon/"
+      migration_status: "files_synchronized"
+      contains_deprecation_notice: true
+      reason: "AppDaemon add-on uses dedicated addon_configs volume, not workspace paths"
+
   maintenance_records:
     last_configuration_update: "2025-10-09T23:06:00Z"
     last_successful_startup: "2025-10-09T23:03:10Z"
