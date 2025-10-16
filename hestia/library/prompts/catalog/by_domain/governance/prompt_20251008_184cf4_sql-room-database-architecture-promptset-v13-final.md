@@ -124,8 +124,8 @@ promptset:
         - "/config/packages/motion_lighting_v2/templates.yaml"
         - "/config/packages/vacuum_control_v2/scripts.yaml"
         - "/config/packages/vacuum_control_v2/mqtt_commands.yaml"
-        - "/config/appdaemon/apps/room_db_updater/app.yaml"            # preferred path
-        - "/config/appdaemon/apps/room_db_updater/room_db_updater.py"  # preferred path (validation + writes)
+        - "/addon_configs/a0d7b954_appdaemon/apps/room_db_updater/app.yaml"            # canonical path
+        - "/addon_configs/a0d7b954_appdaemon/apps/room_db_updater/room_db_updater.py"  # canonical path (validation + writes)
         - "/config/.sql_room_db_tokens/README.txt"                     # token semantics
         - "/config/secrets.example.yaml"                               # valetudo_base_topic stub
     validation_shape:
@@ -311,7 +311,7 @@ promptset:
               - sensor.rooms_needing_cleaning
         ```
 
-        **/config/appdaemon/apps/room_db_updater/app.yaml** (preferred path):
+        **/addon_configs/a0d7b954_appdaemon/apps/room_db_updater/app.yaml** (canonical path):
         ```yaml
         room_db_updater:
           module: room_db_updater
@@ -321,7 +321,7 @@ promptset:
           canonical_mapping_file: {{ canonical_mapping_file }}
         ```
 
-        **/config/appdaemon/apps/room_db_updater/room_db_updater.py** (preferred path skeleton):
+        **/addon_configs/a0d7b954_appdaemon/apps/room_db_updater/room_db_updater.py** (canonical path skeleton):
         ```python
         import appdaemon.plugins.hass.hassapi as hass
         import json, sqlite3, yaml, re, time

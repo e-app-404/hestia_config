@@ -7,16 +7,19 @@ This directory `/config/appdaemon/` is **DEPRECATED** as of October 16, 2025.
 ## New Canonical Location
 
 **All AppDaemon configurations have moved to:**
+
 ```
 /Volumes/addon_configs/a0d7b954_appdaemon/
 ```
 
 **From within the AppDaemon container, this is accessible as:**
+
 ```
 /config/
 ```
 
 **In workspace documentation, reference as:**
+
 ```
 /addon_configs/a0d7b954_appdaemon/
 ```
@@ -51,6 +54,7 @@ vim apps/room_db_updater.py
 ## References Updated
 
 The following files have been updated to reference the canonical location:
+
 - `/config/hestia/config/index/appdaemon_index.yaml`
 - ADR-0028 (AppDaemon & Room-DB canonicalization)
 - All workspace documentation and scripts

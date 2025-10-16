@@ -4,31 +4,31 @@ title: AppDaemon & Room-DB Canonicalization (Endpoints, Entities, SQL Migration)
 slug: appdaemon-room-db-sql-migration
 status: Proposed
 related:
-- ADR-0024
-- ADR-0027
-- ADR-0019
-- ADR-0018
-- ADR-0009
-- ADR-0008
+  - ADR-0024
+  - ADR-0027
+  - ADR-0019
+  - ADR-0018
+  - ADR-0009
+  - ADR-0008
 supersedes: []
-last_updated: '2025-10-15'
+last_updated: "2025-10-15"
 date: 2025-10-12
 decision: summary-concise)
 author: evert-appels
 tags:
-- governance
-- appdaemon
-- room-db
-- endpoints
-- entities
-- migration
-- sql
-- validation
+  - governance
+  - appdaemon
+  - room-db
+  - endpoints
+  - entities
+  - migration
+  - sql
+  - validation
 references:
-- tools: /config/bin/write-broker
-- configuration: /config/packages/package_room_database.yaml, /addon_configs/a0d7b954_appdaemon/apps/**
-- logs: /config/hestia/workspace/operations/logs/write_broker_*.json
-- index: /config/hestia/config/index/appdaemon_index.yaml
+  - tools: /config/bin/write-broker
+  - configuration: /config/packages/package_room_database.yaml, /addon_configs/a0d7b954_appdaemon/apps/**
+  - logs: /config/hestia/workspace/operations/logs/write_broker_*.json
+  - index: /config/hestia/config/index/appdaemon_index.yaml
 ---
 
 # ADR-0028: AppDaemon & Room-DB Canonicalization (Endpoints, Entities, SQL Migration)
@@ -49,7 +49,6 @@ references:
 - [TOKEN_BLOCK](#token_block)
 - [CHANGELOG](#changelog)
 
-
 ## Decision Summary (concise)
 
 - **Endpoints:** AppDaemon routes **must** use the app-scoped pattern `/api/app/<app_name>/<endpoint>/...`. For Room-DB the canonical base is **`/api/app/room_db_updater/room_db`** with subpaths for health, update, sync, and reads.
@@ -66,11 +65,11 @@ api_routes:
   # Canonical, app-scoped base for Room-DB operations
   base: "/api/app/room_db_updater/room_db"
   endpoints:
-    health: "/health"            # GET: liveness/readiness probe
-    update_config: "/update"     # POST: trigger config (re)load / regeneration
-    sync: "/sync"                # POST: reconcile SQL↔HA derived artifacts
-    read_room: "/room/{id}"      # GET: fetch room record by id
-    read_zone: "/zone/{id}"      # GET: fetch zone record by id
+    health: "/health" # GET: liveness/readiness probe
+    update_config: "/update" # POST: trigger config (re)load / regeneration
+    sync: "/sync" # POST: reconcile SQL↔HA derived artifacts
+    read_room: "/room/{id}" # GET: fetch room record by id
+    read_zone: "/zone/{id}" # GET: fetch zone record by id
 validation:
   curl_examples:
     - GET "{{ hass_url('/api/app/room_db_updater/room_db/health') }}"
@@ -78,8 +77,8 @@ validation:
     - POST "{{ hass_url('/api/app/room_db_updater/room_db/sync') }}"
 notes:
   runtime_names:
-    app_name: "room_db_updater"     # confirm in /addon_configs/a0d7b954_appdaemon/apps/**
-    endpoint_group: "room_db"       # confirm in /addon_configs/a0d7b954_appdaemon/apps/**
+    app_name: "room_db_updater" # confirm in /addon_configs/a0d7b954_appdaemon/apps/**
+    endpoint_group: "room_db" # confirm in /addon_configs/a0d7b954_appdaemon/apps/**
 ```
 
 ## ENTITY_INTERFACE
@@ -93,13 +92,13 @@ entities:
     illuminance_sensor: "sensor.roomdb_{room}_illuminance"
     meta_last_update: "sensor.roomdb_last_update"
   device_class_map:
-    presence_binary: ["presence","occupancy","motion"]
+    presence_binary: ["presence", "occupancy", "motion"]
     illuminance_sensor: ["illuminance"]
   attributes_contract:
     room_state_sensor:
-      must_include: ["room_id","zone_id","profile","updated_at"]
+      must_include: ["room_id", "zone_id", "profile", "updated_at"]
     presence_binary:
-      must_include: ["room_id","confidence","updated_at"]
+      must_include: ["room_id", "confidence", "updated_at"]
   update_policy:
     source_of_truth: "sql"
     regeneration_trigger: "POST /update (app route) succeeds"
@@ -206,11 +205,11 @@ migration:
         - scan_templates: "/config/packages/**"
         - inventory_entities: "/config/.storage/core.entity_registry"
         - enumerate_rest_commands: "/config/packages/package_room_database.yaml"
-        - confirm_app_names: "/config/appdaemon/apps/** (ensure app='room_db_updater', endpoint='room_db')"
+        - confirm_app_names: "/addon_configs/a0d7b954_appdaemon/apps/** (ensure app='room_db_updater', endpoint='room_db')"
     - id: mapping
       actions:
         - map_automations_to_sql:
-            groups: ["motion groups","lighting modes","presence policies"]
+            groups: ["motion groups", "lighting modes", "presence policies"]
         - define_entity_mappings:
             from: "legacy template ids"
             to: "roomdb_* canonical"
@@ -239,7 +238,7 @@ migration:
 governance:
   path_policy:
     canonical_root: "/config"
-    readonly_roots: ["/System/Volumes/Data/homeassistant","/Volumes/HA"]
+    readonly_roots: ["/System/Volumes/Data/homeassistant", "/Volumes/HA"]
   write_policy:
     tool: "/config/bin/write-broker"
     sha256_required: true
@@ -256,6 +255,68 @@ governance:
       - "curl update endpoint returns 2xx"
       - "entity registry contains roomdb_* interfaces"
 ```
+
+## ADDON_CONFIGS_GOVERNANCE
+
+### Volume Management
+
+AppDaemon configurations are managed through the dedicated add-on configuration volume:
+
+**Canonical Location**: `/Volumes/addon_configs/a0d7b954_appdaemon/`
+**Container View**: `/config/` (within AppDaemon container)
+**Workspace Reference**: `/addon_configs/a0d7b954_appdaemon/` (relative notation)
+
+### Path Standards
+
+| Context             | Path Format                                  | Example                  |
+| ------------------- | -------------------------------------------- | ------------------------ |
+| Host System         | `/Volumes/addon_configs/a0d7b954_appdaemon/` | Full macOS path          |
+| Container           | `/config/`                                   | AppDaemon container view |
+| Documentation       | `/addon_configs/a0d7b954_appdaemon/`         | Workspace relative       |
+| Legacy (DEPRECATED) | `/config/appdaemon/`                         | DO NOT USE               |
+
+### File Management Constraints
+
+1. **Add-on Volume Access**: Modifications require AppDaemon add-on restart to take effect
+2. **File Permissions**: Must maintain proper ownership (evertappels:staff on macOS)
+3. **Configuration Validation**: All YAML files must pass AppDaemon syntax validation
+4. **Backup Requirements**: Changes require backup creation before modification
+
+### Validation Tokens
+
+```bash
+# Verify canonical location accessibility
+test -d "/Volumes/addon_configs/a0d7b954_appdaemon/apps/"
+
+# Validate configuration syntax
+python3 -c "import yaml; yaml.safe_load(open('/Volumes/addon_configs/a0d7b954_appdaemon/apps/apps.yaml'))"
+
+# Check AppDaemon startup after changes
+curl -f http://localhost:5050/api/appdaemon/room_db/health
+```
+
+### Deprecation Management
+
+**Legacy Directory**: `/config/appdaemon/`
+
+- **Status**: DEPRECATED as of 2025-10-16
+- **Removal**: 2025-11-01 (2-week grace period)
+- **Migration**: Files synchronized to canonical location
+- **Notice**: DEPRECATED.md placed in legacy directory
+
+### Operational Guardrails
+
+1. **No Direct Container Access**: Modifications via host volume paths only
+2. **Restart Required**: AppDaemon add-on restart after configuration changes
+3. **Path Validation**: All scripts must validate canonical paths before operation
+4. **Audit Trail**: All modifications logged via write-broker when applicable
+
+### Integration Points
+
+- **appdaemon_index.yaml**: Reflects canonical path structure
+- **REST Commands**: Target endpoints on add-on container network
+- **Database Files**: Located within add-on volume for proper access
+- **Area Mapping**: Accessible via `/config/www/area_mapping.yaml` (container view)
 
 ## VALIDATION_SUITE
 
@@ -317,7 +378,6 @@ rollback:
 - Canonical `roomdb_*` entities exist with correct `device_class` and required attributes.
 - All configuration writes were performed via **write-broker** with SHA-256 before/after, backup, and audit JSON.
 - `ha core check` passes.
-
 
 ## STATUS_BLOCK
 

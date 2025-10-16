@@ -702,6 +702,85 @@ sudo mount_smbfs //${USER}@homeassistant.reverse-beta.ts.net/addons /Volumes/HA/
 
 ---
 
+# ADR-0024-addendum-addon-configs-volume-governance
+
+**Status:** Implemented  
+**Date:** 2025-10-15  
+**Related ADRs:** ADR-0024 (Canonical Config Path), ADR-0028 (AppDaemon & Room-DB Canonicalization), ADR-0022 (Mount Management)
+
+## Context
+
+Home Assistant add-ons store configurations in `/addon_configs/` volume mounts rather than `/config`. AppDaemon, being an add-on, uses canonical path `/addon_configs/a0d7b954_appdaemon/` for its runtime configuration. This creates path management challenges when workspace tools need to interact with add-on configurations.
+
+## Decision
+
+Establish governance standards for `/addon_configs/` volume management with strict operational guardrails:
+
+### 1. Canonical Add-on Path Standards
+
+- **AppDaemon canonical**: `/addon_configs/a0d7b954_appdaemon/`
+- **Workspace legacy**: `/config/appdaemon/` (deprecated as of 2025-10-15)
+- **Volume mount**: `/Volumes/addon_configs/` (operator use only)
+
+### 2. Path Validation Tokens
+
+All add-on configuration scripts must validate canonical access:
+
+```bash
+# Required validation token for add-on configs
+if [[ ! -d "/addon_configs/a0d7b954_appdaemon" ]]; then
+    echo "ERROR: Canonical AppDaemon path not accessible"
+    echo "Expected: /addon_configs/a0d7b954_appdaemon/"
+    exit 1
+fi
+```
+
+### 3. Operational Guardrails
+
+- **NEVER** hardcode `/Volumes/addon_configs/` in workspace tools
+- **ALWAYS** use canonical `/addon_configs/` paths in runtime scripts
+- **VALIDATE** add-on volume accessibility before operations
+- **FALLBACK** gracefully when add-on volumes unavailable
+
+### 4. Synchronization Policy
+
+When workspace tools need add-on config access:
+
+1. **Primary source**: Add-on canonical location (`/addon_configs/`)
+2. **Workspace copy**: Synchronized to `/config/` for workspace operations
+3. **Conflict resolution**: Canonical location wins, workspace updated
+4. **Deprecation notice**: Legacy paths marked with clear migration timeline
+
+## Implementation Examples
+
+### AppDaemon Configuration Access
+
+```python
+# Canonical path validation
+APPDAEMON_CANONICAL = Path("/addon_configs/a0d7b954_appdaemon")
+APPDAEMON_WORKSPACE = Path("/config/appdaemon")
+
+if APPDAEMON_CANONICAL.exists():
+    config_root = APPDAEMON_CANONICAL
+    print(f"Using canonical AppDaemon config: {config_root}")
+else:
+    config_root = APPDAEMON_WORKSPACE
+    print(f"WARNING: Using legacy workspace config: {config_root}")
+    print("Consider migrating to canonical add-on volume")
+```
+
+### File Synchronization Protocol
+
+```bash
+# Sync canonical to workspace (one-way)
+if [[ -d "/addon_configs/a0d7b954_appdaemon" ]]; then
+    rsync -av "/addon_configs/a0d7b954_appdaemon/" "/config/appdaemon/"
+    echo "Synchronized canonical AppDaemon config to workspace"
+fi
+```
+
+---
+
 # ADR-0024-addendum-vscode-workspace-path-canonicalization
 
 **Status:** Implemented  
