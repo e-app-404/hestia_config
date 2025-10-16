@@ -278,6 +278,25 @@ sort:
 
 In the `options:` option of the filters, the string `this.entity_id` will be replaced with the matched entity_id. Useful for service calls - see below.
 
+### Entity Card Options
+
+When an entity is automatically added to the list by `auto-entities`, the options will be specified by the `options:` parameter of the filter that selected it. If no `options:` parameter is given, the entity will be displayed with its default icon and name.
+
+Options can be anything that would normally go in a manual entity list:
+
+```yaml
+options:
+  secondary_info: entity_id
+  name: "A name"
+  icon: mdi:lightbulb
+```
+
+### Entity Removal Options
+
+To populate the card with _all_ entities matching a certain filter _except_ some unwanted ones, use the special option `type: 'custom:auto-entities'` with `filter:` for the exceptions.
+
+The results will be a list of entities matching the first filter, but with those matching the second filter removed.
+
 ## Examples
 
 Show all entities, except yahoo weather, groups and zones in a glance card:
@@ -461,3 +480,10 @@ filter:
       },
     {% endfor %}]
 ```
+
+## References
+
+- [Auto-entities HACS Integration](https://github.com/thomasloven/lovelace-auto-entities)
+- [Home Assistant Lovelace Cards Documentation](https://www.home-assistant.io/lovelace/)
+- [Home Assistant Entity Configuration](https://developers.home-assistant.io/docs/core/entity/)
+- [Jinja2 Templates in Home Assistant](https://www.home-assistant.io/docs/configuration/templating/)
