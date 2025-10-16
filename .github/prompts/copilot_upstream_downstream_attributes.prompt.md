@@ -1,6 +1,6 @@
 ---
 mode: "agent"
-model: "GPT-4o"
+model: "Claude Sonnet 4"
 description: "Trace sensor lineage in Home Assistant templates and harden entity attributes with upstream/downstream references"
 tools: ["edit", "search"]
 ---
