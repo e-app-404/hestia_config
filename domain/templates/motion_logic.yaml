@@ -34,7 +34,7 @@
         upstream_sources: >-
           {{ ['template.library.jinja','binary_sensor.sanctum_motion_alpha','binary_sensor.bedroom_motion_beta','binary_sensor.ensuite_motion_beta'] | tojson }}
         downstream_consumers: >-
-          {{ ['binary_sensor.sanctum_motion_recent_beta'] | tojson }}
+          {{ ['binary_sensor.sanctum_motion_recent_beta','binary_sensor.sanctum_occupancy_beta'] | tojson }}
         aggregation_strategy: "preference-based selection (motion-only)"
         active_source: >-
           {% from 'template.library.jinja' import get_active_source %}
@@ -97,15 +97,10 @@
         role: "beta_motion"
         file: "/config/domain/templates/motion_logic.yaml"
         protocols: "TP-Link(1,2), Wi-Fi(3)"
-        upstream_sources: >
-          {{ [
-            'template.library.jinja',
-            'binary_sensor.sanctum_motion_alpha',
-            'binary_sensor.wardrobe_motion_beta',
-            'binary_sensor.bedroom_security_cam_alpha_motion',
-            'binary_sensor.bedroom_ottoman_motion_proxy',
-            'binary_sensor.desk_motion_proxy'
-          ] | tojson }}
+        upstream_sources: >-
+          {{ ['template.library.jinja','binary_sensor.sanctum_motion_alpha','binary_sensor.wardrobe_motion_beta','binary_sensor.bedroom_security_cam_alpha_motion','binary_sensor.bedroom_ottoman_motion_proxy','binary_sensor.desk_motion_proxy'] | tojson }}
+        downstream_consumers: >-
+          {{ ['binary_sensor.bedroom_motion_recent_beta','binary_sensor.bedroom_occupancy_beta'] | tojson }}
         aggregation_strategy: "preference-based selection (motion-only)"
         active_source: >
           {% from 'template.library.jinja' import get_active_source %}
@@ -119,7 +114,7 @@
           {{ get_active_source(sources) }}
         source_count: "5"
         version: "2.5"
-        last_updated: "2025-10-11"
+        last_updated: "2025-10-16"
         floor_id: "sanctum"
         area_id: "bedroom"
 

@@ -43,7 +43,7 @@
           {{ ['zigbee2mqtt/ensuite_motion_alpha'] | tojson }}
         source_count: "1"
         downstream_consumers: >-
-          {{ [] | tojson }}
+          {{ ['binary_sensor.ensuite_motion_beta'] | tojson }}
         protocols: "mqtt"
         version: "1.1"
         last_updated: "2025-10-16"

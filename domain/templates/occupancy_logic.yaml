@@ -31,19 +31,9 @@
         file: "/config/domain/templates/occupancy_logic"
         protocols: "MQTT(1), Matter(2), Logic(3), WiFi(4)"
         upstream_sources: >-
-          {{ [
-            'template.library.jinja',
-            'binary_sensor.bedroom_occupancy_alpha_occupancy',
-            'binary_sensor.bedroom_wardrobe_occupancy_matter_alpha',
-            'binary_sensor.desk_occupancy_beta',
-            'binary_sensor.bedroom_motion_beta'
-          ] | tojson }}
+          {{ ['template.library.jinja','binary_sensor.bedroom_occupancy_alpha_occupancy','binary_sensor.bedroom_wardrobe_occupancy_matter_alpha','binary_sensor.desk_occupancy_beta','binary_sensor.bedroom_motion_beta'] | tojson }}
         downstream_consumers: >-
-          {{ [
-            'binary_sensor.sanctum_occupancy_beta',
-            'binary_sensor.zone_upstairs_occupancy_beta',
-            'binary_sensor.merged_home_occupancy_eta'
-          ] | tojson }}
+          {{ ['binary_sensor.sanctum_occupancy_beta','binary_sensor.zone_upstairs_occupancy_beta','binary_sensor.merged_home_occupancy_eta'] | tojson }}
         aggregation_strategy: "preference-based selection (occupancy-only)"
         active_source: >-
           {% from 'template.library.jinja' import get_active_source %}
