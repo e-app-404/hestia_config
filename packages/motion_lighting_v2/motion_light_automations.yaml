@@ -67,7 +67,7 @@ automation:
         continue_on_timeout: false
       - service: light.turn_off
         target: { entity_id: light.adaptive_bedroom_light_group }
-        data: { transition: 5 }
+        data: { transition: 10 }
 
   - alias: "Motion Lights — Upstairs (SQL v1.5)"
     id: motion_lights_upstairs_sql_v15
@@ -134,7 +134,7 @@ automation:
         continue_on_timeout: false
       - service: light.turn_off
         target: { entity_id: light.adaptive_upstairs_light_group }
-        data: { transition: 5 }
+        data: { transition: 10 }
 
   - alias: "Motion Lights — Downstairs (SQL v1.5)"
     id: motion_lights_downstairs_sql_v15
@@ -201,7 +201,7 @@ automation:
         continue_on_timeout: false
       - service: light.turn_off
         target: { entity_id: light.adaptive_downstairs_light_group }
-        data: { transition: 5 }
+        data: { transition: 10 }
 
   - alias: "Motion Lights — Kitchen (SQL v1.5)"
     id: motion_lights_kitchen_sql_v15
@@ -268,7 +268,7 @@ automation:
         continue_on_timeout: false
       - service: light.turn_off
         target: { entity_id: light.adaptive_kitchen_light_group }
-        data: { transition: 5 }
+        data: { transition: 10 }
 
   - alias: "Motion Lights — Living Room (SQL v1.5)"
     id: motion_lights_living_room_sql_v15
@@ -335,7 +335,7 @@ automation:
         continue_on_timeout: false
       - service: light.turn_off
         target: { entity_id: light.adaptive_living_room_light_group }
-        data: { transition: 5 }
+        data: { transition: 10 }
 
   - alias: "Motion Lights — Ensuite (SQL v1.5)"
     id: motion_lights_ensuite_sql_v15
@@ -402,7 +402,7 @@ automation:
         continue_on_timeout: false
       - service: light.turn_off
         target: { entity_id: light.adaptive_ensuite_light_group }
-        data: { transition: 5 }
+        data: { transition: 10 }
 
   - alias: "Motion Lights — Desk (SQL v1.5)"
     id: motion_lights_desk_sql_v15
@@ -469,4 +469,4 @@ automation:
         continue_on_timeout: false
       - service: light.turn_off
         target: { entity_id: light.adaptive_desk_light_group }
-        data: { transition: 5 }
+        data: { transition: 10 }
