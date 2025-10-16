@@ -28,19 +28,26 @@
         tier: "α"
         description: "Proxy sensor exposing current time in ISO 8601 format."
         domain: "temporal"
-        upstream_sources: ""
-        downstream_consumers: ""
+        upstream_sources: >-
+          {{ ["template.library.jinja"] | tojson }}
+        source_count: "0"
+        downstream_consumers: >-
+          {{ ["sensor.schedule_status"] | tojson }}
         file: "/config/domain/templates/time_logic.yaml"
         created: "2025-07-17T12:00:00Z"
-        last_updated: "2025-07-20T08:00:00Z"
+        last_updated: "2025-10-16"
         version: "1.2"
 
     - name: "Current Time (hh:mm:ss)"
       unique_id: "current_time_legacy"
       state: "{{ now().strftime('%H:%M:%S') }}"
       attributes:
-        downstream_consumers: >
-          {{ "sensor.schedule_status" | tojson }}
+        downstream_consumers: >-
+          {{ ["sensor.schedule_status"] | tojson }}
+        upstream_sources: >-
+          {{ ["template.library.jinja"] | tojson }}
+        source_count: "0"
+        last_updated: "2025-10-16"
 
 - trigger:
     - platform: time_pattern
@@ -61,6 +68,10 @@
         description: "Returns the current day of the week as a full name (e.g., Friday)."
         version: "1.0"
         file: "/config/domain/templates/time_logic.yaml"
+        upstream_sources: >-
+          {{ ["template.library.jinja"] | tojson }}
+        source_count: "0"
+        last_updated: "2025-10-16"
 
 - trigger:
     - platform: time_pattern
@@ -87,6 +98,10 @@
         description: "Returns the current date in natural language format (e.g., August 6th)."
         version: "1.0"
         file: "/config/domain/templates/time_logic.yaml"
+        upstream_sources: >-
+          {{ ["template.library.jinja"] | tojson }}
+        source_count: "0"
+        last_updated: "2025-10-16"
 
 - trigger:
     - platform: time_pattern
@@ -111,16 +126,17 @@
         source_count: "1"
         version: "1.2"
         created: "2025-07-17"
-        last_updated: "2025-07-20"
+        last_updated: "2025-10-16"
         description: "Evaluates whether the current time falls within working hours (09:00–17:00)."
         domain: "temporal"
         module: "scheduling"
         role: "evaluator"
         type: "status"
         tier: "β"
-        upstream_sources: >
-          {{"sensor.current_time_legacy" | tojson }}
-        downstream_consumers: ""
+        upstream_sources: >-
+          {{ ["sensor.current_time_legacy"] | tojson }}
+        downstream_consumers: >-
+          {{ [] | tojson }}
         file: "/config/domain/templates/time_logic.yaml"
 
 - trigger:
@@ -148,3 +164,7 @@
         version: "1.0"
         description: "Returns a merged sentence-style summary of the current weekday and date (e.g., 'Today is Friday, August 6th')."
         file: "/config/domain/templates/time_logic.yaml"
+        upstream_sources: >-
+          {{ ["template.library.jinja"] | tojson }}
+        source_count: "0"
+        last_updated: "2025-10-16"

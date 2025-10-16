@@ -21,7 +21,7 @@ For each sensor defined in the files below, parse Jinja in `state:` (and templat
 
 Reference and modify these Home Assistant template files:
 
-- `domain/templates/illuminance_decay.yaml`
+- `domain/templates/tracking_logic.yaml`
 
 <!--
 - `domain/templates/humidity_logic.yaml`
