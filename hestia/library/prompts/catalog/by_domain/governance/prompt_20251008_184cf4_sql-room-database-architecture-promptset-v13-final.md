@@ -2,17 +2,17 @@
 id: prompt_20251008_184cf4
 slug: sql-room-database-architecture-promptset-v13-final
 title: "SQL Room Database Architecture — Promptset v1.3 (Final, Strategos)"
-date: '2025-10-08'
+date: "2025-10-08"
 tier: "α"
 domain: governance
 persona: promachos
 status: candidate
 tags: []
-version: '1.0'
+version: "1.0"
 source_path: sql_room_db/sql_room_db_v1.3.promptset
 author: Unknown
 related: []
-last_updated: '2025-10-09T01:44:26.861870'
+last_updated: "2025-10-09T01:44:26.861870"
 redaction_log: []
 ---
 
@@ -551,4 +551,3 @@ promptset:
     - "Assert room_id pattern {{ room_id_pattern }} and mapping validation is implemented in preferred (AppDaemon) path."
     - "Assert MQTT topics reference a single {{ valetudo_base_topic_var }} value (secret or input_text)."
 ````
-

@@ -2,17 +2,17 @@
 id: prompt_20251008_150236
 slug: sql-room-database-architecture-promptset-v14-final
 title: "SQL Room Database Architecture — Promptset v1.4 (Final\u2011Locked, Strategos)"
-date: '2025-10-08'
+date: "2025-10-08"
 tier: "α"
 domain: governance
 persona: promachos
 status: candidate
 tags: []
-version: '1.0'
+version: "1.0"
 source_path: sql_room_db/sql_room_db_v1.4.promptset
 author: Unknown
 related: []
-last_updated: '2025-10-09T01:44:26.925047'
+last_updated: "2025-10-09T01:44:26.925047"
 redaction_log: []
 ---
 
@@ -620,4 +620,3 @@ promptset:
     - "Assert room_id matches {{ room_id_pattern }} and exists in {{ canonical_mapping_file }} (preferred path validation)."
     - "Assert writes respect rate limit and size cap; dry_run honored."
 ````
-
