@@ -1,4 +1,15 @@
-# Sankey Chart Card
+---
+title: "Sankey Chart Card - Energy and Flow Visualization"
+authors: "@MindFreeze"
+source: "https://github.com/MindFreeze/ha-sankey-chart"
+slug: "sankey-chart-card"
+tags: ["home-assistant", "lovelace", "cards", "energy", "sankey", "visualization"]
+original_date: "2022-01-01"
+last_updated: "2025-10-16"
+url: "https://github.com/MindFreeze/ha-sankey-chart"
+---
+
+# Sankey Chart Card - Energy and Flow Visualization
 
 A Home Assistant lovelace card to display a sankey chart. For example for energy/power/water consumption.
 
@@ -12,11 +23,31 @@ This card is intended to display connections between entities with numeric state
 
 ![Example card](img/example.png)
 
+## Table of Contents
+
+- [Installation](#installation)
+- [Configuration Options](#configuration-options)
+  - [Sections Object](#sections-object)
+  - [Entities Object](#entities-object)
+  - [Children Object](#children-object)
+  - [Reconcile Config](#reconcile-config)
+  - [Entity Types](#entity-types)
+  - [Autoconfig](#autoconfig)
+  - [Time Period](#time-period)
+- [Examples](#examples)
+  - [Simple Example](#simple-example)
+  - [Energy Use Example](#energy-use-example)
+  - [Reconcile State Example](#reconcile-state-example)
+- [Energy Dashboard Integration](#energy-dashboard-integration)
+- [FAQ](#faq)
+- [Development](#development)
+- [References](#references)
+
 ## Installation
 
 Install through [HACS](https://hacs.xyz/)
 
-## Options
+## Configuration Options
 
 | Name                    | Type    | Default                          | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | ----------------------- | ------- | -------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -51,7 +82,7 @@ Install through [HACS](https://hacs.xyz/)
 | time_period_to          | string  | now                              | End of custom time period. Not compatible with `energy_date_selection`. See [Time period](#time-period)                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | ignore_missing_entities | boolean | false                            | If true, missing entities will be treated as having a state of 0 instead of throwing an error                                                                                                                                                                                                                                                                                                                                                                                                                                       |
 
-### Sections object
+### Sections Object
 
 | Name                 | Type    | Requirement  | Default | Description                                                                                                                                                                                      |
 | -------------------- | ------- | ------------ | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -61,7 +92,7 @@ Install through [HACS](https://hacs.xyz/)
 | sort_group_by_parent | boolean | **Optional** | false   | Group entities by parent before sorting. See [#135](https://github.com/MindFreeze/ha-sankey-chart/issues/135)                                                                                    |
 | min_width            | number  | **Optional** |         | Minimum section width in pixels. Only relevant while in horizontal layout                                                                                                                        |
 
-### Entities object
+### Entities Object
 
 | Name                | Type    | Requirement  | Default                     | Description                                                                                                                                                                                                                                                                                          |
 | ------------------- | ------- | ------------ | --------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -84,21 +115,21 @@ Install through [HACS](https://hacs.xyz/)
 | children_sum        | object  | **Optional** |                             | [reconcile config](#reconcile-config). Determines how to handle mismatches between parents & children. For example if the sum of the energy from all rooms shouldn't exceed the energy of the whole house. See [#37](https://github.com/MindFreeze/ha-sankey-chart/issues/37) and its related issues |
 | parents_sum         | object  | **Optional** |                             | [reconcile config](#reconcile-config). Determines how to handle mismatches between parents & children. For example if the sum of the energy from all rooms shouldn't exceed the energy of the whole house. See [#37](https://github.com/MindFreeze/ha-sankey-chart/issues/37) and its related issues |
 
-### Children object
+### Children Object
 
 | Name                 | Type   | Requirement  | Default | Description                                                                            |
 | -------------------- | ------ | ------------ | ------- | -------------------------------------------------------------------------------------- |
 | entity_id            | string | **Required** |         | Entity id of the child box                                                             |
 | connection_entity_id | string | **Optional** |         | Entity id of the sensor to that determines how much of the parent flows into the child |
 
-### Reconcile config
+### Reconcile Config
 
 | Name         | Type   | Requirement  | Default | Description                                                                                      |
 | ------------ | ------ | ------------ | ------- | ------------------------------------------------------------------------------------------------ |
 | should_be    | string | **Required** |         | Valid options are 'equal', 'equal_or_less', 'equal_or_more'                                      |
 | reconcile_to | string | **Required** |         | Which value to display in case of inconsistency. Valid options are 'min', 'max', 'mean', 'latest |
 
-### Entity types
+### Entity Types
 
 - `entity` - The default value, representing an entity from HA
 - `passthrough` - Used for connecting entities across sections, passing through intermediate sections. The card creates such passtroughs automatically when needed but you can create them manually in order to have the connection pass through a specific place. See issue [#9](https://github.com/MindFreeze/ha-sankey-chart/issues/9). Here is an example passthrough config:
@@ -194,7 +225,7 @@ time_period_to: "now/d"
 
 ## Examples
 
-### Simple
+### Simple Example
 
 ![Simple example card](img/example-simple.png)
 
@@ -212,7 +243,7 @@ time_period_to: "now/d"
         - sensor.other_power
 ```
 
-### Energy use
+### Energy Use Example
 
 ![Energy example card](img/example-energy.png)
 
@@ -264,7 +295,7 @@ time_period_to: "now/d"
         - sensor.washer
 ```
 
-### Reconcile state
+### Reconcile State Example
 
 Example config where the state of the children must not exceed their parent. `reconcile_to: max` means to take the bigger of the two values. In other words, if the sum of the children is more than the state of the parent, the parent state will be set to the sum of its children within the card. `reconcile_to: min` would do the opposite and reduce the state of the children so they fully fit within the parent. `latest` just takes whichever value was updated last.
 
@@ -287,7 +318,7 @@ Example config where the state of the children must not exceed their parent. `re
 
 You can find more examples and help in the HA forum <https://community.home-assistant.io/t/anyone-using-the-sankey-chart-card/423125>
 
-## Energy Dashboard
+## Energy Dashboard Integration
 
 This card supports partial Energy dashboard integration. You still need to specify the entities and connections for now. See `energy_date_selection` option.
 
