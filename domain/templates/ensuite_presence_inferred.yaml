@@ -23,7 +23,6 @@
         composite_logic: "recent OR detected AND NOT end"
         upstream_sources: >-
           {{ ['binary_sensor.ensuite_shower_detected', 'binary_sensor.ensuite_shower_recent', 'binary_sensor.ensuite_shower_end_detected'] | tojson }}
-        downstream_consumers: >-
-          {{ [] | tojson }}
+
         source_count: "3"
         last_updated: "2025-10-16"
