@@ -39,7 +39,6 @@
         description: "Real-time motion event inferred from Zigbee2MQTT occupancy/action"
         created: "2024-09-03"
         file: "/config/domain/templates/mqtt_native.yaml"
-
         source_count: "0"
         downstream_consumers: >-
           {{ ['binary_sensor.ensuite_motion_beta'] | tojson }}

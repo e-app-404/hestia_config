@@ -19,7 +19,6 @@
         upstream_sources: >-
           {{ ["binary_sensor.bedroom_tv_entertainment_engaged_gamma"] | tojson }}
         source_count: "1"
-        downstream_consumers: {{ [] | tojson }}
         rationale: "Decay illuminance score when TV engaged, persists lighting effects for a short period."
         last_updated: "2025-10-16"
         description: >

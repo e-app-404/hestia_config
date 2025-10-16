@@ -52,7 +52,6 @@
             'device_tracker.ephone',
             'device_tracker.iphone8'
           ] | tojson }}
-        downstream_consumers: {{ [] | tojson }}
         last_updated: "2025-10-16"
 
     - name: "Macbook Presence"
@@ -63,7 +62,6 @@
         source_count: "1"
         upstream_sources: >-
           {{ ['device_tracker.macbook'] | tojson }}
-        downstream_consumers: {{ [] | tojson }}
         last_updated: "2025-10-16"
 
     - name: "Apple_Watch Presence"
@@ -74,7 +72,6 @@
         source_count: "1"
         upstream_sources: >-
           {{ ['device_tracker.everts_apple_watch'] | tojson }}
-        downstream_consumers: {{ [] | tojson }}
         last_updated: "2025-10-16"
 
     - name: "iPhone11 Presence"
@@ -85,7 +82,6 @@
         source_count: "1"
         upstream_sources: >-
           {{ ['device_tracker.iphone11'] | tojson }}
-        downstream_consumers: {{ [] | tojson }}
         last_updated: "2025-10-16"
 
     - name: "iPhone14 Presence"
@@ -96,7 +92,6 @@
         source_count: "1"
         upstream_sources: >-
           {{ ['device_tracker.iphone14'] | tojson }}
-        downstream_consumers: {{ [] | tojson }}
         last_updated: "2025-10-16"
 
     - name: "ePhone-Uk Presence"
@@ -107,7 +102,6 @@
         source_count: "1"
         upstream_sources: >-
           {{ ['device_tracker.ephone_uk'] | tojson }}
-        downstream_consumers: {{ [] | tojson }}
         last_updated: "2025-10-16"
 
     - name: "Nintendo_Switch Presence"
@@ -118,7 +112,6 @@
         source_count: "1"
         upstream_sources: >-
           {{ ['device_tracker.nintendo_switch'] | tojson }}
-        downstream_consumers: {{ [] | tojson }}
         last_updated: "2025-10-16"
 
     - name: "Wallet Presence"
@@ -129,7 +122,6 @@
         source_count: "1"
         upstream_sources: >-
           {{ ['device_tracker.wallet'] | tojson }}
-        downstream_consumers: {{ [] | tojson }}
         last_updated: "2025-10-16"
 
     - name: "Keys Presence"
@@ -140,7 +132,6 @@
         source_count: "1"
         upstream_sources: >-
           {{ ['device_tracker.keys'] | tojson }}
-        downstream_consumers: {{ [] | tojson }}
         last_updated: "2025-10-16"
 
     - name: "Backpack Presence"
@@ -151,7 +142,6 @@
         source_count: "1"
         upstream_sources: >-
           {{ ['device_tracker.backpack'] | tojson }}
-        downstream_consumers: {{ [] | tojson }}
         last_updated: "2025-10-16"
 
     - name: "ePhone Presence"
@@ -162,7 +152,6 @@
         source_count: "1"
         upstream_sources: >-
           {{ ['device_tracker.ephone'] | tojson }}
-        downstream_consumers: {{ [] | tojson }}
         last_updated: "2025-10-16"
 
     - name: "iPhone8 Presence"
@@ -173,5 +162,4 @@
         source_count: "1"
         upstream_sources: >-
           {{ ['device_tracker.iphone8'] | tojson }}
-        downstream_consumers: {{ [] | tojson }}
         last_updated: "2025-10-16"

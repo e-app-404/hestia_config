@@ -2,7 +2,6 @@
 description: "Fix all 'line too long' linter errors in a file while preserving functionality"
 mode: "edit"
 model: "GPT-4o"
-tools: ["readFile", "editFile"]
 ---
 
 # Fix Line Length Violations

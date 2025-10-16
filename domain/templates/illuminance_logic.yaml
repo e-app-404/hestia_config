@@ -127,7 +127,6 @@
       attributes:
         upstream_sources: >-
           {{ ['sensor.bedroom_illuminance_beta', 'sensor.living_room_illuminance_beta', 'sensor.ensuite_illuminance_beta'] | tojson }}
-
         area_id: "home"
         tier: "η"
         canonical_id: "merged_home_illuminance_η"
@@ -142,3 +141,33 @@
         role: "aggregation"
         type: "fusion"
         description: "Maximum illuminance detected in any room of the home"
+
+    - name: "Desk Illuminance (Beta)"
+      unique_id: "desk_illuminance_beta"
+      unit_of_measurement: "lx"
+      device_class: illuminance
+      icon: mdi:lumx
+      state: >
+        {% set val = states('sensor.bedroom_illuminance_alpha_illuminance') %}
+        {{ val if val not in ['unknown', 'unavailable', 'none', ''] else 0 }}
+      attributes:
+        tier: "β"
+        canonical_id: "desk_illuminance_β"
+        area_id: "desk"
+        floor_id: "sanctum"
+        upstream_sources: >-
+          {{ ['sensor.bedroom_illuminance_alpha_illuminance'] | tojson }}
+        source_count: "1"
+        data_quality: "{{ state_attr('sensor.bedroom_illuminance_alpha_illuminance', 'data_quality') }}"
+        sources: "{{ state_attr('sensor.bedroom_illuminance_alpha_illuminance', 'sources') }}"
+        subsystem: "aether"
+        is_multi_source: "false"
+        is_validated: true
+        version: "1.0"
+        last_updated: "2025-10-16"
+        role: "alias"
+        type: "standardized_sensor"
+        module: "illuminance"
+        file: "/config/domain/templates/illuminance_logic.yaml"
+        description: "Standardized illuminance reading for desk from merged alpha sensor"
+        created: "2025-10-07"
