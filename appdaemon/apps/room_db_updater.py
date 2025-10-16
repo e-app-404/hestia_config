@@ -31,11 +31,16 @@ class RoomDbUpdater(hassapi.Hass):
         # Register endpoints - use simple names, AppDaemon builds full path
         self.log("Registering health endpoint")
         self.register_endpoint(self.health_check, "health")
-        self.log("Registered: /api/app/room_db_updater/health")
-
+        self.log("Health endpoint registered with name: health")
+        
         self.log("Registering update_config endpoint")
         self.register_endpoint(self.update_config, "update_config")
-        self.log("Registered: /api/app/room_db_updater/update_config")
+        self.log("Update_config endpoint registered with name: update_config")
+        
+        # Debug: Log the app name that AppDaemon will use in URL construction
+        self.log(f"App name for URL construction: {self.name}")
+        self.log(f"Expected health URL: /api/app/{self.name}/health")
+        self.log(f"Expected update_config URL: /api/app/{self.name}/update_config")
         self.log("RoomDbUpdater initialized")
 
     def _init_database(self):
@@ -122,7 +127,11 @@ class RoomDbUpdater(hassapi.Hass):
             raise RuntimeError("WRITE_RATE_LIMIT")
         self._last_write[domain] = now
 
-    def health_check(self, data):
+    def test_endpoint(self, request):
+        """Simple test endpoint for debugging URL construction"""
+        return {"status": "test_success", "message": "Test endpoint is working", "app_name": self.name}, 200
+    
+    def health_check(self, request):
         """Health check endpoint"""
         try:
             conn = sqlite3.connect(self.db_path)
