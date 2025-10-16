@@ -19,7 +19,9 @@ Diagnose and resolve 404 "App Not Found" errors in Home Assistant + AppDaemon ro
 ## Investigation Points
 
 ### 1. Endpoint Registration Analysis
+
 Examine `room_db_updater.py` endpoint registration:
+
 ```python
 # Current registration (likely incorrect)
 self.register_endpoint(self.update_config, "room_db/update_config")
@@ -27,12 +29,15 @@ self.register_endpoint(self.health_check, "room_db/health")
 ```
 
 ### 2. URL Pattern Validation
+
 AppDaemon URL structure: `/api/app/<app_name>/<endpoint_name>`
+
 - **App name**: `room_db_updater` (from apps.yaml)
 - **Expected endpoints**: Simple names without prefixes/slashes
 - **Current URLs**: May include incorrect prefixes
 
 ### 3. Configuration Files to Check
+
 - `room_db_updater.py` - Endpoint registration methods
 - `package_room_database.yaml` - REST command URL definitions
 - `apps.yaml` - AppDaemon app configuration
@@ -41,6 +46,7 @@ AppDaemon URL structure: `/api/app/<app_name>/<endpoint_name>`
 ## Required Fixes
 
 ### Fix 1: Standardize Endpoint Names
+
 Update `room_db_updater.py` to use simple endpoint names:
 
 ```python
@@ -54,6 +60,7 @@ self.register_endpoint(self.update_config, "update_config")
 ```
 
 ### Fix 2: Update REST Command URLs
+
 Update `package_room_database.yaml` REST command URLs to match:
 
 ```yaml
@@ -67,6 +74,7 @@ url: "http://a0d7b954-appdaemon:5050/api/app/room_db_updater/update_config"
 ```
 
 ### Fix 3: Add Diagnostic Logging
+
 Enhance endpoint registration with verbose logging:
 
 ```python
@@ -75,19 +83,22 @@ self.register_endpoint(self.health_check, "health")
 self.log("Health endpoint registered at /api/app/room_db_updater/health")
 
 self.log("Registering update_config endpoint")
-self.register_endpoint(self.update_config, "update_config")  
+self.register_endpoint(self.update_config, "update_config")
 self.log("Update endpoint registered at /api/app/room_db_updater/update_config")
 ```
 
 ## Validation Steps
 
 ### 1. AppDaemon Restart
+
 ```bash
 ha addons restart a0d7b954_appdaemon
 ```
 
 ### 2. Log Verification
+
 Check AppDaemon logs for successful registration:
+
 ```
 INFO room_db_updater: Registering health endpoint
 INFO room_db_updater: Health endpoint registered at /api/app/room_db_updater/health
@@ -97,13 +108,16 @@ INFO room_db_updater: RoomDbUpdater initialized
 ```
 
 ### 3. Health Check Test
+
 ```yaml
 service: rest_command.room_db_health
 data: {}
 ```
+
 **Expected**: Status 200, JSON response with `"status": "healthy"`
 
 ### 4. Update Config Test
+
 ```yaml
 service: rest_command.room_db_update_config
 data:
@@ -114,30 +128,38 @@ data:
     bypass: false
   schema_expected: 1
 ```
+
 **Expected**: Status 200, successful database update
 
 ### 5. Template Verification
+
 ```jinja2
 {% set payload = state_attr('sensor.room_configs_motion_lighting_dict', 'payload') %}
 Bedroom timeout: {{ payload.bedroom.timeout }}
 ```
+
 **Expected**: `Bedroom timeout: 999`
 
 ## Troubleshooting
 
 ### Direct HTTP Test
+
 Bypass Home Assistant and test AppDaemon directly:
+
 ```bash
 curl -v http://a0d7b954-appdaemon:5050/api/app/room_db_updater/health
 ```
+
 **Expected**: JSON response with status and database info
 
 ### Common Patterns
+
 - **AppDaemon endpoint registration**: Use simple names without slashes
 - **URL construction**: `/api/app/<app_name>/<simple_endpoint_name>`
 - **Home Assistant integration**: REST command URLs must match exactly
 
 ### Error Indicators
+
 - **404 errors**: Endpoint name mismatch between registration and URL
 - **No startup logs**: App initialization failure
 - **Connection refused**: AppDaemon service not running
