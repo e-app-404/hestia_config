@@ -11,7 +11,12 @@ automation:
         to: "on"
     variables:
       _raw: "{{ state_attr('sensor.room_configs_motion_lighting_dict','payload') }}"
-      _cfgs: "{{ _raw if _raw is mapping else {} }}"
+      _cfgs: >-
+        {% if _raw is mapping %}
+          {{ _raw }}
+        {% else %}
+          {}
+        {% endif %}
       room_config: >-
         {% if _cfgs and 'bedroom' in _cfgs %}
           {% set cfg = _cfgs.bedroom %}
@@ -78,7 +83,12 @@ automation:
         to: "on"
     variables:
       _raw: "{{ state_attr('sensor.room_configs_motion_lighting_dict','payload') }}"
-      _cfgs: "{{ _raw if _raw is mapping else {} }}"
+      _cfgs: >-
+        {% if _raw is mapping %}
+          {{ _raw }}
+        {% else %}
+          {}
+        {% endif %}
       room_config: >-
         {% if _cfgs and 'upstairs' in _cfgs %}
           {% set cfg = _cfgs.upstairs %}
@@ -145,7 +155,12 @@ automation:
         to: "on"
     variables:
       _raw: "{{ state_attr('sensor.room_configs_motion_lighting_dict','payload') }}"
-      _cfgs: "{{ _raw if _raw is mapping else {} }}"
+      _cfgs: >-
+        {% if _raw is mapping %}
+          {{ _raw }}
+        {% else %}
+          {}
+        {% endif %}
       room_config: >-
         {% if _cfgs and 'downstairs' in _cfgs %}
           {% set cfg = _cfgs.downstairs %}
@@ -212,7 +227,12 @@ automation:
         to: "on"
     variables:
       _raw: "{{ state_attr('sensor.room_configs_motion_lighting_dict','payload') }}"
-      _cfgs: "{{ _raw if _raw is mapping else {} }}"
+      _cfgs: >-
+        {% if _raw is mapping %}
+          {{ _raw }}
+        {% else %}
+          {}
+        {% endif %}
       room_config: >-
         {% if _cfgs and 'kitchen' in _cfgs %}
           {% set cfg = _cfgs.kitchen %}
@@ -279,7 +299,12 @@ automation:
         to: "on"
     variables:
       _raw: "{{ state_attr('sensor.room_configs_motion_lighting_dict','payload') }}"
-      _cfgs: "{{ _raw if _raw is mapping else {} }}"
+      _cfgs: >-
+        {% if _raw is mapping %}
+          {{ _raw }}
+        {% else %}
+          {}
+        {% endif %}
       room_config: >-
         {% if _cfgs and 'living_room' in _cfgs %}
           {% set cfg = _cfgs.living_room %}
@@ -346,7 +371,12 @@ automation:
         to: "on"
     variables:
       _raw: "{{ state_attr('sensor.room_configs_motion_lighting_dict','payload') }}"
-      _cfgs: "{{ _raw if _raw is mapping else {} }}"
+      _cfgs: >-
+        {% if _raw is mapping %}
+          {{ _raw }}
+        {% else %}
+          {}
+        {% endif %}
       room_config: >-
         {% if _cfgs and 'ensuite' in _cfgs %}
           {% set cfg = _cfgs.ensuite %}
@@ -413,7 +443,12 @@ automation:
         to: "on"
     variables:
       _raw: "{{ state_attr('sensor.room_configs_motion_lighting_dict','payload') }}"
-      _cfgs: "{{ _raw if _raw is mapping else {} }}"
+      _cfgs: >-
+        {% if _raw is mapping %}
+          {{ _raw }}
+        {% else %}
+          {}
+        {% endif %}
       room_config: >-
         {% if _cfgs and 'desk' in _cfgs %}
           {% set cfg = _cfgs.desk %}
