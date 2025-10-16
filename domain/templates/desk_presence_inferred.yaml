@@ -18,6 +18,10 @@
         tier: "γ"
         area_id: "desk"
         floor_id: "sanctum"
+        upstream_sources: >-
+          {{ ["sensor.macbook_displays"] | tojson }}
+        source_count: "1"
+        downstream_consumers: {{ [] | tojson }}
 
     - name: "MacBook HP32 Monitor Active"
       unique_id: "macbook_hp32_monitor_active"
@@ -32,6 +36,10 @@
         tier: "γ"
         area_id: "desk"
         floor_id: "sanctum"
+        upstream_sources: >-
+          {{ ["sensor.macbook_displays"] | tojson }}
+        source_count: "1"
+        downstream_consumers: {{ [] | tojson }}
 
     - name: "MacBook Bedroom TV (AirPlay) Active"
       unique_id: "macbook_bedroom_tv_airplay_active"
@@ -46,6 +54,10 @@
         tier: "γ"
         area_id: "bedroom"
         floor_id: "sanctum"
+        upstream_sources: >-
+          {{ ["sensor.macbook_displays"] | tojson }}
+        source_count: "1"
+        downstream_consumers: {{ [] | tojson }}
 
     - name: "MacBook Apple TV Bedroom TV (AirPlay) Active"
       unique_id: "macbook_appletv_bedroom_airplay_active"
@@ -60,6 +72,10 @@
         tier: "γ"
         area_id: "bedroom"
         floor_id: "sanctum"
+        upstream_sources: >-
+          {{ ["sensor.macbook_displays"] | tojson }}
+        source_count: "1"
+        downstream_consumers: {{ [] | tojson }}
 
     - name: "Desk Presence Inferred"
       unique_id: "desk_presence_inferred"
@@ -90,14 +106,15 @@
         tier: "γ"
         canonical_id: "desk_presence_inferred_γ"
         role: "composite"
-        upstream_sources: >
+        upstream_sources: >-
           {{ [
-            'sensor.macbook_displays',
-            'sensor.macbook_internal_battery_state',
-            'device_tracker.macbook',
-            'binary_sensor.desk_macbook_recent_connectivity_desk'
+            "sensor.macbook_displays",
+            "sensor.macbook_internal_battery_state",
+            "device_tracker.macbook",
+            "binary_sensor.desk_macbook_recent_connectivity_desk"
           ] | tojson }}
-        downstream_consumers: >
+        source_count: "4"
+        downstream_consumers: >-
           {{ ["binary_sensor.desk_presence_beta"] | tojson }}
         area_id: "desk"
         floor_id: "sanctum"
@@ -123,8 +140,10 @@
         rationale: >-
           True if connection is Ethernet OR Wi-Fi on a known home SSID. When it turns off, it decays after 120s (delay_off) to smooth brief link changes.
         last_updated: "{{ now().isoformat() }}"
-        upstream_sources: >
+        upstream_sources: >-
           {{ ["sensor.macbook_connection_type", "sensor.macbook_ssid"] | tojson }}
+        source_count: "2"
+        downstream_consumers: {{ [] | tojson }}
         role: "inference"
         type: "proxy"
         subsystem: "soteria"
