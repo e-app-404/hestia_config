@@ -299,7 +299,7 @@ The results will be a list of entities matching the first filter, but with those
 
 ## Examples
 
-Show all entities, except yahoo weather, groups and zones in a glance card:
+**Example 1:** Show all entities, except yahoo weather, groups and zones in a glance card:
 
 ```yaml
 type: custom:auto-entities
@@ -313,7 +313,7 @@ filter:
     - domain: zone
 ```
 
-Show all gps `device_tracker`s with battery level less than 50:
+**Example 2:** Show all gps `device_tracker`s with battery level less than 50:
 
 ```yaml
 type: custom:auto-entities
@@ -330,7 +330,7 @@ filter:
         source_type: gps
 ```
 
-Show all lights that are on:
+**Example 3:** Show all lights that are on:
 
 ```yaml
 type: custom:auto-entities
@@ -347,7 +347,7 @@ filter:
           action: toggle
 ```
 
-Also show all lights that are on, except the hidden ones:
+**Example 4:** Also show all lights that are on, except the hidden ones:
 
 ```yaml
 type: custom:auto-entities
@@ -365,7 +365,7 @@ filter:
     - hidden_by: "user"
 ```
 
-Show everything that has "light" in its name, but isn't a light, and all switches in the living room:
+**Example 5:** Show everything that has "light" in its name, but isn't a light, and all switches in the living room:
 
 ```yaml
 type: custom:auto-entities
@@ -383,7 +383,7 @@ filter:
       area: Living Room
 ```
 
-List every sensor belonging to any iPhone:
+**Example 6:** List every sensor belonging to any iPhone:
 
 ```yaml
 type: custom:auto-entities
@@ -396,7 +396,7 @@ filter:
     - device: /iPhone/
 ```
 
-List the five last triggered motion sensors:
+**Example 7:** List the five last triggered motion sensors:
 
 ```yaml
 type: custom:auto-entities
@@ -413,7 +413,7 @@ sort:
   count: 5
 ```
 
-Put all sensors in individual entity cards in a grid card:
+**Example 8:** Put all sensors in individual entity cards in a grid card:
 
 ```yaml
 type: custom:auto-entities
@@ -427,7 +427,7 @@ filter:
         type: entity
 ```
 
-Turn on scenes by clicking them:
+**Example 9:** Turn on scenes by clicking them:
 
 ```yaml
 type: custom:auto-entities
@@ -445,7 +445,7 @@ filter:
             entity_id: this.entity_id
 ```
 
-Example using templates:
+**Example 10:** Example using templates:
 
 ```yaml
 type: custom:auto-entities
@@ -460,13 +460,13 @@ filter:
     {% endfor %}
 ```
 
-Or:
+**Example 10:** Alternative syntax
 
 ```yaml
 template: "{{states.light | selectattr('state', '==', 'on') | map(attribute='entity_id') | list}}"
 ```
 
-Templates also give great opportunity for customization:
+**Example 11:** Templates also give great opportunity for customization:
 
 ```yaml
 type: custom:auto-entities

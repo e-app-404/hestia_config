@@ -93,8 +93,7 @@ This card allows you to convert any vertical stack into a pop-up. Each pop-up is
 > This feature allows you to open a pop-up based on the state of any entity, for example, you can open a "Security" pop-up with a camera when a person is in front of your house. You can also create a toggle helper (input_boolean) and trigger its opening/closing in an automation.
 >
 > <details>
-> <summary>Opening a pop-up when a <code>binary_sensor</code> is <code>on</code></summary>
-> <br>
+> <summary>Opening a pop-up when a `binary_sensor` is `on`</summary>
 >
 > ```yaml
 > type: custom:bubble-card
@@ -119,7 +118,6 @@ This card allows you to convert any vertical stack into a pop-up. Each pop-up is
 >
 > <details>
 > <summary>Installation</summary>
-> <br>
 >
 > You can do this by adding `bubble-pop-up-fix.js` to your `configuration.yaml` like so:
 >
@@ -189,8 +187,6 @@ This card allows you to convert any vertical stack into a pop-up. Each pop-up is
 
 <summary>A pop-up</summary>
 
-<br>
-
 ```yaml
 type: vertical-stack
 cards:
@@ -206,8 +202,6 @@ cards:
 <details>
 
 <summary>A button to open the pop-up</summary>
-
-<br>
 
 ```yaml
 type: custom:bubble-card
@@ -226,8 +220,6 @@ button_action:
 <details>
 
 <summary>A pop-up with a fixed height</summary>
-
-<br>
 
 Replace `400px` with the size you need.
 
@@ -299,8 +291,6 @@ This card is a good companion to the pop-up card, allowing you to open the corre
 <details>
 
 <summary>An horizontal buttons stack that reorganize itself based on occupancy sensors</summary>
-
-<br>
 
 ```yaml
 type: custom:bubble-card
@@ -431,8 +421,6 @@ These options are only available when `button_type` is set to `slider`.
 
 <summary>A slider button that can control the brightness of a light</summary>
 
-<br>
-
 ```yaml
 type: custom:bubble-card
 card_type: button
@@ -447,8 +435,6 @@ icon: mdi:led-strip-variant
 <details>
 
 <summary>A button with more options</summary>
-
-<br>
 
 ```yaml
 type: custom:bubble-card
@@ -483,11 +469,7 @@ sub_button:
 
 </details>
 
-<br>
-
 ---
-
-<br>
 
 ## Media player
 
@@ -561,8 +543,6 @@ This card allows you to control a media player entity.
 
 <summary>A media player with all the options</summary>
 
-<br>
-
 ```yaml
 type: custom:bubble-card
 card_type: media-player
@@ -607,11 +587,7 @@ sub_button:
 
 </details>
 
-<br>
-
 ---
-
-<br>
 
 ## Cover
 
@@ -676,8 +652,6 @@ This card allows you to control your `cover` entities.
 
 <summary>A card that can control a roller shade</summary>
 
-<br>
-
 ```yaml
 type: custom:bubble-card
 card_type: cover
@@ -689,11 +663,7 @@ icon_close: mdi:roller-shade-closed
 
 </details>
 
-<br>
-
 ---
-
-<br>
 
 ## Select
 
@@ -760,8 +730,6 @@ This card allows you to add a dropdown menu for your `input_select` / `select` e
 
 <summary>A select card with a list of scenes</summary>
 
-<br>
-
 ```yaml
 type: custom:bubble-card
 card_type: select
@@ -773,11 +741,7 @@ show_state: true
 
 </details>
 
-<br>
-
 ---
-
-<br>
 
 ## Climate
 
@@ -846,8 +810,6 @@ This card allows you to control your `climate` entities.
 
 <summary>A climate card with an HVAC modes dropdown menu</summary>
 
-<br>
-
 ```yaml
 type: custom:bubble-card
 card_type: climate
@@ -861,11 +823,7 @@ sub_button:
 
 </details>
 
-<br>
-
 ---
-
-<br>
 
 ## Calendar
 
@@ -916,8 +874,6 @@ This card allows you to display your calendar entities. Its content is scrollabl
 
 <summary>A calendar card with a limited amount of events</summary>
 
-<br>
-
 ```yaml
 type: custom:bubble-card
 card_type: calendar
@@ -933,8 +889,6 @@ limit: 1
 
 <summary>A calendar card with an end time and a progress bar</summary>
 
-<br>
-
 ```yaml
 type: custom:bubble-card
 card_type: calendar
@@ -947,11 +901,7 @@ show_progress: true
 
 </details>
 
-<br>
-
 ---
-
-<br>
 
 ## Separator
 
@@ -991,8 +941,6 @@ This card is a simple separator for dividing your pop-up into categories / secti
 
 <summary>A separator/divider for a "Covers" section</summary>
 
-<br>
-
 ```yaml
 type: custom:bubble-card
 card_type: separator
@@ -1002,11 +950,7 @@ icon: mdi:window-shutter
 
 </details>
 
-<br>
-
 ---
-
-<br>
 
 ## Empty column
 
@@ -1024,8 +968,6 @@ This card has no options and doesn’t support [styling](#styling), though it do
 
 <summary>An empty column in an horizontal stack</summary>
 
-<br>
-
 ```yaml
 type: horizontal-stack
 cards:
@@ -1038,11 +980,7 @@ cards:
 
 </details>
 
-<br>
-
 ---
-
-<br>
 
 ## Sub-buttons
 
@@ -1105,8 +1043,6 @@ These sub-buttons can also display dropdown menus if combined with selectable en
 
 <summary>A button with some sub-buttons to make a vacuum card (like on the screenshot)</summary>
 
-<br>
-
 ```yaml
 type: custom:bubble-card
 card_type: button
@@ -1167,8 +1103,6 @@ styles: >-
 
 <summary>A button slider with a sub-button that shows the brightness and one that toggle the light (like on the screenshot)</summary>
 
-<br>
-
 ```yaml
 type: custom:bubble-card
 card_type: button
@@ -1196,9 +1130,7 @@ sub_button:
 
 <summary>A button that shows the inside and outside temperature with the weather for today and tomorrow (screenshot included)</summary>
 
-<br>
-
-<img width="591" alt="image" src="https://github.com/Clooos/Bubble-Card/assets/36499953/360312de-db08-47bf-9b46-92afeb435edd">
+![image](https://github.com/Clooos/Bubble-Card/assets/36499953/360312de-db08-47bf-9b46-92afeb435edd)
 
 > Bad luck for me it's cloudy all the time but all the icons are changing based on the weather.
 
@@ -1240,11 +1172,7 @@ styles: >-
 
 </details>
 
-<br>
-
 ---
-
-<br>
 
 ## Card layouts
 
@@ -1271,9 +1199,7 @@ Bubble Card fully supports the Home Assistant section view, you can change the c
 
 <summary>A large button that shows energy statistics with 2 rows of sub-buttons (screenshot included)</summary>
 
-<br>
-
-<img width="547" alt="image" src="https://github.com/Clooos/Bubble-Card/assets/36499953/faa643d5-5d1e-488d-b4a5-6bedd043c747">
+![image](https://github.com/Clooos/Bubble-Card/assets/36499953/faa643d5-5d1e-488d-b4a5-6bedd043c747)
 
 ```yaml
 type: custom:bubble-card
@@ -1313,9 +1239,7 @@ sub_button:
 
 <summary>A large button with multiple rows with 12 sub-buttons</summary>
 
-<br>
-
-<img width="547" alt="image" src="/img/Example_Layout_Large_multi-row.png">
+![image](/img/Example_Layout_Large_multi-row.png)
 
 ```yaml
 type: custom:bubble-card
@@ -1354,11 +1278,7 @@ sub_button:
 
 </details>
 
-<br>
-
 ---
-
-<br>
 
 ## Tap, double tap and hold actions
 
@@ -1391,8 +1311,6 @@ of a double tap. If this delay is undesirable, set `double_tap_action` to `none`
 
 <summary>A button to open a pop-up</summary>
 
-<br>
-
 ```yaml
 type: custom:bubble-card
 card_type: button
@@ -1407,11 +1325,7 @@ button_action:
 
 </details>
 
-<br>
-
 ---
-
-<br>
 
 ## Styling
 
@@ -1424,8 +1338,6 @@ You can add custom styles to modify the CSS of all cards **without using card-mo
   <details>
 
   <summary>Example</a></summary>
-
-  <br>
 
   Don't copy the `Bubble:` line, this is the name of the theme you use. You also need to remove the `--` from the variables.
 
@@ -1466,8 +1378,6 @@ You can add custom styles to modify the CSS of all cards **without using card-mo
 
 <summary>Changing the font size of any Bubble Card</summary>
 
-<br>
-
 ```yaml
 styles: |
   * { 
@@ -1480,8 +1390,6 @@ styles: |
 <details>
 
 <summary>Changing the background color of a single button in an horizontal buttons stack</summary>
-
-<br>
 
 ```yaml
 styles: >
@@ -1496,8 +1404,6 @@ styles: >
 <details>
 
 <summary>Changing the background color of a card</summary>
-
-<br>
 
 This one works on all Bubble Card types (except for the pop-ups):
 
@@ -1525,8 +1431,6 @@ To change the color when it's `on` take a look at the style templates below.
 
 <summary>Changing the color of a button slider</summary>
 
-<br>
-
 ```yaml
 styles: |
   .bubble-range-fill { 
@@ -1541,8 +1445,6 @@ styles: |
 
 <summary>Changing the line color of a separator</summary>
 
-<br>
-
 ```yaml
 styles: |
   .bubble-line {
@@ -1556,8 +1458,6 @@ styles: |
 <details>
 
 <summary>Changing the color of an icon</summary>
-
-<br>
 
 ```yaml
 styles: |
@@ -1579,8 +1479,6 @@ For an horizontal buttons stack icon.
 <details>
 
 <summary>Changing the background color of an icon container</summary>
-
-<br>
 
 This one works on all Bubble Card types (except for the pop-ups):
 
@@ -1606,8 +1504,6 @@ styles: |
 
 <summary>Changing the size of the sub-buttons (perfect for the large layout)</summary>
 
-<br>
-
 ```yaml
 styles: |
   .bubble-sub-button {
@@ -1622,8 +1518,6 @@ styles: |
 
 <summary>Changing the background color of the second sub-button</summary>
 
-<br>
-
 ```yaml
 styles: |
   .bubble-sub-button-2 {
@@ -1636,8 +1530,6 @@ styles: |
 <details>
 
 <summary>Changing the size of an icon</summary>
-
-<br>
 
 For the main icon.
 
@@ -1663,8 +1555,6 @@ styles: |
 
 <summary>Using a picture rather than an icon in a sub button</summary>
 
-<br>
-
 ```yaml
 sub_button:
   - icon: none
@@ -1683,9 +1573,7 @@ Just upload this picture in a “pictures” folder (or the name you want) in th
 
 <summary>Advanced example: Creating an horizontal row of sub-buttons (screenshot included)</summary>
 
-<br>
-
-<img width="556" alt="image" src="https://github.com/Clooos/Bubble-Card/assets/36499953/b9be2bcf-93fc-4b06-8eae-ecac97dfb5e2">
+![image](https://github.com/Clooos/Bubble-Card/assets/36499953/b9be2bcf-93fc-4b06-8eae-ecac97dfb5e2)
 
 > I really love this one, I use it as a header on my dashboard.
 
@@ -1757,8 +1645,6 @@ styles: |
 
 </details>
 
-<br>
-
 ## Templates
 
 **Bubble Card doesn’t support Jinja templates** but advanced users can add templates in JS directly in their [custom styles](#styling). For example, this allows you to dynamically change an icon, the texts or the colors of an element, to show or hide an element conditionally (like a sub-button), or almost anything based on a state, an attribute and more.
@@ -1774,8 +1660,6 @@ styles: |
 <details>
 
 <summary>Variables</summary>
-
-<br>
 
 You have access to these variables in most cards:
 
@@ -1795,8 +1679,6 @@ You have access to these variables in most cards:
 <details>
 
 <summary>Functions</summary>
-
-<br>
 
 You have access to all the global JS functions, but you have also access to:
 
@@ -1835,45 +1717,31 @@ You can find a lot of examples below, but you can also find very advanced templa
 <details>
 <summary>Examples from my Patreon page</summary>
 
-<p align="center"><br>
-    <img src="https://github.com/user-attachments/assets/e95ab7f8-f5a3-4fca-b3fd-61479540b723" alt="Example 2" />
-    <br>
-    <a href="https://www.patreon.com/posts/adding-home-like-116764324">Adding Home Assistant like badges to any card</a>
-</p>
+![Example 2](https://github.com/user-attachments/assets/e95ab7f8-f5a3-4fca-b3fd-61479540b723)
 
-<p align="center"><br>
-    <img src="https://github.com/user-attachments/assets/24ad619b-2a98-49c0-bc9d-a59f00541731" alt="Example 4" />
-    <br>
-    <a href="https://www.patreon.com/posts/showing-date-and-116766943">Showing formatted date and time in a separator without using any entity</a>
-</p>
+[Adding Home Assistant like badges to any card](https://www.patreon.com/posts/adding-home-like-116764324)
 
-<p align="center"><br>
-    <img src="https://github.com/user-attachments/assets/0c8891a8-ca96-45a9-ada6-fc91268cb815" alt="Example 1" />
-    <br>
-    <a href="https://www.patreon.com/posts/showing-sub-on-116808854">Showing a sub-button state on two lines</a>
-</p>
+![Example 4](https://github.com/user-attachments/assets/24ad619b-2a98-49c0-bc9d-a59f00541731)
 
-<p align="center"><br>
-    <img src="https://github.com/user-attachments/assets/c90d561c-ab6a-4e4e-bd00-fe8676c2bf5b" alt="Example 3" />
-    <br>
-    <a href="https://www.patreon.com/posts/customizing-and-116753941">Customizing labels and icons inside a select sub-button</a>
-</p>
+[Showing formatted date and time in a separator without using any entity](https://www.patreon.com/posts/showing-date-and-116766943)
 
-<p align="center"><br>
-    <img src="https://github.com/user-attachments/assets/02782c6b-12e7-40bf-ad23-2bacf8016392" alt="Example 5" />
-    <br>
-    <a href="https://www.patreon.com/posts/119701174">Adding a persistent reminder pop-up that shows up only when needed</a>
-</p>
+![Example 1](https://github.com/user-attachments/assets/0c8891a8-ca96-45a9-ada6-fc91268cb815)
 
-<br>
+[Showing a sub-button state on two lines](https://www.patreon.com/posts/showing-sub-on-116808854)
+
+![Example 3](https://github.com/user-attachments/assets/c90d561c-ab6a-4e4e-bd00-fe8676c2bf5b)
+
+[Customizing labels and icons inside a select sub-button](https://www.patreon.com/posts/customizing-and-116753941)
+
+![Example 5](https://github.com/user-attachments/assets/02782c6b-12e7-40bf-ad23-2bacf8016392)
+
+[Adding a persistent reminder pop-up that shows up only when needed](https://www.patreon.com/posts/119701174)
 
 </details>
 
 <details>
 
 <summary>Changing the background color of a button that is red when it's <code>off</code> and blue when it's <code>on</code></summary>
-
-<br>
 
 ```yaml
 type: custom:bubble-card
@@ -1893,8 +1761,6 @@ styles: |
 
 <summary>Changing the background color of a button based on an entity for the horizontal buttons stack</summary>
 
-<br>
-
 ```yaml
 styles: |
   .kitchen > .color-background {
@@ -1907,8 +1773,6 @@ styles: |
 <details>
 
 <summary>Showing/Hiding a sub-button conditionally</summary>
-
-<br>
 
 This one is showing the first sub-button only when my vacuum is stuck.
 
@@ -1934,8 +1798,6 @@ styles: |
 
 <summary>Changing an icon or sub-button icon conditionally</summary>
 
-<br>
-
 This one is changing a button icon only when a vacuum is stuck.
 
 ```yaml
@@ -1955,8 +1817,6 @@ styles: |
 <details>
 
 <summary>Changing an icon or sub-button icon color conditionally</summary>
-
-<br>
 
 This one is changing a button icon color based on its state.
 
@@ -1982,8 +1842,6 @@ styles: |
 
 <summary>Animating a fan icon conditionally</summary>
 
-<br>
-
 This one is rotating a button icon when a fan is `on`.
 
 ```yaml
@@ -2003,8 +1861,6 @@ styles: |-
 
 <summary>Templating texts (like name or state)</summary>
 
-<br>
-
 This one is changing a button name/state with "It's currently sunny" depending on your weather.
 
 ```yaml
@@ -2020,8 +1876,6 @@ If you want to template the state (`.bubble-state`) don't toggle `show_state: tr
 
 <summary>Advanced example: Changing the color of a sub-button when a pop-up is open</summary>
 
-<br>
-
 ```yaml
 styles: |
   ${window.addEventListener('location-changed', () => { 
@@ -2034,8 +1888,6 @@ styles: |
 <details>
 
 <summary>Advanced example: Templating a separator name based on a state translated to your language</summary>
-
-<br>
 
 You can use `hass.formatEntityState(state)` to transtale a state and `hass.formatEntityAttributeValue(state, "attribute")` to translate an attribute.
 
@@ -2068,8 +1920,6 @@ styles: >
 
 </details>
 
-<br>
-
 ## Modules
 
 Modules are a powerful feature that allows you to save, reuse, and share your custom styles and templates across all of your Bubble Cards. Instead of copying and pasting the same code into multiple cards, you can create a Module and apply it wherever you need it. This makes managing your dashboard's look and feel much easier and more efficient.
@@ -2080,8 +1930,6 @@ You can also browse the **Module Store** to find and install [modules created by
 
 > [!TIP]
 > A Module's code works exactly the same way as the code in the `styles` section of a card. All the same variables and functions from the [Templates](#templates) section are available.
-
-<br>
 
 ### Initial Setup
 
@@ -2095,8 +1943,6 @@ This method allows you to use the Module Editor and the Module Store.
 <details>
 
 <summary>Click to expand</summary>
-
-<br>
 
 1. Add the following template sensor to your `configuration.yaml` file:
 
@@ -2118,8 +1964,6 @@ template:
 2. Save the file and restart Home Assistant.
 3. You can now access the Module Editor and Module Store from any Bubble Card!
 
-<br>
-
 </details>
 
 #### Method 2: YAML-only configuration
@@ -2130,16 +1974,10 @@ This method is for users who prefer to work exclusively in YAML without using th
 
 <summary>Click to expand</summary>
 
-<br>
-
 1. Create a file called `bubble-modules.yaml` in a newly created `/www/bubble/` folder.
 2. Structure your modules in the file like in this [example](https://github.com/Clooos/Bubble-Card/blob/main/dist/bubble-modules-example.yaml), check the last module for more details.
 
-<br>
-
 </details>
-
-<br>
 
 ### The Module Editor
 
@@ -2169,8 +2007,6 @@ This tab will display [all available modules from the community](https://github.
 - **Install** modules with one click
 - **Update** installed modules when new versions are available
 
-<br>
-
 ### How to use modules
 
 #### Creating a new module
@@ -2178,8 +2014,6 @@ This tab will display [all available modules from the community](https://github.
 <details>
 
 <summary>Click to expand</summary>
-
-<br>
 
 ![module-preview](https://github.com/user-attachments/assets/4670b486-5a48-4476-a868-2ec4d42226a5)
 
@@ -2192,8 +2026,6 @@ This tab will display [all available modules from the community](https://github.
 
 Your module is now available to be used on any of your cards!
 
-<br>
-
 </details>
 
 #### Applying a module to a card
@@ -2201,8 +2033,6 @@ Your module is now available to be used on any of your cards!
 <details>
 
 <summary>Click to expand</summary>
-
-<br>
 
 - **Via the editor:**
 
@@ -2222,8 +2052,6 @@ Your module is now available to be used on any of your cards!
     - module_id_2
   ```
 
-<br>
-
 </details>
 
 #### Applying a module globally
@@ -2231,8 +2059,6 @@ Your module is now available to be used on any of your cards!
 <details>
 
 <summary>Click to expand</summary>
-
-<br>
 
 You can set a module to apply automatically to all Bubble Cards:
 
@@ -2248,8 +2074,6 @@ You can set a module to apply automatically to all Bubble Cards:
 
   In your module YAML configuration (in `bubble-modules.yaml`), just add `is_global: true`.
 
-<br>
-
 </details>
 
 #### Excluding a single card from a global module
@@ -2257,8 +2081,6 @@ You can set a module to apply automatically to all Bubble Cards:
 <details>
 
 <summary>Click to expand</summary>
-
-<br>
 
 If you have a global module but want to exclude it from a specific card:
 
@@ -2277,8 +2099,6 @@ If you have a global module but want to exclude it from a specific card:
     - !global_module_id # The ! prefix excludes this global module
   ```
 
-<br>
-
 </details>
 
 #### Sharing your module to the Module Store
@@ -2287,13 +2107,9 @@ If you have a global module but want to exclude it from a specific card:
 
 <summary>Click to expand</summary>
 
-<br>
-
 To share your Module to the Module Store, in the Module Editor, at the bottom in "Export Module", click on "Copy for GitHub" and paste the content in a new discussion in the [Share your Modules](https://github.com/Clooos/Bubble-Card/discussions/categories/share-your-modules) category. **Edit the description** (if needed), **the example** (for YAML users), and remember to **include at least one screenshot** for the Module Store.
 
 **Your Module becomes available right after that** (after a Store refresh), so double-check that everything is correctly written and the Module is working as expected. You can of course edit/update the Module after it is shared.
-
-<br>
 
 </details>
 
@@ -2303,15 +2119,11 @@ To share your Module to the Module Store, in the Module Editor, at the bottom in
 
 <summary>Click to expand</summary>
 
-<br>
-
 The Module Store automatically checks for updates to installed modules. When updates are available:
 
 1. You'll see an update indicator in the **Module Store** tab.
 2. Click **Update** in modules with available updates.
 3. Confirm the update in the Module Store.
-
-<br>
 
 </details>
 
@@ -2320,8 +2132,6 @@ The Module Store automatically checks for updates to installed modules. When upd
 <details>
 
 <summary>Click to expand</summary>
-
-<br>
 
 Some modules may not be compatible with all card types. You can specify which cards a module support:
 
@@ -2336,14 +2146,10 @@ my_module:
 
 </details>
 
-<br>
-
 ### Examples
 
 <details>
 <summary>Basic styling module</summary>
-
-<br>
 
 ```yaml
 blue_cards:
@@ -2357,18 +2163,14 @@ blue_cards:
     }
 ```
 
-<br>
-
 </details>
 
 <details>
 <summary>Module with custom configuration</summary>
 
-<br>
-
 This module is available [here](https://github.com/Clooos/Bubble-Card/discussions/1231).
 
-```yaml
+````yaml
 icon_container_color:
   name: "Example: Customize the icon container color"
   version: v1.2
@@ -2384,11 +2186,11 @@ icon_container_color:
   description: |
     A list of predefined colors to customize the icon container color.
     Configure this module via the editor or in YAML, for example:
-    <br><br>
-    <code-block><pre>
+
+    ```yaml
     icon_container_color: 
         color: light-blue
-    </pre></code-block>
+    ```
   code: |
     .bubble-icon-container,
     .bubble-day-chip {
@@ -2401,7 +2203,7 @@ icon_container_color:
       selector:
         ui_color:
           include_none: true
-```
+````
 
 > note: More examples can be found in the Module Store, or [here](https://github.com/Clooos/Bubble-Card/discussions/categories/share-your-modules).
 
