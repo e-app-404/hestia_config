@@ -1,9 +1,37 @@
 template:
+  # ═════════════════════════════════════════════════════════════════
+  # SQL Payload Parser - Converts SQL sensor string to proper dict
+  # Root cause: json_group_object returns JSON string, not object
+  # ═════════════════════════════════════════════════════════════════
+  - sensor:
+      - name: "Room Configs Motion Lighting Dict"
+        unique_id: room_configs_motion_lighting_dict
+        state: "ok"
+        attributes:
+          payload: >-
+            {% set raw = state_attr('sensor.room_configs_motion_lighting', 'payload') %}
+            {% if raw is string %}
+              {{ raw | from_json }}
+            {% else %}
+              {{ raw }}
+            {% endif %}
+            
+      - name: "Room Configs Vacuum Control Dict"
+        unique_id: room_configs_vacuum_control_dict
+        state: "ok"
+        attributes:
+          payload: >-
+            {% set raw = state_attr('sensor.room_configs_vacuum_control', 'payload') %}
+            {% if raw is string %}
+              {{ raw | from_json }}
+            {% else %}
+              {{ raw }}
+            {% endif %}
   - sensor:
       - name: "Motion Timeout — Bedroom (SQL)"
         unique_id: "motion_timeout_bedroom_sql_v15"
         state: >-
-          {% set raw = state_attr('sensor.room_configs_motion_lighting','payload') %}
+          {% set raw = state_attr('sensor.room_configs_motion_lighting_dict','payload') %}
           {% if raw %}
             {% set parsed = raw | from_json %}
             {% if parsed is mapping and 'bedroom' in parsed %}

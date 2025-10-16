@@ -1,0 +1,3 @@
+room_db_updater:
+  module: room_db_updater
+  class: RoomDbUpdater
