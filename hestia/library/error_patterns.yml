@@ -25,7 +25,7 @@ patterns:
       good: |
         value_template: >-
           {%- set state = trigger.to_state -%}
-          {{ state is not none and state.state not in ['unknown','unavailable',''] 
+          {{ state is not none and state.state not in ['unknown','unavailable','']
              and state.state | abs or 0 }}
     references:
       - "Home Assistant Template Documentation"
@@ -1168,8 +1168,8 @@ patterns:
             command: 'du -s /config/.trash | awk "{print $1}"'  # Wrong escaping
             device_class: data_size
             state_class: measurement
-            
-        # Issue 2: Non-numeric state with numeric indicators  
+
+        # Issue 2: Non-numeric state with numeric indicators
         - sensor:
             command: 'git status --porcelain | wc -l'
             state_class: measurement
@@ -1185,10 +1185,10 @@ patterns:
               sh -lc '
                 du -s /config/.trash | awk "{print \\$1}" || echo "0"
               '
-            device_class: data_size  
+            device_class: data_size
             state_class: measurement
             value_template: "{{ value | default('0') | trim | int(0) }}"
-            
+
         # Fix 2: Remove state_class for text-based status sensors
         - sensor:
             command: 'git status --porcelain | wc -l'
@@ -1205,7 +1205,7 @@ patterns:
       - "Add int() conversion in value_template for numeric sensors"
       - "Test sensor states after configuration fixes"
     prevention_strategies:
-      - "Test command output manually before using in sensors" 
+      - "Test command output manually before using in sensors"
       - "Use state_class measurement only for truly numeric sensors"
       - "Always include proper fallback values in commands"
       - "Validate sensor states match expected data types"
@@ -1321,7 +1321,7 @@ patterns:
     critical_warning: |
       ⚠️  DO NOT BLINDLY REPLACE ALL 'platform:' WITH 'trigger:' ⚠️
       - sensor: platform: snmp     ← CORRECT (sensor platform)
-      - automation trigger: state  ← CORRECT (trigger type)  
+      - automation trigger: state  ← CORRECT (trigger type)
       - trigger: snmp              ← WRONG (not a valid trigger type)
       Only change 'platform:' to 'trigger:' in automation trigger definitions.
     references:
@@ -1438,3 +1438,53 @@ patterns:
     references:
       - "Home Assistant selector documentation"
       - "Entity domain reference documentation"
+
+  - name: "automation_template_sensor_reference_mismatch"
+    category: "automation_template"
+    description: "Automation template errors due to referencing SQL sensors that return JSON strings instead of parsed dictionaries"
+    error_format: "invalid template (TemplateSyntaxError: unexpected '}') for dictionary value @ data['variables']['variable_name']"
+    symptoms:
+      - "Automations showing as 'not active' due to template configuration errors"
+      - "TemplateSyntaxError with 'unexpected }' in automation variable templates"
+      - "Template parsing failures when accessing SQL sensor payload attributes"
+      - "Variables expecting dictionary data receiving JSON string data"
+    root_causes:
+      - "Using raw SQL sensor that returns json_group_object() as JSON string"
+      - "Templates expecting parsed dictionary but receiving quoted JSON string"
+      - "Inconsistent sensor references across automations after sensor updates"
+      - "Missing template wrapper sensors to convert JSON strings to dictionaries"
+    solution:
+      - "Use template wrapper sensors that parse JSON strings to dictionaries"
+      - "Update all automation references to use consistent sensor names"
+      - "Add SQL payload parser sensors using | from_json filter"
+      - "Ensure all related automations use the same corrected sensor reference"
+    examples:
+      bad: |
+        variables:
+          _raw: "{{ state_attr('sensor.room_configs_motion_lighting','payload') }}"
+          # SQL sensor returns: '{"bedroom":{"timeout":120}}'  (JSON string)
+          room_config: "{{ _raw.bedroom }}"  # Fails - string has no .bedroom attribute
+      good: |
+        variables:
+          _raw: "{{ state_attr('sensor.room_configs_motion_lighting_dict','payload') }}"
+          # Template sensor returns: {"bedroom":{"timeout":120}}  (parsed dict)
+          room_config: "{{ _raw.bedroom }}"  # Success - dict has .bedroom key
+    resolution_steps:
+      - "Identify all automations using the problematic SQL sensor reference"
+      - "Create template wrapper sensor with | from_json filter for SQL payload parsing"
+      - "Update all automation variable references to use the wrapper sensor"
+      - "Validate YAML syntax after sensor reference updates"
+      - "Test automation functionality with corrected dictionary access"
+    prevention_strategies:
+      - "Use template wrapper sensors for all SQL sensors returning JSON data"
+      - "Maintain consistent sensor naming across all related automations"
+      - "Test template variable access patterns when updating sensor references"
+      - "Document sensor data types and expected template usage patterns"
+    tooling:
+      sensor_check: "grep -r 'sensor.room_configs.*payload' packages/ - find sensor references"
+      template_test: "Developer Tools > Template - test variable access patterns"
+      yaml_validator: "python -c \"import yaml; yaml.safe_load(open('file.yaml'))\" - validate syntax"
+    references:
+      - "Home Assistant Template Sensor Documentation"
+      - "SQL Integration JSON Payload Handling"
+      - "Jinja Template Variable Access Patterns"

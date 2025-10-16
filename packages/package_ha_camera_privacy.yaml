@@ -11,17 +11,6 @@
 #   • No dedicated privacy switch → control master: switch.bedroom_security_cam_alpha
 #   • Zone enter/leave for person.evert handles named zones reliably.
 #   • Occupancy decisions use occupancy-only sensors (no motion in decision path).
-#
-# How to use
-#   1) Save as /config/packages/package_ha_camera_privacy.yaml (or merge).
-#   2) Reload Automations or restart Home Assistant.
-#   3) Set input_select.camera_privacy_mode:
-#        - home  → private whenever Evert is in the Home zone
-#        - room  → private only while BEDROOM/SANCTUM is occupied by Evert
-#        - off   → disable all privacy automations in this package
-#   4) Ensure input_boolean.presence_detection_enabled is ON.
-# ============================================================================
-
 # ---------------------------------------------------------------------------
 # MODE SELECTOR
 # ---------------------------------------------------------------------------
