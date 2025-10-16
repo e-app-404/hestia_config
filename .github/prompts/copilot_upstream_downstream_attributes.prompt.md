@@ -2,23 +2,21 @@
 mode: "agent"
 model: "GPT-4o"
 description: "Trace sensor lineage in Home Assistant templates and harden entity attributes with upstream/downstream references"
-tools: ['edit', 'search', 'runCommands', 'runTasks', 'changes', 'todos']
+tools: ["edit", "search", "runCommands", "runTasks", "changes", "todos"]
 ---
 
 You are in **sensor lineage tracing mode**.
 
 ## Objective
 
-For each sensor defined in the following Home Assistant template YAMLs, parse the `state:` Jinja to extract **upstream source entities**, and discover **downstream consumers** by scanning cross-references. Then, **write the lineage back into each entity’s attributes**:
+For each sensor defined in the files below, parse Jinja in `state:` (and templated attributes) to extract **all upstream source entities** and discover **downstream consumers** by cross-referencing other entities’ `state:`. Then **write lineage back** into each entity’s `attributes:`:
 
-- Add/refresh `upstream_sources:` (JSON array emitted via Jinja `tojson`)
-- Ensure `source_count:` matches the number of **entity IDs** in `upstream_sources` (exclude macro/template references from the count)
-- Add/refresh `downstream_consumers:` (JSON array via Jinja `tojson`)
-- Update `last_updated:` to today’s date **only if** you modified the block
+- Add/refresh `upstream_sources:` as a Jinja JSON array (`tojson`)
+- Ensure `source_count:` equals the number of **entity IDs** in `upstream_sources` (exclude macro/template filenames)
+- Add/refresh `downstream_consumers:` as a Jinja JSON array (`tojson`) — **must not include the entity itself**
+- Update `last_updated:` to today’s date (YYYY-MM-DD) **only if** you changed upstream/downstream content
 
 ## Scope (only edit these files)
-
-Reference and modify these Home Assistant template files:
 
 - `domain/templates/presence_logic.yaml`
 - `domain/templates/occupancy_logic.yaml`
@@ -27,86 +25,93 @@ Reference and modify these Home Assistant template files:
 - `domain/templates/ensuite_presence_inferred.yaml`
 - `domain/templates/illuminance_logic.yaml`
 
-## Entity types to trace
+## Entities to consider
 
-- Template `binary_sensor:` and `sensor:` blocks (and any nested lists under them)
-- Treat each list item with `name:` / `unique_id:` as one entity definition
+- Template `binary_sensor:` and `sensor:` definitions (each list item with `name:`/`unique_id:`)
 
-## How to detect **upstream sources**
+## DEFINITIVE upstream capture rules (ALL sources)
 
-Parse each entity’s `state:` Jinja for concrete references to other entities. Collect any entity_id that appears in:
+Extract entity IDs that appear anywhere in the entity’s `state:` **or templated attributes**. Include sources referenced:
 
-- `states('entity_id')`, `state_attr('entity_id','...')`, `is_state('entity_id','...')`, `device_id('...')` (only if it implies entity targets)
-- Static lists/dicts in Jinja like `sources = [{'entity': 'binary_sensor.x', ...}, ...]`
-- Direct YAML `entity_id:` or `target:` if present inside the same definition
-- Macros and includes: if the `state:` block uses `{% from 'template.library.jinja' import ... %}` or `{% include %}`, also capture the macro file name as a non-entity dependency (e.g., `"template.library.jinja"`) **but do not count it** toward `source_count`
+1. **Directly** in Jinja calls, e.g.
+   - `states('entity_id')`, `is_state('entity_id', ...)`, `state_attr('entity_id','...')`
+   - `expand('group.entity')` (include the group entity itself; do not expand members)
+   - `device_id()` **only** when it resolves to concrete entities in code (skip otherwise)
+2. **Inside Jinja variables**, e.g.
+   - `{% set desk = is_state('binary_sensor.desk_occupancy_beta','on') %}` → include `binary_sensor.desk_occupancy_beta`
+   - `{% set src = state_attr('person.evert','source') %}` → include **`person.evert`** as upstream (do **not** attempt to add the dynamic `src` value)
+3. **In Jinja data structures**, e.g.
+   - `sources = [{'entity': 'binary_sensor.x', ...}, ...]` → include each `'entity'` value
+4. **YAML siblings** within the same definition, if templated:
+   - `entity_id:`, `target:`, or templated attributes containing entity references
+5. **Macros/includes** used in `state:`:
+   - Record macro file (e.g., `"template.library.jinja"`) in `upstream_sources` **but do not count it** in `source_count`
 
-Normalize and **deduplicate** entity_ids. Keep only valid Home Assistant domains (e.g., `binary_sensor.`, `sensor.`, `light.`, `person.`). Ignore variables or unresolved dynamic references.
+**Normalization**
 
-## How to detect **downstream consumers**
+- Capture entity IDs for valid HA domains: `binary_sensor.`, `sensor.`, `light.`, `switch.`, `person.`, `input_*`, `group.`, `zone.`, `camera.`
+- Deduplicate, keep stable order (source order of appearance)
+- Don’t include the entity’s own `entity_id` in `upstream_sources`
 
-Within the same file set, find all other entities whose `state:` Jinja references the current entity’s `entity_id` via any of:
+**Example correction**
+Given:
 
-- `states('this_entity')`, `state_attr('this_entity','...')`, `is_state('this_entity','...')`
-- Included in a `sources = [...]` list
-  Record each consumer’s `entity_id` under `downstream_consumers`. Deduplicate.
+```yaml
+state: >-
+  {% set person_home = (states('person.evert') == 'home') %}
+  {% set src = state_attr('person.evert','source') %}
+  {% set desk = is_state('binary_sensor.desk_occupancy_beta','on') %}
+  {% set bed_occ = is_state('binary_sensor.bedroom_occupancy_beta','on') %}
+  {% set bed_motion = is_state('binary_sensor.bedroom_ottoman_motion_proxy','on') %}
+  ...
+```
+
+`upstream_sources` **must** include:
+`person.evert`, `binary_sensor.desk_occupancy_beta`, `binary_sensor.bedroom_occupancy_beta`, `binary_sensor.bedroom_ottoman_motion_proxy`.
+
+## Downstream capture rules (NO self)
+
+In the same six files, for each entity **E**, find all other entities whose `state:` (or templated attributes) reference **E** by:
+
+- `states('E')`, `is_state('E', ...)`, `state_attr('E','...')`, inclusion in `sources=[...]`, etc.
+- Deduplicate. **Do not include E itself** in its `downstream_consumers`.
 
 ## Attribute write-back rules
 
-- If `attributes:` exists: **merge** or insert keys; do not remove unrelated attributes
-- If missing: create `attributes:` and add the keys
-- **Formatting for arrays** must be Jinja JSON, e.g.:
+- Merge into existing `attributes:`; do not remove unrelated keys
+- Arrays must be **Jinja JSON**:
 
-```yaml
-upstream_sources: >-
-  {{ ['binary_sensor.foo', 'sensor.bar'] | tojson }}
-downstream_consumers: >-
-  {{ ['binary_sensor.baz'] | tojson }}
-```
+  ```yaml
+  upstream_sources: >-
+    {{ ['entity.one', 'entity.two'] | tojson }}
+  downstream_consumers: >-
+    {{ ['entity.three'] | tojson }}
+  ```
 
-- `source_count:` must reflect **only the number of entity IDs in upstream_sources** (exclude macro/include filenames). Preserve existing type (if it was quoted, keep quoted; if numeric, keep numeric). If absent, create as a quoted string.
-- `last_updated:` set to **today in ISO** (YYYY-MM-DD) **only if** you changed any upstream/downstream content for that entity. Otherwise leave as-is.
+- `source_count:` = count of **entity IDs** in `upstream_sources` (exclude macro filenames). Preserve existing type (quoted stays quoted; if absent, create a quoted string).
+- Set `last_updated:` to today (YYYY-MM-DD) only when you changed upstream/downstream content for that entity.
 
 ## House style & safety
 
-- Keep **2-space indentation**, UTF-8, LF newlines, keys sorted A→Z inside attributes **only for newly added keys** (do not re-order existing keys globally)
-- Preserve comments and existing order outside of the `attributes:` block
-- Do not change `state:` logic
-- No changes outside the six files
-- If an entity already has these keys, update in place (merge & dedupe)
-- If an entity has **zero** upstream sources, write `upstream_sources: {{ [] | tojson }}` and `source_count: "0"`
+- 2-space indent, UTF-8, LF; keep existing order outside `attributes:`
+- Do **not** alter `state:` logic
+- No edits outside the six files
+- If no upstreams: write `upstream_sources: {{ [] | tojson }}` and `source_count: "0"`
 
 ## Output requirements (STRICT)
 
-1. Emit **unified diffs** for each changed file (one diff block per file).
-2. Then emit a **Machine Findings Log** (newline-delimited JSON objects), where each line has:
+1. Emit **unified diffs** per changed file (one diff block per file).
+2. Emit a **Machine Findings Log** (newline-delimited JSON). Each line:
+
    - `code`: one of ["UPSTREAM_ADDED","UPSTREAM_UPDATED","DOWNSTREAM_ADDED","COUNT_FIXED","TIMESTAMP_UPDATED","NO_CHANGE","ANOMALY"]
-   - `file`, `entity_id` (unique_id if present else a stable slug), `changes`: {keys_modified:[...]}
-   - `evidence`: {upstream:[{ref, line?}], downstream:[{ref, line?}]}
-   - `anomalies`: e.g., unresolved dynamic reference, invalid entity domain, etc.
+   - `file`
+   - `entity_id` (use `unique_id` if present; else the resolved entity_id)
+   - `changes`: { "keys_modified": [...] }
+   - `evidence`: { "upstream": [{ "ref": "...", "line": n? }], "downstream": [{ "ref": "...", "line": n? }] }
+   - `anomalies`: e.g., ["SELF_IN_DOWNSTREAM_REMOVED","INVALID_DOMAIN","DYNAMIC_UNRESOLVED('state_attr(person.evert,source)')"]
 
-Example log line:
-
-```json
-{
-  "code": "UPSTREAM_UPDATED",
-  "file": "domain/templates/motion_logic.yaml",
-  "entity_id": "binary_sensor.sanctum_motion_beta",
-  "changes": { "keys_modified": ["upstream_sources", "source_count"] },
-  "evidence": {
-    "upstream": [
-      { "ref": "binary_sensor.bedroom_motion_beta", "line": 42 },
-      { "ref": "binary_sensor.ensuite_motion_beta", "line": 43 }
-    ]
-  },
-  "anomalies": []
-}
-```
-
-## Reference shape (illustrative)
-
-- If macro used: include "template.library.jinja" in `upstream_sources` but not in `source_count`
-- Keep `source_count` aligned with **count of entity IDs only**
+**Example log line**
+{"code":"UPSTREAM_UPDATED","file":"domain/templates/motion_logic.yaml","entity_id":"binary_sensor.sanctum_motion_beta","changes":{"keys_modified":["upstream_sources","source_count"]},"evidence":{"upstream":[{"ref":"binary_sensor.bedroom_motion_beta","line":42},{"ref":"binary_sensor.ensuite_motion_beta","line":43}]},"anomalies":[]}
 
 ## Begin
 

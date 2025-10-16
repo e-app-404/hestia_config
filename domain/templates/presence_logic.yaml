@@ -111,10 +111,6 @@
         description: |
           # Presence is on if: person.evert is home OR their tracker says home
           # OR desk presence is inferred OR bedroom occupancy/motion is active.
-        upstream_sources: ["person.evert"]
-        downstream_consumers: ["binary_sensor.bedroom_presence_beta"]
-        source_count: 1
-        last_updated: "2025-10-16T00:00:00Z"
 
     # DESK PRESENCE (BETA)
     - name: "Desk Presence (Beta)"
@@ -138,10 +134,6 @@
         reliability: excellent
         notes: |
           "Private area not used by other occupants"
-        upstream_sources: ["person.evert"]
-        downstream_consumers: ["binary_sensor.desk_presence_beta"]
-        source_count: 1
-        last_updated: "2025-10-16T00:00:00Z"
 
     # LIVING ROOM PRESENCE (BETA)
     - name: "Living Room Presence (Beta)"
@@ -165,10 +157,6 @@
         reliability: poor
         notes: |
           "Common area used by untracked occupant - never rely on this sensor for blocking"
-        upstream_sources: ["person.evert"]
-        downstream_consumers: ["binary_sensor.living_room_presence_beta"]
-        source_count: 1
-        last_updated: "2025-10-16T00:00:00Z"
 
     # KITCHEN PRESENCE (BETA) - Always False (Untracked Housemate Area)
     - name: "Kitchen Presence (Beta)"
@@ -187,10 +175,6 @@
         reliability: poor
         notes: |
           "Common area used by untracked occupant - never rely on this sensor for blocking"
-        upstream_sources: ["person.evert"]
-        downstream_consumers: ["binary_sensor.kitchen_presence_beta"]
-        source_count: 1
-        last_updated: "2025-10-16T00:00:00Z"
 
     # ENSUITE PRESENCE (BETA) - Always False (Untracked Housemate Area)
     - name: "Ensuite Presence (Beta)"
@@ -217,10 +201,6 @@
         reliability: excellent
         notes: |
           "Private area not used by other occupants"
-        upstream_sources: ["person.evert"]
-        downstream_consumers: ["binary_sensor.ensuite_presence_beta"]
-        source_count: 1
-        last_updated: "2025-10-16T00:00:00Z"
 
     # HALLWAY DOWNSTAIRS PRESENCE (BETA) - Always False (Common Area)
     - name: "Hallway Downstairs Presence (Beta)"
@@ -239,10 +219,6 @@
         reliability: poor
         notes: |
           "Common area used by untracked occupant - never rely on this sensor for blocking"
-        upstream_sources: ["person.evert"]
-        downstream_consumers: ["binary_sensor.hallway_downstairs_presence_beta"]
-        source_count: 1
-        last_updated: "2025-10-16T00:00:00Z"
 
     # HALLWAY UPSTAIRS PRESENCE (BETA) - Always False (Common Area)
     - name: "Hallway Upstairs Presence (Beta)"
@@ -261,7 +237,3 @@
         reliability: poor
         notes: |
           "Common area used by untracked occupant - never rely on this sensor for blocking"
-        upstream_sources: ["person.evert"]
-        downstream_consumers: ["binary_sensor.hallway_upstairs_presence_beta"]
-        source_count: 1
-        last_updated: "2025-10-16T00:00:00Z"
