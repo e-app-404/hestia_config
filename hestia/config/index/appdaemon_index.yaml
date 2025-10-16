@@ -190,7 +190,7 @@ appdaemon_index:
       endpoint_accessibility: "container_network_isolated"
       notes: "AppDaemon endpoints not accessible from host (expected container behavior)"
       endpoint_urls:
-        style_1: "http://a0d7b954-appdaemon:5050/api/app/room_db_updater/room_db/health"
+        style_1: "http://a0d7b954-appdaemon:5050/api/app/room_db_updater/health"
         style_2: "http://a0d7b954-appdaemon:5050/api/appdaemon/room_db/health"
       recommendation: "Test endpoints from within Home Assistant using rest_command"
 
@@ -218,13 +218,13 @@ appdaemon_index:
       consolidation_note: "Individual files consolidated to resolve duplicate key warnings"
       rest_commands_available:
         room_db_update_config:
-          endpoint_url: "http://a0d7b954-appdaemon:5050/api/app/room_db_updater/room_db/update_config"
+          endpoint_url: "http://a0d7b954-appdaemon:5050/api/app/room_db_updater/update_config"
           method: "POST"
           content_type: "application/json"
           payload_template: "room_id, domain, config_data parameters supported"
           fix_applied: "2025-10-16 - Corrected URL to match AppDaemon endpoint registration"
         room_db_health:
-          endpoint_url: "http://a0d7b954-appdaemon:5050/api/app/room_db_updater/room_db/health"
+          endpoint_url: "http://a0d7b954-appdaemon:5050/api/app/room_db_updater/health"
           method: "GET"
           timeout: "10s"
           purpose: "AppDaemon connectivity and health verification"
