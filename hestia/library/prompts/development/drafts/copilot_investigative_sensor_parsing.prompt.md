@@ -112,6 +112,6 @@ Shape:
 
 - Do not modify any files.
 - Be concise; no extra commentary outside the two required blocks.
-- If you cannot determine a room_slug, use "unknown_<hash>" and add an anomaly.
+- If you cannot determine a room*slug, use "unknown*<hash>" and add an anomaly.
 
 ## Now perform the parse and emit the two required blocks in order.
