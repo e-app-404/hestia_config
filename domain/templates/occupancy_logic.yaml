@@ -30,16 +30,22 @@
         role: "room_aggregate"
         file: "/config/domain/templates/occupancy_logic"
         protocols: "MQTT(1), Matter(2), Logic(3), WiFi(4)"
-        upstream_sources: >
+        upstream_sources: >-
           {{ [
             'template.library.jinja',
             'binary_sensor.bedroom_occupancy_alpha_occupancy',
-            'binary_sensor.bedroom_wardrobe_occupancy_beta',
-            'binary_sensor.desk_presence_inferred',
+            'binary_sensor.bedroom_wardrobe_occupancy_matter_alpha',
+            'binary_sensor.desk_occupancy_beta',
             'binary_sensor.bedroom_motion_beta'
           ] | tojson }}
+        downstream_consumers: >-
+          {{ [
+            'binary_sensor.sanctum_occupancy_beta',
+            'binary_sensor.zone_upstairs_occupancy_beta',
+            'binary_sensor.merged_home_occupancy_eta'
+          ] | tojson }}
         aggregation_strategy: "preference-based selection (occupancy-only)"
-        active_source: >
+        active_source: >-
           {% from 'template.library.jinja' import get_active_source %}
           {% set sources = [
             {'entity': 'binary_sensor.bedroom_occupancy_alpha_occupancy','preference': 1},
@@ -53,7 +59,7 @@
         related_motion_recent_entity: "binary_sensor.bedroom_motion_recent_beta"
         replacements_note: "desk_occupancy_macbook_inference → desk_occupancy_beta; ethernet inference removed"
         version: "2.4"
-        last_updated: "2025-09-20"
+        last_updated: "2025-10-16"
         floor_id: "sanctum"
         area_id: "bedroom"
 
@@ -77,10 +83,19 @@
         file: "/config/domain/templates/occupancy_logic"
         protocols: "MQTT(1), Matter(2)"
         refactor_note: "Occupancy-only, preference-based"
-        upstream_sources: >
-          {{ ['template.library.jinja','binary_sensor.kitchen_occupancy_alpha_occupancy','binary_sensor.kitchen_occupancy_alpha_matter_occupancy'] | tojson }}
+        upstream_sources: >-
+          {{ [
+            'template.library.jinja',
+            'binary_sensor.kitchen_occupancy_alpha_occupancy',
+            'binary_sensor.kitchen_occupancy_alpha_matter_occupancy'
+          ] | tojson }}
+        downstream_consumers: >-
+          {{ [
+            'binary_sensor.zone_downstairs_occupancy_beta',
+            'binary_sensor.merged_home_occupancy_eta'
+          ] | tojson }}
         aggregation_strategy: "preference-based occupancy (no motion)"
-        active_source: >
+        active_source: >-
           {% from 'template.library.jinja' import get_active_source %}
           {% set sources = [
             {'entity': 'binary_sensor.kitchen_occupancy_alpha_occupancy', 'preference': 1},
@@ -88,12 +103,10 @@
           ] %}
           {{ get_active_source(sources) or 'unknown' }}
         source_count: "2"
-        downstream_consumers: >
-          {{ ["sensor.kitchen_last_activity"] | tojson }}
-        version: "3.3"
-        last_updated: "2025-09-20"
-        timeout: >
+        timeout: >-
           {{ ["number.kitchen_occupancy_alpha_occupancy_timeout"] | tojson }}
+        version: "3.3"
+        last_updated: "2025-10-16"
         area_id: "kitchen"
 
     - name: "Living Room Occupancy (Beta)"
@@ -114,22 +127,28 @@
         role: "standardized"
         file: "/config/domain/templates/occupancy_logic"
         protocols: "MQTT(1)"
-        upstream_sources: >
-          {{ ['template.library.jinja','binary_sensor.living_room_occupancy_alpha_occupancy'] | tojson }}
+        upstream_sources: >-
+          {{ [
+            'template.library.jinja',
+            'binary_sensor.living_room_occupancy_alpha_occupancy'
+          ] | tojson }}
+        downstream_consumers: >-
+          {{ [
+            'binary_sensor.zone_downstairs_occupancy_beta',
+            'binary_sensor.merged_home_occupancy_eta'
+          ] | tojson }}
         aggregation_strategy: "single-source zigbee occupancy"
-        active_source: >
+        active_source: >-
           {% from 'template.library.jinja' import get_active_source %}
           {% set sources = [
             {'entity': 'binary_sensor.living_room_occupancy_alpha_occupancy', 'preference': 1}
           ] %}
           {{ get_active_source(sources) or 'unknown' }}
         source_count: "1"
-        downstream_consumers: >
-          {{ ["sensor.living_room_last_activity"] | tojson }}
-        version: "3.3"
-        last_updated: "2025-09-20"
-        timeout: >
+        timeout: >-
           {{ ["number.living_room_occupancy_alpha_occupancy_timeout"] | tojson }}
+        version: "3.3"
+        last_updated: "2025-10-16"
         area_id: "living_room"
 
     - name: "Ensuite Occupancy (Beta)"
@@ -152,10 +171,20 @@
         file: "/config/domain/templates/occupancy_logic"
         protocols: "MQTT(1)"
         refactor_note: "Single-source zigbee occupancy"
-        upstream_sources: >
-          {{ ['template.library.jinja','binary_sensor.ensuite_occupancy_alpha_occupancy', 'binary_sensor.ensuite_shower_occupancy_epsilon'] | tojson }}
+        upstream_sources: >-
+          {{ [
+            'template.library.jinja',
+            'binary_sensor.ensuite_occupancy_alpha_occupancy',
+            'binary_sensor.ensuite_shower_occupancy_epsilon'
+          ] | tojson }}
+        downstream_consumers: >-
+          {{ [
+            'binary_sensor.sanctum_occupancy_beta',
+            'binary_sensor.zone_upstairs_occupancy_beta',
+            'binary_sensor.merged_home_occupancy_eta'
+          ] | tojson }}
         aggregation_strategy: "single-source zigbee occupancy"
-        active_source: >
+        active_source: >-
           {% from 'template.library.jinja' import get_active_source %}
           {% set sources = [
             {'entity': 'binary_sensor.ensuite_occupancy_alpha_occupancy', 'preference': 1},
@@ -163,12 +192,10 @@
           ] %}
           {{ get_active_source(sources) or 'unknown' }}
         source_count: "2"
-        downstream_consumers: >
-          {{ ["sensor.ensuite_last_activity"] | tojson }}
-        version: "3.5"
-        last_updated: "2025-09-20"
-        timeout: >
+        timeout: >-
           {{ ["number.ensuite_occupancy_alpha_occupancy_timeout"] | tojson }}
+        version: "3.5"
+        last_updated: "2025-10-16"
         area_id: "ensuite"
         floor_id: "sanctum"
 
@@ -191,20 +218,26 @@
         file: "/config/domain/templates/occupancy_logic"
         protocols: "Matter(1)"
         refactor_note: "Single-source occupancy for transition zone"
-        active_source: >
+        upstream_sources: >-
+          {{ [
+            'template.library.jinja',
+            'binary_sensor.downstairs_occupancy_alpha_matter'
+          ] | tojson }}
+        downstream_consumers: >-
+          {{ [
+            'binary_sensor.zone_downstairs_occupancy_beta',
+            'binary_sensor.merged_home_occupancy_eta'
+          ] | tojson }}
+        aggregation_strategy: "single-source matter occupancy"
+        active_source: >-
           {% from 'template.library.jinja' import get_active_source %}
           {% set sources = [
             {'entity': 'binary_sensor.downstairs_occupancy_alpha_matter', 'preference': 1}
           ] %}
           {{ get_active_source(sources) or 'unknown' }}
-        aggregation_strategy: "single-source matter occupancy"
-        upstream_sources: >
-          {{ ['template.library.jinja','binary_sensor.downstairs_occupancy_alpha_matter'] | tojson }}
         source_count: "1"
-        downstream_consumers: >
-          {{ 'sensor.hallway_downstairs_last_activity' | tojson }}
         version: "3.5"
-        last_updated: "2025-09-20"
+        last_updated: "2025-10-16"
         area_id: "downstairs"
         floor_id: "downstairs"
 
