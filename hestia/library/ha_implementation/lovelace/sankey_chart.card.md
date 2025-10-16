@@ -371,6 +371,14 @@ Currently this chart just shows historical data based on a energy-date-selection
   type: module
 ```
 
+## References
+
+- [Sankey Chart Card GitHub Repository](https://github.com/MindFreeze/ha-sankey-chart)
+- [Home Assistant Lovelace Cards Documentation](https://www.home-assistant.io/lovelace/)
+- [HACS - Home Assistant Community Store](https://hacs.xyz/)
+- [Home Assistant Energy Dashboard](https://www.home-assistant.io/dashboards/energy/)
+- [Unit Prefix Information](https://en.wikipedia.org/wiki/Unit_prefix)
+
 [commits-shield]: https://img.shields.io/github/commit-activity/y/MindFreeze/ha-sankey-chart.svg?style=for-the-badge
 [commits]: https://github.com//MindFreeze/ha-sankey-chart/commits/master
 [license-shield]: https://img.shields.io/github/license/MindFreeze/ha-sankey-chart.svg?style=for-the-badge
