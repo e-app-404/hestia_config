@@ -1,8 +1,6 @@
 
 # ApexCharts Card by [@RomRider](https://github.com/RomRider) <!-- omit in toc -->
 
-![Header](https://github.com/RomRider/apexcharts-card/raw/master/docs/Header.png)
-
 This is a highly customizable graph card for [Home-Assistant](https://www.home-assistant.io)'s Lovelace UI.<br/>
 
 It is based on [ApexCharts.js](https://apexcharts.com) and offers most of the features of the library.
@@ -12,7 +10,7 @@ It is also inspired by the great [`mini-graph-card`](https://github.com/kalkih/m
 
 However, some things might be broken :grin:
 
-## Table of Content <!-- omit in toc -->
+## Table of Contents
 
 - [Installation](#installation)
   - [HACS (recommended)](#hacs-recommended)
@@ -21,7 +19,7 @@ However, some things might be broken :grin:
   - [Add resource reference](#add-resource-reference)
 - [Data processing steps](#data-processing-steps)
 - [Using the card](#using-the-card)
-  - [Main Options](#main-options)
+  - [Configuration Options](#configuration-options)
   - [`series` Options](#series-options)
   - [series' `show` Options](#series-show-options)
   - [`header_actions` or `title_actions` options](#header_actions-or-title_actions-options)
@@ -81,7 +79,7 @@ This card is available in [HACS](https://hacs.xyz/) (Home Assistant Community St
 
 2. Grab `apexcharts-card.js`:
 
-```
+```bash
 $ wget https://github.com/RomRider/apexcharts-card/releases/download/v2.2.3/apexcharts-card.js
 ```
 
@@ -108,12 +106,11 @@ Else, if you prefer the graphical editor, use the menu to add the resource:
 
 This diagram shows how your data goes through all the steps allowed by this card:
 
-![data_processing_steps](docs/data_processing_chart.png)!
 [data_processing_steps](image.png)
 
 ## Using the card
 
-### Main Options
+### Configuration Options
 
 :warning: Since this card is in its debut, you should expect breaking changes moving forward. :warning:
 
@@ -1075,10 +1072,26 @@ card:
 This is described in the ApexCharts.js documentation [here](https://apexcharts.com/docs/options/chart/height/) where you can find way more options.
 
 ```yaml
-type: custom:apexchart-card
+type: custom:apexcharts-card
 apex_config:
   chart:
     height: 250px
 series:
   - entity: sensor.temperature
 ```
+
+## References
+
+- [ApexCharts Card GitHub Repository](https://github.com/RomRider/apexcharts-card)
+- [ApexCharts.js Documentation](https://apexcharts.com/docs/)
+- [Home Assistant Lovelace Cards Documentation](https://www.home-assistant.io/lovelace/)
+- [HACS - Home Assistant Community Store](https://hacs.xyz/)
+- [Community Forum Discussion](https://community.home-assistant.io/t/apexcharts-card-a-highly-customizable-graph-card/272877)
+
+## References
+
+- [ApexCharts Card GitHub Repository](https://github.com/RomRider/apexcharts-card)
+- [ApexCharts.js Documentation](https://apexcharts.com/docs/)
+- [Home Assistant Lovelace Cards Documentation](https://www.home-assistant.io/lovelace/)
+- [HACS - Home Assistant Community Store](https://hacs.xyz/)
+- [Community Forum Discussion](https://community.home-assistant.io/t/apexcharts-card-a-highly-customizable-graph-card/272877)
