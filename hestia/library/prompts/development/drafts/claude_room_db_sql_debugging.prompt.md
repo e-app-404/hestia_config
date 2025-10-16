@@ -59,27 +59,28 @@ You are operating in **Investigative + Repair Mode** for a Home Assistant + AppD
 
 ### SQL sensors (same file)
 
-* `db_url: sqlite:////config/room_database.db`
-* Use `json(config_data)` or `CASE WHEN json_valid(...) THEN json(...)`.
-* State short: `"ok"` or numeric count; JSON only in `payload` attribute.
+- `db_url: sqlite:////config/room_database.db`
+- Use `json(config_data)` or `CASE WHEN json_valid(...) THEN json(...)`.
+- State short: `"ok"` or numeric count; JSON only in `payload` attribute.
 
 ### AppDaemon (`room_db_updater.py`)
 
-* Registers **GET** `/api/appdaemon/room_db/health`
-* Registers **POST** `/api/appdaemon/room_db/update_config`
-* Validations:
+- Registers **GET** `/api/appdaemon/room_db/health`
+- Registers **POST** `/api/appdaemon/room_db/update_config`
+- Validations:
 
-  * `room_id: ^[a-z0-9_]+$` and **exists** in canonical mapping if provided
-  * `domain` allowlist: motion_lighting, vacuum_control, shared
-  * `schema_version == 1` guard
-  * transaction: `BEGIN IMMEDIATE ... COMMIT`
-  * rate limit ≥ 2s per domain
-  * payload ≤ 4096 bytes
-* Writes to `/config/room_database.db`.
+  - `room_id: ^[a-z0-9_]+$` and **exists** in canonical mapping if provided
+  - `domain` allowlist: motion_lighting, vacuum_control, shared
+  - `schema_version == 1` guard
+  - transaction: `BEGIN IMMEDIATE ... COMMIT`
+  - rate limit ≥ 2s per domain
+  - payload ≤ 4096 bytes
+
+- Writes to `/config/room_database.db`.
 
 ### Automations (`motion_light_automations.yaml`)
 
-* **Use REST**, not shell:
+- **Use REST**, not shell:
 
   ```yaml
   - service: rest_command.room_db_update_config
@@ -92,38 +93,39 @@ You are operating in **Investigative + Repair Mode** for a Home Assistant + AppD
           'trigger_count': (room_config.get('trigger_count', 0) | int) + 1
         }) }}
   ```
-* **DO NOT** `| tojson` here (rest_command handles JSON).
-* Presence logic:
 
-  * Prefer per-room `binary_sensor.<room>_occupancy_beta` if exists else fallback to `person.evert == home`.
-  * `effective_timeout = timeout * presence_multiplier` when occupancy is on; else `timeout`.
+- **DO NOT** `| tojson` here (rest_command handles JSON).
+- Presence logic:
+
+  - Prefer per-room `binary_sensor.<room>_occupancy_beta` if exists else fallback to `person.evert == home`.
+  - `effective_timeout = timeout * presence_multiplier` when occupancy is on; else `timeout`.
 
 ## Investigation checklist (perform in order)
 
 1. **REST endpoints**
 
-   * Open `room_db_updater.py`: verify routes paths (health + update_config) match **exactly** `/api/appdaemon/room_db/...`.
-   * If different, fix code OR change `package_room_database.yaml` URLs to match. Prefer fixing code to canonical path above.
+   - Open `room_db_updater.py`: verify routes paths (health + update_config) match **exactly** `/api/appdaemon/room_db/...`.
+   - If different, fix code OR change `package_room_database.yaml` URLs to match. Prefer fixing code to canonical path above.
 
 2. **DB path alignment**
 
-   * Open `apps.yaml` and `appdaemon.yaml`: confirm the app config points to **/config/room_database.db**.
-   * Open `room_db_updater.py`: confirm the sqlite path is **/config/room_database.db**.
-   * Open `package_room_database.yaml`: confirm all SQL `db_url` use **sqlite:////config/room_database.db**.
-   * If any discrepancy, normalize all to the path above.
+   - Open `apps.yaml` and `appdaemon.yaml`: confirm the app config points to **/config/room_database.db**.
+   - Open `room_db_updater.py`: confirm the sqlite path is **/config/room_database.db**.
+   - Open `package_room_database.yaml`: confirm all SQL `db_url` use **sqlite:////config/room_database.db**.
+   - If any discrepancy, normalize all to the path above.
 
 3. **SQL sensors JSON encoding**
 
-   * In `package_room_database.yaml` ensure `json(config_data)` (or guarded `CASE WHEN json_valid`) is used so HA gets **clean JSON** in `payload`.
+   - In `package_room_database.yaml` ensure `json(config_data)` (or guarded `CASE WHEN json_valid`) is used so HA gets **clean JSON** in `payload`.
 
 4. **Automations write path**
 
-   * In `motion_light_automations.yaml`, replace **any** `shell_command.update_room_config` with `rest_command.room_db_update_config`.
-   * Remove `| tojson` from `config_data` in automations.
+   - In `motion_light_automations.yaml`, replace **any** `shell_command.update_room_config` with `rest_command.room_db_update_config`.
+   - Remove `| tojson` from `config_data` in automations.
 
 5. **Presence logic**
 
-   * In each room’s automation, add:
+   - In each room’s automation, add:
 
      ```yaml
      occupancy_entity: "binary_sensor.<room>_occupancy_beta"
@@ -137,17 +139,18 @@ You are operating in **Investigative + Repair Mode** for a Home Assistant + AppD
      presence_multiplier: "{{ room_config.get('presence_timeout_multiplier', 1.0) | float }}"
      effective_timeout: "{{ (timeout * presence_multiplier) | int if occupancy_on else timeout }}"
      ```
-   * Ensure `delay` uses `effective_timeout`.
+
+   - Ensure `delay` uses `effective_timeout`.
 
 6. **Vacuum**
 
-   * Verify `vac_scripts.yaml` uses base topic from `vac_mqtt_commands.yaml` (`input_text.valetudo_base_topic`).
-   * Confirm each vacuum-eligible room has a `segment_id` in DB; if missing, script will publish empty/invalid segment.
+   - Verify `vac_scripts.yaml` uses base topic from `vac_mqtt_commands.yaml` (`input_text.valetudo_base_topic`).
+   - Confirm each vacuum-eligible room has a `segment_id` in DB; if missing, script will publish empty/invalid segment.
 
 7. **Health surfaces**
 
-   * If defined, confirm `rest_command.room_db_health` returns 200 OK.
-   * Confirm SQL sensors states are `ok` and their `attributes.payload` evaluate to **mapping**, not a quoted string.
+   - If defined, confirm `rest_command.room_db_health` returns 200 OK.
+   - Confirm SQL sensors states are `ok` and their `attributes.payload` evaluate to **mapping**, not a quoted string.
 
 ## Make the fixes (unified diffs) and produce:
 
@@ -155,23 +158,29 @@ You are operating in **Investigative + Repair Mode** for a Home Assistant + AppD
 
 2. A **machine-optimized findings log** (one JSON object per line) with fields:
 
-   * `code` (stable ID), `severity` (INFO/WARN/ERROR), `file`, `line` (if applicable), `message`, `suggested_fix` (short), `fixed` (true/false).
-   * Example line:
+   - `code` (stable ID), `severity` (INFO/WARN/ERROR), `file`, `line` (if applicable), `message`, `suggested_fix` (short), `fixed` (true/false).
+   - Example line:
      `{"code":"REST_ENDPOINT_MISMATCH","severity":"ERROR","file":"room_db_updater.py","line":72,"message":"Endpoint mounted at /api/app/room_db/update_config but HA expects /api/appdaemon/room_db/update_config","suggested_fix":"Change route base to /api/appdaemon/room_db","fixed":true}`
 
 3. A **post-fix smoke plan** (5 steps) that uses Home Assistant Developer Tools:
 
-   * Call `rest_command.room_db_update_config` with:
+   - Call `rest_command.room_db_update_config` with:
 
      ```yaml
      room_id: bedroom
      domain: motion_lighting
-     config_data: {timeout: 240, bypass: false, illuminance_threshold: 10, presence_timeout_multiplier: 3.0}
+     config_data:
+       {
+         timeout: 240,
+         bypass: false,
+         illuminance_threshold: 10,
+         presence_timeout_multiplier: 3.0,
+       }
      ```
-   * Verify `sensor.room_configs_motion_lighting` → `attributes.payload.bedroom.timeout == 240`.
-   * Run `script.clean_room_with_sql_tracking` with `room: "kitchen"`.
-   * Confirm MQTT publish payload contains the configured `segment_id`.
-   * Trigger a motion event and confirm write-back increments `trigger_count`.
+
+   - Verify `sensor.room_configs_motion_lighting` → `attributes.payload.bedroom.timeout == 240`.
+   - Run `script.clean_room_with_sql_tracking` with `room: "kitchen"`.
+   - Confirm MQTT publish payload contains the configured `segment_id`.
+   - Trigger a motion event and confirm write-back increments `trigger_count`.
 
 Work now. Show the diffs, then the findings log, then the smoke plan.
-````
