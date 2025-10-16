@@ -31,10 +31,12 @@
         role: "beta_motion"
         file: "/config/domain/templates/motion_logic.yaml"
         protocols: "TP-Link(1), Beta(2,3)"
-        upstream_sources: >
+        upstream_sources: >-
           {{ ['template.library.jinja','binary_sensor.sanctum_motion_alpha','binary_sensor.bedroom_motion_beta','binary_sensor.ensuite_motion_beta'] | tojson }}
+        downstream_consumers: >-
+          {{ ['binary_sensor.sanctum_motion_recent_beta'] | tojson }}
         aggregation_strategy: "preference-based selection (motion-only)"
-        active_source: >
+        active_source: >-
           {% from 'template.library.jinja' import get_active_source %}
           {% set sources = [
             {'entity': 'binary_sensor.sanctum_motion_alpha','preference': 1},
@@ -44,7 +46,7 @@
           {{ get_active_source(sources) }}
         source_count: "3"
         version: "1.1"
-        last_updated: "2025-10-06"
+        last_updated: "2025-10-16"
         floor_id: "upstairs"
         area_id: "sanctum"
 

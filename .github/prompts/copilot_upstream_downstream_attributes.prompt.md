@@ -1,6 +1,6 @@
 ---
 mode: "agent"
-model: "Claude Sonnet 4"
+model: "GPT-4o"
 description: "Trace sensor lineage in Home Assistant templates and harden entity attributes with upstream/downstream references"
 tools: ["edit", "search"]
 ---
@@ -21,12 +21,12 @@ For each sensor defined in the files below, parse Jinja in `state:` (and templat
 
 Reference and modify these Home Assistant template files:
 
-- `domain/templates/presence_logic.yaml`
-- `domain/templates/occupancy_logic.yaml`
 - `domain/templates/motion_logic.yaml`
-- `domain/templates/desk_presence_inferred.yaml`
+<!-- - `domain/templates/desk_presence_inferred.yaml`
 - `domain/templates/ensuite_presence_inferred.yaml`
 - `domain/templates/illuminance_logic.yaml`
+- `domain/templates/presence_logic.yaml`
+- `domain/templates/occupancy_logic.yaml` -->
 
 ## Entities to consider
 
@@ -116,4 +116,4 @@ Across the same six files, for each entity **E**, find other entities whose `sta
 
 ## Begin
 
-Parse the six files, apply **per-entity** updates in-memory, and output unified diffs followed by the Machine Findings Log.
+Parse the file(s) indicated in the Scope, apply **per-entity** updates in-memory, and output unified diffs followed by the Machine Findings Log.

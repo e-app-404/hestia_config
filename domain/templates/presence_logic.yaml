@@ -237,6 +237,3 @@
         reliability: poor
         notes: |
           "Common area used by untracked occupant - never rely on this sensor for blocking"
-
-# Corrected upstream_sources and downstream_consumers for relevant entities.
-# Updated last_updated to today's date where changes were made.

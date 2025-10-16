@@ -2,7 +2,7 @@
 # ▶ LOGIC SENSOR: Occupancy Inference Fusion ◀
 # Loader: !include_dir_merge_list domain/templates/
 # Schema: binary_sensor (list)
-# Tier: β  •  Domain: logic  •  Updated: 2025-09-20
+# Tier: β  •  Domain: logic  •  Updated: 2025-09-04
 # Notes:
 #   • Preference aggregation uses occupancy-only sources (no motion).
 #   • <room>_motion_beta linked via attributes only.
@@ -17,7 +17,7 @@
         {% set sources = [
           {'entity': 'binary_sensor.bedroom_occupancy_alpha_occupancy',      'protocol': 'mqtt',   'preference': 1, 'type': 'occupancy'},
           {'entity': 'binary_sensor.bedroom_wardrobe_occupancy_matter_alpha','protocol': 'matter', 'preference': 2, 'type': 'occupancy'},
-          {'entity': 'binary_sensor.desk_occupancy_beta',                    'protocol': 'wifi',   'preference': 4, 'type': 'occupancy'}, 
+          {'entity': 'binary_sensor.desk_occupancy_beta',                    'protocol': 'wifi',   'preference': 4, 'type': 'occupancy'},
           {'entity': 'binary_sensor.bedroom_motion_beta',                    'protocol': 'alias',  'preference': 5, 'type': 'motion'}
         ] %}
         {{ preference_select(sources) == 'on' }}
@@ -171,7 +171,7 @@
           {{ ["number.ensuite_occupancy_alpha_occupancy_timeout"] | tojson }}
         area_id: "ensuite"
         floor_id: "sanctum"
-    
+
     - name: "Hallway Downstairs Occupancy (Beta)"
       unique_id: hallway_downstairs_occupancy_beta
       device_class: occupancy
@@ -241,7 +241,7 @@
         version: "3.6"
         last_updated: "2025-09-20"
         area_id: "upstairs"
-        floor_id: "upstairs" 
+        floor_id: "upstairs"
 
     #───────────────────────────────────────────────────────────────
     # ▼ GROUP: Sanctum Subareas
