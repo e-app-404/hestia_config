@@ -32,11 +32,11 @@ class RoomDbUpdater(hassapi.Hass):
         self.log("Registering health endpoint")
         self.register_endpoint(self.health_check, "health")
         self.log("Health endpoint registered with name: health")
-        
+
         self.log("Registering update_config endpoint")
         self.register_endpoint(self.update_config, "update_config")
         self.log("Update_config endpoint registered with name: update_config")
-        
+
         # Debug: Log the app name that AppDaemon will use in URL construction
         self.log(f"App name for URL construction: {self.name}")
         self.log(f"Expected health URL: /api/app/{self.name}/health")
@@ -129,8 +129,12 @@ class RoomDbUpdater(hassapi.Hass):
 
     def test_endpoint(self, request):
         """Simple test endpoint for debugging URL construction"""
-        return {"status": "test_success", "message": "Test endpoint is working", "app_name": self.name}, 200
-    
+        return {
+            "status": "test_success",
+            "message": "Test endpoint is working",
+            "app_name": self.name,
+        }, 200
+
     def health_check(self, request):
         """Health check endpoint"""
         try:
