@@ -34,7 +34,7 @@ sql:
       SELECT 'ok' AS state,
              json_group_object(
                room_id,
-               CASE WHEN json_valid(config_data)
+               CASE WHEN json_valid(config_data) = 1
                     THEN json(config_data)
                     ELSE NULL
                END
@@ -49,7 +49,7 @@ sql:
       SELECT 'ok' AS state,
              json_group_object(
                room_id,
-               CASE WHEN json_valid(config_data)
+               CASE WHEN json_valid(config_data) = 1
                     THEN json(config_data)
                     ELSE NULL
                END
