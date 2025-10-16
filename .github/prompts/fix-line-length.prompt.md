@@ -17,6 +17,7 @@ If no file is selected, ask the user to specify the file path.
 ## Requirements
 
 ### Line Length Standards
+
 - **Python**: Maximum 88 characters (Black formatter standard) or 79 characters (PEP 8)
 - **JavaScript/TypeScript**: Maximum 80-100 characters (project-specific)
 - **YAML**: Maximum 80 characters for readability
@@ -28,10 +29,11 @@ If no file is selected, ask the user to specify the file path.
 Apply these techniques in order of preference:
 
 1. **Break long expressions**:
+
    ```python
    # Before
    result = some_very_long_function_name(argument1, argument2, argument3, argument4)
-   
+
    # After
    result = some_very_long_function_name(
        argument1, argument2, argument3, argument4
@@ -39,10 +41,11 @@ Apply these techniques in order of preference:
    ```
 
 2. **Split string literals**:
+
    ```python
    # Before
    message = "This is a very long error message that exceeds the line length limit"
-   
+
    # After
    message = (
        "This is a very long error message "
@@ -51,10 +54,11 @@ Apply these techniques in order of preference:
    ```
 
 3. **Break method chains**:
+
    ```python
    # Before
    data = df.filter(col("status") == "active").select("id", "name").orderBy("name")
-   
+
    # After
    data = (
        df.filter(col("status") == "active")
@@ -64,10 +68,11 @@ Apply these techniques in order of preference:
    ```
 
 4. **Extract variables for complex expressions**:
+
    ```python
    # Before
    if user.has_permission("read") and user.is_active and user.department == "engineering":
-   
+
    # After
    has_read_access = user.has_permission("read")
    is_active_engineer = user.is_active and user.department == "engineering"
@@ -75,14 +80,15 @@ Apply these techniques in order of preference:
    ```
 
 5. **Use trailing commas for multi-line collections**:
+
    ```python
    # Before
    items = ["item1", "item2", "item3", "item4", "item5"]
-   
+
    # After
    items = [
        "item1",
-       "item2", 
+       "item2",
        "item3",
        "item4",
        "item5",
@@ -92,21 +98,25 @@ Apply these techniques in order of preference:
 ### Language-Specific Guidelines
 
 **Python**:
+
 - Use parentheses for implicit line continuation
 - Follow PEP 8 indentation (4 spaces for continuation)
 - Use Black-style formatting when possible
 
 **YAML**:
+
 - Use YAML folded scalars (`>`) for long text
 - Break long lists into multiple lines
 - Maintain proper indentation (2 spaces)
 
 **JavaScript/TypeScript**:
+
 - Use template literals for long strings
 - Break object properties and array elements
 - Consider destructuring for long parameter lists
 
 **Shell Scripts**:
+
 - Use backslash continuation (`\`)
 - Break long command pipelines
 - Use here-docs for long strings
@@ -128,6 +138,7 @@ Apply these techniques in order of preference:
 ## Validation
 
 Before completing:
+
 - Verify no lines exceed the target length limit
 - Confirm all syntax is valid
 - Ensure code functionality is preserved
@@ -136,10 +147,12 @@ Before completing:
 ## Example Usage
 
 Input variables:
+
 - `${file}`: Path to the file to fix
 - `${selection}`: Selected code (if any) to focus on specific sections
 
 Run this prompt on files with linter errors like:
+
 - `E501 line too long (95 > 88 characters)`
 - `line-length: Line is too long (120/80)`
 - `max-len: Line exceeds maximum length`
