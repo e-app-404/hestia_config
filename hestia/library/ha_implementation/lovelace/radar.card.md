@@ -1,12 +1,5 @@
 # Radar Card
 
-[![hacs_badge](https://img.shields.io/badge/HACS-Custom-41BDF5.svg?style=flat-square)](https://github.com/hacs/integration)
-![GitHub release (latest by date)](https://img.shields.io/github/v/release/timmaurice/lovelace-radar-card?style=flat-square)
-[![GH-downloads](https://img.shields.io/github/downloads/timmaurice/lovelace-radar-card/total?style=flat-square)](https://github.com/timmaurice/lovelace-radar-card/releases)
-[![GH-last-commit](https://img.shields.io/github/last-commit/timmaurice/lovelace-radar-card.svg?style=flat-square)](https://github.com/timmaurice/lovelace-radar-card/commits/master)
-[![GH-code-size](https://img.shields.io/github/languages/code-size/timmaurice/lovelace-radar-card.svg?style=flat-square)](https://github.com/timmaurice/lovelace-radar-card)
-![GitHub](https://img.shields.io/github/license/timmaurice/lovelace-radar-card?style=flat-square)
-
 ## Features
 
 ### Flexible Plotting
@@ -35,48 +28,6 @@
 - Configure legend position (`bottom`, `left`, `right`) and optionally show distances within it.
 
 ![Radar Card Screenshot](https://raw.githubusercontent.com/timmaurice/lovelace-radar-card/main/screenshot.png)
-
-## Languages
-
-This card is available in the following languages:
-
-- English
-- German
-- French
-- Polish
-
-<details>
-<summary>Contributing Translations</summary>
-
-If you would like to contribute a new translation:
-
-1.  Fork the repository on GitHub.
-2.  Copy the `src/translation/en.json` file and rename it to your language code (e.g., `es.json` for Spanish).
-3.  Translate all the values in the new file.
-4.  Submit a pull request with your changes.
-
-</details>
-
-## Installation
-
-### HACS (Recommended)
-
-This card is available in the [Home Assistant Community Store (HACS)](https://hacs.xyz/).
-
-<a href="https://my.home-assistant.io/redirect/hacs_repository/?owner=timmaurice&repository=lovelace-radar-card&category=plugin" target="_blank" rel="noreferrer noopener"><img src="https://my.home-assistant.io/badges/hacs_repository.svg" alt="Open your Home Assistant instance and open a repository inside the Home Assistant Community Store." /></a>
-
-<details>
-<summary>Manual Installation</summary>
-
-1.  Download the `radar-card.js` file from the latest release.
-2.  Place it in your `config/www` directory.
-3.  Add the resource reference to your Lovelace configuration under `Settings` -> `Dashboards` -> `...` -> `Resources`.
-    - URL: `/local/radar-card.js`
-    - Resource Type: `JavaScript Module`
-
-You can now add the card to your dashboard.
-
-</details>
 
 ## Configuration
 
@@ -192,10 +143,3 @@ entities:
 
 ---
 
-For further assistance or to [report issues](https://github.com/timmaurice/lovelace-radar-card/issues), please visit the [GitHub repository](https://github.com/timmaurice/lovelace-radar-card).
-
-![Star History Chart](https://api.star-history.com/svg?repos=timmaurice/lovelace-radar-card&type=Date)
-
-## ☕ Support My Work
-
-[<img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" height="30" />](https://www.buymeacoffee.com/timmaurice)

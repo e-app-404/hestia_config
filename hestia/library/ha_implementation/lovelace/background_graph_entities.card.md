@@ -1,11 +1,15 @@
-# Background Graph Entities Custom Component
+---
+title: "Background Graph Entities - Entity List with Historical Graphs"
+authors: "@timmaurice"
+source: "https://github.com/timmaurice/lovelace-background-graph-entities"
+slug: "background-graph-entities-card"
+tags: ["home-assistant", "lovelace", "cards", "graphs", "entities", "history"]
+original_date: "2023-01-01"
+last_updated: "2025-10-16"
+url: "https://github.com/timmaurice/lovelace-background-graph-entities"
+---
 
-[![hacs_badge](https://img.shields.io/badge/HACS-Custom-41BDF5.svg?style=flat-square)](https://github.com/hacs/integration)
-![GitHub release (latest by date)](https://img.shields.io/github/v/release/timmaurice/lovelace-background-graph-entities?style=flat-square)
-[![GH-downloads](https://img.shields.io/github/downloads/timmaurice/lovelace-background-graph-entities/total?style=flat-square)](https://github.com/timmaurice/lovelace-background-graph-entities/releases)
-[![GH-last-commit](https://img.shields.io/github/last-commit/timmaurice/lovelace-background-graph-entities.svg?style=flat-square)](https://github.com/timmaurice/lovelace-background-graph-entities/commits/master)
-[![GH-code-size](https://img.shields.io/github/languages/code-size/timmaurice/lovelace-background-graph-entities.svg?style=flat-square)](https://github.com/timmaurice/lovelace-background-graph-entities)
-![GitHub](https://img.shields.io/github/license/timmaurice/lovelace-background-graph-entities?style=flat-square)
+# Background Graph Entities - Entity List with Historical Graphs
 
 ## Overview
 
@@ -16,6 +20,23 @@ The `background-graph-entities` custom component for Home Assistant displays a l
   <img src="https://raw.githubusercontent.com/timmaurice/lovelace-background-graph-entities/main/image-entity.png" alt="Entity Editor Screenshot" width="260">
   <img src="https://raw.githubusercontent.com/timmaurice/lovelace-background-graph-entities/main/image-color-thresholds.png" alt="Color Thresholds Editor Screenshot" width="260">
 </p>
+
+## Table of Contents
+
+- [Features](#features)
+- [Localization](#localization)
+- [Installation](#installation)
+- [Configuration](#configuration)
+  - [UI Editor](#ui-editor)
+  - [YAML Configuration](#yaml-configuration)
+    - [Card Options](#card-options)
+    - [Entity Options](#entity-options)
+- [Examples](#examples)
+  - [Minimal Configuration](#1-minimal-configuration)
+  - [Basic Configuration](#2-basic-configuration)
+  - [Advanced Configuration with Overrides](#3-advanced-configuration-with-overrides)
+- [Development](#development)
+- [References](#references)
 
 ## Features
 
@@ -60,17 +81,6 @@ If you would like to contribute a new translation:
 4.  Submit a pull request with your changes.
 
 </details>
-
-## Installation
-
-1. Ensure you have HACS installed.
-2. Add this repository to HACS as a custom repository.
-   ```yaml
-   Repository: https://github.com/timmaurice/lovelace-background-graph-entities
-   Type: Dashboard
-   ```
-3. Install `background-graph-entities` via HACS.<br>
-   [![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=timmaurice&repository=lovelace-background-graph-entities&category=Dashboard)
 
 ## Configuration
 
@@ -237,6 +247,20 @@ entities:
 For further assistance or to report issues, please visit the [GitHub repository](https://github.com/timmaurice/lovelace-background-graph-entities).
 
 ![Star History Chart](https://api.star-history.com/svg?repos=timmaurice/lovelace-background-graph-entities&type=Date)
+
+---
+
+For further assistance or to report issues, please visit the [GitHub repository](https://github.com/timmaurice/lovelace-background-graph-entities).
+
+![Star History Chart](https://api.star-history.com/svg?repos=timmaurice/lovelace-background-graph-entities&type=Date)
+
+## References
+
+- [Background Graph Entities GitHub Repository](https://github.com/timmaurice/lovelace-background-graph-entities)
+- [Home Assistant Lovelace Cards Documentation](https://www.home-assistant.io/lovelace/)
+- [HACS - Home Assistant Community Store](https://hacs.xyz/)
+- [Home Assistant Custom Components](https://developers.home-assistant.io/docs/creating_component_index/)
+- [MDI Icons](https://materialdesignicons.com/)
 
 ## ☕ Support My Work
 
