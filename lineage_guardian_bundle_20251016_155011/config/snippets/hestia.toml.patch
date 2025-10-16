@@ -1,4 +1,3 @@
-
 # Merge this into /config/hestia/config/system/hestia.toml
 
 [automation.lineage_guardian]
@@ -20,8 +19,8 @@ enforce_bidirectional = true
 allow_self_references = false
 require_source_count = true
 valid_domains = [
-"binary_sensor","sensor","light","switch",
-"automation","script","person","input_boolean","device_tracker"
+    "binary_sensor","sensor","light","switch",
+    "automation","script","person","input_boolean","device_tracker"
 ]
 
 [automation.lineage_guardian.corrector]

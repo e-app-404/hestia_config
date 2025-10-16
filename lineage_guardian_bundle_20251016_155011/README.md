@@ -10,10 +10,8 @@
    ```bash
    python -m venv .venv && source .venv/bin/activate
    pip install -r requirements.txt
-````
-
+   ```
 3. Run the pipeline (dry-run safe):
-
    ```bash
    python lineage_guardian/graph_scanner.py --output ./.artifacts/graph.json --template-dir /config/domain/templates/ --verbose
    python lineage_guardian/lineage_validator.py --graph-file ./.artifacts/graph.json --output ./.artifacts/violations.json --verbose
@@ -23,10 +21,9 @@
    ```
 4. Or in VSCode: **Terminal → Run Task → Lineage: Full Pipeline (dry-run)**
 
-## What’s inside
+## What's inside
 
 * `lineage_guardian/` — modular components
-
   * `graph_scanner.py` (build graph)
   * `lineage_validator.py` (check vs declared metadata)
   * `lineage_corrector.py` (non-destructive plan; ruamel-based merge placeholder)

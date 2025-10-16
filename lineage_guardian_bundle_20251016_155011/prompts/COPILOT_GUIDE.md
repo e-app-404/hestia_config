@@ -1,7 +1,6 @@
-
 # Copilot Coaching Script — Hestia Lineage Guardian
 
-You’re assisting on a modular YAML lineage tool. Expand parsers, harden regexes, and make the corrector safe and idempotent.
+You're assisting on a modular YAML lineage tool. Expand parsers, harden regexes, and make the corrector safe and idempotent.
 
 ## Targets to read
 
@@ -16,7 +15,6 @@ You’re assisting on a modular YAML lineage tool. Expand parsers, harden regexe
 ## Parsing rules (strict)
 
 * Extract **entity_ids** from:
-
   * `states('domain.object')`
   * `is_state('domain.object', 'on')`
   * `state_attr('domain.object','attr')`
