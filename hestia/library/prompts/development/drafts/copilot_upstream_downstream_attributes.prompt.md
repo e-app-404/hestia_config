@@ -1,11 +1,9 @@
 ---
-mode: "agent"
-model: GPT-4o
-description: "Parse Home Assistant template YAMLs to extract room sensor entities and create machine-operable inventory"
-tools: ['edit', 'search', 'runTasks', 'todos']
+mode: 'agent'
+model: 'GPT-4o'
+description: 'Trace sensor lineage in Home Assistant templates and harden entity attributes with upstream/downstream references'
+tools: ['search']
 ---
-
-# Prompt for Copilot — Upstream/Downstream Trace & Attribute Hardening
 
 
 You are in **sensor lineage tracing mode**.
@@ -18,12 +16,15 @@ For each sensor defined in the following Home Assistant template YAMLs, parse th
 - Update `last_updated:` to today’s date **only if** you modified the block
 
 ## Scope (only edit these files)
-- /config/domain/templates/presence_logic.yaml
-- /config/domain/templates/occupancy_logic.yaml
-- /config/domain/templates/motion_logic.yaml
-- /config/domain/templates/desk_presence_inferred.yaml
-- /config/domain/templates/ensuite_presence_inferred.yaml
-- /config/domain/templates/illuminance_logic.yaml
+
+Reference and modify these Home Assistant template files:
+
+- `domain/templates/presence_logic.yaml`
+- `domain/templates/occupancy_logic.yaml`
+- `domain/templates/motion_logic.yaml`
+- `domain/templates/desk_presence_inferred.yaml`
+- `domain/templates/ensuite_presence_inferred.yaml`
+- `domain/templates/illuminance_logic.yaml`
 
 ## Entity types to trace
 - Template `binary_sensor:` and `sensor:` blocks (and any nested lists under them)
