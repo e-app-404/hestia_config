@@ -122,6 +122,31 @@ hades_config_index:
         title: "Non-destructive Lineage Correction Planner"
         tags: ["lineage", "correction", "planning"]
 
+      - path: "/config/hestia/tools/lineage_guardian/lineage_guardian_cli.py"
+        file: "lineage_guardian_cli.py"
+        title: "Lineage Guardian CLI Wrapper"
+        tags: ["automation", "lineage", "validation", "cli"]
+
+      - path: "/config/hestia/tools/lineage_guardian/lineage_guardian/graph_integrity_checker.py"
+        file: "graph_integrity_checker.py"
+        title: "Entity Graph Bidirectional Integrity Checker"
+        tags: ["lineage", "integrity", "validation", "health"]
+
+      - path: "/config/hestia/tools/lineage_guardian/lineage_guardian/lineage_report.py"
+        file: "lineage_report.py"
+        title: "Comprehensive Lineage Validation Reporter"
+        tags: ["lineage", "reporting", "markdown", "json"]
+
+      - path: "/config/hestia/tools/lineage_guardian/lineage_guardian/models.py"
+        file: "models.py"
+        title: "Lineage Guardian Data Structures"
+        tags: ["lineage", "dataclass", "models"]
+
+      - path: "/config/hestia/tools/lineage_guardian/lineage_guardian/utils.py"
+        file: "utils.py"
+        title: "Lineage Guardian Parsing Utilities"
+        tags: ["lineage", "parsing", "regex", "jinja"]
+
       - path: "/config/hestia/tools/lineage_guardian/README.md"
         file: "README.md"
         title: "Lineage Guardian System Documentation"

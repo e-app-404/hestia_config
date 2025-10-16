@@ -7,18 +7,22 @@
 **✅ Configuration is already integrated into `/config/hestia/config/system/hestia.toml`**
 
 ### Option 1: CLI (Recommended)
+
 ```bash
 cd /config/hestia/tools/lineage_guardian
 python lineage_guardian_cli.py --verbose
 ```
 
 ### Option 2: VSCode Tasks
+
 From **any workspace location**:
+
 - **Terminal → Run Task → "Lineage Guardian: Full Pipeline (dry-run)"**
 - **Terminal → Run Task → "Lineage Guardian: Scanner Only"**
 - **Terminal → Run Task → "Lineage Guardian: Open Documentation"**
 
 ### Option 3: Manual Components
+
 ```bash
 cd /config/hestia/tools/lineage_guardian
 python lineage_guardian/graph_scanner.py --output ./.artifacts/graph.json --template-dir /config/domain/templates/ --verbose
@@ -31,6 +35,7 @@ python lineage_guardian/lineage_report.py --graph ./.artifacts/graph.json --viol
 ## Architecture
 
 ### Core Components
+
 - **`lineage_guardian_cli.py`** — ADR-compliant CLI wrapper with proper logging
 - **`lineage_guardian/`** — modular pipeline components:
   - `graph_scanner.py` — extract entity relationships from YAML templates
@@ -41,6 +46,7 @@ python lineage_guardian/lineage_report.py --graph ./.artifacts/graph.json --viol
   - `models.py`, `utils.py` — data structures and utilities
 
 ### Integration Points
+
 - **Configuration**: `/config/hestia/config/system/hestia.toml` → `[automation.lineage_guardian]`
 - **Documentation**: `/config/hestia/library/docs/guides/development/lineage_guardian_copilot_guide.md`
 - **VSCode Tasks**: Integrated into main workspace `/.vscode/tasks.json`
@@ -61,6 +67,7 @@ python lineage_guardian/lineage_report.py --graph ./.artifacts/graph.json --viol
 **Copilot Enhancement Guide**: `/config/hestia/library/docs/guides/development/lineage_guardian_copilot_guide.md`
 
 Use this guide to:
+
 - Harden regex patterns in `utils.py`
 - Implement ruamel.yaml-based safe merges in `lineage_corrector.py`
 - Add comprehensive unit tests

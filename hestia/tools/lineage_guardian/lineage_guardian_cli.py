@@ -84,7 +84,13 @@ def main():
         sys.exit(1)
 
     # 5. Report Generator
-    cmd = f"python lineage_guardian/lineage_report.py --graph {graph_file} --violations {violations_file} --integrity {integrity_file} --outdir {report_dir}"
+    cmd = (
+        f"python lineage_guardian/lineage_report.py "
+        f"--graph {graph_file} "
+        f"--violations {violations_file} "
+        f"--integrity {integrity_file} "
+        f"--outdir {report_dir}"
+    )
     print(f"[EXEC] {cmd}")
     if os.system(cmd) != 0:
         sys.exit(1)

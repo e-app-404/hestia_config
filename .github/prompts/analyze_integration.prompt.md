@@ -1,7 +1,17 @@
 ---
 mode: "agent"
 model: "Claude Sonnet 4"
-tools: ['edit', 'search', 'new', 'runCommands', 'problems', 'changes', 'fetch', 'githubRepo']
+tools:
+  [
+    "edit",
+    "search",
+    "new",
+    "runCommands",
+    "problems",
+    "changes",
+    "fetch",
+    "githubRepo",
+  ]
 description: "Streamlined Home Assistant integration configuration analyzer with prioritized patch plan generation"
 ---
 
@@ -91,6 +101,7 @@ I will categorize all issues using this refined priority framework:
 **Output Format for Each Issue**:
 
 <!-- Output format start here -->
+
 ### [PRIORITY]: [Issue Description]
 
 **Problem**: [Clear explanation of the issue]
@@ -110,7 +121,9 @@ I will categorize all issues using this refined priority framework:
 ```
 
 **Validation**: [How to verify the fix works]
+
 <!-- Output format ends here -->
+
 ### Step 3: Generate & Present
 
 **Create Patch Plan File**:

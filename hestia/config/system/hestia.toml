@@ -46,9 +46,9 @@ atomic_writes = true
 
 [backup.legacy_patterns]
 patterns = [
-    "*.bak", 
-    "*.bak-*", 
-    "*_backup*", 
+    "*.bak",
+    "*.bak-*",
+    "*_backup*",
     "*_restore*",
     "*.perlbak"
 ]
@@ -177,7 +177,7 @@ backup_retention_days = 30
 [validation]
 banned_prefixes = [
     ".storage/",
-    ".cloud/", 
+    ".cloud/",
     ".venv",
     "deps/",
     "__pycache__/",
@@ -223,7 +223,7 @@ metadata_format = "frontmatter"
 
 [reporting.metadata]
 required_fields = [
-    "tool", "script", "created_at", "batch_id", 
+    "tool", "script", "created_at", "batch_id",
     "input_path", "rows_processed", "content_hash"
 ]
 timestamp_format = "iso8601_utc"
@@ -255,13 +255,13 @@ field_processors_path = "/config/hestia/tools/adr"
 
 [adr.validation]
 required_frontmatter = [
-    "id", "title", "slug", "status", "date", 
+    "id", "title", "slug", "status", "date",
     "decision", "last_updated"
 ]
 optional_frontmatter = ["related", "supersedes", "author", "tags"]
 status_transitions = [
     "Draft → Proposed",
-    "Proposed → Accepted", 
+    "Proposed → Accepted",
     "Proposed → Rejected",
     "Accepted → Superseded",
     "Draft → Superseded"
