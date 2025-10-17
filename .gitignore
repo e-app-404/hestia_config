@@ -53,9 +53,10 @@ domain/zones/*_zones.yaml
 # Device configurations - contain IP addresses, MAC addresses, device identifiers
 hestia/config/devices/*.conf
 # Network configurations - contain network topology, IP ranges, DNS info
-hestia/config/network/*.conf  
+hestia/config/network/*.conf
 # System configurations - contain relationships, credentials references, topology
 hestia/config/system/*.conf
+hestia/config/system/*.toml
 # Allow workspace configuration (no PII)
 !hestia/config/system/hestia_workspace.conf
 # Preview configurations may contain generated credentials
