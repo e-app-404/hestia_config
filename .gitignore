@@ -321,3 +321,10 @@ reports/
 # build metadata
 *.egg-info/
 hestia/library/prompts/_archive/
+
+# Archived personas should not be consumed by AI operators  
+hestia/library/docs/governance/personas/personas.archive/
+
+# SQL database cache files and temporary promptsets
+hestia/workspace/cache/out/sql_room_database_files/*.txt
+hestia/workspace/cache/out/**/*.promptset.*

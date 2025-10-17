@@ -1509,6 +1509,7 @@ patterns:
       - "AppDaemon API Documentation - register_endpoint() method"
       - "Home Assistant REST Command Integration Documentation"
       - "ADR-0020: Home Assistant Configuration Error Canonicalization"
+  - name: "appdaemon_rest_endpoint_404_error_continued"
     description: "AppDaemon REST endpoint calls failing with 404 due to incorrect URL structure"
     error_format: "WARNING AppDaemon: API Call to system: status: 404, App Not Found"
     symptoms:
