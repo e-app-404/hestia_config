@@ -1,7 +1,7 @@
 ---
 mode: "agent"
 model: "GPT-4o"
-tools: ["file_system", "terminal", "search"]
+tools: ["edit", "search", "problems", "changes"]
 description: "Systematic debugging and validation of AppDaemon room_db endpoint configuration with binary validation gates"
 ---
 
