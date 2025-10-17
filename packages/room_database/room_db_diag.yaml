@@ -19,12 +19,11 @@ rest:
     sensor:
       - name: "AppDaemon Health Raw"
         value_template: >
-          {% if value_json is defined %}
-            {{ value_json.status | default('no_json_status') }}
+          {% if value_json is defined and value_json %}
+            {{ value_json.status | default('no_status') }}
           {% else %}
             {{ value | default('no_response') }}
           {% endif %}
-        json_attributes_path: "$"
         json_attributes:
           - status
           - message
@@ -37,16 +36,14 @@ rest:
     sensor:
       - name: "AppDaemon Test Raw"
         value_template: >
-          {% if value_json is defined %}
-            {{ value_json.status | default('no_json_status') }}
+          {% if value_json is defined and value_json %}
+            {{ value_json.status | default('no_status') }}
           {% else %}
             {{ value | default('no_response') }}
           {% endif %}
-        json_attributes_path: "$"
         json_attributes:
           - status
           - message
-          - app_name
 
 # Shell commands for direct SQLite database operations (fallback/emergency use)
 shell_command:
