@@ -1,0 +1,64 @@
+
+# Direct HTTP test sensors to debug the endpoint issue
+template:
+  - sensor:
+      - name: "AppDaemon Health Direct Test"
+        state: >
+          {% set response = states.sensor.appdaemon_health_raw.attributes %}
+          {{ response.status | default('unknown') }}
+        attributes:
+          last_test: "{{ now().isoformat() }}"
+          full_response: >
+            {{ states.sensor.appdaemon_health_raw.attributes | default('No response') }}
+
+rest:
+  - resource: "http://localhost:5050/api/app/room_db_updater/health"
+    method: GET
+    timeout: 10
+    sensor:
+      name: "AppDaemon Health Raw"
+      value_template: "{{ value_json.status | default('error') }}"
+      json_attributes:
+        - status
+        - message
+        - timestamp
+      scan_interval: 30
+
+  - resource: "http://localhost:5050/api/app/room_db_updater/test"
+    method: GET
+    timeout: 10
+    sensor:
+      name: "AppDaemon Test Raw"
+      value_template: "{{ value_json.status | default('error') }}"
+      json_attributes:
+        - status
+        - message
+        - app_name
+      scan_interval: 30# SQL sensors for reading room configurations from SQLite database
+
+# Shell commands for direct SQLite database operations (fallback/emergency use)
+shell_command:
+  # AppDaemon endpoint discovery - test different URL patterns
+  test_appdaemon_endpoints: |
+    echo "=== AppDaemon Endpoint Discovery ===" > /tmp/appdaemon_test.log 2>&1
+    echo "Testing at $(date)" >> /tmp/appdaemon_test.log 2>&1
+    echo "" >> /tmp/appdaemon_test.log 2>&1
+
+    # Test different URL patterns
+    for path in \
+      "/api/app/room_db_updater/health" \
+      "/api/app/room_db_updater/test" \
+      "/api/appdaemon/room_db_updater/health" \
+      "/api/appdaemon/health" \
+      "/health" \
+      "/test" \
+      "/room_db_updater/health" \
+      "/room_db_updater/test"
+    do
+      echo "Testing: http://localhost:5050$path" >> /tmp/appdaemon_test.log 2>&1
+      timeout 3 wget -q -O - "http://localhost:5050$path" >> /tmp/appdaemon_test.log 2>&1 || echo "  -> FAILED" >> /tmp/appdaemon_test.log 2>&1
+      echo "" >> /tmp/appdaemon_test.log 2>&1
+    done
+
+    echo "=== Test Complete ===" >> /tmp/appdaemon_test.log 2>&1
+    cat /tmp/appdaemon_test.log

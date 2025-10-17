@@ -31,7 +31,6 @@ rest_command:
     headers:
       accept: application/json
 
-# SQL sensors for reading room configurations from SQLite database
 sql:
   - name: "Room Configs — Motion Lighting"
     db_url: sqlite:////config/room_database.db
