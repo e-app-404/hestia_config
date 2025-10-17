@@ -22,7 +22,7 @@ rest:
         - status
         - message
         - timestamp
-      scan_interval: 30
+
 
   - resource: "http://localhost:5050/api/app/room_db_updater/test"
     method: GET
