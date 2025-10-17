@@ -1,8 +1,8 @@
 ---
 mode: "agent"
-model: "gpt-4"
+model: Claude Sonnet 4
 description: "Update Hestia system configuration files with recent changes and ensure information accuracy"
-tools: ["edit", "search", "readFiles", "writeFiles"]
+tools: ['edit', 'search', 'runCommands', 'changes']
 ---
 
 # Update Hestia System Configuration Files
@@ -60,22 +60,22 @@ session_YYYY_MM_DD_description:
   date: "YYYY-MM-DD"
   duration: "~X hours"
   focus: "Brief description of maintenance focus"
-  
+
   actions_completed:
     action_name:
       description: "What was accomplished"
       files_modified: ["list", "of", "files"]
       tools_used: ["command", "patterns"]
-      
+
   metrics:
     errors_before: X
     errors_after: X
     success_rate: "XX%"
-    
+
   knowledge_captured:
     topic_name:
       description: "Key insights or learnings"
-      
+
   confidence_level:
     technical: 0.XX
     operational: 0.XX
@@ -145,7 +145,7 @@ For each identified issue, generate structured patch proposals:
 # Recommended configuration or addition
 ```
 
-**Rationale:** 
+**Rationale:**
 - Why this change is needed
 - What problem it solves
 - ADR compliance or governance requirement
@@ -169,7 +169,7 @@ For each identified issue, generate structured patch proposals:
 
 ## Changes Applied
 - [X] maintenance_log.conf: Added session_YYYY_MM_DD_description
-- [X] cli.conf: Added [tool_name] documentation  
+- [X] cli.conf: Added [tool_name] documentation
 - [X] addons.conf: Updated [addon_name] version information
 
 ## Patch Plans for Review
