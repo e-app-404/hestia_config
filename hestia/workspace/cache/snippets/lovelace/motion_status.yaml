@@ -1,0 +1,621 @@
+title: Motion & Presence Status
+path: motion-presence-status
+type: sections
+icon: mdi:motion-sensor
+max_columns: 3
+
+header:
+  card:
+    type: markdown
+    content: |-
+      # Motion & Presence Status
+      Real-time operational view: Where is motion happening? Which rooms are occupied? How does this link to motion lighting automations?
+
+sections:
+  # Section 1: At-a-Glance Active Motion & Occupancy
+  - type: grid
+    cards:
+      - type: heading
+        heading: Active Motion & Occupancy Right Now
+        icon: mdi:run-fast
+        heading_style: title
+
+      - type: entity-filter
+        state_filter:
+          - "on"
+        card:
+          type: glance
+          title: Rooms with Motion (On)
+          show_name: true
+          show_state: false
+          columns: 4
+          state_color: true
+        entities:
+          - entity: binary_sensor.bedroom_motion_beta
+            name: Bedroom
+            icon: mdi:bed-king-outline
+          - entity: binary_sensor.ensuite_motion_beta
+            name: Ensuite
+            icon: mdi:shower
+          - entity: binary_sensor.desk_motion_proxy
+            name: Desk
+            icon: mdi:desk
+          - entity: binary_sensor.kitchen_motion_beta
+            name: Kitchen
+            icon: mdi:stove
+          - entity: binary_sensor.living_room_motion_beta
+            name: Living Room
+            icon: mdi:sofa
+          - entity: binary_sensor.hallway_downstairs_motion_beta
+            name: Hallway ↓
+            icon: mdi:walk
+          - entity: binary_sensor.hallway_upstairs_motion_beta
+            name: Hallway ↑
+            icon: mdi:stairs-up
+
+      - type: entity-filter
+        state_filter:
+          - "on"
+        card:
+          type: glance
+          title: Rooms with Occupancy (On)
+          show_name: true
+          show_state: false
+          columns: 4
+          state_color: true
+        entities:
+          - entity: binary_sensor.bedroom_occupancy_beta
+            name: Bedroom
+            icon: mdi:bed-king-outline
+          - entity: binary_sensor.ensuite_occupancy_beta
+            name: Ensuite
+            icon: mdi:shower
+          - entity: binary_sensor.desk_occupancy_beta
+            name: Desk
+            icon: mdi:desk
+          - entity: binary_sensor.kitchen_occupancy_beta
+            name: Kitchen
+            icon: mdi:stove
+          - entity: binary_sensor.living_room_occupancy_beta
+            name: Living Room
+            icon: mdi:sofa
+          - entity: binary_sensor.hallway_downstairs_occupancy_beta
+            name: Hallway ↓
+            icon: mdi:walk
+          - entity: binary_sensor.hallway_upstairs_occupancy_beta
+            name: Hallway ↑
+            icon: mdi:stairs-up
+
+  # Section 2: Room-by-Room Status Grid
+  - type: grid
+    columns: 3
+    cards:
+      - type: heading
+        heading: Room-by-Room Status
+        icon: mdi:home-map-marker
+        heading_style: subtitle
+
+      # Bedroom
+      - type: custom:bubble-card
+        card_type: button
+        button_type: state
+        entity: binary_sensor.bedroom_occupancy_beta
+        name: Bedroom
+        icon: mdi:bed-king-outline
+        show_name: true
+        show_icon: true
+        show_state: true
+        show_last_changed: true
+        tap_action:
+          action: more-info
+        styles: |-
+          .bubble-button-background {
+            background: ${state === 'on' ? 'rgba(255, 107, 53, 0.2)' : 'rgba(74, 74, 74, 0.1)'} !important;
+          }
+
+      - type: custom:bubble-card
+        card_type: button
+        button_type: state
+        entity: binary_sensor.bedroom_motion_beta
+        name: Bedroom Motion
+        icon: mdi:motion-sensor
+        show_name: true
+        show_icon: true
+        show_state: false
+        show_last_changed: true
+
+      - type: tile
+        entity: sensor.bedroom_illuminance_beta
+        name: Bedroom Lux
+        icon: mdi:brightness-6
+        color: amber
+
+      # Ensuite
+      - type: custom:bubble-card
+        card_type: button
+        button_type: state
+        entity: binary_sensor.ensuite_occupancy_beta
+        name: Ensuite
+        icon: mdi:shower
+        show_name: true
+        show_icon: true
+        show_state: true
+        show_last_changed: true
+        tap_action:
+          action: more-info
+        styles: |-
+          .bubble-button-background {
+            background: ${state === 'on' ? 'rgba(255, 107, 53, 0.2)' : 'rgba(74, 74, 74, 0.1)'} !important;
+          }
+
+      - type: custom:bubble-card
+        card_type: button
+        button_type: state
+        entity: binary_sensor.ensuite_motion_beta
+        name: Ensuite Motion
+        icon: mdi:motion-sensor
+        show_name: true
+        show_icon: true
+        show_state: false
+        show_last_changed: true
+
+      - type: tile
+        entity: sensor.ensuite_illuminance_beta
+        name: Ensuite Lux
+        icon: mdi:brightness-6
+        color: amber
+
+      # Desk/Sanctum
+      - type: custom:bubble-card
+        card_type: button
+        button_type: state
+        entity: binary_sensor.desk_occupancy_beta
+        name: Desk / Sanctum
+        icon: mdi:desk
+        show_name: true
+        show_icon: true
+        show_state: true
+        show_last_changed: true
+        tap_action:
+          action: more-info
+        styles: |-
+          .bubble-button-background {
+            background: ${state === 'on' ? 'rgba(255, 107, 53, 0.2)' : 'rgba(74, 74, 74, 0.1)'} !important;
+          }
+
+      - type: custom:bubble-card
+        card_type: button
+        button_type: state
+        entity: binary_sensor.desk_motion_proxy
+        name: Desk Motion (proxy)
+        icon: mdi:motion-sensor-off
+        show_name: true
+        show_icon: true
+        show_state: false
+        show_last_changed: true
+
+      - type: markdown
+        content: ⚠️ No illuminance
+
+      # Kitchen
+      - type: custom:bubble-card
+        card_type: button
+        button_type: state
+        entity: binary_sensor.kitchen_occupancy_beta
+        name: Kitchen
+        icon: mdi:stove
+        show_name: true
+        show_icon: true
+        show_state: true
+        show_last_changed: true
+        tap_action:
+          action: more-info
+        styles: |-
+          .bubble-button-background {
+            background: ${state === 'on' ? 'rgba(255, 107, 53, 0.2)' : 'rgba(74, 74, 74, 0.1)'} !important;
+          }
+
+      - type: custom:bubble-card
+        card_type: button
+        button_type: state
+        entity: binary_sensor.kitchen_motion_beta
+        name: Kitchen Motion
+        icon: mdi:motion-sensor
+        show_name: true
+        show_icon: true
+        show_state: false
+        show_last_changed: true
+
+      - type: markdown
+        content: ⚠️ No illuminance
+
+      # Living Room
+      - type: custom:bubble-card
+        card_type: button
+        button_type: state
+        entity: binary_sensor.living_room_occupancy_beta
+        name: Living Room
+        icon: mdi:sofa
+        show_name: true
+        show_icon: true
+        show_state: true
+        show_last_changed: true
+        tap_action:
+          action: more-info
+        styles: |-
+          .bubble-button-background {
+            background: ${state === 'on' ? 'rgba(255, 107, 53, 0.2)' : 'rgba(74, 74, 74, 0.1)'} !important;
+          }
+
+      - type: custom:bubble-card
+        card_type: button
+        button_type: state
+        entity: binary_sensor.living_room_motion_beta
+        name: Living Room Motion
+        icon: mdi:motion-sensor
+        show_name: true
+        show_icon: true
+        show_state: false
+        show_last_changed: true
+
+      - type: tile
+        entity: sensor.living_room_illuminance_beta
+        name: Living Room Lux
+        icon: mdi:brightness-6
+        color: amber
+
+      # Hallway Downstairs
+      - type: custom:bubble-card
+        card_type: button
+        button_type: state
+        entity: binary_sensor.hallway_downstairs_occupancy_beta
+        name: Hallway ↓
+        icon: mdi:walk
+        show_name: true
+        show_icon: true
+        show_state: true
+        show_last_changed: true
+        tap_action:
+          action: more-info
+        styles: |-
+          .bubble-button-background {
+            background: ${state === 'on' ? 'rgba(255, 107, 53, 0.2)' : 'rgba(74, 74, 74, 0.1)'} !important;
+          }
+
+      - type: custom:bubble-card
+        card_type: button
+        button_type: state
+        entity: binary_sensor.hallway_downstairs_motion_beta
+        name: Hallway ↓ Motion
+        icon: mdi:motion-sensor
+        show_name: true
+        show_icon: true
+        show_state: false
+        show_last_changed: true
+
+      - type: markdown
+        content: ⚠️ No illuminance
+
+      # Hallway Upstairs
+      - type: custom:bubble-card
+        card_type: button
+        button_type: state
+        entity: binary_sensor.hallway_upstairs_occupancy_beta
+        name: Hallway ↑
+        icon: mdi:stairs-up
+        show_name: true
+        show_icon: true
+        show_state: true
+        show_last_changed: true
+        tap_action:
+          action: more-info
+        styles: |-
+          .bubble-button-background {
+            background: ${state === 'on' ? 'rgba(255, 107, 53, 0.2)' : 'rgba(74, 74, 74, 0.1)'} !important;
+          }
+
+      - type: custom:bubble-card
+        card_type: button
+        button_type: state
+        entity: binary_sensor.hallway_upstairs_motion_beta
+        name: Hallway ↑ Motion
+        icon: mdi:motion-sensor
+        show_name: true
+        show_icon: true
+        show_state: false
+        show_last_changed: true
+
+      - type: markdown
+        content: ⚠️ No illuminance
+
+  # Section 3: Zone Aggregations
+  - type: grid
+    cards:
+      - type: heading
+        heading: Zone Aggregations
+        icon: mdi:home-group
+        heading_style: subtitle
+
+      - type: tile
+        entity: binary_sensor.merged_home_occupancy_eta
+        name: Someone Home?
+        icon: mdi:home-account
+        color: accent
+        state_content:
+          - state
+          - last_changed
+        features_position: bottom
+        vertical: false
+
+      - type: tile
+        entity: binary_sensor.zone_upstairs_occupancy_beta
+        name: Upstairs Zone
+        icon: mdi:stairs-up
+        state_content: last_changed
+
+      - type: tile
+        entity: binary_sensor.zone_downstairs_occupancy_beta
+        name: Downstairs Zone
+        icon: mdi:arrow-down-bold
+        state_content: last_changed
+
+      - type: tile
+        entity: binary_sensor.merged_hallways_occupancy_eta
+        name: Hallways (Merged)
+        icon: mdi:walk
+        state_content: last_changed
+
+  # Section 4: Recent Activity Timeline
+  - type: grid
+    cards:
+      - type: heading
+        heading: Recent Activity – Last 3 Hours
+        icon: mdi:timeline-clock-outline
+        heading_style: subtitle
+
+      - type: history-graph
+        hours_to_show: 3
+        entities:
+          - entity: binary_sensor.bedroom_occupancy_beta
+            name: Bedroom
+          - entity: binary_sensor.ensuite_occupancy_beta
+            name: Ensuite
+          - entity: binary_sensor.desk_occupancy_beta
+            name: Desk
+          - entity: binary_sensor.kitchen_occupancy_beta
+            name: Kitchen
+          - entity: binary_sensor.living_room_occupancy_beta
+            name: Living Room
+          - entity: binary_sensor.hallway_downstairs_occupancy_beta
+            name: Hallway ↓
+          - entity: binary_sensor.hallway_upstairs_occupancy_beta
+            name: Hallway ↑
+          - entity: binary_sensor.merged_home_occupancy_eta
+            name: Home (merged)
+
+  # Section 5: Motion → Light Automation Linkage
+  - type: grid
+    cards:
+      - type: heading
+        heading: Motion Lighting Automations
+        icon: mdi:lightbulb-auto-outline
+        heading_style: subtitle
+
+      - type: markdown
+        content: |-
+          **Motion Lighting V2 Integration**
+          
+          This section shows active motion lighting automations and their trigger states.
+          When motion is detected in a room, the corresponding automation should activate
+          and control the lights based on occupancy and illuminance levels.
+
+      - type: custom:auto-entities
+        card:
+          type: entities
+          title: Active Motion Lighting Automations
+          state_color: true
+        filter:
+          include:
+            - entity_id: automation.*motion_light*
+              state: "on"
+            - entity_id: automation.*occupancy_light*
+              state: "on"
+            - entity_id: automation.*adaptive_lighting*
+              state: "on"
+          exclude: []
+        show_empty: true
+        sort:
+          method: friendly_name
+
+      - type: custom:apexcharts-card
+        graph_span: 1h
+        header:
+          show: true
+          title: Bedroom Motion → Light Correlation (1 hour)
+          show_states: false
+        yaxis:
+          - id: state
+            min: 0
+            max: 1
+          - id: brightness
+            min: 0
+            max: 255
+            opposite: true
+        series:
+          - entity: binary_sensor.bedroom_motion_beta
+            name: Motion
+            type: line
+            color: '#00B4D8'
+            yaxis_id: state
+            stroke_width: 2
+            transform: 'return x === "on" ? 1 : 0;'
+          - entity: binary_sensor.bedroom_occupancy_beta
+            name: Occupancy
+            type: line
+            color: '#90BE6D'
+            yaxis_id: state
+            stroke_width: 2
+            transform: 'return x === "on" ? 1 : 0;'
+          - entity: light.bedroom_lights
+            name: Light Brightness
+            type: area
+            color: '#FFBA08'
+            yaxis_id: brightness
+            opacity: 0.3
+            attribute: brightness
+
+      - type: custom:apexcharts-card
+        graph_span: 1h
+        header:
+          show: true
+          title: Ensuite Motion → Light Correlation (1 hour)
+          show_states: false
+        yaxis:
+          - id: state
+            min: 0
+            max: 1
+          - id: brightness
+            min: 0
+            max: 255
+            opposite: true
+        series:
+          - entity: binary_sensor.ensuite_motion_beta
+            name: Motion
+            type: line
+            color: '#00B4D8'
+            yaxis_id: state
+            stroke_width: 2
+            transform: 'return x === "on" ? 1 : 0;'
+          - entity: binary_sensor.ensuite_occupancy_beta
+            name: Occupancy
+            type: line
+            color: '#90BE6D'
+            yaxis_id: state
+            stroke_width: 2
+            transform: 'return x === "on" ? 1 : 0;'
+          - entity: light.ensuite_lights
+            name: Light Brightness
+            type: area
+            color: '#FFBA08'
+            yaxis_id: brightness
+            opacity: 0.3
+            attribute: brightness
+
+      - type: custom:apexcharts-card
+        graph_span: 1h
+        header:
+          show: true
+          title: Kitchen Motion → Light Correlation (1 hour)
+          show_states: false
+        yaxis:
+          - id: state
+            min: 0
+            max: 1
+          - id: brightness
+            min: 0
+            max: 255
+            opposite: true
+        series:
+          - entity: binary_sensor.kitchen_motion_beta
+            name: Motion
+            type: line
+            color: '#00B4D8'
+            yaxis_id: state
+            stroke_width: 2
+            transform: 'return x === "on" ? 1 : 0;'
+          - entity: binary_sensor.kitchen_occupancy_beta
+            name: Occupancy
+            type: line
+            color: '#90BE6D'
+            yaxis_id: state
+            stroke_width: 2
+            transform: 'return x === "on" ? 1 : 0;'
+          - entity: light.kitchen_lights
+            name: Light Brightness
+            type: area
+            color: '#FFBA08'
+            yaxis_id: brightness
+            opacity: 0.3
+            attribute: brightness
+
+  # Section 6: Presence Indicators
+  - type: grid
+    cards:
+      - type: heading
+        heading: Presence Detection
+        icon: mdi:account-multiple
+        heading_style: subtitle
+
+      - type: entities
+        title: Person Presence Sensors
+        entities:
+          - entity: person.evert
+            name: Evert (Person)
+            secondary_info: last-changed
+          - entity: sensor.any_home_presence
+            name: Any Home Presence
+            secondary_info: last-changed
+          - entity: binary_sensor.evert_at_home
+            name: Evert at Home
+            secondary_info: last-changed
+
+      - type: entities
+        title: Room-Level Presence (β)
+        entities:
+          - entity: binary_sensor.bedroom_presence_beta
+            name: Bedroom
+            secondary_info: last-changed
+            icon: mdi:bed-king-outline
+          - entity: binary_sensor.ensuite_presence_beta
+            name: Ensuite
+            secondary_info: last-changed
+            icon: mdi:shower
+          - entity: binary_sensor.desk_presence_beta
+            name: Desk / Sanctum
+            secondary_info: last-changed
+            icon: mdi:desk
+          - entity: binary_sensor.kitchen_presence_beta
+            name: Kitchen (always false)
+            secondary_info: last-changed
+            icon: mdi:stove
+          - entity: binary_sensor.living_room_presence_beta
+            name: Living Room
+            secondary_info: last-changed
+            icon: mdi:sofa
+          - entity: binary_sensor.hallway_downstairs_presence_beta
+            name: Hallway ↓ (always false)
+            secondary_info: last-changed
+            icon: mdi:walk
+          - entity: binary_sensor.hallway_upstairs_presence_beta
+            name: Hallway ↑ (always false)
+            secondary_info: last-changed
+            icon: mdi:stairs-up
+
+      - type: custom:apexcharts-card
+        graph_span: 6h
+        header:
+          show: true
+          title: Home Presence Timeline (6 hours)
+          show_states: true
+          colorize_states: true
+        series:
+          - entity: binary_sensor.bedroom_presence_beta
+            name: Bedroom
+            type: line
+            color: '#F77F00'
+            transform: 'return x === "on" ? 1 : 0;'
+          - entity: binary_sensor.ensuite_presence_beta
+            name: Ensuite
+            type: line
+            color: '#4ECDC4'
+            transform: 'return x === "on" ? 1 : 0;'
+          - entity: binary_sensor.desk_presence_beta
+            name: Desk
+            type: line
+            color: '#FF006E'
+            transform: 'return x === "on" ? 1 : 0;'
+          - entity: binary_sensor.living_room_presence_beta
+            name: Living Room
+            type: line
+            color: '#90BE6D'
+            transform: 'return x === "on" ? 1 : 0;'

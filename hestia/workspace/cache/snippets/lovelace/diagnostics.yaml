@@ -1,0 +1,611 @@
+title: Sensor Diagnostics
+path: sensor-diagnostics
+type: sections
+icon: mdi:stethoscope
+max_columns: 2
+
+header:
+  card:
+    type: markdown
+    content: |-
+      # Sensor Pipeline Diagnostics
+      Engineering view: Motion → Occupancy → Presence flow analysis, anomaly detection, and source file references.
+
+sections:
+  # Section 1: System-Wide Health Overview
+  - type: grid
+    cards:
+      - type: heading
+        heading: Pipeline Health Overview
+        icon: mdi:chart-sankey
+        heading_style: title
+
+      - type: markdown
+        content: |-
+          ## Sensor Hierarchy Summary
+          
+          **Coverage Status:**
+          - ✅ Bedroom: Full pipeline (motion, occupancy, presence, illuminance)
+          - ✅ Ensuite: Full pipeline (motion, occupancy, presence, illuminance)
+          - ⚠️ Desk: Missing illuminance sensors
+          - ⚠️ Kitchen: Missing illuminance, presence always false
+          - ⚠️ Living Room: Full pipeline but shared area (poor presence reliability)
+          - ⚠️ Hallway Down: Missing illuminance, presence always false
+          - ⚠️ Hallway Up: Missing illuminance, presence always false
+          - ℹ️ Home: Aggregated sensors only (zone-level)
+          
+          **Anomalies Detected:**
+          - 4 rooms missing illuminance sensors
+          - 3 rooms with hardcoded false presence
+          - Multiple proxy sensors for motion inference
+          - Health biometrics integration (bedroom sleep tracking)
+
+      - type: custom:auto-entities
+        card:
+          type: entities
+          title: Unavailable/Unknown Sensors
+          state_color: true
+        filter:
+          include:
+            - entity_id: binary_sensor.*_(motion|occupancy|presence)_*
+              state: unavailable
+            - entity_id: binary_sensor.*_(motion|occupancy|presence)_*
+              state: unknown
+            - entity_id: sensor.*_illuminance_*
+              state: unavailable
+            - entity_id: sensor.*_illuminance_*
+              state: unknown
+          exclude: []
+        show_empty: true
+        card:
+          type: entities
+          title: ⚠️ No Unavailable Sensors Detected
+        sort:
+          method: state
+          reverse: false
+
+  # Section 2: Bedroom Deep Dive
+  - type: grid
+    cards:
+      - type: heading
+        heading: Bedroom Pipeline Analysis
+        icon: mdi:bed-king-outline
+        heading_style: subtitle
+
+      - type: custom:apexcharts-card
+        graph_span: 6h
+        header:
+          show: true
+          title: Motion → Occupancy → Presence (6 hours)
+          show_states: true
+          colorize_states: true
+        series:
+          - entity: binary_sensor.bedroom_motion_beta
+            name: Motion (β)
+            type: line
+            color: '#00B4D8'
+            stroke_width: 2
+            transform: 'return x === "on" ? 1 : 0;'
+          - entity: binary_sensor.bedroom_occupancy_beta
+            name: Occupancy (β)
+            type: line
+            color: '#90BE6D'
+            stroke_width: 2
+            transform: 'return x === "on" ? 1 : 0;'
+          - entity: binary_sensor.bedroom_presence_beta
+            name: Presence (β)
+            type: line
+            color: '#F77F00'
+            stroke_width: 2
+            transform: 'return x === "on" ? 1 : 0;'
+
+      - type: entities
+        title: Preferred Sensors (β)
+        entities:
+          - entity: binary_sensor.bedroom_motion_beta
+            name: Motion
+            secondary_info: last-changed
+            icon: mdi:motion-sensor
+          - entity: binary_sensor.bedroom_occupancy_beta
+            name: Occupancy
+            secondary_info: last-changed
+            icon: mdi:account-check
+          - entity: binary_sensor.bedroom_presence_beta
+            name: Presence
+            secondary_info: last-changed
+            icon: mdi:human
+          - entity: sensor.bedroom_illuminance_beta
+            name: Illuminance
+            secondary_info: last-changed
+            icon: mdi:brightness-6
+
+      - type: markdown
+        content: |-
+          **Source Files:**
+          - `binary_sensor.bedroom_motion_beta`
+            → `/config/domain/templates/motion_logic.yaml:61`
+          - `binary_sensor.bedroom_occupancy_beta`
+            → `/config/domain/templates/occupancy_logic.yaml:21`
+          - `binary_sensor.bedroom_presence_beta`
+            → `/config/domain/templates/presence_logic.yaml:50`
+          - `sensor.bedroom_illuminance_beta`
+            → `/config/domain/templates/illuminance_logic.yaml:32`
+          
+          **Proxy Sensors:**
+          - `binary_sensor.bedroom_ottoman_motion_proxy` (motion inference)
+          - `binary_sensor.desk_motion_proxy` (motion inference)
+          - `sensor.bedroom_tv_illuminance_decay_delta` (illuminance decay tracking)
+          - `binary_sensor.evert_in_bed` (health biometrics)
+          - `binary_sensor.evert_asleep` (health biometrics)
+
+      - type: custom:apexcharts-card
+        graph_span: 6h
+        header:
+          show: true
+          title: Illuminance vs Occupancy Correlation
+          show_states: false
+        yaxis:
+          - id: lux
+            min: 0
+            apex_config:
+              tickAmount: 5
+          - id: state
+            min: 0
+            max: 1
+            opposite: true
+        series:
+          - entity: sensor.bedroom_illuminance_beta
+            name: Illuminance (lux)
+            type: area
+            color: '#FFBA08'
+            yaxis_id: lux
+            stroke_width: 2
+            opacity: 0.3
+          - entity: binary_sensor.bedroom_occupancy_beta
+            name: Occupancy
+            type: line
+            color: '#90BE6D'
+            yaxis_id: state
+            stroke_width: 3
+            transform: 'return x === "on" ? 1 : 0;'
+
+  # Section 3: Ensuite Deep Dive
+  - type: grid
+    cards:
+      - type: heading
+        heading: Ensuite Pipeline Analysis
+        icon: mdi:shower
+        heading_style: subtitle
+
+      - type: custom:apexcharts-card
+        graph_span: 6h
+        header:
+          show: true
+          title: Motion → Occupancy → Presence (6 hours)
+          show_states: true
+          colorize_states: true
+        series:
+          - entity: binary_sensor.ensuite_motion_beta
+            name: Motion (β)
+            type: line
+            color: '#00B4D8'
+            stroke_width: 2
+            transform: 'return x === "on" ? 1 : 0;'
+          - entity: binary_sensor.ensuite_occupancy_beta
+            name: Occupancy (β)
+            type: line
+            color: '#90BE6D'
+            stroke_width: 2
+            transform: 'return x === "on" ? 1 : 0;'
+          - entity: binary_sensor.ensuite_presence_beta
+            name: Presence (β)
+            type: line
+            color: '#F77F00'
+            stroke_width: 2
+            transform: 'return x === "on" ? 1 : 0;'
+
+      - type: entities
+        title: Preferred Sensors (β)
+        entities:
+          - entity: binary_sensor.ensuite_motion_beta
+            name: Motion
+            secondary_info: last-changed
+            icon: mdi:motion-sensor
+          - entity: binary_sensor.ensuite_occupancy_beta
+            name: Occupancy
+            secondary_info: last-changed
+            icon: mdi:account-check
+          - entity: binary_sensor.ensuite_presence_beta
+            name: Presence
+            secondary_info: last-changed
+            icon: mdi:human
+          - entity: sensor.ensuite_illuminance_beta
+            name: Illuminance
+            secondary_info: last-changed
+            icon: mdi:brightness-6
+
+      - type: markdown
+        content: |-
+          **Source Files:**
+          - `binary_sensor.ensuite_motion_beta`
+            → `/config/domain/templates/motion_logic.yaml:135`
+          - `binary_sensor.ensuite_occupancy_beta`
+            → `/config/domain/templates/occupancy_logic.yaml:96`
+          - `binary_sensor.ensuite_presence_beta`
+            → `/config/domain/templates/presence_logic.yaml:124`
+          - `sensor.ensuite_illuminance_beta`
+            → `/config/domain/templates/illuminance_logic.yaml:65`
+          
+          **Proxy Sensors:**
+          - `binary_sensor.ensuite_motion_real_time` (MQTT native trigger)
+          - `binary_sensor.ensuite_shower_occupancy_epsilon` (composite shower detection)
+
+  # Section 4: Desk/Sanctum Deep Dive
+  - type: grid
+    cards:
+      - type: heading
+        heading: Desk/Sanctum Pipeline Analysis
+        icon: mdi:desk
+        heading_style: subtitle
+
+      - type: custom:apexcharts-card
+        graph_span: 6h
+        header:
+          show: true
+          title: Motion → Occupancy → Presence (6 hours)
+          show_states: true
+          colorize_states: true
+        series:
+          - entity: binary_sensor.desk_motion_proxy
+            name: Motion (proxy)
+            type: line
+            color: '#00B4D8'
+            stroke_width: 2
+            transform: 'return x === "on" ? 1 : 0;'
+          - entity: binary_sensor.desk_occupancy_beta
+            name: Occupancy (β)
+            type: line
+            color: '#90BE6D'
+            stroke_width: 2
+            transform: 'return x === "on" ? 1 : 0;'
+          - entity: binary_sensor.desk_presence_beta
+            name: Presence (β)
+            type: line
+            color: '#F77F00'
+            stroke_width: 2
+            transform: 'return x === "on" ? 1 : 0;'
+
+      - type: entities
+        title: Preferred Sensors (β)
+        entities:
+          - entity: binary_sensor.desk_motion_proxy
+            name: Motion (proxy)
+            secondary_info: last-changed
+            icon: mdi:motion-sensor
+          - entity: binary_sensor.desk_occupancy_beta
+            name: Occupancy
+            secondary_info: last-changed
+            icon: mdi:account-check
+          - entity: binary_sensor.desk_presence_beta
+            name: Presence
+            secondary_info: last-changed
+            icon: mdi:human
+
+      - type: markdown
+        content: |-
+          **⚠️ Anomaly: No Illuminance Sensors**
+          
+          **Source Files:**
+          - `binary_sensor.desk_motion_proxy`
+            → `/config/domain/templates/motion_logic.yaml:262`
+          - `binary_sensor.desk_occupancy_beta`
+            → `/config/domain/templates/occupancy_logic.yaml:214`
+          - `binary_sensor.desk_presence_beta`
+            → `/config/domain/templates/presence_logic.yaml:74`
+          
+          **Proxy/Inferred Sensors:**
+          - `binary_sensor.desk_motion_proxy` (inferred from MacBook connectivity)
+          - `binary_sensor.desk_presence_inferred` (MacBook display state)
+          - `binary_sensor.desk_macbook_recent_connectivity` (connectivity timeout)
+          - `binary_sensor.macbook_retina_display_active`
+          - `binary_sensor.macbook_hp32_monitor_active`
+
+  # Section 5: Kitchen Analysis (Anomaly: Always False Presence)
+  - type: grid
+    cards:
+      - type: heading
+        heading: Kitchen Pipeline Analysis
+        icon: mdi:stove
+        heading_style: subtitle
+
+      - type: custom:apexcharts-card
+        graph_span: 6h
+        header:
+          show: true
+          title: Motion → Occupancy (6 hours)
+          show_states: true
+          colorize_states: true
+        series:
+          - entity: binary_sensor.kitchen_motion_beta
+            name: Motion (β)
+            type: line
+            color: '#00B4D8'
+            stroke_width: 2
+            transform: 'return x === "on" ? 1 : 0;'
+          - entity: binary_sensor.kitchen_occupancy_beta
+            name: Occupancy (β)
+            type: line
+            color: '#90BE6D'
+            stroke_width: 2
+            transform: 'return x === "on" ? 1 : 0;'
+
+      - type: entities
+        title: Preferred Sensors (β)
+        entities:
+          - entity: binary_sensor.kitchen_motion_beta
+            name: Motion
+            secondary_info: last-changed
+            icon: mdi:motion-sensor
+          - entity: binary_sensor.kitchen_occupancy_beta
+            name: Occupancy
+            secondary_info: last-changed
+            icon: mdi:account-check
+          - entity: binary_sensor.kitchen_presence_beta
+            name: Presence (always false)
+            secondary_info: last-changed
+            icon: mdi:human-handsdown
+
+      - type: markdown
+        content: |-
+          **⚠️ Anomalies:**
+          - No illuminance sensors
+          - Presence hardcoded to 'off' (shared area with untracked occupant)
+          
+          **Source Files:**
+          - `binary_sensor.kitchen_motion_beta`
+            → `/config/domain/templates/motion_logic.yaml:??`
+          - `binary_sensor.kitchen_occupancy_beta`
+            → `/config/domain/templates/occupancy_logic.yaml:??`
+          - `binary_sensor.kitchen_presence_beta`
+            → `/config/domain/templates/presence_logic.yaml:94` (hardcoded false)
+
+  # Section 6: Living Room Analysis
+  - type: grid
+    cards:
+      - type: heading
+        heading: Living Room Pipeline Analysis
+        icon: mdi:sofa
+        heading_style: subtitle
+
+      - type: custom:apexcharts-card
+        graph_span: 6h
+        header:
+          show: true
+          title: Motion → Occupancy → Presence (6 hours)
+          show_states: true
+          colorize_states: true
+        series:
+          - entity: binary_sensor.living_room_motion_beta
+            name: Motion (β)
+            type: line
+            color: '#00B4D8'
+            stroke_width: 2
+            transform: 'return x === "on" ? 1 : 0;'
+          - entity: binary_sensor.living_room_occupancy_beta
+            name: Occupancy (β)
+            type: line
+            color: '#90BE6D'
+            stroke_width: 2
+            transform: 'return x === "on" ? 1 : 0;'
+          - entity: binary_sensor.living_room_presence_beta
+            name: Presence (β)
+            type: line
+            color: '#F77F00'
+            stroke_width: 2
+            transform: 'return x === "on" ? 1 : 0;'
+
+      - type: entities
+        title: Preferred Sensors (β)
+        entities:
+          - entity: binary_sensor.living_room_motion_beta
+            name: Motion
+            secondary_info: last-changed
+            icon: mdi:motion-sensor
+          - entity: binary_sensor.living_room_occupancy_beta
+            name: Occupancy
+            secondary_info: last-changed
+            icon: mdi:account-check
+          - entity: binary_sensor.living_room_presence_beta
+            name: Presence
+            secondary_info: last-changed
+            icon: mdi:human
+          - entity: sensor.living_room_illuminance_beta
+            name: Illuminance
+            secondary_info: last-changed
+            icon: mdi:brightness-6
+
+      - type: markdown
+        content: |-
+          **⚠️ Note:** Shared area with poor presence reliability
+          
+          **Source Files:**
+          - `binary_sensor.living_room_motion_beta`
+            → `/config/domain/templates/motion_logic.yaml:??`
+          - `binary_sensor.living_room_occupancy_beta`
+            → `/config/domain/templates/occupancy_logic.yaml:??`
+          - `binary_sensor.living_room_presence_beta`
+            → `/config/domain/templates/presence_logic.yaml:??`
+          - `sensor.living_room_illuminance_beta`
+            → `/config/domain/templates/illuminance_logic.yaml:13`
+
+  # Section 7: Hallway Downstairs Analysis
+  - type: grid
+    cards:
+      - type: heading
+        heading: Hallway Downstairs Pipeline Analysis
+        icon: mdi:walk
+        heading_style: subtitle
+
+      - type: custom:apexcharts-card
+        graph_span: 6h
+        header:
+          show: true
+          title: Motion → Occupancy (6 hours)
+          show_states: true
+          colorize_states: true
+        series:
+          - entity: binary_sensor.hallway_downstairs_motion_beta
+            name: Motion (β)
+            type: line
+            color: '#00B4D8'
+            stroke_width: 2
+            transform: 'return x === "on" ? 1 : 0;'
+          - entity: binary_sensor.hallway_downstairs_occupancy_beta
+            name: Occupancy (β)
+            type: line
+            color: '#90BE6D'
+            stroke_width: 2
+            transform: 'return x === "on" ? 1 : 0;'
+
+      - type: entities
+        title: Preferred Sensors (β)
+        entities:
+          - entity: binary_sensor.hallway_downstairs_motion_beta
+            name: Motion
+            secondary_info: last-changed
+            icon: mdi:motion-sensor
+          - entity: binary_sensor.hallway_downstairs_occupancy_beta
+            name: Occupancy
+            secondary_info: last-changed
+            icon: mdi:account-check
+          - entity: binary_sensor.hallway_downstairs_presence_beta
+            name: Presence (always false)
+            secondary_info: last-changed
+            icon: mdi:human-handsdown
+
+      - type: markdown
+        content: |-
+          **⚠️ Anomalies:**
+          - No illuminance sensors
+          - Presence hardcoded to 'off'
+          
+          **Source Files:**
+          - `binary_sensor.hallway_downstairs_motion_beta`
+            → `/config/domain/templates/motion_logic.yaml:??`
+          - `binary_sensor.hallway_downstairs_occupancy_beta`
+            → `/config/domain/templates/occupancy_logic.yaml:??`
+          - `binary_sensor.hallway_downstairs_presence_beta`
+            → `/config/domain/templates/presence_logic.yaml:??` (hardcoded false)
+          
+          **Proxy Sensors:**
+          - `binary_sensor.entrance_motion_proxy` (from door contact)
+
+  # Section 8: Hallway Upstairs Analysis
+  - type: grid
+    cards:
+      - type: heading
+        heading: Hallway Upstairs Pipeline Analysis
+        icon: mdi:stairs-up
+        heading_style: subtitle
+
+      - type: custom:apexcharts-card
+        graph_span: 6h
+        header:
+          show: true
+          title: Motion → Occupancy (6 hours)
+          show_states: true
+          colorize_states: true
+        series:
+          - entity: binary_sensor.hallway_upstairs_motion_beta
+            name: Motion (β)
+            type: line
+            color: '#00B4D8'
+            stroke_width: 2
+            transform: 'return x === "on" ? 1 : 0;'
+          - entity: binary_sensor.hallway_upstairs_occupancy_beta
+            name: Occupancy (β)
+            type: line
+            color: '#90BE6D'
+            stroke_width: 2
+            transform: 'return x === "on" ? 1 : 0;'
+
+      - type: entities
+        title: Preferred Sensors (β)
+        entities:
+          - entity: binary_sensor.hallway_upstairs_motion_beta
+            name: Motion
+            secondary_info: last-changed
+            icon: mdi:motion-sensor
+          - entity: binary_sensor.hallway_upstairs_occupancy_beta
+            name: Occupancy
+            secondary_info: last-changed
+            icon: mdi:account-check
+          - entity: binary_sensor.hallway_upstairs_presence_beta
+            name: Presence (always false)
+            secondary_info: last-changed
+            icon: mdi:human-handsdown
+
+      - type: markdown
+        content: |-
+          **⚠️ Anomalies:**
+          - No illuminance sensors
+          - Presence hardcoded to 'off'
+          
+          **Source Files:**
+          - `binary_sensor.hallway_upstairs_motion_beta`
+            → `/config/domain/templates/motion_logic.yaml:??`
+          - `binary_sensor.hallway_upstairs_occupancy_beta`
+            → `/config/domain/templates/occupancy_logic.yaml:??`
+          - `binary_sensor.hallway_upstairs_presence_beta`
+            → `/config/domain/templates/presence_logic.yaml:174` (hardcoded false)
+
+  # Section 9: Home Aggregation Analysis
+  - type: grid
+    cards:
+      - type: heading
+        heading: Home-Wide Aggregation Analysis
+        icon: mdi:home-outline
+        heading_style: subtitle
+
+      - type: custom:apexcharts-card
+        graph_span: 6h
+        header:
+          show: true
+          title: Merged Home Occupancy (6 hours)
+          show_states: true
+          colorize_states: true
+        series:
+          - entity: binary_sensor.merged_home_occupancy_eta
+            name: Home Occupancy (η)
+            type: line
+            color: '#F77F00'
+            stroke_width: 3
+            transform: 'return x === "on" ? 1 : 0;'
+
+      - type: entities
+        title: Aggregated Sensors (η)
+        entities:
+          - entity: binary_sensor.merged_home_occupancy_eta
+            name: Home Occupancy
+            secondary_info: last-changed
+            icon: mdi:home-account
+          - entity: sensor.any_home_presence
+            name: Home Presence
+            secondary_info: last-changed
+            icon: mdi:account-multiple
+          - entity: sensor.merged_home_illuminance_eta
+            name: Home Illuminance
+            secondary_info: last-changed
+            icon: mdi:brightness-6
+
+      - type: markdown
+        content: |-
+          **ℹ️ Note:** Home-level aggregated sensors only (no individual room sensors)
+          
+          **Source Files:**
+          - `binary_sensor.merged_home_occupancy_eta`
+            → `/config/domain/templates/occupancy_logic.yaml:??`
+          - `sensor.any_home_presence`
+            → `/config/domain/templates/tracking_logic.yaml:13`
+          - `sensor.merged_home_illuminance_eta`
+            → `/config/domain/templates/illuminance_logic.yaml:84`
