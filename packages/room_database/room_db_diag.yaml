@@ -11,7 +11,7 @@ template:
             {{ states.sensor.appdaemon_health_raw.attributes | default('No response') }}
 
 rest:
-  - resource: "http://localhost:5050/api/app/room_db_updater/health"
+  - resource: "http://a0d7b954-appdaemon:5050/api/app/room_db_updater/health"
     method: GET
     timeout: 10
     scan_interval: 30
@@ -28,7 +28,7 @@ rest:
           - message
           - timestamp
 
-  - resource: "http://localhost:5050/api/app/room_db_updater/test"
+  - resource: "http://a0d7b954-appdaemon:5050/api/app/room_db_updater/test"
     method: GET
     timeout: 10
     scan_interval: 30
@@ -63,8 +63,8 @@ shell_command:
       "/room_db_updater/health" \
       "/room_db_updater/test"
     do
-      echo "Testing: http://localhost:5050$path" >> /tmp/appdaemon_test.log 2>&1
-      timeout 3 wget -q -O - "http://localhost:5050$path" >> /tmp/appdaemon_test.log 2>&1 || echo "  -> FAILED" >> /tmp/appdaemon_test.log 2>&1
+      echo "Testing: http://a0d7b954-appdaemon:5050$path" >> /tmp/appdaemon_test.log 2>&1
+      timeout 3 wget -q -O - "http://a0d7b954-appdaemon:5050$path" >> /tmp/appdaemon_test.log 2>&1 || echo "  -> FAILED" >> /tmp/appdaemon_test.log 2>&1
       echo "" >> /tmp/appdaemon_test.log 2>&1
     done
 
