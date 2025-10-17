@@ -1,0 +1,79 @@
+title: Vacuum draft
+sections:
+  - type: grid
+    cards:
+      - type: heading
+        heading: valetudo_roborocks5_vacuum
+      - type: tile
+        entity: vacuum.valetudo_roborocks5
+      - type: vertical-stack
+        cards:
+          - vacuum: valetudo_mistyprofitablebadger
+            type: custom:valetudo-map-card
+          - entities:
+              - vacuum.valetudo_roborocks5
+            type: entities
+      - type: tile
+        entity: input_boolean.enable_daily_clean
+  - type: grid
+    cards:
+      - type: heading
+        heading: valetudo_roborocks5_vacuum
+      - type: tile
+        entity: sensor.valetudo_roborocks5_vacuum_events
+      - type: tile
+        entity: camera.valetudo_roborocks5_vacuum_map_data
+        show_entity_picture: true
+      - type: tile
+        entity: sensor.valetudo_roborocks5_vacuum_map_segments
+  - type: grid
+    cards:
+      - type: heading
+        heading: valetudo_roborocks5_vacuum
+      - type: tile
+        entity: switch.valetudo_roborocks5_vacuum_carpet_mode
+      - type: tile
+        entity: select.valetudo_roborocks5_vacuum_fan
+      - type: tile
+        entity: number.valetudo_roborocks5_vacuum_speaker_volume
+  - type: grid
+    cards:
+      - type: heading
+        heading: valetudo_roborocks5_vacuum
+      - type: tile
+        entity: sensor.valetudo_roborocks5_vacuum_battery_level
+      - type: tile
+        entity: sensor.valetudo_roborocks5_vacuum_current_statistics_area
+      - type: tile
+        entity: sensor.valetudo_roborocks5_vacuum_current_statistics_time
+      - type: tile
+        entity: sensor.valetudo_roborocks5_vacuum_error
+      - type: tile
+        entity: sensor.valetudo_roborocks5_vacuum_main_brush
+      - type: tile
+        entity: sensor.valetudo_roborocks5_vacuum_main_filter
+      - type: tile
+        entity: button.valetudo_roborocks5_vacuum_reset_main_brush_consumable
+      - type: tile
+        entity: button.valetudo_roborocks5_vacuum_reset_main_filter_consumable
+      - type: tile
+        entity: button.valetudo_roborocks5_vacuum_reset_right_brush_consumable
+      - type: tile
+        entity: button.valetudo_roborocks5_vacuum_reset_sensor_cleaning_consumable
+      - type: tile
+        entity: sensor.valetudo_roborocks5_vacuum_right_brush
+      - type: tile
+        entity: sensor.valetudo_roborocks5_vacuum_sensor_cleaning
+      - type: tile
+        entity: sensor.valetudo_roborocks5_vacuum_status_flag
+      - type: tile
+        entity: sensor.valetudo_roborocks5_vacuum_total_statistics_area
+      - type: tile
+        entity: sensor.valetudo_roborocks5_vacuum_total_statistics_count
+      - type: tile
+        entity: sensor.valetudo_roborocks5_vacuum_total_statistics_time
+      - type: tile
+        entity: sensor.valetudo_roborocks5_vacuum_wi_fi_configuration
+cards: []
+type: sections
+max_columns: 3

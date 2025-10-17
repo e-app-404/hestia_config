@@ -1,0 +1,282 @@
+title: Presence
+path: presence
+type: sections
+icon: mdi:account-group
+sections:
+  - type: grid
+    cards:
+      - type: heading
+        heading: Occupied right now
+        icon: mdi:account-check
+        heading_style: subtitle
+      - type: entity-filter
+        state_filter:
+          - "on"
+        card:
+          type: glance
+          title: Occupied right now
+          show_name: true
+          show_state: false
+          columns: 4
+          state_color: true
+        entities:
+          - entity: binary_sensor.bedroom_occupancy_beta
+            name: Bedroom
+          - entity: binary_sensor.ensuite_occupancy_beta
+            name: Ensuite
+          - entity: binary_sensor.kitchen_occupancy_beta
+            name: Kitchen
+          - entity: binary_sensor.living_room_occupancy_beta
+            name: Living Room
+          - entity: binary_sensor.hallway_downstairs_occupancy_beta
+            name: Hallway (Downstairs)
+          - entity: binary_sensor.hallway_upstairs_occupancy_beta
+            name: Hallway (Upstairs)
+          - entity: binary_sensor.entrance_door_occupancy_matter_alpha
+            name: Entrance
+          - entity: binary_sensor.wardrobe_occupancy_sanctum
+            name: Wardrobe
+          - entity: binary_sensor.desk_occupancy_sanctum
+            name: Desk / Sanctum
+          - entity: binary_sensor.zone_downstairs_occupancy_beta
+            name: Downstairs Zone
+          - entity: binary_sensor.upstairs_occupancy_matter_alpha_occupancy
+            name: Upstairs Zone
+          - entity: binary_sensor.merged_hallways_occupancy_eta
+            name: Hallways (Merged)
+  - type: grid
+    cards:
+      - type: heading
+        heading: Rooms at a glance
+        icon: mdi:home-outline
+        heading_style: subtitle
+      - type: grid
+        columns: 3
+        square: false
+        cards:
+          - type: tile
+            entity: binary_sensor.merged_home_occupancy_eta
+            name: Someone home?
+            icon: mdi:home-account
+            color: accent
+            state_content:
+              - state
+              - last_changed
+            features_position: bottom
+            vertical: false
+          - type: tile
+            entity: binary_sensor.bedroom_occupancy_beta
+            name: Bedroom
+            icon: mdi:bed-king-outline
+            state_content: last_changed
+          - type: tile
+            entity: binary_sensor.ensuite_occupancy_beta
+            name: Ensuite
+            icon: mdi:shower
+            state_content: last_changed
+          - type: tile
+            entity: binary_sensor.kitchen_occupancy_beta
+            name: Kitchen
+            icon: mdi:stove
+            state_content: last_changed
+          - type: tile
+            entity: binary_sensor.living_room_occupancy_beta
+            name: Living Room
+            icon: mdi:sofa
+            state_content: last_changed
+          - type: tile
+            entity: binary_sensor.hallway_downstairs_occupancy_beta
+            name: Hallway (Down)
+            icon: mdi:walk
+            state_content: last_changed
+          - type: tile
+            entity: binary_sensor.hallway_upstairs_occupancy_beta
+            name: Hallway (Up)
+            icon: mdi:stairs-up
+            state_content: last_changed
+          - type: tile
+            entity: binary_sensor.entrance_door_alpha_contact
+            name: Entrance
+            icon: mdi:door
+            state_content: last_changed
+            features_position: bottom
+            vertical: false
+          - type: tile
+            entity: binary_sensor.desk_occupancy_beta
+            name: Desk / Sanctum
+            icon: mdi:desk
+            state_content: last_changed
+            features_position: bottom
+            vertical: false
+  - type: grid
+    cards:
+      - type: heading
+        heading: Recent motion (last triggered)
+        icon: mdi:run
+        heading_style: subtitle
+      - type: custom:bubble-card
+        card_type: button
+        button_type: state
+        entity: binary_sensor.bedroom_wardrobe_motion_tplink_alpha
+        grid_options:
+          columns: 6
+          rows: auto
+        name: Wardrobe
+      - type: custom:bubble-card
+        card_type: button
+        button_type: state
+        entity: binary_sensor.hallway_upstairs_motion_beta
+        grid_options:
+          columns: 6
+          rows: auto
+        name: Upstairs Hallway
+        show_name: true
+        show_icon: true
+        show_last_changed: true
+        show_attribute: false
+        show_last_updated: false
+      - type: custom:bubble-card
+        card_type: button
+        button_type: state
+        entity: binary_sensor.hallway_downstairs_motion_beta
+        grid_options:
+          columns: 6
+          rows: auto
+        name: Downstairs Hallway
+        show_name: true
+        show_icon: true
+        show_last_changed: true
+        show_attribute: false
+        show_last_updated: false
+      - type: custom:bubble-card
+        card_type: button
+        button_type: state
+        entity: binary_sensor.kitchen_motion_beta
+        grid_options:
+          columns: 6
+          rows: auto
+        name: Kitchen
+        show_name: true
+        show_icon: true
+        show_last_changed: true
+        show_attribute: false
+        show_last_updated: false
+      - type: custom:bubble-card
+        card_type: button
+        button_type: state
+        entity: binary_sensor.entrance_door_alpha_contact
+        grid_options:
+          columns: 6
+          rows: auto
+        name: Enrance
+        show_name: true
+        show_icon: true
+        show_last_changed: true
+        show_attribute: false
+        show_last_updated: false
+      - type: heading
+        heading: Entry
+        icon: mdi:door-open
+        heading_style: subtitle
+      - type: tile
+        entity: binary_sensor.entrance_door_alpha_contact
+      - type: tile
+        entity: binary_sensor.entrance_door_motion_tplink_alpha_motion
+  - type: grid
+    cards:
+      - type: heading
+        heading: Occupancy – last 3 hours
+        icon: mdi:timeline-clock-outline
+        heading_style: subtitle
+      - type: history-graph
+        hours_to_show: 3
+        entities:
+          - entity: binary_sensor.bedroom_occupancy_beta
+            name: Bedroom
+          - entity: binary_sensor.kitchen_occupancy_beta
+            name: Kitchen
+          - entity: binary_sensor.living_room_occupancy_beta
+            name: Living Room
+          - entity: binary_sensor.upstairs_occupancy_matter_alpha_occupancy
+            name: Upstairs Zone
+          - entity: binary_sensor.merged_hallways_occupancy_eta
+          - entity: binary_sensor.zone_downstairs_occupancy_beta
+            name: Downstairs Zone
+          - entity: binary_sensor.zone_upstairs_occupancy_beta
+  - type: grid
+    cards:
+      - type: heading
+        heading: Motion _beta
+        heading_style: subtitle
+      - type: tile
+        entity: binary_sensor.bedroom_motion_beta
+      - type: tile
+        entity: binary_sensor.ensuite_motion_beta
+      - type: tile
+        entity: binary_sensor.hallway_downstairs_motion_beta
+      - type: tile
+        entity: binary_sensor.hallway_upstairs_motion_beta
+      - type: tile
+        entity: binary_sensor.kitchen_motion_beta
+      - type: tile
+        entity: binary_sensor.living_room_motion_beta
+      - type: tile
+        entity: binary_sensor.wardrobe_motion_beta
+  - type: grid
+    cards:
+      - type: heading
+        heading: Recent motion _beta
+        heading_style: subtitle
+      - type: tile
+        entity: binary_sensor.bedroom_motion_recent_beta
+      - type: tile
+        entity: binary_sensor.ensuite_motion_recent_beta
+      - type: tile
+        entity: binary_sensor.hallway_downstairs_motion_recent_beta
+      - type: tile
+        entity: binary_sensor.hallway_upstairs_motion_recent_beta
+      - type: tile
+        entity: binary_sensor.kitchen_motion_recent_beta
+      - type: tile
+        entity: binary_sensor.living_room_motion_recent_beta
+      - type: tile
+        entity: binary_sensor.wardrobe_motion_recent_beta
+  - type: grid
+    cards:
+      - type: heading
+        heading: alpha motion
+        heading_style: subtitle
+      - type: tile
+        entity: binary_sensor.bedroom_wardrobe_motion_tplink_alpha
+      - type: tile
+        entity: binary_sensor.downstairs_presence_alpha_motion
+      - type: tile
+        entity: binary_sensor.upstairs_presence_alpha_motion
+      - type: tile
+        entity: binary_sensor.kitchen_presence_alpha_motion
+      - type: tile
+        entity: binary_sensor.living_room_multipurpose_alpha_motion
+      - type: tile
+        entity: binary_sensor.entrance_door_motion_tplink_alpha_motion
+  - type: grid
+    cards:
+      - type: custom:apexcharts-card
+        header:
+          show: true
+          title: ApexCharts-Card
+          show_states: true
+          colorize_states: true
+        series:
+          - entity: binary_sensor.upstairs_presence_alpha_motion
+            type: line
+          - entity: binary_sensor.hallway_upstairs_motion_beta
+            type: line
+max_columns: 2
+cards: []
+header:
+  card:
+    type: markdown
+    text_only: true
+    content: |-
+      # Hello {{ user }}
+      Add your text here, template variables are supported ✨
