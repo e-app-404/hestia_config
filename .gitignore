@@ -322,7 +322,7 @@ reports/
 *.egg-info/
 hestia/library/prompts/_archive/
 
-# Archived personas should not be consumed by AI operators  
+# Archived personas should not be consumed by AI operators
 hestia/library/docs/governance/personas/personas.archive/
 
 # SQL database cache files and temporary promptsets
