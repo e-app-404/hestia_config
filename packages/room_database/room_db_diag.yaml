@@ -15,24 +15,42 @@ rest:
   - resource: "http://localhost:5050/api/app/room_db_updater/health"
     method: GET
     timeout: 10
+    scan_interval: 30
     sensor:
-      name: "AppDaemon Health Raw"
-      value_template: "{{ value_json.status | default('error') }}"
-      json_attributes:
-        - status
-        - message
-        - timestamp
-
+      - name: "AppDaemon Health Raw"
+        value_template: >
+          {% if value_json is defined %}
+            {{ value_json.status | default('no_json_status') }}
+          {% else %}
+            {{ value | default('no_response') }}
+          {% endif %}
+        json_attributes_path: "$"
+        json_attributes:
+          - status
+          - message
+          - timestamp
+        attributes:
+          full_response: "{{ value }}"
+          
   - resource: "http://localhost:5050/api/app/room_db_updater/test"
     method: GET
     timeout: 10
+    scan_interval: 30
     sensor:
-      name: "AppDaemon Test Raw"
-      value_template: "{{ value_json.status | default('error') }}"
-      json_attributes:
-        - status
-        - message
-        - app_name
+      - name: "AppDaemon Test Raw"
+        value_template: >
+          {% if value_json is defined %}
+            {{ value_json.status | default('no_json_status') }}
+          {% else %}
+            {{ value | default('no_response') }}
+          {% endif %}
+        json_attributes_path: "$"
+        json_attributes:
+          - status
+          - message
+          - app_name
+        attributes:
+          full_response: "{{ value }}"
 
 # Shell commands for direct SQLite database operations (fallback/emergency use)
 shell_command:
@@ -60,3 +78,11 @@ shell_command:
 
     echo "=== Test Complete ===" >> /tmp/appdaemon_test.log 2>&1
     cat /tmp/appdaemon_test.log
+
+  view_appdaemon_test_results: |
+    echo "=== AppDaemon Test Results ===" && echo ""
+    if [ -f /tmp/appdaemon_test.log ]; then
+      cat /tmp/appdaemon_test.log
+    else
+      echo "No test results found. Run shell_command.test_appdaemon_endpoints first."
+    fi
