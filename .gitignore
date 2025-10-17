@@ -52,6 +52,8 @@ domain/zones/*_zones.yaml
 # Configuration files containing PII (IP addresses, MAC addresses, network topology)
 # Device configurations - contain IP addresses, MAC addresses, device identifiers
 hestia/config/devices/*.conf
+hestia/config/devices/*.md
+hestia/config/devices/*.json
 # Network configurations - contain network topology, IP ranges, DNS info
 hestia/config/network/*.conf
 # System configurations - contain relationships, credentials references, topology
