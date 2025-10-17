@@ -1,0 +1,15 @@
+title: Dashboard View Title
+path: presence
+type: sections
+icon: mdi:account-group
+max_columns: 2
+cards: []
+header:
+  card:
+    type: markdown
+    text_only: true
+    content: |-
+      # {{ topic }} dashboard view
+      Add a brief intro text here, template variables are supported.
+
+sections: []
