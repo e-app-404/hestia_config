@@ -1,0 +1,214 @@
+title: Motion, Occupancy & Lighting
+path: status-lighting
+icon: mdi:lightbulb-group
+max_columns: 4
+header:
+  card:
+    type: markdown
+    text_only: true
+    content: |
+      # Motion, Occupancy & Lighting
+      Real-time status of motion, occupancy, and presence sensors, linked to lighting automations. See which rooms are active and which automations are triggered.
+sections:
+  - type: grid
+    cards:
+      - type: heading
+        heading: Room Status Overview
+        icon: mdi:home-group
+        heading_style: subtitle
+      - type: custom:bubble-card
+        card_type: button
+        button_type: state
+        entity: binary_sensor.bedroom_motion_beta
+        name: Bedroom Motion
+        show_name: true
+        show_icon: true
+        show_last_changed: true
+      - type: custom:bubble-card
+        card_type: button
+        button_type: state
+        entity: binary_sensor.bedroom_occupancy_beta
+        name: Bedroom Occupancy
+        show_name: true
+        show_icon: true
+        show_last_changed: true
+      - type: custom:bubble-card
+        card_type: button
+        button_type: state
+        entity: binary_sensor.bedroom_presence_beta
+        name: Bedroom Presence
+        show_name: true
+        show_icon: true
+        show_last_changed: true
+      - type: custom:bubble-card
+        card_type: button
+        button_type: state
+        entity: binary_sensor.ensuite_motion_beta
+        name: Ensuite Motion
+        show_name: true
+        show_icon: true
+        show_last_changed: true
+      - type: custom:bubble-card
+        card_type: button
+        button_type: state
+        entity: binary_sensor.ensuite_occupancy_beta
+        name: Ensuite Occupancy
+        show_name: true
+        show_icon: true
+        show_last_changed: true
+      - type: custom:bubble-card
+        card_type: button
+        button_type: state
+        entity: binary_sensor.ensuite_presence_beta
+        name: Ensuite Presence
+        show_name: true
+        show_icon: true
+        show_last_changed: true
+      - type: custom:bubble-card
+        card_type: button
+        button_type: state
+        entity: binary_sensor.desk_motion_proxy
+        name: Desk Motion
+        show_name: true
+        show_icon: true
+        show_last_changed: true
+      - type: custom:bubble-card
+        card_type: button
+        button_type: state
+        entity: binary_sensor.desk_occupancy_beta
+        name: Desk Occupancy
+        show_name: true
+        show_icon: true
+        show_last_changed: true
+      - type: custom:bubble-card
+        card_type: button
+        button_type: state
+        entity: binary_sensor.desk_presence_beta
+        name: Desk Presence
+        show_name: true
+        show_icon: true
+        show_last_changed: true
+      - type: custom:bubble-card
+        card_type: button
+        button_type: state
+        entity: binary_sensor.kitchen_motion_beta
+        name: Kitchen Motion
+        show_name: true
+        show_icon: true
+        show_last_changed: true
+      - type: custom:bubble-card
+        card_type: button
+        button_type: state
+        entity: binary_sensor.kitchen_occupancy_beta
+        name: Kitchen Occupancy
+        show_name: true
+        show_icon: true
+        show_last_changed: true
+      - type: custom:bubble-card
+        card_type: button
+        button_type: state
+        entity: binary_sensor.kitchen_presence_beta
+        name: Kitchen Presence
+        show_name: true
+        show_icon: true
+        show_last_changed: true
+      - type: custom:bubble-card
+        card_type: button
+        button_type: state
+        entity: binary_sensor.living_room_motion_beta
+        name: Living Room Motion
+        show_name: true
+        show_icon: true
+        show_last_changed: true
+      - type: custom:bubble-card
+        card_type: button
+        button_type: state
+        entity: binary_sensor.living_room_occupancy_beta
+        name: Living Room Occupancy
+        show_name: true
+        show_icon: true
+        show_last_changed: true
+      - type: custom:bubble-card
+        card_type: button
+        button_type: state
+        entity: binary_sensor.living_room_presence_beta
+        name: Living Room Presence
+        show_name: true
+        show_icon: true
+        show_last_changed: true
+      - type: custom:bubble-card
+        card_type: button
+        button_type: state
+        entity: binary_sensor.hallway_downstairs_motion_beta
+        name: Hallway Downstairs Motion
+        show_name: true
+        show_icon: true
+        show_last_changed: true
+      - type: custom:bubble-card
+        card_type: button
+        button_type: state
+        entity: binary_sensor.hallway_downstairs_occupancy_beta
+        name: Hallway Downstairs Occupancy
+        show_name: true
+        show_icon: true
+        show_last_changed: true
+      - type: custom:bubble-card
+        card_type: button
+        button_type: state
+        entity: binary_sensor.hallway_downstairs_presence_beta
+        name: Hallway Downstairs Presence
+        show_name: true
+        show_icon: true
+        show_last_changed: true
+      - type: custom:bubble-card
+        card_type: button
+        button_type: state
+        entity: binary_sensor.hallway_upstairs_motion_beta
+        name: Hallway Upstairs Motion
+        show_name: true
+        show_icon: true
+        show_last_changed: true
+      - type: custom:bubble-card
+        card_type: button
+        button_type: state
+        entity: binary_sensor.hallway_upstairs_occupancy_beta
+        name: Hallway Upstairs Occupancy
+        show_name: true
+        show_icon: true
+        show_last_changed: true
+      - type: custom:bubble-card
+        card_type: button
+        button_type: state
+        entity: binary_sensor.hallway_upstairs_presence_beta
+        name: Hallway Upstairs Presence
+        show_name: true
+        show_icon: true
+        show_last_changed: true
+      - type: custom:apexcharts-card
+        header:
+          title: "Motion Lighting Automation Status"
+        series:
+          - entity: binary_sensor.bedroom_motion_beta
+            name: Bedroom Motion
+          - entity: light.bedroom
+            name: Bedroom Light
+          - entity: binary_sensor.living_room_motion_beta
+            name: Living Room Motion
+          - entity: light.living_room
+            name: Living Room Light
+        hours_to_show: 6
+        graph_span: 6h
+        chart_type: line
+        show:
+          legend: true
+          header: true
+      - type: custom:auto-entities
+        card:
+          type: entities
+          title: "Active Automations (motion_lighting_v2)"
+        filter:
+          include:
+            - entity_id: automation.motion_light_*
+        show_empty: false
+        sort:
+          method: last_triggered

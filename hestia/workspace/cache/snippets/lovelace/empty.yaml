@@ -1,9 +1,8 @@
 title: Dashboard View Title
-path: presence
+path: dashboard-view-topic
 type: sections
-icon: mdi:account-group
-max_columns: 2
-cards: []
+icon: {mdi:icon}
+max_columns: 4
 header:
   card:
     type: markdown
