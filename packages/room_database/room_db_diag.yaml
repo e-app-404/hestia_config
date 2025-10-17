@@ -29,9 +29,7 @@ rest:
           - status
           - message
           - timestamp
-        attributes:
-          full_response: "{{ value }}"
-          
+
   - resource: "http://localhost:5050/api/app/room_db_updater/test"
     method: GET
     timeout: 10
@@ -49,8 +47,6 @@ rest:
           - status
           - message
           - app_name
-        attributes:
-          full_response: "{{ value }}"
 
 # Shell commands for direct SQLite database operations (fallback/emergency use)
 shell_command:
