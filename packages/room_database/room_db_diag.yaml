@@ -1,4 +1,3 @@
-
 # Direct HTTP test sensors to debug the endpoint issue
 template:
   - sensor:
@@ -19,8 +18,8 @@ rest:
     sensor:
       - name: "AppDaemon Health Raw"
         value_template: >
-          {% if value_json is defined and value_json %}
-            {{ value_json.status | default('no_status') }}
+          {% if value_json is defined and value_json.status is defined %}
+            {{ value_json.status }}
           {% else %}
             {{ value | default('no_response') }}
           {% endif %}
@@ -36,8 +35,8 @@ rest:
     sensor:
       - name: "AppDaemon Test Raw"
         value_template: >
-          {% if value_json is defined and value_json %}
-            {{ value_json.status | default('no_status') }}
+          {% if value_json is defined and value_json.status is defined %}
+            {{ value_json.status }}
           {% else %}
             {{ value | default('no_response') }}
           {% endif %}
