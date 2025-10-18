@@ -52,62 +52,28 @@ connect to Home Assistant. This example shows where it fits into the overall con
           ... # other Hass plugin config options here
 ```
 
-## Configuration Options
+## HASS Plugin Configuration Options
 
 This is the full list of configuration options available for the `Hass` plugin.
 
-```
-.. list-table:: HASS Plugin Configuration Options
-  :header-rows: 1
-  :widths: 20 6 80
 
-  * - Key
-    - Note
-    - Description
-  * - type
-    - required
-    - This must be declared and it must be the exact value hass
-  * - ha_url
-    - required
-    - URL to a Home Assistant instance, must include correct port and scheme (http or https)
-  * - token
-    - required
-    - Long-lived token for authentication with Home Assistant See the section on authentication for more information on how to set it up
-  * - ha_key
-    - deprecated
-    - Use token instead
-  * - retry_secs
-    - optional
-    - Time to sleep between connection attempts Defaults to 5 seconds
-  * - cert_verify
-    - optional
-    - Flag for adding an SSL context around the aiohttpClientSession Set to False to disable (eg with internal IPs)
-  * - cert_path
-    - optional
-    - Path to the SSL certificate file This is only used if cert_verify is set to True
-  * - api_port
-    - optional
-    - Port the AppDaemon RESTful API will listen on If not specified API is disabled
-  * - ws_timeout
-    - optional
-    - Timeout for waiting for Home Assistant response from the websocket API This is the time between when a websocket message is first sent and when Home Assistant responds with some kind of acknowledgement or result Config values are parsed with pyfuncparse_timedelta appdaemonutilsparse_timedelta Defaults to 10 seconds
-  * - suppress_log_messages
-    - optional
-    - If true suppress log messages related to pymethcall_service appdaemonpluginshasshassapiHasscall_service Defaults to false
-  * - app_init_delay
-    - optional
-    - Delay in seconds before initializing apps and listening for events
-  * - appdaemon_startup_conditions
-    - optional
-    - See the startup control section for more information
-  * - plugin_startup_conditions
-    - optional
-    - See the startup control section for more information
-```
+  | **Key**                        | **Required** | **Description**                                                                                                                                                                                                                   |
+  |--------------------------------|--------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+  | `type`                         | Yes          | Must be set to `hass`.                                                                                                                                                                                                            |
+  | `ha_url`                       | Yes          | URL of your Home Assistant instance, including scheme (`http` or `https`) and port.                                                                                                                                                |
+  | `token`                        | Yes          | Long-lived access token for authenticating with Home Assistant. See the Authentication section for setup details.                                                                           |
+  | `ha_key`                       | Deprecated   | Use `token` instead.                                                                                                                                                                                                              |
+  | `retry_secs`                   | No           | Seconds to wait between connection attempts. Default: 5.                                                                                                                                                                          |
+  | `cert_verify`                  | No           | Set to `False` to disable SSL verification (useful for internal IPs). Default: `True`.                                                                                                     |
+  | `cert_path`                    | No           | Path to SSL certificate file. Used only if `cert_verify` is `True`.                                                                                                                         |
+  | `api_port`                     | No           | Port for AppDaemon RESTful API. If omitted, API is disabled.                                                                                                                                |
+  | `ws_timeout`                   | No           | Timeout (in seconds) for Home Assistant websocket responses. Parsed with `pyfuncparse_timedelta`. Default: 10.                                                                              |
+  | `suppress_log_messages`        | No           | If `true`, suppresses log messages from `call_service`. Default: `false`.                                                                                                                  |
+  | `app_init_delay`               | No           | Delay (in seconds) before initializing apps and listening for events.                                                                                                                       |
+  | `appdaemon_startup_conditions` | No           | Startup conditions for AppDaemon. See Startup Control section.                                                                                                                              |
+  | `plugin_startup_conditions`    | No           | Startup conditions for the plugin. See Startup Control section.                                                                                                                             |
 
-Authentication
-
-~~~~~~~~~~~~~~
+## Authentication
 
 The `Hass` plugin needs a long-lived access token to authenticate with Home Assistant over the websocket. This is
 provided to AppDaemon by the ``token`` directive in the plugin configuration.
@@ -117,30 +83,20 @@ To create a long-lived access token, use the following steps:
 1. Login as the user that you want to create the token for and open the user profile. The profile is found by clicking
 the icon next to the ``Home Assistant`` label to the left of the web ui when the burger menu is clicked:
 
-.. figure:: images/Profile.png
-   :alt: Profile
-
 2. At the bottom of the user profile is the Long-Lived Access Tokens section. Click on "Create Token"
-
-.. figure:: images/create_token.png
-   :alt: Create Token
 
 This will pop up a dialog that asks you for the name of the token - this can be anything, it's just to remind you what
 the token was created for - ``AppDaemon`` is as good a name as any. When you are done click ``OK``
 
-.. figure:: images/popup.png
-   :alt: Popup
-
 3. A new dialog will popup with the token itself showing:
-
-.. figure:: images/token.png
-   :alt: Token
 
 Copy this string and add it as the argument of the ``token`` directive in your HASS Plugin section:
 
+```yaml
 .. code:: yaml
 
     token: ABCDEF
+```
 
 A real token will be a lot longer than this and will consist of a string of random letters and numbers. For example:
 
@@ -148,9 +104,6 @@ A real token will be a lot longer than this and will consist of a string of rand
 
 4. A reference to your new token will be shown in the Long-Lived tokens section, and you can revoke access via this
 token at any time by pressing the delete icon. The token will last for 10 years.
-
-.. figure:: images/list.png
-   :alt: List
 
 ## Startup Control
 
@@ -160,16 +113,18 @@ When the plugin first starts with AppDaemon itself, it will check the conditions
 key before starting any apps. If the connection to Home Assistant is broken and re-established, it will check the
 conditions in the ``plugin_startup_conditions`` key before starting any apps.
 
+```yaml
 .. admonition:: Starting Event
   :class: note
+```
 
     If/when the `Hass` plugin reconnects to Home Assistant, it will wait for the ``homeassistant_started`` event before
     starting any of the apps that use the `Hass` API. Home Assistant will accept connections very early as it's
     starting, even before some fundamental components have been loaded, which causes most apps to somehow fail without
     waiting for this event. This is the same event that the Home Assistant web UI waits for to indicate readiness.
 
-.. code:: yaml
 
+```yaml
     # conf/appdaemon.yaml
     appdaemon:
       ... # other AppDaemon config here
@@ -187,18 +142,17 @@ conditions in the ``plugin_startup_conditions`` key before starting any apps.
             delay: ...
             state: ...
             event: ...
+```
 
-delay
-^^^^^
+### delay
 
 Delay startup for a number of seconds, for example:
 
-.. code:: yaml
-
+```yaml
     delay: 10 # delays for 10s
+```
 
-state
-^^^^^
+### state
 
 Wait until a specific state exists or has a specific value or set of values. The values can be specified as an inline dictionary as follows:
 
@@ -208,31 +162,69 @@ Wait until a specific state exists or has a specific value or set of values. The
 
 Example to wait for an input boolean:
 
-.. code:: yaml
-
+```yaml
     state:
       entity: input_boolean.appdaemon_enable # example entity name
       value:
         state: "on" # on needs to be in quotes
+```
 
 Example to wait for a light to be on full brightness:
 
-.. code:: yaml
-
+```yaml
     state:
       entity: light.office_1 # example entity
       value:
         state: "on" # on needs to be in quotes
         attributes:
           brightness: 255 # full brightness
+```
 
-event
-^^^^^
+### event
+
 
 Wait for an event or an event with specific data
+### event
 
-- wait for an event of a given type: ``{event_type: <event name>}``
-- wait for an event with specific data: ``{event_type: <event name>, data: {service_data: {entity_id: <some entity>}, service: <some service>}}``
+Wait for an event or an event with specific data:
+
+- **Wait for an event of a given type:**
+  ```yaml
+  event:
+    event_type: <event name>
+  ```
+  Example:
+  ```yaml
+  event:
+    event_type: zwave.network_ready
+  ```
+
+- **Wait for an event with specific data:**
+  ```yaml
+  event:
+    event_type: <event name>
+    data:
+      <key>: <value>
+      ...
+  ```
+  Example:
+  ```yaml
+  event:
+    event_type: call_service
+    data:
+      domain: input_button
+      service: press
+      service_data:
+        entity_id: input_button.start_appdaemon
+  ```
+
+You can also specify these as inline dictionaries in your configuration:
+
+- Wait for an event of a given type:  
+  ``event: {event_type: <event name>}``
+- Wait for an event with specific data:  
+  ``event: {event_type: <event name>, data: {service_data: {entity_id: <some entity>}, service: <some service>}}``
+
 
 Example to wait for ZWave to complete initialization upon a HASS restart:
 
@@ -253,26 +245,24 @@ Example to wait for an input button before starting AppDaemon
         service_data:
           entity_id: input_button.start_appdaemon # example entity
 
-API Usage
----------
+## API Usage
 
 Create apps using the `Hass` API by inheriting from the :py:class:`Hass <appdaemon.plugins.hass.hassapi.Hass>` class:
 
-.. code:: python
 
+```py
     from appdaemon.plugins.hass import Hass
 
 
     class MyApp(Hass):
         def initialize(self):
             ... # Your initialization code here
+```
 
 Read the `AppDaemon API Reference <AD_API_REFERENCE.html>`__ to learn other inherited helper functions that
 can be used by Hass applications.
 
-Services
-
-~~~~~~~~
+## Services
 
 Services are now called `actions` in Home Assistant, but are sometimes also referred to as `service actions`. Any of
 them can be called by using the :py:meth:`call_service <appdaemon.plugins.hass.hassapi.Hass.call_service>` method with

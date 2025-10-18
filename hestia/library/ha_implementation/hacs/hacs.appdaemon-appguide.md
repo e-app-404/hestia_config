@@ -286,7 +286,7 @@ To set your IDE up properly there are a few initial steps, and a couple of rules
 ## Initial Setup
 In order for your IDE to properly understand AppDaemon’s API, we need to give the IDE access to AppDaemon’s code, although this is not normally necessary for developing apps. The way to do this is to simply use pip to install AppDaemon in the virtual environment that your IDE is using. How this works varies between IDEs, but once you have worked out which virtual environment to target, simply activate it then use pip` to install AppDaemon:
 
-```
+```bash
 $ source /path/to/venv/bin/activate
 $ pip install appdaemon
 ```

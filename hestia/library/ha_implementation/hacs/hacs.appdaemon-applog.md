@@ -2,7 +2,7 @@
 
 Starting from AD 4.0, it is now possible to determine which log as declared by the user, will be used by Apps by default when using the self.log() within the App; this can be very useful for debugging purposes. This is done by simply adding the log: directive entry, to its parameters. e.g.:
 
-```
+```yaml
 downstairs_motion_light:
   module: motion_light
   class: MotionLight
