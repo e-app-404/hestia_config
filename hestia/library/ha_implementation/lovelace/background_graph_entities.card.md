@@ -24,8 +24,6 @@ The `background-graph-entities` custom component for Home Assistant displays a l
 ## Table of Contents
 
 - [Features](#features)
-- [Localization](#localization)
-- [Installation](#installation)
 - [Configuration](#configuration)
   - [UI Editor](#ui-editor)
   - [YAML Configuration](#yaml-configuration)
@@ -35,7 +33,6 @@ The `background-graph-entities` custom component for Home Assistant displays a l
   - [Minimal Configuration](#1-minimal-configuration)
   - [Basic Configuration](#2-basic-configuration)
   - [Advanced Configuration with Overrides](#3-advanced-configuration-with-overrides)
-- [Development](#development)
 - [References](#references)
 
 ## Features
@@ -61,26 +58,6 @@ The `background-graph-entities` custom component for Home Assistant displays a l
   - **Tile Style:** A compact mode that replaces the toggle with an interactive, state-aware icon and provides a cleaner layout.
   - **Separate Graph Data:** Optionally display one entity (like a switch) while graphing the history of another (like its power consumption sensor).
 - **Secondary State Display:** When using a separate `graph_entity`, you can optionally display its current state next to the main entity's state.
-
-## Localization
-
-The editor is available in the following languages:
-
-- English
-- German
-- French
-
-<details>
-<summary>Contributing Translations</summary>
-
-If you would like to contribute a new translation:
-
-1.  Fork the repository on GitHub.
-2.  Copy the `src/translation/en.json` file and rename it to your language code (e.g., `es.json` for Spanish).
-3.  Translate all the values in the new file.
-4.  Submit a pull request with your changes.
-
-</details>
 
 ## Configuration
 
@@ -214,46 +191,6 @@ entities:
     show_graph_entity_state: true
 ```
 
-## Development
-
-<details>
-<summary>To contribute to the development, you'll need to set up a build environment.</summary>
-
-1.  **Clone the repository:**
-
-    ```bash
-    git clone https://github.com/timmaurice/lovelace-background-graph-entities.git
-    cd lovelace-background-graph-entities
-    ```
-
-2.  **Install dependencies:**
-
-    ```bash
-    npm install
-    ```
-
-3.  **Build the card:**
-    This command will compile the card and place the output in the `dist/` directory.
-
-    ```bash
-    npm run build
-    ```
-
-4.  In your Home Assistant instance, you will need to configure Lovelace to use the local development version of the card from `dist/background-graph-entities.js`.
-</details>
-
----
-
-For further assistance or to report issues, please visit the [GitHub repository](https://github.com/timmaurice/lovelace-background-graph-entities).
-
-![Star History Chart](https://api.star-history.com/svg?repos=timmaurice/lovelace-background-graph-entities&type=Date)
-
----
-
-For further assistance or to report issues, please visit the [GitHub repository](https://github.com/timmaurice/lovelace-background-graph-entities).
-
-![Star History Chart](https://api.star-history.com/svg?repos=timmaurice/lovelace-background-graph-entities&type=Date)
-
 ## References
 
 - [Background Graph Entities GitHub Repository](https://github.com/timmaurice/lovelace-background-graph-entities)
@@ -261,7 +198,3 @@ For further assistance or to report issues, please visit the [GitHub repository]
 - [HACS - Home Assistant Community Store](https://hacs.xyz/)
 - [Home Assistant Custom Components](https://developers.home-assistant.io/docs/creating_component_index/)
 - [MDI Icons](https://materialdesignicons.com/)
-
-## ☕ Support My Work
-
-[<img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" height="30" />](https://www.buymeacoffee.com/timmaurice)

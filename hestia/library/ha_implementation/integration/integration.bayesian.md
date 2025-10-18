@@ -52,7 +52,7 @@ binary_sensor:
         to_state: "on"
 ```
 
-{% configuration %}
+```yaml
 prior:
   description: >
      The baseline probability of the event (0 to 1). At any given time
@@ -113,7 +113,7 @@ observations:
       description: Assuming the Bayesian binary_sensor is `off`, the probability that the entity state is occurring.
       required: true
       type: float
-{% endconfiguration %}
+```
 
 ## Theory
 
@@ -202,8 +202,6 @@ binary_sensor:
 
 Here's an example for `template` observations, as seen in the configuration it requires `value_template`. This template will evaluate to true if the device tracker `device_tracker.paulus` has not been seen in the last 5 minutes.
 
-{% raw %}
-
 ```yaml
 # Example configuration.yaml entry
 binary_sensor:
@@ -219,8 +217,6 @@ binary_sensor:
       prob_given_true: 0.05
       prob_given_false: 0.99
 ```
-
-{% endraw %}
 
 ### Multiple state and numeric entries per entity
 

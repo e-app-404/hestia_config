@@ -1,22 +1,24 @@
-# ApexCharts Card by [@RomRider](https://github.com/RomRider) <!-- omit in toc -->
+---
+title: "ApexCharts Card - Highly Customizable Graph Card"
+authors: "@RomRider"
+source: "https://github.com/RomRider/apexcharts-card"
+slug: "apexcharts-card"
+tags: ["home-assistant", "lovelace", "cards", "charts", "graphs", "apexcharts"]
+original_date: "2021-01-01"
+last_updated: "2025-10-16"
+url: "https://github.com/RomRider/apexcharts-card"
+---
 
-This is a highly customizable graph card for [Home-Assistant](https://www.home-assistant.io)'s Lovelace UI.<br/>
+# ApexCharts Card - Highly Customizable Graph Card
 
-It is based on [ApexCharts.js](https://apexcharts.com) and offers most of the features of the library.
-
-It is also inspired by the great [`mini-graph-card`](https://github.com/kalkih/mini-graph-card) by [@kalkih](https://github.com/kalkih)
-
-However, some things might be broken :grin:
+A highly customizable graph card for Home Assistant's Lovelace UI based on ApexCharts.js, offering most features of the ApexCharts library with advanced data processing capabilities.
 
 ## Table of Contents
 
-- [Installation](#installation)
-  - [HACS (recommended)](#hacs-recommended)
-  - [Manual install](#manual-install)
-  - [CLI install](#cli-install)
-  - [Add resource reference](#add-resource-reference)
-- [Data processing steps](#data-processing-steps)
-- [Using the card](#using-the-card)
+- [Usage](#usage)
+  - [Data Processing Steps](#data-processing-steps)
+  - [Configuration Options](#configuration-options)
+- [Configuration](#configuration)
   - [Configuration Options](#configuration-options)
   - [`series` Options](#series-options)
   - [series' `show` Options](#series-show-options)
@@ -58,47 +60,22 @@ However, some things might be broken :grin:
   - [Use apexcharts-card with auto-entities](#use-apexcharts-card-with-auto-entities)
   - [Change the height of the graph](#change-the-height-of-the-graph)
 
-## Installation
+## Usage
 
-### HACS (recommended)
+### Data Processing Steps
 
-This card is available in [HACS](https://hacs.xyz/) (Home Assistant Community Store).
-<small>_HACS is a third-party community store and is not included in Home Assistant out of the box._</small>
+The card processes data through multiple steps:
 
-### Manual install
+1. **Data Collection**: Retrieves entity history from Home Assistant
+2. **Filtering**: Applies include/exclude filters based on configuration  
+3. **Processing**: Handles data transformations and calculations
+4. **Rendering**: Creates the final chart using ApexCharts.js
 
-1. Download and copy `apexcharts-card.js` from the [latest release](https://github.com/RomRider/apexcharts-card/releases/latest) into your `config/www` directory.
+### Configuration Options
 
-2. Add the resource reference as described below.
+The card validates all configuration options (except for the `apex_config` object). Configuration errors will display detailed error messages.
 
-### CLI install
-
-1. Move into your `config/www` directory.
-
-2. Grab `apexcharts-card.js`:
-
-```bash
-$ wget https://github.com/RomRider/apexcharts-card/releases/download/v2.2.3/apexcharts-card.js
-```
-
-3. Add the resource reference as described below.
-
-### Add resource reference
-
-If you configure Lovelace via YAML, add a reference to `apexcharts-card.js` inside your `configuration.yaml`:
-
-```yaml
-resources:
-  - url: /local/apexcharts-card.js?v=2.2.3
-    type: module
-```
-
-Else, if you prefer the graphical editor, use the menu to add the resource:
-
-1. Make sure, advanced mode is enabled in your user profile (click on your user name to get there)
-2. Navigate to Dashboard --> Edit Dashboard --> Manage resources. Click the '+ Add Resource' icon in bottom-right.
-3. Enter URL `/local/apexcharts-card.js` and select type "JavaScript Module".
-4. Restart Home Assistant.
+## Configuration
 
 ## Data processing steps
 
