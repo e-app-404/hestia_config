@@ -1,16 +1,22 @@
-# Created in GUI
-#schedule:
-#  valetudo_allowed
+# No quiet-hour helpers: we use schedule.valetudo_allowed
 
+input_text:
+  valetudo_base_topic:
+    name: "Valetudo Base Topic"
+    min: 1
+    max: 128
+    initial: "valetudo/robot"
 
 script:
   valetudo_clean_room_ad_hoc:
     alias: "Valetudo — Clean Room (Ad-hoc)"
+    mode: queued
     fields:
       room:
         description: "Canonical room id"
+        example: "bedroom"
       force:
-        description: "Bypass quiet hours"
+        description: "Bypass schedule gate (schedule.valetudo_allowed)"
         example: false
       force_presence:
         description: "Bypass presence gate"
@@ -22,56 +28,34 @@ script:
           force: "{{ force | default(false) }}"
           force_presence: "{{ force_presence | default(false) }}"
 
-  seed_vacuum_rooms:
-    sequence:
-      - repeat:
-          for_each:
-            - { room: living_room, segment: 19, freq: 3 }
-            - { room: kitchen, segment: 17, freq: 2 }
-            - { room: powder_room, segment: 20, freq: 7 }
-            - { room: downstairs_hallway, segment: 18, freq: 3 }
-            - { room: laundry_room, segment: 16, freq: 7 }
-          sequence:
-            - service: rest_command.room_db_update_config
-              data:
-                room_id: "{{ repeat.item.room }}"
-                domain: vacuum_control
-                config_data:
-                  segment_id: "{{ repeat.item.segment }}"
-                  needs_cleaning: 1
-                  default_mode: standard
-                  cleaning_frequency_days: "{{ repeat.item.freq }}"
-                  last_cleaned: null
-                schema_expected: 1
-            - delay: "00:00:06"
-            
 automation:
   - alias: "Valetudo — Daily Routine Trigger"
+    description: "Optional: nudge the routine cycle; app also polls every 30s."
     trigger:
       - platform: time
         at: "09:00:00"
     condition:
       - condition: state
-        entity_id: input_boolean.valetudo_routine_enabled
+        entity_id: schedule.valetudo_allowed
         state: "on"
     action:
-      - event: valetudo_routine_clean_requested  # (optional hook; app polls every 30s anyway)
+      - event: valetudo_routine_clean_requested
 
   - alias: "Valetudo — Flag Stale Rooms"
     mode: single
     variables:
       rooms_to_flag: >-
-        {% set vac = state_attr('sensor.room_configs_vacuum_control','payload') | default('{}') %}
-        {% set data = vac | from_json if vac is string and vac.startswith('{') else {} %}
+        {% set raw = state_attr('sensor.room_configs_vacuum_control','payload') | default('{}') %}
+        {% set data = raw | from_json if raw is string and raw.startswith('{') else {} %}
         {% set now_ts = now().timestamp() %}
-        {% set rooms = [] %}
+        {% set out = [] %}
         {% for room, cfg in (data or {}).items() %}
           {% set last = cfg.get('last_cleaned') %}
           {% set freq = (cfg.get('cleaning_frequency_days', 7) | int(7)) %}
           {% set due = (last is none) or (as_timestamp(last, default=0) > 0 and (now_ts - as_timestamp(last, default=0)) / 86400 > freq) %}
-          {% if due %}{% set _ = rooms.append(room) %}{% endif %}
+          {% if due %}{% set _ = out.append(room) %}{% endif %}
         {% endfor %}
-        {{ rooms }}
+        {{ out }}
     trigger:
       - platform: time
         at: "08:00:00"
@@ -86,4 +70,4 @@ automation:
                 config_data:
                   needs_cleaning: 1
                 schema_expected: 1
-            - delay: "00:00:02"  # respect rate limit
+            - delay: "00:00:02"
