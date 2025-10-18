@@ -404,7 +404,7 @@ sections:
       - type: markdown
         content: |-
           **Motion Lighting V2 Integration**
-          
+
           This section shows active motion lighting automations and their trigger states.
           When motion is detected in a room, the corresponding automation should activate
           and control the lights based on occupancy and illuminance levels.

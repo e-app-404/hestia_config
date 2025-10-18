@@ -23,7 +23,7 @@ sections:
       - type: markdown
         content: |-
           ## Sensor Hierarchy Summary
-          
+
           **Coverage Status:**
           - ✅ Bedroom: Full pipeline (motion, occupancy, presence, illuminance)
           - ✅ Ensuite: Full pipeline (motion, occupancy, presence, illuminance)
@@ -33,7 +33,7 @@ sections:
           - ⚠️ Hallway Down: Missing illuminance, presence always false
           - ⚠️ Hallway Up: Missing illuminance, presence always false
           - ℹ️ Home: Aggregated sensors only (zone-level)
-          
+
           **Anomalies Detected:**
           - 4 rooms missing illuminance sensors
           - 3 rooms with hardcoded false presence
@@ -57,9 +57,6 @@ sections:
               state: unknown
           exclude: []
         show_empty: true
-        card:
-          type: entities
-          title: ⚠️ No Unavailable Sensors Detected
         sort:
           method: state
           reverse: false
@@ -130,7 +127,7 @@ sections:
             → `/config/domain/templates/presence_logic.yaml:50`
           - `sensor.bedroom_illuminance_beta`
             → `/config/domain/templates/illuminance_logic.yaml:32`
-          
+
           **Proxy Sensors:**
           - `binary_sensor.bedroom_ottoman_motion_proxy` (motion inference)
           - `binary_sensor.desk_motion_proxy` (motion inference)
@@ -235,7 +232,7 @@ sections:
             → `/config/domain/templates/presence_logic.yaml:124`
           - `sensor.ensuite_illuminance_beta`
             → `/config/domain/templates/illuminance_logic.yaml:65`
-          
+
           **Proxy Sensors:**
           - `binary_sensor.ensuite_motion_real_time` (MQTT native trigger)
           - `binary_sensor.ensuite_shower_occupancy_epsilon` (composite shower detection)
@@ -294,7 +291,7 @@ sections:
       - type: markdown
         content: |-
           **⚠️ Anomaly: No Illuminance Sensors**
-          
+
           **Source Files:**
           - `binary_sensor.desk_motion_proxy`
             → `/config/domain/templates/motion_logic.yaml:262`
@@ -302,7 +299,7 @@ sections:
             → `/config/domain/templates/occupancy_logic.yaml:214`
           - `binary_sensor.desk_presence_beta`
             → `/config/domain/templates/presence_logic.yaml:74`
-          
+
           **Proxy/Inferred Sensors:**
           - `binary_sensor.desk_motion_proxy` (inferred from MacBook connectivity)
           - `binary_sensor.desk_presence_inferred` (MacBook display state)
@@ -360,7 +357,7 @@ sections:
           **⚠️ Anomalies:**
           - No illuminance sensors
           - Presence hardcoded to 'off' (shared area with untracked occupant)
-          
+
           **Source Files:**
           - `binary_sensor.kitchen_motion_beta`
             → `/config/domain/templates/motion_logic.yaml:??`
@@ -427,7 +424,7 @@ sections:
       - type: markdown
         content: |-
           **⚠️ Note:** Shared area with poor presence reliability
-          
+
           **Source Files:**
           - `binary_sensor.living_room_motion_beta`
             → `/config/domain/templates/motion_logic.yaml:??`
@@ -488,7 +485,7 @@ sections:
           **⚠️ Anomalies:**
           - No illuminance sensors
           - Presence hardcoded to 'off'
-          
+
           **Source Files:**
           - `binary_sensor.hallway_downstairs_motion_beta`
             → `/config/domain/templates/motion_logic.yaml:??`
@@ -496,7 +493,7 @@ sections:
             → `/config/domain/templates/occupancy_logic.yaml:??`
           - `binary_sensor.hallway_downstairs_presence_beta`
             → `/config/domain/templates/presence_logic.yaml:??` (hardcoded false)
-          
+
           **Proxy Sensors:**
           - `binary_sensor.entrance_motion_proxy` (from door contact)
 
@@ -550,7 +547,7 @@ sections:
           **⚠️ Anomalies:**
           - No illuminance sensors
           - Presence hardcoded to 'off'
-          
+
           **Source Files:**
           - `binary_sensor.hallway_upstairs_motion_beta`
             → `/config/domain/templates/motion_logic.yaml:??`
@@ -601,7 +598,7 @@ sections:
       - type: markdown
         content: |-
           **ℹ️ Note:** Home-level aggregated sensors only (no individual room sensors)
-          
+
           **Source Files:**
           - `binary_sensor.merged_home_occupancy_eta`
             → `/config/domain/templates/occupancy_logic.yaml:??`
