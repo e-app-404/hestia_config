@@ -1,0 +1,51 @@
+# AppDaemon Apps Configuration v3.1
+# Room-DB System with admission control, jitter, backoff, and robust endpoints
+
+room_db_updater:
+  module: room_db_updater
+  class: RoomDbUpdater
+  db_path: /config/room_database.db
+  canonical_mapping_file: /config/www/area_mapping.yaml
+  allowed_domains:
+    - motion_lighting
+    - vacuum_control
+    - activity_tracking
+  max_config_size_bytes: 4096
+  write_rate_limit_seconds: 3
+  schema_expected: 1
+
+activity_tracker:
+  module: activity_tracker
+  class: ActivityTracker
+  update_url: "http://a0d7b954-appdaemon:5050/api/appdaemon/room_db_update_config"
+  rate_limit_seconds: 2
+  enabled: true
+
+valetudo_default_activity:
+  module: valetudo_default_activity
+  class: ValetudoDefaultActivity
+  valetudo:
+    mqtt:
+      command_topic: "valetudo/robot/MapSegmentationCapability/action/start_segment_action"
+  mqtt:
+    base_qos: 1
+  ha:
+    room_configs_sensor: sensor.room_configs_vacuum_control
+    presence_sensors_glob: "_presence_beta"
+    schedule_entity: schedule.valetudo_allowed
+    mapping_path: /config/www/area_mapping.yaml
+    base_topic_entity: input_text.valetudo_base_topic
+    room_db_update_service: rest_command.room_db_update_config
+  policy:
+    batch_size: 2
+    require_presence_clear: true
+    max_job_runtime_minutes: 60
+    optimistic_writeback: false  # Safe default
+    optimistic_job_seconds: 90
+    rate_limit_seconds: 3
+
+room_db_exporter:
+  module: room_db_exporter
+  class: RoomDbExporter
+  db_path: /config/room_database.db
+  export_path: /config/room_db_export.json
