@@ -5,31 +5,6 @@
 # REST commands for AppDaemon HTTP API interaction
 # FIXED: Updated endpoints to use app-scoped URLs (ADR-0020 Error Resolution)
 # Prefer /api/appdaemon/<endpoint>; if health check fails in your setup, switch to /api/app/<app_name>/<endpoint>/
-rest_command:
-  room_db_update_config:
-    url: "http://localhost:5050/api/app/room_db_updater/update_config"
-    method: POST
-    content_type: "application/json"
-    timeout: 20
-    payload: >
-      {
-        "room_id": "{{ room_id }}",
-        "domain": "{{ domain }}",
-        "config_data": {{ config_data | tojson }},
-        "schema_expected": {{ schema_expected|default(1) }}
-      }
-
-  room_db_health:
-    url: "http://localhost:5050/api/app/room_db_updater/health"
-    method: GET
-    timeout: 10
-
-  room_db_test:
-    url: "http://localhost:5050/api/app/room_db_updater/test"
-    method: GET
-    timeout: 10
-    headers:
-      accept: application/json
 
 # Direct HTTP test sensors to debug the endpoint issue
 template:
