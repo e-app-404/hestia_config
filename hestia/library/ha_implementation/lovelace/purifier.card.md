@@ -1,66 +1,45 @@
-# Purifier Card
+---
+title: "Purifier Card - Air Purifier Control Card"
+authors: "@denysdovhan"
+source: "https://github.com/denysdovhan/purifier-card"
+slug: "purifier-card"
+tags: ["home-assistant", "lovelace", "cards", "purifier", "air-quality"]
+original_date: "2021-01-01"
+last_updated: "2025-10-16"
+url: "https://github.com/denysdovhan/purifier-card"
+---
 
-> Air Purifier card for [Home Assistant][home-assistant] Lovelace UI
+# Purifier Card - Air Purifier Control Card
 
-By default, the Home Assistant does not provide any card for controlling air purifiers. This card displays the state and allows to control your air purifier.
+Air Purifier card for Home Assistant Lovelace UI that displays the state and allows control of your air purifier.
 
-[![Preview](image-1.png)
+## Table of Contents
 
-## Using the card
+- [Usage](#usage)
+  - [Configuration](#configuration)
+  - [Card Options](#card-options)
+  - [AQI Object](#aqi-object)
+  - [Stats Object](#stats-object)
+  - [Shortcuts Object](#shortcuts-object)
+- [Examples](#examples)
+- [Theming](#theming)
+- [Animations](#animations)
+- [Supported Models](#supported-models)
+- [References](#references)
 
-This card can be configured using Lovelace UI editor.
+## Usage
 
-1. In Lovelace UI, click 3 dots in top left corner.
-2. Click _Configure UI_.
-3. Click Plus button to add a new card.
-4. Find _Custom: Purifier Card_ in the list.
-5. Choose `entity`.
-6. Now you should see the preview of the card!
+### Configuration
 
-_Sorry, no support for `shortcuts` and `stats` in visual config yet._
+This card can be configured using the Lovelace UI editor or YAML configuration.
 
-Typical example of using this card in YAML config would look like this:
+For UI configuration:
+1. Add a new card to your dashboard
+2. Search for "Custom: Purifier Card" in the list
+3. Choose your purifier entity
+4. Configure the options as needed
 
-```yaml
-type: 'custom:purifier-card'
-entity: fan.purifier
-stats:
-  - attribute: filter_life_remaining
-    unit: '%'
-    subtitle: Filter Remaining
-  - attribute: motor_speed
-    unit: RPM
-    subtitle: Motor Speed
-  - entity_id: sensor.purifier_filter_life
-    value_template: '{{ (value | float(0) / 3600) | round(1) }}'
-    unit: hours
-    subtitle: Filter Life
-shortcuts:
-  - name: Silent
-    icon: 'mdi:weather-night'
-    preset_mode: Silent
-  - name: 25%
-    icon: 'mdi:circle-slice-2'
-    percentage: 25
-  - name: 50%
-    icon: 'mdi:circle-slice-4'
-    percentage: 50
-  - name: 75%
-    icon: 'mdi:circle-slice-6'
-    percentage: 75
-  - name: 100%
-    icon: 'mdi:circle-slice-8'
-    percentage: 100
-  - name: Auto
-    icon: 'mdi:brightness-auto'
-    preset_mode: Auto
-show_name: true
-show_state: true
-show_toolbar: true
-compact_view: false
-```
-
-Here is what every option means:
+### Card Options
 
 | Name               |   Type    | Default      | Description                                      |
 | ------------------ | :-------: | ------------ | ------------------------------------------------ |
@@ -161,24 +140,9 @@ style: |
 
 ## Animations
 
-I've added an animation for this card to make it alive:
+The card includes CSS animations to provide visual feedback when the purifier is active.
 
-<img src="https://raw.githubusercontent.com/denysdovhan/purifier-card/master/src/images/purifier-working.gif" width="300px">
-
-How did I make this animation? It's a long story…
-
-1. I took original gif file from [here][original-gif].
-2. Then I tweaked image levels to make the background black and purifier white.
-3. Then I inverted colors on the gif.
-4. Then I've split the gif by frame.
-5. Then I removed the background of the image frame by frame using remove.bg.
-6. Then I upscaled each of those images using icons8.com/upscaler.
-7. Then I put up all of those images back in a single gif.
-8. Profit!
-
-Archive with images from all of these steps [can be found here](https://t.me/denysandtech/185).
-
-## Supported models
+## Supported Models
 
 This card relies on basic fan services, like `toggle`, `turn_on`, `turn_off`, etc. It should work with any air purifier, however I can physically test it only with my own purifier.
 
@@ -201,4 +165,11 @@ If this card works with your air purifier, please open a PR and your model to th
 - Philips AirPurifier AC4221/11 ([using philips-airpurifier-coap cutom component](https://github.com/kongo09/philips-airpurifier-coap))
 - SmartMI Air Purifier
 - Winix AM90 Wi-Fi Air Purifier
-- [_Your purifier?_][edit-readme]
+- [_Your purifier?_](https://github.com/denysdovhan/purifier-card/edit/master/README.md)
+
+## References
+
+- [Purifier Card GitHub Repository](https://github.com/denysdovhan/purifier-card)
+- [Home Assistant Lovelace Cards Documentation](https://www.home-assistant.io/lovelace/)
+- [Home Assistant Fan Integration](https://www.home-assistant.io/integrations/fan/)
+- [HACS - Home Assistant Community Store](https://hacs.xyz/)
