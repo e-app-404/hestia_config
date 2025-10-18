@@ -4,7 +4,7 @@ Audience: Machine operators and maintainers
 Scope: AppDaemon Room‑DB endpoints, HA REST/Template wiring, diagnostics, and operator workflows
 
 ## Executive summary
-- Issue resolved: All 404/500 endpoint errors were eliminated by standardizing on unique global AppDaemon endpoints: `/api/appdaemon/room_db_health`, `/room_db_test`, `/room_db_update_config`.
+- Issue resolved: All 404/500 endpoint errors were eliminated by standardizing on unique global AppDaemon endpoints: `/api/appdaemon/room_db_health`, `/api/appdaemon/room_db_test`, `/api/appdaemon/room_db_update_config`.
 - Current status: Healthy. Global sensors in HA report `healthy` and `test_success`. SQL dictionary sensors are available for motion lighting and vacuum control.
 - Operator tooling: New diagnostics templates, an Operator README with copy‑paste Developer Tools Actions, and suggested shell commands are in place.
 - Next steps focus: Validate per‑room configs end‑to‑end (writes → dict sensors → automations), then prune legacy probes and finalize dashboards.
@@ -75,7 +75,7 @@ Scope: AppDaemon Room‑DB endpoints, HA REST/Template wiring, diagnostics, and 
 
 ## Contact points
 - AppDaemon add‑on: `a0d7b954_appdaemon` @ http://a0d7b954-appdaemon:5050
-- Global endpoints: `/api/appdaemon/room_db_health`, `/room_db_test`, `/room_db_update_config`
+- Global endpoints: `/api/appdaemon/room_db_health`, `/api/appdaemon/room_db_test`, `/api/appdaemon/room_db_update_config`
 - DB: `/config/room_database.db`
 - Mapping: `/config/www/area_mapping.yaml`
 

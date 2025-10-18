@@ -25,13 +25,15 @@ rest_command:
     url: "http://a0d7b954-appdaemon:5050/api/appdaemon/room_db_health"
     method: GET
     timeout: 10
+    headers:
+      Accept: "application/json"
 
   room_db_test:
     url: "http://a0d7b954-appdaemon:5050/api/appdaemon/room_db_test"
     method: GET
     timeout: 10
     headers:
-      accept: application/json
+      Accept: "application/json"
 
   # Alternate commands (app-scoped): useful for environments that expose per-app paths
   room_db_update_config_app:
