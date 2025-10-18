@@ -1,5 +1,6 @@
 - id: 7e1b2c9a-3f4d-4e8a-9b2c-8e5d1a7c2f3b
   alias: "Recorder purge noisy entities"
+  mode: single
   trigger:
     - platform: time
       at: "04:20:00"

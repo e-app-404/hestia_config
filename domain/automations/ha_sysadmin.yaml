@@ -113,36 +113,51 @@
         message: "Home Assistant will shut down at {{ now().strftime('%Y-%m-%d %H:%M:%S') }}"
         language: en-ca
 
-- id: W3mPTGMiX7SeIb0r9yL3HCP18lLWIZQW
-  alias: Hestia Trash Reaches Threshold
+- id: hestia_trash_reaches_threshold
+  alias: "Hestia Trash Reaches Threshold"
+  description: "Notifies when trash exceeds 500MB and waits for approval to empty."
   trigger:
     - platform: numeric_state
       entity_id: sensor.hestia_trash_size
       above: 512000
+
   action:
     - action: script.notify_engine
       data:
         message: "Trash exceeded 500MB. Approve to empty?"
+
     - wait_for_trigger:
         - platform: state
           entity_id: input_boolean.hestia_approve_trash
           to: "on"
       timeout: "24:00:00"
+
     - choose:
-        - conditions: "{{ is_state('input_boolean.hestia_approve_trash','on') }}"
+        - conditions:
+            - condition: state
+              entity_id: input_boolean.hestia_approve_trash
+              state: "on"
           sequence:
-            - service: shell_command.hestia_empty_trash
-            - service: input_boolean.turn_off
-              target: { entity_id: input_boolean.hestia_approve_trash }
+            - action: shell_command.hestia_empty_trash
+            - action: input_boolean.turn_off
+              target:
+                entity_id: input_boolean.hestia_approve_trash
+
+  mode: single
+  max_exceeded: silent
+
+#──────────────────────────────────────────────────────────────────────────────
 
 - id: wI9fehuS06MVsRXqcdFHSri12G08I153
-  alias: Hestia Tmp Weekly Prune
+  alias: "Hestia Tmp Weekly Prune"
+  description: "Weekly cleanup of /tmp directory, requires approval before running."
   trigger:
     - platform: time
       at: "03:30:00"
   condition:
     - condition: time
-      weekday: [sun]
+      weekday:
+        - sun
   action:
     - action: script.notify_engine
       data:
@@ -157,11 +172,17 @@
           to: "on"
       timeout: "24:00:00"
     - choose:
-        - conditions: "{{ is_state('input_boolean.hestia_approve_tmp','on') }}"
+        - conditions:
+            - condition: state
+              entity_id: input_boolean.hestia_approve_tmp
+              state: "on"
           sequence:
             - action: shell_command.hestia_prune_tmp
             - action: input_boolean.turn_off
-              target: { entity_id: input_boolean.hestia_approve_tmp }
+              target:
+                entity_id: input_boolean.hestia_approve_tmp
+  mode: single
+  max_exceeded: silent
 
 - id: pvCE6fsuA9pNCB9hhBzRQStt08hpDgaa
   alias: Hestia On Shutdown - Prune Tmp
