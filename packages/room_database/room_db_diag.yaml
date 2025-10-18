@@ -27,6 +27,23 @@ rest:
     scan_interval: 30
     sensor:
       - name: "AppDaemon Health (app path)"
+  # Trailing slash variant (some setups enforce slash)
+  - resource: "http://a0d7b954-appdaemon:5050/api/app/room_db_updater/health/"
+    method: GET
+    timeout: 10
+    scan_interval: 30
+    sensor:
+      - name: "AppDaemon Health (app path, slash)"
+        value_template: >
+          {% if value_json is defined and value_json.status is defined %}
+            {{ value_json.status }}
+          {% else %}
+            {{ value | default('no_response') }}
+          {% endif %}
+        json_attributes:
+          - status
+          - message
+          - timestamp
         value_template: >
           {% if value_json is defined and value_json.status is defined %}
             {{ value_json.status }}
@@ -45,6 +62,23 @@ rest:
     scan_interval: 30
     sensor:
       - name: "AppDaemon Health Raw"
+  # Trailing slash variant for compat
+  - resource: "http://a0d7b954-appdaemon:5050/api/app/room_db_updater/room_db/health/"
+    method: GET
+    timeout: 10
+    scan_interval: 30
+    sensor:
+      - name: "AppDaemon Health Raw (slash)"
+        value_template: >
+          {% if value_json is defined and value_json.status is defined %}
+            {{ value_json.status }}
+          {% else %}
+            {{ value | default('no_response') }}
+          {% endif %}
+        json_attributes:
+          - status
+          - message
+          - timestamp
         value_template: >
           {% if value_json is defined and value_json.status is defined %}
             {{ value_json.status }}
@@ -99,6 +133,22 @@ rest:
     scan_interval: 30
     sensor:
       - name: "AppDaemon Test Raw (app path)"
+  # Trailing slash variant for test
+  - resource: "http://a0d7b954-appdaemon:5050/api/app/room_db_updater/test/"
+    method: GET
+    timeout: 10
+    scan_interval: 30
+    sensor:
+      - name: "AppDaemon Test Raw (app path, slash)"
+        value_template: >
+          {% if value_json is defined and value_json.status is defined %}
+            {{ value_json.status }}
+          {% else %}
+            {{ value | default('no_response') }}
+          {% endif %}
+        json_attributes:
+          - status
+          - message
         value_template: >
           {% if value_json is defined and value_json.status is defined %}
             {{ value_json.status }}
@@ -124,6 +174,59 @@ rest:
         json_attributes:
           - status
           - message
+
+  # Additional probes to discover actual base path mapping
+  - resource: "http://a0d7b954-appdaemon:5050/health"
+    method: GET
+    timeout: 10
+    scan_interval: 30
+    sensor:
+      - name: "AppDaemon Health (root path)"
+        value_template: >
+          {% if value_json is defined and value_json.status is defined %}
+            {{ value_json.status }}
+          {% else %}
+            {{ value | default('no_response') }}
+          {% endif %}
+
+  - resource: "http://a0d7b954-appdaemon:5050/api/health"
+    method: GET
+    timeout: 10
+    scan_interval: 30
+    sensor:
+      - name: "AppDaemon Health (api root path)"
+        value_template: >
+          {% if value_json is defined and value_json.status is defined %}
+            {{ value_json.status }}
+          {% else %}
+            {{ value | default('no_response') }}
+          {% endif %}
+
+  - resource: "http://a0d7b954-appdaemon:5050/api/app/room_db_updater/index"
+    method: GET
+    timeout: 10
+    scan_interval: 30
+    sensor:
+      - name: "AppDaemon Index (app path)"
+        value_template: >
+          {% if value_json is defined %}
+            {{ value_json | tojson }}
+          {% else %}
+            {{ value | default('no_response') }}
+          {% endif %}
+
+  - resource: "http://a0d7b954-appdaemon:5050/api/app/room_db_updater/room_db/index"
+    method: GET
+    timeout: 10
+    scan_interval: 30
+    sensor:
+      - name: "AppDaemon Index (compat nested path)"
+        value_template: >
+          {% if value_json is defined %}
+            {{ value_json | tojson }}
+          {% else %}
+            {{ value | default('no_response') }}
+          {% endif %}
 
 shell_command:
   # AppDaemon endpoint discovery - test different URL patterns
