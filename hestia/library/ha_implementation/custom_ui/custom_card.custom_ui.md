@@ -351,4 +351,4 @@ assertConfig (optional): On each update of the configuration, the user's config 
 This example then results in the following config form: Screenshot of the config form
 
 Previous Chapter
-Next Chapter
+Next Chapter (/config/hestia/library/ha_implementation/custom_ui/custom_card_feature.custom_ui.md)

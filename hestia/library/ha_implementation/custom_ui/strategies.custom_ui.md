@@ -118,7 +118,7 @@ class StrategyDashboardDemo {
   }
 }
 ```
-
+```
 class StrategyViewDemo {
   static async generate(config, hass) {
     const { area, devices, entities } = config;
@@ -162,8 +162,35 @@ class StrategyViewDemo {
 
 customElements.define("ll-strategy-dashboard-my-demo", StrategyDashboardDemo);
 customElements.define("ll-strategy-view-my-demo", StrategyViewDemo);
+```
+
 Use the following dashboard configuration to use this strategy:
 
+```
 strategy:
   type: custom:my-demo
+```
 
+## Registering resources
+
+If you want to extend the Home Assistant interface with custom cards, strategies or views you need to load external resources.
+
+The first step is to make it accessible for the Home Assistant frontend. This is done by creating a new directory in your config folder called `www`. Create this directory and restart Home Assistant.
+
+Once restarted, you can put files in this directory. Each file will be accessible without authentication via the UI at /local.
+
+The next step is to register these resources with the Home Assistant interface. This is done by navigating to the Resources page by following below link:
+
+https://my.home-assistant.io/redirect/lovelace_dashboards/ [alt text: Open your Home Assistant instance and show your resources.]
+
+> note: This area is only available when the active user's profile has "advanced mode" enabled.
+
+![Screenshot of the Advanced Mode selector found on the Profile page](image-1.png)
+
+Alternatively, you can also register the resource by adding it to the resources section of lovelace in the configuration:
+
+```yaml
+resources:
+  - url: /local/<name of the resource>.js
+    type: module
+```
