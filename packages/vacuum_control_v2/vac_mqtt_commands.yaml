@@ -1,7 +1,0 @@
-# Valetudo base topic variable
-input_text:
-  valetudo_base_topic:
-    name: "Valetudo Base Topic"
-    min: 1
-    max: 128
-    initial: "valetudo/robot"

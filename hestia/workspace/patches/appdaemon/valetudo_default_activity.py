@@ -14,7 +14,7 @@ import time
 import uuid
 from collections import deque
 
-import hassapi as hass
+from appdaemon.plugins.hass import hassapi as hass
 
 try:
     import yaml
@@ -228,7 +228,11 @@ class ValetudoDefaultActivity(hass.Hass):
             )
             return
 
-        if not force and not self._policy_allows(room, force_presence=force_presence, force_schedule=False):
+        if not force and not self._policy_allows(
+            room,
+            force_presence=force_presence,
+            force_schedule=False,
+        ):
             self.log(f"ad-hoc: policy deferred for {room}", level="INFO")
             return
 
@@ -306,6 +310,7 @@ class ValetudoDefaultActivity(hass.Hass):
     def _clear_active(self):
         if self.active and self.active.get("timeout_handle"):
             import contextlib
+
             with contextlib.suppress(Exception):
                 self.cancel_timer(self.active["timeout_handle"])
         self.active = None
