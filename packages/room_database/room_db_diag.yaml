@@ -175,6 +175,33 @@ rest:
           - status
           - message
 
+  # AppDaemon global endpoint namespace (per docs: /api/appdaemon/<endpoint>)
+  - resource: "http://a0d7b954-appdaemon:5050/api/appdaemon/health"
+    method: GET
+    timeout: 10
+    scan_interval: 30
+    sensor:
+      - name: "AppDaemon Health (appdaemon global)"
+        value_template: >
+          {% if value_json is defined and value_json.status is defined %}
+            {{ value_json.status }}
+          {% else %}
+            {{ value | default('no_response') }}
+          {% endif %}
+
+  - resource: "http://a0d7b954-appdaemon:5050/api/appdaemon/test"
+    method: GET
+    timeout: 10
+    scan_interval: 30
+    sensor:
+      - name: "AppDaemon Test (appdaemon global)"
+        value_template: >
+          {% if value_json is defined and value_json.status is defined %}
+            {{ value_json.status }}
+          {% else %}
+            {{ value | default('no_response') }}
+          {% endif %}
+
   # Additional probes to discover actual base path mapping
   - resource: "http://a0d7b954-appdaemon:5050/health"
     method: GET
