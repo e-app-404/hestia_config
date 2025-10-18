@@ -42,7 +42,7 @@
         type: "inference"
         tier: "γ"
         canonical_id: "desk_presence_inferred_γ"
-        role: "composite"
+        role: "composite_occupancy"
         upstream_sources: >-
           {{ [
             "sensor.macbook_displays",
@@ -73,7 +73,7 @@
         file: "/config/domain/templates/humidity_logic.yaml"
         subsystem: "hermes"
         module: "room_occupancy"
-        role: "logic"
+        role: "composite_occupancy"
         type: "inference"
         composite_logic: "recent OR detected AND NOT end"
         upstream_sources: >-
