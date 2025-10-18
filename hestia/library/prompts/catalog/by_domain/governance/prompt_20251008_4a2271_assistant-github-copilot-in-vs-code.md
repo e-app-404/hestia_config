@@ -42,7 +42,7 @@ You are GitHub Copilot in VS Code. Refactor and align my Adaptive Motion Lightin
   - Wardrobe → `light.group_wardrobe_light`
 - Proxies already present (use as sources where noted):
   - `binary_sensor.bedroom_ottoman_motion_proxy`
-  - `binary_sensor.entrance_motion_proxy`
+  - `binary_sensor.entrance_motion_beta`
   - `binary_sensor.hallway_downstairs_motion_recent_beta` (recent-motion helper)
 
 ## What to produce/update

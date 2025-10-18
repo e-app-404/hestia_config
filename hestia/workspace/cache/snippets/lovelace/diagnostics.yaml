@@ -495,7 +495,7 @@ sections:
             → `/config/domain/templates/presence_logic.yaml:??` (hardcoded false)
 
           **Proxy Sensors:**
-          - `binary_sensor.entrance_motion_proxy` (from door contact)
+          - `binary_sensor.entrance_motion_beta (from door contact)
 
   # Section 8: Hallway Upstairs Analysis
   - type: grid

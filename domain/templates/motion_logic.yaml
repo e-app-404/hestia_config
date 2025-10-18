@@ -417,7 +417,7 @@
         {% from 'template.library.jinja' import preference_select %}
         {% set sources = [
           {'entity': 'binary_sensor.downstairs_motion_alpha_motion', 'protocol': 'tplink', 'preference': 1, 'type': 'motion'},
-          {'entity': 'binary_sensor.entrance_motion_proxy',          'protocol': 'proxy',  'preference': 2, 'type': 'contact'}
+          {'entity': 'binary_sensor.entrance_motion_beta',          'protocol': 'proxy',  'preference': 2, 'type': 'contact'}
         ] %}
         {{ preference_select(sources) == 'on' }}
       attributes:
@@ -430,13 +430,13 @@
         file: "/config/domain/templates/motion_logic.yaml"
         protocols: "TP-Link(1), MQTT(2), Matter(3), WiFi(4), Beta(5)"
         upstream_sources: >
-          {{ ['template.library.jinja','binary_sensor.downstairs_motion_alpha_motion','binary_sensor.entrance_motion_proxy'] | tojson }}
+          {{ ['template.library.jinja','binary_sensor.downstairs_motion_alpha_motion','binary_sensor.entrance_motion_beta'] | tojson }}
         aggregation_strategy: "preference-based selection (motion-only)"
         active_source: >
           {% from 'template.library.jinja' import get_active_source %}
           {% set sources = [
             {'entity': 'binary_sensor.downstairs_motion_alpha_motion','preference': 1},
-            {'entity': 'binary_sensor.entrance_motion_proxy','preference': 2}
+            {'entity': 'binary_sensor.entrance_motion_beta','preference': 2}
           ] %}
           {{ get_active_source(sources) }}
         source_count: "2"
@@ -472,8 +472,8 @@
         area_id: "hallway"
         subarea: "downstairs"
 
-    - name: "Entrance Motion (Proxy)"
-      unique_id: "entrance_motion_proxy"
+    - name: "Entrance Motion (Beta)"
+      unique_id: "entrance_motion_beta"
       device_class: motion
       delay_off:
         seconds: 5
@@ -487,11 +487,11 @@
            or states('binary_sensor.entrance_door_contact_alpha_door') not in ['unknown','unavailable', none, ''] }}
       attributes:
         tier: "β"
-        canonical_id: "entrance_motion_proxy_β"
+        canonical_id: "entrance_motion_β"
         subsystem: "hermes"
         module: "motion"
         type: "proxy"
-        role: "motion_via_contact"
+        role: "beta_motion"
         file: "/config/domain/templates/motion_logic.yaml"
         upstream_sources: >
           {{ ['binary_sensor.entrance_door_contact_alpha_matter_door','binary_sensor.entrance_door_contact_alpha_door'] | tojson }}
@@ -509,7 +509,7 @@
       device_class: motion
       delay_off:
         minutes: 5
-      state: "{{ is_state('binary_sensor.entrance_motion_proxy','on') }}"
+      state: "{{ is_state('binary_sensor.entrance_motion_beta','on') }}"
       attributes:
         tier: "β"
         canonical_id: "entrance_motion_recent_β"
@@ -521,7 +521,7 @@
         delay_duration: "300s"
         timeout_behavior: "delay_off"
         upstream_sources: >
-          {{ ['binary_sensor.entrance_motion_proxy'] | tojson }}
+          {{ ['binary_sensor.entrance_motion_beta'] | tojson }}
         version: "1.0"
         last_updated: "2025-10-15"
         floor_id: "downstairs"

@@ -169,5 +169,5 @@
         type: "standardized_sensor"
         module: "illuminance"
         file: "/config/domain/templates/illuminance_logic.yaml"
-        description: "Standardized illuminance reading for desk from merged alpha sensor"
+        description: "Standardized illuminance reading for desk from bedroom alpha sensor"
         created: "2025-10-07"

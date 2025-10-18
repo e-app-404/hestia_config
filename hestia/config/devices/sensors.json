@@ -141,7 +141,7 @@
   },
   "hallway_downstairs": {
     "motion": {
-      "all": ["binary_sensor.hallway_downstairs_motion_beta", "binary_sensor.downstairs_motion_alpha_motion", "binary_sensor.entrance_motion_proxy"],
+      "all": ["binary_sensor.hallway_downstairs_motion_beta", "binary_sensor.downstairs_motion_alpha_motion", "binary_sensor.entrance_motion_beta"],
       "preferred": "binary_sensor.hallway_downstairs_motion_beta"
     },
     "occupancy": {
@@ -156,12 +156,12 @@
       "all": [],
       "preferred": null
     },
-    "proxies": ["binary_sensor.entrance_motion_proxy"],
+    "proxies": ["binary_sensor.entrance_motion_beta"],
     "sources": {
       "binary_sensor.hallway_downstairs_motion_beta": [{"file": "/config/domain/templates/motion_logic.yaml", "line": 421}],
       "binary_sensor.hallway_downstairs_occupancy_beta": [{"file": "/config/domain/templates/occupancy_logic.yaml", "line": 127}],
       "binary_sensor.hallway_downstairs_presence_beta": [{"file": "/config/domain/templates/presence_logic.yaml", "line": 157}],
-      "binary_sensor.entrance_motion_proxy": [{"file": "/config/domain/templates/motion_logic.yaml", "line": 455}]
+      "binary_sensor.entrance_motion_beta": [{"file": "/config/domain/templates/motion_logic.yaml", "line": 455}]
     },
     "notes": ["Presence provides contextual enhancement only - never blocks due to untracked housemate"]
   },
