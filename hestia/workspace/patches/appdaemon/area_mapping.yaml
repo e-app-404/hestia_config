@@ -73,7 +73,6 @@ nodes:
     entities: 0
     services: 0
     tags: [transit, structural_connector]
-  - id: kitchen
     type: area
     canonical_name: Kitchen
     parents: [downstairs]
@@ -85,8 +84,7 @@ nodes:
       vacuum_control:
         cleaning_frequency_days: 3
         default_mode: deep
-        segment_id: null
-  - id: laundry_room
+        segment_id: 17
     type: subarea
     canonical_name: Laundry room
     parents: [kitchen]
@@ -98,8 +96,7 @@ nodes:
       vacuum_control:
         cleaning_frequency_days: 7
         default_mode: standard
-        segment_id: null
-  - id: living_room
+        segment_id: 16
     type: area
     canonical_name: Living Room
     parents: [downstairs]
@@ -111,8 +108,7 @@ nodes:
       vacuum_control:
         cleaning_frequency_days: 3
         default_mode: standard
-        segment_id: null
-  - id: entrance
+        segment_id: 19
     type: subarea
     canonical_name: Entrance
     parents: [downstairs]
@@ -123,7 +119,6 @@ nodes:
     capabilities:
       vacuum_control:
         segment_id: null
-  - id: hallway_downstairs
     type: subarea
     canonical_name: Hallway (Downstairs)
     parents: [downstairs]
@@ -133,7 +128,7 @@ nodes:
     services: 0
     capabilities:
       vacuum_control:
-        segment_id: null
+        segment_id: 18
   - id: downstairs
     type: area
     canonical_name: Downstairs
@@ -150,7 +145,6 @@ nodes:
     devices: 5
     entities: 5
     services: 0
-  - id: bedroom
     type: area
     canonical_name: Bedroom
     parents: [sanctum]
@@ -187,7 +181,6 @@ nodes:
     devices: 0
     entities: 0
     services: 0
-  - id: ensuite
     type: area
     canonical_name: Ensuite
     parents: [sanctum]
@@ -266,7 +259,6 @@ nodes:
     entities: 0
     services: 0
     tags: [system, network]
-  - id: powder_room
     type: area
     canonical_name: powder room
     parents: [downstairs]
@@ -277,7 +269,7 @@ nodes:
     tags: ["bathroom", "toilet"]
     capabilities:
       vacuum_control:
-        segment_id: null
+        segment_id: 20
   - id: config
     type: system
     canonical_name: Config

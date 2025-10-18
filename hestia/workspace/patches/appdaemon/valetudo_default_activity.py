@@ -228,10 +228,9 @@ class ValetudoDefaultActivity(hass.Hass):
             )
             return
 
-        if not force:
-            if not self._policy_allows(room, force_presence=force_presence, force_schedule=False):
-                self.log(f"ad-hoc: policy deferred for {room}", level="INFO")
-                return
+        if not force and not self._policy_allows(room, force_presence=force_presence, force_schedule=False):
+            self.log(f"ad-hoc: policy deferred for {room}", level="INFO")
+            return
 
         if room not in self.queued_rooms and not (self.active and self.active.get("room") == room):
             job = self._mk_job(room, [seg], self._fallback_default_mode(room) or mode, "adhoc")
@@ -306,10 +305,9 @@ class ValetudoDefaultActivity(hass.Hass):
 
     def _clear_active(self):
         if self.active and self.active.get("timeout_handle"):
-            try:
+            import contextlib
+            with contextlib.suppress(Exception):
                 self.cancel_timer(self.active["timeout_handle"])
-            except Exception:
-                pass
         self.active = None
 
     # ---------- Helpers ----------
