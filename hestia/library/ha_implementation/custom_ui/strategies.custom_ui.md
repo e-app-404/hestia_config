@@ -1,8 +1,27 @@
-developers.home-assistant.io /docs/frontend/custom-ui/custom-strategy/
-4-6 minutes
-Introduced in Home Assistant 2021.5.
+---
+title: "Custom Strategies Development"
+authors: "Home Assistant Developer Docs"
+source: "developers.home-assistant.io"
+slug: "custom-strategies-development"
+tags: ["home-assistant", "custom-ui", "strategies", "dashboard", "frontend"]
+original_date: "2021-05-01"
+last_updated: "2025-10-18"
+url: "https://developers.home-assistant.io/docs/frontend/custom-ui/custom-strategy"
+---
 
-# Custom strategies | Home Assistant Developer Docs
+# Custom Strategies Development
+
+> Introduced in Home Assistant 2021.5.
+
+## Table of Contents
+
+- [Introduction](#introduction)
+- [Dashboard Strategies](#dashboard-strategies)
+- [View Strategies](#view-strategies)
+- [Full Example](#full-example)
+- [Registering Resources](#registering-resources)
+
+## Introduction
 
 Strategies are JavaScript functions that generate dashboard configurations. When a user has not created a dashboard configuration yet, an auto-generated dashboard is shown. That configuration is generated using a built-in strategy.
 
@@ -17,11 +36,12 @@ A dashboard strategy is responsible for generating a full dashboard configuratio
 
 Two parameters are passed to the strategy:
 
-| Key	| Description |
-| config	| Dashboard strategy configuration. |
-| hass	| The Home Assistant object. |
+| Key | Description |
+| --- | --- |
+| config | Dashboard strategy configuration. |
+| hass | The Home Assistant object. |
 
-```
+```javascript
 class StrategyDemo {
   static async generate(config, hass) {
     return {
@@ -45,12 +65,12 @@ customElements.define("ll-strategy-my-demo", StrategyDemo);
 
 Use the following dashboard configuration to use this strategy:
 
-```
+```yaml
 strategy:
   type: custom:my-demo
 ```
 
-View strategies​
+## View Strategies
 A view strategy is responsible for generating the configuration of a specific dashboard view. The strategy is invoked when the user opens the specific view.
 
 Two parameters are passed to the strategy:
@@ -167,12 +187,12 @@ customElements.define("ll-strategy-view-my-demo", StrategyViewDemo);
 
 Use the following dashboard configuration to use this strategy:
 
-```
+```yaml
 strategy:
   type: custom:my-demo
 ```
 
-## Registering resources
+## Registering Resources
 
 If you want to extend the Home Assistant interface with custom cards, strategies or views you need to load external resources.
 

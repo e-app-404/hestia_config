@@ -94,19 +94,21 @@ If your view requires data to persist at a card level, there is a view_layout in
 ```
 
 ## Edit, Delete, or Add a Card
+
 To call the core frontend dialogs to edit, delete or add a card, you can simply call these three events:
 
-Event: "ll-delete-card"
+**Event: "ll-delete-card"**
 Detail: { path: [number] | [number, number] }
 
-Event: "ll-edit-card"
+**Event: "ll-edit-card"**
 Detail: { path: [number] | [number, number] }
 
-Event: "ll-create-card"
+**Event: "ll-create-card"**
 Detail: none
+
 To call an event, you can use:
 
+```javascript
 // Delete 4th card in the current view
 this.dispatchEvent(new CustomEvent("ll-edit-card", { detail: { path: [3] } })) // this refers to the card element
-Previous Chapter
-Next Chapter
+```
