@@ -36,7 +36,6 @@
           {{ ["person.evert", "binary_sensor.desk_occupancy_beta", "binary_sensor.bedroom_occupancy_beta", "binary_sensor.bedroom_ottoman_motion_proxy"] | tojson }}
         source_count: "4"
 
-
     - name: "Desk Presence (Beta)"
       unique_id: "desk_presence_beta"
       icon: mdi:home-map-marker
@@ -115,7 +114,6 @@
         upstream_sources: >-
           {{ ["person.evert"] | tojson }}
         source_count: "1"
-
 
     - name: "Hallway Downstairs Presence (Beta)"
       unique_id: "hallway_downstairs_presence_beta"
