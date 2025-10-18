@@ -10,9 +10,10 @@ import time
 from urllib.parse import urljoin
 
 # Configuration
-APPDAEMON_BASE_URL = "http://localhost:5050"  # Default AppDaemon port
-HEALTH_ENDPOINT = "/api/appdaemon/room_db/health"
-UPDATE_ENDPOINT = "/api/appdaemon/room_db/update_config"
+APPDAEMON_BASE_URL = "http://localhost:5050"  # Default AppDaemon port (inside HA network)
+# App-scoped endpoints registered by AppDaemon for the 'room_db_updater' app
+HEALTH_ENDPOINT = "/api/app/room_db_updater/health"
+UPDATE_ENDPOINT = "/api/app/room_db_updater/update_config"
 
 def test_health_endpoint():
     """Test the health endpoint to verify the service is running."""
@@ -46,8 +47,8 @@ def test_update_endpoint():
     print("\n🔍 Testing AppDaemon room_db update endpoint...")
     
     test_config = {
-        "room_id": "test_room",
-        "config_domain": "motion_lighting", 
+        "room_id": "bedroom",
+        "domain": "motion_lighting",
         "config_data": {
             "enabled": True,
             "brightness": 80,

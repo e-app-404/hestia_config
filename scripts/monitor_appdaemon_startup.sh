@@ -9,7 +9,7 @@ echo ""
 
 # Function to check if AppDaemon is accessible
 check_appdaemon_health() {
-    if curl -s http://localhost:5050/api/appdaemon/room_db/health >/dev/null 2>&1; then
+    if curl -s http://localhost:5050/api/app/room_db_updater/health >/dev/null 2>&1; then
         echo "✅ AppDaemon API is accessible at http://localhost:5050"
         return 0
     else
