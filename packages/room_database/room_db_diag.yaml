@@ -195,8 +195,8 @@ rest:
           - status
           - message
 
-  # AppDaemon global endpoint namespace (per docs: /api/appdaemon/<endpoint>)
-  - resource: "http://a0d7b954-appdaemon:5050/api/appdaemon/health"
+  # AppDaemon global endpoints (confirmed working)
+  - resource: "http://a0d7b954-appdaemon:5050/api/appdaemon/room_db_health"
     method: GET
     timeout: 10
     scan_interval: 30
@@ -209,7 +209,7 @@ rest:
             {{ value | default('no_response') }}
           {% endif %}
 
-  - resource: "http://a0d7b954-appdaemon:5050/api/appdaemon/test"
+  - resource: "http://a0d7b954-appdaemon:5050/api/appdaemon/room_db_test"
     method: GET
     timeout: 10
     scan_interval: 30
