@@ -27,6 +27,16 @@ rest:
     scan_interval: 30
     sensor:
       - name: "AppDaemon Health (app path)"
+        value_template: >
+          {% if value_json is defined and value_json.status is defined %}
+            {{ value_json.status }}
+          {% else %}
+            {{ value | default('no_response') }}
+          {% endif %}
+        json_attributes:
+          - status
+          - message
+          - timestamp
   # Trailing slash variant (some setups enforce slash)
   - resource: "http://a0d7b954-appdaemon:5050/api/app/room_db_updater/health/"
     method: GET
@@ -62,6 +72,16 @@ rest:
     scan_interval: 30
     sensor:
       - name: "AppDaemon Health Raw"
+        value_template: >
+          {% if value_json is defined and value_json.status is defined %}
+            {{ value_json.status }}
+          {% else %}
+            {{ value | default('no_response') }}
+          {% endif %}
+        json_attributes:
+          - status
+          - message
+          - timestamp
   # Trailing slash variant for compat
   - resource: "http://a0d7b954-appdaemon:5050/api/app/room_db_updater/room_db/health/"
     method: GET
