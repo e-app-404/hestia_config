@@ -115,6 +115,21 @@ sql:
         AND json_extract(config_data, '$.needs_cleaning') = 1;
     column: count
 
+  - name: "Room Configs — Activity Tracking"
+    db_url: sqlite:////config/room_database.db
+    query: >
+      SELECT 'ok' AS state,
+             json_group_object(
+               room_id,
+               CASE WHEN json_valid(config_data) = 1
+                    THEN json(config_data)
+                    ELSE NULL
+               END
+             ) AS payload
+      FROM room_configs
+      WHERE config_domain = 'activity_tracking';
+    column: state
+
 # Shell commands for direct SQLite database operations (fallback/emergency use)
 shell_command:
   update_room_config: |
