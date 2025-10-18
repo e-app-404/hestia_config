@@ -1,7 +1,7 @@
 {
   "bedroom": {
     "motion": {
-      "all": ["binary_sensor.bedroom_motion_beta", "binary_sensor.sanctum_motion_alpha", "binary_sensor.bedroom_wardrobe_motion_beta", "binary_sensor.bedroom_security_cam_alpha_motion", "binary_sensor.bedroom_ottoman_motion_proxy", "binary_sensor.desk_motion_proxy"],
+      "all": ["binary_sensor.bedroom_motion_beta", "binary_sensor.sanctum_motion_alpha", "binary_sensor.bedroom_wardrobe_motion_beta", "binary_sensor.bedroom_security_cam_alpha_motion", "binary_sensor.bedroom_ottoman_motion_proxy", "binary_sensor.desk_motion_beta"],
       "preferred": "binary_sensor.bedroom_motion_beta"
     },
     "occupancy": {
@@ -61,8 +61,8 @@
   },
   "desk": {
     "motion": {
-      "all": ["binary_sensor.desk_motion_proxy"],
-      "preferred": "binary_sensor.desk_motion_proxy"
+      "all": ["binary_sensor.desk_motion_beta"],
+      "preferred": "binary_sensor.desk_motion_beta"
     },
     "occupancy": {
       "all": ["binary_sensor.desk_occupancy_beta", "binary_sensor.desk_presence_inferred"],
@@ -76,9 +76,9 @@
       "all": [],
       "preferred": null
     },
-    "proxies": ["binary_sensor.desk_motion_proxy", "binary_sensor.desk_presence_inferred", "binary_sensor.desk_macbook_recent_connectivity"],
+    "proxies": ["binary_sensor.desk_motion_beta", "binary_sensor.desk_presence_inferred", "binary_sensor.desk_macbook_recent_connectivity"],
     "sources": {
-      "binary_sensor.desk_motion_proxy": [{"file": "/config/domain/templates/motion_logic.yaml", "line": 262}],
+      "binary_sensor.desk_motion_beta": [{"file": "/config/domain/templates/motion_logic.yaml", "line": 297}],
       "binary_sensor.desk_occupancy_beta": [{"file": "/config/domain/templates/occupancy_logic.yaml", "line": 214}],
       "binary_sensor.desk_presence_beta": [{"file": "/config/domain/templates/presence_logic.yaml", "line": 74}],
       "binary_sensor.desk_presence_inferred": [{"file": "/config/domain/templates/desk_presence_inferred.yaml", "line": 57}],
@@ -111,7 +111,7 @@
       "binary_sensor.kitchen_occupancy_beta": [{"file": "/config/domain/templates/occupancy_logic.yaml", "line": 47}],
       "binary_sensor.kitchen_presence_beta": [{"file": "/config/domain/templates/presence_logic.yaml", "line": 94}]
     },
-    "notes": ["Kitchen presence always false - shared area with untracked occupant"]
+    "notes": ["Kitchen presence provides contextual enhancement only - never blocks due to untracked housemate"]
   },
   "living_room": {
     "motion": {
@@ -137,7 +137,7 @@
       "binary_sensor.living_room_presence_beta": [{"file": "/config/domain/templates/presence_logic.yaml", "line": 100}],
       "sensor.living_room_illuminance_beta": [{"file": "/config/domain/templates/illuminance_logic.yaml", "line": 13}]
     },
-    "notes": ["Shared area with poor presence reliability"]
+    "notes": ["Shared area presence provides contextual enhancement only - never blocks due to untracked housemate"]
   },
   "hallway_downstairs": {
     "motion": {
@@ -163,7 +163,7 @@
       "binary_sensor.hallway_downstairs_presence_beta": [{"file": "/config/domain/templates/presence_logic.yaml", "line": 157}],
       "binary_sensor.entrance_motion_proxy": [{"file": "/config/domain/templates/motion_logic.yaml", "line": 455}]
     },
-    "notes": ["Motion proxy from entrance door contact sensors"]
+    "notes": ["Presence provides contextual enhancement only - never blocks due to untracked housemate"]
   },
   "hallway_upstairs": {
     "motion": {

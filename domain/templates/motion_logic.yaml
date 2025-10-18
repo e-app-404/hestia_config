@@ -85,7 +85,7 @@
           {'entity': 'binary_sensor.bedroom_wardrobe_motion_beta',      'protocol': 'tplink', 'preference': 2, 'type': 'motion'},
           {'entity': 'binary_sensor.bedroom_security_cam_alpha_motion', 'protocol': 'wifi',   'preference': 3, 'type': 'motion'},
           {'entity': 'binary_sensor.bedroom_ottoman_motion_proxy',      'protocol': 'proxy',  'preference': 4, 'type': 'vibration'},
-          {'entity': 'binary_sensor.desk_motion_proxy',                 'protocol': 'proxy',  'preference': 5, 'type': 'vibration'}
+          {'entity': 'binary_sensor.desk_motion_beta',                 'protocol': 'proxy',  'preference': 5, 'type': 'vibration'}
         ] %}
         {{ preference_select(sources) == 'on' }}
       attributes:
@@ -98,7 +98,7 @@
         file: "/config/domain/templates/motion_logic.yaml"
         protocols: "TP-Link(1,2), Wi-Fi(3)"
         upstream_sources: >-
-          {{ ['template.library.jinja','binary_sensor.sanctum_motion_alpha','binary_sensor.bedroom_wardrobe_motion_beta','binary_sensor.bedroom_security_cam_alpha_motion','binary_sensor.bedroom_ottoman_motion_proxy','binary_sensor.desk_motion_proxy'] | tojson }}
+          {{ ['template.library.jinja','binary_sensor.sanctum_motion_alpha','binary_sensor.bedroom_wardrobe_motion_beta','binary_sensor.bedroom_security_cam_alpha_motion','binary_sensor.bedroom_ottoman_motion_proxy','binary_sensor.desk_motion_beta'] | tojson }}
         downstream_consumers: >-
           {{ ['binary_sensor.bedroom_motion_recent_beta','binary_sensor.bedroom_occupancy_beta','binary_sensor.sanctum_motion_beta'] | tojson }}
         aggregation_strategy: "preference-based selection (motion-only)"
@@ -109,7 +109,7 @@
             {'entity': 'binary_sensor.bedroom_wardrobe_motion_beta','preference': 2},
             {'entity': 'binary_sensor.bedroom_security_cam_alpha_motion','preference': 3},
             {'entity': 'binary_sensor.bedroom_ottoman_motion_proxy','preference': 4},
-            {'entity': 'binary_sensor.desk_motion_proxy','preference': 5}
+            {'entity': 'binary_sensor.desk_motion_beta','preference': 5}
           ] %}
           {{ get_active_source(sources) }}
         source_count: "5"
@@ -294,8 +294,8 @@
         area_id: "bedroom"
         subarea: "ottoman"
 
-    - name: "Desk Motion (Proxy)"
-      unique_id: "desk_motion_proxy"
+    - name: "Desk Motion (Beta)"
+      unique_id: "desk_motion_beta"
       device_class: motion
       delay_off:
         seconds: 120
@@ -307,11 +307,11 @@
       icon: "mdi:motion-sensor"
       attributes:
         tier: "β"
-        canonical_id: "desk_motion_proxy_β"
+        canonical_id: "desk_motion_β"
         subsystem: "hermes"
         module: "motion"
         type: "composite"
-        role: "proxy"
+        role: "beta_motion"
         file: "/config/domain/templates/motion_logic.yaml"
         upstream_sources: >
           {{ ['binary_sensor.desk_presence_inferred'] | tojson }}
@@ -329,7 +329,7 @@
       device_class: motion
       delay_off:
         minutes: 2
-      state: "{{ is_state('binary_sensor.desk_motion_proxy','on') }}"
+      state: "{{ is_state('binary_sensor.desk_motion_beta','on') }}"
       attributes:
         tier: "β"
         canonical_id: "desk_motion_recent_β"
@@ -341,7 +341,7 @@
         delay_duration: "120s"
         timeout_behavior: "delay_off"
         upstream_sources: >
-          {{ ['binary_sensor.desk_motion_proxy'] | tojson }}
+          {{ ['binary_sensor.desk_motion_beta'] | tojson }}
         downstream_consumers: >
           {{ ['binary_sensor.desk_occupancy_beta','sensor.desk_motion_score_gamma'] | tojson }}
         version: "2.2"

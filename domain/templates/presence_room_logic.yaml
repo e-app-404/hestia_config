@@ -74,13 +74,13 @@
         floor_id: "downstairs"
         module: "presence_inference"
         persons: "person.evert"
-        strategy: "asymmetric"
+        strategy: "contextual_enhancement_only"
         subsystem: "hermes"
         area_type: "shared"
         tier: "β"
         reliability: poor
         notes: |
-          "Common area used by untracked occupant - never rely on this sensor for blocking"
+          "Provides contextual enhancement for timeouts/scenes only. Never used for blocking due to untracked housemate."
         last_updated: "2025-10-16"
         upstream_sources: >-
           {{ ["person.evert"] | tojson }}
@@ -117,57 +117,76 @@
 
     - name: "Hallway Downstairs Presence (Beta)"
       unique_id: "hallway_downstairs_presence_beta"
-      state: "off"
+      state: >-
+        {% set person_state = states('person.evert') %}
+        {% set source = state_attr('person.evert', 'source') %}
+        {% set via_person = (person_state == 'home') %}
+        {% set via_source = source and states(source) == 'home' and (state_attr(source,'source_type') in ['gps','bluetooth_le','bluetooth']) %}
+        {% if via_person or via_source %}on{% else %}off{% endif %}
       icon: mdi:home-map-marker
       attributes:
         area_id: "downstairs"
         floor_id: "hallway"
         area_type: "shared"
         module: "presence_inference"
-        persons: ""
-        strategy: "always_false"
+        persons: "person.evert"
+        strategy: "contextual_enhancement_only"
         subsystem: "hermes"
         tier: "β"
         reliability: poor
         notes: |
-          "Common area used by untracked occupant - never rely on this sensor for blocking"
-        last_updated: "2025-10-16"
-        source_count: "0"
+          "Provides contextual enhancement for timeouts/scenes only. Never used for blocking due to untracked housemate."
+        last_updated: "2025-10-18"
+        upstream_sources: >-
+          {{ ["person.evert"] | tojson }}
+        source_count: "1"
 
     - name: "Hallway Upstairs Presence (Beta)"
       unique_id: "hallway_upstairs_presence_beta"
-      state: "off"
+      state: >-
+        {% set person_state = states('person.evert') %}
+        {% set source = state_attr('person.evert', 'source') %}
+        {% set via_person = (person_state == 'home') %}
+        {% set via_source = source and states(source) == 'home' and (state_attr(source,'source_type') in ['gps','bluetooth_le','bluetooth']) %}
+        {% if via_person or via_source %}on{% else %}off{% endif %}
       icon: mdi:home-map-marker
       attributes:
         area_id: "upstairs"
         floor_id: "hallway"
         area_type: "shared"
         module: "presence_inference"
-        persons: ""
-        strategy: "always_false"
+        persons: "person.evert"
+        strategy: "contextual_enhancement_only"
         subsystem: "hermes"
         tier: "β"
         reliability: poor
         notes: |
-          "Common area used by untracked occupant - never rely on this sensor for blocking"
-        last_updated: "2025-10-16"
-        source_count: "0"
+          "Provides contextual enhancement for timeouts/scenes only. Never used for blocking due to untracked housemate."
+        last_updated: "2025-10-18"
+        upstream_sources: >-
+          {{ ["person.evert"] | tojson }}
+        source_count: "1"
 
     - name: "Kitchen Presence (Beta)"
       unique_id: "kitchen_presence_beta"
       icon: mdi:home-map-marker
-      state: "off"
+      state: >-
+        {% set person_state = states('person.evert') %}
+        {% set source = state_attr('person.evert', 'source') %}
+        {% set via_person = (person_state == 'home') %}
+        {% set via_source = source and states(source) == 'home' and (state_attr(source,'source_type') in ['gps','bluetooth_le','bluetooth']) %}
+        {% if via_person or via_source %}on{% else %}off{% endif %}
       attributes:
         area_id: "kitchen"
         floor_id: "downstairs"
         module: "presence_inference"
-        persons: ""
-        strategy: "always_false"
+        persons: "person.evert"
+        strategy: "contextual_enhancement_only"
         area_type: "shared"
         subsystem: "hermes"
         tier: "β"
         reliability: poor
         notes: |
-          "Common area used by untracked occupant - never rely on this sensor for blocking"
+          "Provides contextual enhancement for timeouts/scenes only. Never used for blocking due to untracked housemate."
         last_updated: "2025-10-16"
         source_count: "0"
