@@ -1,9 +1,0 @@
-{
-  "_deprecated": true,
-  "message": "This schema has been deprecated. The canonical device metadata has been consolidated into 'network.consolidated.yaml'. See 'hestia/config/network/network.consolidated.yaml'.",
-  "archived_at": "2025-10-03T00:00:00Z",
-  "archive_path": "archive/tailscale_machines.schema.json.2025-10-03.json"
-}
-  "type": "object",
-  "additionalProperties": false
-}

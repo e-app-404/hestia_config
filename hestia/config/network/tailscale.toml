@@ -1,0 +1,53 @@
+[[device]]
+name = "ds220plus"
+role = "nas"
+ip = "100.93.61.53"
+version = "1.84.3"
+os = "Synology DSM 7"
+interface = "docker-compose"
+dns_name = "ds220plus.reverse-beta.ts.net"
+
+[[device]]
+name = "ipad"
+role = "mobile"
+ip = "100.64.201.33"
+version = "18.6.2"
+
+[[device]]
+name = "homeassistant"
+role = "automation"
+ip = "100.105.130.99"
+version = "1.60.x"
+os = "Home Assistant OS"
+dns_name = "ha-core.reverse-beta.ts.net"
+
+[[device]]
+name = "macbook"
+role = "workstation"
+ip = "100.100.227.79"
+os = "macOS Ventura"
+services = ["glances", "ssh"]
+
+[[device]]
+name = "iphone11"
+role = "mobile"
+ip = "100.122.135.128"
+os = "iOS 18.1.0"
+
+[[device]]
+name = "dev-vm"
+role = "test-vm"
+ip = "100.82.212.111"
+os = "Debian 12"
+
+[[device]]
+name = "apple-tv"
+role = "media"
+ip = "100.69.234.125"
+os = "tvOS 18.5.0"
+
+[[device]]
+name = "ds220plus_legacy"
+role = "nas (deprecated)"
+ip = "100.71.87.40"
+version = "1.58.2"
