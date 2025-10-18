@@ -1,7 +1,8 @@
 developers.home-assistant.io /docs/frontend/custom-ui/custom-strategy/
-Custom strategies | Home Assistant Developer Docs
 4-6 minutes
 Introduced in Home Assistant 2021.5.
+
+# Custom strategies | Home Assistant Developer Docs
 
 Strategies are JavaScript functions that generate dashboard configurations. When a user has not created a dashboard configuration yet, an auto-generated dashboard is shown. That configuration is generated using a built-in strategy.
 
@@ -11,14 +12,16 @@ A strategy can be applied to the whole configuration or to a specific view.
 
 Strategies are defined as a custom element in a JavaScript file, and included via dashboard resources. Home Assistant will call static functions on the class instead of rendering it as a custom element.
 
-Dashboard strategies​
+## Dashboard strategies​
 A dashboard strategy is responsible for generating a full dashboard configuration. This can either be from scratch, or based on an existing dashboard configuration that is passed in.
 
 Two parameters are passed to the strategy:
 
-Key	Description
-config	Dashboard strategy configuration.
-hass	The Home Assistant object.
+| Key	| Description |
+| config	| Dashboard strategy configuration. |
+| hass	| The Home Assistant object. |
+
+```
 class StrategyDemo {
   static async generate(config, hass) {
     return {
@@ -38,18 +41,25 @@ class StrategyDemo {
 }
 
 customElements.define("ll-strategy-my-demo", StrategyDemo);
+```
+
 Use the following dashboard configuration to use this strategy:
 
+```
 strategy:
   type: custom:my-demo
+```
+
 View strategies​
 A view strategy is responsible for generating the configuration of a specific dashboard view. The strategy is invoked when the user opens the specific view.
 
 Two parameters are passed to the strategy:
 
-Key	Description
-config	View strategy configuration.
-hass	The Home Assistant object.
+| Key	| Description |
+| config	| View strategy configuration. |
+| hass	| The Home Assistant object. |
+
+```
 class StrategyDemo {
   static async generate(config, hass) {
     return {
@@ -64,16 +74,25 @@ class StrategyDemo {
 }
 
 customElements.define("ll-strategy-my-demo", StrategyDemo);
+```
+
+
 Use the following dashboard configuration to use this strategy:
 
+```
 views:
 - strategy:
     type: custom:my-demo
-Full example​
+```
+
+
+## Full example​
+
 It's recommended for a dashboard strategy to leave as much work to be done to the view strategies. That way the dashboard will show up for the user as fast as possible. This can be done by having the dashboard generate a configuration with views that rely on its own strategy.
 
 Below example will create a view per area, with each view showing all entities in that area in a grid.
 
+```
 class StrategyDashboardDemo {
   static async generate(config, hass) {
     // Query all data we need. We will make it available to views by storing it in strategy options.
@@ -98,6 +117,7 @@ class StrategyDashboardDemo {
     };
   }
 }
+```
 
 class StrategyViewDemo {
   static async generate(config, hass) {
