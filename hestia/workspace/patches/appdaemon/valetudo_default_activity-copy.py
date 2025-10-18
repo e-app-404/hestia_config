@@ -13,6 +13,7 @@ import os
 import time
 import uuid
 from collections import deque
+from datetime import timedelta
 
 from appdaemon.plugins.hass import hassapi as hass
 
@@ -116,7 +117,7 @@ class ValetudoDefaultActivity(hass.Hass):
 
         # Events & ticks
         self.listen_event(self._on_ad_hoc, "valetudo_ad_hoc_clean")
-        self.run_every(self._tick, self.datetime() + self.timedelta(seconds=5), 30)
+        self.run_every(self._tick, self.datetime() + timedelta(seconds=5), 30)
 
         # Load area mapping (fallback for segment_id/default_mode)
         self.area_map = {}
