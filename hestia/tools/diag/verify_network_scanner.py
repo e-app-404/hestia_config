@@ -1,20 +1,24 @@
 #!/usr/bin/env python3
-"""
-Verify and generate network_scanner MAC mappings from Home Assistant
-Run this script on your Home Assistant instance or any machine with API access
-"""
 
 import requests
 import json
 import sys
 from typing import Dict, List, Optional
+import sys
+
+import requests
+
+"""
+Verify and generate network_scanner MAC mappings from Home Assistant
+Run this script on your Home Assistant instance or any machine with API access
+"""
 
 # ═══════════════════════════════════════════════════════════════
 # CONFIGURATION - Update these values
 # ═══════════════════════════════════════════════════════════════
 
 HA_URL = "http://homeassistant.local:8123"
-HA_TOKEN = "YOUR_LONG_LIVED_ACCESS_TOKEN_HERE"
+HA_TOKEN = !secret HA_TOKEN
 
 # Known entities from your YAML files
 KNOWN_ENTITIES = [
@@ -55,7 +59,7 @@ KNOWN_ENTITIES = [
 # Helper Functions
 # ═══════════════════════════════════════════════════════════════
 
-def make_request(endpoint: str) -> Optional[Dict]:
+def make_request(endpoint: str) -> dict | None:
     """Make authenticated request to Home Assistant API"""
     headers = {
         "Authorization": f"Bearer {HA_TOKEN}",
@@ -70,23 +74,19 @@ def make_request(endpoint: str) -> Optional[Dict]:
         print(f"❌ Error fetching {endpoint}: {e}")
         return None
 
-def get_entity_registry() -> List[Dict]:
+def get_entity_registry() -> list[dict]:
     """Get all entities from registry"""
     return make_request("config/entity_registry/list") or []
 
-def get_device_registry() -> List[Dict]:
+def get_device_registry() -> list[dict]:
     """Get all devices from registry"""
     return make_request("config/device_registry/list") or []
 
-def get_network_scanner_state() -> Optional[Dict]:
+def get_network_scanner_state() -> dict | None:
     """Get current network_scanner sensor state"""
     return make_request("states/sensor.network_scanner")
 
-def extract_mac_from_device(device: Dict) -> Optional[str]:
-    """Extract MAC address from device connections"""
-    connections = device.get("connections", [])
-    for conn_type, conn_value in connections:
-        if conn_type == "mac":
+def extract_mac_from_device(device: dict) -> str | None:
             return conn_value.lower()
     return None
 
