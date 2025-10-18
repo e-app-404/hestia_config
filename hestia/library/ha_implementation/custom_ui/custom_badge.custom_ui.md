@@ -1,14 +1,34 @@
-developers.home-assistant.io /docs/frontend/custom-ui/custom-badge
-Custom badge | Home Assistant Developer Docs
-5-6 minutes
+---
+title: "Custom Badge Development"
+authors: "Home Assistant Developer Docs"
+source: "developers.home-assistant.io"
+slug: "custom-badge-development"
+tags: ["home-assistant", "custom-ui", "badge", "frontend"]
+original_date: "2023-01-01"
+last_updated: "2025-10-18"
+url: "https://developers.home-assistant.io/docs/frontend/custom-ui/custom-badge"
+---
+
+# Custom Badge Development
+
+## Table of Contents
+
+- [Introduction](#introduction)
+- [Defining Your Badge](#defining-your-badge)
+- [Referencing Your Badge](#referencing-your-badge)
+- [API Reference](#api-reference)
+- [Graphical Configuration](#graphical-configuration)
+
+## Introduction
+
 Badges are small widgets that sit at the top of a view, above all cards. We offer a built-in badge, the entity badge, but you're not just limited that one. You can build and use your own!
 
-Defining your badge​
+## Defining Your Badge
 Defining a badge is done in a very similar way to defining a custom card.
 
-Let's create a basic badge that displays custom text at the top of the screen. Create a new file in your Home Assistant config dir as <config>/www/text-badge.js and put in the following contents:
+Let's create a basic badge that displays custom text at the top of the screen. Create a new file in your Home Assistant config dir as `<config>/www/text-badge.js` and put in the following contents:
 
-
+```javascript
 class TextBadge extends HTMLElement {
   // Whenever the state changes, a new `hass` object is set. Use this to
   // update your content.
@@ -39,27 +59,32 @@ class TextBadge extends HTMLElement {
 }
 
 customElements.define("text-badge", TextBadge);
-Referencing your new badge​
+```
+
+## Referencing Your Badge
 In our example badge, we defined a badge with the tag text-badge (see last line), so our badge type will be custom:text-badge. And because you created the file in your <config>/www directory, it will be accessible in your browser via the url /local/ (if you have recently added the www folder you will need to re-start Home Assistant for files to be picked up).
 
 Add a resource to your dashboard configuration with URL /local/text-badge.js and type module (resource docs).
 
 You can then use your badge in your dashboard configuration:
 
+```yaml
 # Example dashboard configuration
 views:
   - name: Example
     badges:
       - type: "custom:text-badge"
         entity: light.bedside_lamp
-API​
+```
+
+## API Reference
 Custom badges are defined as a custom element. It's up to you to decide how to render your DOM inside your element. You can use Polymer, Angular, Preact or any other popular framework (except for React – more info on React here).
 
 Home Assistant will call setConfig(config) when the configuration changes (rare). If you throw an exception if the configuration is invalid, Home Assistant will render an error badge to notify the user.
 
 Home Assistant will set the hass property when the state of Home Assistant changes (frequent). Whenever the state changes, the component will have to update itself to represent the latest state.
 
-Graphical badge configuration​
+## Graphical Configuration
 Your badge can define a getConfigElement method that returns a custom element for editing the user configuration. Home Assistant will display this element in the badge editor in the dashboard.
 
 Your badge can also define a getStubConfig method that returns a default badge configuration (without the type: parameter) in json form for use by the badge type picker in the dashboard.
@@ -70,6 +95,7 @@ Changes to the configuration are communicated back to the dashboard by dispatchi
 
 To have your badge displayed in the badge picker dialog in the dashboard, add an object describing it to the array window.customBadges. Required properties of the object are type and name (see example below).
 
+```javascript
 import "./text-badge-editor.js";
 
 class TextBadge extends HTMLElement {
@@ -111,5 +137,4 @@ window.customBadges.push({
   documentationURL:
     "https://developers.home-assistant.io/docs/frontend/custom-ui/custom-badge", // Adds a help link in the frontend badge editor
 });
-Previous Chapter
-Next Chapter
+```
