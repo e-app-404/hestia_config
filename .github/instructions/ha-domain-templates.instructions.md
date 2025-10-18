@@ -35,7 +35,9 @@ applyTo: 'domain/templates/**/*.yaml'
 - Task: ADR-0024: Validate HA YAML & Core
 
 ### Examples
-Good
+
+**Good example:**
+
 ```yaml
 template:
   - sensor:
@@ -49,7 +51,8 @@ template:
           {% endif %}
 ```
 
-Bad
+**Bad example:**
+
 ```yaml
 template:
   - sensor:
@@ -58,9 +61,9 @@ template:
 ```
 
 ### References
-- /config/hestia/library/docs/ADR/ADR-0002-jinja-patterns.md
-- /config/hestia/library/docs/ADR/ADR-0020-ha-config-error-canonicalization.md
-- /config/hestia/library/docs/ADR/ADR-0008-normalization-and-determinism-rules.md
-- /config/.github/instructions/copilot-instructions.md
-- /config/.workspace/governance_index.md
-- /config/hestia/config/system/hestia.toml
+- [ADR-0002] (/config/hestia/library/docs/ADR/ADR-0002-jinja-patterns.md)
+- [ADR-0020] (/config/hestia/library/docs/ADR/ADR-0020-ha-config-error-canonicalization.md)
+- [ADR-0008] (/config/hestia/library/docs/ADR/ADR-0008-normalization-and-determinism-rules.md)
+- [Copilot Instructions] (/config/.github/instructions/copilot-instructions.md)
+- [Governance Index] (/config/.workspace/governance_index.md)
+- [Hestia Configuration] (/config/hestia/config/system/hestia.toml)

@@ -34,7 +34,7 @@ applyTo: 'domain/{automations,binary_sensors,command_line,frontend,geo_location,
 - Task: ADR-0024: Validate HA YAML & Core
 
 ### Examples
-Good
+Good example:
 ```yaml
 automation:
   - id: ha_sysadmin_auto_restart

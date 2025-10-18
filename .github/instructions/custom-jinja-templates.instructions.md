@@ -32,27 +32,16 @@ applyTo: 'custom_templates/**/*.{jinja,jinja2,yaml}'
 - Minimize repeated states() calls; cache in local vars.
 
 ### Testing (quick checks)
-- Task: Hestia: Patch HA templates
-- Then run: ADR-0024: Validate HA YAML & Core
+- Task: `Hestia: Patch HA templates`
+- Then run: `ADR-0024: Validate HA YAML & Core`
 
 ### Examples
 Good
-```jinja
-{%- macro pct(value) -%}
-{%- set v = (value | float(0.0)) -%}
-{%- if v is not number -%}0{%- else -%}{{ (v * 100) | round(0) }}{%- endif -%}
-{%- endmacro -%}
+```text
+Guard inputs, use filters (|float, |round), and apply whitespace control in macros.
 ```
 
 Bad
-```jinja
-{% macro pct(value) %}
-{{ '{{' }} int(value*100) {{ '}}' }} {# no guards, function not filter #}
-{% endmacro %}
+```text
+Use of Python functions (e.g., int(value*100)) with no availability/type guards.
 ```
-
-### References
-- /config/hestia/library/docs/ADR/ADR-0002-jinja-patterns.md
-- /config/hestia/library/docs/ADR/ADR-0020-ha-config-error-canonicalization.md
-- /config/.github/instructions/copilot-instructions.md
-- /config/hestia/config/system/hestia.toml

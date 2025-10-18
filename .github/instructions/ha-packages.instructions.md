@@ -32,7 +32,9 @@ applyTo: 'packages/**/*.yaml'
 - Review `rest_command`/`command_line` actions for SSRF or shell injection risks.
 
 ### Examples
-Good
+
+**Good example:**
+
 ```yaml
 homeassistant:
   customize: {}
@@ -51,7 +53,8 @@ template:
       - service: shell_command.git_push
 ```
 
-Bad
+**Bad example:**
+
 ```yaml
 homeassistant:
     customize: {}  # wrong indent

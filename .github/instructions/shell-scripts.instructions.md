@@ -16,7 +16,7 @@ applyTo: 'scripts/**/*.sh, hestia/tools/**/*.sh'
 - For any writes to repo files, use write-broker (ADR-0027).
 
 ### Code Standards
-- Use Bash when Bash features are needed: `#!/usr/bin/env bash`.
+- Use Bash when Bash features are needed (env bash shebang recommended).
 - Quote variables; avoid word splitting; use arrays.
 - For HA commands, use `bash -lc '/config/path'` pattern (see governance guide).
 
@@ -38,26 +38,24 @@ applyTo: 'scripts/**/*.sh, hestia/tools/**/*.sh'
 - Validate effects with HA config-validate tasks when scripts modify YAML.
 
 ### Examples
-Good
 
+### Examples
+Good
 ```bash
-#!/usr/bin/env bash
 set -Eeuo pipefail
 IFS=$'\n\t'
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 CONFIG_ROOT="/config"
 : "${CONFIG_ROOT:?Missing CONFIG_ROOT}"
 
-main() {
-  echo "Path health check..."
-  "${CONFIG_ROOT}/bin/config-health" "${CONFIG_ROOT}"
-}
-main "$@"
+echo "Path health check..."
+"${CONFIG_ROOT}/bin/config-health" "${CONFIG_ROOT}"
+```
 
 Bad
-#!/bin/sh
+```bash
 rm -rf /config/* # unsafe, no guards
 echo done
+```
 
 ### References
 - /config/hestia/library/docs/ADR/ADR-0024-canonical-config-path.md
