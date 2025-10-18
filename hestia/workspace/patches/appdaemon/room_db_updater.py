@@ -3,6 +3,7 @@ import os
 import re
 import sqlite3
 import time
+import random
 
 import yaml
 
@@ -44,7 +45,9 @@ class RoomDbUpdater(hassapi.Hass):
         self.write_rate_limit_seconds = int(self.args.get("write_rate_limit_seconds", 2))
 
         self._last_write = {}
-        self._canonical_rooms = None
+    self._canonical_rooms = None
+    self._allowed_matrix = None  # {room_id: set(domains)} built from mapping capabilities
+    self._next_write_ts = {}  # per-domain limiter with jitter
         self._mapping_path = None
         self._init_error = None
 
@@ -52,8 +55,8 @@ class RoomDbUpdater(hassapi.Hass):
         self.register_endpoint(self.health_check, "health")
         self.log("Health endpoint registered with name: health")
 
-        self.log("Registering update_config endpoint")
-        self.register_endpoint(self.update_config, "update_config")
+    self.log("Registering update_config endpoint")
+    self.register_endpoint(self.update_config, "update_config")
         self.log("Update_config endpoint registered with name: update_config")
 
         try:
@@ -70,9 +73,12 @@ class RoomDbUpdater(hassapi.Hass):
             self.register_endpoint(self.health_check, "room_db_health")
             self.register_endpoint(self.update_config, "room_db_update_config")
             self.register_endpoint(self.test_endpoint, "room_db_test")
+            # New endpoints
+            self.register_endpoint(self.bulk_update_ep, "room_db_bulk_update", methods=["POST"]) 
+            self.register_endpoint(self.reload_mapping_ep, "room_db_reload_mapping", methods=["POST"]) 
             self.log(
                 "Global endpoints registered: "
-                "room_db_health, room_db_update_config, room_db_test"
+                "room_db_health, room_db_update_config, room_db_test, room_db_bulk_update, room_db_reload_mapping"
             )
         except Exception as e:
             self.log(f"Global endpoint registration failed: {e}", level="WARNING")
@@ -90,6 +96,11 @@ class RoomDbUpdater(hassapi.Hass):
         try:
             self._validate_config()
             self._init_database()
+            # Build allowed matrix from mapping
+            try:
+                self._load_allowed_matrix()
+            except Exception as me:
+                self.log(f"Failed to build allowed matrix from mapping: {me}", level="WARNING")
             self.log("RoomDbUpdater initialized")
         except Exception as e:
             self._init_error = str(e)
@@ -185,6 +196,53 @@ class RoomDbUpdater(hassapi.Hass):
             )
         return self._canonical_rooms
 
+    def _load_allowed_matrix(self):
+        """Build {room_id: set(domains)} from mapping capabilities.
+        Requires v3.1 mapping with nodes[*].capabilities.{motion_lighting|vacuum_control|shared}.
+        Vacuum writes are allowed only if a segment_id is present in capabilities.
+        """
+        if not self._mapping_path:
+            self._mapping_path = self._resolve_mapping_path()
+        if not self._mapping_path or not os.path.exists(self._mapping_path):
+            raise FileNotFoundError(
+                f"Canonical mapping file not found. Tried: {self._mapping_candidates()}"
+            )
+        with open(self._mapping_path, encoding="utf-8") as f:
+            amap = yaml.safe_load(f) or {}
+        nodes = amap.get("nodes", [])
+        allowed = {}
+        for node in nodes:
+            rid = (node or {}).get("id")
+            if not rid:
+                continue
+            caps = ((node or {}).get("capabilities") or {})
+            doms = set()
+            # Motion lighting capability
+            if caps.get("motion_lighting") is not None:
+                doms.add("motion_lighting")
+            # Vacuum control requires segment_id
+            vc = caps.get("vacuum_control") or {}
+            if isinstance(vc, dict) and vc.get("segment_id") is not None:
+                doms.add("vacuum_control")
+            # Shared domain always allowed for all rooms when present
+            if caps.get("shared") is not None:
+                doms.add("shared")
+            if doms:
+                allowed[rid] = doms
+        self._allowed_matrix = allowed
+        # Also make sure canonical rooms loaded
+        self._canonical_rooms = None
+        self._load_canonical_mapping()
+        return {"rooms": len(self._allowed_matrix)}
+
+    def _is_allowed(self, domain: str, room_id: str) -> bool:
+        try:
+            if not self._allowed_matrix:
+                self._load_allowed_matrix()
+            return domain in (self._allowed_matrix or {}).get(room_id, set())
+        except Exception:
+            return False
+
     def _validate_room(self, room_id: str):
         if not ROOM_ID_RE.match(room_id or ""):
             raise ValueError("Invalid room_id slug")
@@ -205,12 +263,15 @@ class RoomDbUpdater(hassapi.Hass):
         if v != self.schema_expected:
             raise RuntimeError("SCHEMA_VERSION_MISMATCH")
 
-    def _rate_limit(self, domain: str):
+    def _respect_write_limiter(self, domain: str):
+        limit = int(self.write_rate_limit_seconds)
+        jitter = random.uniform(-1.0, 1.0)
         now = time.monotonic()
-        last = self._last_write.get(domain, 0.0)
-        if now - last < self.write_rate_limit_seconds:
+        next_ts = self._next_write_ts.get(domain, 0.0)
+        if now < next_ts:
             raise RuntimeError("WRITE_RATE_LIMIT")
-        self._last_write[domain] = now
+        # set next write time with jitter but never less than 1s in the future
+        self._next_write_ts[domain] = now + max(1.0, limit + jitter)
 
     def index_endpoint(self, data=None, **kwargs):
         return {
@@ -224,6 +285,8 @@ class RoomDbUpdater(hassapi.Hass):
                 "/api/appdaemon/room_db_health",
                 "/api/appdaemon/room_db_test",
                 "/api/appdaemon/room_db_update_config",
+                "/api/appdaemon/room_db_bulk_update",
+                "/api/appdaemon/room_db_reload_mapping",
             ],
         }, 200
 
@@ -294,6 +357,10 @@ class RoomDbUpdater(hassapi.Hass):
 
             self._validate_room(room_id)
 
+            # Mapping-based admission control (capability check)
+            if not self._is_allowed(domain, room_id):
+                return {"status": "error", "error": f"{domain}:{room_id} not allowed by mapping"}, 422
+
             cfg_json = json.dumps(cfg, separators=(",", ":"))
             if len(cfg_json.encode("utf-8")) > self.max_config_size_bytes:
                 raise ValueError(
@@ -301,7 +368,7 @@ class RoomDbUpdater(hassapi.Hass):
                     f"{self.max_config_size_bytes}"
                 )
 
-            self._rate_limit(domain)
+            self._respect_write_limiter(domain)
 
             conn = sqlite3.connect(self.db_path)
             cur = conn.cursor()
@@ -321,6 +388,8 @@ class RoomDbUpdater(hassapi.Hass):
                 raise
             finally:
                 conn.close()
+            # exporter hook (debounced)
+            self._export_async()
             return {"status": "ok", "room_id": room_id, "domain": domain}, 200
 
         except (ValueError, FileNotFoundError) as e:
@@ -376,3 +445,53 @@ class RoomDbUpdater(hassapi.Hass):
                 kwargs["notification_id"] = notif_id
             self.call_service("persistent_notification/create", **kwargs)
             return {"status": "error", "error": "Internal server error"}, 500
+
+    # -------- New endpoints --------
+    def bulk_update_ep(self, request, data):
+        """POST endpoint to process array of updates with per-item backoff.
+        Accepts either a list of items or an object with 'items' key.
+        """
+        try:
+            items = data if isinstance(data, list) else (data or {}).get("items", [])
+            if not items:
+                return ({"status": "error", "error": "no items"}, 400)
+            results = []
+            for it in items:
+                payload = {
+                    "room_id": it.get("room_id"),
+                    "domain": it.get("domain"),
+                    "config_data": it.get("config_data", {}),
+                }
+                res, code = self.update_config(payload)
+                # On rate limit, backoff a bit and retry once
+                if code == 500 and res.get("error") == "Internal server error":
+                    time.sleep(0.5 + random.uniform(0, 0.5))
+                    res, code = self.update_config(payload)
+                results.append({"code": code, "result": res})
+            # exporter hook once after batch
+            self._export_async()
+            return ({"status": "ok", "results": results}, 200)
+        except Exception as e:
+            self.error(f"bulk_update_ep failed: {e}")
+            return ({"status": "error", "error": str(e)}, 500)
+
+    def reload_mapping_ep(self, request, data):
+        try:
+            stats = self._load_allowed_matrix()
+            return ({"status": "ok", "mapping": stats}, 200)
+        except Exception as e:
+            return ({"status": "error", "error": str(e)}, 500)
+
+    def _export_async(self):
+        """If exporter app is present, schedule a write_once soon (debounced)."""
+        try:
+            # Slight delay to coalesce bursts
+            self.run_in(
+                lambda *_: self.call_service(
+                    "appdaemon/call", app="room_db_exporter", function="write_once"
+                ),
+                0.5,
+            )
+        except Exception:
+            # exporter not available is non-fatal
+            pass

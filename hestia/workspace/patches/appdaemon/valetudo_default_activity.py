@@ -92,7 +92,7 @@ class ValetudoDefaultActivity(hass.Hass):
                     self.args.get("policy", {}).get("max_job_runtime_minutes", 60)
                 ),
                 "optimistic_writeback": bool(
-                    self.args.get("policy", {}).get("optimistic_writeback", True)
+                    self.args.get("policy", {}).get("optimistic_writeback", False)
                 ),
                 "optimistic_job_seconds": int(
                     self.args.get("policy", {}).get("optimistic_job_seconds", 90)
@@ -345,7 +345,9 @@ class ValetudoDefaultActivity(hass.Hass):
         key = (room, domain)
         last = self.last_write_ts.get(key, 0)
         now = time.time()
-        wait = self.cfg["policy"]["rate_limit_seconds"] - (now - last)
+        # add a tiny jitter to smooth concurrent writers
+        jitter = 0.2
+        wait = self.cfg["policy"]["rate_limit_seconds"] - (now - last) + jitter
         if wait > 0:
             self.run_in(lambda *_: self._writeback(room, config_delta), int(wait) + 1)
             return
