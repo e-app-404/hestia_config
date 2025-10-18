@@ -24,7 +24,7 @@ tail -f /config/home-assistant.log | while read line; do
     if echo "$line" | grep -qi "appdaemon\|ad_\|room_db"; then
         timestamp=$(echo "$line" | cut -d' ' -f1-2)
         echo "[$timestamp] $line"
-        
+
         # Check if this indicates AppDaemon is starting
         if echo "$line" | grep -qi "appdaemon.*start\|ad.*start"; then
             echo "🚀 AppDaemon appears to be starting..."
