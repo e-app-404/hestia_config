@@ -1,58 +1,10 @@
-# Room Database Package - SQL-driven room configuration management
-# Consolidates SQL sensors, REST commands, shell commands, and recorder policies
-# Used by AppDaemon room_db_updater app for centralized room configuration
+---
+# DEPRECATED — do not load.
+# Neutralized on 2025-10-18 per ADR-0018, ADR-0024, ADR-0027.
+# Archived at: /config/hestia/workspace/archive/legacy/package_room_database.yaml
+# Active configuration:
+#   - /config/packages/room_database/room_db_src.yaml
+#   - /config/packages/room_database/room_db_diag.yaml
 
-# REST commands for AppDaemon HTTP API interaction
-# FIXED: Updated endpoints to use app-scoped URLs (ADR-0020 Error Resolution)
-# Prefer /api/appdaemon/<endpoint>; if health check fails in your setup, switch to /api/app/<app_name>/<endpoint>/
-rest_command:
-  room_db_update_config:
-    url: "http://localhost:5050/api/app/room_db_updater/update_config"
-    method: POST
-    content_type: "application/json"
-    timeout: 20
-    payload: >
-      {
-        "room_id": "{{ room_id }}",
-        "domain": "{{ domain }}",
-        "config_data": {{ config_data | tojson }},
-        "schema_expected": {{ schema_expected|default(1) }}
-      }
-
-  room_db_health:
-    url: "http://localhost:5050/api/app/room_db_updater/health"
-    method: GET
-    timeout: 10
-
-  room_db_test:
-    url: "http://localhost:5050/api/app/room_db_updater/test"
-    method: GET
-    timeout: 10
-    headers:
-      accept: application/json
-
-# Direct HTTP test sensors to debug the endpoint issue
-template:
-  - sensor:
-      - name: "AppDaemon Health Direct Test"
-        state: >
-          {% set response = states.sensor.appdaemon_health_raw.attributes %}
-          {{ response.status | default('unknown') }}
-        attributes:
-          last_test: "{{ now().isoformat() }}"
-          full_response: >
-            {{ states.sensor.appdaemon_health_raw.attributes | default('No response') }}
-
-rest:
-  - resource: "http://localhost:5050/api/app/room_db_updater/health"
-    method: GET
-    timeout: 10
-    sensor:
-      name: "AppDaemon Health Raw"
-      value_template: "{{ value_json.status | default('error') }}"
-      ---
-      # DEPRECATED — do not load.
-      # This file was neutralized on 2025-10-18 after archiving to
-      # /config/hestia/workspace/archive/legacy/package_room_database.yaml
-      # See room_db_src.yaml (baseline) and room_db_diag.yaml (diagnostics) for active config.
+# Intentionally empty to prevent HA from loading legacy content.
 
