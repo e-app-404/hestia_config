@@ -1,15 +1,11 @@
-input_boolean:
-  valetudo_routine_enabled:
-    name: Valetudo Routine Enabled
-    icon: mdi:robot-vacuum
+#input_boolean:
+#  valetudo_routine_enabled:
+#input_datetime:
+#  valetudo_quiet_hours_start:
+#  valetudo_quiet_hours_end:
+#schedule:
+#  valetudo_quiet_hours
 
-input_datetime:
-  valetudo_quiet_hours_start:
-    name: Quiet Hours Start
-    has_time: true
-  valetudo_quiet_hours_end:
-    name: Quiet Hours End
-    has_time: true
 
 script:
   valetudo_clean_room_ad_hoc:
