@@ -10,12 +10,10 @@
 
 import json
 import os
-import random
 import time
 import uuid
 from collections import deque
 
-import requests
 from appdaemon.plugins.hass import hassapi as hass
 
 try:
@@ -93,7 +91,7 @@ class ValetudoDefaultActivity(hass.Hass):
                     self.args.get("policy", {}).get("max_job_runtime_minutes", 60)
                 ),
                 "optimistic_writeback": bool(
-                    self.args.get("policy", {}).get("optimistic_writeback", False)
+                    self.args.get("policy", {}).get("optimistic_writeback", True)
                 ),
                 "optimistic_job_seconds": int(
                     self.args.get("policy", {}).get("optimistic_job_seconds", 90)
@@ -148,14 +146,6 @@ class ValetudoDefaultActivity(hass.Hass):
             )
 
         self.log("ValetudoDefaultActivity initialized", level="INFO")
-    
-    def _allowed_vc(self, room_id):
-        """Check if room has vacuum_control capability with segment_id"""
-        try:
-            vc_caps = self.area_map.get(room_id, {}).get("vacuum_control", {})
-            return vc_caps.get("segment_id") is not None
-        except Exception:
-            return False
 
     # ---------- Core Tick ----------
     def _tick(self, *args, **kwargs):
@@ -282,7 +272,7 @@ class ValetudoDefaultActivity(hass.Hass):
             return
         job = self.active["job"]
         self.log(f"Job DONE (optimistic): {job}", level="INFO")
-        self._maybe_write(
+        self._writeback(
             job["room"],
             {
                 "needs_cleaning": 0,
@@ -303,7 +293,7 @@ class ValetudoDefaultActivity(hass.Hass):
             return
         job = self.active["job"]
         self.error(f"Job TIMEOUT: {job}")
-        self._maybe_write(
+        self._writeback(
             job["room"],
             {
                 "last_result": {
@@ -349,36 +339,26 @@ class ValetudoDefaultActivity(hass.Hass):
                 return False
         return True
 
-    def _maybe_write(self, room_id, cfg):
-        """Write with capability guard and cadence alignment"""
-        if not self._allowed_vc(room_id):
-            self.log(f"roomdb/valetudo/write level=DEBUG event=skip_not_allowed room_id={room_id}")
-            return
-        
-        # Honor global limiter cadence + jitter
-        rate_limit = self.cfg["policy"]["rate_limit_seconds"]
-        jitter = random.uniform(0, 1)
-        time.sleep(rate_limit + jitter)
-        
-        self._post_update("vacuum_control", room_id, cfg)
-    
-    def _post_update(self, domain, room_id, cfg):
-        """Post update via HTTP with error handling"""
-        url = "http://a0d7b954-appdaemon:5050/api/appdaemon/room_db_update_config"
-        payload = {"domain": domain, "room_id": room_id, "config_data": cfg}
-        
-        try:
-            r = requests.post(url, json=payload, timeout=5)
-            if r.status_code == 200:
-                self.log(f"roomdb/valetudo/write level=INFO event=success room_id={room_id}")
-            else:
-                self.log(f"roomdb/valetudo/write level=WARNING event=http_error room_id={room_id} status={r.status_code}")
-        except Exception as e:
-            self.log(f"roomdb/valetudo/write level=ERROR event=request_failed room_id={room_id} error={str(e)}")
-    
     def _writeback(self, room, config_delta: dict):
-        """Legacy writeback method - updated to use _maybe_write"""
-        self._maybe_write(room, config_delta)
+        domain = "vacuum_control"
+        key = (room, domain)
+        last = self.last_write_ts.get(key, 0)
+        now = time.time()
+        wait = self.cfg["policy"]["rate_limit_seconds"] - (now - last)
+        if wait > 0:
+            self.run_in(lambda *_: self._writeback(room, config_delta), int(wait) + 1)
+            return
+
+        payload = {
+            "room_id": room,
+            "domain": domain,
+            "config_data": config_delta,
+            "schema_expected": 1,
+        }
+        # REST layer applies tojson; we pass native dicts
+        self.call_service(self.update_service, **payload)
+        self.last_write_ts[key] = time.time()
+        self.log(f"Room-DB writeback: {payload}", level="INFO")
 
     # ---- MQTT base topic handling ----
     def _set_command_topic_from_base(self, *args, **kwargs):
