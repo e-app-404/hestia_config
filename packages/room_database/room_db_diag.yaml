@@ -11,7 +11,7 @@ template:
             {{ states.sensor.appdaemon_health_raw.attributes | default('No response') }}
 
 rest:
-  - resource: "http://a0d7b954-appdaemon:5050/api/app/room_db_updater/health"
+  - resource: "http://a0d7b954-appdaemon:5050/api/app/room_db_updater/room_db/health"
     method: GET
     timeout: 10
     scan_interval: 30
@@ -28,7 +28,7 @@ rest:
           - message
           - timestamp
 
-  - resource: "http://a0d7b954-appdaemon:5050/api/app/room_db_updater/test"
+  - resource: "http://a0d7b954-appdaemon:5050/api/app/room_db_updater/room_db/test"
     method: GET
     timeout: 10
     scan_interval: 30
