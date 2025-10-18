@@ -7,6 +7,50 @@ input_text:
     max: 128
     initial: "valetudo/robot"
 
+template:
+  - sensor:
+      - name: "Rooms Stale For Cleaning"
+        unique_id: rooms_stale_for_cleaning
+        state: >
+          {% set activity = state_attr('sensor.room_configs_activity_tracking_dict', 'payload') %}
+          {% set vac = state_attr('sensor.room_configs_vacuum_control', 'payload') %}
+          {% if not activity or not vac %}
+            0
+          {% else %}
+            {% set stale = namespace(rooms=[]) %}
+            {% for room, data in activity.items() %}
+              {% if room in vac %}
+                {% set last = data.last_activity | as_datetime | as_local %}
+                {% set age_hours = ((now() - last).total_seconds() / 3600) | round(1) %}
+                {% set threshold = vac[room].get('activity_threshold_hours', 24) %}
+                {% if age_hours > threshold %}
+                  {% set stale.rooms = stale.rooms + [room] %}
+                {% endif %}
+              {% endif %}
+            {% endfor %}
+            {{ stale.rooms | length }}
+          {% endif %}
+        attributes:
+          rooms: >
+            {% set activity = state_attr('sensor.room_configs_activity_tracking_dict', 'payload') %}
+            {% set vac = state_attr('sensor.room_configs_vacuum_control', 'payload') %}
+            {% if not activity or not vac %}
+              []
+            {% else %}
+              {% set stale = [] %}
+              {% for room, data in activity.items() %}
+                {% if room in vac %}
+                  {% set last = data.last_activity | as_datetime | as_local %}
+                  {% set age_hours = ((now() - last).total_seconds() / 3600) | round(1) %}
+                  {% set threshold = vac[room].get('activity_threshold_hours', 24) %}
+                  {% if age_hours > threshold %}
+                    {% set stale = stale + [{'room': room, 'age_hours': age_hours, 'threshold': threshold}] %}
+                  {% endif %}
+                {% endif %}
+              {% endfor %}
+              {{ stale }}
+            {% endif %}
+
 script:
   valetudo_clean_room_ad_hoc:
     alias: "Valetudo — Clean Room (Ad-hoc)"
