@@ -70,7 +70,9 @@ automation:
 # The following shows the three UI fields you need to set when creating the File sensor (do NOT add a file platform sensor entry in YAML):
 #
 # - File path: /config/hestia/config/diagnostics/.last_mount_status.json
-# - Value template: {{ value_json.health.summary | default('unknown') if value_json is defined else 'unknown' }}
+# - Value template:
+# {{ value_json.health.summary | default('unknown') if value_json is defined else 'unknown' }}
+# {{ value_json.health.summary if value_json is defined and value_json.health is defined else 'unknown' }}
 # - Unit of measurement: (leave empty or use a short label, e.g. "status")
 #
 # Additional attributes (if you want them) can be created using a separate Template Sensor or in the UI templates:
