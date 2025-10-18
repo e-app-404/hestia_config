@@ -23,14 +23,13 @@ This script is read-only and adheres to ADR-0008/0027 policies.
 from __future__ import annotations
 
 import json
-import sys
+import sqlite3
+import urllib.error
+import urllib.request
 from pathlib import Path
-from typing import Dict, Any, List
+from typing import Any
 
 import yaml
-import urllib.request
-import urllib.error
-
 
 HA_URL = "http://homeassistant.local:8123"
 SECRETS_PATH = Path("/config/secrets.yaml")
@@ -52,7 +51,7 @@ def load_token() -> str:
     return token
 
 
-def ha_api_get(path: str, token: str) -> Dict[str, Any]:
+def ha_api_get(path: str, token: str) -> dict[str, Any]:
     url = f"{HA_URL}{path}"
     req = urllib.request.Request(url, headers={"Authorization": f"Bearer {token}"})
     try:
@@ -63,11 +62,11 @@ def ha_api_get(path: str, token: str) -> Dict[str, Any]:
         raise RuntimeError(f"HTTP {e.code} for GET {path}") from e
 
 
-def get_state(entity_id: str, token: str) -> Dict[str, Any]:
+def get_state(entity_id: str, token: str) -> dict[str, Any]:
     return ha_api_get(f"/api/states/{entity_id}", token)
 
 
-def parse_payload(attr_payload: Any) -> Dict[str, Any]:
+def parse_payload(attr_payload: Any) -> dict[str, Any]:
     # payload is typically a JSON string; tolerate dict too
     if attr_payload is None:
         return {}
@@ -84,7 +83,7 @@ def parse_payload(attr_payload: Any) -> Dict[str, Any]:
     return {}
 
 
-def extract_rooms_from_sensor(entity_id: str, token: str) -> List[str]:
+def extract_rooms_from_sensor(entity_id: str, token: str) -> list[str]:
     try:
         st = get_state(entity_id, token)
     except Exception:
@@ -93,7 +92,7 @@ def extract_rooms_from_sensor(entity_id: str, token: str) -> List[str]:
     payload = parse_payload(attrs.get("payload"))
     if not isinstance(payload, dict):
         return []
-    return sorted([k for k in payload.keys() if isinstance(k, str)])
+    return sorted([k for k in payload if isinstance(k, str)])
 
 
 def tail_appdaemon_db_path(log_path: Path) -> str | None:
@@ -115,9 +114,128 @@ def tail_appdaemon_db_path(log_path: Path) -> str | None:
     return db_path
 
 
+def find_area_mapping_file() -> Path | None:
+    """Return the first existing canonical area mapping file.
+
+    Preference order (left→right):
+    - /config/www/area_mapping.yaml (runtime served static)
+    - /config/domain/architecture/area_mapping.yaml (new canonical per docs)
+    - /config/hestia/workspace/patches/appdaemon/area_mapping.yaml (workspace patch)
+    """
+    candidates = [
+        Path("/config/www/area_mapping.yaml"),
+        Path("/config/domain/architecture/area_mapping.yaml"),
+        Path("/config/hestia/workspace/patches/appdaemon/area_mapping.yaml"),
+    ]
+    for p in candidates:
+        if p.exists():
+            return p
+    return None
+
+
+def parse_expected_rooms(mapping_path: Path) -> list[str]:
+    """Parse canonical expected rooms from area mapping YAML.
+
+    Strategy:
+    - Use metadata.valid_rooms if present
+    - Else, collect ids from nodes[] where id is a string
+    - Return sorted unique list
+    """
+    try:
+        data = yaml.safe_load(mapping_path.read_text(encoding="utf-8")) or {}
+    except Exception:
+        return []
+
+    rooms: list[str] = []
+    meta = data.get("metadata") or {}
+    valid = meta.get("valid_rooms")
+    if isinstance(valid, list):
+        rooms.extend([x for x in valid if isinstance(x, str)])
+
+    if not rooms:
+        nodes = data.get("nodes")
+        if isinstance(nodes, list):
+            for n in nodes:
+                if isinstance(n, dict):
+                    rid = n.get("id")
+                    if isinstance(rid, str):
+                        rooms.append(rid)
+
+    # unique + sorted
+    return sorted(sorted(set(rooms)))
+
+
+def try_sqlite_enumeration(db_path_str: str | None) -> dict[str, Any]:
+    """Best-effort read-only SQLite introspection for room/domain pairs.
+
+    - Opens the DB in read-only URI mode if file exists locally
+    - Lists tables and row counts
+    - If a table contains both columns 'room_id' and 'config_domain',
+      returns distinct pairs aggregated by domain under by_domain
+    """
+    result: dict[str, Any] = {"by_domain": {}, "tables": []}
+    if not db_path_str:
+        result["error"] = "db_path unavailable"
+        return result
+    db_file = Path(db_path_str)
+    if not db_file.exists():
+        result["error"] = f"db file not found at {db_path_str} (not on this workspace)"
+        return result
+    try:
+        conn = sqlite3.connect(f"file:{db_path_str}?mode=ro", uri=True)
+    except Exception as e:
+        result["error"] = f"unable to open db read-only: {e}"
+        return result
+    try:
+        cur = conn.cursor()
+        cur.execute("SELECT name FROM sqlite_master WHERE type='table'")
+        tables = [r[0] for r in cur.fetchall()]
+        for t in tables:
+            # row count
+            try:
+                cur.execute(f"SELECT COUNT(*) FROM {t}")
+                count = int(cur.fetchone()[0])
+            except Exception:
+                count = -1
+            # columns
+            try:
+                cur.execute(f"PRAGMA table_info({t})")
+                cols = [r[1] for r in cur.fetchall()]
+            except Exception:
+                cols = []
+            result["tables"].append({"name": t, "rows": count, "columns": cols})
+
+        # find table(s) with desired columns
+        candidate_tables = [
+            ti["name"]
+            for ti in result["tables"]
+            if set(["room_id", "config_domain"]).issubset(set(ti.get("columns", [])))
+        ]
+        by_domain: dict[str, set] = {}
+        for t in candidate_tables:
+            try:
+                cur.execute(f"SELECT DISTINCT config_domain, room_id FROM {t}")
+                for domain, room in cur.fetchall():
+                    if isinstance(domain, str) and isinstance(room, str):
+                        by_domain.setdefault(domain, set()).add(room)
+            except Exception:
+                # skip silently; keep best-effort behavior
+                continue
+        result["by_domain"] = {k: sorted(v) for k, v in by_domain.items()}
+        return result
+    finally:
+        import contextlib
+        with contextlib.suppress(Exception):
+            conn.close()
+
+
 def main() -> int:
     token = load_token()
-    summary: Dict[str, Any] = {"domains": {}, "union_rooms": [], "notes": []}
+    summary: dict[str, Any] = {
+        "domains": {},
+        "union_rooms": [],
+        "notes": [],
+    }
 
     for domain, entity in SENSOR_ENTITIES:
         rooms = extract_rooms_from_sensor(entity, token)
@@ -138,6 +256,30 @@ def main() -> int:
         summary["db_path"] = db_path
     else:
         summary["notes"].append("DB path not found in appdaemon.log")
+
+    # cross-check against canonical area mapping
+    mapping_file = find_area_mapping_file()
+    if mapping_file:
+        expected = parse_expected_rooms(mapping_file)
+        summary["expected_rooms"] = expected
+        summary["mapping_file"] = str(mapping_file)
+        if expected:
+            present = set(summary["union_rooms"]) if summary["union_rooms"] else set()
+            exp = set(expected)
+            missing = sorted(list(exp - present))
+            unexpected = sorted(list(present - exp))
+            if missing:
+                summary["missing_in_db"] = missing
+            if unexpected:
+                summary["unexpected_in_db"] = unexpected
+    else:
+        summary["notes"].append("Area mapping file not found in any canonical location")
+
+    # optional: try read-only sqlite enumeration (only if local file exists)
+    sql_info = try_sqlite_enumeration(summary.get("db_path"))
+    # Only include if we found anything meaningful to avoid noise
+    if sql_info.get("by_domain") or sql_info.get("tables") or sql_info.get("error"):
+        summary["db_sql"] = sql_info
 
     print(json.dumps(summary, indent=2, sort_keys=True))
     return 0
