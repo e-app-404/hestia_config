@@ -99,20 +99,19 @@ customElements.define("ll-strategy-my-demo", StrategyDemo);
 
 Use the following dashboard configuration to use this strategy:
 
-```
+```yaml
 views:
 - strategy:
     type: custom:my-demo
 ```
 
-
-## Full example​
+## Full Example
 
 It's recommended for a dashboard strategy to leave as much work to be done to the view strategies. That way the dashboard will show up for the user as fast as possible. This can be done by having the dashboard generate a configuration with views that rely on its own strategy.
 
 Below example will create a view per area, with each view showing all entities in that area in a grid.
 
-```
+```javascript
 class StrategyDashboardDemo {
   static async generate(config, hass) {
     // Query all data we need. We will make it available to views by storing it in strategy options.
@@ -139,7 +138,7 @@ class StrategyDashboardDemo {
 }
 ```
 
-```
+```javascript
 class StrategyViewDemo {
   static async generate(config, hass) {
     const { area, devices, entities } = config;
