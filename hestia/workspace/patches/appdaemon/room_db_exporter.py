@@ -23,7 +23,7 @@ class RoomDbExporter(hass.Hass):
         self._debounce_handle = None
         # Expose a simple global endpoint
         self.register_endpoint(self._handle_export, "room_db_export")
-        self.register_endpoint(self._write_once_ep, "room_db_export_write_once", methods=["POST"]) 
+        self.register_endpoint(self._write_once_ep, "room_db_export_write_once", methods=["POST"])
         self.log(f"RoomDbExporter initialized with db_path={self.db_path} export_path={self.export_path}")
 
     def _handle_export(self, data):

@@ -20,7 +20,7 @@ class ActivityTracker(hass.Hass):
         )
         self.rate_limit_seconds = int(self.args.get("rate_limit_seconds", 2))
         self._dedupe_ttl = int(self.args.get("dedupe_ttl_seconds", 5))
-        
+
         # Room → Sensor mapping (occupancy preferred, motion fallback)
         # IMPORTANT: room_id (key) must match canonical mapping in area_mapping.yaml
         self.room_sensors = {
@@ -33,12 +33,12 @@ class ActivityTracker(hass.Hass):
             "desk": "binary_sensor.desk_occupancy_beta",
             "entrance": "binary_sensor.entrance_motion_beta",
         }
-        
+
     # Track last write per room (rate limiting)
     self._last_write = {}
     # Track last event per room:sensor for dedupe
     self._last_event = {}
-        
+
         # Listen to all sensors
         for room, sensor in self.room_sensors.items():
             self.listen_state(
@@ -48,18 +48,18 @@ class ActivityTracker(hass.Hass):
                 room_id=room,
                 sensor=sensor
             )
-        
+
         self.log(
             f"ActivityTracker initialized - monitoring {len(self.room_sensors)} rooms; enabled={self.enabled}"
         )
-    
+
     def on_activity_detected(self, entity, attribute, old, new, kwargs):
         """Handle sensor triggering"""
         if not self.enabled:
             return
         room = kwargs["room_id"]
         sensor = kwargs["sensor"]
-        
+
         # Dedupe identical sensor spikes within a short TTL
         now = time.time()
         ekey = f"{room}:{sensor}"
@@ -70,14 +70,14 @@ class ActivityTracker(hass.Hass):
 
         # Rate limiting check (per room)
         last = self._last_write.get(room, 0)
-        
+
         if now - last < self.rate_limit_seconds:
             self.log(f"Rate limit: skipping write for {room} (last write {now - last:.1f}s ago)")
             return
-        
+
         # Get current trigger count
         current_count = self._get_current_count(room)
-        
+
         # Write to Room-DB
         payload = dict(
             room_id=room,
@@ -96,7 +96,7 @@ class ActivityTracker(hass.Hass):
             )
         else:
             self.error(f"Failed to write activity for {room}")
-    
+
     def _get_current_count(self, room):
         """Read current trigger count from Room-DB sensor"""
         try:
@@ -104,12 +104,12 @@ class ActivityTracker(hass.Hass):
                 "sensor.room_configs_activity_tracking_dict",
                 attribute="payload"
             )
-            
+
             if sensor_data and isinstance(sensor_data, dict) and room in sensor_data:
                 return sensor_data[room].get("trigger_count", 0)
         except Exception as e:
             self.log(f"Could not read trigger count for {room}: {e}", level="WARNING")
-        
+
         return 0
 
     def _post_update(self, payload: dict) -> bool:

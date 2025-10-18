@@ -74,8 +74,8 @@ class RoomDbUpdater(hassapi.Hass):
             self.register_endpoint(self.update_config, "room_db_update_config")
             self.register_endpoint(self.test_endpoint, "room_db_test")
             # New endpoints
-            self.register_endpoint(self.bulk_update_ep, "room_db_bulk_update", methods=["POST"]) 
-            self.register_endpoint(self.reload_mapping_ep, "room_db_reload_mapping", methods=["POST"]) 
+            self.register_endpoint(self.bulk_update_ep, "room_db_bulk_update", methods=["POST"])
+            self.register_endpoint(self.reload_mapping_ep, "room_db_reload_mapping", methods=["POST"])
             self.log(
                 "Global endpoints registered: "
                 "room_db_health, room_db_update_config, room_db_test, room_db_bulk_update, room_db_reload_mapping"
