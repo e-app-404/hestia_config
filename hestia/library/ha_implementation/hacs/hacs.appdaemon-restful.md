@@ -3,7 +3,7 @@ AppDaemon supports a simple RESTFul API to enable arbitrary HTTP connections to 
 
 To call into a specific App, construct a URL, use the regular AppDaemon URL, and append /api/appdaemon, then add the name of the endpoint as registered by the App on the end, for example:
 
-http://192.168.1.20:5050/api/appdaemon/hello_endpoint
+`http://192.168.1.20:5050/api/appdaemon/hello_endpoint`
 This URL will call into an App that registered an endpoint named hello_endpoint.
 
 Within the App, a call must be made to register_endpoint() to tell AppDaemon that the App is expecting calls on that endpoint. When registering an endpoint, the App supplies a function to be called when a request comes into that endpoint and an optional name for the endpoint. If not specified, the name will default to the name of the App as specified in the configuration file.
@@ -38,12 +38,12 @@ As well as any user specified code, the API can return the following codes:
 
 - 400 - JSON Decode Error
 - 401 - Unauthorized
-404 - App not found
-
-500 - Internal Server Error
+- 404 - App not found
+- 500 - Internal Server Error
 
 Below is an example of using curl to call into the App shown above:
 
+```
 $ curl -i -X POST -H "Content-Type: application/json" http://192.168.1.20:5050/api/appdaemon/test_endpoint -d '{"type": "Hello World Test"}'
 HTTP/1.1 200 OK
 Content-Type: application/json; charset=utf-8
@@ -52,3 +52,4 @@ Date: Sun, 06 Aug 2017 16:38:14 GMT
 Server: Python/3.5 aiohttp/2.2.3
 
 {"message": "Hello World"}hass@Pegasus:~$
+```
