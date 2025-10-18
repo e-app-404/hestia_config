@@ -90,30 +90,33 @@
       unique_id: "ensuite_presence_beta"
       icon: mdi:home-map-marker
       state: >-
-        {# Presence is on when the tracked user is home.
-           Uses person state and, as a fallback, the person's tracker source when reliable. #}
-        {% set person_state = states('person.evert') %}
-        {% set source = state_attr('person.evert', 'source') %}
-        {% set via_person = (person_state == 'home') %}
-        {% set via_source = source and states(source) == 'home'
-           and (state_attr(source,'source_type') in ['gps','bluetooth_le','bluetooth']) %}
-        {% if via_person or via_source %}on{% else %}off{% endif %}
+        {% set person_home = (states('person.evert') == 'home') %}
+        {% set src = state_attr('person.evert','source') %}
+        {% set via_src = src and states(src) == 'home' and (state_attr(src,'source_type') in ['gps','bluetooth_le','bluetooth']) %}
+        {% set occ = is_state('binary_sensor.ensuite_occupancy_beta', 'on') %}
+        {% set motion = is_state('binary_sensor.ensuite_motion_beta', 'on') %}
+        {% set shower = is_state('binary_sensor.ensuite_shower_occupancy_epsilon', 'on') %}
+        {% if person_home or via_src or occ or motion or shower %}on{% else %}off{% endif %}
+      delay_off:
+        minutes: 10
       attributes:
         area_id: "ensuite"
         floor_id: "sanctum"
         module: "presence_inference"
         persons: "person.evert"
-        strategy: "presence enhances, never blocks"
-        area_type: "private"
+        strategy: "asymmetric"
         subsystem: "hermes"
+        area_type: "private"
         tier: "β"
         reliability: excellent
         notes: |
-          "Private area not used by other occupants"
-        last_updated: "2025-10-16"
+          Presence inferred from person.home status OR reliable tracker source OR
+          local sensors: motion, occupancy, and shower composite occupancy.
+          This is a private area with exclusive access.
+        last_updated: "2025-10-18"
         upstream_sources: >-
-          {{ ["person.evert"] | tojson }}
-        source_count: "1"
+          {{ ["person.evert", "binary_sensor.ensuite_occupancy_beta", "binary_sensor.ensuite_motion_beta", "binary_sensor.ensuite_shower_occupancy_epsilon"] | tojson }}
+        source_count: "4"
 
     - name: "Hallway Downstairs Presence (Beta)"
       unique_id: "hallway_downstairs_presence_beta"

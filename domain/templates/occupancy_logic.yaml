@@ -82,7 +82,7 @@
             'binary_sensor.zone_downstairs_occupancy_beta',
             'binary_sensor.merged_home_occupancy_eta'
           ] | tojson }}
-        aggregation_strategy: "preference-based occupancy (no motion)"
+        aggregation_strategy: "preference-based occupancy"
         active_source: >-
           {% from 'template.library.jinja' import get_active_source %}
           {% set sources = [
@@ -158,7 +158,7 @@
         role: "standardized"
         file: "/config/domain/templates/occupancy_logic"
         protocols: "MQTT(1)"
-        refactor_note: "Single-source zigbee occupancy"
+        refactor_note: "Preference-based dual-source logic"
         upstream_sources: >-
           {{ [
             'template.library.jinja',
