@@ -1,0 +1,73 @@
+path_remap_rules:
+- id: governance_doctrine_single_file_to_ADR_dir
+  description: Replace legacy ARCHITECTURE_DOCTRINE.md references with the ADR collection
+    root.
+  find_regex: (?i)\bARCHITECTURE_DOCTRINE\.md\b
+  replace: hestia/library/docs/ADR
+  file_globs:
+  - '**/*.md'
+  - '**/*.yaml'
+  - '**/*.yml'
+  - '**/*.py'
+  - '**/*.sh'
+  - '**/*.txt'
+  notes: 'Prefer linking to the ADR index in workspace if available: config/.workspace/governance_index.md'
+- id: system_instruction_root_to_primary
+  description: Point all system_instruction.yaml mentions to the canonical governance
+    path.
+  find_regex: (?i)(?:^|[/\\])system_instruction\.ya?ml\b
+  replace: hestia/library/docs/governance/system_instruction/system_instruction.yaml
+  file_globs:
+  - '**/*.md'
+  - '**/*.yaml'
+  - '**/*.yml'
+  - '**/*.py'
+  - '**/*.sh'
+  - '**/*.txt'
+- id: system_instruction_legacy_to_primary
+  description: Collapse any legacy governance/system_instruction/legacy/* paths to
+    the primary file.
+  find_regex: hestia/library/docs/governance/system_instruction/legacy/[^/]+/system_instruction\.ya?ml
+  replace: hestia/library/docs/governance/system_instruction/system_instruction.yaml
+  file_globs:
+  - '**/*'
+- id: snapshot_naming_update
+  description: Normalize prior final_snapshot naming to ha_hestia bundle naming in
+    docs/scripts.
+  find_regex: (?i)final_snapshot[_\-]?\w*
+  replace: ha_hestia
+  file_globs:
+  - '**/*.md'
+  - '**/*.yaml'
+  - '**/*.yml'
+  - '**/*.py'
+  - '**/*.sh'
+  - '**/*.txt'
+- id: appdaemon_runtime_note
+  description: Update hardcoded AppDaemon runtime under /config to addon_configs (parameterized).
+  find_regex: (?i)/config/appdaemon\b
+  replace: ${APPDAEMON_RUNTIME_ROOT}/${APPDAEMON_ADDON_SLUG}/appdaemon
+  file_globs:
+  - '**/*.md'
+  - '**/*.yaml'
+  - '**/*.yml'
+  - '**/*.py'
+  - '**/*.sh'
+  - '**/*.txt'
+  env_defaults:
+    APPDAEMON_RUNTIME_ROOT: /addon_configs
+    APPDAEMON_ADDON_SLUG: <your-ad-addon-slug>
+- id: storage_root_parameterize
+  description: Parameterize .storage path so offline tools can target the exported
+    storage bundle.
+  find_regex: (?i)/config/\.storage\b
+  replace: ${HA_STORAGE_ROOT}/.storage
+  file_globs:
+  - '**/*.md'
+  - '**/*.yaml'
+  - '**/*.yml'
+  - '**/*.py'
+  - '**/*.sh'
+  - '**/*.txt'
+  env_defaults:
+    HA_STORAGE_ROOT: /mnt/data/unpacked_ha_storage_2025-W42_20251018T115241Z
