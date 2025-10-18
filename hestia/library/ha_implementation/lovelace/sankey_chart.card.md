@@ -28,6 +28,15 @@ A Home Assistant lovelace card to display a sankey chart. For example for energy
 - [FAQ](#faq)
 - [References](#references)
 
+## Usage
+
+This card is intended to display connections between entities with numeric state using a Sankey diagram visualization. It's particularly useful for:
+
+- Energy flow visualization (solar, grid, consumption)
+- Water consumption tracking
+- Power distribution monitoring
+- Any system where you want to show flow between sources and destinations
+
 ## Configuration Options
 
 | Name                    | Type    | Default                          | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
