@@ -29,7 +29,7 @@ Reference and modify these Home Assistant template files:
 - `domain/templates/illuminance_decay.yaml`
 - `domain/templates/mqtt_native.yaml`
 - `domain/templates/motion_logic.yaml`
-- `domain/templates/desk_presence_inferred.yaml`
+- `domain/templates/desk_occupancy_inferred.yaml`
 - `domain/templates/ensuite_presence_inferred.yaml`
 - `domain/templates/illuminance_logic.yaml`
 - `domain/templates/presence_logic.yaml`

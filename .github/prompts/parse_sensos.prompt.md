@@ -17,7 +17,7 @@ Reference these Home Assistant template files for parsing:
 - `domain/templates/presence_logic.yaml`
 - `domain/templates/occupancy_logic.yaml`
 - `domain/templates/motion_logic.yaml`
-- `domain/templates/desk_presence_inferred.yaml`
+- `domain/templates/desk_occupancy_inferred.yaml`
 - `domain/templates/ensuite_presence_inferred.yaml`
 - `domain/templates/illuminance_logic.yaml`
 

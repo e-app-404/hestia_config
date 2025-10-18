@@ -88,7 +88,7 @@
       ],
       "binary_sensor.macbook_bedroom_tv_airplay_active": [
         {
-          "file": "/config/domain/templates/desk_presence_inferred.yaml",
+          "file": "/config/domain/templates/desk_occupancy_inferred.yaml",
           "line": 31
         }
       ],
@@ -176,14 +176,14 @@
     "occupancy": {
       "all": [
         "binary_sensor.desk_occupancy_beta",
-        "binary_sensor.desk_presence_inferred"
+        "binary_sensor.desk_occupancy_inferred"
       ],
       "preferred": "binary_sensor.desk_occupancy_beta"
     },
     "presence": {
       "all": [
         "binary_sensor.desk_presence_beta",
-        "binary_sensor.desk_presence_inferred",
+        "binary_sensor.desk_occupancy_inferred",
         "person.evert",
         "binary_sensor.macbook_retina_display_active",
         "binary_sensor.macbook_hp32_monitor_active",
@@ -197,7 +197,7 @@
     },
     "proxies": [
       "binary_sensor.desk_motion_beta",
-      "binary_sensor.desk_presence_inferred",
+      "binary_sensor.desk_occupancy_inferred",
       "binary_sensor.desk_macbook_recent_connectivity"
     ],
     "sources": {
@@ -210,27 +210,27 @@
       "binary_sensor.desk_presence_beta": [
         { "file": "/config/domain/templates/presence_logic.yaml", "line": 74 }
       ],
-      "binary_sensor.desk_presence_inferred": [
+      "binary_sensor.desk_occupancy_inferred": [
         {
-          "file": "/config/domain/templates/desk_presence_inferred.yaml",
+          "file": "/config/domain/templates/desk_occupancy_inferred.yaml",
           "line": 57
         }
       ],
       "binary_sensor.macbook_retina_display_active": [
         {
-          "file": "/config/domain/templates/desk_presence_inferred.yaml",
+          "file": "/config/domain/templates/desk_occupancy_inferred.yaml",
           "line": 10
         }
       ],
       "binary_sensor.macbook_hp32_monitor_active": [
         {
-          "file": "/config/domain/templates/desk_presence_inferred.yaml",
+          "file": "/config/domain/templates/desk_occupancy_inferred.yaml",
           "line": 23
         }
       ],
       "binary_sensor.desk_macbook_recent_connectivity": [
         {
-          "file": "/config/domain/templates/desk_presence_inferred.yaml",
+          "file": "/config/domain/templates/desk_occupancy_inferred.yaml",
           "line": 122
         }
       ]
@@ -537,7 +537,7 @@
 - **Sleep/bed occupancy sensors**: `binary_sensor.evert_in_bed`, `binary_sensor.evert_asleep`, `binary_sensor.evert_health_biometrics_sleep_eta`
 - **Presence sensor**: `binary_sensor.evert_at_home`
 
-### Desk Presence (desk_presence_inferred.yaml):
+### Desk Presence (desk_occupancy_inferred.yaml):
 
 - **MacBook display sensors**: `binary_sensor.macbook_retina_display_active`, `binary_sensor.macbook_hp32_monitor_active`, `binary_sensor.macbook_bedroom_tv_airplay_active`, `binary_sensor.macbook_appletv_bedroom_airplay_active`
 - **Connectivity sensor**: `binary_sensor.desk_macbook_recent_connectivity`

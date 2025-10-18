@@ -566,7 +566,7 @@ _rooms:
             - entity_id: binary_sensor.desk_occupancy_beta
             - entity_id: binary_sensor.macbook_retina_display_active
             - entity_id: binary_sensor.macbook_hp32_monitor_active
-            - entity_id: binary_sensor.desk_presence_inferred
+            - entity_id: binary_sensor.desk_occupancy_inferred
             - entity_id: binary_sensor.desk_macbook_recent_connectivity
         - hifi_configuration: null
           area_id: hifi_configuration

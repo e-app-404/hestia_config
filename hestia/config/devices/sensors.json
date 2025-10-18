@@ -24,7 +24,12 @@
       "sensor.bedroom_illuminance_beta": [{"file": "/config/domain/templates/illuminance_logic.yaml", "line": 32}],
       "sensor.bedroom_tv_illuminance_decay_delta": [{"file": "/config/domain/templates/illuminance_decay.yaml", "line": 8}],
       "sensor.any_home_presence": [{"file": "/config/domain/templates/tracking_logic.yaml", "line": 13}],
-      "binary_sensor.macbook_bedroom_tv_airplay_active": [{"file": "/config/domain/templates/desk_presence_inferred.yaml", "line": 31}],
+      "binary_sensor.macbook_bedroom_tv_airplay_active": [
+        {
+          "file": "/config/domain/templates/desk_occupancy_inferred.yaml",
+          "line": 31
+        }
+      ],
       "binary_sensor.evert_in_bed": [{"file": "/config/domain/templates/health_logic.yaml", "line": 186}],
       "binary_sensor.evert_asleep": [{"file": "/config/domain/templates/health_logic.yaml", "line": 203}],
       "binary_sensor.evert_at_home": [{"file": "/config/domain/templates/health_logic.yaml", "line": 221}]
@@ -65,26 +70,60 @@
       "preferred": "binary_sensor.desk_motion_beta"
     },
     "occupancy": {
-      "all": ["binary_sensor.desk_occupancy_beta", "binary_sensor.desk_presence_inferred"],
+      "all": [
+        "binary_sensor.desk_occupancy_beta",
+        "binary_sensor.desk_occupancy_inferred"
+      ],
       "preferred": "binary_sensor.desk_occupancy_beta"
     },
     "presence": {
-      "all": ["binary_sensor.desk_presence_beta", "binary_sensor.desk_presence_inferred", "person.evert", "binary_sensor.macbook_retina_display_active", "binary_sensor.macbook_hp32_monitor_active", "binary_sensor.desk_macbook_recent_connectivity"],
+      "all": [
+        "binary_sensor.desk_presence_beta",
+        "binary_sensor.desk_occupancy_inferred",
+        "person.evert",
+        "binary_sensor.macbook_retina_display_active",
+        "binary_sensor.macbook_hp32_monitor_active",
+        "binary_sensor.desk_macbook_recent_connectivity"
+      ],
       "preferred": "binary_sensor.desk_presence_beta"
     },
     "illuminance": {
       "all": [],
       "preferred": null
     },
-    "proxies": ["binary_sensor.desk_motion_beta", "binary_sensor.desk_presence_inferred", "binary_sensor.desk_macbook_recent_connectivity"],
+    "proxies": [
+      "binary_sensor.desk_motion_beta",
+      "binary_sensor.desk_occupancy_inferred",
+      "binary_sensor.desk_macbook_recent_connectivity"
+    ],
     "sources": {
       "binary_sensor.desk_motion_beta": [{"file": "/config/domain/templates/motion_logic.yaml", "line": 297}],
       "binary_sensor.desk_occupancy_beta": [{"file": "/config/domain/templates/occupancy_logic.yaml", "line": 214}],
       "binary_sensor.desk_presence_beta": [{"file": "/config/domain/templates/presence_logic.yaml", "line": 74}],
-      "binary_sensor.desk_presence_inferred": [{"file": "/config/domain/templates/desk_presence_inferred.yaml", "line": 57}],
-      "binary_sensor.macbook_retina_display_active": [{"file": "/config/domain/templates/desk_presence_inferred.yaml", "line": 10}],
-      "binary_sensor.macbook_hp32_monitor_active": [{"file": "/config/domain/templates/desk_presence_inferred.yaml", "line": 23}],
-      "binary_sensor.desk_macbook_recent_connectivity": [{"file": "/config/domain/templates/desk_presence_inferred.yaml", "line": 122}]
+      "binary_sensor.desk_occupancy_inferred": [
+        {
+          "file": "/config/domain/templates/desk_occupancy_inferred.yaml",
+          "line": 57
+        }
+      ],
+      "binary_sensor.macbook_retina_display_active": [
+        {
+          "file": "/config/domain/templates/desk_occupancy_inferred.yaml",
+          "line": 10
+        }
+      ],
+      "binary_sensor.macbook_hp32_monitor_active": [
+        {
+          "file": "/config/domain/templates/desk_occupancy_inferred.yaml",
+          "line": 23
+        }
+      ],
+      "binary_sensor.desk_macbook_recent_connectivity": [
+        {
+          "file": "/config/domain/templates/desk_occupancy_inferred.yaml",
+          "line": 122
+        }
+      ]
     },
     "notes": ["Desk presence inferred from MacBook connectivity and display state", "Multiple MacBook display sensors for presence detection"]
   },

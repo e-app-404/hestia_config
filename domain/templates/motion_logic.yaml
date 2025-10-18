@@ -300,10 +300,10 @@
       delay_off:
         seconds: 120
       state: >-
-        {{ is_state('binary_sensor.desk_presence_inferred','on')
-           or is_state('binary_sensor.desk_presence_inferred','detected') }}
+        {{ is_state('binary_sensor.desk_occupancy_inferred','on')
+           or is_state('binary_sensor.desk_occupancy_inferred','detected') }}
       availability: >-
-        {{ states('binary_sensor.desk_presence_inferred') not in ['unknown','unavailable', none, ''] }}
+        {{ states('binary_sensor.desk_occupancy_inferred') not in ['unknown','unavailable', none, ''] }}
       icon: "mdi:motion-sensor"
       attributes:
         tier: "β"
@@ -314,7 +314,7 @@
         role: "beta_motion"
         file: "/config/domain/templates/motion_logic.yaml"
         upstream_sources: >
-          {{ ['binary_sensor.desk_presence_inferred'] | tojson }}
+          {{ ['binary_sensor.desk_occupancy_inferred'] | tojson }}
         downstream_consumers: >-
           {{ ['binary_sensor.desk_motion_recent_beta','binary_sensor.bedroom_motion_beta','automation.motion_lights_desk','hestia.config.devices.motion_index','binary_sensor.desk_occupancy_beta'] | tojson }}
         aggregation_strategy: "composite→motion pulse"

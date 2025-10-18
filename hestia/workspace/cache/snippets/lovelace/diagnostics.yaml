@@ -302,7 +302,7 @@ sections:
 
           **Proxy/Inferred Sensors:**
           - `binary_sensor.desk_motion_beta` (inferred from MacBook connectivity)
-          - `binary_sensor.desk_presence_inferred` (MacBook display state)
+          - `binary_sensor.desk_occupancy_inferred` (MacBook display state)
           - `binary_sensor.desk_macbook_recent_connectivity` (connectivity timeout)
           - `binary_sensor.macbook_retina_display_active`
           - `binary_sensor.macbook_hp32_monitor_active`

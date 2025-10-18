@@ -2,7 +2,7 @@
     # ───────────────────────────────────────────────────────────────────────────────
     # ▶ Desk Inferred Presence Composite Sensor ◀
     - name: "Desk Presence Inferred"
-      unique_id: "desk_presence_inferred"
+      unique_id: "desk_occupancy_inferred"
       icon: mdi:desk
       device_class: occupancy
       state: >-
@@ -41,7 +41,7 @@
         module: "presence"
         type: "inference"
         tier: "γ"
-        canonical_id: "desk_presence_inferred_γ"
+        canonical_id: "desk_occupancy_inferred_γ"
         role: "composite_occupancy"
         upstream_sources: >-
           {{ [

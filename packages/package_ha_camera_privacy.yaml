@@ -66,7 +66,7 @@ template:
               {% set hits.n = hits.n + 1 %}
             {% endif %}
           {% endfor %}
-          {% set desk = is_state('binary_sensor.desk_presence_inferred','on') %}
+          {% set desk = is_state('binary_sensor.desk_occupancy_inferred','on') %}
           {{ occ and is_state('person.evert','home') and (hits.n > 0 or desk) }}
         attributes:
           rationale: "Private only if room is occupied AND a trusted token for Evert is present."
@@ -76,7 +76,7 @@ template:
                 'apple_watch': is_state('sensor.apple_watch_presence','Home'),
                 'iphone14': is_state('sensor.iphone14_presence','Home'),
                 'macbook': is_state('sensor.macbook_presence','Home'),
-                'desk_presence_inferred': is_state('binary_sensor.desk_presence_inferred','on')
+                'desk_occupancy_inferred': is_state('binary_sensor.desk_occupancy_inferred','on')
               } | tojson
             }}
           source_entities: >
@@ -89,7 +89,7 @@ template:
                 'sensor.apple_watch_presence',
                 'sensor.iphone14_presence',
                 'sensor.macbook_presence',
-                'binary_sensor.desk_presence_inferred',
+                'binary_sensor.desk_occupancy_inferred',
                 'person.evert'
               ] | tojson
             }}
