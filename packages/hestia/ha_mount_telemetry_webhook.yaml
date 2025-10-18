@@ -89,6 +89,7 @@ automation:
 template:
   - sensor:
       - name: "Macbook HASS Mount Health Attributes"
+        unique_id: "macbook_hass_mount_health"
         state: >
           {{ states('sensor.macbook_hass_mount_health') | default('unknown') }}
         attributes:
@@ -147,6 +148,8 @@ template:
           last_run: "{{ trigger.event.data.last_run }}"
           age_s: "{{ trigger.event.data.age_s | int }}"
           mount_details: "{{ trigger.event.data.mount_details }}"
+          upstream_sources: >
+            {{ ['sensor.file_last_mount_status_json', 'sensor.macbook_hass_mount_health'] | tojson }}
 
   - trigger:
       - trigger: event
@@ -169,3 +172,6 @@ template:
           {% endif %}
         device_class: connectivity
         icon: "mdi:harddisk-plus"
+        attributes:
+          upstream_sources: >
+            {{ ['sensor.macbook_ha_mount_status', 'sensor.macbook_hass_mount_health' ] | tojson }}
