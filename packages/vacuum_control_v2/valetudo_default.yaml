@@ -4,7 +4,7 @@
 #  valetudo_quiet_hours_start:
 #  valetudo_quiet_hours_end:
 #schedule:
-#  valetudo_quiet_hours
+#  valetudo_allowed
 
 
 script:
