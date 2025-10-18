@@ -34,7 +34,9 @@ applyTo: 'domain/{automations,binary_sensors,command_line,frontend,geo_location,
 - Task: ADR-0024: Validate HA YAML & Core
 
 ### Examples
-Good example:
+
+**Good example:**
+
 ```yaml
 automation:
   - id: ha_sysadmin_auto_restart
@@ -48,7 +50,8 @@ automation:
       - service: homeassistant.restart
 ```
 
-Bad
+**Bad example:**
+
 ```yaml
 automation:
 - alias: Restart
@@ -58,8 +61,8 @@ automation:
 ```
 
 ### References
-- /config/.workspace/governance_index.md
-- /config/hestia/library/docs/ADR/ADR-0024-canonical-config-path.md
-- /config/hestia/library/docs/ADR/ADR-0008-normalization-and-determinism-rules.md
-- /config/hestia/library/docs/ADR/ADR-0021-motion-occupancy-presence-signals.md
-- /config/hestia/config/system/hestia.toml
+- [ADR Governance Index](/config/.workspace/governance_index.md)
+- [ADR-0024](/config/hestia/library/docs/ADR/ADR-0024-canonical-config-path.md)
+- [ADR-0008](/config/hestia/library/docs/ADR/ADR-0008-normalization-and-determinism-rules.md)
+- [ADR-0021](/config/hestia/library/docs/ADR/ADR-0021-motion-occupancy-presence-signals.md)
+- [Hestia Configuration](/config/hestia/config/system/hestia.toml)

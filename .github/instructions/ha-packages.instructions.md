@@ -68,7 +68,6 @@ automation:
     action:
       - service: shell_command.git_push
       - service: notify.mobile_app  # unrelated side effect
-```
   - name: 'Push'
     state: "{{ abs(states('sensor.x')) }}"  # function not filter; no guards
 automation:
@@ -77,14 +76,15 @@ automation:
     action:
       - service: shell_command.git_push
       - service: notify.mobile_app  # unrelated side effect
+```
 
 ### References
-- /config/.workspace/governance_index.md
-- /config/.github/instructions/instructions.instructions.md
-- /config/.github/instructions/copilot-instructions.md
-- /config/hestia/config/system/hestia.toml
-- /config/hestia/library/docs/ADR/ADR-0024-canonical-config-path.md
-- /config/hestia/library/docs/ADR/ADR-0008-normalization-and-determinism-rules.md
-- /config/hestia/library/docs/ADR/ADR-0014-oom-and-recorder-policy.md
-- /config/hestia/library/docs/ADR/ADR-0002-jinja-patterns.md
-- /config/hestia/library/docs/ADR/ADR-0020-ha-config-error-canonicalization.md
+- [ADR Governance Index](/config/.workspace/governance_index.md)
+- [ADR Instructions](/config/.github/instructions/instructions.instructions.md)
+- [Copilot Instructions](/config/.github/instructions/copilot-instructions.md)
+- [Hestia Configuration](/config/hestia/config/system/hestia.toml)
+- [ADR-0024](/config/hestia/library/docs/ADR/ADR-0024-canonical-config-path.md)
+- [ADR-0008](/config/hestia/library/docs/ADR/ADR-0008-normalization-and-determinism-rules.md)
+- [ADR-0014](/config/hestia/library/docs/ADR/ADR-0014-oom-and-recorder-policy.md)
+- [ADR-0002](/config/hestia/library/docs/ADR/ADR-0002-jinja-patterns.md)
+- [ADR-0020](/config/hestia/library/docs/ADR/ADR-0020-ha-config-error-canonicalization.md)
