@@ -9,7 +9,7 @@
 # App-scoped and compat nested variants remain as alternates for reference.
 rest_command:
   room_db_update_config:
-    url: "http://a0d7b954-appdaemon:5050/api/appdaemon/update_config"
+    url: "http://a0d7b954-appdaemon:5050/api/appdaemon/room_db_update_config"
     method: POST
     content_type: "application/json"
     timeout: 20
@@ -22,12 +22,12 @@ rest_command:
       }
 
   room_db_health:
-    url: "http://a0d7b954-appdaemon:5050/api/appdaemon/health"
+    url: "http://a0d7b954-appdaemon:5050/api/appdaemon/room_db_health"
     method: GET
     timeout: 10
 
   room_db_test:
-    url: "http://a0d7b954-appdaemon:5050/api/appdaemon/test"
+    url: "http://a0d7b954-appdaemon:5050/api/appdaemon/room_db_test"
     method: GET
     timeout: 10
     headers:
