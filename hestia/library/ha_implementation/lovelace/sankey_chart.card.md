@@ -11,17 +11,7 @@ url: "https://github.com/MindFreeze/ha-sankey-chart"
 
 # Sankey Chart Card - Energy and Flow Visualization
 
-A Home Assistant lovelace card to display a sankey chart. For example for energy/power/water consumption.
-
-[![License][license-shield]](LICENSE.md)
-[![hacs_badge](https://img.shields.io/badge/HACS-Default-41BDF5.svg?style=for-the-badge)](https://github.com/hacs/integration)
-[![GitHub Activity][commits-shield]][commits]
-
-[!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/mindfreeze)
-
-This card is intended to display connections between entities with numeric state. It is not a general graph card.
-
-![Example card](img/example.png)
+A Home Assistant lovelace card to display a sankey chart. For example for energy/power/water consumption. This card is intended to display connections between entities with numeric state. It is not a general graph card.
 
 ## Table of Contents
 
@@ -42,10 +32,6 @@ This card is intended to display connections between entities with numeric state
 - [FAQ](#faq)
 - [Development](#development)
 - [References](#references)
-
-## Installation
-
-Install through [HACS](https://hacs.xyz/)
 
 ## Configuration Options
 
