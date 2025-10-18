@@ -275,7 +275,7 @@
         {% from 'template.library.jinja' import preference_select %}
         {% set sources = [
           {'entity': 'binary_sensor.desk_occupancy_inferred', 'protocol': 'gamma', 'preference': 1, 'type': 'occupancy'},
-          {'entity': 'binary_sensor.desk_motion_beta', 'protocol': 'mqtt',  'preference': 2, 'type': 'occupancy'}
+          {'entity': 'binary_sensor.desk_motion_beta', 'protocol': 'mqtt',  'preference': 2, 'type': 'motion'}
         ] %}
         {{ preference_select(sources) == 'on' }}
       attributes:
@@ -391,7 +391,6 @@
         last_updated: "2025-10-16"
         floor_id: "upstairs"
         area_id: "sanctum"
-
 
     - name: "Zone Hallways Occupancy (Eta)"
       unique_id: merged_hallways_occupancy_eta

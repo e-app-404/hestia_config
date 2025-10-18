@@ -1,7 +1,7 @@
 - binary_sensor:
     # ───────────────────────────────────────────────────────────────────────────────
     # ▶ Desk Inferred Presence Composite Sensor ◀
-    - name: "Desk Presence Inferred"
+    - name: "Desk Occupancy Inferred"
       unique_id: "desk_occupancy_inferred"
       icon: mdi:desk
       device_class: occupancy
