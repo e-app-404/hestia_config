@@ -1,8 +1,4 @@
-#input_boolean:
-#  valetudo_routine_enabled:
-#input_datetime:
-#  valetudo_quiet_hours_start:
-#  valetudo_quiet_hours_end:
+# Created in GUI
 #schedule:
 #  valetudo_allowed
 
