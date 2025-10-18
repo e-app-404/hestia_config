@@ -108,6 +108,16 @@ else
   RC=1
 fi
 
+# Write one-line JSON health file for HA File integration (expects last line to be valid JSON)
+HEALTH_FILE="/config/hestia/config/diagnostics/.last_mount_status.json"
+ONE_LINE_JSON=$(echo "$JSON_PAYLOAD" | python3 -c 'import sys,json; print(json.dumps(json.load(sys.stdin)))' 2>/dev/null || true)
+if [ -n "$ONE_LINE_JSON" ]; then
+  printf "%s\n" "$ONE_LINE_JSON" > "$HEALTH_FILE" || true
+else
+  # Fallback: minify without parsing (not ideal but single-line)
+  printf "%s\n" "$JSON_PAYLOAD" | tr -d '\n' > "$HEALTH_FILE" || true
+fi
+
 # Bounded log rotation
 if [ -f "$LOG" ] && [ "$(wc -c < "$LOG")" -gt 1048576 ]; then
   tail -n 200 "$LOG" > "$LOG.tmp" && mv "$LOG.tmp" "$LOG"

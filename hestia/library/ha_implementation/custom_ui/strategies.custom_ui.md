@@ -118,6 +118,7 @@ class StrategyDashboardDemo {
   }
 }
 ```
+
 ```
 class StrategyViewDemo {
   static async generate(config, hass) {
