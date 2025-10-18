@@ -93,7 +93,8 @@
         at_home: "{{ is_state('device_tracker.macbook','home') }}"
         connectivity_recent: "{{ states('binary_sensor.desk_macbook_recent_connectivity_desk') }}"
         rationale: >-
-          On when external monitor is connected, on AC power, at home, and connectivity is either a known home Wi-Fi SSID or Ethernet (current/recent).
+          On when external monitor is connected, on AC power, at home, and connectivity is either a
+          known home Wi-Fi SSID or Ethernet (current/recent).
         fusion_strategy: "{{ ['display','ac_power','at_home','connectivity_recent'] | tojson }}"
         last_updated: "{{ now().isoformat() }}"
         subsystem: "hermes"
