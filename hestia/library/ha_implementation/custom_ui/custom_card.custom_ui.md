@@ -1,13 +1,39 @@
-developers.home-assistant.io /docs/frontend/custom-ui/custom-card/
-Custom card | Home Assistant Developer Docs
-13-16 minutes
+---
+title: "Custom Card Development"
+authors: "Home Assistant Developer Docs"
+source: "developers.home-assistant.io"
+slug: "custom-card-development"
+tags: ["home-assistant", "custom-ui", "card", "frontend", "dashboard"]
+original_date: "2023-01-01"
+last_updated: "2025-10-18"
+url: "https://developers.home-assistant.io/docs/frontend/custom-ui/custom-card"
+---
+
+# Custom Card Development
+
+## Table of Contents
+
+- [Introduction](#introduction)
+- [Defining Your Card](#defining-your-card)
+- [Referencing Your Card](#referencing-your-card)
+- [API Reference](#api-reference)
+- [Configuration](#configuration)
+- [Sizing in Masonry View](#sizing-in-masonry-view)
+- [Sizing in Sections View](#sizing-in-sections-view)
+- [Advanced Example](#advanced-example)
+- [Graphical Configuration](#graphical-configuration)
+- [Built-in Form Editor](#built-in-form-editor)
+
+## Introduction
+
 Dashboards are our approach to defining your user interface for Home Assistant. We offer a lot of built-in cards, but you're not just limited to the ones that we decided to include in Home Assistant. You can build and use your own!
 
-Defining your card​
+## Defining Your Card
 This is a basic example to show what's possible.
 
-Create a new file in your Home Assistant config dir as <config>/www/content-card-example.js and put in the following contents:
+Create a new file in your Home Assistant config dir as `<config>/www/content-card-example.js` and put in the following contents:
 
+```javascript
 class ContentCardExample extends HTMLElement {
   // Whenever the state changes, a new `hass` object is set. Use this to
   // update your content.
@@ -60,36 +86,44 @@ class ContentCardExample extends HTMLElement {
 }
 
 customElements.define("content-card-example", ContentCardExample);
-Referencing your new card​
+```
+
+## Referencing Your Card
 In our example card we defined a card with the tag content-card-example (see last line), so our card type will be custom:content-card-example. And because you created the file in your <config>/www directory, it will be accessible in your browser via the url /local/ (if you have recently added the www folder you will need to re-start Home Assistant for files to be picked up).
 
 Add a resource to your dashboard configuration with URL /local/content-card-example.js and type module (resource docs).
 
 You can then use your card in your dashboard configuration:
 
+```yaml
 # Example dashboard configuration
 views:
   - name: Example
     cards:
       - type: "custom:content-card-example"
         entity: input_boolean.switch_tv
-API​
+```
+
+## API Reference
 Custom cards are defined as a custom element. It's up to you to decide how to render your DOM inside your element. You can use Polymer, Angular, Preact or any other popular framework (except for React – more info on React here).
 
-Configuration​
+## Configuration
 Home Assistant will call setConfig(config) when the configuration changes (rare). If you throw an exception if the configuration is invalid, Home Assistant will render an error card to notify the user.
 
 Home Assistant will set the hass property when the state of Home Assistant changes (frequent). Whenever the state changes, the component will have to update itself to represent the latest state.
 
-Sizing in masonry view​
+## Sizing in Masonry View
 Your card can define a getCardSize method that returns the size of your card as a number or a promise that will resolve to a number. A height of 1 is equivalent to 50 pixels. This will help Home Assistant distribute the cards evenly over the columns in the masonry view. A card size of 1 will be assumed if the method is not defined.
 
 Since some elements can be lazy loaded, if you want to get the card size of another element, you should first check it is defined.
 
+```javascript
 return customElements
   .whenDefined(element.localName)
   .then(() => element.getCardSize());
-Sizing in sections view​
+```
+
+## Sizing in Sections View
 You can define a getGridOptions method that returns the min, max and default number of cells your card will take in the grid if your card is used in the sections view. Each section is divided in 12 columns. If you don't define this method, the card will take 12 columns and will ignore the rows of the grid.
 
 A cell of the grid is defined with the following dimension:
@@ -99,16 +133,18 @@ height: 56px
 gap between cells: 8px
 The different grid options are:
 
-rows: Default number of rows the card takes. Do not define this value if you want your card to ignore the rows of the grid (not defined by default)
-min_rows: Minimal number of rows the card takes (1 by default)
-max_rows: Maximal number of rows the card takes (not defined by default)
-columns: Default number of columns the card takes. Set it to full to enforce your card to be full width, (12 by default)
-min_columns: Minimal number of columns the card takes (1 by default)
-max_columns: Maximal number of columns the card takes (not defined by default)
+- **rows**: Default number of rows the card takes. Do not define this value if you want your card to ignore the rows of the grid (not defined by default)
+- **min_rows**: Minimal number of rows the card takes (1 by default)
+- **max_rows**: Maximal number of rows the card takes (not defined by default)
+- **columns**: Default number of columns the card takes. Set it to full to enforce your card to be full width, (12 by default)
+- **min_columns**: Minimal number of columns the card takes (1 by default)
+- **max_columns**: Maximal number of columns the card takes (not defined by default)
+
 For the number of columns, it's highly recommended to use multiple of 3 for the default value (3, 6, 9 or 12) so your card will have better looking on the dashboard by default.
 
 Example of implementation:
 
+```typescript
 public getGridOptions() {
   return {
     rows: 2,
@@ -116,16 +152,18 @@ public getGridOptions() {
     min_rows: 2,
   };
 }
+```
 In this example, the card will take 6 x 2 cells by default. The height of the card cannot be smaller than 2 rows. According to the cell dimension, the card will have a height of 120px (2 * 56px + 8px).
 
-Advanced example​
+## Advanced Example
+
 Resources to load in dashboards are imported as a JS module import. Below is an example of a custom card using JS modules that does all the fancy things.
 
-Screenshot of the wired card
+*Screenshot of the wired card*
 
-Create a new file in your Home Assistant config dir as <config>/www/wired-cards.js and put in the following contents:
+Create a new file in your Home Assistant config dir as `<config>/www/wired-cards.js` and put in the following contents:
 
-import "https://unpkg.com/wired-card@0.8.1/wired-card.js?module";
+```javascript "https://unpkg.com/wired-card@0.8.1/wired-card.js?module";
 import "https://unpkg.com/wired-toggle@0.8.0/wired-toggle.js?module";
 import {
   LitElement,
@@ -221,10 +259,13 @@ class WiredToggleCard extends LitElement {
   }
 }
 customElements.define("wired-toggle-card", WiredToggleCard);
-Add a resource to your dashboard config with URL /local/wired-cards.js and type module.
+```
+
+Add a resource to your dashboard config with URL `/local/wired-cards.js` and type module.
 
 And for your configuration:
 
+```yaml
 # Example dashboard configuration
 views:
   - name: Example
@@ -234,7 +275,9 @@ views:
           - input_boolean.switch_ac_kitchen
           - input_boolean.switch_ac_livingroom
           - input_boolean.switch_tv
-Graphical card configuration​
+```
+
+## Graphical Configuration
 Your card can define a getConfigElement method that returns a custom element for editing the user configuration. Home Assistant will display this element in the card editor in the dashboard.
 
 Your card can also define a getStubConfig method that returns a default card configuration (without the type: parameter) in json form for use by the card type picker in the dashboard.
@@ -245,6 +288,7 @@ Changes to the configuration are communicated back to the dashboard by dispatchi
 
 To have your card displayed in the card picker dialog in the dashboard, add an object describing it to the array window.customCards. Required properties of the object are type and name (see example below).
 
+```javascript
 class ContentCardExample extends HTMLElement {
   static getConfigElement() {
     return document.createElement("content-card-editor");
@@ -254,7 +298,7 @@ class ContentCardExample extends HTMLElement {
     return { entity: "sun.sun" }
   }
 
-  ...
+  // ...
 }
 
 customElements.define('content-card-example', ContentCardExample);
@@ -283,72 +327,76 @@ window.customCards.push({
   documentationURL:
     "https://developers.home-assistant.io/docs/frontend/custom-ui/custom-card", // Adds a help link in the frontend card editor
 });
-Using the built-in form editor​
+```
+
+## Built-in Form Editor
 While one way to configure a graphical editor is to supply a custom editor element, another option for cards with relatively simple configuration requirements is to use the built-in frontend form editor. This is done by defining a static getConfigForm function in your card class, that returns a form schema defining the shape of your configuration form.
 
 Example:
 
-  static getConfigForm() {
-    return {
-      schema: [
-        { name: "label", selector: { label: {} } },
-        { name: "entity", required: true, selector: { entity: {} } },
-        {
-          type: "grid",
-          name: "",
-          schema: [
-            { name: "name", selector: { text: {} } },
-            {
-              name: "icon",
-              selector: {
-                icon: {},
-              },
-              context: {
-                icon_entity: "entity",
-              },
+```javascript
+static getConfigForm() {
+  return {
+    schema: [
+      { name: "label", selector: { label: {} } },
+      { name: "entity", required: true, selector: { entity: {} } },
+      {
+        type: "grid",
+        name: "",
+        schema: [
+          { name: "name", selector: { text: {} } },
+          {
+            name: "icon",
+            selector: {
+              icon: {},
             },
-            {
-              name: "attribute",
-              selector: {
-                attribute: {},
-              },
-              context: {
-                filter_entity: "entity",
-              },
+            context: {
+              icon_entity: "entity",
             },
-            { name: "unit", selector: { text: {} } },
-            { name: "theme", selector: { theme: {} } },
-            { name: "state_color", selector: { boolean: {} } },
-          ],
-        },
-      ],
-      computeLabel: (schema) => {
-        if (schema.name === "icon") return "Special Icon";
-        return undefined;
+          },
+          {
+            name: "attribute",
+            selector: {
+              attribute: {},
+            },
+            context: {
+              filter_entity: "entity",
+            },
+          },
+          { name: "unit", selector: { text: {} } },
+          { name: "theme", selector: { theme: {} } },
+          { name: "state_color", selector: { boolean: {} } },
+        ],
       },
-      computeHelper: (schema) => {
-        switch (schema.name) {
-          case "entity":
-            return "This text describes the function of the entity selector";
-          case "unit":
-            return "The unit of measurement for this card";
-        }
-        return undefined;
-      },
-      assertConfig: (config) => {
-        if (config.other_option) {
-          throw new Error("'other_option' is unexpected.");
-        }
-      },
-    };
-  }
+    ],
+    computeLabel: (schema) => {
+      if (schema.name === "icon") return "Special Icon";
+      return undefined;
+    },
+    computeHelper: (schema) => {
+      switch (schema.name) {
+        case "entity":
+          return "This text describes the function of the entity selector";
+        case "unit":
+          return "The unit of measurement for this card";
+      }
+      return undefined;
+    },
+    assertConfig: (config) => {
+      if (config.other_option) {
+        throw new Error("'other_option' is unexpected.");
+      }
+    },
+  };
+}
+```
 From this function, you should return an object with up to 4 keys:
 
-schema (required): This is a list of schema objects, one per form field, defining various properties of the field, like the name and selector.
-computeLabel (optional): This callback function will be called per form field, allowing the card to define the label that will be displayed for the field. If undefined, Home Assistant may apply a known translation for generic field names like entity, or you can supply your own translations.
-computeHelper (optional): This callback function will be called per form field, allowing you to define longer helper text for the field, which will be displayed below the field.
-assertConfig (optional): On each update of the configuration, the user's config will be passed to this callback function. If you throw an Error during this callback, the visual editor will be disabled. This can be used to disable the visual editor when the user enters incompatible data, like entering an object in yaml for a selector that expects a string. If a subsequent execution of this callback does not throw an error, the visual editor will be re-enabled.
-This example then results in the following config form: Screenshot of the config form
+- **schema** (required): This is a list of schema objects, one per form field, defining various properties of the field, like the name and selector.
+- **computeLabel** (optional): This callback function will be called per form field, allowing the card to define the label that will be displayed for the field. If undefined, Home Assistant may apply a known translation for generic field names like entity, or you can supply your own translations.
+- **computeHelper** (optional): This callback function will be called per form field, allowing you to define longer helper text for the field, which will be displayed below the field.
+- **assertConfig** (optional): On each update of the configuration, the user's config will be passed to this callback function. If you throw an Error during this callback, the visual editor will be disabled. This can be used to disable the visual editor when the user enters incompatible data, like entering an object in yaml for a selector that expects a string. If a subsequent execution of this callback does not throw an error, the visual editor will be re-enabled.
 
-Previous Chapter
-Next Chapter (/config/hestia/library/ha_implementation/custom_ui/custom_card_feature.custom_ui.md)
+This example then results in the following config form:
+
+*Screenshot of the config form*
