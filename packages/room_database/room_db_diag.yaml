@@ -63,6 +63,40 @@ rest:
           - status
           - message
           - timestamp
+
+  # AppDaemon legacy path variant with actual app name
+  - resource: "http://a0d7b954-appdaemon:5050/api/appdaemon/room_db_updater/health"
+    method: GET
+    timeout: 10
+    scan_interval: 30
+    sensor:
+      - name: "AppDaemon Health (appdaemon app-name path)"
+        value_template: >
+          {% if value_json is defined and value_json.status is defined %}
+            {{ value_json.status }}
+          {% else %}
+            {{ value | default('no_response') }}
+          {% endif %}
+        json_attributes:
+          - status
+          - message
+          - timestamp
+
+  - resource: "http://a0d7b954-appdaemon:5050/api/appdaemon/room_db_updater/test"
+    method: GET
+    timeout: 10
+    scan_interval: 30
+    sensor:
+      - name: "AppDaemon Test (appdaemon app-name path)"
+        value_template: >
+          {% if value_json is defined and value_json.status is defined %}
+            {{ value_json.status }}
+          {% else %}
+            {{ value | default('no_response') }}
+          {% endif %}
+        json_attributes:
+          - status
+          - message
     method: GET
     timeout: 10
     scan_interval: 30
