@@ -101,7 +101,8 @@ fi
 # Test 7: Telemetry Script Execution
 echo -n "7. Telemetry Script: "
 if [[ -x "$HOME_SAFE/bin/hass_telemetry.sh" ]]; then
-    if "$HOME_SAFE/bin/hass_telemetry.sh" >/dev/null 2>&1; then
+    # Prefer canonical /config for HA_MOUNT to avoid legacy path false negatives
+    if HA_MOUNT="/config" "$HOME_SAFE/bin/hass_telemetry.sh" >/dev/null 2>&1; then
         echo "OK - hass_telemetry.sh executes successfully"
     else
         echo "FAIL - hass_telemetry.sh execution failed"
@@ -153,17 +154,27 @@ echo
 echo "=== SUMMARY ==="
 TOTAL_TESTS=10
 
-# Count passed tests manually
+# Count passed tests manually (aligned with tests above)
 PASSED_TESTS=0
+# 1. mount
 mount | egrep -q " on $CONFIG_MP_REAL .*smbfs" && ((PASSED_TESTS++)) || mount | egrep -q " on $LEGACY_MP_REAL .*smbfs" && ((PASSED_TESTS++))
-test -w "$HOME_SAFE/hass" && ((PASSED_TESTS++))
-test -f "$HOME_SAFE/hass/configuration.yaml" && ((PASSED_TESTS++))
+# 2. write access
+test -w "$CONFIG_MP" && ((PASSED_TESTS++)) || test -w "$LEGACY_MP" && ((PASSED_TESTS++))
+# 3. config present
+test -f "$CONFIG_MP/configuration.yaml" && ((PASSED_TESTS++)) || test -f "$LEGACY_MP/configuration.yaml" && ((PASSED_TESTS++))
+# 4. mount agent
 launchctl print "gui/$(id -u)/com.local.hass.mount" >/dev/null 2>&1 && ((PASSED_TESTS++))
+# 5. telemetry agent
 launchctl print "gui/$(id -u)/com.local.hass.telemetry" >/dev/null 2>&1 && ((PASSED_TESTS++))
+# 6. keychain
 security find-internet-password -w -s "homeassistant.local" -a "evertappels" >/dev/null 2>&1 && ((PASSED_TESTS++))
-$HOME_SAFE/hass/hestia/config/diagnostics/generate_hass_mount_diagnostics.sh >/dev/null 2>&1 && ((PASSED_TESTS++))
-curl -s -o /dev/null -w "%{http_code}" -X POST -H "Content-Type: application/json" -d '{"test":"connectivity"}' "http://homeassistant.local:8123/api/webhook/macbook_hass_mount_telemetry" | egrep -q "200" && ((PASSED_TESTS++))
+# 7. telemetry script exec (use /config)
+HA_MOUNT="/config" "$HOME_SAFE/bin/hass_telemetry.sh" >/dev/null 2>&1 && ((PASSED_TESTS++))
+# 8. webhook endpoint reachable (correct ID)
+curl -s -o /dev/null -w "%{http_code}" -X POST -H "Content-Type: application/json" -d '{"test":"connectivity"}' "$WEBHOOK_URL" | egrep -q "200" && ((PASSED_TESTS++))
+# 9. logs present
 [[ -f "$HOME_SAFE/Library/Logs/hass-mount.log" && -f "$HOME_SAFE/Library/Logs/hass-telemetry.log" ]] && ((PASSED_TESTS++))
+# 10. recent activity
 [[ -f "$HOME_SAFE/Library/Logs/hass-telemetry.log" ]] && tail -n 1 "$HOME_SAFE/Library/Logs/hass-telemetry.log" 2>/dev/null | grep -q "$(date '+%b %_d')" && ((PASSED_TESTS++))
 
 echo "Tests passed: $PASSED_TESTS/$TOTAL_TESTS"
