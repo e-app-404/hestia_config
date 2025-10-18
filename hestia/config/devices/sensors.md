@@ -12,7 +12,7 @@
         "binary_sensor.bedroom_wardrobe_motion_beta",
         "binary_sensor.bedroom_security_cam_alpha_motion",
         "binary_sensor.bedroom_ottoman_motion_proxy",
-        "binary_sensor.desk_motion_proxy"
+        "binary_sensor.desk_motion_beta"
       ],
       "preferred": "binary_sensor.bedroom_motion_beta"
     },
@@ -59,7 +59,7 @@
     },
     "proxies": [
       "binary_sensor.bedroom_ottoman_motion_proxy",
-      "binary_sensor.desk_motion_proxy",
+      "binary_sensor.desk_motion_beta",
       "sensor.bedroom_tv_illuminance_decay_delta",
       "binary_sensor.evert_in_bed",
       "binary_sensor.evert_asleep"
@@ -170,8 +170,8 @@
   },
   "desk": {
     "motion": {
-      "all": ["binary_sensor.desk_motion_proxy"],
-      "preferred": "binary_sensor.desk_motion_proxy"
+      "all": ["binary_sensor.desk_motion_beta"],
+      "preferred": "binary_sensor.desk_motion_beta"
     },
     "occupancy": {
       "all": [
@@ -196,12 +196,12 @@
       "preferred": null
     },
     "proxies": [
-      "binary_sensor.desk_motion_proxy",
+      "binary_sensor.desk_motion_beta",
       "binary_sensor.desk_presence_inferred",
       "binary_sensor.desk_macbook_recent_connectivity"
     ],
     "sources": {
-      "binary_sensor.desk_motion_proxy": [
+      "binary_sensor.desk_motion_beta": [
         { "file": "/config/domain/templates/motion_logic.yaml", "line": 262 }
       ],
       "binary_sensor.desk_occupancy_beta": [

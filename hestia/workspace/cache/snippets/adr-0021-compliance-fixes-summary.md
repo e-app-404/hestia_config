@@ -55,7 +55,7 @@
 
 ## 🚨 Breaking Changes
 
-- **Entity Rename**: `binary_sensor.desk_motion_proxy` → `binary_sensor.desk_motion_beta`
+- **Entity Rename**: `binary_sensor.desk_motion_beta` → `binary_sensor.desk_motion_beta`
 - **Automations**: Any direct references to old desk motion entity need updating
 - **Presence Logic**: Shared area presence sensors now dynamic instead of always-false
 

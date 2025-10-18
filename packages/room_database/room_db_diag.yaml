@@ -1,4 +1,6 @@
 # Direct HTTP test sensors to debug the endpoint issue
+# Normalized per ADR-0008 and aligned with actual AppDaemon routes
+
 template:
   - sensor:
       - name: "AppDaemon Health Direct Test"
@@ -15,74 +17,16 @@ template:
               'message': state_attr('sensor.appdaemon_health_raw','message') | default('no-message'),
               'timestamp': state_attr('sensor.appdaemon_health_raw','timestamp') | default('')
             } -%}
-            rest:
-              # Primary app-scoped route (as registered by RoomDbUpdater)
-              - resource: "http://a0d7b954-appdaemon:5050/api/app/room_db_updater/health"
-rest:
-  - resource: "http://a0d7b954-appdaemon:5050/api/app/room_db_updater/room_db/health"
-    method: GET
-    timeout: 10
-                  - name: "AppDaemon Health Raw"
-                    value_template: >
-                      {% if value_json is defined and value_json.status is defined %}
-                        {{ value_json.status }}
-                      {% else %}
-                        {{ value | default('no_response') }}
-                      {% endif %}
-                    json_attributes:
-                      - status
-                      - message
-                      - timestamp
-    sensor:
-              - resource: "http://a0d7b954-appdaemon:5050/api/app/room_db_updater/room_db/health"
-        value_template: >
-          {% if value_json is defined and value_json.status is defined %}
-            {{ value_json.status }}
-          {% else %}
-                  - name: "AppDaemon Health (compat nested path)"
-                    value_template: >
-                      {% if value_json is defined and value_json.status is defined %}
-                        {{ value_json.status }}
-                      {% else %}
-                        {{ value | default('no_response') }}
-                      {% endif %}
-                    json_attributes:
-                      - status
-                      - message
-                      - timestamp
-              - resource: "http://a0d7b954-appdaemon:5050/api/appdaemon/room_db/health"
-        json_attributes:
-          - status
-          - message
-          - timestamp
+            {{ obj }}
 
-                    value_template: >
-                      {% if value_json is defined and value_json.status is defined %}
-                        {{ value_json.status }}
-                      {% else %}
-                        {{ value | default('no_response') }}
-                      {% endif %}
-                    json_attributes:
-                      - status
-                      - message
-                      - timestamp
-  # Additional diagnostics: probe both app-scoped and compat paths to isolate 404s
+rest:
+  # Primary app-scoped route (as registered by RoomDbUpdater)
   - resource: "http://a0d7b954-appdaemon:5050/api/app/room_db_updater/health"
     method: GET
     timeout: 10
     scan_interval: 30
     sensor:
       - name: "AppDaemon Health (app path)"
-                    value_template: >
-                      {% if value_json is defined and value_json.status is defined %}
-                        {{ value_json.status }}
-                      {% else %}
-                        {{ value | default('no_response') }}
-                      {% endif %}
-                    json_attributes:
-                      - status
-                      - message
-                      - timestamp
         value_template: >
           {% if value_json is defined and value_json.status is defined %}
             {{ value_json.status }}
@@ -94,6 +38,25 @@ rest:
           - message
           - timestamp
 
+  # Compat nested route also registered by the app
+  - resource: "http://a0d7b954-appdaemon:5050/api/app/room_db_updater/room_db/health"
+    method: GET
+    timeout: 10
+    scan_interval: 30
+    sensor:
+      - name: "AppDaemon Health Raw"
+        value_template: >
+          {% if value_json is defined and value_json.status is defined %}
+            {{ value_json.status }}
+          {% else %}
+            {{ value | default('no_response') }}
+          {% endif %}
+        json_attributes:
+          - status
+          - message
+          - timestamp
+
+  # AppDaemon compat routes for completeness
   - resource: "http://a0d7b954-appdaemon:5050/api/appdaemon/room_db/health"
     method: GET
     timeout: 10
@@ -129,6 +92,7 @@ rest:
           - message
           - timestamp
 
+  # Test endpoint on primary app path
   - resource: "http://a0d7b954-appdaemon:5050/api/app/room_db_updater/test"
     method: GET
     timeout: 10
@@ -160,17 +124,7 @@ rest:
         json_attributes:
           - status
           - message
-        value_template: >
-          {% if value_json is defined and value_json.status is defined %}
-            {{ value_json.status }}
-          {% else %}
-            {{ value | default('no_response') }}
-          {% endif %}
-        json_attributes:
-          - status
-          - message
 
-# Shell commands for direct SQLite database operations (fallback/emergency use)
 shell_command:
   # AppDaemon endpoint discovery - test different URL patterns
   test_appdaemon_endpoints: |

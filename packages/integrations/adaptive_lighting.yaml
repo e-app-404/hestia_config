@@ -6,132 +6,132 @@
 
 adaptive_lighting:
   - name: bedroom
-    lights: [ light.adaptive_bedroom_light_group]
-    only_once: true
-    take_over_control: true
+    detect_non_ha_changes: true
+    include_config_in_attributes: true
     initial_transition: 0.3
-    transition: 2
+    lights: [ light.adaptive_bedroom_light_group]
+    max_color_temp: 4500
+    min_color_temp: 2700
+    multi_light_intercept: true
+    only_once: true
+    prefer_rgb_color: false
     sleep_brightness: 50
-    sleep_rgb_or_color_temp: rgb_color
     sleep_color_temp: 2200
     sleep_rgb_color: [47, 19, 229]
+    sleep_rgb_or_color_temp: rgb_color
     sleep_transition: 1
+    take_over_control: true
+    transition: 2
     transition_until_sleep: false
-    min_color_temp: 2700
-    max_color_temp: 4500
-    prefer_rgb_color: false
-    detect_non_ha_changes: true
-    multi_light_intercept: true
-    include_config_in_attributes: true
 
   - name: desk
-    lights: [ light.adaptive_desk_light_group ]
-    only_once: true
-    take_over_control: true
+    detect_non_ha_changes: true
+    include_config_in_attributes: true
     initial_transition: 0.3
-    transition: 2
+    lights: [ light.adaptive_desk_light_group ]
+    max_color_temp: 4500
+    min_color_temp: 2700
+    multi_light_intercept: true
+    only_once: true
+    prefer_rgb_color: true
     sleep_brightness: 50
-    sleep_rgb_or_color_temp: rgb_color
     sleep_color_temp: 2701
     sleep_rgb_color: [229, 58, 155]
+    sleep_rgb_or_color_temp: rgb_color
     sleep_transition: 1
+    take_over_control: true
+    transition: 2
     transition_until_sleep: false
-    min_color_temp: 2700
-    max_color_temp: 4500
-    prefer_rgb_color: true
-    detect_non_ha_changes: true
-    multi_light_intercept: true
-    include_config_in_attributes: true
 
   - name: ensuite
-    lights: [ light.adaptive_ensuite_light_group ]
-    only_once: true
-    take_over_control: true
+    detect_non_ha_changes: true
+    include_config_in_attributes: true
     initial_transition: 0.3
-    transition: 2
+    lights: [ light.adaptive_ensuite_light_group ]
+    max_color_temp: 4500
+    min_color_temp: 2700
+    multi_light_intercept: true
+    only_once: true
+    prefer_rgb_color: true
     sleep_brightness: 20
-    sleep_rgb_or_color_temp: rgb_color
     sleep_color_temp: 2200
     sleep_rgb_color: [127, 11, 210]
+    sleep_rgb_or_color_temp: rgb_color
     sleep_transition: 1
+    take_over_control: true
+    transition: 2
     transition_until_sleep: false
-    prefer_rgb_color: true
-    min_color_temp: 2700
-    max_color_temp: 4500
-    detect_non_ha_changes: true
-    multi_light_intercept: true
-    include_config_in_attributes: true
 
   - name: kitchen
-    lights: [ light.adaptive_kitchen_light_group ]
-    only_once: false
-    take_over_control: true
+    include_config_in_attributes: true
     initial_transition: 0.3
-    transition: 2
+    lights: [ light.adaptive_kitchen_light_group ]
+    max_color_temp: 3500
+    min_color_temp: 2700
+    only_once: false
     sleep_brightness: 25
-    sleep_rgb_or_color_temp: color_temp
     sleep_color_temp: 2500
     sleep_rgb_color: [255, 166, 87]
+    sleep_rgb_or_color_temp: color_temp
     sleep_transition: 1
+    take_over_control: true
+    transition: 2
     transition_until_sleep: false
-    min_color_temp: 2700
-    max_color_temp: 3500
-    include_config_in_attributes: true
 
   - name: hallway_downstairs
-    lights: [ light.adaptive_downstairs_light_group ]
-    only_once: true
+    detect_non_ha_changes: false
     initial_transition: 0.8
-    transition: 2
+    lights: [ light.adaptive_downstairs_light_group ]
+    max_brightness: 35
+    max_color_temp: 3500
+    min_brightness: 15
+    min_color_temp: 2700
+    only_once: true
+    prefer_rgb_color: false
     sleep_brightness: 15
-    sleep_rgb_or_color_temp: rgb_color
     sleep_color_temp: 2000
     sleep_rgb_color: [255, 138, 18]
+    sleep_rgb_or_color_temp: rgb_color
     sleep_transition: 1
-    transition_until_sleep: false
-    min_brightness: 15
-    max_brightness: 35
-    min_color_temp: 2700
-    max_color_temp: 3500
     take_over_control: true
-    prefer_rgb_color: false
-    detect_non_ha_changes: false
+    transition: 2
+    transition_until_sleep: false
 
   - name: hallway_upstairs
-    lights: [ light.adaptive_upstairs_light_group ]
-    initial_transition: 0.5
-    transition: 2
-    sleep_brightness: 15
-    sleep_rgb_or_color_temp: rgb_color
-    sleep_color_temp: 1800
-    sleep_rgb_color: [0, 8, 255]
-    sleep_transition: 1
-    transition_until_sleep: false
-    min_brightness: 10
-    max_brightness: 35
-    only_once: true
-    take_over_control: true
-    min_color_temp: 2200
-    max_color_temp: 3500
-    prefer_rgb_color: true
     detect_non_ha_changes: false
     include_config_in_attributes: true
+    initial_transition: 0.5
+    lights: [ light.adaptive_upstairs_light_group ]
+    max_brightness: 35
+    max_color_temp: 3500
+    min_brightness: 10
+    min_color_temp: 2200
+    only_once: true
+    prefer_rgb_color: true
+    sleep_brightness: 15
+    sleep_color_temp: 1800
+    sleep_rgb_color: [0, 8, 255]
+    sleep_rgb_or_color_temp: rgb_color
+    sleep_transition: 1
+    take_over_control: true
+    transition: 2
+    transition_until_sleep: false
 
   - name: living_room
-    lights: [ light.adaptive_living_room_light_group ]
-    only_once: true
-    take_over_control: true
+    detect_non_ha_changes: true
+    include_config_in_attributes: true
     initial_transition: 0.3
-    transition: 2
+    lights: [ light.adaptive_living_room_light_group ]
+    max_color_temp: 3500
+    min_color_temp: 2700
+    multi_light_intercept: true
+    only_once: true
+    prefer_rgb_color: true
     sleep_brightness: 31
-    sleep_rgb_or_color_temp: color_temp
     sleep_color_temp: 2701
     sleep_rgb_color: [207, 155, 119]
+    sleep_rgb_or_color_temp: color_temp
     sleep_transition: 1
+    take_over_control: true
+    transition: 2
     transition_until_sleep: false
-    min_color_temp: 2700
-    max_color_temp: 3500
-    prefer_rgb_color: true
-    detect_non_ha_changes: true
-    multi_light_intercept: true
-    include_config_in_attributes: true
