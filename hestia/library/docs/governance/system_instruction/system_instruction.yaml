@@ -81,18 +81,9 @@ foundation:
         ├── apollo_knowledge/           ← Knowledge base, includes HESTIA architecture, doctrine, and governance
         │   ├── Volumes/Share/APOLLO/
         │   │   ├── core/               ← Canonical system doctrine
-                quiet:
-                  desc: "No follow-up"
-                  text: ""
         │   └── Volumes/Share/GIT/
         │       ├── _hass_repo_thin/    ← Primary: Bare shallow Git mirror
         │       └── _hass_repo_mirror/  ← Secondary: Full bare Git mirror
-              runtime_control:
-                default_mode: "quiet"     # Enforce no proactive signoffs by default
-                enable_on_user_request:   # Only re-enable when explicitly requested
-                  - "auto_affirm_with_prompt"
-                  - "inverted_questions"
-                  - "polite"
         ├── config_snapshot/            ← Live Home Assistant config extracted from '/config' volume
         │   ├── configuration.yaml      ← Entry-point YAML
         │   ├── .storage/               ← Entity + integration registry
