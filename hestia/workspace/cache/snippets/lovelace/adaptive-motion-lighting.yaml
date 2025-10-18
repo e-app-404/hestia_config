@@ -94,7 +94,7 @@ sections:
 
           {% set al=is_state('switch.adaptive_lighting_desk','on') %}
 
-          {% set obj=states.binary_sensor.desk_motion_proxy %}
+          {% set obj=states.binary_sensor.desk_motion_beta %}
 
           {% set state = '✅ AML On' if (auto and not bypass and al)
                          else '🟧 Motion Only' if (auto and not bypass and not al)
@@ -114,7 +114,7 @@ sections:
             name: AL switch
           - entity: light.al_adaptive_desk_light_group
             name: Light group
-          - entity: binary_sensor.desk_motion_proxy
+          - entity: binary_sensor.desk_motion_beta
             name: Motion (β)
       - type: entities
         entities:
@@ -129,7 +129,7 @@ sections:
       - type: history-graph
         hours_to_show: 2
         entities:
-          - entity: binary_sensor.desk_motion_proxy
+          - entity: binary_sensor.desk_motion_beta
             name: Motion
           - entity: light.bedroom_desk_alpha_matter
             name: Lights

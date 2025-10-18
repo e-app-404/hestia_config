@@ -96,7 +96,7 @@ var:
       group: light.adaptive_desk_light_group
       inhibit_on_startup_seconds: 10
       last_triggered: ""
-      motion_sensors: [binary_sensor.desk_motion_proxy]
+      motion_sensors: [binary_sensor.desk_motion_beta]
       night_mode_brightness_pct: 12
       night_mode_color_temp_mired: 420
       night_mode_enabled: true
@@ -466,7 +466,7 @@ automation:
     mode: single
     trigger:
       - platform: state
-        entity_id: binary_sensor.desk_motion_proxy
+        entity_id: binary_sensor.desk_motion_beta
         from: "off"
         to: "on"
     action:

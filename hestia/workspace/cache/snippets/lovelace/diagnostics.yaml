@@ -130,7 +130,7 @@ sections:
 
           **Proxy Sensors:**
           - `binary_sensor.bedroom_ottoman_motion_proxy` (motion inference)
-          - `binary_sensor.desk_motion_proxy` (motion inference)
+          - `binary_sensor.desk_motion_beta` (motion inference)
           - `sensor.bedroom_tv_illuminance_decay_delta` (illuminance decay tracking)
           - `binary_sensor.evert_in_bed` (health biometrics)
           - `binary_sensor.evert_asleep` (health biometrics)
@@ -253,7 +253,7 @@ sections:
           show_states: true
           colorize_states: true
         series:
-          - entity: binary_sensor.desk_motion_proxy
+          - entity: binary_sensor.desk_motion_beta
             name: Motion (proxy)
             type: line
             color: '#00B4D8'
@@ -275,7 +275,7 @@ sections:
       - type: entities
         title: Preferred Sensors (β)
         entities:
-          - entity: binary_sensor.desk_motion_proxy
+          - entity: binary_sensor.desk_motion_beta
             name: Motion (proxy)
             secondary_info: last-changed
             icon: mdi:motion-sensor
@@ -293,7 +293,7 @@ sections:
           **⚠️ Anomaly: No Illuminance Sensors**
 
           **Source Files:**
-          - `binary_sensor.desk_motion_proxy`
+          - `binary_sensor.desk_motion_beta`
             → `/config/domain/templates/motion_logic.yaml:262`
           - `binary_sensor.desk_occupancy_beta`
             → `/config/domain/templates/occupancy_logic.yaml:214`
@@ -301,7 +301,7 @@ sections:
             → `/config/domain/templates/presence_logic.yaml:74`
 
           **Proxy/Inferred Sensors:**
-          - `binary_sensor.desk_motion_proxy` (inferred from MacBook connectivity)
+          - `binary_sensor.desk_motion_beta` (inferred from MacBook connectivity)
           - `binary_sensor.desk_presence_inferred` (MacBook display state)
           - `binary_sensor.desk_macbook_recent_connectivity` (connectivity timeout)
           - `binary_sensor.macbook_retina_display_active`

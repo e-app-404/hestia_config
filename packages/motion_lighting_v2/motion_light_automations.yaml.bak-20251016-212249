@@ -497,7 +497,7 @@ automation:
           schema_expected: 1
       - wait_for_trigger:
         - trigger: state
-          entity_id: binary_sensor.desk_motion_proxy
+          entity_id: binary_sensor.desk_motion_beta
           to: "off"
           for:
             seconds: "{{ effective_timeout }}"

@@ -37,7 +37,7 @@ sections:
           - entity: binary_sensor.ensuite_motion_beta
             name: Ensuite
             icon: mdi:shower
-          - entity: binary_sensor.desk_motion_proxy
+          - entity: binary_sensor.desk_motion_beta
             name: Desk
             icon: mdi:desk
           - entity: binary_sensor.kitchen_motion_beta
@@ -186,7 +186,7 @@ sections:
       - type: custom:bubble-card
         card_type: button
         button_type: state
-        entity: binary_sensor.desk_motion_proxy
+        entity: binary_sensor.desk_motion_beta
         name: Desk Motion (proxy)
         icon: mdi:motion-sensor-off
         show_name: true

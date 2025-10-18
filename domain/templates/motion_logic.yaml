@@ -428,7 +428,7 @@
         type: "preference_proxy"
         role: "beta_motion"
         file: "/config/domain/templates/motion_logic.yaml"
-        protocols: "TP-Link(1), Proxy(2)"
+        protocols: "TP-Link(1), MQTT(2), Matter(3), WiFi(4), Beta(5)"
         upstream_sources: >
           {{ ['template.library.jinja','binary_sensor.downstairs_motion_alpha_motion','binary_sensor.entrance_motion_proxy'] | tojson }}
         aggregation_strategy: "preference-based selection (motion-only)"

@@ -28,7 +28,7 @@
         type: "preference_proxy"
         role: "room_aggregate"
         file: "/config/domain/templates/occupancy_logic"
-        protocols: "MQTT(1), Matter(2), Logic(3), WiFi(4)"
+        protocols: "MQTT(1), Matter(2), WiFi(4)"
         upstream_sources: >-
           {{ ['template.library.jinja','binary_sensor.bedroom_occupancy_alpha_occupancy','binary_sensor.bedroom_wardrobe_occupancy_matter_alpha','binary_sensor.desk_occupancy_beta'] | tojson }}
         downstream_consumers: >-
