@@ -23,19 +23,29 @@ echo "User: $(whoami)"
 echo "Host: $(hostname)"
 echo
 
+# Prefer canonical /config mount per ADR-0024; fall back to legacy $HOME_SAFE/hass if needed
+CONFIG_MP="/config"
+LEGACY_MP="$HOME_SAFE/hass"
+
 # Test 1: Mount Status
 echo -n "1. Mount Status: "
-if mount | egrep -q "on $HOME_SAFE/hass .*smbfs"; then
-    echo "OK - SMB mount active"
+if mount | egrep -q " on $CONFIG_MP .*smbfs"; then
+    echo "OK - SMB mount active at $CONFIG_MP"
+elif mount | egrep -q " on $LEGACY_MP .*smbfs"; then
+    echo "OK - SMB mount active at $LEGACY_MP (legacy path)"
+    echo "   NOTE: Consider migrating to /config per ADR-0024"
 else
     echo "FAIL - No SMB mount found"
-    echo "   ACTION: Run 'launchctl kickstart -k \"gui/\$(id -u)/com.local.hass.mount\"'"
+    echo "   ACTION: Run 'launchctl kickstart -k \"gui/\$(id -u)/com.local.hass.mount\"' or mount_smbfs to /config"
 fi
 
 # Test 2: Write Access
 echo -n "2. Write Access: "
-if test -w "$HOME_SAFE/hass"; then
-    echo "OK - Mount is writable"
+if test -w "$CONFIG_MP"; then
+    echo "OK - Mount is writable at $CONFIG_MP"
+elif test -w "$LEGACY_MP"; then
+    echo "OK - Mount is writable at $LEGACY_MP (legacy path)"
+    echo "   NOTE: Consider migrating to /config per ADR-0024"
 else
     echo "FAIL - Mount not writable"
     echo "   ACTION: Check SMB permissions or remount"
@@ -43,8 +53,11 @@ fi
 
 # Test 3: Config Present
 echo -n "3. Config Present: "
-if test -f "$HOME_SAFE/hass/configuration.yaml"; then
-    echo "OK - configuration.yaml found"
+if test -f "$CONFIG_MP/configuration.yaml"; then
+    echo "OK - configuration.yaml found at $CONFIG_MP"
+elif test -f "$LEGACY_MP/configuration.yaml"; then
+    echo "OK - configuration.yaml found at $LEGACY_MP (legacy path)"
+    echo "   NOTE: Consider migrating to /config per ADR-0024"
 else
     echo "FAIL - configuration.yaml missing"
     echo "   ACTION: Verify HA instance and SMB share path"
@@ -85,21 +98,26 @@ fi
 
 # Test 7: Telemetry Script Execution
 echo -n "7. Telemetry Script: "
-if $HOME_SAFE/hass/hestia/config/diagnostics/generate_hass_mount_diagnostics.sh >/dev/null 2>&1; then
-    echo "OK - Script executes successfully"
+if [[ -x "$HOME_SAFE/bin/hass_telemetry.sh" ]]; then
+    if "$HOME_SAFE/bin/hass_telemetry.sh" >/dev/null 2>&1; then
+        echo "OK - hass_telemetry.sh executes successfully"
+    else
+        echo "FAIL - hass_telemetry.sh execution failed"
+        echo "   ACTION: Check script permissions and HA webhook availability"
+    fi
 else
-    echo "FAIL - Script execution failed"
-    echo "   ACTION: Check script permissions and HA webhook availability"
+    echo "SKIP - hass_telemetry.sh not found; skipping"
 fi
 
-# Test 8: Webhook Connectivity
+# Test 8: Webhook Connectivity (use correct, random ID)
 echo -n "8. Webhook Endpoint: "
-WEBHOOK_URL="http://homeassistant.local:8123/api/webhook/macbook_hass_mount_telemetry"
+WEBHOOK_ID="${MACBOOK_HASS_MOUNT_WEBHOOK_ID:-macbook_hass_mount_telemetry_f8d2a9b4c7e1}"
+WEBHOOK_URL="http://homeassistant.local:8123/api/webhook/${WEBHOOK_ID}"
 if curl -s -o /dev/null -w "%{http_code}" -X POST -H "Content-Type: application/json" -d '{"test":"connectivity"}' "$WEBHOOK_URL" | egrep -q "200"; then
     echo "OK - Webhook endpoint reachable"
 else
     echo "FAIL - Webhook endpoint not reachable"
-    echo "   ACTION: Verify HA is running and webhook automation is loaded"
+    echo "   ACTION: Verify HA is running and webhook automation is loaded; ensure secrets.yaml contains macbook_hass_mount_webhook_id and telemetry script uses the same ID"
 fi
 
 # Test 9: Log Files Present

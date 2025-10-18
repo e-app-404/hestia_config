@@ -104,7 +104,7 @@ template:
             {{ ['sensor.file_last_mount_status_json'] | tojson }}
           downstream_consumers: >
             {{ ['sensor.macbook_ha_mount_status', 'binary_sensor.macbook_ha_mount'] | tojson }}
-          file: "/config/hestia/packages/hestia/ha_mount_telemetry_webhook.yaml"
+          file: "/config/packages/hestia/ha_mount_telemetry_webhook.yaml"
           date: "2025-01-04"
           subsystem: "hades"
           integration: "macbook"
@@ -118,10 +118,21 @@ template:
   - trigger:
       - trigger: event
         event_type: macbook_mount_telemetry_received
+      # Periodic refresh to mark the sensor OFF if telemetry is stale
+      - trigger: time_pattern
+        minutes: "/2"
     sensor:
       - name: "MacBook HA Mount Status"
         unique_id: "macbook_ha_mount_status"
-        state: "{{ trigger.event.data.state }}"
+        state: >
+          {% if trigger.platform == 'event' %}
+            {{ trigger.event.data.state }}
+          {% else %}
+            {# On time ticks, compute freshness from last_run and force OFF if stale #}
+            {% set lr = as_datetime(state_attr('sensor.macbook_ha_mount_status','last_run')) %}
+            {% set age = (now() - lr).total_seconds() if lr else 999999 %}
+            {{ 'ON' if age < 300 else 'OFF' }}
+          {% endif %}
         icon: "mdi:harddisk-plus"
         attributes:
           mounted: "{{ trigger.event.data.mounted | bool }}"
@@ -140,9 +151,21 @@ template:
   - trigger:
       - trigger: event
         event_type: macbook_mount_telemetry_received
+      # Periodic refresh to mark the sensor OFF if telemetry is stale
+      - trigger: time_pattern
+        minutes: "/2"
     binary_sensor:
       - name: "MacBook HA Mount"
         unique_id: "macbook_ha_mount"
-        state: "{{ trigger.event.data.state == 'ON' }}"
+        state: >
+          {% if trigger.platform == 'event' %}
+            {{ trigger.event.data.state == 'ON' }}
+          {% else %}
+            {# On time ticks, compute freshness from last_run and force OFF if stale #}
+            {% set lr = as_datetime(state_attr('sensor.macbook_ha_mount_status','last_run')) %}
+            {% set age = (now() - lr).total_seconds() if lr else 999999 %}
+            {% set fresh = age < 300 %}
+            {{ fresh and states('sensor.macbook_ha_mount_status') == 'ON' }}
+          {% endif %}
         device_class: connectivity
         icon: "mdi:harddisk-plus"
