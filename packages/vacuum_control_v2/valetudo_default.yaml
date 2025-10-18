@@ -28,6 +28,41 @@ script:
           force: "{{ force | default(false) }}"
           force_presence: "{{ force_presence | default(false) }}"
 
+  clean_room_with_sql_tracking:
+    alias: "Clean Room with SQL Database Tracking"
+    mode: queued
+    fields:
+      room:
+        description: "Room slug (e.g., 'bedroom')"
+        required: true
+        selector:
+          text:
+    variables:
+      _raw: "{{ state_attr('sensor.room_configs_vacuum_control','payload') }}"
+      _cfgs: "{{ _raw | from_json if _raw else {} }}"
+      room_config: "{{ _cfgs.get(room, {}) }}"
+      segment_id: "{{ room_config.get('segment_id', 1) | int }}"
+      base_topic: "{{ states('input_text.valetudo_base_topic') }}"
+    sequence:
+      - action: mqtt.publish
+        data:
+          topic: "{{ base_topic }}/MapSegmentationCapability/action/start_segment_action"
+          payload: "{{ {'action':'clean','segment_ids':[segment_id],'iterations':1,'customOrder':true} | tojson }}"
+      - action: rest_command.room_db_update_config
+        data:
+          room_id: "{{ room }}"
+          domain: "vacuum_control"
+          config_data: >-
+            {{ dict(room_config, **{
+              'last_cleaned': now().isoformat(),
+              'needs_cleaning': false
+            })  }}
+      - action: persistent_notification.create
+        data:
+          title: "Vacuum Control"
+          message: "Started cleaning {{ room }} (segment {{ segment_id }})"
+          notification_id: "vacuum_{{ room }}"
+
 automation:
   - alias: "Valetudo — Daily Routine Trigger"
     description: "Optional: nudge the routine cycle; app also polls every 30s."
