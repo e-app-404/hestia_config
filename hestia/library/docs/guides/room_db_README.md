@@ -139,10 +139,10 @@ Contract:
 
 Example payloads you can send via `rest_command.room_db_update_config`:
 
-1) Motion lighting — set timeout and brightness
+#### 1) Motion lighting — set timeout and brightness
 ```
 {
-  "room_id": "kitchen",
+  "room_id": "bedroom",
   "domain": "motion_lighting",
   "config_data": {"timeout": 120, "brightness": 180},
   "schema_expected": 1
@@ -204,4 +204,87 @@ curl -s -X POST \
   -H 'Content-Type: application/json' \
   -d '{"room_id":"kitchen","domain":"motion_lighting","config_data":{"timeout":120},"schema_expected":1}' \
   http://a0d7b954-appdaemon:5050/api/appdaemon/room_db_update_config | jq .
+```
+
+## Developer Tools → Actions: copy‑paste snippets
+
+Paste the following YAML into Home Assistant → Developer Tools → Actions (YAML mode). Each block is a complete, minimal action sequence.
+
+Health and Test (GET)
+
+```yaml
+- service: rest_command.room_db_health
+- service: rest_command.room_db_test
+```
+
+Motion lighting — set timeout and brightness
+
+```yaml
+- service: rest_command.room_db_update_config
+  data:
+    room_id: bedroom
+    domain: motion_lighting
+    config_data:
+      timeout: 120
+      brightness: 180
+    schema_expected: 1
+```
+
+Vacuum control — mark room as needing cleaning
+
+```yaml
+- service: rest_command.room_db_update_config
+  data:
+    room_id: kitchen
+    domain: vacuum_control
+    config_data:
+      needs_cleaning: 1
+    schema_expected: 1
+```
+
+Vacuum control — clear needs_cleaning and set last_cleaned to now
+
+```yaml
+- service: rest_command.room_db_update_config
+  data:
+    room_id: kitchen
+    domain: vacuum_control
+    config_data:
+      needs_cleaning: 0
+      last_cleaned: "{{ now().isoformat() }}"
+    schema_expected: 1
+```
+
+Shared — set quiet hours window
+
+```yaml
+- service: rest_command.room_db_update_config
+  data:
+    room_id: kitchen
+    domain: shared
+    config_data:
+      quiet_hours:
+        start: "22:00"
+        end: "07:00"
+    schema_expected: 1
+```
+
+Rate‑limit safe double‑update (adds a 2s delay between writes)
+
+```yaml
+- service: rest_command.room_db_update_config
+  data:
+    room_id: bedroom
+    domain: motion_lighting
+    config_data:
+      timeout: 90
+    schema_expected: 1
+- delay: "00:00:02"
+- service: rest_command.room_db_update_config
+  data:
+    room_id: bedroom
+    domain: motion_lighting
+    config_data:
+      timeout: 120
+    schema_expected: 1
 ```
