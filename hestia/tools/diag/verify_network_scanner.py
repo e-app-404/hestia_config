@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 
-import requests
-import json
 import sys
-from typing import Dict, List, Optional
-import yaml
+from datetime import UTC, datetime
 from pathlib import Path
+
+import requests
+import yaml
 
 """
 Verify and generate network_scanner MAC mappings from Home Assistant
@@ -80,17 +80,36 @@ def make_request(endpoint: str) -> dict | None:
 
 def get_entity_registry() -> list[dict]:
     """Get all entities from registry"""
-    return make_request("config/entity_registry/list") or []
+    result = make_request("config/entity_registry/list")
+    if isinstance(result, list):
+        return result
+    return []
 
 def get_device_registry() -> list[dict]:
     """Get all devices from registry"""
-    return make_request("config/device_registry/list") or []
+    result = make_request("config/device_registry/list")
+    if isinstance(result, list):
+        return result
+    return []
+
+def get_area_registry() -> list[dict]:
+    """Get all areas from registry"""
+    result = make_request("config/area_registry/list")
+    if isinstance(result, list):
+        return result
+    return []
 
 def get_network_scanner_state() -> dict | None:
     """Get current network_scanner sensor state"""
     return make_request("states/sensor.network_scanner")
 
 def extract_mac_from_device(device: dict) -> str | None:
+    """Extract MAC address from device connections"""
+    # Home Assistant device registry stores connections as a list of [type, value] pairs
+    # Look for a connection of type 'mac'
+    connections = device.get("connections", [])
+    for conn_type, conn_value in connections:
+        if conn_type == "mac":
             return conn_value.lower()
     return None
 
@@ -125,6 +144,19 @@ def main():
     print(f"   Found {len(devices)} devices")
     print()
 
+    # Fetch areas for friendly names
+    print("📥 Fetching area registry...")
+    areas = get_area_registry()
+    area_name_by_id: dict[str, str] = {}
+    for a in areas:
+        # HA areas have fields: id, name, aliases, etc.
+        a_id = a.get("id")
+        a_name = a.get("name")
+        if a_id and a_name:
+            area_name_by_id[a_id] = a_name
+    print(f"   Found {len(area_name_by_id)} areas")
+    print()
+
     # Build mappings
     entity_to_device = {e["entity_id"]: e["device_id"] for e in entities if e.get("device_id")}
     device_by_id = {d["id"]: d for d in devices if "id" in d}
@@ -139,7 +171,7 @@ def main():
     missing_entities = []
     entities_without_mac = []
 
-    for entity_id in KNOWN_ENTITIES:
+    for entity_id in sorted(KNOWN_ENTITIES):  # deterministic order
         if entity_id not in entity_to_device:
             missing_entities.append(entity_id)
             continue
@@ -160,6 +192,10 @@ def main():
         manufacturer = device.get("manufacturer", "Unknown")
         model = device.get("model", "")
         area_id = device.get("area_id", "")
+        # Map to friendly display name when possible
+        area_display = area_name_by_id.get(area_id) if area_id else None
+        if not area_display:
+            area_display = "Uncategorized"
 
         verified_mappings.append({
             "mac": mac,
@@ -167,7 +203,8 @@ def main():
             "name": name,
             "manufacturer": manufacturer,
             "model": model,
-            "area_id": area_id
+            "area_id": area_id,
+            "area_display": area_display
         })
 
         print(f"✓ {entity_id}")
@@ -176,8 +213,7 @@ def main():
         print(f"  Manufacturer: {manufacturer}")
         if model:
             print(f"  Model: {model}")
-        if area_id:
-            print(f"  Area: {area_id}")
+        print(f"  Area: {area_display}")
         print()
 
     # Get current network_scanner devices
@@ -194,7 +230,9 @@ def main():
 
         # Find unmapped devices
         verified_macs = {m["mac"] for m in verified_mappings}
-        unmapped_devices = [d for d in discovered_devices if d.get("mac", "").lower() not in verified_macs]
+        unmapped_devices = [
+            d for d in discovered_devices if d.get("mac", "").lower() not in verified_macs
+        ]
 
         if unmapped_devices:
             print("⚠ Unmapped devices found on network:")
@@ -221,21 +259,31 @@ def main():
     print()
 
     # Group by area
-    by_area = {}
+    by_area: dict[str, list[dict]] = {}
     for mapping in verified_mappings:
-        area = mapping["area_id"] or "uncategorized"
-        if area not in by_area:
-            by_area[area] = []
-        by_area[area].append(mapping)
+        area_display = mapping.get("area_display") or "Uncategorized"
+        if area_display not in by_area:
+            by_area[area_display] = []
+        by_area[area_display].append(mapping)
+
+    # Deterministic sorting: areas by display name, mappings by entity_id
+    for area_key in by_area:
+        by_area[area_key] = sorted(by_area[area_key], key=lambda m: m["entity_id"]) 
 
     mapping_num = 1
-    for area, mappings in sorted(by_area.items()):
-        area_name = area.replace("_", " ").title()
-        print(f"  # ═══ {area_name} ═══")
+    for area_display, mappings in sorted(by_area.items(), key=lambda kv: kv[0].lower()):
+        print(f"  # ═══ {area_display} ═══")
         for mapping in mappings:
-            entity_comment = f"  # {mapping['name']} - {mapping['model']}" if mapping['model'] else f"  # {mapping['name']}"
+            entity_comment = (
+                f"  # {mapping['name']} - {mapping['model']}"
+                if mapping["model"]
+                else f"  # {mapping['name']}"
+            )
             print(entity_comment)
-            print(f'  mac_mapping_{mapping_num}: "{mapping["mac"]};{mapping["entity_id"]};{mapping["manufacturer"]}"')
+            print(
+                f'  mac_mapping_{mapping_num}: "'
+                f'{mapping["mac"]};{mapping["entity_id"]};{mapping["manufacturer"]}"'
+            )
             mapping_num += 1
         print()
 
@@ -257,26 +305,49 @@ def main():
     print()
 
     # Save to file
+    # Build YAML content once for reuse
+    yaml_lines: list[str] = []
+    yaml_lines.append("network_scanner:\n")
+    yaml_lines.append("  scan_interval: 1800  # 30 minutes\n")
+    yaml_lines.append('  ip_range: "192.168.0.0/24"\n')
+    yaml_lines.append("\n")
+
+    mapping_num = 1
+    for area_display, mappings in sorted(by_area.items(), key=lambda kv: kv[0].lower()):
+        yaml_lines.append(f"  # ═══ {area_display} ═══\n")
+        for mapping in mappings:
+            entity_comment = (
+                f"  # {mapping['name']} - {mapping['model']}"
+                if mapping["model"]
+                else f"  # {mapping['name']}"
+            )
+            yaml_lines.append(f"{entity_comment}\n")
+            yaml_lines.append(
+                f'  mac_mapping_{mapping_num}: "{mapping["mac"]};'
+                f'{mapping["entity_id"]};{mapping["manufacturer"]}"\n'
+            )
+            mapping_num += 1
+        yaml_lines.append("\n")
+
+    # Save to repo-local file
     output_file = "verified_network_scanner.yaml"
     with open(output_file, "w") as f:
-        f.write("network_scanner:\n")
-        f.write("  scan_interval: 1800  # 30 minutes\n")
-        f.write('  ip_range: "192.168.0.0/24"\n')
-        f.write("\n")
-
-        mapping_num = 1
-        for area, mappings in sorted(by_area.items()):
-            area_name = area.replace("_", " ").title()
-            f.write(f"  # ═══ {area_name} ═══\n")
-            for mapping in mappings:
-                entity_comment = f"  # {mapping['name']} - {mapping['model']}" if mapping['model'] else f"  # {mapping['name']}"
-                f.write(f"{entity_comment}\n")
-                f.write(f'  mac_mapping_{mapping_num}: "{mapping["mac"]};{mapping["entity_id"]};{mapping["manufacturer"]}"\n')
-                mapping_num += 1
-            f.write("\n")
+        f.writelines(yaml_lines)
 
     print(f"✓ Configuration saved to: {output_file}")
     print()
+
+    # Save timestamped copy under operations logs per ADR-0018
+    utc_ts = datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
+    logs_dir = Path("/config/hestia/workspace/operations/logs/network_scanner")
+    try:
+        logs_dir.mkdir(parents=True, exist_ok=True)
+        logs_file = logs_dir / f"{utc_ts}__verify_network_scanner__config.yaml"
+        with open(logs_file, "w") as f:
+            f.writelines(yaml_lines)
+        print(f"✓ Timestamped copy saved to: {logs_file}")
+    except Exception as e:
+        print(f"⚠ Could not write logs copy to {logs_dir}: {e}")
 
 if __name__ == "__main__":
     main()
