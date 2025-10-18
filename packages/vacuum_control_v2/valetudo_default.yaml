@@ -22,6 +22,29 @@ script:
           force: "{{ force | default(false) }}"
           force_presence: "{{ force_presence | default(false) }}"
 
+  seed_vacuum_rooms:
+    sequence:
+      - repeat:
+          for_each:
+            - { room: living_room, segment: 19, freq: 3 }
+            - { room: kitchen, segment: 17, freq: 2 }
+            - { room: powder_room, segment: 20, freq: 7 }
+            - { room: downstairs_hallway, segment: 18, freq: 3 }
+            - { room: laundry_room, segment: 16, freq: 7 }
+          sequence:
+            - service: rest_command.room_db_update_config
+              data:
+                room_id: "{{ repeat.item.room }}"
+                domain: vacuum_control
+                config_data:
+                  segment_id: "{{ repeat.item.segment }}"
+                  needs_cleaning: 1
+                  default_mode: standard
+                  cleaning_frequency_days: "{{ repeat.item.freq }}"
+                  last_cleaned: null
+                schema_expected: 1
+            - delay: "00:00:06"
+            
 automation:
   - alias: "Valetudo — Daily Routine Trigger"
     trigger:

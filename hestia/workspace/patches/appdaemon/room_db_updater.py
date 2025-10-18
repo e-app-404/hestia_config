@@ -5,7 +5,29 @@ import sqlite3
 import time
 
 import yaml
-from appdaemon.plugins.hass import hassapi
+
+try:
+    from appdaemon.plugins.hass import hassapi
+except Exception:
+    class _DummyHass:
+        def log(self, *args, **kwargs):
+            pass
+
+        def error(self, *args, **kwargs):
+            pass
+
+        def register_endpoint(self, *args, **kwargs):
+            pass
+
+        def call_service(self, *args, **kwargs):
+            pass
+
+        @property
+        def name(self):
+            return "RoomDbUpdater"
+
+    class hassapi:  # type: ignore
+        Hass = _DummyHass
 
 ROOM_ID_RE = re.compile(r"^[a-z0-9_]+$")
 
@@ -48,7 +70,10 @@ class RoomDbUpdater(hassapi.Hass):
             self.register_endpoint(self.health_check, "room_db_health")
             self.register_endpoint(self.update_config, "room_db_update_config")
             self.register_endpoint(self.test_endpoint, "room_db_test")
-            self.log("Global endpoints registered: room_db_health, room_db_update_config, room_db_test")
+            self.log(
+                "Global endpoints registered: "
+                "room_db_health, room_db_update_config, room_db_test"
+            )
         except Exception as e:
             self.log(f"Global endpoint registration failed: {e}", level="WARNING")
 
@@ -114,7 +139,8 @@ class RoomDbUpdater(hassapi.Hass):
             raise ValueError("No allowed domains configured")
 
         self.log(
-            f"Config validation passed - mapping: {self._mapping_path} - domains: {self.allowed_domains}"
+            f"Config validation passed - mapping: {self._mapping_path} - "
+            f"domains: {self.allowed_domains}"
         )
 
     def _mapping_candidates(self):
@@ -166,7 +192,8 @@ class RoomDbUpdater(hassapi.Hass):
         canonical_rooms = self._load_canonical_mapping()
         if room_id not in canonical_rooms:
             raise ValueError(
-                f"room_id '{room_id}' not in canonical mapping. Available rooms: {sorted(canonical_rooms)}"
+                f"room_id '{room_id}' not in canonical mapping. "
+                f"Available rooms: {sorted(canonical_rooms)}"
             )
 
     def _schema_ok(self, cur):
@@ -270,7 +297,8 @@ class RoomDbUpdater(hassapi.Hass):
             cfg_json = json.dumps(cfg, separators=(",", ":"))
             if len(cfg_json.encode("utf-8")) > self.max_config_size_bytes:
                 raise ValueError(
-                    f"Config too large: {len(cfg_json.encode('utf-8'))} bytes > {self.max_config_size_bytes}"
+                    f"Config too large: {len(cfg_json.encode('utf-8'))} bytes > "
+                    f"{self.max_config_size_bytes}"
                 )
 
             self._rate_limit(domain)
@@ -281,7 +309,9 @@ class RoomDbUpdater(hassapi.Hass):
                 self._schema_ok(cur)
                 conn.execute("BEGIN IMMEDIATE")
                 cur.execute(
-                    "INSERT OR REPLACE INTO room_configs (room_id, config_domain, config_data, updated_at) VALUES (?,?,?, datetime('now'))",
+                    "INSERT OR REPLACE INTO room_configs "
+                    "(room_id, config_domain, config_data, updated_at) "
+                    "VALUES (?,?,?, datetime('now'))",
                     (room_id, domain, cfg_json),
                 )
                 conn.commit()
@@ -298,11 +328,18 @@ class RoomDbUpdater(hassapi.Hass):
             return {"status": "error", "error": str(e)}, 400
         except sqlite3.Error as e:
             self.error(f"Database error: {e}")
-            self.call_service(
-                "persistent_notification/create",
-                title="Room DB Database Error",
-                message=f"Database operation failed: {str(e)}",
-            )
+            room_id = (data or {}).get("room_id")
+            domain = (data or {}).get("domain")
+            notif_id = None
+            if room_id and domain:
+                notif_id = f"roomdb_err__{domain}__{room_id}"
+            kwargs = {
+                "title": "Room DB Database Error",
+                "message": f"Database operation failed: {str(e)}",
+            }
+            if notif_id:
+                kwargs["notification_id"] = notif_id
+            self.call_service("persistent_notification/create", **kwargs)
             return {"status": "error", "error": "Database operation failed"}, 500
         except Exception as e:
             self.error(f"Unexpected error in update_config: {e}")
@@ -318,10 +355,14 @@ class RoomDbUpdater(hassapi.Hass):
             rate = self.write_rate_limit_seconds
             parts = [str(e)]
             if str(e) == "WRITE_RATE_LIMIT":
+                if isinstance(since_last, float):
+                    since = f"since_last={since_last:.1f}s)"
+                else:
+                    since = "since_last=unknown)"
                 parts = [
                     "WRITE_RATE_LIMIT",
                     f"(room={room_id}, domain={domain}, rate={rate}s",
-                    f"since_last={since_last:.1f}s)" if isinstance(since_last, float) else "since_last=unknown)",
+                    since,
                 ]
             msg = " ".join(parts)
             notif_id = None
