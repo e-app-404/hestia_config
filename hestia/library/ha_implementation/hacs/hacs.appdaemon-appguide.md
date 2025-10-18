@@ -1,4 +1,4 @@
-# Using Multiple APIs From One App
+# Using Multiple APIs From One App
 The way apps are constructed, they inherit from a superclass that contains all the methods needed to access a particular plugin. This is convenient as it hides a lot of the complexity by automatically selecting the right configuration information based on namespaces. One drawback of this approach is that an App cannot inherently speak to multiple plugin types as the API required is different, and the App can only choose one API to inherit from.
 
 To get around this, a function called get_plugin_api() is provided to instantiate API objects to handle multiple plugins, as a distinct objects, not part of the APPs inheritance. Once the new API object is obtained, you can make plugin-specific API calls on it directly, as well as call listen_state() on it to listen for state changes specific to that plugin.
@@ -7,6 +7,7 @@ In this case, it is cleaner not to have the App inherit from one or the other sp
 
 As an example, this App is built using ADBase, and uses get_plugin_api() to access both HASS and MQTT, as well as get_ad_api() to access the AppDaemon base functions.
 
+```py
 from appdaemon import adbase as ad
 
 class GetAPI(ad.ADBase):
@@ -27,6 +28,8 @@ class GetAPI(ad.ADBase):
     # Make a scheduler call using the ADBase class
     adbase = self.get_ad_api()
     handle = adbase.run_in(callback, 20)
+```
+
 By default, each plugin API object has it’s namespace correctly set for that plugin, which makes it much more convenient to handle calls and callbacks form that plugin. This way of working can often be more convenient and clearer than changing namespaces within apps or on the individual calls, so is the recommended way to handle multiple plugins of the same or even different types. The AD base API’s namespace defaults to “default”:
 
 # Listen for state changes specific to the "HASS" plugin
@@ -45,6 +48,7 @@ To use a custom constraint, it is first necessary to register the function to be
 Here is an example of how this all fits together.
 
 We start off with a python function that accepts a value to be evaluated like this:
+
 ```
 def is_daylight(self, value):
     if self.sun_up():
