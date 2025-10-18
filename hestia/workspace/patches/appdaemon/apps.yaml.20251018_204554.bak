@@ -1,0 +1,16 @@
+valetudo_default_activity:
+  module: valetudo_default_activity
+  class: ValetudoDefaultActivity
+  ha:
+    room_db_update_service: rest_command.room_db_update_config
+    room_configs_sensor: sensor.room_configs_vacuum_control
+    presence_sensors_glob: _presence_beta
+    schedule_entity: schedule.valetudo_allowed
+    mapping_path: /addon_configs/a0d7b954_appdaemon/www/area_mapping.yaml
+    base_topic_entity: input_text.valetudo_base_topic
+  policy:
+    batch_size: 2
+    require_presence_clear: true
+    optimistic_writeback: true
+    optimistic_job_seconds: 90
+    rate_limit_seconds: 2
