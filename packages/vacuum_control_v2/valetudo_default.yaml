@@ -1,0 +1,74 @@
+input_boolean:
+  valetudo_routine_enabled:
+    name: Valetudo Routine Enabled
+    icon: mdi:robot-vacuum
+
+input_datetime:
+  valetudo_quiet_hours_start:
+    name: Quiet Hours Start
+    has_time: true
+  valetudo_quiet_hours_end:
+    name: Quiet Hours End
+    has_time: true
+
+script:
+  valetudo_clean_room_ad_hoc:
+    alias: "Valetudo — Clean Room (Ad-hoc)"
+    fields:
+      room:
+        description: "Canonical room id"
+      force:
+        description: "Bypass quiet hours"
+        example: false
+      force_presence:
+        description: "Bypass presence gate"
+        example: false
+    sequence:
+      - event: valetudo_ad_hoc_clean
+        event_data:
+          room: "{{ room }}"
+          force: "{{ force | default(false) }}"
+          force_presence: "{{ force_presence | default(false) }}"
+
+automation:
+  - alias: "Valetudo — Daily Routine Trigger"
+    trigger:
+      - platform: time
+        at: "09:00:00"
+    condition:
+      - condition: state
+        entity_id: input_boolean.valetudo_routine_enabled
+        state: "on"
+    action:
+      - event: valetudo_routine_clean_requested  # (optional hook; app polls every 30s anyway)
+
+  - alias: "Valetudo — Flag Stale Rooms"
+    mode: single
+    variables:
+      rooms_to_flag: >-
+        {% set vac = state_attr('sensor.room_configs_vacuum_control','payload') | default('{}') %}
+        {% set data = vac | from_json if vac is string and vac.startswith('{') else {} %}
+        {% set now_ts = now().timestamp() %}
+        {% set rooms = [] %}
+        {% for room, cfg in (data or {}).items() %}
+          {% set last = cfg.get('last_cleaned') %}
+          {% set freq = (cfg.get('cleaning_frequency_days', 7) | int(7)) %}
+          {% set due = (last is none) or (as_timestamp(last, default=0) > 0 and (now_ts - as_timestamp(last, default=0)) / 86400 > freq) %}
+          {% if due %}{% set _ = rooms.append(room) %}{% endif %}
+        {% endfor %}
+        {{ rooms }}
+    trigger:
+      - platform: time
+        at: "08:00:00"
+    action:
+      - repeat:
+          for_each: "{{ rooms_to_flag }}"
+          sequence:
+            - service: rest_command.room_db_update_config
+              data:
+                room_id: "{{ repeat.item }}"
+                domain: vacuum_control
+                config_data:
+                  needs_cleaning: 1
+                schema_expected: 1
+            - delay: "00:00:02"  # respect rate limit
