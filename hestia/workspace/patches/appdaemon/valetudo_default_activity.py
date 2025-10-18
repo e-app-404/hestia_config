@@ -8,25 +8,27 @@ import yaml
 try:
     from appdaemon.plugins.hass import hassapi  # type: ignore
 except Exception:
+    class _DummyHass:
+        def __init__(self, *args, **kwargs):
+            self.args = {}
+
+        def log(self, *args, **kwargs):
+            pass
+
+        def error(self, *args, **kwargs):
+            pass
+
+        def call_service(self, *args, **kwargs):
+            pass
+
+        def get_state(self, *args, **kwargs):
+            return None
+
+        def run_every(self, *args, **kwargs):
+            pass
+
     class hassapi:  # type: ignore
-        class Hass:
-            def __init__(self, *args, **kwargs) -> None:
-                self.args = {}
-
-            def log(self, *args, **kwargs) -> None:
-                pass
-
-            def error(self, *args, **kwargs) -> None:
-                pass
-
-            def call_service(self, *args, **kwargs) -> None:
-                pass
-
-            def get_state(self, *args, **kwargs):
-                return None
-
-            def run_every(self, *args, **kwargs) -> None:
-                pass
+        Hass = _DummyHass
 
 
 class ValetudoDefaultActivity(hassapi.Hass):
@@ -41,8 +43,8 @@ class ValetudoDefaultActivity(hassapi.Hass):
         )
         self.default_mode = self.args.get("default_mode", "vacuum")
         self.canonical_mapping_file = self.args.get("canonical_mapping_file")
-        self._mapping_path: str | None = None
-        self._room_to_segment: dict[str, Any] | None = None
+        self._mapping_path = None
+        self._room_to_segment = None
 
         with contextlib.suppress(Exception):
             self._validate_config()
