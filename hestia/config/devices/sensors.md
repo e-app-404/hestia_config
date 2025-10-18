@@ -331,7 +331,7 @@
       "all": [
         "binary_sensor.hallway_downstairs_motion_beta",
         "binary_sensor.downstairs_motion_alpha_motion",
-        "binary_sensor.entrance_motion_proxy"
+        "binary_sensor.entrance_motion_beta"
       ],
       "preferred": "binary_sensor.hallway_downstairs_motion_beta"
     },
@@ -350,7 +350,7 @@
       "all": [],
       "preferred": null
     },
-    "proxies": ["binary_sensor.entrance_motion_proxy"],
+    "proxies": ["binary_sensor.entrance_motion_beta"],
     "sources": {
       "binary_sensor.hallway_downstairs_motion_beta": [
         { "file": "/config/domain/templates/motion_logic.yaml", "line": 421 }
@@ -361,7 +361,7 @@
       "binary_sensor.hallway_downstairs_presence_beta": [
         { "file": "/config/domain/templates/presence_logic.yaml", "line": 157 }
       ],
-      "binary_sensor.entrance_motion_proxy": [
+      "binary_sensor.entrance_motion_beta": [
         { "file": "/config/domain/templates/motion_logic.yaml", "line": 455 }
       ]
     },
@@ -523,7 +523,7 @@
 | ------------------ | --------------------------------- | ------------------------------------ | ----------------------------------- | ------------------------------ | -------------------- |
 | bedroom            | bin*s.bedroom_motion*β            | bin*s.bedroom_occupancy*β            | bin*s.bedroom_presence*β            | sens.bedroom*illuminance*β     | m:6 o:6 p:17 i:3 x:5 |
 | ensuite            | bin*s.ensuite_motion*β            | bin*s.ensuite_occupancy*β            | bin*s.ensuite_presence*β            | sens.ensuite*illuminance*β     | m:2 o:3 p:2 i:2 x:1  |
-| desk               | bin_s.desk_motion_proxy           | bin*s.desk_occupancy*β               | bin*s.desk_presence*β               | null                           | m:1 o:2 p:6 i:0 x:3  |
+| desk               | bin_s.desk_motion_beta           | bin*s.desk_occupancy*β               | bin*s.desk_presence*β               | null                           | m:1 o:2 p:6 i:0 x:3  |
 | kitchen            | bin*s.kitchen_motion*β            | bin*s.kitchen_occupancy*β            | bin*s.kitchen_presence*β            | null                           | m:2 o:3 p:1 i:0 x:0  |
 | living_room        | bin*s.living_room_motion*β        | bin*s.living_room_occupancy*β        | bin*s.living_room_presence*β        | sens.living*room_illuminance*β | m:2 o:2 p:2 i:2 x:0  |
 | hallway_downstairs | bin*s.hallway_downstairs_motion*β | bin*s.hallway_downstairs_occupancy*β | bin*s.hallway_downstairs_presence*β | null                           | m:3 o:2 p:1 i:0 x:1  |
