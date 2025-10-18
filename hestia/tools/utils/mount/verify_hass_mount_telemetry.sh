@@ -26,13 +26,15 @@ echo
 # Prefer canonical /config mount per ADR-0024; fall back to legacy $HOME_SAFE/hass if needed
 CONFIG_MP="/config"
 LEGACY_MP="$HOME_SAFE/hass"
+CONFIG_MP_REAL="$(realpath "$CONFIG_MP" 2>/dev/null || echo "$CONFIG_MP")"
+LEGACY_MP_REAL="$(realpath "$LEGACY_MP" 2>/dev/null || echo "$LEGACY_MP")"
 
 # Test 1: Mount Status
 echo -n "1. Mount Status: "
-if mount | egrep -q " on $CONFIG_MP .*smbfs"; then
-    echo "OK - SMB mount active at $CONFIG_MP"
-elif mount | egrep -q " on $LEGACY_MP .*smbfs"; then
-    echo "OK - SMB mount active at $LEGACY_MP (legacy path)"
+if mount | egrep -q " on $CONFIG_MP_REAL .*smbfs"; then
+    echo "OK - SMB mount active at $CONFIG_MP_REAL (/config)"
+elif mount | egrep -q " on $LEGACY_MP_REAL .*smbfs"; then
+    echo "OK - SMB mount active at $LEGACY_MP_REAL (legacy path)"
     echo "   NOTE: Consider migrating to /config per ADR-0024"
 else
     echo "FAIL - No SMB mount found"
@@ -153,7 +155,7 @@ TOTAL_TESTS=10
 
 # Count passed tests manually
 PASSED_TESTS=0
-mount | egrep -q "on $HOME_SAFE/hass .*smbfs" && ((PASSED_TESTS++))
+mount | egrep -q " on $CONFIG_MP_REAL .*smbfs" && ((PASSED_TESTS++)) || mount | egrep -q " on $LEGACY_MP_REAL .*smbfs" && ((PASSED_TESTS++))
 test -w "$HOME_SAFE/hass" && ((PASSED_TESTS++))
 test -f "$HOME_SAFE/hass/configuration.yaml" && ((PASSED_TESTS++))
 launchctl print "gui/$(id -u)/com.local.hass.mount" >/dev/null 2>&1 && ((PASSED_TESTS++))
