@@ -15,22 +15,17 @@ A Home Assistant lovelace card to display a sankey chart. For example for energy
 
 ## Table of Contents
 
-- [Installation](#installation)
+- [Usage](#usage)
+
+- [Usage](#usage)
 - [Configuration Options](#configuration-options)
   - [Sections Object](#sections-object)
-  - [Entities Object](#entities-object)
-  - [Children Object](#children-object)
-  - [Reconcile Config](#reconcile-config)
-  - [Entity Types](#entity-types)
-  - [Autoconfig](#autoconfig)
   - [Time Period](#time-period)
 - [Examples](#examples)
   - [Simple Example](#simple-example)
-  - [Energy Use Example](#energy-use-example)
   - [Reconcile State Example](#reconcile-state-example)
 - [Energy Dashboard Integration](#energy-dashboard-integration)
 - [FAQ](#faq)
-- [Development](#development)
 - [References](#references)
 
 ## Configuration Options
