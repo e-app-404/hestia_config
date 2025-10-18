@@ -1,7 +1,7 @@
 ---
 description: 'Create a governance-aware index of all *.sh and *.py in /config/hestia/tools with purpose, scope, environment, usage, and ADR compliance insights.'
 mode: 'agent'
-tools: []
+tools: ['edit', 'search', 'runCommands', 'problems', 'changes', 'ms-python.python/getPythonEnvironmentInfo', 'ms-python.python/getPythonExecutableCommand', 'ms-python.python/installPythonPackage', 'ms-python.python/configurePythonEnvironment']
 ---
 
 # Index Hestia Tools Catalog (governance-aware)
