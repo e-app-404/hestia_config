@@ -1,10 +1,38 @@
-# ═══════════════════════════════════════════════════════════════
-# ▶ AUTOMATION: Auto Git Push on Config Save ◀
-# Pushes HA config to DSM Git mirror every 5 min when diagnostics are on
-# Loader: !include_dir_merge_list from domain/automations/
-# Tier: ζ  •  Domain: system  •  Created: 2025-07-28
-# Tags: [git, diagnostics, config-sync, cron]
-# ═══════════════════════════════════════════════════════════════
+- id: 7e1b2c9a-3f4d-4e8a-9b2c-8e5d1a7c2f3b
+  alias: "Recorder purge noisy entities"
+  mode: single
+  trigger:
+    - platform: time
+      at: "04:20:00"
+  action:
+    - alias: "Daily: purge entity rows (no repack)"
+      action: recorder.purge_entities
+      data:
+        keep_days: 0
+        entity_id:
+          - group.unavailable_entities
+          - sensor.smartthings_entity_list
+
+- id: 1a2b3c4d-5e6f-7a8b-9c0d-111213141516
+  alias: "Recorder weekly repack"
+  trigger:
+    - platform: time
+      at: "04:25:00"
+  condition:
+    - condition: template
+      value_template: "{{ now().isoweekday() == 1 }}" # Monday
+  action:
+    - alias: "Weekly: repack DB"
+      action: recorder.purge
+      data:
+        keep_days: 0
+        repack: true
+    - action: persistent_notification.create
+      data:
+        title: "Recorder Repack Success"
+        message: "Repacked at {{ now().isoformat() }}."
+        notification_id: recorder_repack_success
+
 - id: 7e3b2c1a-4f8d-9a2e-3c7b-5d6e8f1a2b3c
   alias: "Logbook: curated occupancy entries"
   mode: queued
