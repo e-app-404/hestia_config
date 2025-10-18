@@ -1,17 +1,7 @@
 ---
 mode: "agent"
 model: "Claude Sonnet 4"
-tools:
-  [
-    "edit",
-    "search",
-    "new",
-    "runCommands",
-    "problems",
-    "changes",
-    "fetch",
-    "githubRepo",
-  ]
+tools: ["edit", "search", "problems", "changes"]
 description: "Streamlined Home Assistant integration configuration analyzer with prioritized patch plan generation"
 ---
 
