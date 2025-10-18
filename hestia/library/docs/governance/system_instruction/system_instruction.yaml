@@ -96,7 +96,7 @@ foundation:
         symlink_equivalent: /config/
         macos_smb_share_equivalent: /config/
     doctrine_path_reference:
-      canonical_path: /mnt/data/final_snapshot_*/apollo_knowledge/config/share/APOLLO/core/governance/ARCHITECTURE_DOCTRINE.md
+      canonical_path: /mnt/data/ha_storage_*/hestia/library/docs/ADR
       usage: |-
         This file is the governing schema and must not be overwritten.
         It forms the source-of-truth for:
