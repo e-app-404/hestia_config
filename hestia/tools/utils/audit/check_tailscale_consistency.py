@@ -1,12 +1,16 @@
 #!/usr/bin/env python3
 """
-Simple consistency checker: compares IPv4s in tailscale_machines.topology.json with network.conf.yaml `tailscale.ips` list.
+Simple consistency checker: compares IPv4s in tailscale_machines.topology.json with
+network.conf.yaml `tailscale.ips` list.
 Usage: python3 tools/check_tailscale_consistency.py
+Note: moved from hestia/config/network/tools to hestia/tools/utils/audit to align with repo shape.
 """
 import json
 from pathlib import Path
 
 import yaml
+
+# update needed: JSON is now a TOML file tailscale.toml, but keep this script for now
 
 BASE = Path(__file__).resolve().parents[1]
 TOPO = BASE / 'tailscale_machines.topology.json'
@@ -19,10 +23,10 @@ if not NETCONF.exists():
     print('Missing network.conf.yaml:', NETCONF)
     raise SystemExit(2)
 
-with open(TOPO,'r') as f:
+with open(TOPO) as f:
     topo = json.load(f)
 
-with open(NETCONF,'r') as f:
+with open(NETCONF) as f:
     net = yaml.safe_load(f)
 
 # network.conf.yaml is an array at top-level per current file
@@ -46,8 +50,8 @@ for d in topo:
     for ip in d.get('ipv4', []):
         topo_ips.add(ip)
 
-print('Found {} ipv4 addresses in topology.json'.format(len(topo_ips)))
-print('Found {} tailscale ips in network.conf.yaml'.format(len(tailscale_ips_net)))
+print(f'Found {len(topo_ips)} ipv4 addresses in topology.json')
+print(f'Found {len(tailscale_ips_net)} tailscale ips in network.conf.yaml')
 
 only_in_topo = topo_ips - tailscale_ips_net
 only_in_net = tailscale_ips_net - topo_ips
