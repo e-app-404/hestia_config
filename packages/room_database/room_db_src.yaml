@@ -25,11 +25,30 @@ rest_command:
     timeout: 10
 
   room_db_test:
-    url: "http://a0d7b954-appdaemon:5050/api/app/room_db_updater/room_db/test"
+    url: "http://a0d7b954-appdaemon:5050/api/app/room_db_updater/test"
     method: GET
     timeout: 10
     headers:
       accept: application/json
+
+  # Alternate commands (app-scoped paths): useful for environments where compat routes 404
+  room_db_update_config_app:
+    url: "http://a0d7b954-appdaemon:5050/api/app/room_db_updater/update_config"
+    method: POST
+    content_type: "application/json"
+    timeout: 20
+    payload: >
+      {
+        "room_id": "{{ room_id }}",
+        "domain": "{{ domain }}",
+        "config_data": {{ config_data | tojson }},
+        "schema_expected": {{ schema_expected|default(1) }}
+      }
+
+  room_db_health_app:
+    url: "http://a0d7b954-appdaemon:5050/api/app/room_db_updater/health"
+    method: GET
+    timeout: 10
 
 sql:
   - name: "Room Configs — Motion Lighting"
