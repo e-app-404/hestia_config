@@ -102,11 +102,14 @@ fi
 echo -n "7. Telemetry Script: "
 if [[ -x "$HOME_SAFE/bin/hass_telemetry.sh" ]]; then
     # Prefer canonical /config for HA_MOUNT to avoid legacy path false negatives
-    if HA_MOUNT="/config" "$HOME_SAFE/bin/hass_telemetry.sh" >/dev/null 2>&1; then
-        echo "OK - hass_telemetry.sh executes successfully"
+    BEFORE_SIZE=$(wc -c < "$HOME_SAFE/Library/Logs/hass-telemetry.log" 2>/dev/null || echo 0)
+    HA_MOUNT="/config" "$HOME_SAFE/bin/hass_telemetry.sh" >/dev/null 2>&1 || true
+    AFTER_SIZE=$(wc -c < "$HOME_SAFE/Library/Logs/hass-telemetry.log" 2>/dev/null || echo 0)
+    if [[ "$AFTER_SIZE" -gt "$BEFORE_SIZE" ]]; then
+        echo "OK - Telemetry posted and log updated"
     else
-        echo "FAIL - hass_telemetry.sh execution failed"
-        echo "   ACTION: Check script permissions and HA webhook availability"
+        echo "FAIL - Telemetry did not update log"
+        echo "   ACTION: Check script internals and HA webhook availability"
     fi
 else
     echo "SKIP - hass_telemetry.sh not found; skipping"
@@ -168,8 +171,11 @@ launchctl print "gui/$(id -u)/com.local.hass.mount" >/dev/null 2>&1 && ((PASSED_
 launchctl print "gui/$(id -u)/com.local.hass.telemetry" >/dev/null 2>&1 && ((PASSED_TESTS++))
 # 6. keychain
 security find-internet-password -w -s "homeassistant.local" -a "evertappels" >/dev/null 2>&1 && ((PASSED_TESTS++))
-# 7. telemetry script exec (use /config)
-HA_MOUNT="/config" "$HOME_SAFE/bin/hass_telemetry.sh" >/dev/null 2>&1 && ((PASSED_TESTS++))
+# 7. telemetry script exec (consider success if log grew)
+BEFORE_SIZE=$(wc -c < "$HOME_SAFE/Library/Logs/hass-telemetry.log" 2>/dev/null || echo 0)
+HA_MOUNT="/config" "$HOME_SAFE/bin/hass_telemetry.sh" >/dev/null 2>&1 || true
+AFTER_SIZE=$(wc -c < "$HOME_SAFE/Library/Logs/hass-telemetry.log" 2>/dev/null || echo 0)
+[[ "$AFTER_SIZE" -gt "$BEFORE_SIZE" ]] && ((PASSED_TESTS++))
 # 8. webhook endpoint reachable (correct ID)
 curl -s -o /dev/null -w "%{http_code}" -X POST -H "Content-Type: application/json" -d '{"test":"connectivity"}' "$WEBHOOK_URL" | egrep -q "200" && ((PASSED_TESTS++))
 # 9. logs present

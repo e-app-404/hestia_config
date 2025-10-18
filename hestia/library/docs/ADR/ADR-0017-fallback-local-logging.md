@@ -50,7 +50,7 @@ The Home Assistant configuration workspace is normally mounted from network stor
 
 When the primary Home Assistant config mount (the operator's `root config` mount) is unavailable, tooling and scripts MUST write fallback logs to the operator's local directory:
 
-`/Users/evertappels/Projects/HomeAssistant/logs`
+`~/Library/Logs/Hestia`
 
 This location is to be used only as a last-resort fallback when the canonical logging or config locations are unreachable.
 
