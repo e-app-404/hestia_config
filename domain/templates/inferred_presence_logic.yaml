@@ -8,11 +8,11 @@
       state: >-
         {% set app_active = is_state('binary_sensor.macbook_active', 'on') %}
         {% if not app_active %}
-          {{ none }}
+          unknown
         {% else %}
           {% set displays = state_attr('sensor.macbook_displays','Display Names') or [] %}
           {% set display_ok = 'HP 32 Display' in displays %}
-          {% set ac = state_attr('sensor.macbook_internal_battery_state','Power Source State') %}
+          {% set ac = state_attr('sensor.macbook_internal_battery_state','Power Source State') or '' %}
           {% set ac_power = (ac == 'AC Power') %}
           {% set at_home = is_state('device_tracker.macbook','home') %}
           {% set conn = states('binary_sensor.desk_macbook_recent_connectivity_desk') %}
@@ -81,3 +81,5 @@
 
         source_count: "3"
         last_updated: "2025-10-16"
+        area_id: "ensuite"
+        floor_id: "sanctum"

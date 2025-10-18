@@ -291,7 +291,7 @@
           {{ ['template.library.jinja','binary_sensor.desk_presence_inferred', 'binary_sensor.desk_motion_beta'] | tojson }}
         aggregation_strategy: "preference-based selection"
         related_motion_recent_entity: "binary_sensor.desk_motion_recent_beta"
-        source_count: "1"
+        source_count: "2"
         last_updated: "2025-10-16"
         area_id: "desk"
         floor_id: "bedroom"
