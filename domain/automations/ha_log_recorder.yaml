@@ -44,6 +44,7 @@
         - binary_sensor.ensuite_occupancy_beta
         - binary_sensor.hallway_downstairs_occupancy_beta
         - binary_sensor.hallway_upstairs_occupancy_beta
+        - binary_sensor.desk_occupancy_beta
       to:
         - "on"
         - "off"

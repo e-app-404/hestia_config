@@ -195,3 +195,14 @@
         language: en-ca
 
     - service: shell_command.hestia_prune_tmp
+
+- alias: "Debug System Log Events"
+  trigger:
+    - platform: event
+      event_type: system_log_event
+  action:
+    - service: persistent_notification.create
+      data:
+        title: "System Log Event"
+        message: >
+          {{ trigger.event.data | tojson }}

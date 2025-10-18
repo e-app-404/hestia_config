@@ -14,7 +14,7 @@ It is also possible to remove endpoints with the deregister_endpoint() call, mak
 
 Here is an example of an App using the API:
 
-```
+```py
 from appdaemon.plugins.hass import Hass
 
 

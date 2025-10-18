@@ -5,17 +5,46 @@ template:
   - sensor:
       - name: "AppDaemon Health Direct Test"
         state: >
-          {%- set status = state_attr('sensor.appdaemon_health_raw', 'status') -%}
+          {%- set candidates = [
+            'sensor.appdaemon_health_appdaemon_global',
+            'sensor.appdaemon_health_appdaemon_path',
+            'sensor.appdaemon_health_app_name_path',
+            'sensor.appdaemon_health_app_path',
+            'sensor.appdaemon_health_raw'
+          ] -%}
+          {%- set eid = '' -%}
+          {%- for e in candidates -%}
+            {%- if states(e) not in ['unknown','unavailable',''] -%}
+              {%- set eid = e -%}
+              {%- break -%}
+            {%- endif -%}
+          {%- endfor -%}
+          {%- set status = (state_attr(eid, 'status') if eid else none) -%}
           {{ status if status is not none else 'unknown' }}
         attributes:
           last_test: "{{ now().isoformat() }}"
           full_response: >
+            {%- set candidates = [
+              'sensor.appdaemon_health_appdaemon_global',
+              'sensor.appdaemon_health_appdaemon_path',
+              'sensor.appdaemon_health_app_name_path',
+              'sensor.appdaemon_health_app_path',
+              'sensor.appdaemon_health_raw'
+            ] -%}
+            {%- set eid = '' -%}
+            {%- for e in candidates -%}
+              {%- if states(e) not in ['unknown','unavailable',''] -%}
+                {%- set eid = e -%}
+                {%- break -%}
+              {%- endif -%}
+            {%- endfor -%}
             {%- set obj = {
-              'entity_exists': states('sensor.appdaemon_health_raw') not in ['unknown','unavailable',''],
-              'state': states('sensor.appdaemon_health_raw'),
-              'status': state_attr('sensor.appdaemon_health_raw','status') | default('unknown'),
-              'message': state_attr('sensor.appdaemon_health_raw','message') | default('no-message'),
-              'timestamp': state_attr('sensor.appdaemon_health_raw','timestamp') | default('')
+              'picked_entity': eid,
+              'picked_entity_state': (states(eid) if eid else 'missing'),
+              'status': (state_attr(eid,'status') if eid else 'unknown'),
+              'message': (state_attr(eid,'message') if eid else 'no-message'),
+              'timestamp': (state_attr(eid,'timestamp') if eid else ''),
+              'candidates_tested': candidates
             } -%}
             {{ obj }}
 
