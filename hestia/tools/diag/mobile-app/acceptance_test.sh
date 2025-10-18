@@ -1,9 +1,10 @@
 # --- BEGIN HOME STABILIZER ---
-USER_REAL_HOME="$(/usr/bin/dscl . -read /Users/$USER NFSHomeDirectory 2>/dev/null | awk '{print $2}' )"
+USER_REAL_HOME="$(/usr/bin/dscl . -read /Users/$USER NFSHomeDirectory 2>/dev/null | awk '{print $2}')"
 [ -n "$USER_REAL_HOME" ] || USER_REAL_HOME="/Users/$USER"
 HOME_SAFE="$USER_REAL_HOME"
-case "$HOME" in 
-  */actions-runner/*) echo "[hass] WARNING: overriding HOME (/Users/evertappels) -> " >&2; HOME="$HOME_SAFE"; export HOME;;
+case "$HOME" in
+    */actions-runner/*)
+        echo "[hass] WARNING: overriding HOME ('$HOME') -> '$HOME_SAFE'" >&2; HOME="$HOME_SAFE"; export HOME;;
 esac
 # --- END HOME STABILIZER ---
 #!/bin/bash
@@ -14,9 +15,9 @@ echo "=== HASS MOUNT ACCEPTANCE TEST ==="
 echo "Date: $(date)"
 echo
 
-mount | egrep -i "on $HOME_SAFE/hass .*smbfs" && echo "✅ MOUNT_OK" || echo "❌ MOUNT_FAIL"
-test -w "$HOME_SAFE/hass" && echo "✅ WRITE_OK" || echo "❌ WRITE_FAIL"
-test -f "$HOME_SAFE/hass/configuration.yaml" && echo "✅ CONFIG_OK" || echo "❌ CONFIG_MISSING"
+mount | egrep -i " on /config .*smbfs" && echo "✅ MOUNT_OK (/config)" || mount | egrep -i " on $HOME_SAFE/hass .*smbfs" && echo "✅ MOUNT_OK (legacy $HOME_SAFE/hass)" || echo "❌ MOUNT_FAIL"
+test -w "/config" && echo "✅ WRITE_OK (/config)" || test -w "$HOME_SAFE/hass" && echo "✅ WRITE_OK (legacy $HOME_SAFE/hass)" || echo "❌ WRITE_FAIL"
+test -f "/config/configuration.yaml" && echo "✅ CONFIG_OK (/config)" || test -f "$HOME_SAFE/hass/configuration.yaml" && echo "✅ CONFIG_OK (legacy $HOME_SAFE/hass)" || echo "❌ CONFIG_MISSING"
 launchctl print "gui/$(id -u)/com.local.hass.mount" | egrep 'last exit code' | sed 's/^.*last exit code/✅ EXIT_CODE/'
 
 echo
@@ -40,8 +41,8 @@ fi
 
 echo
 echo "=== HEALTH PROBE ==="
-if [[ -f "$HOME_SAFE/hass/hestia/config/diagnostics/.last_mount_status.json" ]]; then
-    HEALTH=$(python3 -c "import json; print(json.load(open('$HOME_SAFE/hass/hestia/config/diagnostics/.last_mount_status.json'))['health']['summary'])" 2>/dev/null || echo "PARSE_ERROR")
+if [[ -f "/config/hestia/config/diagnostics/.last_mount_status.json" ]]; then
+    HEALTH=$(python3 -c "import json; print(json.load(open('/config/hestia/config/diagnostics/.last_mount_status.json'))['health']['summary'])" 2>/dev/null || echo "PARSE_ERROR")
     echo "Health Status: $HEALTH"
 else
     echo "Health probe file missing"

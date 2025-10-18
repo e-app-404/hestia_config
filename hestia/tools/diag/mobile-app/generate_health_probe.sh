@@ -19,8 +19,8 @@ esac
 set -euo pipefail
 
 # Configuration
-HA_MOUNT="${HA_MOUNT:-$HOME_SAFE/hass}"
-STATUS_FILE="$HA_MOUNT/hestia/config/diagnostics/.last_mount_status.json"
+HA_MOUNT="${HA_MOUNT:-/config}"
+STATUS_FILE="/config/hestia/config/diagnostics/.last_mount_status.json"
 HOSTNAME="$(hostname -s)"
 USER="$(whoami)"
 TIMESTAMP="$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
@@ -102,8 +102,13 @@ JSON_OUTPUT=$(cat <<EOF
 EOF
 )
 
-# Write to status file
-mkdir -p "$(dirname "$STATUS_FILE")"
-echo "$JSON_OUTPUT" > "$STATUS_FILE"
-
-echo "Health probe written to $STATUS_FILE: $HEALTH_SUMMARY"
+# Write only on explicit --write; otherwise just print summary
+if [[ "${1:-}" == "--write" ]]; then
+    mkdir -p "$(dirname "$STATUS_FILE")"
+    # Minify JSON to a single line for HA File sensor compatibility
+    ONE_LINE_JSON=$(echo "$JSON_OUTPUT" | python3 -c 'import sys,json; print(json.dumps(json.load(sys.stdin)))')
+    printf "%s\n" "$ONE_LINE_JSON" > "$STATUS_FILE"
+    echo "Health probe written to $STATUS_FILE: $HEALTH_SUMMARY"
+else
+    echo "Health: $HEALTH_SUMMARY"
+fi

@@ -32,12 +32,12 @@ case $choice in
   diskutil unmount "/config" || diskutil unmount "$HOME/hass" || true
     launchctl kickstart -k "gui/$(id -u)/com.local.hass.mount"
     sleep 2
-    mount | egrep -i "on $HOME/hass .*smbfs" && echo "✅ REMOUNT_OK" || echo "❌ REMOUNT_FAIL"
+  mount | egrep -i " on /config .*smbfs" && echo "✅ REMOUNT_OK (/config)" || mount | egrep -i " on $HOME/hass .*smbfs" && echo "✅ REMOUNT_OK (legacy $HOME/hass)" || echo "❌ REMOUNT_FAIL"
     ;;
 
   3)
     echo "=== CHECK TELEMETRY ==="
-  if [[ -x "$HOME/bin/hass_telemetry.sh" ]]; then "$HOME/bin/hass_telemetry.sh" && echo "✅ WEBHOOK_OK"; else echo "SKIP - hass_telemetry.sh not present"; fi
+  if [[ -x "$HOME/bin/hass_telemetry.sh" ]]; then HA_MOUNT="/config" "$HOME/bin/hass_telemetry.sh" && echo "✅ WEBHOOK_OK"; else echo "SKIP - hass_telemetry.sh not present"; fi
     echo "Recent telemetry:"
     tail -n 3 "$HOME/Library/Logs/hass-telemetry.log"
     ;;
@@ -73,7 +73,7 @@ case $choice in
 
   6)
     echo "=== HEALTH PROBE ==="
-    if [[ -f "/config/hestia/config/diagnostics/.last_mount_status.json" ]]; then
+  if [[ -f "/config/hestia/config/diagnostics/.last_mount_status.json" ]]; then
       python3 -c "
 import json
 with open('/config/hestia/config/diagnostics/.last_mount_status.json') as f:
@@ -96,7 +96,7 @@ with open('/config/hestia/config/diagnostics/.last_mount_status.json') as f:
 
   8)
     echo "=== FULL DIAGNOSTIC ==="
-    "$HOME/hass/hestia/config/diagnostics/acceptance_test.sh"
+  "/config/hestia/tools/diag/mobile-app/acceptance_test.sh"
     echo
     echo "=== REGRESSION CHECKS ==="
     echo "LaunchAgent Configuration:"
