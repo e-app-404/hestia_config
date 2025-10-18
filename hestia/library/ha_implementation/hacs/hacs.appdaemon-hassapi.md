@@ -22,27 +22,23 @@ url: "https://appdaemon.readthedocs.io/en/latest/HASS_PLUGIN.html"
 - [Rendering Templates](#rendering-templates)
 - [API Reference](#api-reference)
 
-## About
-
-### Hass Plugin
+## Hass Plugin
 
 The `Hass` plugin connects to Home Assistant using the [websocket API](https://developers.home-assistant.io/docs/api/websocket/) and maintains this connection while AppDaemon is running. In addition, it maintains an HTTP session because some functionality is only available via the [REST API](https://developers.home-assistant.io/docs/api/rest). If the connection is lost, the plugin will gracefully attempt to reconnect every 5s until it succeeds, any apps that are using the `Hass` API will be stopped and restarted when the connection is re-established.
 
-Hass API
-
-~~~~~~~~
+## Hass API
 
 The :py:class:`Hass <appdaemon.plugins.hass.hassapi.Hass>` API is an interface layer that makes it easy for users to
 interact with the `Hass` plugin. In addition to all the methods of the ``ADAPI``, it provides many methods that are
 specific to Home Assistant. Most of these methods simply wrap calling services with some logic that make them more
 convenient to use.
 
-Plugin Configuration
---------------------
+## Plugin Configuration
 
 The `Hass` plugin must be configured in the ``appdaemon.yaml`` file under the ``plugins`` section in order for it to
 connect to Home Assistant. This example shows where it fits into the overall configuration file.
 
+```yaml
 .. code:: yaml
 
     # conf/appdaemon.yaml
@@ -54,61 +50,60 @@ connect to Home Assistant. This example shows where it fits into the overall con
           ha_url: ... # required
           token: ...  # required
           ... # other Hass plugin config options here
+```
 
-### Configuration Options
+## Configuration Options
 
 This is the full list of configuration options available for the `Hass` plugin.
 
+```
 .. list-table:: HASS Plugin Configuration Options
-   :header-rows: 1
-   :widths: 20 6 80
+  :header-rows: 1
+  :widths: 20 6 80
 
-- - **Key**
-  - **Note**
-  - **Description**
-- - ``type``
-  - required
-  - This must be declared and it must be the exact value ``hass``.
-- - ``ha_url``
-  - required
-  - URL to a Home Assistant instance, must include correct port and scheme (``http://`` or ``https://``)
-- - ``token``
-  - required
-  - Long-lived token for for authentication with Home Assistant. See the
-       `section on authentication <#authentication>`_ for more information on how to set it up.
-- - ``ha_key``
-  - deprecated
-  - Use ``token`` instead
-- - ``retry_secs``
-  - optional
-  - Time to sleep between connection attempts. Defaults to 5 seconds.
-- - ``cert_verify``
-  - optional
-  - Flag for adding an SSL context around the ``aiohttp.ClientSession``. Set to ``False`` to disable (e.g., with internal IPs)
-- - ``cert_path``
-  - optional
-  - Path to the SSL certificate file. This is only used if ``cert_verify`` is set to ``True``.
-- - ``api_port``
-  - optional
-  - Port the AppDaemon RESTful API will listen on. If not specified, API is disabled
-- - ``ws_timeout``
-  - optional
-  - Timeout for waiting for Home Assistant response from the websocket API. This is the time between when a websocket
-       message is first sent and when Home Assistant responds with some kind of acknowledgement/result. Config values
-       are parsed with :py:func:`parse_timedelta <appdaemon.utils.parse_timedelta>`. Defaults to 10 seconds.
-- - ``suppress_log_messages``
-  - optional
-  - If ``true``, suppress log messages related to :py:meth:`call_service <appdaemon.plugins.hass.hassapi.Hass.call_service>`.
-       Defaults to ``false``.
-- - ``app_init_delay``
-  - optional
-  - Delay in seconds before initializing apps and listening for events
-- - ``appdaemon_startup_conditions``
-  - optional
-  - See the `startup control section <#startup-control>`_ for more information.
-- - ``plugin_startup_conditions``
-  - optional
-  - See the `startup control section <#startup-control>`_ for more information.
+  * - Key
+    - Note
+    - Description
+  * - type
+    - required
+    - This must be declared and it must be the exact value hass
+  * - ha_url
+    - required
+    - URL to a Home Assistant instance, must include correct port and scheme (http or https)
+  * - token
+    - required
+    - Long-lived token for authentication with Home Assistant See the section on authentication for more information on how to set it up
+  * - ha_key
+    - deprecated
+    - Use token instead
+  * - retry_secs
+    - optional
+    - Time to sleep between connection attempts Defaults to 5 seconds
+  * - cert_verify
+    - optional
+    - Flag for adding an SSL context around the aiohttpClientSession Set to False to disable (eg with internal IPs)
+  * - cert_path
+    - optional
+    - Path to the SSL certificate file This is only used if cert_verify is set to True
+  * - api_port
+    - optional
+    - Port the AppDaemon RESTful API will listen on If not specified API is disabled
+  * - ws_timeout
+    - optional
+    - Timeout for waiting for Home Assistant response from the websocket API This is the time between when a websocket message is first sent and when Home Assistant responds with some kind of acknowledgement or result Config values are parsed with pyfuncparse_timedelta appdaemonutilsparse_timedelta Defaults to 10 seconds
+  * - suppress_log_messages
+    - optional
+    - If true suppress log messages related to pymethcall_service appdaemonpluginshasshassapiHasscall_service Defaults to false
+  * - app_init_delay
+    - optional
+    - Delay in seconds before initializing apps and listening for events
+  * - appdaemon_startup_conditions
+    - optional
+    - See the startup control section for more information
+  * - plugin_startup_conditions
+    - optional
+    - See the startup control section for more information
+```
 
 Authentication
 
