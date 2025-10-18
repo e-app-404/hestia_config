@@ -51,7 +51,9 @@
       "tmp/**": true,
       "hestia/workspace/cache/**": false,
       "hestia/workspace/archive/**": false,
-      "zigbee2mqtt/**": true
+      "zigbee2mqtt/**": true,
+      "**/*.bak": true,
+      "**/*.bak*": true
     },
     "files.watcherExclude": {
       "hestia/workspace/archive/**": true,
