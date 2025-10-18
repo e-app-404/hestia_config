@@ -223,8 +223,12 @@ def try_sqlite_enumeration(db_path_str: str | None) -> dict[str, Any]:
                 continue
         result["by_domain"] = {k: sorted(v) for k, v in by_domain.items()}
         return result
+    except Exception as e:
+        result["error"] = f"introspection failed: {e}"
+        return result
     finally:
         import contextlib
+
         with contextlib.suppress(Exception):
             conn.close()
 
