@@ -4,9 +4,8 @@ import requests
 import json
 import sys
 from typing import Dict, List, Optional
-import sys
-
-import requests
+import yaml
+from pathlib import Path
 
 """
 Verify and generate network_scanner MAC mappings from Home Assistant
@@ -17,8 +16,13 @@ Run this script on your Home Assistant instance or any machine with API access
 # CONFIGURATION - Update these values
 # ═══════════════════════════════════════════════════════════════
 
+# Load token from secrets.yaml
+secrets_path = Path("/config/secrets.yaml")
+with open(secrets_path) as f:
+    secrets = yaml.safe_load(f)
+
 HA_URL = "http://homeassistant.local:8123"
-HA_TOKEN = !secret HA_TOKEN
+HA_TOKEN = secrets["HA_TOKEN"]
 
 # Known entities from your YAML files
 KNOWN_ENTITIES = [
