@@ -351,8 +351,43 @@ def main():
                 errors_total.append(f"{p}: E-MERGE-001 {e}")
                 # fallback to write-through if ruamel missing (still audited by error)
                 merged_text = text
-            atomic_write(target, merged_text.encode("utf-8"))
-            applied = True
+
+            # --- write-broker integration (config-driven) ---
+            apply_cfg = cfg.get("apply", {})
+            use_broker = bool(apply_cfg.get("use_write_broker", False))
+            broker_bin = apply_cfg.get("write_broker_cmd", "")
+            broker_mode = apply_cfg.get("write_broker_mode", "replace")
+
+            def _broker_write(dst: pathlib.Path, payload: str) -> tuple[bool, str]:
+                # write to temp, then broker replace
+                tmp = dst.with_suffix(dst.suffix + f".wb.{int(time.time()*1000)}")
+                atomic_write(tmp, payload.encode("utf-8"))  # reuse atomic_write for temp creation
+                import subprocess
+                try:
+                    cp = subprocess.run(
+                        [broker_bin, broker_mode, str(dst), str(tmp)],
+                        capture_output=True, text=True, check=False
+                    )
+                    ok = (cp.returncode == 0)
+                    msg = (cp.stdout.strip() + "\n" + cp.stderr.strip()).strip()
+                    return ok, msg
+                finally:
+                    try:
+                        tmp.unlink(missing_ok=True)
+                    except Exception:
+                        pass
+
+            if use_broker and broker_bin and os.path.exists(broker_bin):
+                ok, msg = _broker_write(target, merged_text)
+                if not ok:
+                    errors_total.append(f"{p}: E-BROKER-001 write-broker failed: {msg}")
+                    tl = "red"
+                    applied = False
+                else:
+                    applied = True
+            else:
+                atomic_write(target, merged_text.encode("utf-8"))
+                applied = True
 
         # Determine skip reason for audit clarity
         skip_reason = None
@@ -372,13 +407,30 @@ def main():
             elif tl == "orange":
                 skip_reason = "routing-or-shape"
 
+        # Provide routing suggestions for orange results
+        routing_suggestion = None
+        if tl == "orange":
+            routing_tpl_path = cfg.get("paths", {}).get("routing_template", "")
+            try:
+                if routing_tpl_path and os.path.exists(routing_tpl_path):
+                    with open(routing_tpl_path, "r", encoding="utf-8") as f:
+                        tpl = f.read()
+                    section = pathlib.Path(p).stem
+                    dest = str(config_root / "automation" / f"{section}.meta.yaml")
+                    routing_suggestion = tpl.replace("<section_name>", section).replace(
+                        "<relative_path>", f"automation/{section}.meta"
+                    )
+            except Exception:
+                routing_suggestion = None
+
         results.append({
             "source": str(pth),
             "target": str(target),
             "sha256": shex,
             "traffic_light": tl,
             "applied": applied,
-            "skip_reason": (None if applied else skip_reason)
+            "skip_reason": (None if applied else skip_reason),
+            "routing_suggestion": routing_suggestion
         })
 
     counts = {
