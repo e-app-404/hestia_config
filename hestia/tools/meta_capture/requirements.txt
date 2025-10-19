@@ -1,0 +1,4 @@
+# /config/hestia/tools/meta_capture/requirements.txt
+PyYAML==6.0.2
+jsonschema==4.22.0
+ruamel.yaml==0.18.6
