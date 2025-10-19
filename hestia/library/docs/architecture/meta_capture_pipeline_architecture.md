@@ -152,6 +152,60 @@ Validation checks:
 - Clear mapping of APUs → targets, with traffic-light badges
 - Safety banners when yellow/orange/red present; suggested next steps
 
+## Handling Non-Ideal Inputs & Operational Safety
+
+The pipeline must be resilient when inputs are incomplete, duplicated, or unexpected.
+
+### Deduplication & Re-ingestion Guard
+
+- Compute `sha256` for each intake file. Before processing, consult a processed-ledger to avoid re-ingesting identical content.
+- Processed-ledger entry: `{ sha256, original_path, first_seen, last_seen, outcome, report, disposition_path }`.
+- Location: append to `/config/hestia/reports/_index.jsonl` with tool=meta_capture, and optionally maintain a thin ledger at `/config/hestia/workspace/operations/logs/meta_capture/_processed.jsonl`.
+- Duplicate detection outcomes:
+  - Same SHA, different filename: mark as duplicate (no-op), disposition → archive with `.duplicate.<ts>` suffix.
+  - Same filename unchanged mtime/SHA: ignore silently (logged).
+
+### Unknown or New Top-Level Sections
+
+- Classifier collects unknown sections; Router emits `E-ROUTE-404` with section name.
+- Validation level: `orange` (manual review). Disposition → quarantine with structured note and suggested routing addition for `hestia.toml`.
+- Operator guidance: add routing in `[automation.meta_capture.routing]`, or confirm as `notes` append target.
+
+### Malformed or Oversized YAML
+
+- Parse error → `E-YAML-DEC-001`, validation level `red`. Disposition → quarantine with parser error excerpt.
+- Oversized file (configurable `max_file_size_mb`) → `red`. Disposition → quarantine with size stats and advice to split into smaller captures.
+
+### Unknown Topics in `exports:`
+
+- If `topic` not in configured mapping, or `target_path` mismatches mapping, mark `orange` and route to quarantine with a recommended mapping diff.
+- If `file_format` != `yaml`, mark `orange` unless explicitly allowed; prefer YAML in canonical repo.
+
+### Conflicts with Canonical (Pins, Secrets, Stable Paths)
+
+- `# @pin` touched → `red` (block) with `E-GOV-009` and precise path to pinned key.
+- Secret-like values in patch content → `red` per ADR-0027 with `E-SECRET-013`.
+- Unstable device paths (e.g., `/dev/ttyUSB*`) → `orange` with remediation suggestion to rewrite to `/dev/serial/by-id/...`.
+
+### Clock Skew & Timestamp Anomalies
+
+- If `x-origin.timestamp` is in future or far past (configurable skew window), mark `yellow` and include a warning in the report; proceed with merge if otherwise safe.
+
+### Disposition Rules (Suffixes)
+
+- Success: `.processed.<UTC>` → archive path
+- Duplicate: `.duplicate.<UTC>` → archive path
+- Quarantine: `.error.<UTC>` → quarantine path
+- All dispositions record entries in the report index with a stable `batch_id`.
+
+### Operator Playbooks (At-a-glance)
+
+- Unknown section → add routing; re-run
+- Duplicate content → no action needed
+- Malformed YAML → fix syntax; re-stage
+- Secret detected → replace with vault reference in source before re-stage
+- Pin conflict → decide whether to unpin with human approval; re-run in controlled PR
+
 ## Inspiration & Parallels
 
 - Sweeper: orchestrator + modular components, shared log, ADR-0018 reporting

@@ -16,7 +16,7 @@ Related_ADRs:
 
 ## 1) Intake Scanner
 - Inputs: `intake_paths[]`, `since_ts?`, `topics?`
-- Outputs: `queue[]` of file descriptors `{path, size, mtime, sha256}`
+- Outputs: `queue[]` of file descriptors `{path, size, mtime, sha256}` (SHA computed for dedup)
 - Errors: permission_denied, unreadable_yaml, too_large
 - Success: found ≥0 new items
 
@@ -26,10 +26,11 @@ Related_ADRs:
 - Outputs: `schema_ok: bool`, `errors[]`
 - Errors: E-SCHEMA-001 (missing), E-YAML-DEC-001 (parse)
 - Success: schema_ok
+ - Traffic light: missing required sections → red; unknown extra sections → orange
 
 ## 3) Classifier
 - Inputs: parsed YAML
-- Outputs: `sections_present: Set[str]`
+- Outputs: `sections_present: Set[str]`, `unknown_sections: Set[str]`
 - Errors: none (best-effort)
 - Success: non-empty or marked as noop
 
@@ -38,12 +39,14 @@ Related_ADRs:
 - Outputs: `routing_plan[]` of {section, target_path, operation}
 - Errors: E-ROUTE-404 (no route), E-ROUTE-409 (ambiguous)
 - Success: all sections routed or soft-noop
+ - Traffic light: no route for section → orange; ambiguous → orange; mismatched topic mapping → orange
 
 ## 5) Atomizer
 - Inputs: routing_plan + source content
 - Outputs: `apus[]` (Atomic Patch Units)
 - Errors: E-ATOM-001 (oversized), E-ATOM-002 (empty), E-ATOM-003 (id collision)
 - Success: ≥1 apu created when content exists
+ - Traffic light: oversized content → red; empty content → yellow (noop)
 
 ## 6) Validator (Traffic Light)
 - Inputs: apu + target snapshot
@@ -51,6 +54,12 @@ Related_ADRs:
 - Checks: pin guard, secret detection, path stability, merge diff analysis, schema
 - Errors: E-VAL-00x (per check)
 - Success: non-red or red with actionable reasons
+ - Mappings:
+   - touches `# @pin` → red
+   - secrets detected → red
+   - unstable device paths → orange
+   - timestamp skew → yellow
+   - unknown section routed to notes → orange
 
 ## 7) Merger
 - Inputs: apu (green/yellow), write-broker
@@ -63,6 +72,7 @@ Related_ADRs:
 - Outputs: archived or quarantined file path
 - Errors: E-DISP-001 (move failed)
 - Success: source removed from intake, not re-ingested
+ - Dispositions: `.processed.<ts>` (success), `.duplicate.<ts>` (duplicate), `.error.<ts>` (quarantine)
 
 ## 9) Reporter
 - Inputs: run metadata, apus, outcomes
