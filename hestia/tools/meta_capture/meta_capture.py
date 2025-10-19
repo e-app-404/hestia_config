@@ -10,6 +10,7 @@ import os
 import pathlib
 import re
 import shutil
+import subprocess
 import sys
 import time
 import uuid
@@ -159,6 +160,38 @@ def secrets_scan(text: str, rules) -> list[str]:
                 hits.append("E-SECRET-ENTROPY:high")
                 break
     return hits
+
+# ---- Broker helpers ----
+def detect_broker_mode(broker_bin: str) -> dict:
+    """Probe broker for supported syntax."""
+    try:
+        cp = subprocess.run(
+            [broker_bin, "--help"], capture_output=True, text=True, check=False, timeout=5
+        )
+        helptext = (cp.stdout + "\n" + cp.stderr).lower()
+        supports_rewrite = "rewrite" in helptext and "--file" in helptext and "--from" in helptext
+        supports_replace = "replace" in helptext
+        return {"rewrite": supports_rewrite, "replace": supports_replace, "help": helptext}
+    except Exception as e:
+        return {"rewrite": False, "replace": False, "help": f"probe_failed: {e}"}
+
+def broker_invoke(
+    broker_bin: str,
+    mode: str,
+    dst: pathlib.Path,
+    tmp: pathlib.Path,
+) -> tuple[bool, str, int, str, str]:
+    """Run the broker with chosen mode; return (ok, msg, rc, out, err)."""
+    if mode == "rewrite":
+        cmd = [broker_bin, "rewrite", "--file", str(dst), "--from", str(tmp)]
+    elif mode == "replace":
+        cmd = [broker_bin, "replace", str(dst), str(tmp)]
+    else:
+        return False, f"unsupported_mode:{mode}", 127, "", ""
+    cp = subprocess.run(cmd, capture_output=True, text=True, check=False)
+    ok = (cp.returncode == 0)
+    msg = (cp.stdout.strip() + "\n" + cp.stderr.strip()).strip()
+    return ok, msg, cp.returncode, cp.stdout, cp.stderr
 
 def classify_required_keys(doc) -> tuple[str, list[str]]:
     errs = []
