@@ -360,7 +360,10 @@ def main():
             if tl == "red":
                 if secret_errs:
                     skip_reason = "secrets"
-                elif any(e.startswith(("E-YAML-DEC","E-SCHEMA-001")) for e in (parse_errs + schema_errs)):
+                elif any(
+                    e.startswith(("E-YAML-DEC", "E-SCHEMA-001"))
+                    for e in (parse_errs + schema_errs)
+                ):
                     skip_reason = "schema"
                 elif pin_errs:
                     skip_reason = "pin-lock"
