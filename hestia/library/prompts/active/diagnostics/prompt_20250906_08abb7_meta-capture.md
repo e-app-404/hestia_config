@@ -88,7 +88,7 @@ promptset:
             - suggested_commands
             - notes
           - Maintain cross-device and cross-service relationships (e.g., device → service → port).
-          - Ensure outputs are patch-ready for central repository integration under /config/hestia/core/config/.
+          - Ensure outputs are patch-ready for central repository integration under /config/hestia/config/.
       phases:
         - name: extraction_phase
           persona: kybernetes_v1_20250607
@@ -133,7 +133,7 @@ promptset:
         - Include transient states (online/offline, last_seen, status) and
             commands that were suggested/executed.
         - Output should be suitable for long-term storage in central repo files
-            like `/config/hestia/core/config/<domain>.conf`.
+            like `/config/hestia/config/<domain>.conf`.
 
         Treat each conversation as an opportunity to incrementally enrich a
         **knowledge repository of my IT setup** across networking, Home Assistant,
