@@ -73,6 +73,21 @@ rest_command:
     method: GET
     timeout: 10
 
+rest_command:
+  room_db_reload_mapping:
+    url: "http://a0d7b954-appdaemon:5050/api/appdaemon/room_db_reload_mapping"
+    method: GET
+  room_db_update_config:
+    url: "http://a0d7b954-appdaemon:5050/api/appdaemon/room_db_update_config"
+    method: POST
+    content_type: "application/json"
+    payload: '{{ payload_json }}'
+  room_db_export_write_once:
+    url: "http://a0d7b954-appdaemon:5050/api/appdaemon/room_db_export_write_once"
+    method: POST
+    content_type: "application/json"
+    payload: "{}"
+
 sql:
   - name: "Room Configs — Motion Lighting"
     db_url: sqlite:////config/room_database.db
