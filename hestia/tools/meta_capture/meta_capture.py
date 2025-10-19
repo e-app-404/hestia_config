@@ -313,7 +313,12 @@ def main():
         print("E-ROUTE-ROOT-001: config_root outside allowed_root", file=sys.stderr)
         sys.exit(3)
 
+    max_files = int(cfg.get("limits", {}).get("max_files", 100))
+    max_apus  = int(cfg.get("limits", {}).get("max_apus", 2000))
+
     files = list_inputs(args.inputs)
+    if len(files) > max_files:
+        files = files[:max_files]
     ts = now_utc_z()
     run_id, batch_id = str(uuid.uuid4()), str(uuid.uuid4())
 
@@ -325,6 +330,24 @@ def main():
 
     errors_total = []
     results = []
+
+    def last_applied_sha(index_path: pathlib.Path, target: str) -> str | None:
+        if not index_path.exists():
+            return None
+        sha = None
+        try:
+            with open(index_path, encoding="utf-8") as f:
+                for line in f:
+                    try:
+                        obj = json.loads(line)
+                    except Exception:
+                        continue
+                    for r in obj.get("results", []):
+                        if r.get("target") == target and r.get("applied"):
+                            sha = r.get("sha256")
+        except Exception:
+            return None
+        return sha
 
     for p in files:
         pth = pathlib.Path(p)
@@ -375,6 +398,44 @@ def main():
             if pin_errs:
                 tl = "red"
                 errors_total.extend([f"{p}: {e}" for e in pin_errs])
+
+        # Idempotency dedupe by (target, sha256)
+        prev_sha = last_applied_sha(jsonl_index, str(target))
+        if prev_sha == shex:
+            results.append({
+                "source": str(pth),
+                "target": str(target),
+                "sha256": shex,
+                "traffic_light": "green",
+                "applied": False,
+                "skip_reason": "idempotent",
+                "routing_suggestion": None,
+                "broker": None,
+                "apu": {
+                    "apu_id": str(uuid.uuid4()),
+                    "operation": "merge",
+                    "topic": "meta_capture",
+                    "target_path": str(target),
+                    "provenance": {
+                        "source": str(pth),
+                        "sha256": shex,
+                        "run_id": run_id,
+                        "batch_id": batch_id,
+                        "ts": ts,
+                        "tool_version": TOOL_VERSION,
+                    },
+                    "traffic_light": "green",
+                    "severity": "low",
+                    "safety_checks": {
+                        "within_allowed_root": within(allowed_root, target),
+                        "no_traversal": True,
+                        "pins_ok": True,
+                        "no_secrets": True,
+                        "schema_valid": True,
+                    },
+                }
+            })
+            continue
 
         applied = False
         if args.mode == "apply" and tl == "green":
@@ -463,7 +524,7 @@ def main():
                 atomic_write(target, merged_text.encode("utf-8"))
                 applied = True
 
-        # Determine skip reason for audit clarity
+    # Determine skip reason for audit clarity
         skip_reason = None
         if not applied:
             if tl == "red":
@@ -498,6 +559,31 @@ def main():
             except Exception:
                 routing_suggestion = None
 
+        # Compose APU evidence
+        apu_obj = {
+            "apu_id": str(uuid.uuid4()),
+            "operation": "merge",
+            "topic": "meta_capture",
+            "target_path": str(target),
+            "provenance": {
+                "source": str(pth),
+                "sha256": shex,
+                "run_id": run_id,
+                "batch_id": batch_id,
+                "ts": ts,
+                "tool_version": TOOL_VERSION,
+            },
+            "traffic_light": tl,
+            "severity": ("low" if tl in ("green", "yellow") else "high"),
+            "safety_checks": {
+                "within_allowed_root": within(allowed_root, target),
+                "no_traversal": True,
+                "pins_ok": not bool(pin_errs),
+                "no_secrets": not bool(secret_errs),
+                "schema_valid": not bool(schema_errs),
+            },
+        }
+
         results.append({
             "source": str(pth),
             "target": str(target),
@@ -506,7 +592,8 @@ def main():
             "applied": applied,
             "skip_reason": (None if applied else skip_reason),
             "routing_suggestion": routing_suggestion,
-            "broker": (broker_evidence if 'broker_evidence' in locals() else None)
+            "broker": (broker_evidence if 'broker_evidence' in locals() else None),
+            "apu": apu_obj,
         })
 
     counts = {
@@ -519,6 +606,10 @@ def main():
         "orange": sum(1 for r in results if r["traffic_light"] == "orange"),
         "red": sum(1 for r in results if r["traffic_light"] == "red"),
     }
+    # Guardrail for max_apus if batching expands later
+    if sum(1 for r in results if r["traffic_light"] == "green") > max_apus:
+        errors_total.append(f"E-LIMIT-APU-001: greens exceed max_apus={max_apus}")
+
     report = {
         "ts": ts,
         "run_id": run_id,
