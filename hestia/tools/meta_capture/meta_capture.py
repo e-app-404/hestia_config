@@ -25,7 +25,7 @@ import shutil
 import sys
 import time
 import uuid
-from datetime import datetime
+from datetime import UTC, datetime
 
 # --- Optional deps (graceful degradation) ---
 try:
@@ -47,7 +47,10 @@ TOML_PATH = "/config/hestia/config/system/hestia.toml"
 
 
 def _now():
-    return datetime.utcnow().replace(microsecond=0).isoformat() + "Z"
+    """UTC timestamp in ISO-8601 with Z suffix, second precision."""
+    ts = datetime.now(UTC).replace(microsecond=0).isoformat()
+    # isoformat yields "+00:00"; normalize to trailing Z per repo convention
+    return ts.replace("+00:00", "Z")
 
 
 def _load_toml(p: str) -> dict:
