@@ -2,8 +2,18 @@
 # version_id: patch_20251019_03
 # artifact: /config/hestia/tools/meta_capture/meta_capture.py
 
-import os, sys, json, uuid, time, shutil, hashlib, argparse, pathlib, glob, re
-from datetime import datetime, timezone
+import argparse
+import glob
+import hashlib
+import json
+import os
+import pathlib
+import re
+import shutil
+import sys
+import time
+import uuid
+from datetime import UTC, datetime
 
 # Required
 try:
@@ -35,7 +45,7 @@ TOML_PATH    = "/config/hestia/config/system/hestia.toml"
 PIN_MARKER   = "# @pin"
 
 def now_utc_z() -> str:
-    return datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00","Z")
+    return datetime.now(UTC).replace(microsecond=0).isoformat().replace("+00:00", "Z")
 
 def real(p: pathlib.Path) -> pathlib.Path:
     return p.resolve()
@@ -85,7 +95,7 @@ def schema_validate(doc, schema_path: str) -> list[str]:
     if not jsonschema or not schema_path or not os.path.exists(schema_path):
         return []
     try:
-        schema = json.load(open(schema_path, "r"))
+        schema = json.load(open(schema_path))
         jsonschema.validate(instance=doc, schema=schema)
         return []
     except Exception as e:
@@ -97,7 +107,7 @@ def load_secret_rules(path: str):
         return []
     try:
         rules = []
-        with open(path, "r", encoding="utf-8") as f:
+        with open(path, encoding="utf-8") as f:
             text = f.read()
         # Minimal set of common tokens (keep synced with rules file)
         patterns = [

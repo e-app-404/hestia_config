@@ -24,3 +24,4 @@ suggested_commands:
     cmd: curl -sS http://a0d7b954-appdaemon:5050/api/appdaemon/room_db_health | jq .
 notes:
   - "Meta-capture GREEN test; safe to apply."
+pinned_key: 2
