@@ -1,7 +1,6 @@
 {
   "folders": [
-    { "path": "/config", "name": "HASS | Live (canonical)" },
-    { "path": "/System/Volumes/Data/homeassistant", "name": "HASS | Live (realpath - RO)" }
+    { "path": "/config", "name": "HASS | Live (canonical)" }
   ],
   "settings": {
     "git.enabled": true,
