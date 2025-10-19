@@ -1,9 +1,7 @@
 {
   "folders": [
-    {
-      "path": "/config",
-      "name": "HASS · Home Assistant Live Config ADR-0024 compliant"
-    }
+    { "path": "/config", "name": "HASS | Live (canonical)" },
+    { "path": "/System/Volumes/Data/homeassistant", "name": "HASS | Live (realpath - RO)" }
   ],
   "settings": {
     "git.enabled": true,
