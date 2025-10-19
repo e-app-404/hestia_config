@@ -267,6 +267,40 @@ status_transitions = [
     "Draft → Superseded"
 ]
 
+[automation.meta_capture]
+# Dynamic discovery first: this file is authoritative.
+# Never hard-code absolute paths in code; resolve from these keys.
+repo_root       = "/config"                           # repo workspace root
+config_root     = "/config/hestia/config"             # canonical config root
+allowed_root    = "/config/hestia"                    # traversal boundary
+report_dir      = "/config/hestia/workspace/reports/meta_capture"
+index_dir       = "/config/hestia/workspace/.hestia/index"
+tool_version    = "1.0.0"
+
+schemas.intake  = "/config/hestia/tools/meta_capture/meta_capture_intake.schema.json"
+schemas.apu     = "/config/hestia/tools/meta_capture/meta_capture_apu.schema.json"
+secrets.rules   = "/config/hestia/tools/meta_capture/meta_capture_secret_rules.yaml"
+merge.policy    = "/config/hestia/tools/meta_capture/merge_policy.yaml"
+
+[automation.meta_capture.limits]
+max_files       = 100
+max_apus        = 2000
+oversize_bytes  = 5242880
+fail_level      = "red"   # "orange" or "red"
+
+[automation.meta_capture.paths]
+routing_template = "/config/hestia/tools/meta_capture/routing_suggestions_template.yaml"
+jsonl_index      = "/config/hestia/workspace/.hestia/index/meta_capture__index.jsonl"
+
+[automation.meta_capture.routing]
+"automation.meta_capture" = "/config/hestia/config/automation/meta_capture.meta.yaml"
+
+[automation.meta_capture.env_fallbacks]
+# Use only if fields are absent above; otherwise ignore .env
+repo_root_key    = "CONFIG_ROOT"
+config_root_key  = "HESTIA_CONFIG"
+allowed_root_key = "HESTIA_ADR"  # optional; keeps us inside /config/hestia
+
 [security]
 sensitive_file_permissions = "0600"
 backup_file_permissions = "0600"
