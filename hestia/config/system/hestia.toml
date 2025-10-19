@@ -294,7 +294,7 @@ jsonl_index      = "/config/hestia/workspace/.hestia/index/meta_capture__index.j
 
 [automation.meta_capture.apply]
 use_write_broker = true
-write_broker_cmd = "/config/bin/write-broker-NOTFOUND"
+write_broker_cmd = "/config/bin/write-broker"
 write_broker_mode = ""
 
 [automation.meta_capture.routing]

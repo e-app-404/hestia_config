@@ -457,7 +457,7 @@ def main():
                 payload: str,
                 broker_path: str,
                 broker_subcmd: str,
-            ) -> tuple[bool, str]:
+            ) -> tuple[bool, str, int, str, str]:
                 # write to temp, then broker replace
                 tmp = dst.with_suffix(dst.suffix + f".wb.{int(time.time()*1000)}")
                 atomic_write(tmp, payload.encode("utf-8"))  # reuse atomic_write for temp creation
@@ -469,7 +469,7 @@ def main():
                     )
                     ok = (cp.returncode == 0)
                     msg = (cp.stdout.strip() + "\n" + cp.stderr.strip()).strip()
-                    return ok, msg
+                    return ok, msg, cp.returncode, cp.stdout, cp.stderr
                 finally:
                     with suppress(Exception):
                         tmp.unlink(missing_ok=True)
@@ -481,6 +481,12 @@ def main():
                     errors_total.append(f"{p}: E-BROKER-000 broker not found at '{broker_bin}'")
                     tl = "red"
                     broker_failed = True
+                    broker_evidence = {
+                        "cmd_mode": None,
+                        "rc": 127,
+                        "stdout_tail": "",
+                        "stderr_tail": f"broker_not_found:{broker_bin}",
+                    }
                 else:
                     modes = detect_broker_mode(broker_bin)
                     mode = broker_mode or (
@@ -497,21 +503,19 @@ def main():
                         )
                         tl = "red"
                         broker_failed = True
+                        broker_evidence = {
+                            "cmd_mode": None,
+                            "rc": 2,
+                            "stdout_tail": "",
+                            "stderr_tail": (modes.get("help", "")[:400]),
+                        }
                     else:
-                        ok, msg, rc, out, err = broker_invoke(
-                            broker_bin,
-                            mode,
-                            target,
-                            target.with_suffix(target.suffix + ".wb.payload"),
-                        )
-                        # invoke using fresh temp path via helper
-                        # fallback to local helper that already creates temp and runs broker
-                        ok, msg = _broker_write(target, merged_text, broker_bin, mode)
+                        ok, msg, rc, out, err = _broker_write(target, merged_text, broker_bin, mode)
                         broker_evidence = {
                             "cmd_mode": mode,
-                            "rc": rc if 'rc' in locals() else (0 if ok else 1),
-                            "stdout_tail": (out[-400:] if 'out' in locals() else ""),
-                            "stderr_tail": (err[-400:] if 'err' in locals() else ""),
+                            "rc": rc,
+                            "stdout_tail": out[-400:],
+                            "stderr_tail": err[-400:],
                         }
                         if not ok:
                             errors_total.append(f"{p}: E-BROKER-001 broker failed: {msg[:200]}")
@@ -574,7 +578,7 @@ def main():
                 "tool_version": TOOL_VERSION,
             },
             "traffic_light": tl,
-            "severity": ("low" if tl in ("green", "yellow") else "high"),
+            "severity": ("low" if tl in ("green", "orange") else "high"),
             "safety_checks": {
                 "within_allowed_root": within(allowed_root, target),
                 "no_traversal": True,
@@ -631,11 +635,22 @@ def main():
         print(rpt_json)
 
     # ledger append
-    line = json.dumps({
-        "ts": ts, "run_id": run_id, "batch_id": batch_id, "tool_version": TOOL_VERSION,
-        "counts": counts, "severity_counts": severity_counts,
-        "status": args.mode, "report_path": args.report or ""
-    }) + "\n"
+    line = (
+        json.dumps(
+            {
+                "ts": ts,
+                "run_id": run_id,
+                "batch_id": batch_id,
+                "tool_version": TOOL_VERSION,
+                "counts": counts,
+                "severity_counts": severity_counts,
+                "status": args.mode,
+                "report_path": args.report or "",
+                "results": results,
+            }
+        )
+        + "\n"
+    )
     with open(jsonl_index, "a", encoding="utf-8") as f:
         f.write(line)
 
