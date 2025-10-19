@@ -102,34 +102,58 @@ def schema_validate(doc, schema_path: str) -> list[str]:
         return [f"E-SCHEMA-001: {e}"]
 
 def load_secret_rules(path: str):
-    """Rule loader (regex only, minimal)."""
+    """
+    Load secret scanning rules from YAML:
+      allowlist: { mac_address: bool, rfc1918_ip: bool, ... }
+      patterns: [ { id, description, regex, severity } ]
+      entropy_threshold: { enable: bool, bits_per_char: float, min_length: int }
+    """
     if not path or not os.path.exists(path):
-        return []
-    try:
-        rules = []
-        with open(path, encoding="utf-8") as f:
-            text = f.read()
-        # Minimal set of common tokens (keep synced with rules file)
-        patterns = [
-            (r"(?i)AKIA[0-9A-Z]{16}", "AWS_ACCESS"),
-            (r"(ghp|gho|ghu|ghs|ghr)_[A-Za-z0-9]{36,255}", "GITHUB_TOKEN"),
-            (r"(?i)bearer\\s+[A-Za-z0-9._-]{16,}", "BEARER_TOKEN"),
-            (r"xox[baprs]-[A-Za-z0-9-]{10,48}", "SLACK_TOKEN"),
-            (r"-----BEGIN PRIVATE KEY-----[\\s\\S]+?-----END PRIVATE KEY-----", "PRIVATE_KEY"),
-        ]
-        for rx, name in patterns:
-            rules.append((re.compile(rx), name))
-        return rules
-    except Exception:
-        return []
+        return {"compiled": [], "allowlist": {}, "entropy": {"enable": False}}
+    if pyyaml is None:
+        return {"compiled": [], "allowlist": {}, "entropy": {"enable": False}}
+
+    with open(path, "r", encoding="utf-8") as f:
+        data = pyyaml.safe_load(f) or {}
+    allowlist = data.get("allowlist", {}) or {}
+    entropy = data.get("entropy_threshold", {"enable": False}) or {"enable": False}
+
+    compiled = []
+    for pat in (data.get("patterns") or []):
+        rx = re.compile(pat.get("regex"))
+        compiled.append({
+            "id": pat.get("id", "E-SECRET"),
+            "rx": rx,
+            "severity": pat.get("severity", "high"),
+            "description": pat.get("description", "")
+        })
+    return {"compiled": compiled, "allowlist": allowlist, "entropy": entropy}
 
 def secrets_scan(text: str, rules) -> list[str]:
+    """
+    Returns a list of error codes. Entropy scanning is optional.
+    Allowlist is currently advisory (kept for future exemptions).
+    """
     if not rules:
         return []
     hits = []
-    for rx, name in rules:
-        if rx.search(text):
-            hits.append(f"E-SECRET-{name}")
+    for pat in rules.get("compiled", []):
+        if pat["rx"].search(text):
+            hits.append(f'{pat["id"]}:{pat["severity"]}')
+    # entropy (very conservative)
+    ent = rules.get("entropy", {"enable": False})
+    if ent.get("enable"):
+        bpc = float(ent.get("bits_per_char", 3.5))
+        min_len = int(ent.get("min_length", 32))
+        tokens = re.findall(r"[A-Za-z0-9_\-\.]{%d,}" % min_len, text)
+        for tok in tokens:
+            from math import log2
+            alphabet = {c for c in tok}
+            p = 1.0 / max(1, len(alphabet))
+            est = -sum(p * log2(p) for _ in alphabet)
+            if est >= bpc:
+                hits.append("E-SECRET-ENTROPY:high")
+                break
     return hits
 
 def classify_required_keys(doc) -> tuple[str, list[str]]:
