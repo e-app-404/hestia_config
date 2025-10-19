@@ -14,6 +14,7 @@ import subprocess
 import sys
 import time
 import uuid
+from contextlib import suppress
 from datetime import UTC, datetime
 
 # Required
@@ -165,9 +166,8 @@ def secrets_scan(text: str, rules) -> list[str]:
 def detect_broker_mode(broker_bin: str) -> dict:
     """Probe broker for supported syntax."""
     try:
-        cp = subprocess.run(
-            [broker_bin, "--help"], capture_output=True, text=True, check=False, timeout=5
-        )
+        # Prefer calling with no args to trigger usage (our broker doesn't implement --help)
+        cp = subprocess.run([broker_bin], capture_output=True, text=True, check=False, timeout=5)
         helptext = (cp.stdout + "\n" + cp.stderr).lower()
         supports_rewrite = "rewrite" in helptext and "--file" in helptext and "--from" in helptext
         supports_replace = "replace" in helptext
@@ -389,7 +389,7 @@ def main():
             apply_cfg = cfg.get("apply", {})
             use_broker = bool(apply_cfg.get("use_write_broker", False))
             broker_bin = apply_cfg.get("write_broker_cmd", "")
-            broker_mode = apply_cfg.get("write_broker_mode", "rewrite")
+            broker_mode = apply_cfg.get("write_broker_mode", "").strip().lower()
 
             def _broker_write(
                 dst: pathlib.Path,
@@ -410,19 +410,56 @@ def main():
                     msg = (cp.stdout.strip() + "\n" + cp.stderr.strip()).strip()
                     return ok, msg
                 finally:
-                    import contextlib
-                    with contextlib.suppress(Exception):
+                    with suppress(Exception):
                         tmp.unlink(missing_ok=True)
 
-            if use_broker and broker_bin and os.path.exists(broker_bin):
-                ok, msg = _broker_write(target, merged_text, broker_bin, broker_mode)
-                if not ok:
-                    errors_total.append(f"{p}: E-BROKER-001 write-broker failed: {msg}")
+            broker_failed = False
+            broker_evidence = None
+            if use_broker:
+                if not broker_bin or not os.path.exists(broker_bin):
+                    errors_total.append(f"{p}: E-BROKER-000 broker not found at '{broker_bin}'")
                     tl = "red"
-                    applied = False
+                    broker_failed = True
                 else:
-                    applied = True
+                    modes = detect_broker_mode(broker_bin)
+                    mode = broker_mode or (
+                        "rewrite"
+                        if modes.get("rewrite")
+                        else "replace"
+                        if modes.get("replace")
+                        else ""
+                    )
+                    if not mode:
+                        errors_total.append(
+                            f"{p}: E-BROKER-000 no supported mode; help='"
+                            f"{modes.get('help','')[:200]}'"
+                        )
+                        tl = "red"
+                        broker_failed = True
+                    else:
+                        ok, msg, rc, out, err = broker_invoke(
+                            broker_bin,
+                            mode,
+                            target,
+                            target.with_suffix(target.suffix + ".wb.payload"),
+                        )
+                        # invoke using fresh temp path via helper
+                        # fallback to local helper that already creates temp and runs broker
+                        ok, msg = _broker_write(target, merged_text, broker_bin, mode)
+                        broker_evidence = {
+                            "cmd_mode": mode,
+                            "rc": rc if 'rc' in locals() else (0 if ok else 1),
+                            "stdout_tail": (out[-400:] if 'out' in locals() else ""),
+                            "stderr_tail": (err[-400:] if 'err' in locals() else ""),
+                        }
+                        if not ok:
+                            errors_total.append(f"{p}: E-BROKER-001 broker failed: {msg[:200]}")
+                            tl = "red"
+                            broker_failed = True
+                        else:
+                            applied = True
             else:
+                # Direct atomic write (no broker)
                 atomic_write(target, merged_text.encode("utf-8"))
                 applied = True
 
@@ -430,7 +467,9 @@ def main():
         skip_reason = None
         if not applied:
             if tl == "red":
-                if secret_errs:
+                if 'broker_failed' in locals() and broker_failed:
+                    skip_reason = "broker"
+                elif secret_errs:
                     skip_reason = "secrets"
                 elif any(
                     e.startswith(("E-YAML-DEC", "E-SCHEMA-001"))
@@ -466,7 +505,8 @@ def main():
             "traffic_light": tl,
             "applied": applied,
             "skip_reason": (None if applied else skip_reason),
-            "routing_suggestion": routing_suggestion
+            "routing_suggestion": routing_suggestion,
+            "broker": (broker_evidence if 'broker_evidence' in locals() else None)
         })
 
     counts = {

@@ -293,7 +293,7 @@ routing_template = "/config/hestia/tools/meta_capture/routing_suggestions_templa
 jsonl_index      = "/config/hestia/workspace/.hestia/index/meta_capture__index.jsonl"
 
 [automation.meta_capture.apply]
-use_write_broker = false
+use_write_broker = true
 write_broker_cmd = "/config/bin/write-broker"
 write_broker_mode = ""
 
