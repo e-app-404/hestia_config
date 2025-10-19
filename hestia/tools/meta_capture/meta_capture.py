@@ -36,9 +36,9 @@ except Exception:
 
 # ruamel.yaml for comment/anchor-preserving merges
 try:
-    from ruamel.yaml import YAML
+    from ruamel.yaml import YAML as RuamelYAML
 except Exception:
-    YAML = None
+    RuamelYAML = None
 
 TOOL_VERSION = os.environ.get("HES_TOOL_VERSION", "1.0.0")
 TOML_PATH    = "/config/hestia/config/system/hestia.toml"
@@ -51,7 +51,8 @@ def real(p: pathlib.Path) -> pathlib.Path:
     return p.resolve()
 
 def within(root: pathlib.Path, path: pathlib.Path) -> bool:
-    root = real(root); path = real(path)
+    root = real(root)
+    path = real(path)
     return str(path).startswith(str(root))
 
 def atomic_write(dst: pathlib.Path, data: bytes):
@@ -78,7 +79,8 @@ def load_toml_conf() -> dict:
         all_cfg = tomllib.load(f)
     mc = all_cfg.get("automation", {}).get("meta_capture", {})
     if not mc:
-        print("E-TOML-002: [automation.meta_capture] missing", file=sys.stderr); sys.exit(4)
+        print("E-TOML-002: [automation.meta_capture] missing", file=sys.stderr)
+        sys.exit(4)
     return mc
 
 def parse_yaml_quick(text: str):
@@ -95,7 +97,8 @@ def schema_validate(doc, schema_path: str) -> list[str]:
     if not jsonschema or not schema_path or not os.path.exists(schema_path):
         return []
     try:
-        schema = json.load(open(schema_path))
+        with open(schema_path, encoding="utf-8") as f:
+            schema = json.load(f)
         jsonschema.validate(instance=doc, schema=schema)
         return []
     except Exception as e:
@@ -113,7 +116,7 @@ def load_secret_rules(path: str):
     if pyyaml is None:
         return {"compiled": [], "allowlist": {}, "entropy": {"enable": False}}
 
-    with open(path, "r", encoding="utf-8") as f:
+    with open(path, encoding="utf-8") as f:
         data = pyyaml.safe_load(f) or {}
     allowlist = data.get("allowlist", {}) or {}
     entropy = data.get("entropy_threshold", {"enable": False}) or {"enable": False}
@@ -145,7 +148,8 @@ def secrets_scan(text: str, rules) -> list[str]:
     if ent.get("enable"):
         bpc = float(ent.get("bits_per_char", 3.5))
         min_len = int(ent.get("min_length", 32))
-        tokens = re.findall(r"[A-Za-z0-9_\-\.]{%d,}" % min_len, text)
+        pattern = rf"[A-Za-z0-9_\-\.]{{{min_len},}}"
+        tokens = re.findall(pattern, text)
         for tok in tokens:
             from math import log2
             alphabet = {c for c in tok}
@@ -179,7 +183,10 @@ def extract_pinned_keys(original_text: str) -> set[str]:
     return pins
 
 def pin_conflicts(original_text: str, new_text: str) -> list[str]:
-    """Naive pin conflict detector: if a pinned key line exists and the value line for that key differs in new text."""
+    """
+    Naive pin conflict detector: if a pinned key line exists and the value line
+    for that key differs in new text.
+    """
     conflicts = []
     pins = extract_pinned_keys(original_text)
     if not pins:
@@ -201,26 +208,34 @@ def pin_conflicts(original_text: str, new_text: str) -> list[str]:
     return conflicts
 
 # -------- Merge (ruamel.yaml round-trip) ----------
-def ruamel_yaml() -> YAML:
-    if YAML is None:
+def ruamel_yaml():
+    if RuamelYAML is None:
         raise RuntimeError("E-RUNTIME-003: ruamel.yaml not available")
-    y = YAML()
+    y = RuamelYAML()
     y.preserve_quotes = True
     y.indent(mapping=2, sequence=2, offset=0)
     y.width = 120
     return y
 
 def deep_merge(dst, src):
-    """Merge src into dst (recursive for mappings/lists)."""
-    from collections.abc import Mapping
-    if isinstance(dst, Mapping) and isinstance(src, Mapping):
+    """Merge src into dst (recursive for mappings/lists) with best-effort typing."""
+    try:
+        is_mapping = hasattr(dst, "keys") and hasattr(src, "items")
+    except Exception:
+        is_mapping = False
+    if is_mapping:
         for k, v in src.items():
             if k in dst:
-                dst[k] = deep_merge(dst[k], v)
+                try:
+                    dst[k] = deep_merge(dst[k], v)
+                except Exception:
+                    dst[k] = v
             else:
-                dst[k] = v
+                import contextlib
+                with contextlib.suppress(Exception):
+                    dst[k] = v
         return dst
-    # lists: replace by default (policy could become smarter)
+    # lists or scalars: replace by default (policy could become smarter)
     return src
 
 def merge_yaml_preserving(original_text: str | None, new_text: str) -> str:
@@ -262,7 +277,8 @@ def main():
     secrets_path = cfg.get("secrets", {}).get("rules", "")
 
     if not within(allowed_root, config_root):
-        print("E-ROUTE-ROOT-001: config_root outside allowed_root", file=sys.stderr); sys.exit(3)
+        print("E-ROUTE-ROOT-001: config_root outside allowed_root", file=sys.stderr)
+        sys.exit(3)
 
     files = list_inputs(args.inputs)
     ts = now_utc_z()
@@ -280,9 +296,11 @@ def main():
     for p in files:
         pth = pathlib.Path(p)
         if not pth.exists():
-            errors_total.append(f"{p}: E-FS-404 not found"); continue
+            errors_total.append(f"{p}: E-FS-404 not found")
+            continue
         if pth.stat().st_size > oversize:
-            errors_total.append(f"{p}: E-OVERSIZE-001 > {oversize} bytes"); continue
+            errors_total.append(f"{p}: E-OVERSIZE-001 > {oversize} bytes")
+            continue
 
         raw = pth.read_bytes()
         shex = sha256_bytes(raw)
@@ -331,22 +349,44 @@ def main():
                 merged_text = merge_yaml_preserving(existing_text, text)
             except Exception as e:
                 errors_total.append(f"{p}: E-MERGE-001 {e}")
-                merged_text = text  # fallback to write-through if ruamel missing (still audited by error)
+                # fallback to write-through if ruamel missing (still audited by error)
+                merged_text = text
             atomic_write(target, merged_text.encode("utf-8"))
             applied = True
+
+        # Determine skip reason for audit clarity
+        skip_reason = None
+        if not applied:
+            if tl == "red":
+                if secret_errs:
+                    skip_reason = "secrets"
+                elif any(e.startswith(("E-YAML-DEC","E-SCHEMA-001")) for e in (parse_errs + schema_errs)):
+                    skip_reason = "schema"
+                elif pin_errs:
+                    skip_reason = "pin-lock"
+                else:
+                    skip_reason = "policy"
+            elif tl == "orange":
+                skip_reason = "routing-or-shape"
 
         results.append({
             "source": str(pth),
             "target": str(target),
             "sha256": shex,
             "traffic_light": tl,
-            "applied": applied
+            "applied": applied,
+            "skip_reason": (None if applied else skip_reason)
         })
 
     counts = {
         "inputs": len(files),
         "apus": len(results),
         "applied": sum(1 for r in results if r["applied"])
+    }
+    severity_counts = {
+        "green": sum(1 for r in results if r["traffic_light"] == "green"),
+        "orange": sum(1 for r in results if r["traffic_light"] == "orange"),
+        "red": sum(1 for r in results if r["traffic_light"] == "red"),
     }
     report = {
         "ts": ts,
@@ -358,6 +398,7 @@ def main():
         "allowed_root": str(allowed_root),
         "mode": args.mode,
         "counts": counts,
+        "severity_counts": severity_counts,
         "results": results,
         "errors": errors_total[:1000],
     }
@@ -370,7 +411,8 @@ def main():
     # ledger append
     line = json.dumps({
         "ts": ts, "run_id": run_id, "batch_id": batch_id, "tool_version": TOOL_VERSION,
-        "counts": counts, "status": args.mode, "report_path": args.report or ""
+        "counts": counts, "severity_counts": severity_counts,
+        "status": args.mode, "report_path": args.report or ""
     }) + "\n"
     with open(jsonl_index, "a", encoding="utf-8") as f:
         f.write(line)
