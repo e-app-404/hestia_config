@@ -301,30 +301,6 @@ repo_root_key    = "CONFIG_ROOT"
 config_root_key  = "HESTIA_CONFIG"
 allowed_root_key = "HESTIA_ADR"  # optional; keeps us inside /config/hestia
 
-# Meta-Capture Pipeline (v1)
-[automation.meta_capture]
-repo_root   = "/config"
-config_root = "/config/hestia/config"
-allowed_root = "/config/hestia"
-report_dir  = "/config/hestia/workspace/reports/meta_capture"
-index_dir   = "/config/hestia/workspace/.hestia/index"
-tool_version= "1.0.0"
-
-schemas.intake = "/config/hestia/tools/meta_capture/meta_capture_intake.schema.json"
-schemas.apu    = "/config/hestia/tools/meta_capture/meta_capture_apu.schema.json"
-secrets.rules  = "/config/hestia/tools/meta_capture/meta_capture_secret_rules.yaml"
-merge.policy   = "/config/hestia/tools/meta_capture/merge_policy.yaml"
-
-[automation.meta_capture.limits]
-max_files      = 100
-max_apus       = 2000
-oversize_bytes = 5242880
-fail_level     = "red"
-
-[automation.meta_capture.paths]
-routing_template = "/config/hestia/tools/meta_capture/routing_suggestions_template.yaml"
-jsonl_index      = "/config/hestia/workspace/.hestia/index/meta_capture__index.jsonl"
-
 [security]
 sensitive_file_permissions = "0600"
 backup_file_permissions = "0600"
