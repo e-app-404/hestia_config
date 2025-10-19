@@ -1,0 +1,8 @@
+# routing_suggestions_template.yaml
+routing_suggestions:
+  - unknown_section: "<section_name>"
+    recommended_toml_block: |
+      [automation.meta_capture.routing."<section_name>"]
+      target = "/config/hestia/config/<relative_path>.yaml"
+      mode = "merge"
+    rationale: "Mapped by similarity to existing domain files."

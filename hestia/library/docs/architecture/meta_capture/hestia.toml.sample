@@ -1,0 +1,11 @@
+# hestia.toml (sample)
+[automation.meta_capture]
+repo_root_env_keys = ["HES_REPO_ROOT","REPO_ROOT"]
+config_root_env_keys = ["HES_CONFIG_ROOT"]
+allowed_root = "/config/hestia"
+report_dir = "reports/meta_capture"
+
+[automation.meta_capture.limits]
+max_files = 100
+max_apus = 2000
+oversize_bytes = 5242880
