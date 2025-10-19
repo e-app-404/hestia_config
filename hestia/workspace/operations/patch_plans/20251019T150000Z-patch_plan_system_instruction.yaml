@@ -1,0 +1,129 @@
+### 🧭 Copilot Execution Directive — Align `system_instruction.yaml` with Current Hestia Reality
+
+**Mission:**
+Update only
+`hestia/library/docs/governance/system_instruction/system_instruction.yaml`
+so its internal documentation, path references, and changelog reflect the **current Hestia configuration**.
+Do **not** rename, move, or touch any other files.
+
+---
+
+#### ✅ 1. Scope Guard
+
+```bash
+# Stop immediately if target file missing
+test -f hestia/library/docs/governance/system_instruction/system_instruction.yaml || \
+  (echo "❌ system_instruction.yaml not found" && exit 1)
+
+# Work in a dedicated branch
+git switch -c fix/system_instruction-align-hestia
+
+# Backup for safety
+cp hestia/library/docs/governance/system_instruction/system_instruction.yaml \
+   hestia/library/docs/governance/system_instruction/system_instruction.yaml.bak
+```
+
+---
+
+#### 🧩 2. Content Update Strategy
+
+Copilot, open
+`hestia/library/docs/governance/system_instruction/system_instruction.yaml`
+and apply these exact textual corrections **in place** (maintain valid YAML):
+
+1. **Doctrine reference**
+
+   * Replace any `ARCHITECTURE_DOCTRINE.md` mentions with:
+     `hestia/library/docs/ADR`
+
+2. **Canonical system instruction path**
+
+   * Replace all legacy or generic `system_instruction.yaml` references (including under `legacy/*`) with:
+     `hestia/library/docs/governance/system_instruction/system_instruction.yaml`
+
+3. **AppDaemon runtime**
+
+   * Replace `/config/appdaemon` with:
+     `/addon_configs/${APPDAEMON_ADDON_SLUG}/appdaemon`
+
+4. **Snapshot naming**
+
+   * Replace all `final_snapshot*` tokens with:
+     `ha_hestia`
+
+5. **Governance “current reality” block**
+
+   * If not already present, insert a comment block labeled exactly:
+     `# Hestia Governance (current reality)`
+     with the following bullet lines:
+
+     ```
+     # - Doctrine source of truth: ADR collection at hestia/library/docs/ADR
+     # - Primary system instruction file: hestia/library/docs/governance/system_instruction/system_instruction.yaml
+     # - AppDaemon runtime: /addon_configs/${APPDAEMON_ADDON_SLUG}/appdaemon (not under /config)
+     # - Home Assistant runtime .storage: /config/.storage (exported snapshots may live elsewhere)
+     ```
+   * Insert below the `notes:` or `documentation:` section if one exists; otherwise append at file end.
+
+6. **Changelog entry**
+
+   * Append (do not replace) the following under `changelog:`
+
+     ```
+     - date: "$(date +%Y-%m-%d)"
+       change: "Aligned to Hestia current state: ADR doctrine, canonical system_instruction path, AppDaemon runtime in /addon_configs, and ha_hestia snapshot naming."
+     ```
+
+---
+
+#### 🔍 3. Validation
+
+```bash
+# Verify YAML integrity
+python3 - <<'PY'
+import yaml
+p="hestia/library/docs/governance/system_instruction/system_instruction.yaml"
+yaml.safe_load(open(p))
+print("✅ YAML structure OK")
+PY
+
+# Confirm replacements took effect
+grep -q 'hestia/library/docs/ADR' hestia/library/docs/governance/system_instruction/system_instruction.yaml || echo "❌ ADR ref missing"
+grep -q 'governance/system_instruction/system_instruction.yaml' hestia/library/docs/governance/system_instruction/system_instruction.yaml || echo "❌ canonical path missing"
+grep -q '/addon_configs/' hestia/library/docs/governance/system_instruction/system_instruction.yaml || echo "❌ AppDaemon runtime missing"
+grep -q 'ha_hestia' hestia/library/docs/governance/system_instruction/system_instruction.yaml || echo "❌ snapshot naming not normalized"
+grep -q 'Hestia Governance (current reality)' hestia/library/docs/governance/system_instruction/system_instruction.yaml || echo "❌ governance note missing"
+```
+
+---
+
+#### 🧪 4. Idempotency & Commit
+
+```bash
+# Ensure no repeat changes
+git diff --quiet || git --no-pager diff -- hestia/library/docs/governance/system_instruction/system_instruction.yaml
+
+# Commit verified correction
+git add hestia/library/docs/governance/system_instruction/system_instruction.yaml
+git commit -m "Governance: align system_instruction.yaml with current Hestia state (ADR, canonical paths, AppDaemon, ha_hestia)"
+```
+
+---
+
+#### 🛑 5. Fallback
+
+```bash
+# Restore backup if needed
+cp hestia/library/docs/governance/system_instruction/system_instruction.yaml.bak \
+   hestia/library/docs/governance/system_instruction/system_instruction.yaml
+```
+
+---
+
+**Success Criteria for Copilot**
+
+* Only one file modified.
+* YAML validates with zero errors.
+* All five target replacements confirmed by grep.
+* A new changelog entry appended with today’s date.
+* Branch committed cleanly with the message above.
