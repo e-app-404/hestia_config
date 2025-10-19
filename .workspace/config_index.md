@@ -56,7 +56,7 @@ _Generated (UTC): 2025-10-15T12:09:29_
   `hestia/config/devices/localtuya.conf`
   Tags: `devices`, `unknown`
 
-- **⟫⟫ File: /config/hestia/core/config/devices/media** _UNKNOWN_
+- **⟫⟫ File: /config/hestia/config/devices/media** _UNKNOWN_
   `hestia/config/devices/media.conf`
   Tags: `devices`, `unknown`
 

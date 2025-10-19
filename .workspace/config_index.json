@@ -119,7 +119,7 @@
         {
           "path": "/config/hestia/config/devices/media.conf",
           "filename": "media.conf",
-          "title": "⟫⟫ File: /config/hestia/core/config/devices/media",
+          "title": "⟫⟫ File: /config/hestia/config/devices/media",
           "description": "",
           "file_format": "unknown",
           "tags": [
