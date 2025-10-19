@@ -2,8 +2,17 @@
 # version_id: patch_20251019_02
 # artifact: /config/hestia/tools/meta_capture/meta_capture.py
 
-import os, sys, json, uuid, time, shutil, hashlib, argparse, pathlib, glob
-from datetime import datetime, timezone
+import argparse
+import glob
+import hashlib
+import json
+import os
+import pathlib
+import shutil
+import sys
+import time
+import uuid
+from datetime import UTC, datetime
 
 try:
     import tomllib  # py311+
@@ -25,13 +34,19 @@ TOOL_VERSION = os.environ.get("HES_TOOL_VERSION", "1.0.0")
 TOML_PATH    = "/config/hestia/config/system/hestia.toml"
 
 def now_utc_z() -> str:
-    return datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00","Z")
+    return (
+        datetime.now(UTC)
+        .replace(microsecond=0)
+        .isoformat()
+        .replace("+00:00", "Z")
+    )
 
 def real(p: pathlib.Path) -> pathlib.Path:
     return p.resolve()
 
 def within(root: pathlib.Path, path: pathlib.Path) -> bool:
-    root = real(root); path = real(path)
+    root = real(root)
+    path = real(path)
     return str(path).startswith(str(root))
 
 def atomic_write(dst: pathlib.Path, data: bytes):
@@ -59,7 +74,8 @@ def load_toml_conf() -> dict:
         all_cfg = tomllib.load(f)
     mc = all_cfg.get("automation", {}).get("meta_capture", {})
     if not mc:
-        print("E-TOML-002: [automation.meta_capture] missing", file=sys.stderr); sys.exit(4)
+        print("E-TOML-002: [automation.meta_capture] missing", file=sys.stderr)
+        sys.exit(4)
     return mc
 
 def parse_yaml(text: str):
@@ -75,7 +91,8 @@ def schema_validate(doc, schema_path: str) -> list[str]:
     if not jsonschema or not os.path.exists(schema_path):
         return []
     try:
-        schema = json.load(open(schema_path, "r"))
+        with open(schema_path) as f:
+            schema = json.load(f)
         jsonschema.validate(instance=doc, schema=schema)
         return []
     except Exception as e:
@@ -86,8 +103,12 @@ def load_secret_rules(path: str):
         return None
     try:
         import re
-        rules = yaml.safe_load(open(path, "r")) if yaml else None
-        if not rules: return None
+        rules = None
+        if yaml:
+            with open(path) as f:
+                rules = yaml.safe_load(f)
+        if not rules:
+            return None
         compiled = []
         for pat in (rules.get("patterns") or []):
             rx = re.compile(pat["regex"])
@@ -98,7 +119,8 @@ def load_secret_rules(path: str):
         return None
 
 def secrets_scan(text: str, rules) -> list[str]:
-    if not rules: return []
+    if not rules:
+        return []
     found = []
     for pid, rx, sev in rules.get("compiled", []):
         if rx.search(text):
@@ -139,7 +161,8 @@ def main():
     secrets_path = cfg.get("secrets", {}).get("rules", "")
 
     if not within(allowed_root, config_root):
-        print("E-ROUTE-ROOT-001: config_root outside allowed_root", file=sys.stderr); sys.exit(3)
+        print("E-ROUTE-ROOT-001: config_root outside allowed_root", file=sys.stderr)
+        sys.exit(3)
 
     files = list_inputs(args.inputs)
     ts = now_utc_z()
@@ -154,9 +177,11 @@ def main():
     for p in files:
         pth = pathlib.Path(p)
         if not pth.exists():
-            errors_total.append(f"{p}: E-FS-404 not found"); continue
+            errors_total.append(f"{p}: E-FS-404 not found")
+            continue
         if pth.stat().st_size > oversize:
-            errors_total.append(f"{p}: E-OVERSIZE-001 > {oversize} bytes"); continue
+            errors_total.append(f"{p}: E-OVERSIZE-001 > {oversize} bytes")
+            continue
 
         raw = pth.read_bytes()
         shex = sha256_bytes(raw)
@@ -233,7 +258,15 @@ def main():
         f.write(line)
 
     # exit code policy
-    red_present = any("E-OVERSIZE" in e or "E-ROUTE-ROOT" in e or "E-FS-404" in e or "E-YAML-DEC" in e or "E-SCHEMA-001" in e or "E-SECRET" in e for e in errors_total)
+    red_present = any(
+        "E-OVERSIZE" in e
+        or "E-ROUTE-ROOT" in e
+        or "E-FS-404" in e
+        or "E-YAML-DEC" in e
+        or "E-SCHEMA-001" in e
+        or "E-SECRET" in e
+        for e in errors_total
+    )
     if red_present and fail_level == "red":
         sys.exit(3)
     orange_present = any(r["traffic_light"] == "orange" for r in results)
