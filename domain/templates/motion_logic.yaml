@@ -182,7 +182,7 @@
       device_class: motion
       delay_off:
         minutes: 5
-      state: "{{ is_state('binary_sensor.ensuite_motion_real_time','on') }}"
+      state: "{{ is_state('binary_sensor.ensuite_motion_beta','on') }}"
       attributes:
         tier: "β"
         canonical_id: "ensuite_motion_recent_β"

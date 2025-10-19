@@ -55,7 +55,8 @@
         {% from 'template.library.jinja' import preference_select %}
         {% set sources = [
           {'entity': 'binary_sensor.kitchen_occupancy_alpha_occupancy',         'protocol': 'mqtt',   'preference': 1, 'type': 'occupancy'},
-          {'entity': 'binary_sensor.kitchen_occupancy_alpha_matter_occupancy',  'protocol': 'matter', 'preference': 2, 'type': 'occupancy'}
+          {'entity': 'binary_sensor.kitchen_occupancy_alpha_matter_occupancy',  'protocol': 'matter', 'preference': 2, 'type': 'occupancy'},
+          {'entity': 'binary_sensor.kitchen_motion_recent_beta',               'protocol': 'recency','preference': 3, 'type': 'motion'}
         ] %}
         {{ preference_select(sources) == 'on' }}
       attributes:
@@ -72,7 +73,8 @@
           {{ [
             'template.library.jinja',
             'binary_sensor.kitchen_occupancy_alpha_occupancy',
-            'binary_sensor.kitchen_occupancy_alpha_matter_occupancy'
+            'binary_sensor.kitchen_occupancy_alpha_matter_occupancy',
+            'binary_sensor.kitchen_motion_recent_beta'
           ] | tojson }}
         downstream_consumers: >-
           {{ [
@@ -84,10 +86,11 @@
           {% from 'template.library.jinja' import get_active_source %}
           {% set sources = [
             {'entity': 'binary_sensor.kitchen_occupancy_alpha_occupancy', 'preference': 1},
-            {'entity': 'binary_sensor.kitchen_occupancy_alpha_matter_occupancy', 'preference': 2}
+            {'entity': 'binary_sensor.kitchen_occupancy_alpha_matter_occupancy', 'preference': 2},
+            {'entity': 'binary_sensor.kitchen_motion_recent_beta', 'preference': 3}
           ] %}
           {{ get_active_source(sources) or 'unknown' }}
-        source_count: "2"
+        source_count: "3"
         timeout: >-
           {{ ["number.kitchen_occupancy_alpha_occupancy_timeout"] | tojson }}
         version: "3.3"
@@ -142,7 +145,8 @@
       state: |
         {% from 'template.library.jinja' import preference_select %}
         {% set sources = [
-          {'entity': 'binary_sensor.downstairs_occupancy_alpha_matter', 'protocol': 'matter', 'preference': 1, 'type': 'occupancy'}
+          {'entity': 'binary_sensor.downstairs_occupancy_alpha_matter', 'protocol': 'matter', 'preference': 1, 'type': 'occupancy'},
+          {'entity': 'binary_sensor.downstairs_motion_recent_beta', 'protocol': 'recency', 'preference': 2, 'type': 'motion'}
         ] %}
         {{ preference_select(sources) == 'on' }}
       attributes:
@@ -158,7 +162,8 @@
         upstream_sources: >-
           {{ [
             'template.library.jinja',
-            'binary_sensor.downstairs_occupancy_alpha_matter'
+            'binary_sensor.downstairs_occupancy_alpha_matter',
+            'binary_sensor.downstairs_motion_recent_beta'
           ] | tojson }}
         downstream_consumers: >-
           {{ [
@@ -169,10 +174,11 @@
         active_source: >-
           {% from 'template.library.jinja' import get_active_source %}
           {% set sources = [
-            {'entity': 'binary_sensor.downstairs_occupancy_alpha_matter', 'preference': 1}
+            {'entity': 'binary_sensor.downstairs_occupancy_alpha_matter', 'preference': 1},
+            {'entity': 'binary_sensor.downstairs_motion_recent_beta', 'preference': 2}
           ] %}
           {{ get_active_source(sources) or 'unknown' }}
-        source_count: "1"
+        source_count: "2"
         version: "3.5"
         last_updated: "2025-10-16"
         area_id: "downstairs"
@@ -184,7 +190,8 @@
       state: |
         {% from 'template.library.jinja' import preference_select %}
         {% set sources = [
-          {'entity': 'binary_sensor.upstairs_occupancy_matter_alpha_occupancy', 'protocol': 'matter', 'preference': 1, 'type': 'occupancy'}
+          {'entity': 'binary_sensor.upstairs_occupancy_matter_alpha_occupancy', 'protocol': 'matter', 'preference': 1, 'type': 'occupancy'},
+          {'entity': 'binary_sensor.upstairs_motion_recent_beta', 'protocol': 'recency', 'preference': 2, 'type': 'motion'}
         ] %}
         {{ preference_select(sources) == 'on' }}
       attributes:
@@ -197,15 +204,16 @@
         file: "/config/domain/templates/occupancy_logic"
         protocols: "Matter(1)"
         upstream_sources: >
-          {{ ['template.library.jinja','binary_sensor.upstairs_occupancy_matter_alpha_occupancy'] | tojson }}
+          {{ ['template.library.jinja','binary_sensor.upstairs_occupancy_matter_alpha_occupancy','binary_sensor.upstairs_motion_recent_beta'] | tojson }}
         aggregation_strategy: "single-source matter occupancy"
         active_source: >
           {% from 'template.library.jinja' import get_active_source %}
           {% set sources = [
-            {'entity': 'binary_sensor.upstairs_occupancy_matter_alpha_occupancy', 'preference': 1}
+            {'entity': 'binary_sensor.upstairs_occupancy_matter_alpha_occupancy', 'preference': 1},
+            {'entity': 'binary_sensor.upstairs_motion_recent_beta', 'preference': 2}
           ] %}
           {{ get_active_source(sources) or 'unknown' }}
-        source_count: "1"
+        source_count: "2"
         downstream_consumers: >
           {{ 'sensor.hallway_upstairs_last_activity' | tojson }}
         version: "3.6"
@@ -347,7 +355,8 @@
         {% from 'template.library.jinja' import preference_select %}
         {% set sources = [
           {'entity': 'binary_sensor.ensuite_occupancy_alpha_occupancy', 'protocol': 'mqtt', 'preference': 1, 'type': 'occupancy'},
-          {'entity': 'binary_sensor.ensuite_shower_occupancy_epsilon', 'protocol': 'logic','preference': 2, 'type': 'occupancy'}
+          {'entity': 'binary_sensor.ensuite_shower_occupancy_epsilon', 'protocol': 'logic','preference': 2, 'type': 'occupancy'},
+          {'entity': 'binary_sensor.binary_sensor.sanctum_motion_recent_beta', 'protocol': 'recency','preference': 3, 'type': 'motion'}
         ] %}
         {{ preference_select(sources) == 'on' }}
       attributes:
@@ -364,7 +373,8 @@
           {{ [
             'template.library.jinja',
             'binary_sensor.ensuite_occupancy_alpha_occupancy',
-            'binary_sensor.ensuite_shower_occupancy_epsilon'
+            'binary_sensor.ensuite_shower_occupancy_epsilon',
+            'binary_sensor.sanctum_motion_recent_beta'
           ] | tojson }}
         downstream_consumers: >-
           {{ [
@@ -377,10 +387,11 @@
           {% from 'template.library.jinja' import get_active_source %}
           {% set sources = [
             {'entity': 'binary_sensor.ensuite_occupancy_alpha_occupancy', 'preference': 1},
-            {'entity': 'binary_sensor.ensuite_shower_occupancy_epsilon', 'preference': 2}
+            {'entity': 'binary_sensor.ensuite_shower_occupancy_epsilon', 'preference': 2},
+            {'entity': 'binary_sensor.sanctum_motion_recent_beta', 'preference': 3}
           ] %}
           {{ get_active_source(sources) or 'unknown' }}
-        source_count: "2"
+        source_count: "3"
         timeout: >-
           {{ ["number.ensuite_occupancy_alpha_occupancy_timeout"] | tojson }}
         version: "3.5"
