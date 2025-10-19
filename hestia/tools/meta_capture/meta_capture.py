@@ -356,29 +356,33 @@ def main():
             apply_cfg = cfg.get("apply", {})
             use_broker = bool(apply_cfg.get("use_write_broker", False))
             broker_bin = apply_cfg.get("write_broker_cmd", "")
-            broker_mode = apply_cfg.get("write_broker_mode", "replace")
+            broker_mode = apply_cfg.get("write_broker_mode", "rewrite")
 
-            def _broker_write(dst: pathlib.Path, payload: str) -> tuple[bool, str]:
+            def _broker_write(
+                dst: pathlib.Path,
+                payload: str,
+                broker_path: str,
+                broker_subcmd: str,
+            ) -> tuple[bool, str]:
                 # write to temp, then broker replace
                 tmp = dst.with_suffix(dst.suffix + f".wb.{int(time.time()*1000)}")
                 atomic_write(tmp, payload.encode("utf-8"))  # reuse atomic_write for temp creation
                 import subprocess
                 try:
                     cp = subprocess.run(
-                        [broker_bin, broker_mode, str(dst), str(tmp)],
+                        [broker_path, broker_subcmd, "--file", str(dst), "--from", str(tmp)],
                         capture_output=True, text=True, check=False
                     )
                     ok = (cp.returncode == 0)
                     msg = (cp.stdout.strip() + "\n" + cp.stderr.strip()).strip()
                     return ok, msg
                 finally:
-                    try:
+                    import contextlib
+                    with contextlib.suppress(Exception):
                         tmp.unlink(missing_ok=True)
-                    except Exception:
-                        pass
 
             if use_broker and broker_bin and os.path.exists(broker_bin):
-                ok, msg = _broker_write(target, merged_text)
+                ok, msg = _broker_write(target, merged_text, broker_bin, broker_mode)
                 if not ok:
                     errors_total.append(f"{p}: E-BROKER-001 write-broker failed: {msg}")
                     tl = "red"
@@ -413,10 +417,9 @@ def main():
             routing_tpl_path = cfg.get("paths", {}).get("routing_template", "")
             try:
                 if routing_tpl_path and os.path.exists(routing_tpl_path):
-                    with open(routing_tpl_path, "r", encoding="utf-8") as f:
+                    with open(routing_tpl_path, encoding="utf-8") as f:
                         tpl = f.read()
                     section = pathlib.Path(p).stem
-                    dest = str(config_root / "automation" / f"{section}.meta.yaml")
                     routing_suggestion = tpl.replace("<section_name>", section).replace(
                         "<relative_path>", f"automation/{section}.meta"
                     )
