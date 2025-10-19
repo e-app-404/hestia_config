@@ -6,7 +6,7 @@ date: '2025-09-06'
 tier: "α"
 domain: config
 persona: promachos
-status: candidate
+status: active
 tags: []
 version: '1.0'
 source_path: archivist/meta_capture.promptset
