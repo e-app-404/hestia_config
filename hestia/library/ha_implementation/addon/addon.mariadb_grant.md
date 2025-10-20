@@ -115,16 +115,16 @@ If you run the MariaDB add-on in Home Assistant, use the add-on's exposed port a
 ## Emergency recovery (lost root password)
 -- Start MariaDB with `--skip-grant-tables` to reset root credentials (operator task). This bypasses GRANTS — follow MariaDB docs and secure the server afterwards.
 
-Quick recovery checklist
+**Quick recovery checklist**
 1. Stop MariaDB and restart with `--skip-grant-tables` (temporarily, in maintenance window).
 2. Connect locally and reset the root password using `ALTER USER 'root'@'localhost' IDENTIFIED BY 'NEW_STRONG_PASSWORD';` (or follow your distro docs).
 3. Restart MariaDB normally (remove `--skip-grant-tables`).
 4. Verify `SHOW GRANTS FOR 'root'@'localhost';` and test connection from Home Assistant.
 5. Rotate secrets and audit access logs — treat the server as potentially compromised while auth was disabled.
 
-Quick test command
+**Quick test command**
 After creating the user, verify connectivity and privileges from a host that should be allowed:
-
+  
 ```bash
 # Test connection and a simple query (replace host/user/password)
 mysql -u ha_recorder -p -h 192.168.1.10 -e "SELECT 1;"
@@ -138,7 +138,8 @@ mysql -u root -p -h 192.168.1.10 -e "SHOW GRANTS FOR 'ha_recorder'@'192.168.1.%'
 - MariaDB user and authentication docs: https://mariadb.com/kb/en/authentication/
 
 ---
-Notes: This document is intentionally concise. For full privilege tables and plugin-specific auth options, consult the upstream MariaDB documentation linked above.
+
+> Notes: This document is intentionally concise. For full privilege tables and plugin-specific auth options, consult the upstream MariaDB documentation linked above.
 
 binlog_stmt_cache_size
 
