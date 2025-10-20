@@ -173,8 +173,8 @@
               entity_id: input_boolean.hestia_approve_tmp
               state: "on"
           sequence:
-            - service: shell_command.hestia_prune_tmp
-            - service: input_boolean.turn_off
+            - action: shell_command.hestia_prune_tmp
+            - action: input_boolean.turn_off
               target:
                 entity_id: input_boolean.hestia_approve_tmp
 

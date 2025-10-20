@@ -110,14 +110,14 @@ script:
 automation:
   - alias: "Valetudo — Daily Routine Trigger"
     description: "Optional: nudge the routine cycle; app also polls every 30s."
-    trigger:
-      - platform: time
+    triggers:
+      - trigger: time
         at: "09:00:00"
-    condition:
+    conditions:
       - condition: state
         entity_id: schedule.valetudo_allowed
         state: "on"
-    action:
+    actions:
       - event: valetudo_routine_clean_requested
 
   - alias: "Valetudo — Flag Stale Rooms"
@@ -135,14 +135,14 @@ automation:
           {% if due %}{% set _ = out.append(room) %}{% endif %}
         {% endfor %}
         {{ out }}
-    trigger:
-      - platform: time
+    triggers:
+      - trigger: time
         at: "08:00:00"
-    action:
+    actions:
       - repeat:
           for_each: "{{ rooms_to_flag }}"
           sequence:
-            - service: rest_command.room_db_update_config
+            - action: rest_command.room_db_update_config
               data:
                 room_id: "{{ repeat.item }}"
                 domain: vacuum_control

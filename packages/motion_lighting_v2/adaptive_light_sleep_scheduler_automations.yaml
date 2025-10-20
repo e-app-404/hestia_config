@@ -8,7 +8,7 @@ automation:
     trigger:
       - trigger: time
         at: "21:30:00"
-    action:
+    actions:
       - action: switch.turn_on
         target:
           entity_id:
@@ -25,10 +25,10 @@ automation:
   - alias: "Adaptive Lighting — Disable Sleep Mode (Morning)"
     id: adaptive_lighting_disable_sleep_mode_morning
     mode: parallel
-    trigger:
+    triggers:
       - trigger: time
         at: "07:00:00"
-    action:
+    actions:
       - action: switch.turn_off
         target:
           entity_id:
@@ -45,14 +45,14 @@ automation:
   - alias: "Adaptive Lighting — Late Night Sleep Mode (Deep Sleep)"
     id: adaptive_lighting_late_night_deep_sleep
     mode: parallel
-    trigger:
+    triggers:
       - trigger: time
         at: "23:00:00"
-    condition:
+    conditions:
       - condition: state
         entity_id: switch.adaptive_lighting_sleep_mode_bedroom
         state: "on"
-    action:
+    actions:
       - action: adaptive_lighting.set_manual_control
         target:
           entity_id:
@@ -60,7 +60,7 @@ automation:
             - switch.adaptive_lighting_desk
         data:
           manual_control: false
-      - action: light.turn_on
+      - actions: light.turn_on
         target:
           entity_id:
             - light.adaptive_bedroom_light_group
@@ -73,15 +73,15 @@ automation:
   - alias: "Adaptive Lighting — Weekend Sleep Mode Extension"
     id: adaptive_lighting_weekend_sleep_extension
     mode: single
-    trigger:
+    triggers:
       - trigger: time
         at: "07:00:00"
-    condition:
+    conditions:
       - condition: time
         weekday:
           - sat
           - sun
-    action:
+    actions:
       - delay:
           hours: 2
       - action: switch.turn_off

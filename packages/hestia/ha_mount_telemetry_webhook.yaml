@@ -5,13 +5,13 @@
 automation:
   - alias: "MacBook HA Mount Telemetry Webhook"
     id: "macbook_ha_mount_telemetry_webhook"
-    trigger:
+    triggers:
       - trigger: webhook
         webhook_id: !secret macbook_hass_mount_webhook_id
         allowed_methods:
           - POST
         local_only: true
-    action:
+    actions:
       - event: macbook_mount_telemetry_received
         event_data:
           state: "{{ trigger.json.state }}"
@@ -31,12 +31,12 @@ automation:
   - alias: "MacBook HA Mount Down Alert"
     id: "macbook_ha_mount_down_alert"
     mode: restart
-    trigger:
+    triggers:
       - trigger: state
         entity_id: binary_sensor.macbook_ha_mount
         to: "off"
         for: "00:05:00"
-    action:
+    actions:
       - action: persistent_notification.create
         data:
           title: "MacBook HA Mount DOWN"
@@ -49,11 +49,11 @@ automation:
   - alias: "MacBook HA Mount Recovery"
     id: "macbook_ha_mount_recovery"
     mode: restart
-    trigger:
+    triggers:
       - trigger: state
         entity_id: binary_sensor.macbook_ha_mount
         to: "on"
-    action:
+    actions:
       - action: persistent_notification.dismiss
         data:
           notification_id: "macbook_mount_down"
