@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+set -euo pipefail
+if git ls-files -s | awk "$1==120000{print $4}" | grep -q .; then
+  echo "E-ADR0015: Tracked symlinks detected. Remove before commit:" >&2
+  git ls-files -s | awk "$1==120000{print \" - \"$4}" >&2
+  exit 41
+fi

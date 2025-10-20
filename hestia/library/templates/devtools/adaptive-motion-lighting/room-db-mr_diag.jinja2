@@ -8,7 +8,7 @@
 {% set test_ok    = (states(test_ent)   not in ['unknown','unavailable',''] and state_attr(test_ent,'status')   == 'test_success') %}
 
 {# 2) Aggregated shared registry (this is the one under investigation) #}
-{% set shared_ent  = 'sensor.room_configs_shared_registry' %}
+{% set shared_ent  = 'sensor.room_configs_shared_registry_dict' %}
 {% set shared_ok   = (states(shared_ent) not in ['unknown','unavailable','']) %}
 {% set payload     = state_attr(shared_ent,'payload') if shared_ok else {} %}
 {% set payload_is_mapping = (payload is mapping) %}
