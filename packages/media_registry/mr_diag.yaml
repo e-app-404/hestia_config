@@ -278,7 +278,6 @@ script:
     alias: "Test: Large Payload (100KB)"
     sequence:
       - variables:
-          # Generate 500 movie entries (~100KB JSON)
           large_movie_payload:
             movies: >-
               {% set ns = namespace(movies=[]) %}
