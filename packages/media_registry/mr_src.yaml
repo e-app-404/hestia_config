@@ -2,7 +2,7 @@
 # ▶ SHARED MEDIA REGISTRY (Room-DB Backed) ◀
 # Purpose: Large JSON blob storage for Plex indexes and TTS gate registry
 # Storage: SQLite via Room-DB (shared domain, 512KB per entry)
-# Pattern: Read-only SQL sensors + REST write commands
+# Pattern: Read-only SQL sensors   REST write commands
 # ════════════════════════════════════════════════════════════════════════
 
 sql:
@@ -26,6 +26,23 @@ sql:
     column: state
 
 template:
+
+       # ──────────────────────────────────────────────────────────────────
+       # Wrapper: Parse SQL JSON string into dict
+       # ──────────────────────────────────────────────────────────────────
+       - name: "Room Configs Shared Registry Dict"
+         unique_id: room_configs_shared_registry_dict
+         state: "ok"
+         attributes:
+           payload: >-
+             {% set raw = state_attr('sensor.room_configs_shared_registry', 'payload') %}
+             {% if raw in [none, 'unknown', 'unavailable', ''] %}
+               {{ {} }}
+             {% elif raw is string %}
+               {{ (raw | from_json) if (raw | regex_search('^[\[{]')) else {} }}
+             {% else %}
+               {{ raw }}
+             {% endif %}
   - sensor:
       # ──────────────────────────────────────────────────────────────────
       # Plex TV Index Summary
@@ -94,8 +111,8 @@ template:
                 {% set year = movie.get('year', 0) | int %}
                 {% if year > 0 %}
                   {% set decade = (year // 10) * 10 %}
-                  {% set key = decade | string + 's' %}
-                  {% set _ = decades.d.update({key: (decades.d.get(key, 0) + 1)}) %}
+                  {% set key = decade | string   's' %}
+                  {% set _ = decades.d.update({key: (decades.d.get(key, 0)   1)}) %}
                 {% endif %}
               {% endfor %}
               {{ decades.d }}
