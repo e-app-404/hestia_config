@@ -2,11 +2,12 @@
 id: ADR-0022
 title: 'ADR-0022: Home Assistant Mount Keychain Credentials and Telemetry System'
 slug: home-assistant-mount-keychain-credentials-and-telemetry-system
-status: Accepted
+status: Superseded
 related:
 - ADR-0009
-supersedes: []
-last_updated: '2025-10-15'
+- ADR-0024
+superseded_by: 
+- ADR-0029
 date: 2025-10-04
 decision: 'Implement a comprehensive mount reliability and telemetry system'
 author: Evert Appels
@@ -20,22 +21,7 @@ tags:
 - webhook
 - launchagent
 - macos
-rollout:
-  include_scan:
-    phase_A:
-      mode: report
-      start: '2025-10-04T18:00:00+01:00'
-      end: '2025-10-05T00:00:00+01:00'
-    phase_B:
-      mode: enforce
-      start: '2025-10-05T00:00:01+01:00'
-ci_policy:
-  include_scan:
-    mode: enforce
-    start: '2025-10-05T00:00:01+01:00'
-  packaging:
-    deterministic: true
-    manifest: sha256
+last_updated: 2025-10-20
 ---
 
 # ADR-0022: Home Assistant Mount Keychain Credentials and Telemetry System
