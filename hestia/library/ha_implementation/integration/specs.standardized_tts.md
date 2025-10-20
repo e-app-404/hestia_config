@@ -12,6 +12,38 @@ schema_version: 1
 
 # TTS Implementation Specification
 
+## QUICK REFERENCE
+
+```toml
+[[use_case]]
+name = "general_announcement"
+script = "tts_announce"
+behavior = "rate_limited, customizable"
+
+[[use_case]]
+name = "system_event"
+script = "tts_system_event"
+cooldown = 300
+key = "event_type"
+
+[[use_case]]
+name = "critical_alert"
+script = "tts_critical"
+bypass = true
+behavior = "always_plays"
+
+[[use_case]]
+name = "maintenance_task"
+script = "tts_maintenance"
+cooldown = 3600
+key = "task"
+
+[[use_case]]
+name = "custom_advanced"
+script = "tts_gate_native"
+behavior = "full_control"
+```
+
 ## 1. STORAGE ARCHITECTURE
 
 ### 1.1 Database Schema

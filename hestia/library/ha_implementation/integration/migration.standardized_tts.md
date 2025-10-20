@@ -2,7 +2,9 @@
 # MIGRATION GUIDE FOR EXISTING AUTOMATIONS
 
 ## Pattern 1: Direct TTS Call → Standardized
-yaml# ❌ OLD (Direct call, no rate limiting)
+
+```yaml
+# ❌ OLD (Direct call, no rate limiting)
 - action: tts.speak
   target:
     entity_id: tts.google_translate_en_com
@@ -17,8 +19,12 @@ yaml# ❌ OLD (Direct call, no rate limiting)
   data:
     key: "ha_startup"
     message: "Home Assistant successfully rebooted."
-Pattern 2: System Event → Convenience Script
-yaml# ❌ OLD
+```
+
+## Pattern 2: System Event → Convenience Script
+
+```yaml
+# ❌ OLD
 - action: tts.speak
   target:
     entity_id: tts.google_translate_en_com
@@ -33,8 +39,13 @@ yaml# ❌ OLD
   data:
     event_type: "startup"  # or "shutdown", "backup", etc.
     message: "{{ some_dynamic_message }}"
-Pattern 3: Critical Alert → Bypass Rate Limit
-yaml# For urgent announcements that must always play
+```
+
+## Pattern 3: Critical Alert → Bypass Rate Limit
+
+```yaml
+# For urgent announcements that must always play
 - action: script.tts_critical
   data:
     message: "Critical system alert!"
+```
