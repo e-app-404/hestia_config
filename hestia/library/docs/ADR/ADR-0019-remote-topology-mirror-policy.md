@@ -5,29 +5,16 @@ slug: remote-topology-mirror-policy-github-nas-local
 status: Accepted
 related: []
 supersedes: []
-last_updated: '2025-10-15'
 date: 2025-09-28
-decision: Source of truth** = `github/main`. 2) **NAS mirror** is **pull-only**
-  (no dev pushes). It is updated by **fetching from GitHub**, not by direct developer
-  force-pushes.
+decision: Source of truth = `github/main`. The NAS mirror is pull-only (no dev pushes). It is updated by fetching from GitHub, not by direct developer force-pushes.
 author: "e-app-404"
 relates_to:
 - ADR-0015
 - ADR-0017
 - ADR-0018
 - ADR-0023
-last_update: 2025-09-28
-tags:
-- git
-- topology
-- policy
-- mirror
-- backup
-- workflow
-- ci
-- devops
-- release
-- repository
+last_updated: '2025-10-15'
+tags: ["git", "topology", "mirror", "policy", "backup", "workflow", "ci", "devops", "release", "repository"]
 ---
 
 ## Context
