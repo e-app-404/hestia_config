@@ -10,7 +10,7 @@ date: 2025-09-11
 decision: '### Included Artifacts - `system_instruction.yaml` - `design_patterns.md`
   - `prompt_registry.md` - `metadata_schema.yaml` - `hades_config_index.yaml` - All
   related markdown and YAML files in governance and meta folders'
-author: Evert Appels
+author: "e-app-404"
 tags:
 - architecture
 - adr

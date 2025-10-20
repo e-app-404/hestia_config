@@ -14,7 +14,7 @@ supersedes: []
 last_updated: "2025-10-15"
 date: 2025-10-12
 decision: summary-concise)
-author: evert-appels
+author: "e-app-404"
 tags:
   - governance
   - appdaemon

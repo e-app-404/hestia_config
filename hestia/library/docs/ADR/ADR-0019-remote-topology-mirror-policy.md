@@ -10,7 +10,7 @@ date: 2025-09-28
 decision: 1) **Source of truth** = `github/main`. 2) **NAS mirror** is **pull-only**
   (no dev pushes). It is updated by **fetching from GitHub**, not by direct developer
   force-pushes.
-author: e-app-404
+author: "e-app-404"
 relates_to:
 - ADR-0015
 - ADR-0017

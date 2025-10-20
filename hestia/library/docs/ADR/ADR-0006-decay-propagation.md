@@ -15,7 +15,7 @@ tags:
 - decay
 - propagation
 - contract
-author: Evert Appels
+author: "e-app-404"
 ---
 
 # ADR-0006: Decay and Propagation Logic Contract

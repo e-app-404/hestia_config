@@ -21,7 +21,7 @@ tags:
 - relationship
 - contract
 - adr
-author: Evert Appels
+author: "e-app-404"
 ---
 
 # ADR-0004: Canonical Area Hierarchy & Spatial Relationship Contract

@@ -14,7 +14,7 @@ decision:
   summary: When ${HA_MOUNT} is not writable, tooling writes to an OS-specific local
     path outside the repo, with strict perms.
   precedence: Logs MUST NOT be written under ${HA_MOUNT} or the repo root.
-author: Evert Appels
+author: "e-app-404"
 policy:
   macOS: ~/Library/Logs/Hestia/
   linux: ${XDG_STATE_HOME:-$HOME/.local/state}/hestia/logs

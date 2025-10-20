@@ -5,7 +5,7 @@ date: 2025-09-11
 status: Superseded
 superseded_by: ADR-0024
 author:
-  - "Evert Appels"
+  - "e-app-404"
   - "Github Copilot"
 related:
   - ADR-0008
@@ -17,8 +17,6 @@ related:
   - ADR-0016
 supersedes: []
 last_updated: 2025-09-25
-author: 
-  - "Evert Appels"
 tags: ["/n/ha", "autofs", "workspace", "mount", "smb", "macos", "pathing", "folder-structure"]
 amended_by: [ADR-0016]
 notes: "Historical '/n/ha' reference retained in context; canonical path is ${HA_MOUNT:-$HOME/hass}."

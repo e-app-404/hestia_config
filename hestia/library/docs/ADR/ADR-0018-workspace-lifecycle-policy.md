@@ -15,7 +15,7 @@ owners:
 - hestia-core
 references:
 - .github/workflows/adr-0018-include-scan.yml
-author: Evert Appels
+author: "e-app-404"
 tags:
 - architecture
 - workspace

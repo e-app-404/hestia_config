@@ -2,7 +2,7 @@
 title: "Home Assistant SMB Mount Operations Guide"
 date: 2025-10-02
 authors:
-  - "Evert Appels"
+  - "e-app-404"
 status: Active
 related:
   - "ADR-0016: Canonical HA edit root & non-interactive SMB mount"

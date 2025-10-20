@@ -39,7 +39,7 @@ tags:
 - thresholding
 - suppression
 - decision
-author: Evert Appels
+author: "e-app-404"
 ---
 
 

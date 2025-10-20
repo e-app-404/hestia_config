@@ -4,15 +4,14 @@ slug: ops-mount-telemetry-under-canonical-config
 title: Operational Mount & Telemetry under Canonical /config
 status: Accepted
 created: 2025-10-20
+author: "e-app-404"
 context: production
 amends:
   - ADR-0024
 supersedes:
   - ADR-0022
-stakeholders:
-  - operator_host: macOS (user: evertappels)
-  - ha_stack: HA Core/Supervisor
-  - ci: GitHub Actions
+last_updated: 2025-10-20
+decision: "Operationalize ADR-0024 on macOS using synthetic mapping, LaunchAgent mounts, Keychain-backed SMB auth, and local-only mount telemetry."
 ---
 
 # 1) Decision

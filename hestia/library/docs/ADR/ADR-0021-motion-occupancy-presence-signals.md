@@ -12,7 +12,7 @@ decision: 'Hestia’s lighting automations historically referenced **raw (alpha-
   stillness, sensitivity drift, and device o...'
 authors:
 - Strategos Governance
-- Evert Appels
+- "e-app-404"
 tags:
 - home-automation
 - adr

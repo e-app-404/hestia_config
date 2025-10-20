@@ -15,7 +15,7 @@ date: 2025-09-13
 decision: All ADRs must comply with standardized structure, formatting, and machine-parseability
   requirements including mandatory frontmatter fields, token blocks, and redaction
   procedures.
-author: Evert Appels
+author: "e-app-404"
 tags:
 - governance
 - formatting

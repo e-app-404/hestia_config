@@ -8,7 +8,7 @@ supersedes: []
 last_updated: "2025-10-15"
 date: 2025-09-11
 decision: "Standardize TTS YAML actions using templated structure with media_player_entity_id, message, and language parameters for consistent automated assistant usage."
-author: Evert Appels
+author: "e-app-404"
 tags:
   - architecture
   - tts

@@ -8,7 +8,7 @@ supersedes: []
 last_updated: '2025-10-15'
 date: 2025-08-27
 decision: '...'
-author: Evert Appels
+author: "e-app-404"
 tags:
 - architecture
 - adr

@@ -15,7 +15,7 @@ precedence over main branch content. This applies to automation logic, YAML conf
 ADR documentation, operational scripts, deployment pipelines, testing infrastructure, 
 and workspace organization, among others.'
 author:
-- Evert Appels
+- "e-app-404"
 conditions:
 - Active workspace development branch
 - Main branch with potential staleness
