@@ -30,6 +30,18 @@ recorder:
       - sensor.*_minutes_since_*
       - weather.*
       - binary_sensor.*day
+      - sensor.room_configs_*
+      - sensor.rooms_needing_cleaning
+      - sensor.shared_plex_*
+      - sensor.shared_tts_gate_registry
+      - sensor.plex_tv_index_compat
+      - sensor.plex_movie_index_compat
+      - sensor.plex_recently_added
+      - sensor.tts_gate_registry_status
+      - sensor.plex_tv_index_count
+      - sensor.plex_movie_index_count
+      - sensor.appdaemon_health_*
+      - sensor.appdaemon_test_*
     entities:
       - sensor.current_date_natural
       - sensor.current_date_description
@@ -43,8 +55,9 @@ recorder:
       - input_text.plex_movie_index
       - input_number.plex_tv_episode_count
       - input_number.plex_movie_count
+      - sensor.room_configs_shared_registry
     event_types:
-      - call_service                 # keep 'automation_triggered' (do NOT exclude)
+      - call_service
 
   include:
     domains:
