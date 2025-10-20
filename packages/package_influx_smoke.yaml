@@ -12,7 +12,7 @@ rest_command:
     url: "http://192.168.0.104:8086/api/v2/write?org=Hestia&bucket=homeassistant&precision=ns"
     method: POST
     headers:
-      Authorization: !secret influxdb_header # <- guardrail-compliant
+      Authorization: !secret influxdb_header
       Content-Type: "text/plain"
     payload: >
       ha_smoketest,host=homeassistant value=1i {{ (now().timestamp() * 1000000000) | int }}

@@ -831,8 +831,8 @@
       '
   mode: restart
   max_exceeded: silent
-- id: group_sonos_roam_on_motion
-  alias: Group Sonos Roam on Motion
+- id: group_sonos_roam_on_motion_duplicate
+  alias: Group Sonos Roam on Motion (Duplicate)
   description: Group Sonos Roam on Motion (quiet hours + reconcile + volume cap)
   triggers:
   - entity_id:
