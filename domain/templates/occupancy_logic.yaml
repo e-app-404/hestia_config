@@ -17,7 +17,8 @@
         {% set sources = [
           {'entity': 'binary_sensor.sanctum_occupancy_matter_alpha', 'protocol': 'matter', 'preference': 1, 'type': 'occupancy'},
           {'entity': 'binary_sensor.bedroom_occupancy_beta',         'protocol': 'logic',  'preference': 2, 'type': 'occupancy'},
-          {'entity': 'binary_sensor.ensuite_occupancy_beta',         'protocol': 'logic',  'preference': 3, 'type': 'occupancy'}
+          {'entity': 'binary_sensor.ensuite_occupancy_beta',         'protocol': 'logic',  'preference': 3, 'type': 'occupancy'},
+          {'entity': 'binary_sensor.sanctum_motion_recent_beta',  'protocol': 'recency','preference': 4, 'type': 'motion'}
         ] %}
         {{ preference_select(sources) == 'on' }}
       attributes:
