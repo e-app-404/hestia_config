@@ -42,6 +42,11 @@ recorder:
       - sensor.plex_movie_index_count
       - sensor.appdaemon_health_*
       - sensor.appdaemon_test_*
+      - sensor.room_configs_*
+      - sensor.rooms_needing_cleaning
+      - sensor.appdaemon_health_raw
+      - sensor.appdaemon_test_raw
+      - sensor.appdaemon_health_direct_test
     entities:
       - sensor.current_date_natural
       - sensor.current_date_description

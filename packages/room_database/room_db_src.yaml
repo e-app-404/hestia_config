@@ -86,6 +86,7 @@ rest_command:
     method: GET
     timeout: 10
 
+rest_command:
   room_db_reload_mapping:
     url: "http://a0d7b954-appdaemon:5050/api/appdaemon/room_db_reload_mapping"
     method: GET
@@ -185,13 +186,3 @@ shell_command:
     if ! grep -Eq "(^|[[:space:]]){{ room_id }}:" /config/www/area_mapping.yaml 2>/dev/null; then echo "room_id validation failed" >&2; exit 126; fi;
     "$SQLITE_CMD" /config/room_database.db "PRAGMA journal_mode=WAL; PRAGMA synchronous=NORMAL; CREATE TABLE IF NOT EXISTS write_guard(domain TEXT PRIMARY KEY, last_ts INTEGER); CREATE TABLE IF NOT EXISTS schema_version(version INTEGER); CREATE TABLE IF NOT EXISTS room_configs(room_id TEXT, config_domain TEXT, config_data TEXT, updated_at TEXT, PRIMARY KEY(room_id, config_domain)); BEGIN IMMEDIATE; SELECT CASE WHEN (SELECT version FROM schema_version)={{ schema_expected }} THEN 1 ELSE RAISE(ABORT,\"SCHEMA_VERSION_MISMATCH\") END; SELECT CASE WHEN COALESCE(strftime(\"%s\",\"now\") - (SELECT last_ts FROM write_guard WHERE domain=\"vacuum_control\"), 9999) >= 2 THEN 1 ELSE RAISE(ABORT,\"WRITE_RATE_LIMIT\") END; UPDATE room_configs SET config_data = json_set(config_data, \"$.last_cleaned\", datetime(\"now\"), \"$.needs_cleaning\", 0), updated_at = datetime(\"now\") WHERE room_id=\"{{ room_id }}\" AND config_domain=\"vacuum_control\"; INSERT OR REPLACE INTO write_guard(domain,last_ts) VALUES(\"vacuum_control\", strftime(\"%s\",\"now\")); COMMIT;" 2>/dev/null || echo "SQLite operation failed" >&2
     '
-
-# Recorder policy to exclude SQL sensors from history (prevent database bloat)
-recorder:
-  exclude:
-    entity_globs:
-      - sensor.room_configs_*
-      - sensor.rooms_needing_cleaning
-      - sensor.appdaemon_health_raw
-      - sensor.appdaemon_test_raw
-      - sensor.appdaemon_health_direct_test
