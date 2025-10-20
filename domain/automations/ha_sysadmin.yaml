@@ -2,11 +2,11 @@
   alias: "Record HA Restart Time"
   description: "Updates input_datetime helper with the exact restart time on Home Assistant startup."
   mode: single
-  trigger:
+  triggers:
     - trigger: homeassistant
       event: start
-  action:
-    - service: input_datetime.set_datetime
+  actions:
+    - action: input_datetime.set_datetime
       target:
         entity_id: input_datetime.last_ha_restart
       data:
@@ -15,11 +15,11 @@
 - id: d2d8775b-e666-4fb4-976d-02b4d9c5a396
   alias: "Home Assistant Start - Notify"
   mode: single
-  trigger:
+  triggers:
     - trigger: homeassistant
       event: start
   action:
-    - service: script.notify_engine
+    - action: script.notify_engine
       data:
         who: "evert"
         title: "HA started"
@@ -31,12 +31,12 @@
         sticky: false
         timeout_sec: 300
 
-    - service: persistent_notification.create
+    - action: persistent_notification.create
       data:
         title: "HA Startup"
         message: "Home Assistant started at {{ now().strftime('%Y-%m-%d %H:%M:%S') }}"
 
-    - service: tts.speak
+    - action: tts.speak
       target:
         entity_id: tts.google_translate_en_com
       data:
@@ -50,13 +50,13 @@
   mode: queued
   max: 20
   max_exceeded: silent
-  trigger:
-    - platform: event
+  triggers:
+    - trigger: event
       event_type: system_log_event
       event_data:
         level: ERROR
       id: error
-    - platform: event
+    - trigger: event
       event_type: system_log_event
       event_data:
         level: WARNING
@@ -81,11 +81,11 @@
 - id: 2a93d8c4-5ad7-4bf3-842c-2b0940efe4a2
   alias: "Home Assistant Shutdown - Notify"
   mode: single
-  trigger:
+  triggers:
     - trigger: homeassistant
       event: shutdown
-  action:
-    - service: script.notify_engine
+  actions:
+    - action: script.notify_engine
       data:
         who: "evert"
         title: "HA shutdown"
@@ -97,12 +97,12 @@
         sticky: false
         timeout_sec: 180
 
-    - service: persistent_notification.create
+    - action: persistent_notification.create
       data:
         title: "HA Shutdown"
         message: "Home Assistant will shut down at {{ now().strftime('%Y-%m-%d %H:%M:%S') }}"
 
-    - service: tts.speak
+    - action: tts.speak
       target:
         entity_id: tts.google_translate_en_com
       data:
@@ -115,12 +115,12 @@
   alias: "Hestia Trash Reaches Threshold"
   mode: single
   max_exceeded: silent
-  trigger:
+  triggers:
     - trigger: numeric_state
       entity_id: sensor.hestia_trash_size
       above: 512000
-  action:
-    - service: script.notify_engine
+  actions:
+    - action: script.notify_engine
       data:
         message: "Trash exceeded 500MB. Approve to empty?"
 
@@ -146,14 +146,14 @@
   mode: single
   max_exceeded: silent
   trigger:
-    - platform: time
+    - trigger: time
       at: "03:30:00"
-  condition:
+  conditions:
     - condition: time
       weekday:
         - sun
-  action:
-    - service: script.notify_engine
+  actions:
+    - action: script.notify_engine
       data:
         who: "evert"
         title: "Hestia Maintenance"
@@ -184,8 +184,8 @@
   trigger:
     - trigger: homeassistant
       event: shutdown
-  action:
-    - service: tts.speak
+  actions:
+    - action: tts.speak
       target:
         entity_id: tts.google_translate_en_com
       data:
@@ -197,11 +197,13 @@
     - service: shell_command.hestia_prune_tmp
 
 - alias: "Debug System Log Events"
-  trigger:
-    - platform: event
+  id: debug_system_log_events
+  mode: single
+  triggers:
+    - trigger: event
       event_type: system_log_event
-  action:
-    - service: persistent_notification.create
+  actions:
+    - action: persistent_notification.create
       data:
         title: "System Log Event"
         message: >
@@ -210,16 +212,16 @@
 - alias: "Backup: Synology Upload (Controlled)"
   id: backup_to_synology_controlled
   description: "Upload backups to Synology with proper error handling"
-  trigger:
+  triggers:
     - trigger: event
       event_type: backup_end
       event_data:
         success: true
-  condition:
+  conditions:
     - condition: template
       value_template: "{{ trigger.event.data.success == true }}"
-  action:
-    - service: persistent_notification.create
+  actions:
+    - action: persistent_notification.create
       data:
         title: "Backup Available"
         message: >
@@ -233,11 +235,11 @@
   - alias: "System: Startup Optimization Success"
     id: startup_optimization_success
     description: "Log when startup completes without blocking issues"
-    trigger:
+    triggers:
       - trigger: state
         entity_id: binary_sensor.startup_completed
         to: 'on'
-    action:
+    actions:
       - action: system_log.write
         data:
           message: >
@@ -254,14 +256,14 @@
     id: startup_optimization_failure
     description: "Log when startup does not complete within the expected timeout (blocking issues likely)"
     mode: single
-    trigger:
+    triggers:
       - trigger: homeassistant
         event: start
     variables:
       timeout_secs: 300
       grace_secs: 30
       check_after: "{{ timeout_secs + grace_secs }}"
-    action:
+    actions:
       - delay:
           seconds: "{{ check_after }}"
       - choose:
