@@ -1,0 +1,34 @@
+# Lovelace snippet: Tools Observability (Lineage, Sweeper, Broker, Templates)
+
+type: vertical-stack
+cards:
+  - type: markdown
+    content: |
+      ### Tools Observability
+      - Lineage artifacts: `/config/hestia/tools/lineage_guardian/.artifacts/`
+      - Sweeper index: `/config/hestia/reports/_index.jsonl`
+      - Broker logs: `/config/hestia/workspace/operations/logs/`
+  - type: entities
+    title: Lineage Guardian
+    entities:
+      - entity: sensor.lineage_guardian_violations_count
+        name: Violations count
+      - entity: binary_sensor.lineage_guardian_integrity_ok
+        name: Integrity OK
+  - type: entities
+    title: Backup Sweeper
+    entities:
+      - entity: sensor.backup_sweeper_health_score
+        name: Health score
+  - type: entities
+    title: Write Broker
+    entities:
+      - entity: binary_sensor.write_broker_healthy
+        name: Healthy
+      - entity: sensor.write_broker_recent_error_count
+        name: Recent error count
+  - type: entities
+    title: Template Patcher
+    entities:
+      - entity: sensor.template_patcher_recent_backups
+        name: Recent backups (*.bak-*)

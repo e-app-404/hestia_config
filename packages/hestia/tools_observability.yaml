@@ -1,0 +1,102 @@
+# Tools Observability (lineage_guardian, backup_sweeper, write-broker, template_patcher)
+# Components used align with integration guides:
+# - command_line sensor: /config/hestia/library/ha_implementation/integration/integration.sensor-cli.md
+# - REST sensor (used elsewhere for glances): integration.sensor-rest.md
+# - Template sensors/binary_sensors: integration.templates.md
+
+sensor:
+  # --- Lineage Guardian ---
+  - platform: command_line
+    name: "Lineage Guardian Violations Count"
+    command: >-
+      bash -lc 'cat /config/hestia/tools/lineage_guardian/.artifacts/violations.json 2>/dev/null || echo []'
+    scan_interval: 300
+    value_template: >
+      {% set j = (value | from_json(default=[])) %}
+      {{ (j | count) if (j is iterable) else 0 }}
+
+  - platform: command_line
+    name: "Lineage Guardian Integrity Raw"
+    command: >-
+      bash -lc 'cat /config/hestia/tools/lineage_guardian/.artifacts/integrity.json 2>/dev/null || echo {}'
+    scan_interval: 300
+    value_template: "{{ value }}"
+
+  # --- Backup Sweeper (JSONL index) ---
+  - platform: command_line
+    name: "Backup Sweeper Last Index Line"
+    command: >-
+      bash -lc 'tail -n 1 /config/hestia/reports/_index.jsonl 2>/dev/null || echo {}'
+    scan_interval: 600
+    value_template: "{{ value }}"
+
+  # --- write-broker audit state ---
+  - platform: command_line
+    name: "Write Broker Recent Error Count"
+    command: >-
+      bash -lc 'cat /config/hestia/workspace/operations/logs/write_broker_*.json 2>/dev/null | tail -n 1000 | grep -c "\"level\":\"error\"" || echo 0'
+    scan_interval: 300
+    value_template: "{{ (value | int(0)) }}"
+
+  # --- template_patcher activity ---
+  - platform: command_line
+    name: "Template Patcher Recent Backups"
+    command: >-
+      bash -lc 'ls -1 /config/custom_templates/*.bak-* 2>/dev/null | wc -l'
+    scan_interval: 900
+    value_template: "{{ (value | int(0)) }}"
+
+template:
+  - binary_sensor:
+      # Lineage Guardian integrity OK if no issues (ok true or issues length 0)
+      - name: "Lineage Guardian Integrity OK"
+        unique_id: "lineage_guardian_integrity_ok"
+        state: >
+          {% set raw = states('sensor.lineage_guardian_integrity_raw') %}
+          {% set obj = (raw | from_json(default={})) %}
+          {% set issues = (obj.get('issues', []) if obj is mapping else []) %}
+          {% set ok = obj.get('ok') if obj is mapping else none %}
+          {{ (ok is boolean and ok) or (issues | count == 0) }}
+        attributes:
+          issues_count: >
+            {% set raw = states('sensor.lineage_guardian_integrity_raw') %}
+            {% set obj = (raw | from_json(default={})) %}
+            {{ (obj.get('issues', []) | count) if obj is mapping else 0 }}
+          file: "/config/packages/hestia/tools_observability.yaml"
+          subsystem: "lineage_guardian"
+          role: "diagnostics"
+          type: "file"
+          tier: "μ"
+
+      # write-broker healthy if no recent errors
+      - name: "Write Broker Healthy"
+        unique_id: "write_broker_healthy"
+        state: >
+          {{ (states('sensor.write_broker_recent_error_count') | int(0)) == 0 }}
+        attributes:
+          recent_error_count: "{{ states('sensor.write_broker_recent_error_count') | int(0) }}"
+          logs_glob: "/config/hestia/workspace/operations/logs/write_broker_*.json"
+          file: "/config/packages/hestia/tools_observability.yaml"
+          subsystem: "write_broker"
+          role: "diagnostics"
+          type: "file"
+          tier: "μ"
+
+  - sensor:
+      # Backup Sweeper health score from last JSONL line
+      - name: "Backup Sweeper Health Score"
+        unique_id: "backup_sweeper_health_score"
+        state: >
+          {% set raw = states('sensor.backup_sweeper_last_index_line') %}
+          {% set obj = (raw | from_json(default={})) %}
+          {{ obj.get('health_score', -1) if obj is mapping else -1 }}
+        attributes:
+          created_at: >
+            {% set raw = states('sensor.backup_sweeper_last_index_line') %}
+            {% set obj = (raw | from_json(default={})) %}
+            {{ obj.get('created_at', '') if obj is mapping else '' }}
+          file: "/config/packages/hestia/tools_observability.yaml"
+          subsystem: "backup_sweeper"
+          role: "diagnostics"
+          type: "jsonl"
+          tier: "μ"
