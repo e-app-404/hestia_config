@@ -2,13 +2,17 @@
 id: ha-mount-installer
 title: "HA Mount Installer: Sticky, Clean, and ADR-0024-Compliant Integration"
 slug: ha-mount-installer
-date: 2024-06-11
+date: 2025-10-19
+content_type: playbook
+location: library/docs/playbooks/ha_mount_installer.md
 tags: ["playbook", "ha_mount", "macos", "smb", "adr-0024", "integration", "mount", "samba"]
+source: [GPT Strategos] ("https://chatgpt.com/c/68d97bf7-af98-8330-8f6f-da2e3c59a598")
 related: []
 ---
+
 # Integration Playbook: Sticky, Clean, and ADR-0024-Compliant
 
-**Assumptions**
+## Assumptions
 
 - **Platform:** macOS (zsh, Apple Silicon)
 - **Canonical interface:** `/config` (APFS synthetic entry → `/System/Volumes/Data/homeassistant`)
@@ -20,7 +24,7 @@ related: []
     - Credentials: Saved in your login Keychain (not root)
 - **Mounting:** Already validated as user (no `sudo`)
 
-**What “sticky & integrated” means**
+## What “sticky & integrated” means
 
 - **Auto-mount** on login and network availability (user LaunchAgent + robust user-mode mount script)
 - **Idempotent manual up/down commands** (`ha-up`, `ha-down`) available anytime
