@@ -21,15 +21,15 @@ Notes:
 from __future__ import annotations
 
 import argparse
+import contextlib
 import json
 import shutil
 import subprocess
 import sys
 import tempfile
 import time
-import contextlib
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 # --- Constants & defaults
@@ -47,23 +47,21 @@ DEFAULT_CFG = {
         "listen_host": "127.0.0.1",
         "normalizer_port": 61209,
         "tailscale_host": "",
-        "tailscale_port": 61208
+        "tailscale_port": 61208,
     },
     "apply": {
         "use_write_broker": False,
         "write_broker_cmd": "/config/bin/write-broker",
-        "write_broker_mode": ""
+        "write_broker_mode": "",
     },
-    "retention": {
-        "reports_days": 14,
-        "ledger_lines": 20000
-    }
+    "retention": {"reports_days": 14, "ledger_lines": 20000},
 }
 
 # --- Helpers
 
+
 def now_z() -> str:
-    return datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
+    return datetime.now(UTC).isoformat().replace("+00:00", "Z")
 
 
 def load_toml_config() -> dict:
@@ -79,9 +77,9 @@ def load_toml_config() -> dict:
     out = DEFAULT_CFG.copy()
     out.update(cfg)
     # ensure nested keys exist
-    out.setdefault("runtime", DEFAULT_CFG["runtime"]) 
-    out.setdefault("apply", DEFAULT_CFG["apply"]) 
-    out.setdefault("retention", DEFAULT_CFG["retention"]) 
+    out.setdefault("runtime", DEFAULT_CFG["runtime"])
+    out.setdefault("apply", DEFAULT_CFG["apply"])
+    out.setdefault("retention", DEFAULT_CFG["retention"])
     return out
 
 
@@ -106,10 +104,11 @@ class Report:
 def append_ledger(index: Path, payload: dict):
     index.parent.mkdir(parents=True, exist_ok=True)
     with index.open("a", encoding="utf-8") as fh:
-        fh.write(json.dumps(payload, separators=(",",":")) + "\n")
+        fh.write(json.dumps(payload, separators=(",", ":")) + "\n")
 
 
 # run-lock
+
 
 def acquire_lock(lockfile: Path):
     lockfile.parent.mkdir(parents=True, exist_ok=True)
@@ -124,6 +123,7 @@ def acquire_lock(lockfile: Path):
 
 
 # idempotency: check if last applied sha for target matches
+
 
 def last_applied_sha(index: Path, target: str) -> str | None:
     if not index.exists():
@@ -148,6 +148,7 @@ def last_applied_sha(index: Path, target: str) -> str | None:
 
 # tiny sha256 helper
 
+
 def sha256_bytes(b: bytes) -> str:
     import hashlib
 
@@ -157,6 +158,7 @@ def sha256_bytes(b: bytes) -> str:
 
 
 # atomic write
+
 
 def atomic_write_text(dst: Path, text: str):
     tmp = Path(tempfile.mkstemp(prefix=dst.name, dir=str(dst.parent))[1])
@@ -168,6 +170,7 @@ def atomic_write_text(dst: Path, text: str):
 
 
 # broker rewrite helper (best-effort)
+
 
 def broker_rewrite(cfg_apply: dict, dst: Path, temp_src: Path) -> tuple[int, str, str]:
     cmd = cfg_apply.get("write_broker_cmd")
@@ -224,9 +227,9 @@ class H(BaseHTTPRequestHandler):
     def _proxy(self):
         url = f"{UPSTREAM}{self.path}"
         body = None
-        if self.command in ("POST","PUT","PATCH"):
-            length = int(self.headers.get("Content-Length","0"))
-            body = self.rfile.read(length) if length>0 else None
+        if self.command in ("POST", "PUT", "PATCH"):
+            length = int(self.headers.get("Content-Length", "0"))
+            body = self.rfile.read(length) if length > 0 else None
         req = Request(url, data=body, method=self.command)
         for k, v in self.headers.items():
             if k.lower() not in ("host", "content-length"):
@@ -242,8 +245,8 @@ class H(BaseHTTPRequestHandler):
             headers = dict(e.headers.items())
         except URLError as e:
             status = 502
-            resp_body = json.dumps({"error":"upstream_unreachable","detail":str(e)}).encode()
-            headers = {"Content-Type":"application/json"}
+            resp_body = json.dumps({"error": "upstream_unreachable", "detail": str(e)}).encode()
+            headers = {"Content-Type": "application/json"}
         return status, headers, resp_body
 
     def do_GET(self):
@@ -260,9 +263,18 @@ class H(BaseHTTPRequestHandler):
         self.send_response(status)
         headers["Content-Length"] = str(len(body))
         for hk in list(headers.keys()):
-            if hk.lower() in ("transfer-encoding","connection","keep-alive","proxy-authenticate","proxy-authorization","te","trailers","upgrade"):
+            if hk.lower() in (
+                "transfer-encoding",
+                "connection",
+                "keep-alive",
+                "proxy-authenticate",
+                "proxy-authorization",
+                "te",
+                "trailers",
+                "upgrade",
+            ):
                 headers.pop(hk, None)
-        for k,v in headers.items():
+        for k, v in headers.items():
             self.send_header(k, v)
         self.end_headers()
         self.wfile.write(body)
@@ -270,9 +282,10 @@ class H(BaseHTTPRequestHandler):
     def log_message(self, fmt, *args):
         return
 
+
 if __name__ == "__main__":
     host = "127.0.0.1"
-    port = int(sys.argv[1]) if len(sys.argv)>1 else 61209
+    port = int(sys.argv[1]) if len(sys.argv) > 1 else 61209
     srv = ThreadingHTTPServer((host, port), H)
     try:
         srv.serve_forever()
@@ -282,6 +295,7 @@ if __name__ == "__main__":
 
 
 # --- Core operations
+
 
 def probe_upstream(upstream: str, timeout: int = 5) -> dict:
     """Probe upstream /api/4/all and /api/4/diskio to check data shapes."""
@@ -324,9 +338,14 @@ def install_normalizer_script(cfg: dict, target_path: Path) -> dict:
     sha = sha256_bytes(content.encode())
     # atomic replace
     if cfg.get("apply", {}).get("use_write_broker"):
-        rc, sout, serr = broker_rewrite(cfg.get("apply"), target_path, tmp)
+        rc, sout, serr = broker_rewrite(cfg.get("apply", {}), target_path, tmp)
         if rc != 0:
-            return {"installed": False, "reason": f"broker_failed:{rc}", "stdout": sout, "stderr": serr}
+            return {
+                "installed": False,
+                "reason": f"broker_failed:{rc}",
+                "stdout": sout,
+                "stderr": serr,
+            }
         else:
             return {"installed": True, "method": "broker", "sha": sha}
     else:
@@ -338,18 +357,16 @@ def install_normalizer_script(cfg: dict, target_path: Path) -> dict:
 def start_normalizer(target_path: Path, port: int, log_dir: Path) -> dict:
     # If running, try to kill older processes by using a simple pkill -f
     # Then start via nohup to background
-    try:
-        # kill any existing process
+    # kill any existing process (best-effort)
+    with contextlib.suppress(Exception):
         subprocess.run(["pkill", "-f", str(target_path)], check=False)
-    except Exception:
-        pass
     out = {"started": False}
     stdout = log_dir / "glances-normalize.out"
     stderr = log_dir / "glances-normalize.err"
     cmd = [str(target_path), str(port)]
     # start detached
     with open(stdout, "a") as so, open(stderr, "a") as se:
-        p = subprocess.Popen(cmd, stdout=so, stderr=se, start_new_session=True)
+        subprocess.Popen(cmd, stdout=so, stderr=se, start_new_session=True)
     time.sleep(0.7)
     # check listen
     try:
@@ -387,6 +404,7 @@ def configure_tailscale(cfg: dict) -> dict:
 
 # --- Main modes
 
+
 def dry_run(cfg: dict, report_file: Path, index_file: Path) -> Report:
     started = now_z()
     details = {"probes": {}, "install": {"would_install_to": "/usr/local/bin/glances-normalize.py"}}
@@ -409,9 +427,15 @@ def dry_run(cfg: dict, report_file: Path, index_file: Path) -> Report:
             else:
                 normalized.append(d)
         details["probes"]["normalized_preview_count"] = len(normalized)
-    success = True if p.get("ok") else False
+    success = bool(p.get("ok"))
 
-    rep = Report(started_at=started, finished_at=now_z(), mode="dry-run", success=success, details=details)
+    rep = Report(
+        started_at=started,
+        finished_at=now_z(),
+        mode="dry-run",
+        success=success,
+        details=details,
+    )
     # emit report and ledger entry
     report_file.write_text(json.dumps(rep.to_dict(), indent=2), encoding="utf-8")
     ledger = {
@@ -422,7 +446,7 @@ def dry_run(cfg: dict, report_file: Path, index_file: Path) -> Report:
                 "target_path": "/usr/local/bin/glances-normalize.py",
                 "applied": False,
                 "apu": {"provenance": {"sha256": None}},
-                "summary": "dry-run: evaluated upstream and normalization preview"
+                "summary": "dry-run: evaluated upstream and normalization preview",
             }
         ],
     }
@@ -459,12 +483,18 @@ def apply(cfg: dict, report_file: Path, index_file: Path, lock_fp) -> Report:
                 "target_path": str(target),
                 "applied": inst.get("installed", False),
                 "apu": {"provenance": {"sha256": inst.get("sha")}},
-                "summary": "installed normalizer script and started service"
+                "summary": "installed normalizer script and started service",
             }
         ],
     }
     append_ledger(index_file, payload)
-    rep = Report(started_at=started, finished_at=now_z(), mode="apply", success=inst.get("installed", False), details=details)
+    rep = Report(
+        started_at=started,
+        finished_at=now_z(),
+        mode="apply",
+        success=inst.get("installed", False),
+        details=details,
+    )
     report_file.write_text(json.dumps(rep.to_dict(), indent=2), encoding="utf-8")
     return rep
 
@@ -490,10 +520,8 @@ def main():
             sys.exit(0 if rep.success else 3)
     finally:
         if lock_fp:
-            try:
+            with contextlib.suppress(Exception):
                 lock_fp.close()
-            except Exception:
-                pass
 
 
 if __name__ == "__main__":
