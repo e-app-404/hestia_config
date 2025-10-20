@@ -77,14 +77,12 @@ script:
       - choose:
           - conditions: "{{ allow }}"
             sequence:
-              # Set volume
               - action: media_player.volume_set
                 target:
                   entity_id: "{{ media_player }}"
                 data:
                   volume_level: "{{ volume }}"
 
-              # Speak (ADR-0001 compliant)
               - action: tts.speak
                 target:
                   entity_id: "{{ tts_entity }}"

@@ -4,9 +4,8 @@ extracted_config:
 transient_state:
   ok: true
 relationships:
-  - { from: a, to: b, type: ref }
+- {from: a, to: b, type: ref}
 suggested_commands:
-  - { action: noop }
+- {action: noop}
 notes:
-  - "validation sample"
-# nudge 1760939960
+- "validation sample"
