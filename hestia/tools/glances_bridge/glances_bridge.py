@@ -22,14 +22,12 @@ from __future__ import annotations
 
 import argparse
 import json
-import os
-import shlex
 import shutil
-import signal
 import subprocess
 import sys
 import tempfile
 import time
+import contextlib
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
@@ -120,8 +118,8 @@ def acquire_lock(lockfile: Path):
         import fcntl
 
         fcntl.flock(fp, fcntl.LOCK_EX | fcntl.LOCK_NB)
-    except Exception:
-        raise SystemExit("E-LOCK-001: another run is in progress")
+    except Exception as exc:
+        raise SystemExit("E-LOCK-001: another run is in progress") from exc
     return fp
 
 
@@ -136,8 +134,11 @@ def last_applied_sha(index: Path, target: str) -> str | None:
                 try:
                     d = json.loads(line)
                     for r in d.get("results", []):
-                        if r.get("target_path") == target and r.get("applied") and r.get("apu", {}).get("provenance", {}).get("sha256"):
-                            return r["apu"]["provenance"]["sha256"]
+                        tp = r.get("target_path")
+                        applied = r.get("applied")
+                        sha = r.get("apu", {}).get("provenance", {}).get("sha256")
+                        if tp == target and applied and sha:
+                            return sha
                 except Exception:
                     continue
     except Exception:
@@ -302,8 +303,8 @@ def probe_upstream(upstream: str, timeout: int = 5) -> dict:
 
 
 def build_reports_dirs(cfg: dict) -> tuple[Path, Path, Path]:
-    report_dir = Path(cfg.get("report_dir"))
-    index_dir = Path(cfg.get("index_dir"))
+    report_dir = Path(cfg.get("report_dir") or DEFAULT_CFG["report_dir"])
+    index_dir = Path(cfg.get("index_dir") or DEFAULT_CFG["index_dir"])
     report_dir.mkdir(parents=True, exist_ok=True)
     index_dir.mkdir(parents=True, exist_ok=True)
     report_file = report_dir / f"{TOOL}__{int(time.time())}__report.json"
