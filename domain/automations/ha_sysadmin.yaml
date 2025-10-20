@@ -3,7 +3,7 @@
   description: "Updates input_datetime helper with the exact restart time on Home Assistant startup."
   mode: single
   trigger:
-    - platform: homeassistant
+    - trigger: homeassistant
       event: start
   action:
     - service: input_datetime.set_datetime
@@ -16,7 +16,7 @@
   alias: "Home Assistant Start - Notify"
   mode: single
   trigger:
-    - platform: homeassistant
+    - trigger: homeassistant
       event: start
   action:
     - service: script.notify_engine
@@ -82,7 +82,7 @@
   alias: "Home Assistant Shutdown - Notify"
   mode: single
   trigger:
-    - platform: homeassistant
+    - trigger: homeassistant
       event: shutdown
   action:
     - service: script.notify_engine
@@ -116,7 +116,7 @@
   mode: single
   max_exceeded: silent
   trigger:
-    - platform: numeric_state
+    - trigger: numeric_state
       entity_id: sensor.hestia_trash_size
       above: 512000
   action:
@@ -182,7 +182,7 @@
   alias: "Hestia On Shutdown - Prune Tmp"
   mode: single
   trigger:
-    - platform: homeassistant
+    - trigger: homeassistant
       event: shutdown
   action:
     - service: tts.speak
@@ -191,7 +191,7 @@
       data:
         cache: true
         media_player_entity_id: media_player.bedroom_google_home_mini_speaker
-        message: "Hestia maintenance: Performing automatic temporary file cleanup during shutdown."
+        message: "Home Assistant will perform scheduled cleanup of temporary files during shutdown."
         language: en-ca
 
     - service: shell_command.hestia_prune_tmp
@@ -207,27 +207,79 @@
         message: >
           {{ trigger.event.data | tojson }}
 
-# Alternative: If Synology integration backup is needed, use automation approach
-# This provides better error handling and follows ADR-0020 error patterns
+- alias: "Backup: Synology Upload (Controlled)"
+  id: backup_to_synology_controlled
+  description: "Upload backups to Synology with proper error handling"
+  trigger:
+    - trigger: event
+      event_type: backup_end
+      event_data:
+        success: true
+  condition:
+    - condition: template
+      value_template: "{{ trigger.event.data.success == true }}"
+  action:
+    - service: persistent_notification.create
+      data:
+        title: "Backup Available"
+        message: >
+          Backup {{ trigger.event.data.backup_id }} completed successfully.
+          File location: {{ trigger.event.data.backup_path }}
+          Size: {{ (trigger.event.data.size / 1024 / 1024) | round(1) }} MB
+        notification_id: synology_backup_completed
+  mode: single
 
-  - alias: "Backup: Synology Upload (Controlled)"
-    id: backup_to_synology_controlled
-    description: "Upload backups to Synology with proper error handling"
+
+  - alias: "System: Startup Optimization Success"
+    id: startup_optimization_success
+    description: "Log when startup completes without blocking issues"
     trigger:
-      - platform: event
-        event_type: backup_end
-        event_data:
-          success: true
-    condition:
-      - condition: template
-        value_template: "{{ trigger.event.data.success == true }}"
+      - trigger: state
+        entity_id: binary_sensor.startup_completed
+        to: 'on'
     action:
-      - service: persistent_notification.create
+      - action: system_log.write
         data:
-          title: "Backup Available"
           message: >
-            Backup {{ trigger.event.data.backup_id }} completed successfully.
-            File location: {{ trigger.event.data.backup_path }}
-            Size: {{ (trigger.event.data.size / 1024 / 1024) | round(1) }} MB
-          notification_id: "backup_completed"
+            ✅ Startup optimization successful - ADR-0020 fixes applied:
+            - Google Assistant disabled (sync_google blocking resolved)
+            - Backup location configured locally (Synology upload disabled)
+            - Network scanner optimized (scan_interval: 600s)
+            - Startup check window: 300s
+          level: info
+          logger: "homeassistant.adr_0020_fixes"
     mode: single
+
+  - alias: "System: Startup Optimization Failure (Timeout)"
+    id: startup_optimization_failure
+    description: "Log when startup does not complete within the expected timeout (blocking issues likely)"
+    mode: single
+    trigger:
+      - trigger: homeassistant
+        event: start
+    variables:
+      timeout_secs: 300
+      grace_secs: 30
+      check_after: "{{ timeout_secs + grace_secs }}"
+    action:
+      - delay:
+          seconds: "{{ check_after }}"
+      - choose:
+          - conditions:
+              - condition: template
+                value_template: >
+                  {{ states('binary_sensor.startup_completed') != 'on' }}
+            sequence:
+              - action: system_log.write
+                data:
+                  level: error
+                  logger: "homeassistant.adr_0020_fixes"
+                  message: >-
+                    ❌ Startup optimization FAILED or TIMED OUT after {{ check_after }}s.
+                    binary_sensor.startup_completed = {{ states('binary_sensor.startup_completed') }}
+                    last_changed = {{ states.binary_sensor.startup_completed.last_changed if states.binary_sensor.startup_completed is not none else 'n/a' }}
+                    Expected (ADR-0020) to be ready within {{ timeout_secs }}s:
+                    - Google Assistant disabled (sync_google blocking resolved)
+                    - Local backup path active (Synology upload disabled)
+                    - Network scanner interval set to 600s
+                    - Startup timeout enforced ({{ timeout_secs }}s)
