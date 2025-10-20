@@ -67,14 +67,14 @@
             - condition: trigger
               id: warning
           sequence:
-            - service: counter.increment
+            - action: counter.increment
               target:
                 entity_id: counter.homeassistant_warnings
         - conditions:
             - condition: trigger
               id: error
           sequence:
-            - service: counter.increment
+            - action: counter.increment
               target:
                 entity_id: counter.homeassistant_errors
 
@@ -136,8 +136,8 @@
               entity_id: input_boolean.hestia_approve_trash
               state: "on"
           sequence:
-            - service: shell_command.hestia_empty_trash
-            - service: input_boolean.turn_off
+            - action: shell_command.hestia_empty_trash
+            - action: input_boolean.turn_off
               target:
                 entity_id: input_boolean.hestia_approve_trash
 
@@ -194,7 +194,7 @@
         message: "Home Assistant will perform scheduled cleanup of temporary files during shutdown."
         language: en-ca
 
-    - service: shell_command.hestia_prune_tmp
+    - action: shell_command.hestia_prune_tmp
 
 - alias: "Debug System Log Events"
   id: debug_system_log_events

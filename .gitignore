@@ -61,6 +61,8 @@ hestia/config/system/*.conf
 hestia/config/system/*.toml
 # Allow workspace configuration (no PII)
 !hestia/config/system/hestia_workspace.conf
+!hestia/config/system/hestia.toml
+!hestia/config/system/cli.conf
 # Preview configurations may contain generated credentials
 hestia/config/preview/*.conf
 
@@ -273,6 +275,8 @@ domain/shell_commands/**/*.sh
 # Some systems (macOS) are case-insensitive so '/Scripts/' was matching 'scripts'.
 !scripts/
 !scripts/**
+# Allow CI helper in bin
+!bin/ci-meta-capture-enforce
 # ----------------------------------------------------------------------
 /# Allow hestia/reports/ to be tracked while still ignoring top-level reports/
 !hestia/reports/

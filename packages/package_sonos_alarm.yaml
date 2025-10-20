@@ -166,7 +166,7 @@ automation:
   - alias: "Update Sonos Alarm (Automation)"
     id: "update_sonos_alarm_automation_001_a"
     mode: restart
-    trigger:
+    triggers:
       - trigger: state
         entity_id:
           - input_boolean.sonos_alarm_enable
@@ -176,7 +176,7 @@ automation:
           - input_boolean.sonos_alarm_include_group
           - input_select.sonos_alarm_recurrence
           - input_boolean.sonos_alarm_oneoff
-    action:
+    actions:
       - variables:
           zone: "{{ states('input_select.sonos_alarm_zone') }}"
           recur: >-
@@ -210,15 +210,15 @@ automation:
 
   - alias: "Reset One-Off After Alarm Window"
     id: "reset_one_off_after_alarm_window_001_a"
-    trigger:
+    triggers:
       - trigger: state
         entity_id: binary_sensor.sonos_alarm_30_min_passed
         to: "on"
-    condition:
+    conditions:
       - condition: state
         entity_id: input_boolean.sonos_alarm_oneoff
         state: "on"
-    action:
+    actions:
       - action: input_boolean.turn_off
         target:
           entity_id:
@@ -227,11 +227,11 @@ automation:
 
   - alias: "Send Sonos Alarm Preview Notification"
     id: "send_sonos_alarm_preview_notification_001_a"
-    trigger:
+    triggers:
       - trigger: state
         entity_id: input_boolean.sonos_alarm_enable
         to: "on"
-    action:
+    actions:
       - action: notify.notify
         data:
           title: "Sonos Alarm Scheduled"
@@ -265,48 +265,48 @@ automation:
 
   - alias: "Disable Sonos Alarm via Notification"
     id: "disable_sonos_alarm_via_notification_001_a"
-    trigger:
+    triggers:
       - trigger: event
         event_type: mobile_app_notification_action
         event_data:
           action: disable_alarm
-    action:
+    actions:
       - action: input_boolean.turn_off
         target:
           entity_id: input_boolean.sonos_alarm_enable
 
   - alias: "Reconfirm Alarm via Notification"
     id: "reconfirm_alarm_via_notification"
-    trigger:
+    triggers:
       - trigger: event
         event_type: mobile_app_notification_action
         event_data:
           action: resend_alarm
-    action:
+    actions:
       - action: script.reapply_sonos_alarm
 
   - alias: "Auto Trigger Morning Sequence After Alarm"
     id: "auto_trigger_morning_sequence_after_alarm"
-    trigger:
+    triggers:
       - trigger: state
         entity_id: binary_sensor.sonos_alarm_30_min_passed
         to: "on"
-    condition:
+    conditions:
       - condition: state
         entity_id: input_boolean.sonos_alarm_enable
         state: "on"
       - condition: state
         entity_id: input_boolean.initiate_morning_sequence
         state: "off"
-    action:
+    actions:
       - action: input_boolean.turn_on
         target:
           entity_id: input_boolean.initiate_morning_sequence
 
   - alias: "Sunrise Light Sequence Before Sonos Alarm"
     id: sonos_sunrise_light_rampup
-    trigger:
-      - platform: template
+    triggers:
+      - trigger: template
         value_template: |
           {% set alarm = states('input_datetime.sonos_alarm_time') %}
           {% if alarm not in ['unknown', 'unavailable', None, ''] %}
@@ -317,14 +317,14 @@ automation:
           {% else %}
             false
           {% endif %}
-    condition:
+    conditions:
       - condition: state
         entity_id: input_boolean.sonos_alarm_enable
         state: "on"
       - condition: state
         entity_id: input_boolean.sonos_sunrise_enable
         state: "on"
-    action:
+    actions:
       - variables:
           start_b: "{{ states('input_number.sonos_sunrise_light_start_brightness') | int }}"
           final_b: "{{ states('input_number.sonos_sunrise_light_final_brightness') | int }}"
@@ -348,7 +348,7 @@ automation:
   - alias: "Validate Sonos Alarm Availability"
     id: "validate_sonos_alarm_availability"
     mode: restart
-    trigger:
+    triggers:
       - trigger: state
         entity_id:
           - input_select.sonos_alarm_zone
@@ -356,7 +356,7 @@ automation:
           - input_datetime.sonos_alarm_time
       - trigger: homeassistant
         event: start
-    action:
+    actions:
       - variables:
           zone: "{{ states('input_select.sonos_alarm_zone') }}"
           recur: >-

@@ -31,13 +31,13 @@ template:
 automation:
   - alias: Notify if Tailscale goes offline
     id: automation_notify_tailscale_offline
-    trigger:
+    triggers:
       - trigger: state
         entity_id: binary_sensor.ha_tailscale_online
         to: "off"
         for:
           minutes: 5
-    action:
+    actions:
       - alias: "Create persistent notification"
         action: persistent_notification.create
         data:
