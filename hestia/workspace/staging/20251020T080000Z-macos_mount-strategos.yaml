@@ -1,0 +1,169 @@
+# file: /config/hestia/core/config/prompts/meta_capture.promptset.v1.yaml
+# promptset: meta_capture.promptset.v1 (executed)
+# schema_version: 1.0
+
+extracted_config:
+  hosts:
+    - id: macbook
+      role: operator_host
+      os: macOS
+      user: evertappels
+      paths:
+        canonical_config_interface: /config
+        data_backing_dir: /System/Volumes/Data/homeassistant
+        synthetic_conf: /etc/synthetic.conf
+        mountpoint: /System/Volumes/Data/homeassistant
+        logs_dir: /Users/evertappels/Library/Logs
+      tools:
+        vscode:
+          cli:
+            code: /Users/evertappels/bin/code
+            code_insiders: /Users/evertappels/bin/code-insiders
+        smb:
+          mount_smbfs: /sbin/mount_smbfs
+          smbutil: /usr/bin/smbutil
+          netauth_agent: /System/Library/CoreServices/NetAuthAgent.app/Contents/MacOS/NetAuthAgent
+      keychain:
+        entries:
+          - service: homeassistant.local
+            protocol: smb
+            account: evertappels
+          - service: 192.168.0.129
+            protocol: smb
+            account: evertappels
+        trusted_apps:
+          - /sbin/mount_smbfs
+          - /usr/bin/smbutil
+          - /System/Library/CoreServices/NetAuthAgent.app/Contents/MacOS/NetAuthAgent
+          - /System/Applications/Utilities/Terminal.app/Contents/MacOS/Terminal
+      adr:
+        canonical_path_policy: ADR-0024
+        ops_mount_telemetry: ADR-0029 (planned replacement for ADR-0022)
+
+    - id: homeassistant
+      role: ha_host
+      hostname: homeassistant.local
+      ip: 192.168.0.129
+      services:
+        - name: ha_web
+          port: 8123
+          proto: tcp
+        - name: samba_addon
+          shares:
+            - config
+            - backup
+            - addons
+            - media
+            - ssl
+            - share
+            - addon_configs
+      exports:
+        config_share:
+          path: //evertappels@homeassistant.local/config
+          alt_ip_path: //evertappels@192.168.0.129/config
+
+  policy:
+    canonical_config_root: /config
+    macos_resolution:
+      type: synthetic_firmlink_or_symlink
+      mapping: /config -> /System/Volumes/Data/homeassistant
+    containers:
+      bind_mount: /config
+    ci:
+      ro_allowed: true
+      guard_env: REQUIRE_CONFIG_WRITABLE=0
+
+transient_state:
+  macbook:
+    config_node_type: symlink # latest stat -f %HT /config -> "Symbolic Link"
+    config_realpath: /System/Volumes/Data/homeassistant
+    smb_mount_active: false
+    keychain:
+      host_entry_present: true
+      ip_entry_present: true
+    vscode_cli:
+      code: 1.105.1 (arm64)
+      code_insiders: 1.106.0-insider (arm64)
+  homeassistant:
+    smb_shares_visible_via_smbutil_view: true
+    last_seen_ip: 192.168.0.129
+
+relationships:
+  - source: macbook:/config
+    relation: resolves_to
+    target: macbook:/System/Volumes/Data/homeassistant
+  - source: macbook:/System/Volumes/Data/homeassistant
+    relation: mounted_from
+    target: //evertappels@homeassistant.local/config
+  - source: homeassistant:samba_addon
+    relation: provides
+    target: smb_shares:[config,backup,addons,media,ssl,share,addon_configs]
+  - source: ADR-0024
+    relation: governs
+    target: canonical_config_root_/config
+  - source: ADR-0022
+    relation: superseded_by_planned
+    target: ADR-0029
+
+suggested_commands:
+  macos_validate_paths: |
+    stat -f '%HT' /config
+    python3 -c 'import os; print(os.path.realpath("/config"))'
+    sudo grep -n '^[^#]*config' /etc/synthetic.conf || echo 'config\thomeassistant (expected)'
+
+  macos_prepare_mountpoint: |
+    MNT="/System/Volumes/Data/homeassistant"
+    sudo mkdir -p "$MNT"
+    sudo chown "$USER":staff "$MNT"
+    diskutil unmount force "$MNT" >/dev/null 2>&1 || true
+
+  macos_keychain_reset_host_ip: |
+    HOST="homeassistant.local"
+    IP="192.168.0.129"
+    for S in "$HOST" "$IP"; do
+      security delete-internet-password -s "$S" >/dev/null 2>&1 || true
+    done
+
+  macos_keychain_add_trusted_noninteractive: |
+    HOST="homeassistant.local"
+    IP="192.168.0.129"
+    SMB_USER="evertappels"
+    read -s -r "SMB_PASS?Samba password for $SMB_USER@$HOST: "; echo
+    MSMB="/sbin/mount_smbfs"
+    SMBUTIL="/usr/bin/smbutil"
+    NETAUTH="/System/Library/CoreServices/NetAuthAgent.app/Contents/MacOS/NetAuthAgent"
+    TERMBIN="/System/Applications/Utilities/Terminal.app/Contents/MacOS/Terminal"
+    for p in "$MSMB" "$SMBUTIL" "$NETAUTH" "$TERMBIN"; do [[ -x "$p" ]] || { echo "Missing: $p"; exit 1; }; done
+    security add-internet-password -a "$SMB_USER" -s "$HOST" -r 'smb ' -w "$SMB_PASS" -A -U -T "$MSMB" -T "$SMBUTIL" -T "$NETAUTH" -T "$TERMBIN"
+    security add-internet-password -a "$SMB_USER" -s "$IP"   -r 'smb ' -w "$SMB_PASS" -A -U -T "$MSMB" -T "$SMBUTIL" -T "$NETAUTH" -T "$TERMBIN"
+    unset SMB_PASS
+
+  macos_mount_via_ip_keychain: |
+    set -e
+    IP="192.168.0.129"
+    SHARE="config"
+    MNT="/System/Volumes/Data/homeassistant"
+    sudo /sbin/mount_smbfs -N -f 0644 -d 0755 "://$IP/$SHARE" "$MNT"
+
+  macos_verify_mount_and_visibility: |
+    MNT="/System/Volumes/Data/homeassistant"
+    mount | grep -E "on $MNT .*smbfs"
+    python3 - <<'PY'
+    import os; print("realpath(/config):", os.path.realpath("/config"))
+    PY
+    ls -la /config | sed -n '1,80p'
+
+  macos_unmount_clean: |
+    diskutil unmount force /System/Volumes/Data/homeassistant >/dev/null 2>&1 || true
+
+  guards_and_linter: |
+    REQUIRE_CONFIG_WRITABLE=0 bin/require-config-root
+    tools/lint_paths.sh
+
+notes: |
+  - Canonical path is /config across all environments (ADR-0024).
+  - On macOS, /config currently appears as a symlink resolving to /System/Volumes/Data/homeassistant; synthetic firmlink is configured via /etc/synthetic.conf.
+  - Keychain must store SMB credentials for both hostname and IP, with trusted apps set to suppress repeated prompts and support non-interactive mounting.
+  - The Samba add-on lists expected shares; mount specifically the 'config' share to the Data path and consume via /config per policy.
+  - Validation commands are binary and repeatable.
+::contentReference[oaicite:0]{index=0}

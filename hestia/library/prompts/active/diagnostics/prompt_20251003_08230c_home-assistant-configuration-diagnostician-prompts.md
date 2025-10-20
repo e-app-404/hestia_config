@@ -46,11 +46,15 @@ promptset:
       - path: /config/domain/templates/*.yaml
       - path: /config/.storage/core.{entity device}_registry.yaml
       - path: /config/.storage/config_entries.yaml
+      - path: /config/.storage/repairs.issue_registry.yaml
       - path: /config/hestia/reports/*/ha-diagnostics-copilot_{timestamp}.yaml
     governance:
       - path: /config/.workspace/governance_index.md
       - path: /config/.workspace/knowledge_base_index.md
       - path: /config/.workspace/config_index.md
+    credentials:
+      - path: /config/.ssh
+      - path: /config/.secrets.yaml
 
   bindings:
     protocols:
