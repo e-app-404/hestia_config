@@ -212,3 +212,38 @@ template:
             {% endif %}
           upstream_sources: >
             {{ ['sensor.file_last_mount_status_json', 'sensor.macbook_hass_mount_health'] | tojson }}
+
+
+sensor:
+  - platform: rest
+    name: "Glances Bridge DiskIO Missing Count"
+    resource: !secret glances_bridge_diskio_url
+    method: GET
+    timeout: 10
+    value_template: >
+      {% set data = value_json if (value_json is not none) else [] %}
+      {% if data is iterable %}
+        {% set missing = data | selectattr('time_since_update', 'undefined') | list | count %}
+        {{ missing }}
+      {% else %}
+        999999
+      {% endif %}
+    scan_interval: 120
+
+template:
+  - binary_sensor:
+      - name: "Glances Bridge DiskIO Healthy"
+        unique_id: "glances_bridge_diskio_healthy"
+        state: >
+          {% set raw = states('sensor.glances_bridge_diskio_missing_count') %}
+          {% set n = (raw | int(999999)) %}
+          {{ n == 0 }}
+        attributes:
+          upstream_sources: >
+            {{ ['sensor.glances_bridge_diskio_missing_count'] | tojson }}
+          file: "/config/packages/hestia/ha_mount_telemetry_webhook.yaml"
+          subsystem: "glances"
+          role: "diagnostics"
+          type: "rest"
+          tier: "μ"
+

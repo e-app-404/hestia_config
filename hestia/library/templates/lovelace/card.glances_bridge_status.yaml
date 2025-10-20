@@ -1,0 +1,24 @@
+# Lovelace snippet: Glances Bridge health
+# Usage: Add via Dashboard → Edit → Raw configuration editor → !include/path or paste card
+# Assumes `sensor.glances_bridge_diskio_missing_count` and `binary_sensor.glances_bridge_diskio_healthy` exist
+
+type: vertical-stack
+cards:
+  - type: gauge
+    name: DiskIO missing time_since_update
+    entity: sensor.glances_bridge_diskio_missing_count
+    unit: entries
+    min: 0
+    max: 10
+    severity:
+      green: 0
+      yellow: 1
+      red: 3
+  - type: entity
+    entity: binary_sensor.glances_bridge_diskio_healthy
+    name: Glances Bridge Healthy
+  - type: markdown
+    content: |
+      - Reports: `/config/hestia/workspace/reports/glances_bridge/`
+      - Ops logs: `/config/hestia/workspace/operations/logs/glances_bridge/`
+      - Ledger: `/config/hestia/workspace/.hestia/index/glances_bridge__index.jsonl`
