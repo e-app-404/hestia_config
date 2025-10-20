@@ -8,16 +8,9 @@ related:
 - ADR-0009
 supersedes: []
 date: 2025-10-20
-decision: Comprehensive implementation guide for ADR-0030 compliant macOS Finder workflows including architecture, logic patterns, modification procedures, and maintenance guidelines.
+decision: Workspace maintenance, ops and procedures will go accompanied by the implementation of compliant macOS Finder workflows including architecture, logic patterns, modification procedures, and maintenance guidelines.
 author: GitHub Copilot (Claude Sonnet 4)
 tags: ["implementation", "workflows", "macos", "finder", "adr-0030", "automation", "governance", "documentation"]
-- workflows
-- macos
-- finder
-- adr-0030
-- automation
-- governance
-- documentation]
 last_updated: 2025-10-20
 ---
 
@@ -400,8 +393,8 @@ set -x
 
 ### File Locations
 
-- **Workflows:** `/Users/evertappels/Library/Services/`
-- **Documentation:** `/Users/evertappels/Library/Services/ADR-0030-Workflows-Documentation.md`
+- **Workflows:** `~/Library/Services/`
+- **Documentation:** `~/Library/Services/ADR-0030-Workflows-Documentation.md`
 - **ADR Reference:** `/config/hestia/library/docs/ADR/ADR-0030-workspace-lifecycle-policy.md`
 
 ### Related Documents
