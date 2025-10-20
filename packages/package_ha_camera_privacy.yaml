@@ -75,20 +75,19 @@ template:
                 'apple_watch': is_state('sensor.apple_watch_presence','Home'),
                 'iphone14': is_state('sensor.iphone14_presence','Home'),
                 'macbook': is_state('sensor.macbook_presence','Home'),
-                'desk_occupancy_beta': is_state('binary_sensor.desk_occupancy_inferred','on')
+                'desk_occupancy_beta': is_state('binary_sensor.desk_occupancy_beta','on')
               } | tojson
             }}
           source_entities: >
             {{
               [
-                'binary_sensor.sanctum_occupancy_matter_alpha',
+                'binary_sensor.sanctum_occupancy_beta',
                 'binary_sensor.bedroom_occupancy_beta',
                 'binary_sensor.ensuite_occupancy_beta',
-                'binary_sensor.ensuite_shower_occupancy_epsilon',
                 'sensor.apple_watch_presence',
                 'sensor.iphone14_presence',
                 'sensor.macbook_presence',
-                'binary_sensor.desk_occupancy_inferred',
+                'binary_sensor.desk_occupancy_beta',
                 'person.evert'
               ] | tojson
             }}
