@@ -1,20 +1,47 @@
 ---
-id:
-title:
-slug:
+id: ADR-0031
+title: ADR-0031: Hestia Architectural Doctrine — Config-Centric Tooling (TOML-first)
+slug: hestia-architectural-doctrine-config-centric-tooling-toml-first
+status: Accepted
+related:
+  - ADR-0008
+  - ADR-0015
+  - ADR-0019
+  - ADR-0023
+  - ADR-0024
+  - ADR-0027
+  - ADR-0028
+supersedes: []
+last_updated: '2025-10-20'
+date: 2025-10-20
+decision: Formalize TOML-first, config-centric doctrine for all Hestia tools; require dynamic path resolution, dry-run/apply, governed writes, and canonical reporting/ledger structure.
+author: Strategos (Executive Project Strategist)
+tags:
+  - doctrine
+  - config-centric
+  - toml
+  - governance
+  - automation
+  - hestia
 ---
+
 # ADR-0031: Hestia Architectural Doctrine — Config-Centric Tooling (TOML-first)
 
-**Status**: Accepted (context-dependent)
-**Date**: 2025-10-20
-**Owner**: Strategos (Executive Project Strategist)
-**Applies to**: Hestia repository (tools, scripts, automations, CI), small Python utilities → wider applications
-**Supersedes**: none (codifies existing practice)
-**Related**: ADR-0008 (YAML normalization), ADR-0015 (no tracked symlinks), ADR-0019 (source of truth), ADR-0023 (promotion/provenance), ADR-0024 (canonical `/config` paths), ADR-0027 (governed writes), ADR-0028 (AppDaemon/room-db), *sweeper*, *lineage-guardian*, *write-broker*, *meta_capture*
+## Table of Contents
 
----
+1. [Context](#1-context)
+2. [Decision](#2-decision)
+3. [Architectural Tenets (for machine-operators)](#3-architectural-tenets-for-machine-operators)
+4. [Standards & Style (checklist)](#4-standards--style-checklist)
+5. [Implementation Guidance (Python)](#5-implementation-guidance-python)
+6. [Migration & Backwards Compatibility](#6-migration--backwards-compatibility)
+7. [Risks & Mitigations](#7-risks--mitigations)
+8. [Acceptance Criteria](#8-acceptance-criteria)
+9. [Worked Example — Folding “Glances → HA via Tailscale” into Doctrine](#9-worked-example--folding-glances--ha-via-tailscale-into-doctrine)
+10. [Revisit Plan](#10-revisit-plan)
+11. [Decision Summary (one-screen)](#11-decision-summary-one-screen)
 
-## 1) Context
+## 1. Context
 
 Hestia has evolved multiple operator tools (e.g., **sweeper**, **lineage-guardian**, **write-broker**, **meta_capture**). The common success pattern across these efforts:
 
@@ -27,9 +54,7 @@ We now formalize this doctrine so that **machine-operators** can construct new c
 
 > **Note on scope**: This decision holds **only** while it benefits Hestia. Revisit if cargo-cult overhead outweighs value or the platform’s needs change.
 
----
-
-## 2) Decision
+## 2. Decision
 
 1. **TOML-First Centralization**
 
@@ -63,9 +88,7 @@ We now formalize this doctrine so that **machine-operators** can construct new c
    * Provide **CLI bindings** (in `cli.conf`) and convenience Make targets.
    * CI uses **dry-run** with **policy gates** (zero-red; optional zero-orange per TOML `fail_level`).
 
----
-
-## 3) Architectural Tenets (for machine-operators)
+## 3. Architectural Tenets (for machine-operators)
 
 * **Single Source of Truth**: Configuration keys originate from `hestia.toml`. Tools must *fail* if required keys are absent (offer a `—print-sample-config` for onboarding).
 * **Deterministic Discovery**: Inputs discovered via TOML glob lists; avoid shell-fragile patterns.
@@ -77,9 +100,7 @@ We now formalize this doctrine so that **machine-operators** can construct new c
 * **Path Compliance**: Enforce ADR-0024 via a linter; fail on legacy `/config/hestia/core/config` references.
 * **No Hidden State**: All tool state is in the ledger or report. No ad-hoc temp state outside `/config/hestia/workspace`.
 
----
-
-## 4) Standards & Style (checklist)
+## 4. Standards & Style (checklist)
 
 * **Config block** in `hestia.toml`:
 
@@ -131,9 +152,7 @@ We now formalize this doctrine so that **machine-operators** can construct new c
 * **Error Classes** (examples):
   `E-LOCK-001` (run-lock), `E-PIN-LOCK-001`, `E-SECRETS-xxx`, `E-SCHEMA-xxx`, `E-BROKER-001`, `E-LIMIT-APU-001`, `E-PATH-ADR0024`.
 
----
-
-## 5) Implementation Guidance (Python)
+## 5. Implementation Guidance (Python)
 
 **Config loader**
 
@@ -220,9 +239,7 @@ def append_ledger(index: Path, payload: dict):
         fh.write(json.dumps(payload, separators=(",",":")) + "\n")
 ```
 
----
-
-## 6) Migration & Backwards Compatibility
+## 6. Migration & Backwards Compatibility
 
 * **Paths**: Replace legacy `/config/hestia/core/config/` with `/config/hestia/config/` (ADR-0024). A linter step MUST fail on old paths.
 * **Existing tools**:
@@ -230,18 +247,14 @@ def append_ledger(index: Path, payload: dict):
   * **sweeper**, **lineage-guardian**, **write-broker**, **meta_capture** already follow most tenets; ensure each reads from `hestia.toml` and writes reports/ledgers to the canonical locations.
 * **Phased adoption**: New tooling MUST follow this ADR. Existing scripts SHOULD be refactored when touched.
 
----
-
-## 7) Risks & Mitigations
+## 7. Risks & Mitigations
 
 * **Overhead for small scripts** → Provide a **tiny scaffold** (loader/ledger/lock) so overhead is <50 lines.
 * **Stale TOML keys** → CI checks for required keys per tool.
 * **Operator bypass** → CLI/Make/VSCode tasks standardize run paths; documentation emphasizes dry-run first.
 * **Write safety** → Broker + atomic write + `.bak` + idempotency reduce blast radius.
 
----
-
-## 8) Acceptance Criteria
+## 8. Acceptance Criteria
 
 * New tool PRs include:
 
@@ -252,9 +265,7 @@ def append_ledger(index: Path, payload: dict):
   * ADR-0024 path compliance linter passes.
   * No tracked symlinks (ADR-0015).
 
----
-
-## 9) Worked Example — Folding “Glances → HA via Tailscale” into Doctrine
+## 9. Worked Example — Folding “Glances → HA via Tailscale” into Doctrine
 
 **Petition**: A standalone shell + Python proxy (`glances-normalize.py`) to normalize Glances API and expose via Tailscale.
 
@@ -303,16 +314,12 @@ def append_ledger(index: Path, payload: dict):
 
 This turns a niche script into a **first-class governed tool** that benefits from Hestia’s shared observability and safety mechanisms.
 
----
-
-## 10) Revisit Plan
+## 10. Revisit Plan
 
 * Reassess this ADR **every 6 months** or upon evidence of undue overhead.
 * Sunset or relax elements (e.g., broker requirement) when platform changes justify it.
 
----
-
-## 11) Decision Summary (one-screen)
+## 11. Decision Summary (one-screen)
 
 * **Use `hestia.toml`** as the single configuration source.
 * **No hard-coded paths**; resolve via TOML.
@@ -323,4 +330,25 @@ This turns a niche script into a **first-class governed tool** that benefits fro
 * **ADR-0024/0015 compliance** enforced in CLI/CI.
 * **Retain context-dependence**: keep only while it benefits Hestia.
 
+
 This doctrine lets any machine-operator build **complementary, governed** tooling that plugs into Hestia’s ecosystem with minimal friction and maximum safety.
+
+```yaml
+TOKEN_BLOCK:
+  accepted:
+    - TOML_FIRST_DOCTRINE_OK
+    - DYNAMIC_PATH_RESOLUTION_OK
+    - DRY_RUN_APPLY_MODEL_OK
+    - GOVERNED_WRITE_OK
+    - CANONICAL_REPORT_LEDGER_OK
+  requires:
+    - ADR_SCHEMA_V1
+    - ADR_0024_PATH_COMPLIANCE
+    - ADR_0015_NO_SYMLINKS
+  drift:
+    - DRIFT: hard_coded_path
+    - DRIFT: missing_toml_block
+    - DRIFT: missing_report_or_ledger
+    - DRIFT: non_atomic_write
+    - DRIFT: missing_dry_run_apply
+```
