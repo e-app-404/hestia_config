@@ -355,12 +355,12 @@
 - id: '1754732569560'
   alias: Fridge left open alert
   triggers:
-  - entity_id: binary_sensor.kitchen_fridge_contact_omega_door
+  - entity_id: binary_sensor.kitchen_fridge_contact_alpha_door
     to: 'on'
     for: 00:03:00
     id: send_alert
     trigger: state
-  - entity_id: binary_sensor.kitchen_fridge_contact_omega_door
+  - entity_id: binary_sensor.kitchen_fridge_contact_alpha_door
     from: 'on'
     for: 00:00:05
     id: clear_alert
@@ -432,7 +432,7 @@
   max_exceeded: silent
   variables:
     custom_friendly_name: Fridge
-    trigger_entity: binary_sensor.kitchen_fridge_contact_omega_door
+    trigger_entity: binary_sensor.kitchen_fridge_contact_alpha_door
     issue_state: 'on'
     notify_services_string: notify.notify
     notification_title: ⚠️ The fridge was left open
@@ -549,10 +549,10 @@
       notification_id: plex_alert_01
 - id: bedroom_matrix_mqtt_online_20250910_a
   alias: 'Bedroom Matrix: availability online at HA start'
-  trigger:
-  - platform: homeassistant
+  triggers:
+  - trigger: homeassistant
     event: start
-  action:
+  actions:
   - action: mqtt.publish
     data:
       topic: ha/bedroom_hdmi_matrix/status
@@ -613,7 +613,7 @@
   triggers:
   - trigger: state
     entity_id:
-    - binary_sensor.ensuite_presence_beta
+    - binary_sensor.ensuite_occupancy_beta
     - binary_sensor.ensuite_shower_occupancy_epsilon
     from:
     to: 'on'

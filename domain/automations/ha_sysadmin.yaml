@@ -125,7 +125,7 @@
         message: "Trash exceeded 500MB. Approve to empty?"
 
     - wait_for_trigger:
-        - platform: state
+        - trigger: state
           entity_id: input_boolean.hestia_approve_trash
           to: "on"
       timeout: "24:00:00"
