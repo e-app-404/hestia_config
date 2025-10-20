@@ -47,3 +47,8 @@ jobs:
           else
             echo "::warning::Legacy backup shapes allowed until $EXPIRES"
           fi
+
+      - name: "Guard: no tracked symlinks (ADR-0015)"
+        run: |
+          test -z "$(git ls-files -s | awk '$1==120000{print $4}')" || {
+            echo "E-ADR0015: tracked symlinks found"; exit 41; }

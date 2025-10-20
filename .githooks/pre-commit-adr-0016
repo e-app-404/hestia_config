@@ -21,7 +21,7 @@ for file in $PYTHON_FILES; do
         # Check staged content for violations
         SINGLE_VIOLATIONS=$(git show ":$file" | grep -n "Path('~[^']*')" | grep -v "\.expanduser()" || true)
         DOUBLE_VIOLATIONS=$(git show ":$file" | grep -n 'Path("~[^"]*")' | grep -v "\.expanduser()" || true)
-        
+
         if [ -n "$SINGLE_VIOLATIONS" ] || [ -n "$DOUBLE_VIOLATIONS" ]; then
             echo "❌ ADR-0016 VIOLATION in $file:"
             [ -n "$SINGLE_VIOLATIONS" ] && echo "$SINGLE_VIOLATIONS"

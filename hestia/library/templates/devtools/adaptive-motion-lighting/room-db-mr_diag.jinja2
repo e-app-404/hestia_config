@@ -1,0 +1,50 @@
+{# Room-DB Full Diagnostics (copy into Developer Tools → Template) #}
+{% macro eid(x) -%}{{ x if states(x) not in ['unknown','unavailable',''] else 'missing' }}{%- endmacro %}
+
+{# 1) Endpoint health via REST sensors if present #}
+{% set health_ent = 'sensor.room_db_health' %}
+{% set test_ent   = 'sensor.room_db_test' %}
+{% set health_ok  = (states(health_ent) not in ['unknown','unavailable',''] and state_attr(health_ent,'status') == 'healthy') %}
+{% set test_ok    = (states(test_ent)   not in ['unknown','unavailable',''] and state_attr(test_ent,'status')   == 'test_success') %}
+
+{# 2) Aggregated shared registry (this is the one under investigation) #}
+{% set shared_ent  = 'sensor.room_configs_shared_registry' %}
+{% set shared_ok   = (states(shared_ent) not in ['unknown','unavailable','']) %}
+{% set payload     = state_attr(shared_ent,'payload') if shared_ok else {} %}
+{% set payload_is_mapping = (payload is mapping) %}
+{% set tts_keys_ct = (payload.get('tts_gate_registry',{}) | list | count) if payload_is_mapping else 0 %}
+
+{# 3) Domain readers (motion/vacuum/activity) #}
+{% set dom_motion  = 'sensor.room_configs_motion_lighting' %}
+{% set dom_vacuum  = 'sensor.room_configs_vacuum_control' %}
+{% set dom_act     = 'sensor.room_configs_activity_tracking' %}
+{% set motion_ok   = (states(dom_motion) not in ['unknown','unavailable','']) %}
+{% set vacuum_ok   = (states(dom_vacuum) not in ['unknown','unavailable','']) %}
+{% set activity_ok = (states(dom_act)    not in ['unknown','unavailable','']) %}
+
+{# 4) Synthesis #}
+Room-DB Diagnostics
+===================
+Endpoints:
+  health_entity:   {{ eid(health_ent) }}  -> ok={{ health_ok }}
+  test_entity:     {{ eid(test_ent)   }}  -> ok={{ test_ok }}
+
+Aggregated Shared Registry:
+  entity:          {{ eid(shared_ent) }}
+  exists:          {{ shared_ok }}
+  payload_mapping: {{ payload_is_mapping }}
+  keys_present:    {{ (payload.keys() | list) if payload_is_mapping else [] }}
+  tts_keys_count:  {{ tts_keys_ct }}
+
+Domain Readers:
+  motion:          {{ eid(dom_motion)   }} (exists={{ motion_ok }})
+  vacuum:          {{ eid(dom_vacuum)   }} (exists={{ vacuum_ok }})
+  activity:        {{ eid(dom_act)      }} (exists={{ activity_ok }})
+
+Action Hints:
+  - If health/test are false: confirm only global endpoints are polled +
+    see app logs for /api/appdaemon/room_db_*.
+  - If shared registry exists=false: ensure 'mr_src.yaml' is LOADED by packages include
+    (non-recursive include; add a shim or move file up).
+  - If tts_keys_count=0: seed via room_db_update_config (domain='shared') then re-evaluate.
+

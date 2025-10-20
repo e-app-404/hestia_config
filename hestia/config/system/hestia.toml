@@ -396,3 +396,27 @@ old_backup_formats = ["*.bak", "*.bak-*"]
 legacy_paths = ["/tmp", "~/hass", "/n/ha", "/private/var/ha_real"]
 deprecated_since = "2025-10-15"
 removal_target = "2025-12-01"
+
+# --- Automation: glances_bridge (ADR-0031) ---
+[automation.glances_bridge]
+repo_root    = "/config"
+config_root  = "/config/hestia/config"
+allowed_root = "/config/hestia"
+report_dir   = "/config/hestia/workspace/reports/glances_bridge"
+index_dir    = "/config/hestia/workspace/.hestia/index"
+
+[automation.glances_bridge.runtime]
+upstream_url    = "http://127.0.0.1:61208"
+listen_host     = "127.0.0.1"
+normalizer_port = 61209
+tailscale_host  = "" # set to enable tailscale wiring
+tailscale_port  = 61208
+
+[automation.glances_bridge.apply]
+use_write_broker = true
+write_broker_cmd = "/config/bin/write-broker"
+write_broker_mode= ""
+
+[automation.glances_bridge.retention]
+reports_days = 14
+ledger_lines = 20000

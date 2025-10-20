@@ -83,7 +83,14 @@ script:
           text:
     variables:
       _raw: "{{ state_attr('sensor.room_configs_vacuum_control','payload') }}"
-      _cfgs: "{{ _raw | from_json if _raw else {} }}"
+      _cfgs: >-
+        {% if _raw in [none, 'unknown', 'unavailable', ''] %}
+          {{ {} }}
+        {% elif _raw is mapping %}
+          {{ _raw }}
+        {% else %}
+          {{ {} }}
+        {% endif %}
       room_config: "{{ _cfgs.get(room, {}) }}"
       segment_id: "{{ room_config.get('segment_id', 1) | int }}"
       base_topic: "{{ states('input_text.valetudo_base_topic') }}"

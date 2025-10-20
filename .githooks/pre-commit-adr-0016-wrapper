@@ -1,0 +1,2 @@
+# ADR-0016 Path Expansion Compliance Check
+exec .githooks/pre-commit-adr-0016

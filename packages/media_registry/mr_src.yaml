@@ -9,6 +9,7 @@ sql:
   # Primary SQL sensor - reads all shared registry keys in one query
   - name: "Room Configs — Shared Registry"
     db_url: sqlite:////config/room_database.db
+    unique_id: room_configs_shared_registry
     query: >
       SELECT 'ok' AS state,
              json_group_object(

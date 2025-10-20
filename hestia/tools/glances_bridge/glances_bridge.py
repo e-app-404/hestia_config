@@ -9,9 +9,13 @@ Usage:
   glances_bridge.py apply
 
 Behaviors (per ADR-0031):
-- Load config from /config/hestia/config/system/hestia.toml under [automation.glances_bridge]
-- dry-run: probe upstream, validate normalization rules, produce report + ledger (no writes)
-- apply: perform atomic install of normalizer script, start as background process, configure tailscale serve (if available), produce apply report + ledger
+- Load config from /config/hestia/config/system/hestia.toml under
+    [automation.glances_bridge]
+- dry-run: probe upstream, validate normalization rules, produce report + ledger
+    (no writes)
+- apply: perform atomic install of normalizer script, start as background
+    process, configure tailscale serve (if available), produce apply report +
+    ledger
 - Use write-broker if configured for writes
 - Implement run-lock and idempotency checks
 
@@ -40,7 +44,7 @@ DEFAULT_CFG = {
     "repo_root": "/config",
     "config_root": "/config/hestia/config",
     "allowed_root": "/config/hestia",
-    "report_dir": "/config/hestia/workspace/operations/logs/glances_bridge",
+    "report_dir": "/config/hestia/workspace/reports/glances_bridge",
     "index_dir": "/config/hestia/workspace/.hestia/index",
     "runtime": {
         "upstream_url": "http://127.0.0.1:61208",
@@ -66,9 +70,9 @@ def now_z() -> str:
 
 def load_toml_config() -> dict:
     try:
-        import tomllib as toml
+        import tomllib as toml  # py311+
     except Exception:
-        import tomli as toml
+        import toml as toml  # 3rd-party fallback
     if not HTOML.exists():
         return DEFAULT_CFG
     data = toml.loads(HTOML.read_text(encoding="utf-8"))
@@ -284,7 +288,7 @@ class H(BaseHTTPRequestHandler):
 
 
 if __name__ == "__main__":
-    host = "127.0.0.1"
+    host = "{listen_host}"
     port = int(sys.argv[1]) if len(sys.argv) > 1 else 61209
     srv = ThreadingHTTPServer((host, port), H)
     try:
@@ -316,54 +320,61 @@ def probe_upstream(upstream: str, timeout: int = 5) -> dict:
     return out
 
 
-def build_reports_dirs(cfg: dict) -> tuple[Path, Path, Path]:
+def build_reports_dirs(cfg: dict, mode: str) -> tuple[Path, Path, Path]:
     report_dir = Path(cfg.get("report_dir") or DEFAULT_CFG["report_dir"])
     index_dir = Path(cfg.get("index_dir") or DEFAULT_CFG["index_dir"])
     report_dir.mkdir(parents=True, exist_ok=True)
     index_dir.mkdir(parents=True, exist_ok=True)
-    report_file = report_dir / f"{TOOL}__{int(time.time())}__report.json"
+    suffix = (mode or "report").replace("-", "_")
+    report_file = report_dir / f"{TOOL}__{int(time.time())}__{suffix}.json"
     index_file = index_dir / f"{TOOL}__index.jsonl"
     lock_file = index_dir / f"{TOOL}.lock"
     return report_file, index_file, lock_file
 
 
-def install_normalizer_script(cfg: dict, target_path: Path) -> dict:
-    upstream = cfg.get("runtime", {}).get("upstream_url")
-    content = NORMALIZER_SCRIPT.format(upstream=upstream)
-    # write to a temp file then atomic_move
+def install_normalizer_script(cfg: dict, target_path: Path, content: str) -> dict:
+    """Install provided content to target_path via broker or atomic write. Cleans temp file."""
     tmp = Path(tempfile.mkstemp(prefix=target_path.name, dir=str(target_path.parent))[1])
     tmp.write_text(content, encoding="utf-8")
     tmp.chmod(0o755)
-    # compute sha
     sha = sha256_bytes(content.encode())
-    # atomic replace
-    if cfg.get("apply", {}).get("use_write_broker"):
-        rc, sout, serr = broker_rewrite(cfg.get("apply", {}), target_path, tmp)
-        if rc != 0:
-            return {
-                "installed": False,
-                "reason": f"broker_failed:{rc}",
-                "stdout": sout,
-                "stderr": serr,
-            }
-        else:
+    try:
+        if cfg.get("apply", {}).get("use_write_broker"):
+            rc, sout, serr = broker_rewrite(cfg.get("apply", {}), target_path, tmp)
+            if rc != 0:
+                return {
+                    "installed": False,
+                    "reason": f"broker_failed:{rc}",
+                    "stdout": sout,
+                    "stderr": serr,
+                }
             return {"installed": True, "method": "broker", "sha": sha}
-    else:
         # atomic write
         atomic_write_text(target_path, content)
         return {"installed": True, "method": "atomic", "sha": sha}
+    finally:
+        with contextlib.suppress(Exception):
+            tmp.unlink()
 
 
 def start_normalizer(target_path: Path, port: int, log_dir: Path) -> dict:
     # If running, try to kill older processes by using a simple pkill -f
     # Then start via nohup to background
     # kill any existing process (best-effort)
-    with contextlib.suppress(Exception):
-        subprocess.run(["pkill", "-f", str(target_path)], check=False)
+    # quick listen check before touching anything
     out = {"started": False}
     stdout = log_dir / "glances-normalize.out"
     stderr = log_dir / "glances-normalize.err"
     cmd = [str(target_path), str(port)]
+    try:
+        import socket
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.settimeout(0.4)
+        s.connect(("127.0.0.1", int(port)))
+        s.close()
+        return {"started": True, "already_running": True}
+    except Exception:
+        pass
     # start detached
     with open(stdout, "a") as so, open(stderr, "a") as se:
         subprocess.Popen(cmd, stdout=so, stderr=se, start_new_session=True)
@@ -371,7 +382,6 @@ def start_normalizer(target_path: Path, port: int, log_dir: Path) -> dict:
     # check listen
     try:
         import socket
-
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.settimeout(0.5)
         try:
@@ -407,7 +417,9 @@ def configure_tailscale(cfg: dict) -> dict:
 
 def dry_run(cfg: dict, report_file: Path, index_file: Path) -> Report:
     started = now_z()
-    details = {"probes": {}, "install": {"would_install_to": "/usr/local/bin/glances-normalize.py"}}
+    repo_root = Path(cfg.get("repo_root", "/config"))
+    target = repo_root / "bin" / "glances-normalize.py"
+    details = {"probes": {}, "install": {"would_install_to": str(target)}}
     upstream = cfg.get("runtime", {}).get("upstream_url")
     p = probe_upstream(upstream)
     details["probes"]["upstream"] = p
@@ -443,14 +455,18 @@ def dry_run(cfg: dict, report_file: Path, index_file: Path) -> Report:
         "mode": "dry-run",
         "results": [
             {
-                "target_path": "/usr/local/bin/glances-normalize.py",
+                "target_path": str(target),
                 "applied": False,
+                "traffic_light": "green" if success else "red",
+                "skip_reason": None,
                 "apu": {"provenance": {"sha256": None}},
                 "summary": "dry-run: evaluated upstream and normalization preview",
             }
         ],
     }
     append_ledger(index_file, ledger)
+    # retention prune
+    _prune_retention(cfg, report_file.parent, index_file)
     return rep
 
 
@@ -462,8 +478,24 @@ def apply(cfg: dict, report_file: Path, index_file: Path, lock_fp) -> Report:
     bin_dir = repo_root / "bin"
     bin_dir.mkdir(parents=True, exist_ok=True)
     target = bin_dir / "glances-normalize.py"
-    # install script
-    inst = install_normalizer_script(cfg, target)
+    # prepare content and idempotency
+    rt = cfg.get("runtime", {})
+    upstream = rt.get("upstream_url")
+    listen_host = rt.get("listen_host", "127.0.0.1")
+    content = NORMALIZER_SCRIPT.format(upstream=upstream, listen_host=listen_host)
+    new_sha = sha256_bytes(content.encode())
+    prev_ledger_sha = last_applied_sha(index_file, str(target))
+    existing_sha = None
+    if target.exists():
+        with contextlib.suppress(Exception):
+            existing_sha = sha256_bytes(target.read_bytes())
+    idempotent = new_sha in (prev_ledger_sha, existing_sha)
+
+    # install script (skip if idempotent)
+    if not idempotent:
+        inst = install_normalizer_script(cfg, target, content)
+    else:
+        inst = {"installed": False, "method": None, "sha": new_sha, "reason": "idempotent"}
     details["install"]["result"] = inst
     # start normalizer
     log_dir = Path("/config/hestia/workspace/operations/logs/glances_bridge")
@@ -474,14 +506,21 @@ def apply(cfg: dict, report_file: Path, index_file: Path, lock_fp) -> Report:
     tails = configure_tailscale(cfg)
     details["steps"]["tailscale"] = tails
 
-    # ledger entry with applied true and provenance
+    # ledger entry with applied + provenance + traffic light/skip
+    tl = (
+        "green"
+        if (inst.get("installed") or idempotent) and started_info.get("started")
+        else "orange"
+    )
     payload = {
         "ts": int(time.time()),
         "mode": "apply",
         "results": [
             {
                 "target_path": str(target),
-                "applied": inst.get("installed", False),
+                "applied": bool(inst.get("installed")),
+                "traffic_light": tl,
+                "skip_reason": inst.get("reason") if idempotent else None,
                 "apu": {"provenance": {"sha256": inst.get("sha")}},
                 "summary": "installed normalizer script and started service",
             }
@@ -492,10 +531,12 @@ def apply(cfg: dict, report_file: Path, index_file: Path, lock_fp) -> Report:
         started_at=started,
         finished_at=now_z(),
         mode="apply",
-        success=inst.get("installed", False),
+        success=(tl == "green"),
         details=details,
     )
     report_file.write_text(json.dumps(rep.to_dict(), indent=2), encoding="utf-8")
+    # retention prune
+    _prune_retention(cfg, report_file.parent, index_file)
     return rep
 
 
@@ -504,7 +545,7 @@ def main():
     parser.add_argument("mode", choices=["dry-run", "apply"], help="Operation mode")
     args = parser.parse_args()
     cfg = load_toml_config()
-    report_file, index_file, lock_file = build_reports_dirs(cfg)
+    report_file, index_file, lock_file = build_reports_dirs(cfg, args.mode)
     # acquire run-lock for apply mode
     lock_fp = None
     if args.mode == "apply":
@@ -522,6 +563,24 @@ def main():
         if lock_fp:
             with contextlib.suppress(Exception):
                 lock_fp.close()
+
+
+# retention prune (best-effort)
+def _prune_retention(cfg: dict, report_dir: Path, index_file: Path) -> None:
+    now_ts = time.time()
+    days = int(cfg.get("retention", {}).get("reports_days", 14))
+    keep_lines = int(cfg.get("retention", {}).get("ledger_lines", 20000))
+    cutoff = now_ts - (days * 86400)
+    with contextlib.suppress(Exception):
+        for f in report_dir.glob("*.json"):
+            if f.stat().st_mtime < cutoff:
+                f.unlink()
+    with contextlib.suppress(Exception):
+        if index_file.exists():
+            lines = index_file.read_text(encoding="utf-8").splitlines()
+            if len(lines) > keep_lines:
+                tail = "\n".join(lines[-keep_lines:]) + "\n"
+                index_file.write_text(tail, encoding="utf-8")
 
 
 if __name__ == "__main__":

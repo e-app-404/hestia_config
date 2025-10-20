@@ -3,36 +3,7 @@ template:
   # SQL Payload Parser - Converts SQL sensor string to proper dict
   # Root cause: json_group_object returns JSON string, not object
   # ═════════════════════════════════════════════════════════════════
-  - sensor:
-      - name: "Room Configs Motion Lighting Dict"
-        unique_id: room_configs_motion_lighting_dict
-        state: "ok"
-        attributes:
-          payload: >-
-            {# Prefer dict sensor when available, and guard unknown/unavailable #}
-            {% set alt = state_attr('sensor.room_configs_motion_lighting', 'payload') %}
-            {% set raw = state_attr('sensor.room_configs_motion_lighting_dict', 'payload') or alt %}
-            {% if raw in [none, 'unknown', 'unavailable', ''] %}
-              {{ {} }}
-            {% elif raw is string %}
-              {{ (raw | from_json) if (raw | regex_search('^[\[{]')) else {} }}
-            {% else %}
-              {{ raw }}
-            {% endif %}
 
-      - name: "Room Configs Vacuum Control Dict"
-        unique_id: room_configs_vacuum_control_dict
-        state: "ok"
-        attributes:
-          payload: >-
-            {% set raw = state_attr('sensor.room_configs_vacuum_control', 'payload') %}
-            {% if raw in [none, 'unknown', 'unavailable', ''] %}
-              {{ {} }}
-            {% elif raw is string %}
-              {{ (raw | from_json) if (raw | regex_search('^[\[{]')) else {} }}
-            {% else %}
-              {{ raw }}
-            {% endif %}
   - sensor:
       - name: "Motion Timeout — Bedroom (SQL)"
         unique_id: "motion_timeout_bedroom_sql_v15"

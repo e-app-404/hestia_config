@@ -10,7 +10,7 @@ automation:
         entity_id: binary_sensor.bedroom_motion_beta
         to: "on"
     variables:
-      _raw: "{{ state_attr('sensor.room_configs_motion_lighting_dict','payload') }}"
+      _raw: "{{ state_attr('sensor.room_configs_motion_lighting','payload') }}"
       _cfgs: "{{ _raw if _raw is mapping else {} }}"
       room_config: >-
         {% if _cfgs and 'bedroom' in _cfgs %}
@@ -77,7 +77,7 @@ automation:
         entity_id: binary_sensor.hallway_upstairs_motion_beta
         to: "on"
     variables:
-      _raw: "{{ state_attr('sensor.room_configs_motion_lighting_dict','payload') }}"
+      _raw: "{{ state_attr('sensor.room_configs_motion_lighting','payload') }}"
       _cfgs: "{{ _raw if _raw is mapping else {} }}"
       room_config: >-
         {% if _cfgs and 'upstairs' in _cfgs %}
@@ -144,7 +144,7 @@ automation:
         entity_id: binary_sensor.hallway_downstairs_motion_beta
         to: "on"
     variables:
-      _raw: "{{ state_attr('sensor.room_configs_motion_lighting_dict','payload') }}"
+      _raw: "{{ state_attr('sensor.room_configs_motion_lighting','payload') }}"
       _cfgs: "{{ _raw if _raw is mapping else {} }}"
       room_config: >-
         {% if _cfgs and 'downstairs' in _cfgs %}
@@ -211,7 +211,7 @@ automation:
         entity_id: binary_sensor.kitchen_motion_beta
         to: "on"
     variables:
-      _raw: "{{ state_attr('sensor.room_configs_motion_lighting_dict','payload') }}"
+      _raw: "{{ state_attr('sensor.room_configs_motion_lighting','payload') }}"
       _cfgs: "{{ _raw if _raw is mapping else {} }}"
       room_config: >-
         {% if _cfgs and 'kitchen' in _cfgs %}
@@ -278,7 +278,7 @@ automation:
         entity_id: binary_sensor.living_room_motion_beta
         to: "on"
     variables:
-      _raw: "{{ state_attr('sensor.room_configs_motion_lighting_dict','payload') }}"
+      _raw: "{{ state_attr('sensor.room_configs_motion_lighting','payload') }}"
       _cfgs: "{{ _raw if _raw is mapping else {} }}"
       room_config: >-
         {% if _cfgs and 'living_room' in _cfgs %}
@@ -345,7 +345,7 @@ automation:
         entity_id: binary_sensor.ensuite_motion_beta
         to: "on"
     variables:
-      _raw: "{{ state_attr('sensor.room_configs_motion_lighting_dict','payload') }}"
+      _raw: "{{ state_attr('sensor.room_configs_motion_lighting','payload') }}"
       _cfgs: "{{ _raw if _raw is mapping else {} }}"
       room_config: >-
         {% if _cfgs and 'ensuite' in _cfgs %}
@@ -412,7 +412,7 @@ automation:
         entity_id: binary_sensor.desk_motion_beta
         to: "on"
     variables:
-      _raw: "{{ state_attr('sensor.room_configs_motion_lighting_dict','payload') }}"
+      _raw: "{{ state_attr('sensor.room_configs_motion_lighting','payload') }}"
       _cfgs: "{{ _raw if _raw is mapping else {} }}"
       room_config: >-
         {% if _cfgs and 'desk' in _cfgs %}
@@ -462,7 +462,7 @@ automation:
           schema_expected: 1
       - wait_for_trigger:
         - trigger: state
-          entity_id: binary_sensor.desk_motion_beta
+          entity_id: binary_sensor.desk_motion__beta
           to: "off"
           for:
             seconds: "{{ effective_timeout }}"

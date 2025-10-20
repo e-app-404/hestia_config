@@ -9,7 +9,7 @@ rest:
   - resource: "http://a0d7b954-appdaemon:5050/api/appdaemon/room_db_health"
     method: GET
     timeout: 10
-    scan_interval: 300  # 5 min (was 30s)
+    scan_interval: 600
     sensor:
       - name: "Room DB Health"
         unique_id: room_db_health_monitor
@@ -25,20 +25,20 @@ rest:
           - canonical_rooms_count
           - allowed_domains
 
-  # Optional: Keep test if you want dual monitoring
-  - resource: "http://a0d7b954-appdaemon:5050/api/appdaemon/room_db_test"
-    method: GET
-    timeout: 10
-    scan_interval: 300  # 5 min (was 30s)
-    sensor:
-      - name: "Room DB Test"
-        unique_id: room_db_test_monitor
-        value_template: >
-          {% if value_json is defined and value_json.status is defined %}
-            {{ value_json.status }}
-          {% else %}
-            unavailable
-          {% endif %}
-        json_attributes:
-          - status
-          - app_name
+ #  Optional: Keep test if you want dual monitoring
+ # - resource: "http://a0d7b954-appdaemon:5050/api/appdaemon/room_db_test"
+ #   method: GET
+ #   timeout: 10
+ #   scan_interval: 300  # 5 min (was 30s)
+ #   sensor:
+ #     - name: "Room DB Test"
+ #       unique_id: room_db_test_monitor
+ #       value_template: >
+ #         {% if value_json is defined and value_json.status is defined %}
+ #           {{ value_json.status }}
+ #         {% else %}
+ #           unavailable
+ #         {% endif %}
+ #       json_attributes:
+ #         - status
+ #         - app_name

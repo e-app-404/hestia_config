@@ -14,12 +14,12 @@ rest_command:
     content_type: "application/json; charset=utf-8"
     timeout: 30
     payload: >
-            {
+      {
         "room_id": "{{ room_id }}",
         "domain": "{{ domain }}",
         "config_data": {{ config_data | tojson }},
         "schema_expected": {{ schema_expected | default(1) | int }}
-            }
+      }
 
   room_db_health:
     url: "http://a0d7b954-appdaemon:5050/api/appdaemon/room_db_health"
@@ -28,12 +28,12 @@ rest_command:
     headers:
       Accept: "application/json"
 
-  room_db_test:
-    url: "http://a0d7b954-appdaemon:5050/api/appdaemon/room_db_test"
-    method: GET
-    timeout: 10
-    headers:
-      Accept: "application/json"
+#  room_db_test:
+#    url: "http://a0d7b954-appdaemon:5050/api/appdaemon/room_db_test"
+#    method: GET
+#    timeout: 10
+#    headers:
+#      Accept: "application/json"
 
   # Alternate commands (app-scoped): useful for environments that expose per-app paths
   room_db_update_config_app:
@@ -84,6 +84,7 @@ rest_command:
 sql:
   - name: "Room Configs — Motion Lighting"
     db_url: sqlite:////config/room_database.db
+    unique_id: room_configs_motion_lighting
     query: >
       SELECT 'ok' AS state,
              json_group_object(
@@ -99,6 +100,7 @@ sql:
 
   - name: "Room Configs — Vacuum Control"
     db_url: sqlite:////config/room_database.db
+    unique_id: room_configs_vacuum_control
     query: >
       SELECT 'ok' AS state,
              json_group_object(
@@ -114,6 +116,7 @@ sql:
 
   - name: "Rooms Needing Cleaning"
     db_url: sqlite:////config/room_database.db
+    unique_id: rooms_needing_cleaning
     query: >
       SELECT
         json_array_length(COALESCE(json_group_array(room_id),'[]')) AS count,
@@ -125,6 +128,7 @@ sql:
 
   - name: "Room Configs — Activity Tracking"
     db_url: sqlite:////config/room_database.db
+    unique_id: room_configs_activity_tracking
     query: >
       SELECT 'ok' AS state,
              json_group_object(
