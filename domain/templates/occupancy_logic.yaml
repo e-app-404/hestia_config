@@ -259,7 +259,7 @@
             {'entity': 'binary_sensor.bedroom_occupancy_alpha_occupancy','preference': 1},
             {'entity': 'binary_sensor.bed_occupancy_beta','preference': 2},
             {'entity': 'binary_sensor.bedroom_wardrobe_occupancy_beta','preference': 3},
-            {'entity': 'binary_sensor.desk_occupancy_beta','preference': 4}
+            {'entity': 'binary_sensor.desk_occupancy_beta','preference': 4},
             {'entity': 'binary_sensor.bedroom_motion_recent_beta','preference': 5}
           ] %}
           {{ get_active_source(sources) or 'unknown' }}
