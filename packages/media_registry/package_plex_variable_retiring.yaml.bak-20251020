@@ -1,0 +1,67 @@
+# Plex Variable Migration Template Sensors
+# Provides backward compatibility during transition from HACS Variable to native HA helpers
+
+template:
+  - sensor:
+      - name: "Plex TV Index (Legacy Compatibility)"
+        unique_id: "plex_tv_index_compat"
+        state: "{{ states('input_number.plex_tv_episode_count') | int(0) }}"
+        attributes:
+          shows: >-
+            {% set raw = state_attr('input_text.plex_tv_index', 'value') %}
+            {% if raw is not none and raw not in ['unknown','unavailable',''] %}
+              {{ raw | from_json | default({}) | selectattr('shows') | first | default({}) }}
+            {% else %}
+              {}
+            {% endif %}
+          seasons: >-
+            {% set raw = state_attr('input_text.plex_tv_index', 'value') %}
+            {% if raw is not none and raw not in ['unknown','unavailable',''] %}
+              {{ raw | from_json | default({}) | selectattr('seasons') | first | default({}) }}
+            {% else %}
+              {}
+            {% endif %}
+          episodes: >-
+            {% set raw = state_attr('input_text.plex_tv_index', 'value') %}
+            {% if raw is not none and raw not in ['unknown','unavailable',''] %}
+              {{ raw | from_json | default({}) | selectattr('episodes') | first | default({}) }}
+            {% else %}
+              {}
+            {% endif %}
+          updated: >-
+            {% set raw = state_attr('input_text.plex_tv_index', 'value') %}
+            {% if raw is not none and raw not in ['unknown','unavailable',''] %}
+              {{ raw | from_json | default({}) | selectattr('updated') | first | default('') }}
+            {% else %}
+              ''
+            {% endif %}
+        unit_of_measurement: "episodes"
+        icon: mdi:television-box
+        
+      - name: "Plex Movie Index (Legacy Compatibility)"
+        unique_id: "plex_movie_index_compat"
+        state: "{{ states('input_number.plex_movie_count') | int(0) }}"
+        attributes:
+          movies: >-
+            {% set raw = state_attr('input_text.plex_movie_index', 'value') %}
+            {% if raw is not none and raw not in ['unknown','unavailable',''] %}
+              {{ raw | from_json | default({}) | selectattr('movies') | first | default({}) }}
+            {% else %}
+              {}
+            {% endif %}
+          year_released: >-
+            {% set raw = state_attr('input_text.plex_movie_index', 'value') %}
+            {% if raw is not none and raw not in ['unknown','unavailable',''] %}
+              {{ raw | from_json | default({}) | selectattr('year_released') | first | default({}) }}
+            {% else %}
+              {}
+            {% endif %}
+          updated: >-
+            {% set raw = state_attr('input_text.plex_movie_index', 'value') %}
+            {% if raw is not none and raw not in ['unknown','unavailable',''] %}
+              {{ raw | from_json | default({}) | selectattr('updated') | first | default('') }}
+            {% else %}
+              ''
+            {% endif %}
+        unit_of_measurement: "movies"
+        icon: mdi:movie

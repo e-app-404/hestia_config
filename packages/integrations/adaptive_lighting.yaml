@@ -1,0 +1,137 @@
+# ═════════════════════════════════════════════════════════════════════════════
+# ⟫⟫ HACS  •  Adaptive Lighting Custom Component  ◀
+# ⟫⟫ packages/integrations/adaptive_motion_lighting/adaptive_lighting.yaml  •  packages: !include_dir_named packages
+# ⟫⟫ Tier: σ  •  Domain: configuration  •  Updated: 2025-10-06
+# ═════════════════════════════════════════════════════════════════════════════
+
+adaptive_lighting:
+  - name: bedroom
+    detect_non_ha_changes: true
+    include_config_in_attributes: true
+    initial_transition: 0.3
+    lights: [ light.adaptive_bedroom_light_group]
+    max_color_temp: 4500
+    min_color_temp: 2700
+    multi_light_intercept: true
+    only_once: true
+    prefer_rgb_color: false
+    sleep_brightness: 50
+    sleep_color_temp: 2200
+    sleep_rgb_color: [47, 19, 229]
+    sleep_rgb_or_color_temp: rgb_color
+    sleep_transition: 1
+    take_over_control: true
+    transition: 2
+    transition_until_sleep: false
+
+  - name: desk
+    detect_non_ha_changes: true
+    include_config_in_attributes: true
+    initial_transition: 0.3
+    lights: [ light.adaptive_desk_light_group ]
+    max_color_temp: 4000
+    min_color_temp: 2700
+    multi_light_intercept: true
+    only_once: true
+    prefer_rgb_color: true
+    sleep_brightness: 50
+    sleep_color_temp: 2701
+    sleep_rgb_color: [229, 58, 155]
+    sleep_rgb_or_color_temp: rgb_color
+    sleep_transition: 1
+    take_over_control: true
+    transition: 2
+    transition_until_sleep: false
+
+  - name: ensuite
+    detect_non_ha_changes: true
+    include_config_in_attributes: true
+    initial_transition: 0.3
+    lights: [ light.adaptive_ensuite_light_group ]
+    max_color_temp: 4500
+    min_color_temp: 2700
+    multi_light_intercept: true
+    only_once: true
+    prefer_rgb_color: true
+    sleep_brightness: 20
+    sleep_color_temp: 2200
+    sleep_rgb_color: [127, 11, 210]
+    sleep_rgb_or_color_temp: rgb_color
+    sleep_transition: 1
+    take_over_control: true
+    transition: 2
+    transition_until_sleep: false
+
+  - name: kitchen
+    include_config_in_attributes: true
+    initial_transition: 0.3
+    lights: [ light.adaptive_kitchen_light_group ]
+    max_color_temp: 3500
+    min_color_temp: 2700
+    only_once: false
+    sleep_brightness: 25
+    sleep_color_temp: 2500
+    sleep_rgb_color: [255, 166, 87]
+    sleep_rgb_or_color_temp: color_temp
+    sleep_transition: 1
+    take_over_control: true
+    transition: 2
+    transition_until_sleep: false
+
+  - name: hallway_downstairs
+    detect_non_ha_changes: false
+    initial_transition: 0.8
+    lights: [ light.adaptive_downstairs_light_group ]
+    max_brightness: 35
+    max_color_temp: 3500
+    min_brightness: 15
+    min_color_temp: 2700
+    only_once: true
+    prefer_rgb_color: false
+    sleep_brightness: 15
+    sleep_color_temp: 2000
+    sleep_rgb_color: [255, 138, 18]
+    sleep_rgb_or_color_temp: rgb_color
+    sleep_transition: 1
+    take_over_control: true
+    transition: 2
+    transition_until_sleep: false
+
+  - name: hallway_upstairs
+    detect_non_ha_changes: false
+    include_config_in_attributes: true
+    initial_transition: 0.5
+    lights: [ light.adaptive_upstairs_light_group ]
+    max_brightness: 35
+    max_color_temp: 3500
+    min_brightness: 10
+    min_color_temp: 2200
+    only_once: true
+    prefer_rgb_color: true
+    sleep_brightness: 15
+    sleep_color_temp: 1800
+    sleep_rgb_color: [0, 8, 255]
+    sleep_rgb_or_color_temp: rgb_color
+    sleep_transition: 1
+    take_over_control: true
+    transition: 2
+    transition_until_sleep: false
+
+  - name: living_room
+    detect_non_ha_changes: true
+    include_config_in_attributes: true
+    initial_transition: 0.3
+    lights: [ light.adaptive_living_room_light_group ]
+    max_color_temp: 3500
+    min_color_temp: 2700
+    multi_light_intercept: true
+    only_once: true
+    prefer_rgb_color: true
+    sleep_brightness: 31
+    sleep_color_temp: 2701
+    sleep_rgb_color: [207, 155, 119]
+    sleep_rgb_or_color_temp: color_temp
+    sleep_transition: 1
+    take_over_control: true
+    transition: 2
+    transition_until_sleep: false

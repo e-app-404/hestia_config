@@ -1,208 +1,217 @@
 _meta_schema:
   area_id:
     type: str
-    description: "Room area identifier (slug, lowercase, no spaces)"
+    description: Room area identifier (slug, lowercase, no spaces)
   last_activity_sensor:
     type: str
-    description: "Entity id of last activity sensor (Home Assistant entity_id)"
+    description: Entity id of last activity sensor (Home Assistant entity_id)
   cleaning:
     type: dict
-    description: "Group of keys related to cleaning logic and thresholds"
+    description: Group of keys related to cleaning logic and thresholds
     schema:
       segment_id:
         type: str
-        description: "Segment number as string (for mapping to cleaning zones)"
+        description: Segment number as string (for mapping to cleaning zones)
       last_cleaned_input:
         type: str
-        description: "Entity id of input_datetime for last cleaned timestamp"
+        description: Entity id of input_datetime for last cleaned timestamp
       needs_cleaning_boolean:
         type: str
-        description: "Entity id of input_boolean for cleaning flag"
+        description: Entity id of input_boolean for cleaning flag
       days_since_last_cleaned_sensor:
         type: str
-        description: "Entity id of sensor tracking days since last cleaned"
+        description: Entity id of sensor tracking days since last cleaned
       days_threshold:
         type: int
-        description: "Threshold in days before room is flagged for cleaning"
+        description: Threshold in days before room is flagged for cleaning
   sensors:
     type: dict
-    description: "Lists of motion and occupancy sensors assigned to the room. Each is a list of dicts with entity_id."
+    description: Lists of motion and occupancy sensors assigned to the room. Each
+      is a list of dicts with entity_id.
     schema:
       motion:
         type: list[dict]
-        description: "List of motion sensor dicts, each with entity_id."
+        description: List of motion sensor dicts, each with entity_id.
         item_schema:
           entity_id:
             type: str
-            description: "Entity id of the motion sensor."
+            description: Entity id of the motion sensor.
       occupancy:
         type: list[dict]
-        description: "List of occupancy sensor dicts, each with entity_id."
+        description: List of occupancy sensor dicts, each with entity_id.
         item_schema:
           entity_id:
             type: str
-            description: "Entity id of the occupancy sensor."
+            description: Entity id of the occupancy sensor.
   climate:
     type: dict
-    description: "Climate and environmental sensors grouped by measurement type"
+    description: Climate and environmental sensors grouped by measurement type
     schema:
       temperature:
         type: list[dict]
-        description: "Temperature sensors in the room"
+        description: Temperature sensors in the room
         item_schema:
           entity_id:
             type: str
-            description: "Entity id of the temperature sensor"
+            description: Entity id of the temperature sensor
           integration:
             type: str
-            description: "Home Assistant integration providing the sensor"
+            description: Home Assistant integration providing the sensor
           device_name:
             type: str
-            description: "Name of the device containing the sensor"
+            description: Name of the device containing the sensor
           manufacturer:
             type: str?
-            description: "Optional: Device manufacturer"
+            description: 'Optional: Device manufacturer'
           model:
             type: str?
-            description: "Optional: Device model"
+            description: 'Optional: Device model'
       humidity:
         type: list[dict]
-        description: "Humidity sensors in the room"
+        description: Humidity sensors in the room
         item_schema:
           entity_id:
             type: str
-            description: "Entity id of the humidity sensor"
+            description: Entity id of the humidity sensor
           integration:
             type: str
-            description: "Home Assistant integration providing the sensor"
+            description: Home Assistant integration providing the sensor
           device_name:
             type: str
-            description: "Name of the device containing the sensor"
+            description: Name of the device containing the sensor
           manufacturer:
             type: str?
-            description: "Optional: Device manufacturer"
+            description: 'Optional: Device manufacturer'
           model:
             type: str?
-            description: "Optional: Device model"
+            description: 'Optional: Device model'
       illuminance:
         type: list[dict]
-        description: "Light/illuminance sensors in the room"
+        description: Light/illuminance sensors in the room
         item_schema:
           entity_id:
             type: str
-            description: "Entity id of the illuminance sensor"
+            description: Entity id of the illuminance sensor
           integration:
             type: str
-            description: "Home Assistant integration providing the sensor"
+            description: Home Assistant integration providing the sensor
           device_name:
             type: str
-            description: "Name of the device containing the sensor"
+            description: Name of the device containing the sensor
           manufacturer:
             type: str?
-            description: "Optional: Device manufacturer"
+            description: 'Optional: Device manufacturer'
           model:
             type: str?
-            description: "Optional: Device model"
+            description: 'Optional: Device model'
       moisture:
         type: list[dict]
-        description: "Soil/surface moisture sensors in the room"
+        description: Soil/surface moisture sensors in the room
         item_schema:
           entity_id:
             type: str
-            description: "Entity id of the moisture sensor"
+            description: Entity id of the moisture sensor
           integration:
             type: str
-            description: "Home Assistant integration providing the sensor"
+            description: Home Assistant integration providing the sensor
           device_name:
             type: str
-            description: "Name of the device containing the sensor"
+            description: Name of the device containing the sensor
           manufacturer:
             type: str?
-            description: "Optional: Device manufacturer"
+            description: 'Optional: Device manufacturer'
           model:
             type: str?
-            description: "Optional: Device model"
+            description: 'Optional: Device model'
       air_quality:
         type: list[dict]
-        description: "Air quality sensors (PM2.5, CO2, etc.) in the room"
+        description: Air quality sensors (PM2.5, CO2, etc.) in the room
         item_schema:
           entity_id:
             type: str
-            description: "Entity id of the air quality sensor"
+            description: Entity id of the air quality sensor
           integration:
             type: str
-            description: "Home Assistant integration providing the sensor"
+            description: Home Assistant integration providing the sensor
           device_name:
             type: str
-            description: "Name of the device containing the sensor"
+            description: Name of the device containing the sensor
           manufacturer:
             type: str?
-            description: "Optional: Device manufacturer"
+            description: 'Optional: Device manufacturer'
           model:
             type: str?
-            description: "Optional: Device model"
+            description: 'Optional: Device model'
   lighting:
     type: dict
-    description: "Lighting control block for the room"
+    description: Lighting control block for the room
     schema:
       mode:
         type: enum
-        values: ["all", "select"]
-        description: "Apply to all lights or only selected ones"
+        values:
+        - all
+        - select
+        description: Apply to all lights or only selected ones
       targets:
         type: list[str]
-        description: "List of light entity_ids (used if mode is 'select')"
+        description: List of light entity_ids (used if mode is 'select')
       auto_off:
         type: dict
-        description: "Auto-off configuration"
+        description: Auto-off configuration
         schema:
           enabled:
             type: bool
-            description: "Enable/disable auto-off"
+            description: Enable/disable auto-off
           timer:
             type: int
-            description: "Minutes before auto-off triggers"
+            description: Minutes before auto-off triggers
           behavior:
             type: dict
-            description: "Behavioral flags for auto-off logic"
+            description: Behavioral flags for auto-off logic
             schema:
               reset_on_on:
                 type: bool
-                description: "Reset timer if light is turned on again before timeout"
+                description: Reset timer if light is turned on again before timeout
               cancel_on_manual_off:
                 type: bool
-                description: "Cancel timer if light is turned off manually"
+                description: Cancel timer if light is turned off manually
       trigger:
         type: dict
-        description: "Trigger configuration for lighting automation"
+        description: Trigger configuration for lighting automation
         schema:
           type:
             type: enum
-            values: ["state_change", "time_window", "blocker"]
-            description: "Type of trigger for automation"
+            values:
+            - state_change
+            - time_window
+            - blocker
+            description: Type of trigger for automation
           entity_id:
             type: str?
-            description: "Optional: entity_id that acts as a trigger or blocker"
+            description: 'Optional: entity_id that acts as a trigger or blocker'
           state:
             type: str?
-            description: "Optional: state that the trigger entity must match"
+            description: 'Optional: state that the trigger entity must match'
       holdout:
         type: dict
-        description: "Holdout configuration for lighting automation (e.g., media player state to block auto-off)"
+        description: Holdout configuration for lighting automation (e.g., media player
+          state to block auto-off)
         schema:
           entity_id:
             type: str
-            description: "Entity id that acts as a holdout/blocker (e.g., media player)"
+            description: Entity id that acts as a holdout/blocker (e.g., media player)
           state:
             type: str
-            description: "State of the holdout entity that blocks automation (e.g., 'playing')"
-
+            description: State of the holdout entity that blocks automation (e.g.,
+              'playing')
 _rooms:
   home:
-    ground_floor:
-      - living_room:
+    downstairs:
+      __order: []
+      living_room:
+        living_room: null
         area_id: living_room
-        segment_id: "19"
+        segment_id: '19'
         last_activity_sensor: sensor.living_room_last_activity
         cleaning:
           last_cleaned_input: input_datetime.living_room_last_cleaned
@@ -210,52 +219,75 @@ _rooms:
           days_since_last_cleaned_sensor: sensor.living_room_days_since_last_cleaned
           days_threshold: 1
         lighting:
-          mode: "select"
+          mode: select
           targets:
-            - light.living_room_side_matter_alpha
-            - light.living_room_foxy_matter_alpha
-            - light.living_room_desk_matter_alpha
-            - light.living_room_main_matter_alpha
-            - light.living_room_floorlamp_matter_alpha
+          - light.living_room_side_matter_alpha
+          - light.living_room_foxy_matter_alpha
+          - light.living_room_desk_matter_alpha
+          - light.living_room_main_matter_alpha
+          - light.living_room_floorlamp_matter_alpha
           auto_off:
             enabled: true
-            timer: 15 # minutes
+            timer: 15
             behavior:
               reset_on_on: true
               cancel_on_manual_off: true
           trigger:
-            type: "state_change"
+            type: state_change
             entity_id: binary_sensor.living_room_motion_occupancy
-            state: "off"
+            state: 'off'
           holdout:
             entity_id: media_player.living_room
-            state: "playing"
+            state: playing
         sensors:
           motion:
-            - entity_id: binary_sensor.living_room_multipurpose_alpha_motion
-            - entity_id: binary_sensor.living_room_motion_beta
-            - entity_id: binary_sensor.living_room_motion_recent_beta
+          - entity_id: binary_sensor.living_room_multipurpose_alpha_motion
+          - entity_id: binary_sensor.living_room_motion_beta
+          - entity_id: binary_sensor.living_room_motion_recent_beta
           occupancy:
-            - entity_id: binary_sensor.living_room_occupancy_alpha_occupancy
-            - entity_id: binary_sensor.living_room_occupancy_beta
+          - entity_id: binary_sensor.living_room_occupancy_alpha_occupancy
+          - entity_id: binary_sensor.living_room_occupancy_beta
         climate:
           temperature:
-            - entity_id: sensor.living_room_multipurpose_alpha_temperature
-              integration: smartthings
-              device_name: "living_room_multipurpose_wifi_alpha"
-            - entity_id: sensor.living_room_smartbutton_alpha_temperature
-              integration: mqtt
-              device_name: "living_room_smartbutton_alpha"
+          - entity_id: sensor.living_room_multipurpose_alpha_temperature
+            integration: smartthings
+            device_name: living_room_multipurpose_wifi_alpha
+          - entity_id: sensor.living_room_smartbutton_alpha_temperature
+            integration: mqtt
+            device_name: living_room_smartbutton_alpha
           illuminance:
-            - entity_id: sensor.living_room_multipurpose_alpha_illuminance
-              integration: smartthings
-              device_name: "living_room_multipurpose_wifi_alpha"
-            - entity_id: sensor.living_room_illuminance_beta
-              integration: template
-              device_name: "living_room_illuminance_beta"
-      - kitchen:
+          - entity_id: sensor.living_room_multipurpose_alpha_illuminance
+            integration: smartthings
+            device_name: living_room_multipurpose_wifi_alpha
+          - entity_id: sensor.living_room_illuminance_beta
+            integration: template
+            device_name: living_room_illuminance_beta
+        subareas:
+        - laundry_room: null
+          area_id: laundry_room
+          container: kitchen
+          segment_id: '16'
+          last_activity_sensor: sensor.laundry_room_last_activity
+          last_cleaned_input: input_datetime.laundry_room_last_cleaned
+          needs_cleaning_boolean: input_boolean.laundry_room_needs_cleaning
+          days_since_last_cleaned_sensor: sensor.laundry_room_days_since_last_cleaned
+          days_threshold: 2
+          lighting:
+            mode: all
+            targets: []
+            auto_off:
+              enabled: true
+              timer: 2
+              behavior:
+                reset_on_on: true
+                cancel_on_manual_off: true
+          sensors:
+            motion: []
+            occupancy: []
+      kitchen:
+        kitchen: null
         area_id: kitchen
-        segment_id: "17"
+        segment_id: '17'
         last_activity_sensor: sensor.kitchen_last_activity
         cleaning:
           last_cleaned_input: input_datetime.kitchen_last_cleaned
@@ -263,7 +295,7 @@ _rooms:
           days_since_last_cleaned_sensor: sensor.kitchen_days_since_last_cleaned
           days_threshold: 1
         lighting:
-          mode: "all"
+          mode: all
           targets: []
           auto_off:
             enabled: true
@@ -272,41 +304,67 @@ _rooms:
               reset_on_on: true
               cancel_on_manual_off: true
           trigger:
-            type: "state_change"
-            entity_id: ""
-            state: ""
+            type: state_change
+            entity_id: ''
+            state: ''
         sensors:
           motion:
-            - entity_id: binary_sensor.kitchen_motion_alpha_motion
-            - entity_id: binary_sensor.kitchen_motion_beta
-            - entity_id: binary_sensor.kitchen_motion_recent_beta
+          - entity_id: binary_sensor.kitchen_motion_alpha_motion
+          - entity_id: binary_sensor.kitchen_motion_beta
+          - entity_id: binary_sensor.kitchen_motion_recent_beta
           occupancy:
-            - entity_id: binary_sensor.kitchen_occupancy_alpha_occupancy
-            - entity_id: binary_sensor.kitchen_occupancy_alpha_matter_occupancy
-            - entity_id: binary_sensor.kitchen_occupancy_beta
+          - entity_id: binary_sensor.kitchen_occupancy_alpha_occupancy
+          - entity_id: binary_sensor.kitchen_occupancy_alpha_matter_occupancy
+          - entity_id: binary_sensor.kitchen_occupancy_beta
         climate:
           temperature:
-            - entity_id: sensor.kitchen_ambient_climate_alpha_temperature
-              integration: mqtt
-              device_name: "kitchen_ambient_climate_alpha"
-              manufacturer: "SONOFF"
-              model: "Temperature and humidity sensor with screen"
+          - entity_id: sensor.kitchen_ambient_climate_alpha_temperature
+            integration: mqtt
+            device_name: kitchen_ambient_climate_alpha
+            manufacturer: SONOFF
+            model: Temperature and humidity sensor with screen
           humidity:
-            - entity_id: sensor.kitchen_ambient_climate_alpha_humidity
-              integration: mqtt
-              device_name: "kitchen_ambient_climate_alpha"
-              manufacturer: "SONOFF"
-              model: "Temperature and humidity sensor with screen"
-      - powder_room:
+          - entity_id: sensor.kitchen_ambient_climate_alpha_humidity
+            integration: mqtt
+            device_name: kitchen_ambient_climate_alpha
+            manufacturer: SONOFF
+            model: Temperature and humidity sensor with screen
+        subareas:
+        - laundry_room:
+            area_id: laundry_room
+            segment_id: '16'
+            last_activity_sensor: sensor.laundry_room_last_activity
+            last_cleaned_input: input_datetime.laundry_room_last_cleaned
+            needs_cleaning_boolean: input_boolean.laundry_room_needs_cleaning
+            days_since_last_cleaned_sensor: sensor.laundry_room_days_since_last_cleaned
+            days_threshold: 2
+            lighting:
+              mode: all
+              targets: []
+              auto_off:
+                enabled: true
+                timer: 10
+                behavior:
+                  reset_on_on: true
+                  cancel_on_manual_off: true
+              trigger:
+                type: state_change
+                entity_id: ''
+                state: ''
+            sensors:
+              motion: []
+              occupancy: []
+      powder_room:
+        powder_room: null
         area_id: powder_room
-        segment_id: "20"
+        segment_id: '20'
         last_activity_sensor: sensor.powder_room_last_activity
         last_cleaned_input: input_datetime.powder_room_last_cleaned
         needs_cleaning_boolean: input_boolean.powder_room_needs_cleaning
         days_since_last_cleaned_sensor: sensor.powder_room_days_since_last_cleaned
         days_threshold: 2
         lighting:
-          mode: "all"
+          mode: all
           targets: []
           auto_off:
             enabled: true
@@ -315,295 +373,278 @@ _rooms:
               reset_on_on: true
               cancel_on_manual_off: true
           trigger:
-            type: "state_change"
-            entity_id: ""
-            state: ""
+            type: state_change
+            entity_id: ''
+            state: ''
         sensors:
           motion: []
           occupancy: []
-      - laundry_room:
-        area_id: laundry_room
-        segment_id: "16"
-        last_activity_sensor: sensor.laundry_room_last_activity
-        last_cleaned_input: input_datetime.laundry_room_last_cleaned
-        needs_cleaning_boolean: input_boolean.laundry_room_needs_cleaning
-        days_since_last_cleaned_sensor: sensor.laundry_room_days_since_last_cleaned
-        days_threshold: 2
+    upstairs:
+      __order:
+      - sanctum
+      sanctum:
+      - bedroom: null
+        area_id: bedroom
+        segment_id: ''
+        last_activity_sensor: ''
+        last_cleaned_input: ''
+        needs_cleaning_boolean: ''
+        days_since_last_cleaned_sensor: ''
+        days_threshold: 1
         lighting:
-          mode: "all"
-          targets: []
+          mode: select
+          targets:
+          - light.bedroom_entrance_alpha_matter
+          - light.bedroom_main_alpha_matter
+          - light.bedroom_nightstand_right_alpha_matter
+          - light.bedroom_nightstand_left_alpha_matter
+          - light.bedroom_ottoman_lightstrip_alpha_matter
+          - light.bedroom_hifi_accent_alpha_matter
           auto_off:
             enabled: true
-            timer: 10
+            timer: 30
             behavior:
               reset_on_on: true
               cancel_on_manual_off: true
           trigger:
-            type: "state_change"
-            entity_id: ""
-            state: ""
+            type: state_change
+            entity_id: binary_sensor.bedroom_occupancy_combined
+            state: 'off'
         sensors:
-          motion: []
-          occupancy: []
-
-    top_floor:
-      - evert_sanctum:
-          - bedroom:
-            area_id: bedroom
-            segment_id: ""
-            last_activity_sensor: ""
-            last_cleaned_input: ""
-            needs_cleaning_boolean: ""
-            days_since_last_cleaned_sensor: ""
-            days_threshold: 1
-            lighting:
-              mode: "select"
-              targets:
-                - light.bedroom_entrance_alpha_matter
-                - light.bedroom_main_alpha_matter
-                - light.bedroom_nightstand_right_alpha_matter
-                - light.bedroom_nightstand_left_alpha_matter
-                - light.bedroom_ottoman_lightstrip_alpha_matter
-                - light.bedroom_hifi_accent_alpha_matter
-              auto_off:
-                enabled: true
-                timer: 30
-                behavior:
-                  reset_on_on: true
-                  cancel_on_manual_off: true
-              trigger:
-                type: "state_change"
-                entity_id: "binary_sensor.bedroom_occupancy_combined"
-                state: "off"
-            sensors:
-              motion:
-                - entity_id: binary_sensor.sanctum_motion_alpha
-                - entity_id: binary_sensor.bedroom_motion_beta
-                - entity_id: binary_sensor.bedroom_motion_recent_beta
-                - entity_id: binary_sensor.sanctum_motion_beta
-                - entity_id: binary_sensor.sanctum_motion_recent_beta
-              occupancy:
-                - entity_id: binary_sensor.bedroom_occupancy_alpha_occupancy
-                - entity_id: binary_sensor.sanctum_occupancy_alpha_matter_occupancy
-                - entity_id: binary_sensor.bedroom_occupancy_beta
-                - entity_id: binary_sensor.bed_occupancy_beta
-                - entity_id: binary_sensor.sanctum_occupancy_beta
-                - entity_id: binary_sensor.macbook_bedroom_tv_airplay_active
-                - entity_id: binary_sensor.macbook_appletv_bedroom_airplay_active
-            climate:
-              temperature:
-                - entity_id: sensor.monstera_temperature
-                  integration: plant
-                  device_name: "Monstera"
-                  model: "Monstera deliciosa variegata"
-                - entity_id: sensor.bedroom_ambient_climate_alpha_temperature
-                  integration: mqtt
-                  device_name: "bedroom_ambient_climate_alpha"
-                  manufacturer: "SONOFF"
-                  model: "Temperature and humidity sensor with screen"
-                - entity_id: sensor.bedroom_monstera_soil_alpha_temperature
-                  integration: mqtt
-                  device_name: "bedroom_monstera_soil_alpha"
-                  manufacturer: "Third Reality"
-                  model: "Soil sensor"
-                - entity_id: sensor.bedroom_smart_button_alpha_temperature
-                  integration: mqtt
-                  device_name: "bedroom_smart_button_alpha"
-                  manufacturer: "SmartThings"
-                  model: "Button"
-                - entity_id: sensor.bedroom_dehumidifier_probreeze_temperature
-                  integration: localtuya
-                  device_name: "bedroom_dehumidifier_probreeze"
-                  manufacturer: "Tuya"
-                  model: "OmniDry 12L Quiet Low Energy Dehumidifier (bfc078b00c8b86f6e3ta5d)"
-              humidity:
-                - entity_id: sensor.monstera_air_humidity
-                  integration: plant
-                  device_name: "Monstera"
-                  model: "Monstera deliciosa variegata"
-                - entity_id: sensor.bedroom_ambient_climate_alpha_humidity
-                  integration: mqtt
-                  device_name: "bedroom_ambient_climate_alpha"
-                  manufacturer: "SONOFF"
-                  model: "Temperature and humidity sensor with screen"
-                - entity_id: sensor.bedroom_monstera_soil_alpha_humidity
-                  integration: mqtt
-                  device_name: "bedroom_monstera_soil_alpha"
-                  manufacturer: "Third Reality"
-                  model: "Soil sensor"
-                - entity_id: sensor.bedroom_dehumidifier_alpha_humidity
-                  integration: localtuya
-                  device_name: "bedroom_dehumidifier_probreeze"
-                  manufacturer: "Tuya"
-                  model: "OmniDry 12L Quiet Low Energy Dehumidifier (bfc078b00c8b86f6e3ta5d)"
-              illuminance:
-                - entity_id: sensor.monstera_illuminance
-                  integration: plant
-                  device_name: "Monstera"
-                  model: "Monstera deliciosa variegata"
-                - entity_id: sensor.bedroom_illuminance_wifi_alpha_illuminance
-                  integration: smartthings
-                  device_name: "bedroom_illuminance_alpha"
-                  manufacturer: "Samsung Electronics"
-                  model: "QE43Q60CAUXXU"
-                - entity_id: sensor.bedroom_illuminance_beta
-                  integration: template
-                  device_name: "bedroom_illuminance_beta"
-                - entity_id: sensor.bedroom_tv_illuminance_decay_delta
-                  integration: template
-                  device_name: "bedroom_tv_illuminance_decay_delta"
-              moisture:
-                - entity_id: sensor.monstera_soil_moisture
-                  integration: plant
-                  device_name: "Monstera"
-                  model: "Monstera deliciosa variegata"
-                - entity_id: sensor.bedroom_monstera_soil_alpha_soil_moisture
-                  integration: mqtt
-                  device_name: "bedroom_monstera_soil_alpha"
-                  manufacturer: "Third Reality"
-                  model: "Soil sensor"
-              air_quality:
-                - entity_id: sensor.bedroom_airpurifier_alpha_pm2_5
-                  integration: vesync
-                  device_name: "bedroom_airpurifier_alpha"
-                  manufacturer: "VeSync"
-                  model: "LAP-V102S-WEU"
-            subareas:
-              - wardrobe:
-                area_id: wardrobe
-                container: bedroom
-                segment_id: ""
-                last_activity_sensor: ""
-                last_cleaned_input: ""
-                needs_cleaning_boolean: ""
-                days_since_last_cleaned_sensor: ""
-                days_threshold: 1
-                lighting:
-                  mode: "all"
-                  targets: []
-                  auto_off:
-                    enabled: false
-                    timer: 10
-                    behavior:
-                      reset_on_on: false
-                      cancel_on_manual_off: false
-                  trigger:
-                    type: "state_change"
-                    entity_id: ""
-                    state: ""
-                sensors:
-                  motion:
-                    - entity_id: binary_sensor.bedroom_wardrobe_motion_alpha_motion
-                    - entity_id: binary_sensor.wardrobe_motion_beta
-                    - entity_id: binary_sensor.wardrobe_motion_recent_beta
-                  occupancy:
-                    - entity_id: binary_sensor.bedroom_wardrobe_occupancy_alpha_matter_occupancy
-                    - entity_id: binary_sensor.wardrobe_occupancy_beta
-              - desk:
-                area_id: desk
-                container: bedroom
-                segment_id: ""
-                last_activity_sensor: ""
-                last_cleaned_input: ""
-                needs_cleaning_boolean: ""
-                days_since_last_cleaned_sensor: ""
-                days_threshold: 1
-                lighting:
-                  mode: "select"
-                  targets:
-                    - light.bedroom_desk_alpha_matter
-                    - light.bedroom_desk_wall_alpha_matter
-                    - light.bedroom_desk_lightstrip_alpha_matter
-                    - light.monitor_backlight_alpha
-                  auto_off:
-                    enabled: true
-                    timer: 20
-                    behavior:
-                      reset_on_on: true
-                      cancel_on_manual_off: true
-                  trigger:
-                    type: "state_change"
-                    entity_id: "binary_sensor.desk_occupancy_combined"
-                    state: "off"
-                sensors:
-                  motion: []
-                  occupancy:
-                    - entity_id: binary_sensor.desk_occupancy_beta
-                    - entity_id: binary_sensor.macbook_retina_display_active
-                    - entity_id: binary_sensor.macbook_hp32_monitor_active
-                    - entity_id: binary_sensor.desk_presence_inferred
-                    - entity_id: binary_sensor.desk_macbook_recent_connectivity
-          - ensuite:
-            area_id: ensuite
-            segment_id: ""
-            last_activity_sensor: ""
-            last_cleaned_input: ""
-            needs_cleaning_boolean: ""
-            days_since_last_cleaned_sensor: ""
-            days_threshold: 1
-            lighting:
-              mode: "all"
-              targets: []
-              auto_off:
-                enabled: false
-                timer: 10
-                behavior:
-                  reset_on_on: false
-                  cancel_on_manual_off: false
-              trigger:
-                type: "state_change"
-                entity_id: ""
-                state: ""
-            sensors:
-              motion:
-                - entity_id: binary_sensor.ensuite_motion_alpha_occupancy
-                - entity_id: binary_sensor.ensuite_motion_beta
-                - entity_id: binary_sensor.ensuite_motion_recent_beta
-                - entity_id: binary_sensor.ensuite_motion_real_time
-              occupancy:
-                - entity_id: binary_sensor.ensuite_occupancy_alpha_occupancy
-                - entity_id: binary_sensor.ensuite_occupancy_beta
-                - entity_id: binary_sensor.ensuite_shower_occupancy_epsilon
-            climate:
-              temperature:
-                - entity_id: sensor.ensuite_climate_alpha_temperature
-                  integration: tplink
-                  device_name: "ensuite_climate_alpha"
-                  manufacturer: "TP-Link"
-                  model: "T310"
-                - entity_id: sensor.ensuite_climate_alpha_matter_temperature
-                  integration: matter
-                  device_name: "ensuite_climate_alpha_matter"
-                  manufacturer: "Tapo"
-                  model: "T310"
-              humidity:
-                - entity_id: sensor.ensuite_climate_alpha_humidity
-                  integration: tplink
-                  device_name: "ensuite_climate_alpha"
-                  manufacturer: "TP-Link"
-                  model: "T310"
-                - entity_id: sensor.ensuite_climate_alpha_matter_humidity
-                  integration: matter
-                  device_name: "ensuite_climate_alpha_matter"
-                  manufacturer: "Tapo"
-                  model: "T310"
-              illuminance:
-                - entity_id: sensor.ensuite_motion_alpha_illuminance
-                  integration: mqtt
-                  device_name: "ensuite_motion_alpha"
-                  manufacturer: "Candeo"
-                  model: "Motion sensor"
+          motion:
+          - entity_id: binary_sensor.sanctum_motion_alpha
+          - entity_id: binary_sensor.bedroom_motion_beta
+          - entity_id: binary_sensor.bedroom_motion_recent_beta
+          - entity_id: binary_sensor.sanctum_motion_beta
+          - entity_id: binary_sensor.sanctum_motion_recent_beta
+          occupancy:
+          - entity_id: binary_sensor.bedroom_occupancy_alpha_occupancy
+          - entity_id: binary_sensor.sanctum_occupancy_alpha_matter_occupancy
+          - entity_id: binary_sensor.bedroom_occupancy_beta
+          - entity_id: binary_sensor.bed_occupancy_beta
+          - entity_id: binary_sensor.sanctum_occupancy_beta
+          - entity_id: binary_sensor.macbook_bedroom_tv_airplay_active
+          - entity_id: binary_sensor.macbook_appletv_bedroom_airplay_active
+        climate:
+          temperature:
+          - entity_id: sensor.monstera_temperature
+            integration: plant
+            device_name: Monstera
+            model: Monstera deliciosa variegata
+          - entity_id: sensor.bedroom_ambient_climate_alpha_temperature
+            integration: mqtt
+            device_name: bedroom_ambient_climate_alpha
+            manufacturer: SONOFF
+            model: Temperature and humidity sensor with screen
+          - entity_id: sensor.bedroom_monstera_soil_alpha_temperature
+            integration: mqtt
+            device_name: bedroom_monstera_soil_alpha
+            manufacturer: Third Reality
+            model: Soil sensor
+          - entity_id: sensor.bedroom_smart_button_alpha_temperature
+            integration: mqtt
+            device_name: bedroom_smart_button_alpha
+            manufacturer: SmartThings
+            model: Button
+          - entity_id: sensor.bedroom_dehumidifier_probreeze_temperature
+            integration: localtuya
+            device_name: bedroom_dehumidifier_probreeze
+            manufacturer: Tuya
+            model: OmniDry 12L Quiet Low Energy Dehumidifier (bfc078b00c8b86f6e3ta5d)
+          humidity:
+          - entity_id: sensor.monstera_air_humidity
+            integration: plant
+            device_name: Monstera
+            model: Monstera deliciosa variegata
+          - entity_id: sensor.bedroom_ambient_climate_alpha_humidity
+            integration: mqtt
+            device_name: bedroom_ambient_climate_alpha
+            manufacturer: SONOFF
+            model: Temperature and humidity sensor with screen
+          - entity_id: sensor.bedroom_monstera_soil_alpha_humidity
+            integration: mqtt
+            device_name: bedroom_monstera_soil_alpha
+            manufacturer: Third Reality
+            model: Soil sensor
+          - entity_id: sensor.bedroom_dehumidifier_alpha_humidity
+            integration: localtuya
+            device_name: bedroom_dehumidifier_probreeze
+            manufacturer: Tuya
+            model: OmniDry 12L Quiet Low Energy Dehumidifier (bfc078b00c8b86f6e3ta5d)
+          illuminance:
+          - entity_id: sensor.monstera_illuminance
+            integration: plant
+            device_name: Monstera
+            model: Monstera deliciosa variegata
+          - entity_id: sensor.bedroom_illuminance_wifi_alpha_illuminance
+            integration: smartthings
+            device_name: bedroom_illuminance_alpha
+            manufacturer: Samsung Electronics
+            model: QE43Q60CAUXXU
+          - entity_id: sensor.bedroom_illuminance_beta
+            integration: template
+            device_name: bedroom_illuminance_beta
+          - entity_id: sensor.bedroom_tv_illuminance_decay_delta
+            integration: template
+            device_name: bedroom_tv_illuminance_decay_delta
+          moisture:
+          - entity_id: sensor.monstera_soil_moisture
+            integration: plant
+            device_name: Monstera
+            model: Monstera deliciosa variegata
+          - entity_id: sensor.bedroom_monstera_soil_alpha_soil_moisture
+            integration: mqtt
+            device_name: bedroom_monstera_soil_alpha
+            manufacturer: Third Reality
+            model: Soil sensor
+          air_quality:
+          - entity_id: sensor.bedroom_airpurifier_alpha_pm2_5
+            integration: vesync
+            device_name: bedroom_airpurifier_alpha
+            manufacturer: VeSync
+            model: LAP-V102S-WEU
+        subareas:
+        - wardrobe: null
+          area_id: wardrobe
+          container: bedroom
+          segment_id: ''
+          last_activity_sensor: ''
+          last_cleaned_input: ''
+          needs_cleaning_boolean: ''
+          days_since_last_cleaned_sensor: ''
+          days_threshold: 1
+          lighting:
+            mode: all
+            targets: []
+            auto_off:
+              enabled: false
+              timer: 10
+              behavior:
+                reset_on_on: false
+                cancel_on_manual_off: false
+            trigger:
+              type: state_change
+              entity_id: ''
+              state: ''
+          sensors:
+            motion:
+            - entity_id: binary_sensor.bedroom_wardrobe_motion_alpha_motion
+            - entity_id: binary_sensor.wardrobe_motion_beta
+            - entity_id: binary_sensor.wardrobe_motion_recent_beta
+            occupancy:
+            - entity_id: binary_sensor.bedroom_wardrobe_occupancy_alpha_matter_occupancy
+            - entity_id: binary_sensor.wardrobe_occupancy_beta
+        - desk: null
+          area_id: desk
+          container: bedroom
+          segment_id: ''
+          last_activity_sensor: ''
+          last_cleaned_input: ''
+          needs_cleaning_boolean: ''
+          days_since_last_cleaned_sensor: ''
+          days_threshold: 1
+          lighting:
+            mode: select
+            targets:
+            - light.bedroom_desk_alpha_matter
+            - light.bedroom_desk_wall_alpha_matter
+            - light.bedroom_desk_lightstrip_alpha_matter
+            - light.monitor_backlight_alpha
+            auto_off:
+              enabled: true
+              timer: 20
+              behavior:
+                reset_on_on: true
+                cancel_on_manual_off: true
+            trigger:
+              type: state_change
+              entity_id: binary_sensor.desk_occupancy_combined
+              state: 'off'
+          sensors:
+            motion: []
+            occupancy:
+            - entity_id: binary_sensor.desk_occupancy_beta
+            - entity_id: binary_sensor.macbook_retina_display_active
+            - entity_id: binary_sensor.macbook_hp32_monitor_active
+            - entity_id: binary_sensor.desk_occupancy_inferred
+            - entity_id: binary_sensor.desk_macbook_recent_connectivity
+        - hifi_configuration: null
+          area_id: hifi_configuration
+        - ottoman: null
+          area_id: ottoman
+      - ensuite: null
+        area_id: ensuite
+        segment_id: ''
+        last_activity_sensor: ''
+        last_cleaned_input: ''
+        needs_cleaning_boolean: ''
+        days_since_last_cleaned_sensor: ''
+        days_threshold: 1
+        lighting:
+          mode: all
+          targets: []
+          auto_off:
+            enabled: false
+            timer: 10
+            behavior:
+              reset_on_on: false
+              cancel_on_manual_off: false
+          trigger:
+            type: state_change
+            entity_id: ''
+            state: ''
+        sensors:
+          motion:
+          - entity_id: binary_sensor.ensuite_motion_alpha_occupancy
+          - entity_id: binary_sensor.ensuite_motion_beta
+          - entity_id: binary_sensor.ensuite_motion_recent_beta
+          - entity_id: binary_sensor.ensuite_motion_real_time
+          occupancy:
+          - entity_id: binary_sensor.ensuite_occupancy_alpha_occupancy
+          - entity_id: binary_sensor.ensuite_occupancy_beta
+          - entity_id: binary_sensor.ensuite_shower_occupancy_epsilon
+        climate:
+          temperature:
+          - entity_id: sensor.ensuite_climate_alpha_temperature
+            integration: tplink
+            device_name: ensuite_climate_alpha
+            manufacturer: TP-Link
+            model: T310
+          - entity_id: sensor.ensuite_climate_alpha_matter_temperature
+            integration: matter
+            device_name: ensuite_climate_alpha_matter
+            manufacturer: Tapo
+            model: T310
+          humidity:
+          - entity_id: sensor.ensuite_climate_alpha_humidity
+            integration: tplink
+            device_name: ensuite_climate_alpha
+            manufacturer: TP-Link
+            model: T310
+          - entity_id: sensor.ensuite_climate_alpha_matter_humidity
+            integration: matter
+            device_name: ensuite_climate_alpha_matter
+            manufacturer: Tapo
+            model: T310
+          illuminance:
+          - entity_id: sensor.ensuite_motion_alpha_illuminance
+            integration: mqtt
+            device_name: ensuite_motion_alpha
+            manufacturer: Candeo
+            model: Motion sensor
     hallway:
-      - hallway_downstairs:
+      __order: []
+      downstairs:
+        downstairs: null
         area_id: downstairs
-        segment_id: "18"
+        segment_id: '18'
         last_activity_sensor: sensor.hallway_downstairs_last_activity
         last_cleaned_input: input_datetime.downstairs_hallway_last_cleaned
         needs_cleaning_boolean: input_boolean.downstairs_hallway_needs_cleaning
         days_since_last_cleaned_sensor: sensor.downstairs_hallway_days_since_last_cleaned
         days_threshold: 2
         lighting:
-          mode: "all"
+          mode: all
           targets: []
           auto_off:
             enabled: true
@@ -612,27 +653,28 @@ _rooms:
               reset_on_on: true
               cancel_on_manual_off: true
           trigger:
-            type: "state_change"
-            entity_id: ""
-            state: ""
+            type: state_change
+            entity_id: ''
+            state: ''
         sensors:
           motion:
-            - entity_id: binary_sensor.downstairs_motion_alpha_motion
-            - entity_id: binary_sensor.hallway_downstairs_motion_beta
-            - entity_id: binary_sensor.hallway_downstairs_motion_recent_beta
+          - entity_id: binary_sensor.downstairs_motion_alpha_motion
+          - entity_id: binary_sensor.hallway_downstairs_motion_beta
+          - entity_id: binary_sensor.hallway_downstairs_motion_recent_beta
           occupancy:
-            - entity_id: binary_sensor.downstairs_occupancy_alpha_matter
-            - entity_id: binary_sensor.hallway_downstairs_occupancy_beta
-      - entrance:
+          - entity_id: binary_sensor.downstairs_occupancy_alpha_matter
+          - entity_id: binary_sensor.hallway_downstairs_occupancy_beta
+      entrance:
+        entrance: null
         area_id: entrance
-        segment_id: ""
-        last_activity_sensor: ""
-        last_cleaned_input: ""
-        needs_cleaning_boolean: ""
-        days_since_last_cleaned_sensor: ""
+        segment_id: ''
+        last_activity_sensor: ''
+        last_cleaned_input: ''
+        needs_cleaning_boolean: ''
+        days_since_last_cleaned_sensor: ''
         days_threshold: 1
         lighting:
-          mode: "all"
+          mode: all
           targets: []
           auto_off:
             enabled: false
@@ -641,23 +683,24 @@ _rooms:
               reset_on_on: false
               cancel_on_manual_off: false
           trigger:
-            type: "state_change"
-            entity_id: ""
-            state: ""
+            type: state_change
+            entity_id: ''
+            state: ''
         sensors:
           motion:
-            - entity_id: binary_sensor.entrance_motion_proxy
+          - entity_id: binary_sensor.entrance_motion_beta
           occupancy: []
-      - hallway_upstairs:
+      upstairs:
+        upstairs: null
         area_id: upstairs
-        segment_id: ""
-        last_activity_sensor: ""
-        last_cleaned_input: ""
-        needs_cleaning_boolean: ""
-        days_since_last_cleaned_sensor: ""
+        segment_id: ''
+        last_activity_sensor: ''
+        last_cleaned_input: ''
+        needs_cleaning_boolean: ''
+        days_since_last_cleaned_sensor: ''
         days_threshold: 1
         lighting:
-          mode: "all"
+          mode: all
           targets: []
           auto_off:
             enabled: false
@@ -666,17 +709,18 @@ _rooms:
               reset_on_on: false
               cancel_on_manual_off: false
           trigger:
-            type: "state_change"
-            entity_id: ""
-            state: ""
+            type: state_change
+            entity_id: ''
+            state: ''
         sensors:
           motion:
-            - entity_id: binary_sensor.upstairs_motion_alpha_motion
-            - entity_id: binary_sensor.hallway_upstairs_motion_beta
-            - entity_id: binary_sensor.hallway_upstairs_motion_recent_beta
+          - entity_id: binary_sensor.upstairs_motion_alpha_motion
+          - entity_id: binary_sensor.hallway_upstairs_motion_beta
+          - entity_id: binary_sensor.hallway_upstairs_motion_recent_beta
           occupancy:
-            - entity_id: binary_sensor.upstairs_occupancy_alpha_matter_occupancy
-            - entity_id: binary_sensor.hallway_upstairs_occupancy_beta
-
+          - entity_id: binary_sensor.upstairs_occupancy_alpha_matter_occupancy
+          - entity_id: binary_sensor.hallway_upstairs_occupancy_beta
+    evert: []
+    hestia: []
   outside: []
   virtual: []

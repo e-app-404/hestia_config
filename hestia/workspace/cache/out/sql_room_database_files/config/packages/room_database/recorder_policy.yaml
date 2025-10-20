@@ -1,0 +1,5 @@
+recorder:
+  exclude:
+    entity_globs:
+      - sensor.room_configs_*
+      - sensor.rooms_needing_cleaning

@@ -1,15 +1,24 @@
 ---
 id: ADR-0007
-title: "Meta/Governance Patterns and Schema Definitions Contract"
-date: 2025-09-11
-status: Pending Validation
+title: Meta/Governance Patterns and Schema Definitions Contract
+slug: metagovernance-patterns-and-schema-definitions-contract
+status: Accepted
 related: []
 supersedes: []
-last_updated: 2025-09-11
-author: "Evert Appels"
-tags: [architecture, adr, meta, governance, schema]
+last_updated: '2025-10-15'
+date: 2025-09-11
+decision: '### Included Artifacts - `system_instruction.yaml` - `design_patterns.md`
+  - `prompt_registry.md` - `metadata_schema.yaml` - `hades_config_index.yaml` - All
+  related markdown and YAML files in governance and meta folders'
+author: Evert Appels
+tags:
+- architecture
+- adr
+- meta
+- governance
+- schema
 references:
-  - docs/poa/architecture/POA-metadata-schema.md
+- docs/poa/architecture/POA-metadata-schema.md
 ---
 
 # ADR-0007: Meta/Governance Patterns and Schema Definitions Contract
@@ -26,7 +35,7 @@ This ADR formalizes the canonical meta and governance patterns, including schema
 
 ## 2. Decision
 ### Included Artifacts
-- `architecture_doctrine.yaml`
+- `system_instruction.yaml`
 - `design_patterns.md`
 - `prompt_registry.md`
 - `metadata_schema.yaml`

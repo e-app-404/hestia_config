@@ -16,7 +16,8 @@ template:
           canonical_id: "ha_tailscale_online_β"
           canonical_tier: "abstract_signal"
           subsystem: "hades"
-          area_id: "network_stack"
+          area_id: "tailscale_vpn"
+          floor_id: "network"
           type: "availability_flag"
           diagnostic_type: "connectivity_status"
           data_quality: "derived"
@@ -30,13 +31,13 @@ template:
 automation:
   - alias: Notify if Tailscale goes offline
     id: automation_notify_tailscale_offline
-    trigger:
+    triggers:
       - trigger: state
         entity_id: binary_sensor.ha_tailscale_online
         to: "off"
         for:
           minutes: 5
-    action:
+    actions:
       - alias: "Create persistent notification"
         action: persistent_notification.create
         data:
@@ -49,7 +50,6 @@ group:
   tailscale_diagnostics:
     name: Tailscale Diagnostics
     entities:
-      - binary_sensor.tailscale_ds220
       - binary_sensor.tailscale_macbook
       - binary_sensor.nas_xplab_io
       - binary_sensor.tailscale_iphone14

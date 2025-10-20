@@ -66,6 +66,92 @@ hades_config_index:
         title: null
         tags: ["tailscale", "diagnostics"]
 
+    tools:
+      - path: "/config/hestia/tools/backup_sweeper.py"
+        file: "backup_sweeper.py"
+        title: "Backup Sweeper Pipeline Orchestrator"
+        tags: ["automation", "backup", "sweeper", "orchestrator"]
+
+      - path: "/config/hestia/tools/sweeper/index.py"
+        file: "index.py"
+        title: "Workspace File Discovery Engine"
+        tags: ["sweeper", "indexer", "scanner"]
+
+      - path: "/config/hestia/tools/sweeper/naming_convention.py"
+        file: "naming_convention.py"
+        title: "Naming Standards Enforcement"
+        tags: ["sweeper", "naming", "standardization"]
+
+      - path: "/config/hestia/tools/sweeper/sweeper.py"
+        file: "sweeper.py"
+        title: "File Lifecycle Management"
+        tags: ["sweeper", "lifecycle", "ttl", "cleanup"]
+
+      - path: "/config/hestia/tools/sweeper/vault_warden.py"
+        file: "vault_warden.py"
+        title: "Vault Retention Manager"
+        tags: ["sweeper", "vault", "retention"]
+
+      - path: "/config/hestia/tools/sweeper/sweeper_report.py"
+        file: "sweeper_report.py"
+        title: "Comprehensive Reporting Engine"
+        tags: ["sweeper", "reporting", "health", "compliance"]
+
+      - path: "/config/hestia/tools/sweeper/README.md"
+        file: "README.md"
+        title: "Backup Sweeper System Documentation"
+        tags: ["documentation", "sweeper", "usage"]
+
+      - path: "/config/hestia/tools/lineage_guardian/lineage_guardian/lineage_guardian.py"
+        file: "lineage_guardian.py"
+        title: "Entity Lineage Validation Pipeline Orchestrator"
+        tags: ["automation", "lineage", "validation", "orchestrator"]
+
+      - path: "/config/hestia/tools/lineage_guardian/lineage_guardian/graph_scanner.py"
+        file: "graph_scanner.py"
+        title: "YAML Template Entity Graph Scanner"
+        tags: ["lineage", "scanner", "graph", "yaml"]
+
+      - path: "/config/hestia/tools/lineage_guardian/lineage_guardian/lineage_validator.py"
+        file: "lineage_validator.py"
+        title: "Entity Lineage Metadata Validator"
+        tags: ["lineage", "validation", "metadata"]
+
+      - path: "/config/hestia/tools/lineage_guardian/lineage_guardian/lineage_corrector.py"
+        file: "lineage_corrector.py"
+        title: "Non-destructive Lineage Correction Planner"
+        tags: ["lineage", "correction", "planning"]
+
+      - path: "/config/hestia/tools/lineage_guardian/lineage_guardian_cli.py"
+        file: "lineage_guardian_cli.py"
+        title: "Lineage Guardian CLI Wrapper"
+        tags: ["automation", "lineage", "validation", "cli"]
+
+      - path: "/config/hestia/tools/lineage_guardian/lineage_guardian/graph_integrity_checker.py"
+        file: "graph_integrity_checker.py"
+        title: "Entity Graph Bidirectional Integrity Checker"
+        tags: ["lineage", "integrity", "validation", "health"]
+
+      - path: "/config/hestia/tools/lineage_guardian/lineage_guardian/lineage_report.py"
+        file: "lineage_report.py"
+        title: "Comprehensive Lineage Validation Reporter"
+        tags: ["lineage", "reporting", "markdown", "json"]
+
+      - path: "/config/hestia/tools/lineage_guardian/lineage_guardian/models.py"
+        file: "models.py"
+        title: "Lineage Guardian Data Structures"
+        tags: ["lineage", "dataclass", "models"]
+
+      - path: "/config/hestia/tools/lineage_guardian/lineage_guardian/utils.py"
+        file: "utils.py"
+        title: "Lineage Guardian Parsing Utilities"
+        tags: ["lineage", "parsing", "regex", "jinja"]
+
+      - path: "/config/hestia/tools/lineage_guardian/README.md"
+        file: "README.md"
+        title: "Lineage Guardian System Documentation"
+        tags: ["documentation", "lineage", "usage"]
+
   # Metadata sections (not validated as artifacts)
   metadata:
     retrieval_hints:

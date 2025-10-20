@@ -1,0 +1,31 @@
+{
+  "name": "HA @ /config (ADR-0024)",
+  "image": "ghcr.io/home-assistant/home-assistant:stable",
+  "runArgs": [
+    "--volume=${localWorkspaceFolder}:/config",
+    "--user=0:0"
+  ],
+  "workspaceMount": "source=${localWorkspaceFolder},target=/config,type=bind",
+  "workspaceFolder": "/config",
+  "features": {},
+  "postCreateCommand": "echo 'config mounted at /config'; /bin/true",
+  "remoteUser": "root",
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "terminal.integrated.env.linux": {
+          "CONFIG_ROOT": "/config",
+          "HA_MOUNT": "/config",
+          "HA_MOUNT_OPERATOR": "/config"
+        }
+      },
+      "extensions": [
+        "ms-python.python",
+        "ms-azuretools.vscode-docker",
+        "tamasfe.even-better-toml",
+        "redhat.vscode-yaml",
+        "esbenp.prettier-vscode"
+      ]
+    }
+  }
+}

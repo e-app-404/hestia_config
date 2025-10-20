@@ -1,49 +1,53 @@
-# minimalist package setup with config split. Packages are
-# listed by their names (each package is titled 'integration_key')
-# This way, integrations are front-loaded as packages.
-# https://www.home-assistant.io/docs/configuration/splitting_configuration/
+#═════════════════════════════════════════════════════════════════════════════
+# ▶  HOME ASSISTANT CONFIGURATION  •  Minimalist config split package setup ◀
+# Each package is titled 'integration_key' and front-loaded as an integration
+# related: /config/hestia/library/ha_implementation/homeassistant/ha.split-configuration.md
+#═════════════════════════════════════════════════════════════════════════════
 
 homeassistant:
-  customize: !include customize.yaml
+  name: "Hestia"
+  latitude: 51.4623937
+  longitude: -0.1289665
+  time_zone: "Europe/London"
+  unit_system: metric
   packages: !include_dir_named packages
+  customize: !include domain/core/customize.yaml
+  customize_glob: !include domain/core/customize_glob.yaml
   allowlist_external_dirs:
     - "/config"
-    - "/config/hestia/workspace/operations/diagnostics/logs"
-    - "/config/hestia/workspace/cache/scratch"
+    - "/config/hestia/workspace/operations/logs"
     - "/config/hestia/tools/utils"
-    - "/config/hestia/workspace"
     - "/config/hestia/library/docs/governance/system_instruction"
+    - "/config/hestia/config/diagnostics"
 
-# 🔧 UI-based automations (editable via GUI)
+# command-line sensors
+command_line: !include_dir_merge_list domain/command_line
+
+# UI-based automations (editable via GUI)
 automation ui: !include automations.yaml
 
-# 🔧 YAML-based automations (in domain folder)
+# YAML-based automations (in domain folder)
 automation manual: !include_dir_merge_list domain/automations/
 
-# 🔧 for callable scripts
+# for callable scripts
 script ui: !include scripts.yaml
 
-# 🔧 for callable scripts
+# for callable scripts
 script manual: !include_dir_merge_named domain/scripts/
 
-# 📥 all standalone sensors
+# all standalone sensors
 sensor: !include_dir_merge_list domain/sensors/
 
-# 📥 all standalone binary sensors
+# all standalone binary sensors
 binary_sensor: !include_dir_merge_list domain/binary_sensors/
 
-# 📥 all `sensor:` & `binary_sensor:` under `template`
+# all `sensor:` & `binary_sensor:` under `template`
 template: !include_dir_merge_list domain/templates/
 
-# 📥 helpers → file-per-domain
+# helpers → file-per-domain
 input_boolean: !include domain/helpers/input_boolean.yaml
 input_select: !include domain/helpers/input_select.yaml
 input_number: !include domain/helpers/input_number.yaml
 input_datetime: !include domain/helpers/input_datetime.yaml
 input_text: !include domain/helpers/input_text.yaml
 counter: !include domain/helpers/counter.yaml
-
-# 👤 person entities
-#person: !include domain/persons/key_persons.yaml
-
-

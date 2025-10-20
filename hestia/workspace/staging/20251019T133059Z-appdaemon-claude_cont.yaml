@@ -1,0 +1,571 @@
+exports:
+  - topic: system
+    target_path: /config/hestia/config/system/system.conf
+    file_format: yaml
+    content: |
+      system:
+        hostnames:
+          - name: homeassistant
+            type: host
+            role: primary_controller
+            os: Home Assistant OS 16.2
+            hardware: Raspberry Pi 5
+
+          - name: a0d7b954-appdaemon
+            type: container
+            role: automation_engine
+            parent_host: homeassistant
+            engine: AppDaemon 4.5.11
+            python_version: 3.12.11
+
+        services:
+          appdaemon:
+            container: a0d7b954-appdaemon
+            version: 4.5.11
+            port: 5050
+            protocol: http
+            base_url: http://a0d7b954-appdaemon:5050
+            config_path: /config/appdaemon.yaml
+            apps_path: /addon_configs/a0d7b954_appdaemon/apps/
+            startup_workers: 5
+            startup_pins: 5
+
+          home_assistant:
+            version: 2025.10.1
+            port: 8123
+            protocol: http
+            auth_method: supervisor_token
+
+          room_db:
+            engine: SQLite
+            version: 3
+            schema_version: 1
+            db_path_container: /config/room_database.db
+            db_path_host: /addon_configs/a0d7b954_appdaemon/room_database.db
+
+        env:
+          supervisor_token: __SUPERVISOR_TOKEN__
+          timezone: Europe/London
+          latitude: 51.725
+          longitude: 14.3434
+          elevation: 0
+
+        notes:
+          - AppDaemon runs as Home Assistant add-on with supervisor integration
+          - Database path differs between container view and host filesystem
+          - System uses REST API for all writes (no direct SQL writes from automations)
+
+  - topic: network
+    target_path: /config/hestia/config/network/network.conf
+    file_format: yaml
+    content: |
+      network:
+        interfaces:
+          - service: appdaemon_http
+            protocol: http
+            port: 5050
+            bind_address: 0.0.0.0
+            access: internal
+
+        addresses:
+          - hostname: a0d7b954-appdaemon
+            ip: __INTERNAL_DOCKER__
+            port: 5050
+            reachable_from: homeassistant
+
+        dns:
+          - hostname: a0d7b954-appdaemon
+            resolves_to: container_internal
+            context: docker_network
+
+        api_endpoints:
+          base_path: /api/appdaemon
+          endpoints:
+            - path: /api/appdaemon/room_db_health
+              method: GET
+              auth: none
+              purpose: health_check
+              response_format: json
+
+            - path: /api/appdaemon/room_db_test
+              method: GET
+              auth: none
+              purpose: connectivity_test
+              response_format: json
+
+            - path: /api/appdaemon/room_db_export
+              method: GET
+              auth: none
+              purpose: export_db_state
+              response_format: json
+
+            - path: /api/appdaemon/room_db_update_config
+              method: POST
+              auth: none
+              content_type: application/json
+              purpose: update_room_config
+              required_fields: [room_id, domain, config_data]
+
+            - path: /api/appdaemon/room_db_export_write_once
+              method: POST
+              auth: none
+              content_type: application/json
+              purpose: trigger_file_export
+              body_required: true
+
+            - path: /api/appdaemon/room_db_bulk_update
+              method: POST
+              auth: none
+              content_type: application/json
+              purpose: bulk_config_update
+
+            - path: /api/appdaemon/room_db_reload_mapping
+              method: [GET, POST]
+              auth: none
+              purpose: reload_area_mapping
+
+        notes:
+          - All POST endpoints require Content-Type: application/json header
+          - Empty POST body must be {} not omitted
+          - Endpoints registered globally under /api/appdaemon namespace
+
+  - topic: storage
+    target_path: /config/hestia/config/storage/storage.conf
+    file_format: yaml
+    content: |
+      storage:
+        volumes:
+          - name: config
+            type: persistent
+            mount_point_container: /config
+            mount_point_host: /addon_configs/a0d7b954_appdaemon
+            purpose: appdaemon_configuration
+
+          - name: database
+            type: sqlite_file
+            path_container: /config/room_database.db
+            path_host: /addon_configs/a0d7b954_appdaemon/room_database.db
+            schema_version: 1
+            tables: [room_configs, schema_version]
+            pragma:
+              journal_mode: WAL
+              synchronous: NORMAL
+
+          - name: export_file
+            type: json_file
+            path: /config/room_db_export.json
+            purpose: database_snapshot
+            update_trigger: debounced
+            debounce_seconds: 1.5
+
+          - name: area_mapping
+            type: yaml_file
+            path: /config/www/area_mapping.yaml
+            version: 3.2
+            canonical_rooms: 11
+            purpose: capability_admission_control
+
+        backups:
+          - source: /config/room_database.db
+            method: WAL_mode
+            atomic: true
+
+        notes:
+          - Database uses WAL mode for concurrent read/write safety
+          - Export file written atomically via temp file + rename
+          - Area mapping is read-only reference for validation
+
+  - topic: devices
+    target_path: /config/hestia/config/devices/devices.conf
+    file_format: yaml
+    content: |
+      devices:
+        inventory:
+          - id: homeassistant
+            type: controller
+            model: Raspberry Pi 5
+            os: Home Assistant OS 16.2
+            ha_version: 2025.10.1
+            services: [core, supervisor, appdaemon]
+
+          - id: room_db_system
+            type: logical_service
+            components: [updater, exporter, activity_tracker]
+            data_store: sqlite
+            canonical_rooms: 11
+            domains: [motion_lighting, vacuum_control, activity_tracking, shared]
+
+        sensors:
+          occupancy:
+            - binary_sensor.bedroom_occupancy_beta
+            - binary_sensor.kitchen_occupancy_beta
+            - binary_sensor.living_room_occupancy_beta
+            - binary_sensor.ensuite_occupancy_beta
+            - binary_sensor.hallway_downstairs_occupancy_beta
+            - binary_sensor.hallway_upstairs_occupancy_beta
+            - binary_sensor.desk_occupancy_beta
+
+          motion:
+            - binary_sensor.bedroom_motion_beta
+            - binary_sensor.kitchen_motion_beta
+            - binary_sensor.living_room_motion_beta
+            - binary_sensor.ensuite_motion_beta
+            - binary_sensor.hallway_downstairs_motion_beta
+            - binary_sensor.hallway_upstairs_motion_beta
+            - binary_sensor.desk_motion_beta
+            - binary_sensor.bedroom_wardrobe_motion_beta
+            - binary_sensor.entrance_motion_beta
+
+          illuminance:
+            - sensor.bedroom_illuminance_beta
+            - sensor.kitchen_illuminance_beta
+            - sensor.living_room_illuminance_beta
+            - sensor.ensuite_illuminance_beta
+            - sensor.desk_illuminance_beta
+
+        relationships:
+          - source: motion_automations
+            target: rest_command.room_db_update_config
+            type: service_call
+
+          - source: rest_command.room_db_update_config
+            target: appdaemon_endpoint
+            type: http_post
+
+          - source: appdaemon_endpoint
+            target: room_db_updater.py
+            type: code_execution
+
+          - source: room_db_updater.py
+            target: room_database.db
+            type: sql_write
+
+          - source: room_db_updater.py
+            target: room_db_exporter.py
+            type: async_trigger
+
+          - source: sql_sensors
+            target: room_database.db
+            type: sql_read
+
+          - source: room_db_updater.py
+            target: area_mapping.yaml
+            type: validation_reference
+
+        notes:
+          - Occupancy sensors used for presence detection in timeout calculations
+          - Motion sensors used for triggers and wait conditions
+          - Sensor naming convention: {room}_{type}_beta
+
+  - topic: diagnostics
+    target_path: /config/hestia/config/diagnostics/diagnostics.conf
+    file_format: yaml
+    content: |
+      diagnostics:
+        checks:
+          - name: appdaemon_health
+            endpoint: http://a0d7b954-appdaemon:5050/api/appdaemon/room_db_health
+            method: GET
+            expected_status: 200
+            expected_fields: [status, db_path, schema_expected, canonical_rooms_count]
+            last_result: healthy
+            last_check: 2025-10-19T03:03:21
+
+          - name: database_export_counts
+            endpoint: http://a0d7b954-appdaemon:5050/api/appdaemon/room_db_export
+            method: GET
+            expected_status: 200
+            expected_structure: counts
+            last_result:
+              motion_lighting: 5
+              vacuum_control: 1
+            last_check: 2025-10-19T03:01:49
+
+          - name: sql_sensor_payload
+            entity: sensor.room_configs_motion_lighting_dict
+            attribute: payload
+            expected_type: dict
+            expected_keys: [bedroom, downstairs, entrance, kitchen, upstairs]
+            validation: single_encoded_json
+
+        recent_errors:
+          - timestamp: 2025-10-19T03:02:05
+            component: AppDaemon
+            endpoint: room_db_export_write_once
+            error: ValueError not enough values to unpack
+            cause: missing_content_type_header
+            resolution: added Content-Type application/json to curl
+            status: resolved
+
+        test_commands:
+          - name: health_check
+            command: curl -sS http://a0d7b954-appdaemon:5050/api/appdaemon/room_db_health | jq .
+            expected: '{"status":"healthy","rooms":11}'
+
+          - name: export_get
+            command: curl -sS http://a0d7b954-appdaemon:5050/api/appdaemon/room_db_export | jq '.counts'
+            expected: '{"motion_lighting":5,"vacuum_control":1}'
+
+          - name: config_update
+            command: |
+              curl -sS -X POST -H "Content-Type: application/json" \
+                -d '{"room_id":"bedroom","domain":"motion_lighting","config_data":{"timeout":180}}' \
+                http://a0d7b954-appdaemon:5050/api/appdaemon/room_db_update_config | jq .
+            expected: '{"status":"ok","room_id":"bedroom","domain":"motion_lighting"}'
+
+          - name: export_trigger
+            command: |
+              curl -sS -X POST -H "Content-Type: application/json" -d '{}' \
+                http://a0d7b954-appdaemon:5050/api/appdaemon/room_db_export_write_once | jq .
+            expected: '{"status":"ok","path":"/config/room_db_export.json"}'
+
+        notes:
+          - All endpoints verified working as of 2025-10-19T03:03:21
+          - AppDaemon POST endpoints require Content-Type header even with empty body
+          - System uses debounced file writes to prevent thrashing
+
+  - topic: cli
+    target_path: /config/hestia/config/system/cli.conf
+    file_format: yaml
+    content: |
+      cli:
+        commands:
+          - name: appdaemon_health_check
+            command: curl -sS http://a0d7b954-appdaemon:5050/api/appdaemon/room_db_health | jq .
+            purpose: verify_appdaemon_api_responsive
+            related: [system, network, diagnostics]
+            output_format: json
+
+          - name: room_config_update
+            command: |
+              curl -sS -X POST \
+                -H "Content-Type: application/json" \
+                -d '{"room_id":"ROOM","domain":"DOMAIN","config_data":CONFIG}' \
+                http://a0d7b954-appdaemon:5050/api/appdaemon/room_db_update_config
+            purpose: update_room_configuration
+            related: [devices, system]
+            variables: [ROOM, DOMAIN, CONFIG]
+
+          - name: database_export_snapshot
+            command: curl -sS http://a0d7b954-appdaemon:5050/api/appdaemon/room_db_export | jq . > /tmp/room_db_snapshot.json
+            purpose: capture_database_state
+            related: [storage, diagnostics]
+            output_file: /tmp/room_db_snapshot.json
+
+          - name: trigger_file_export
+            command: curl -sS -X POST -H "Content-Type: application/json" -d '{}' http://a0d7b954-appdaemon:5050/api/appdaemon/room_db_export_write_once
+            purpose: force_immediate_file_write
+            related: [storage, system]
+
+          - name: database_direct_query
+            command: sqlite3 /addon_configs/a0d7b954_appdaemon/room_database.db "SELECT * FROM room_configs;"
+            purpose: read_database_raw
+            related: [storage, diagnostics]
+            context: host_filesystem
+            warning: read_only_recommended
+
+          - name: view_appdaemon_logs
+            command: docker logs a0d7b954-appdaemon --tail 50 --follow
+            purpose: monitor_appdaemon_activity
+            related: [diagnostics, system]
+
+          - name: check_export_file_age
+            command: stat /addon_configs/a0d7b954_appdaemon/room_db_export.json | grep Modify
+            purpose: verify_export_freshness
+            related: [storage, diagnostics]
+
+          - name: test_all_endpoints
+            command: |
+              echo "=== Testing all endpoints ==="
+              echo -e "\n1. Health:"
+              curl -sS http://a0d7b954-appdaemon:5050/api/appdaemon/room_db_health | jq -c '{status,rooms:.canonical_rooms_count}'
+              echo -e "\n2. Test:"
+              curl -sS http://a0d7b954-appdaemon:5050/api/appdaemon/room_db_test | jq -c .
+              echo -e "\n3. Export (GET):"
+              curl -sS http://a0d7b954-appdaemon:5050/api/appdaemon/room_db_export | jq -c '.counts'
+              echo -e "\n4. Update Config:"
+              curl -sS -X POST -H "Content-Type: application/json" \
+                -d '{"room_id":"bedroom","domain":"motion_lighting","config_data":{"timeout":180}}' \
+                http://a0d7b954-appdaemon:5050/api/appdaemon/room_db_update_config | jq -c .
+              echo -e "\n5. Export Write Once:"
+              curl -sS -X POST -H "Content-Type: application/json" -d '{}' \
+                http://a0d7b954-appdaemon:5050/api/appdaemon/room_db_export_write_once | jq -c .
+            purpose: comprehensive_endpoint_validation
+            related: [diagnostics, network]
+
+---
+
+extracted_config:
+  appdaemon:
+    version: 4.5.11
+    python_version: 3.12.11
+    http_port: 5050
+    http_bind: 0.0.0.0
+    workers: 5
+    pins: 5
+    apps_dir: /config/apps
+    event_stream: ws
+
+  room_db_apps:
+    room_db_updater:
+      class: RoomDbUpdater
+      db_path: /config/room_database.db
+      schema_expected: 1
+      canonical_mapping_file: /config/www/area_mapping.yaml
+      allowed_domains: [motion_lighting, vacuum_control, shared, activity_tracking]
+      max_config_size_bytes: 4096
+      write_rate_limit_seconds: 2
+      dry_run: false
+
+    room_db_exporter:
+      class: RoomDbExporter
+      db_path: /config/room_database.db
+      export_path: /config/room_db_export.json
+      debounce_seconds: 1.5
+
+    activity_tracker:
+      class: ActivityTracker
+      room_db_update_service: rest_command.room_db_update_config
+      rate_limit_seconds: 2
+      enabled: false
+
+  database_schema:
+    version: 1
+    tables:
+      room_configs:
+        columns: [config_domain, room_id, config_data, version, created_at, updated_at]
+        primary_key: [config_domain, room_id]
+      schema_version:
+        columns: [version]
+
+  rest_commands:
+    room_db_update_config:
+      url: http://a0d7b954-appdaemon:5050/api/appdaemon/room_db_update_config
+      method: POST
+      content_type: application/json
+      timeout: 20
+
+  canonical_rooms:
+    - bedroom
+    - ensuite
+    - kitchen
+    - living_room
+    - downstairs
+    - upstairs
+    - entrance
+    - powder_room
+    - desk
+    - wardrobe
+    - laundry_room
+
+transient_state:
+  system_status:
+    appdaemon: running
+    health_endpoint: healthy
+    last_health_check: 2025-10-19T03:03:21
+
+  database_state:
+    motion_lighting_configs: 5
+    vacuum_control_configs: 1
+    total_configs: 6
+    last_export: 2025-10-19T03:01:18
+
+  active_configs:
+    bedroom:
+      domain: motion_lighting
+      timeout: 180
+      version: 1
+      updated_at: 2025-10-19T03:00:25
+
+    entrance:
+      domain: motion_lighting
+      timeout: 60
+      version: 2
+
+    kitchen:
+      domain: motion_lighting
+      last_triggered: 2025-10-19T02:40:01
+      trigger_count: 1
+
+    kitchen_vacuum:
+      domain: vacuum_control
+      needs_cleaning: 1
+
+relationships:
+  - from: Home Assistant
+    to: AppDaemon
+    via: supervisor_token
+    protocol: websocket
+
+  - from: motion_automations
+    to: rest_command.room_db_update_config
+    type: service_call
+    trigger: motion_detected
+
+  - from: rest_command
+    to: AppDaemon API
+    via: http_post
+    endpoint: /api/appdaemon/room_db_update_config
+
+  - from: AppDaemon endpoint
+    to: room_db_updater.py
+    type: code_execution
+    validates: [room_id, domain, capability, size, rate_limit]
+
+  - from: room_db_updater
+    to: SQLite database
+    type: sql_transaction
+    isolation: BEGIN IMMEDIATE
+
+  - from: room_db_updater
+    to: room_db_exporter
+    type: async_trigger
+    debounce: 1.5s
+
+  - from: SQL sensors
+    to: SQLite database
+    type: read_only_query
+    frequency: scan_interval
+
+  - from: admission_control
+    to: area_mapping.yaml
+    type: validation_lookup
+    checks: [room_exists, capability_present]
+
+suggested_commands:
+  immediate_health_check: |
+    curl -sS http://a0d7b954-appdaemon:5050/api/appdaemon/room_db_health | jq .
+
+  update_room_config: |
+    curl -sS -X POST -H "Content-Type: application/json" \
+      -d '{"room_id":"bedroom","domain":"motion_lighting","config_data":{"timeout":240,"bypass":false}}' \
+      http://a0d7b954-appdaemon:5050/api/appdaemon/room_db_update_config | jq .
+
+  trigger_export: |
+    curl -sS -X POST -H "Content-Type: application/json" -d '{}' \
+      http://a0d7b954-appdaemon:5050/api/appdaemon/room_db_export_write_once | jq .
+
+  verify_sql_sensor: |
+    # In Home Assistant Developer Tools → Template:
+    {{ state_attr('sensor.room_configs_motion_lighting_dict','payload').bedroom.timeout }}
+
+  check_database_file: |
+    ls -lh /addon_configs/a0d7b954_appdaemon/room_database.db
+    sqlite3 /addon_configs/a0d7b954_appdaemon/room_database.db "SELECT COUNT(*) FROM room_configs;"
+
+  monitor_logs: |
+    docker logs a0d7b954-appdaemon --tail 100 --follow
+
+notes:
+  - System is production-ready with all endpoints verified working
+  - POST requests to AppDaemon require Content-Type: application/json header even with empty body
+  - Database uses two path references (container: /config, host: /addon_configs/a0d7b954_appdaemon)
+  - Admission control validates against area_mapping.yaml capabilities before allowing writes
+  - All writes go through REST API (shell commands deprecated for safety)
+  - SQL sensors use json(config_data) to prevent double-encoding
+  - File exports are atomic (temp file + rename) with debounced triggers
+  - Rate limiting: 2 seconds per domain with jitter
+  - Schema version 1 enforced on all writes
+  - 11 canonical rooms with capability-based access control
+  - Motion automations use occupancy sensors for presence detection and motion sensors for wait triggers
+  - Export file automatically updates after config changes (debounced)

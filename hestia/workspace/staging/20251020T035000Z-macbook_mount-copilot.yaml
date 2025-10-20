@@ -1,0 +1,105 @@
+meta_capture:
+  session_timestamp: "2025-10-20T03:29:33Z"
+  extraction_source: "adr0024_samba_mount_cleanup_session"
+
+  extracted_config:
+    system:
+      hostname: "evertappels@macbook"
+      user: "evertappels"
+      shell: "/bin/zsh"
+      os: "macOS"
+      canonical_mount_path: "/System/Volumes/Data/homeassistant"
+      synthetic_path: "/config"
+
+    network:
+      homeassistant_host: "homeassistant.local"
+      homeassistant_ip: "192.168.0.129"
+      samba_port: 445
+      share_name: "config"
+
+    storage:
+      samba_mount:
+        source: "//evertappels@192.168.0.129/config"
+        target: "/System/Volumes/Data/homeassistant"
+        filesystem: "smbfs"
+        options: "nodev,nosuid"
+        user: "evertappels"
+      synthetic_mapping:
+        source: "config"
+        target: "homeassistant"
+        file: "/etc/synthetic.conf"
+
+    automation:
+      launchagent:
+        active: "com.hestia.mount.homeassistant.plist"
+        path: "~/Library/LaunchAgents/com.hestia.mount.homeassistant.plist"
+        pid: 35481
+      quick_actions:
+        - name: "Mount Home Assistant Config"
+          path: "~/Library/Services/Mount Home Assistant Config.workflow"
+          script: "/Users/evertappels/bin/ha-mount.sh"
+        - name: "Unmount Home Assistant Config"
+          path: "~/Library/Services/Unmount Home Assistant Config.workflow"
+          script: "/Users/evertappels/bin/ha-unmount.sh"
+      scripts:
+        - path: "~/bin/ha-mount.sh"
+          purpose: "Mount Home Assistant config share"
+        - path: "~/bin/ha-unmount.sh"
+          purpose: "Unmount Home Assistant config share"
+        - path: "~/bin/config-health"
+          purpose: "Validate config mount health"
+
+    security:
+      keychain_entries:
+        - service: "homeassistant.local"
+          account: "evertappels"
+          protocol: "smb"
+        - service: "192.168.0.129"
+          account: "evertappels"
+          protocol: "smb"
+
+  transient_state:
+    mount_status: "active"
+    mount_point: "/System/Volumes/Data/homeassistant"
+    canonical_path_resolution: "/config -> /System/Volumes/Data/homeassistant"
+    duplicate_mounts_eliminated: true
+    autofs_legacy_disabled: true
+    sudo_cache_available: false
+
+  relationships:
+    - entity: "synthetic.conf"
+      maps_to: "/config"
+      resolves_to: "/System/Volumes/Data/homeassistant"
+    - entity: "autofs_auto_smb"
+      status: "disabled"
+      prevented_duplicate: "/System/Volumes/Data/n/ha"
+    - entity: "keychain_homeassistant.local"
+      provides_auth_for: "samba_mount"
+    - entity: "launchagent_hestia"
+      manages: "automatic_mounting"
+    - entity: "quick_actions"
+      invoke: ["ha-mount.sh", "ha-unmount.sh"]
+
+  suggested_commands:
+    - name: "verify_mount"
+      command: 'mount | egrep "/System/Volumes/Data/homeassistant"'
+      purpose: "Confirm canonical mount is active"
+    - name: "check_config_path"
+      command: 'python3 -c "import os; print(os.path.realpath(\"/config\"))"'
+      purpose: "Verify /config resolves correctly"
+    - name: "test_quick_actions"
+      command: "Right-click in Finder → Quick Actions → Mount/Unmount Home Assistant Config"
+      purpose: "Test Automator workflows"
+    - name: "validate_adr_compliance"
+      command: "~/bin/config-health /config"
+      purpose: "Run health check on canonical setup"
+
+  notes:
+    - "Successfully achieved ADR-0024 single canonical mount compliance"
+    - "Eliminated duplicate autofs mount at /System/Volumes/Data/n/ha"
+    - "Disabled legacy auto_smb direct map in /etc/auto_master"
+    - "Quarantined legacy autofs maps in /etc/auto_master.d/.disabled/"
+    - "Removed non-canonical com.local.* LaunchAgents"
+    - "Maintained only com.hestia.mount.homeassistant.plist LaunchAgent"
+    - "Created Finder Quick Actions for mount/unmount operations"
+    - "All changes are reversible with backed up config files"

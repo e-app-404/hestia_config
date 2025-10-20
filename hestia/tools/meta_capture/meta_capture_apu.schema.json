@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hestia.local/schemas/meta_capture_apu.schema.json",
+  "title": "Meta-Capture APU v1",
+  "type": "object",
+  "required": ["apu_id", "operation", "target_path", "provenance", "traffic_light"],
+  "additionalProperties": false,
+  "properties": {
+    "apu_id": { "type": "string", "format": "uuid" },
+    "operation": { "type": "string", "enum": ["upsert", "merge", "replace", "delete"] },
+    "topic": { "type": "string" },
+    "target_path": { "type": "string", "pattern": "^/config/hestia/config/.+\\.ya?ml$" },
+    "provenance": {
+      "type": "object",
+      "required": ["source", "sha256", "run_id", "batch_id", "ts", "tool_version"],
+      "properties": {
+        "source": { "type": "string" },
+        "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "run_id": { "type": "string", "format": "uuid" },
+        "batch_id": { "type": "string", "format": "uuid" },
+        "ts": { "type": "string", "format": "date-time" },
+        "tool_version": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "traffic_light": { "type": "string", "enum": ["green", "yellow", "orange", "red"] },
+    "severity": { "type": "string", "enum": ["low", "medium", "high", "critical"] },
+    "safety_checks": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "within_allowed_root": { "type": "boolean" },
+        "no_traversal": { "type": "boolean" },
+        "pins_ok": { "type": "boolean" },
+        "no_secrets": { "type": "boolean" },
+        "schema_valid": { "type": "boolean" }
+      }
+    },
+    "content_yaml": { "type": "string" }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "operation": { "const": "delete" } } },
+      "then": {},
+      "else": { "required": ["content_yaml"] }
+    }
+  ]
+}

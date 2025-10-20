@@ -1,0 +1,43 @@
+- id: diagnostics.copilot.write_integrity.v1
+  persona: strategos
+  label: "Copilot Diagnostics — File Write Integrity"
+  mode: governance_review_mode
+  protocols:
+    - prompt_optimization_first
+    - confidence_scoring_always
+    - copilot_bridge_strict_v1
+  bindings:
+    - /mnt/data/system_instruction.yaml
+  prompt: |
+    version: 1.0
+    Run the following diagnostic to verify Copilot's ability to write to the /config workspace.
+
+    Please execute and confirm:
+
+    1. ✅ Confirm current directory and file presence
+    ```bash
+    cd /config && pwd && ls -l configuration.yaml
+    ```
+
+    2. ✅ Check for humidifier.py patch content
+    ```bash
+    grep -n "isinstance(modes" custom_components/localtuya/humidifier.py
+    ```
+
+    3. ✅ Check Copilot visibility and trust in the file system
+    ```bash
+    stat custom_components/localtuya/humidifier.py
+    ```
+
+    Expected behavior:
+    - All outputs are non-empty
+    - Path is `/config`
+    - Humidifier file exists and matches expected content
+
+    If any step fails, prompt with corrective guidance and retry.
+  phases:
+    - name: file_write_check
+      persona: strategos
+      instructions: |
+        Confirm Copilot sees and can access files in /config.
+        Validate the CWD, file visibility, and patch verification.

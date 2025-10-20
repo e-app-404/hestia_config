@@ -5,6 +5,13 @@ home-assistant_v2.db*
 deps/
 .venv/
 tmp/
+
+# Hestia operational logs and temp
+hestia/workspace/operations/logs/
+
+# Prompt library outputs
+hestia/library/prompts/logs/
+hestia/library/prompts/reports/
 *.db
 *.db-shm
 *.db-wal
@@ -29,6 +36,8 @@ backup*/
 *.zip
 # Exception: allow critical deployment bundles
 !home_assistant_complete_restoration_v2.0_FINAL_APPROVED.tar.gz
+# Exception: allow backup tools (not backup storage)
+!hestia/tools/utils/backup/
 # Secrets (do NOT commit)
 secrets.yaml
 secrets.yml
@@ -43,12 +52,17 @@ domain/zones/*_zones.yaml
 # Configuration files containing PII (IP addresses, MAC addresses, network topology)
 # Device configurations - contain IP addresses, MAC addresses, device identifiers
 hestia/config/devices/*.conf
+hestia/config/devices/*.md
+hestia/config/devices/*.json
 # Network configurations - contain network topology, IP ranges, DNS info
-hestia/config/network/*.conf  
+hestia/config/network/*.conf
 # System configurations - contain relationships, credentials references, topology
 hestia/config/system/*.conf
+hestia/config/system/*.toml
 # Allow workspace configuration (no PII)
 !hestia/config/system/hestia_workspace.conf
+!hestia/config/system/hestia.toml
+!hestia/config/system/cli.conf
 # Preview configurations may contain generated credentials
 hestia/config/preview/*.conf
 
@@ -261,6 +275,8 @@ domain/shell_commands/**/*.sh
 # Some systems (macOS) are case-insensitive so '/Scripts/' was matching 'scripts'.
 !scripts/
 !scripts/**
+# Allow CI helper in bin
+!bin/ci-meta-capture-enforce
 # ----------------------------------------------------------------------
 /# Allow hestia/reports/ to be tracked while still ignoring top-level reports/
 !hestia/reports/
@@ -299,6 +315,15 @@ tts/
 www/
 reports/
 
+# Meta-Capture workspace artifacts (reports + JSONL index)
+hestia/workspace/reports/meta_capture/
+hestia/workspace/.hestia/index/
+/config/hestia/workspace/staging/
+
+# Absolute path variants to ensure ignores in any checkout context
+/config/hestia/workspace/reports/meta_capture/
+/config/hestia/workspace/.hestia/index/
+
 # Personal path information that may contain PII
 # Files containing hardcoded user paths, backup locations, or personal identifiers
 **/backup_source_info.txt
@@ -306,3 +331,15 @@ reports/
 # Exclude any files that might have been generated with personal paths
 **/*evertappels*
 **/HomeAssistant/_backups/*
+/config
+
+# build metadata
+*.egg-info/
+hestia/library/prompts/_archive/
+
+# Archived personas should not be consumed by AI operators
+hestia/library/docs/governance/personas/personas.archive/
+
+# SQL database cache files and temporary promptsets
+hestia/workspace/cache/out/sql_room_database_files/*.txt
+hestia/workspace/cache/out/**/*.promptset.*

@@ -1,0 +1,25 @@
+#════════════════════════════════════════════════════════════════════════════════════════
+# ▶ BACKUP CONFIGURATION (ADR-0024 Compliant) ◀
+# Implements backup location management following canonical path policy
+# Reference: ADR-0018 Workspace Lifecycle Policy, ADR-0024 Canonical Config Path
+#════════════════════════════════════════════════════════════════════════════════════════
+
+# Configuration for Home Assistant backup system
+# Uses local filesystem locations per ADR-0024 canonical path requirements
+
+homeassistant:
+  # Backup configuration using canonical paths
+  # Disables problematic remote upload locations that were causing failures
+  backup:
+    # Use local backup directory following ADR-0024 canonical structure
+    # Location: /config/hestia/workspace/archive/backups (per hestia_structure.md)
+    location: "/config/hestia/workspace/archive/backups"
+
+    # Retention policy per ADR-0018 lifecycle management
+    keep_days: 7
+
+    # Disable automatic upload to problematic Synology location
+    # This prevents the "SynologyNAS" upload failures reported in logs
+    auto_upload: false
+
+

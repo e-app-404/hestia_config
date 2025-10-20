@@ -1,0 +1,96 @@
+---
+# Canonical promptset template (authoritative)
+# Single source of truth for new promptset creation. Do NOT duplicate this file.
+# If you need to reference it from elsewhere, link back here.
+
+promptset:
+  id: template.promptset.draft
+  load: false        # not executable; template only
+  version: 0.1
+  created: "2025-09-05"
+  description: |
+    Universal template for promptset files. Accommodates legacy and new-style formats,
+    multi-phase workflows, and governance protocols. Includes migration guidance and schema reference.
+  persona: template_persona
+  purpose: |
+    Use as a starting point for new promptset development. Supports governance, audit,
+    changelog, and custom modes. Legacy compatibility and migration guidance included.
+  legacy_compatibility: true
+  schema_version: "1.0"  # Must match _meta/promptset_schema.yaml
+
+  # Artifacts & Bindings
+  artifacts:
+    required:
+      - path: /config/hestia/library/docs/governance/system_instruction.yaml
+    optional:
+      - path: /config/hestia/config/index/appdaemon_index.yaml
+      - path: /config/hestia/config/index/manifest.yaml
+      - path: /config/hestia/library/docs/architecture/promptset_docs.md
+  bindings:
+    protocols:
+      - prompt_optimization_first
+      - confidence_scoring_always
+      - phase_context_memory
+    persona: template_persona
+
+  retrieval_tags: [governance, audit, changelog, legacy, future]
+
+  operational_modes:
+    - governance_review_mode
+    - technical_changelog_mode
+    - custom_mode
+
+  # Prompts Section
+  prompts:
+    # Example: New-style multi-phase prompt
+    - id: template.governance_review.v1
+      persona: template_persona
+      label: "Governance Review — Template v1"
+      mode: governance_review_mode
+      protocols: [prompt_optimization_first, confidence_scoring_always, phase_context_memory]
+      bindings:
+        - /config/hestia/library/docs/governance/system_instruction.yaml
+      prompt: |
+        version: 1.0
+        Activate governance review mode and load system_instruction.yaml for protocol enforcement.
+        Parse user queries and assistant responses. Score each response for compliance, fidelity, and structure.
+      phases:
+        - name: governance_review
+          persona: template_persona
+          instructions: |
+            Diagnostic review only. Parse all turns, reconstruct intent, score responses, emit governance prompt.
+          outputs:
+            - name: governance_report.md
+              required: true
+              content: |
+                # Governance Review (Phase 1)
+                ...
+            - name: meta_system_instruction_PR.md
+              required: false
+              content: |
+                ...
+
+    # Example: Legacy single-phase prompt (binding points at a real governance file)
+    - id: template.legacy_single_phase
+      persona: legacy_persona
+      label: "Legacy Promptset — Single Phase"
+      mode: legacy_mode
+      protocols: [prompt_optimization_first]
+      bindings:
+        - /config/hestia/library/docs/governance/system_instruction.yaml
+      prompt: |
+        Legacy promptset format. Single-phase, flat bindings. See migration guidance below.
+
+  # Migration Guidance
+  migration:
+    strategy: |
+      - Map legacy fields (e.g., flat bindings, single-phase prompts) to new structure.
+      - Use legacy_compatibility: true to signal support.
+      - Validate against /config/hestia/library/prompts/_meta/promptset_schema.yaml.
+
+  # Extensibility & Documentation
+  extensibility:
+    - Add phases, protocols, or outputs as needed; keep bindings absolute and canonical.
+  documentation:
+    - Reference: /config/hestia/library/prompts/_meta/promptset_schema.yaml
+    - Guidance:  /config/hestia/library/docs/architecture/promptset_docs.md

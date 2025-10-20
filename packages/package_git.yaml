@@ -7,7 +7,7 @@
 # ══════════════════════════════════════════════════════════════════
 
 shell_command:
-  git_push_config: "bash -lc '/config/tools/ha_git_push.sh /config'"
+  git_push_config: "bash -lc 'REMOTE_NAME=origin /config/hestia/tools/ha_git_push.sh /config'"
 
 input_button:
   git_push_now:

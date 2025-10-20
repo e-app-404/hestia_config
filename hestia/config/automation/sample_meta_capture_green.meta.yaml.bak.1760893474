@@ -1,0 +1,27 @@
+# sample_meta_capture_green.yaml — minimal GREEN example
+# drop into: /config/hestia/workspace/staging/
+extracted_config:
+  project: Room-DB
+  platform:
+    home_assistant: {os_version: "16.2", hardware: "Raspberry Pi 5", web_port: 8123}
+    appdaemon: {addon_slug: "a0d7b954_appdaemon", version: "4.5.11", api: {host_alias: "a0d7b954-appdaemon", port: 5050}}
+  paths:
+    container_db_path: /config/room_database.db
+    host_db_path: /addon_configs/a0d7b954_appdaemon/room_database.db
+  endpoints:
+    health: {path: /api/appdaemon/room_db_health, method: GET}
+    export: {path: /api/appdaemon/room_db_export, method: GET}
+transient_state:
+  last_validation: 2025-10-19T00:00:00Z
+  health: healthy
+  export_counts: {motion_lighting: 5, vacuum_control: 1}
+relationships:
+- from: "AppDaemon add-on (a0d7b954_appdaemon)"
+  to: "API service"
+  via: "port 5050/tcp"
+suggested_commands:
+- label: Health
+  cmd: curl -sS http://a0d7b954-appdaemon:5050/api/appdaemon/room_db_health | jq .
+notes:
+- "Meta-capture GREEN test; safe to apply."
+pinned_key: 1  # @pin

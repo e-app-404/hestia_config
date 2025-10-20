@@ -1,0 +1,67 @@
+#═══════════════════════════════════════════════════════════════
+# ▶ LIGHTS: Adaptive Light Groups ◀
+# Loader: !include_dir_merge_named domain/lights/adaptive_light_groups.yaml
+# Schema: group
+#═══════════════════════════════════════════════════════════════
+
+- platform: group
+  name: "Adaptive Bedroom Light Group"
+  unique_id: "adaptive_bedroom_light_group"
+  entities:
+    - light.bedroom_accent_alpha
+    - light.bedroom_wall_alpha
+    - light.bedroom_main_alpha_matter
+    - light.bedroom_nightstand_left_alpha_matter
+    - light.bedroom_nightstand_right_alpha_matter
+    - light.bedroom_main_alpha_matter
+    - light.bedroom_wall_alpha
+  # - light.bedroom_entrance_alpha_matter
+
+- platform: group
+  name: "Adaptive Desk Light Group"
+  unique_id: "adaptive_desk_light_group"
+  entities:
+    - light.bedroom_desk_corner_alpha
+    - light.bedroom_desk_alpha_matter
+    - light.bedroom_desk_lightstrip_alpha_matter
+    - light.bedroom_desk_wall_alpha_matter
+
+- platform: group
+  name: "Adaptive Kitchen Light Group"
+  unique_id: "adaptive_kitchen_light_group"
+  entities:
+    - light.kitchen_ceiling_alpha
+    - light.kitchen_cupboards_lightstrip_alpha
+    - light.laundry_ceiling_alpha
+
+- platform: group
+  name: "Adaptive Living Room Light Group"
+  unique_id: "adaptive_living_room_light_group"
+  entities:
+    - light.living_room_desk_alpha_matter
+    - light.living_room_floorlamp_alpha_matter
+    - light.living_room_foxy_alpha_matter
+    - light.living_room_main_alpha_matter
+    - light.living_room_side_alpha_matter
+
+- platform: group
+  name: "Adaptive Ensuite Light Group"
+  unique_id: "adaptive_ensuite_light_group"
+  entities:
+    - light.ensuite_accent_alpha
+    - light.ensuite_main_alpha_matter
+    - light.ensuite_lightstrip_alpha_matter
+
+- platform: group
+  name: "Adaptive Downstairs Light Group"
+  unique_id: "adaptive_downstairs_light_group"
+  entities:
+    - light.downstairs_lightstrip_alpha
+    - light.hallway_lightstrip_alpha
+
+- platform: group
+  name: "Adaptive Upstairs Light Group"
+  unique_id: "adaptive_upstairs_light_group"
+  entities:
+    - light.upstairs_lightstrip_alpha
+    - light.hallway_lightstrip_alpha

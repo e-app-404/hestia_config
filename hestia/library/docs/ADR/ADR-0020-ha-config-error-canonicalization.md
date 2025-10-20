@@ -1,25 +1,30 @@
 ---
 id: ADR-0020
-title: "Home Assistant Configuration Error Canonicalization"
-date: 2025-09-30
-author: Strategos GPT
+title: Home Assistant Configuration Error Canonicalization
+slug: home-assistant-configuration-error-canonicalization
 status: Accepted
-last_updated: 2025-09-30
-supersedes:
-  - None
 related:
-  - ADR-0002 (Jinja patterns)
-  - ADR-0009 (ADR governance formatting)
-  - ADR-0016 (Canonical HA edit root)
+- ADR-0002 (Jinja patterns)
+- ADR-0009 (ADR governance formatting)
+- ADR-0016 (Canonical HA edit root)
+supersedes:
+- None
+last_updated: '2025-10-15'
+date: 2025-09-30
+decision: 'Create a systematic approach to configuration error management with three
+  components:'
+author: Strategos GPT
 references:
-  - hestia/tools/error_patterns.yml (Machine-readable error patterns)
-  - hestia/tools/template_patcher/ (Template fixing tools)
-  - custom_templates/template.library.jinja (Jinja macro library)
-  - .githooks/pre-commit (Git hooks for validation)
-decision_note: 
-  - Establish centralized repository of common Home Assistant configuration errors and proven solutions.
-  - Provide machine-readable error pattern documentation for automated detection and fixing.
-  - Focus on systematic prevention through tooling and validation.
+- hestia/library/error_patterns.yml (Machine-readable error patterns)
+- hestia/tools/template_patcher/ (Template fixing tools)
+- custom_templates/template.library.jinja (Jinja macro library)
+- .githooks/pre-commit (Git hooks for validation)
+decision_note:
+- Establish centralized repository of common Home Assistant configuration errors and
+  proven solutions.
+- Provide machine-readable error pattern documentation for automated detection and
+  fixing.
+- Focus on systematic prevention through tooling and validation.
 ---
 
 # ADR-0020 — Home Assistant Configuration Error Canonicalization
@@ -42,7 +47,7 @@ Create a systematic approach to configuration error management with three compon
 
 ### 1. Machine-Readable Error Pattern Database
 
-Establish `hestia/tools/error_patterns.yml` as the canonical source of known error patterns:
+Establish `hestia/library/error_patterns.yml` as the canonical source of known error patterns:
 
 ```yaml
 error_patterns:
@@ -126,7 +131,7 @@ grep -r "{% macro.*[^-]%}" custom_templates/
 ## Implementation
 
 ### Phase 1: Error Pattern Database
-- ✅ Created `hestia/tools/error_patterns.yml` with jinja_whitespace_control pattern
+- ✅ Created `hestia/library/error_patterns.yml` with jinja_whitespace_control pattern
 - Document additional patterns as discovered
 - Establish pattern submission process
 

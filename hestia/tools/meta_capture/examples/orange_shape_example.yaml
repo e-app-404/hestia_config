@@ -1,0 +1,4 @@
+# No secrets, intentionally missing several required keys
+extracted_config:
+  device: demo
+notes: ["shape test"]

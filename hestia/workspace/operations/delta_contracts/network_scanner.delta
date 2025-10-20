@@ -1,0 +1,22 @@
+planned_change: "Trim network_scanner to a minimal, verified-ready baseline; fix verifier’s registry access."
+deliverable: "network_scanner.yaml (minimal), verify_network_scanner.py (WS or states-fallback patch)"
+action_needed: "Apply YAML below; patch verifier; rerun; then add back a few bedroom mappings only."
+rationale: "Remove placeholder churn that delays startup; only map entities the verifier can prove."
+status: "proposed"
+location:
+  yaml: "/config/hestia/domain/rest/network_scanner.yaml"
+  verifier: "/config/hestia/tools/diag/verify_network_scanner.py"
+RACI_matrix:
+  Responsible: Strategos
+  Accountable: Evert
+  Consulted: Pythagoras
+  Informed: Stakeholders
+acceptance_criteria:
+  - "Home Assistant core startup shows network_scanner init < 5s; no mapping-parse warnings."
+  - "Verifier run succeeds without 404s; 'Verified mappings' ≥ 0 and 'Missing entities' == 0 for bedroom scope."
+  - "No 'router_device_list'/'fing_device_list'/template placeholders remain in active YAML."
+  - "Adding 1–5 bedroom mappings post-fix yields ✓ verification with vendor+area populated."
+risk_assessment:
+  - low: "Temporarily no friendly names for devices in scanner until mappings are re-added."
+rollback:
+  - "Restore the last timestamped YAML produced by the verifier under /config/hestia/workspace/operations/logs/network_scanner/ (if present), or your current file from VCS."

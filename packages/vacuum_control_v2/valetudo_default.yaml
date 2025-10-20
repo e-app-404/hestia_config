@@ -1,0 +1,152 @@
+# No quiet-hour helpers: we use schedule.valetudo_allowed
+
+input_text:
+  valetudo_base_topic:
+    name: "Valetudo Base Topic"
+    min: 1
+    max: 128
+    initial: "valetudo/robot"
+
+template:
+  - sensor:
+      - name: "Rooms Stale For Cleaning"
+        unique_id: rooms_stale_for_cleaning
+        state: >
+          {% set activity = state_attr('sensor.room_configs_activity_tracking_dict', 'payload') %}
+          {% set vac = state_attr('sensor.room_configs_vacuum_control', 'payload') %}
+          {% if not activity or not vac %}
+            0
+          {% else %}
+            {% set stale = namespace(rooms=[]) %}
+            {% for room, data in activity.items() %}
+              {% if room in vac %}
+                {% set last = data.last_activity | as_datetime | as_local %}
+                {% set age_hours = ((now() - last).total_seconds() / 3600) | round(1) %}
+                {% set threshold = vac[room].get('activity_threshold_hours', 24) %}
+                {% if age_hours > threshold %}
+                  {% set stale.rooms = stale.rooms + [room] %}
+                {% endif %}
+              {% endif %}
+            {% endfor %}
+            {{ stale.rooms | length }}
+          {% endif %}
+        attributes:
+          rooms: >
+            {% set activity = state_attr('sensor.room_configs_activity_tracking_dict', 'payload') %}
+            {% set vac = state_attr('sensor.room_configs_vacuum_control', 'payload') %}
+            {% if not activity or not vac %}
+              []
+            {% else %}
+              {% set stale = [] %}
+              {% for room, data in activity.items() %}
+                {% if room in vac %}
+                  {% set last = data.last_activity | as_datetime | as_local %}
+                  {% set age_hours = ((now() - last).total_seconds() / 3600) | round(1) %}
+                  {% set threshold = vac[room].get('activity_threshold_hours', 24) %}
+                  {% if age_hours > threshold %}
+                    {% set stale = stale + [{'room': room, 'age_hours': age_hours, 'threshold': threshold}] %}
+                  {% endif %}
+                {% endif %}
+              {% endfor %}
+              {{ stale }}
+            {% endif %}
+
+script:
+  valetudo_clean_room_ad_hoc:
+    alias: "Valetudo — Clean Room (Ad-hoc)"
+    mode: queued
+    fields:
+      room:
+        description: "Canonical room id"
+        example: "bedroom"
+      force:
+        description: "Bypass schedule gate (schedule.valetudo_allowed)"
+        example: false
+      force_presence:
+        description: "Bypass presence gate"
+        example: false
+    sequence:
+      - event: valetudo_ad_hoc_clean
+        event_data:
+          room: "{{ room }}"
+          force: "{{ force | default(false) }}"
+          force_presence: "{{ force_presence | default(false) }}"
+
+  clean_room_with_sql_tracking:
+    alias: "Clean Room with SQL Database Tracking"
+    mode: queued
+    fields:
+      room:
+        description: "Room slug (e.g., 'bedroom')"
+        required: true
+        selector:
+          text:
+    variables:
+      _raw: "{{ state_attr('sensor.room_configs_vacuum_control','payload') }}"
+      _cfgs: "{{ _raw | from_json if _raw else {} }}"
+      room_config: "{{ _cfgs.get(room, {}) }}"
+      segment_id: "{{ room_config.get('segment_id', 1) | int }}"
+      base_topic: "{{ states('input_text.valetudo_base_topic') }}"
+    sequence:
+      - action: mqtt.publish
+        data:
+          topic: "{{ base_topic }}/MapSegmentationCapability/action/start_segment_action"
+          payload: "{{ {'action':'clean','segment_ids':[segment_id],'iterations':1,'customOrder':true} | tojson }}"
+      - action: rest_command.room_db_update_config
+        data:
+          room_id: "{{ room }}"
+          domain: "vacuum_control"
+          config_data: >-
+            {{ dict(room_config, **{
+              'last_cleaned': now().isoformat(),
+              'needs_cleaning': false
+            })  }}
+      - action: persistent_notification.create
+        data:
+          title: "Vacuum Control"
+          message: "Started cleaning {{ room }} (segment {{ segment_id }})"
+          notification_id: "vacuum_{{ room }}"
+
+automation:
+  - alias: "Valetudo — Daily Routine Trigger"
+    description: "Optional: nudge the routine cycle; app also polls every 30s."
+    triggers:
+      - trigger: time
+        at: "09:00:00"
+    conditions:
+      - condition: state
+        entity_id: schedule.valetudo_allowed
+        state: "on"
+    actions:
+      - event: valetudo_routine_clean_requested
+
+  - alias: "Valetudo — Flag Stale Rooms"
+    mode: single
+    variables:
+      rooms_to_flag: >-
+        {% set raw = state_attr('sensor.room_configs_vacuum_control','payload') | default('{}') %}
+        {% set data = raw | from_json if raw is string and raw.startswith('{') else {} %}
+        {% set now_ts = now().timestamp() %}
+        {% set out = [] %}
+        {% for room, cfg in (data or {}).items() %}
+          {% set last = cfg.get('last_cleaned') %}
+          {% set freq = (cfg.get('cleaning_frequency_days', 7) | int(7)) %}
+          {% set due = (last is none) or (as_timestamp(last, default=0) > 0 and (now_ts - as_timestamp(last, default=0)) / 86400 > freq) %}
+          {% if due %}{% set _ = out.append(room) %}{% endif %}
+        {% endfor %}
+        {{ out }}
+    triggers:
+      - trigger: time
+        at: "08:00:00"
+    actions:
+      - repeat:
+          for_each: "{{ rooms_to_flag }}"
+          sequence:
+            - action: rest_command.room_db_update_config
+              data:
+                room_id: "{{ repeat.item }}"
+                domain: vacuum_control
+                config_data:
+                  needs_cleaning: 1
+                schema_expected: 1
+            - delay: "00:00:02"

@@ -1,0 +1,19 @@
+title: Home
+sections:
+  - type: grid
+    cards:
+      - type: entities
+        entities:
+          - light.group_all_bedroom_lights
+          - light.group_bedroom_nightstand_lights
+          - light.group_bedroom_utility_lights
+          - light.group_desk_lights
+          - light.group_ensuite_lights
+          - light.group_hallway_lights_all
+          - light.group_hallway_lights_downstairs
+          - light.group_hallway_lights_upstairs
+          - light.group_kitchen_lights
+          - light.group_laundry_room_lights
+          - light.group_living_room_lights_all
+          - light.group_main_bedroom_lights
+          - light.group_switch_lights

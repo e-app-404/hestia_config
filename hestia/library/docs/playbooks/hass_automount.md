@@ -15,6 +15,14 @@ tags: ["automation","smb-mount", "launchagent", "macos", "playbook"]
 
 # Home Assistant Automount Playbook
 
+> Update • 2025-10-18
+> This playbook now aligns with ADR-0024 canonical paths and the hardened telemetry pipeline:
+> - Telemetry sender script: `~/bin/hass_telemetry.sh` (single source of truth)
+> - LaunchAgent label: `com.local.hass.telemetry` with `StartInterval=120`
+> - Environment: `HA_MOUNT=/config` for canonical path semantics while still mounting at `~/hass`
+> - File sensor JSON: a single-line, minified `.last_mount_status.json` at `~/hass/hestia/config/diagnostics/` (seen in HA as `/config/...`) to avoid "unknown" parsing
+> - Single-writer policy: telemetry is the only periodic writer; diagnostic scripts require explicit `--write`
+
 **Objective**: Establish reliable automatic mounting of Home Assistant configuration from SMB share to `~/hass`
 
 **Prerequisites**: 
@@ -113,7 +121,8 @@ tags: ["automation","smb-mount", "launchagent", "macos", "playbook"]
 
 ### Shell Environment
 ```bash
-grep -F 'export HA_MOUNT="$HOME/hass"' "$HOME/.zshrc" || echo 'export HA_MOUNT="$HOME/hass"' >> "$HOME/.zshrc"
+# Canonical path semantics for telemetry: write to /config via mounted ~/hass
+grep -F 'export HA_MOUNT="/config"' "$HOME/.zshrc" || echo 'export HA_MOUNT="/config"' >> "$HOME/.zshrc"
 ```
 
 ### Keychain Setup
@@ -208,49 +217,34 @@ For machine-readable diagnostics, see: `hestia/config/diagnostics/hass_mount_sta
 
 The mount diagnostics can be integrated into Home Assistant for monitoring and alerting. Two implementation paths are available:
 
-#### Option A: Webhook Push (No MQTT Required)
+#### Option A: Webhook Push (No MQTT Required) — Hardened (Recommended)
 
 **1. Mac-Side Telemetry Script**
 
-Create webhook push script:
+Use the single, hardened sender `~/bin/hass_telemetry.sh` with these guarantees:
+- Writes a minified, single-line JSON file at `~/hass/hestia/config/diagnostics/.last_mount_status.json` (HA sees it at `/config/...`)
+- Posts webhook telemetry to Home Assistant
+- Bounded logs and reliable exit codes
+- Respects `HA_MOUNT=/config` for canonical path alignment
+
+If you do not yet have the script, retrieve it from the workspace tools package or re-deploy from version control. Ensure it is executable:
 ```bash
-# Create the webhook push script
-cat > "$HESTIA_TOOLS/utils/mount/post_hass_mount_status.sh" << 'EOF'
-#!/usr/bin/env bash
-set -euo pipefail
-
-# Source centralized environment variables
-WORKSPACE_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && git rev-parse --show-toplevel 2>/dev/null || echo "$HOME/hass")"
-source "$WORKSPACE_ROOT/.env"
-
-GEN="$HESTIA_TOOLS/utils/mount/generate_hass_mount_diagnostics.sh"
-TMP="$(mktemp)"
-"$GEN" --format json > "$TMP"
-
-curl -fsS -X POST \
-  -H "Content-Type: application/json" \
-  --data-binary @"$TMP" \
-  "http://homeassistant.local:8123/api/webhook/hass_mount_status"
-
-rm -f "$TMP"
-EOF
-
-chmod +x "$HESTIA_TOOLS/utils/mount/post_hass_mount_status.sh"
+chmod +x "$HOME/bin/hass_telemetry.sh"
 ```
 
 **2. Telemetry LaunchAgent (Every 2 Minutes)**
 
 ```bash
-cat >"$HOME/Library/LaunchAgents/com.local.hass.mount.telemetry.plist" <<'PL'
+cat >"$HOME/Library/LaunchAgents/com.local.hass.telemetry.plist" <<'PL'
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0"><dict>
-  <key>Label</key><string>com.local.hass.mount.telemetry</string>
+  <key>Label</key><string>com.local.hass.telemetry</string>
   <key>ProgramArguments</key>
   <array>
     <string>/bin/zsh</string>
     <string>-lc</string>
-    <string>source ~/.zshrc && $HESTIA_TOOLS/utils/mount/post_hass_mount_status.sh</string>
+    <string>export HA_MOUNT="/config"; source ~/.zshrc; "$HOME/bin/hass_telemetry.sh"</string>
   </array>
   <key>StartInterval</key><integer>120</integer>
   <key>KeepAlive</key><dict><key>NetworkState</key><true/></dict>
@@ -259,13 +253,14 @@ cat >"$HOME/Library/LaunchAgents/com.local.hass.mount.telemetry.plist" <<'PL'
 </dict></plist>
 PL
 
-launchctl bootstrap "gui/$(id -u)" "$HOME/Library/LaunchAgents/com.local.hass.mount.telemetry.plist"
-launchctl kickstart -k "gui/$(id -u)/com.local.hass.mount.telemetry"
+launchctl bootstrap "gui/$(id -u)" "$HOME/Library/LaunchAgents/com.local.hass.telemetry.plist" 2>/dev/null || true
+launchctl kickstart -k "gui/$(id -u)/com.local.hass.telemetry"
+launchctl print "gui/$(id -u)/com.local.hass.telemetry" | egrep 'state|last exit code|program' || true
 ```
 
 **3. Home Assistant Package Configuration**
 
-Create `packages/hass_mount_monitor.yaml`:
+Create or update the HA package (example `packages/hass_mount_monitor.yaml`). Ensure the File sensor reads the minified JSON and that template sensors are stale-aware (auto OFF after ~5 minutes without telemetry):
 ```yaml
 automation:
   - id: hass_mount_webhook_ingest
@@ -306,6 +301,10 @@ template:
              and state_attr('sensor.macbook_hass_mount_state','config_present') }}
         device_class: connectivity
 
+# File integration fallback expects a single-line JSON file:
+# /config/hestia/config/diagnostics/.last_mount_status.json (written by hass_telemetry.sh)
+# If state remains 'unknown', reload the File integration or re-add the entity.
+
 automation:
   - id: hass_mount_alert_down
     alias: ALERT • Macbook HASS mount down
@@ -316,7 +315,7 @@ automation:
         to: 'off'
         for: "00:05:00"
     action:
-      - service: persistent_notification.create
+      - action: persistent_notification.create
         data:
           title: "Macbook HASS mount is down"
           message: >
@@ -333,7 +332,7 @@ automation:
         entity_id: binary_sensor.macbook_hass_mount_ok
         to: 'on'
     action:
-      - service: persistent_notification.create
+      - action: persistent_notification.create
         data:
           title: "Macbook HASS mount recovered"
           message: "Mount recovered at {{ now().isoformat() }}"

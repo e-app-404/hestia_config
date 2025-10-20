@@ -1,0 +1,472 @@
+# ═════════════════════════════════════
+# ⟫⟫ Motion Light SQL Automations  ◀
+# ═════════════════════════════════════
+automation:
+  - alias: "Motion Lights — Bedroom (SQL v1.5)"
+    id: motion_lights_bedroom_sql_v15
+    mode: restart
+    triggers:
+      - trigger: state
+        entity_id: binary_sensor.bedroom_motion_beta
+        to: "on"
+    variables:
+      _raw: "{{ state_attr('sensor.room_configs_motion_lighting_dict','payload') }}"
+      _cfgs: "{{ _raw if _raw is mapping else {} }}"
+      room_config: >-
+        {% if _cfgs and 'bedroom' in _cfgs %}
+          {% set cfg = _cfgs.bedroom %}
+          {% if cfg is mapping %}
+            {{ cfg }}
+          {% elif cfg is string %}
+            {{ cfg | from_json }}
+          {% else %}
+            {}
+          {% endif %}
+        {% else %}
+          {}
+        {% endif %}
+      timeout: "{{ room_config.get('timeout', 120) | int }}"
+      bypass: "{{ room_config.get('bypass', false) | bool }}"
+      presence_multiplier: "{{ room_config.get('presence_timeout_multiplier', 1.0) | float }}"
+      occupancy_entity: "binary_sensor.bedroom_occupancy_beta"
+      occupancy_on: >
+        {% set e = occupancy_entity %}
+        {% if e and states(e) in ['on','off','unknown','unavailable'] %}
+          {{ is_state(e, 'on') }}
+        {% else %}
+          {{ is_state('person.evert','home') }}
+        {% endif %}
+      effective_timeout: "{{ (timeout * presence_multiplier) | int if occupancy_on else timeout }}"
+      illuminance_threshold: "{{ room_config.get('illuminance_threshold', 10) | int }}"
+    conditions:
+      - condition: template
+        value_template: "{{ not bypass }}"
+      - condition: template
+        value_template: >
+          {{ (states('sensor.bedroom_illuminance_beta') | float(9999)) < illuminance_threshold }}
+    actions:
+      - action: light.turn_on
+        target: { entity_id: light.adaptive_bedroom_light_group }
+        data: { transition: 2 }
+      - action: rest_command.room_db_update_config
+        data:
+          room_id: "bedroom"
+          domain: "motion_lighting"
+          config_data: >-
+            {{ dict(room_config, **{
+              'last_triggered': now().isoformat(),
+              'trigger_count': (room_config.get('trigger_count', 0) | int) + 1
+            }) }}
+          schema_expected: 1
+      - wait_for_trigger:
+          - trigger: state
+            entity_id: binary_sensor.bedroom_motion_beta
+            to: "off"
+            for:
+              seconds: "{{ effective_timeout }}"
+        continue_on_timeout: false
+      - action: light.turn_off
+        target: { entity_id: light.adaptive_bedroom_light_group }
+        data: { transition: 10 }
+
+  - alias: "Motion Lights — Upstairs (SQL v1.5)"
+    id: motion_lights_upstairs_sql_v15
+    mode: restart
+    triggers:
+      - trigger: state
+        entity_id: binary_sensor.hallway_upstairs_motion_beta
+        to: "on"
+    variables:
+      _raw: "{{ state_attr('sensor.room_configs_motion_lighting_dict','payload') }}"
+      _cfgs: "{{ _raw if _raw is mapping else {} }}"
+      room_config: >-
+        {% if _cfgs and 'upstairs' in _cfgs %}
+          {% set cfg = _cfgs.upstairs %}
+          {% if cfg is mapping %}
+            {{ cfg }}
+          {% elif cfg is string %}
+            {{ cfg | from_json }}
+          {% else %}
+            {}
+          {% endif %}
+        {% else %}
+          {}
+        {% endif %}
+      timeout: "{{ room_config.get('timeout', 120) | int }}"
+      bypass: "{{ room_config.get('bypass', false) | bool }}"
+      presence_multiplier: "{{ room_config.get('presence_timeout_multiplier', 1.0) | float }}"
+      occupancy_entity: "binary_sensor.hallway_upstairs_occupancy_beta"
+      occupancy_on: >
+        {% set e = occupancy_entity %}
+        {% if e and states(e) in ['on','off','unknown','unavailable'] %}
+          {{ is_state(e, 'on') }}
+        {% else %}
+          {{ is_state('person.evert','home') }}
+        {% endif %}
+      effective_timeout: "{{ (timeout * presence_multiplier) | int if occupancy_on else timeout }}"
+      illuminance_threshold: "{{ room_config.get('illuminance_threshold', 10) | int }}"
+    conditions:
+      - condition: template
+        value_template: "{{ not bypass }}"
+     # - condition: template
+     #   value_template: >
+     #     {{ (states('sensor.hallway_upstairs_illuminance_beta') | float(9999)) < illuminance_threshold }}
+    actions:
+      - action: light.turn_on
+        target: { entity_id: light.adaptive_upstairs_light_group }
+        data: { transition: 2 }
+      - action: rest_command.room_db_update_config
+        data:
+          room_id: "upstairs"
+          domain: "motion_lighting"
+          config_data: >-
+            {{ dict(room_config, **{
+              'last_triggered': now().isoformat(),
+              'trigger_count': (room_config.get('trigger_count', 0) | int) + 1
+            }) }}
+          schema_expected: 1
+      - wait_for_trigger:
+          - trigger: state
+            entity_id: binary_sensor.hallway_upstairs_motion_beta  # Already correct
+            to: "off"
+            for:
+              seconds: "{{ effective_timeout }}"
+        continue_on_timeout: false
+      - action: light.turn_off
+        target: { entity_id: light.adaptive_upstairs_light_group }
+        data: { transition: 10 }
+
+  - alias: "Motion Lights — Downstairs (SQL v1.5)"
+    id: motion_lights_downstairs_sql_v15
+    mode: restart
+    triggers:
+      - trigger: state
+        entity_id: binary_sensor.hallway_downstairs_motion_beta
+        to: "on"
+    variables:
+      _raw: "{{ state_attr('sensor.room_configs_motion_lighting_dict','payload') }}"
+      _cfgs: "{{ _raw if _raw is mapping else {} }}"
+      room_config: >-
+        {% if _cfgs and 'downstairs' in _cfgs %}
+          {% set cfg = _cfgs.downstairs %}
+          {% if cfg is mapping %}
+            {{ cfg }}
+          {% elif cfg is string %}
+            {{ cfg | from_json }}
+          {% else %}
+            {}
+          {% endif %}
+        {% else %}
+          {}
+        {% endif %}
+      timeout: "{{ room_config.get('timeout', 120) | int }}"
+      bypass: "{{ room_config.get('bypass', false) | bool }}"
+      presence_multiplier: "{{ room_config.get('presence_timeout_multiplier', 1.0) | float }}"
+      occupancy_entity: "binary_sensor.hallway_downstairs_occupancy_beta"
+      occupancy_on: >
+        {% set e = occupancy_entity %}
+        {% if e and states(e) in ['on','off','unknown','unavailable'] %}
+          {{ is_state(e, 'on') }}
+        {% else %}
+          {{ is_state('person.evert','home') }}
+        {% endif %}
+      effective_timeout: "{{ (timeout * presence_multiplier) | int if occupancy_on else timeout }}"
+      illuminance_threshold: "{{ room_config.get('illuminance_threshold', 10) | int }}"
+    conditions:
+      - condition: template
+        value_template: "{{ not bypass }}"
+    #  - condition: template
+    #    value_template: >
+    #      {{ (states('sensor.hallway_downstairs_illuminance_beta') | float(9999)) < illuminance_threshold }}
+    actions:
+      - action: light.turn_on
+        target: { entity_id: light.adaptive_downstairs_light_group }
+        data: { transition: 2 }
+      - action: rest_command.room_db_update_config
+        data:
+          room_id: "downstairs"
+          domain: "motion_lighting"
+          config_data: >-
+            {{ dict(room_config, **{
+              'last_triggered': now().isoformat(),
+              'trigger_count': (room_config.get('trigger_count', 0) | int) + 1
+            }) }}
+          schema_expected: 1
+      - wait_for_trigger:
+          - trigger: state
+            entity_id: binary_sensor.hallway_downstairs_motion_beta  # Already correct
+            to: "off"
+            for:
+              seconds: "{{ effective_timeout }}"
+        continue_on_timeout: false
+      - action: light.turn_off
+        target: { entity_id: light.adaptive_downstairs_light_group }
+        data: { transition: 10 }
+
+  - alias: "Motion Lights — Kitchen (SQL v1.5)"
+    id: motion_lights_kitchen_sql_v15
+    mode: restart
+    triggers:
+      - trigger: state
+        entity_id: binary_sensor.kitchen_motion_beta
+        to: "on"
+    variables:
+      _raw: "{{ state_attr('sensor.room_configs_motion_lighting_dict','payload') }}"
+      _cfgs: "{{ _raw if _raw is mapping else {} }}"
+      room_config: >-
+        {% if _cfgs and 'kitchen' in _cfgs %}
+          {% set cfg = _cfgs.kitchen %}
+          {% if cfg is mapping %}
+            {{ cfg }}
+          {% elif cfg is string %}
+            {{ cfg | from_json }}
+          {% else %}
+            {}
+          {% endif %}
+        {% else %}
+          {}
+        {% endif %}
+      timeout: "{{ room_config.get('timeout', 120) | int }}"
+      bypass: "{{ room_config.get('bypass', false) | bool }}"
+      presence_multiplier: "{{ room_config.get('presence_timeout_multiplier', 1.0) | float }}"
+      occupancy_entity: "binary_sensor.kitchen_occupancy_beta"
+      occupancy_on: >
+        {% set e = occupancy_entity %}
+        {% if e and states(e) in ['on','off','unknown','unavailable'] %}
+          {{ is_state(e, 'on') }}
+        {% else %}
+          {{ is_state('person.evert','home') }}
+        {% endif %}
+      effective_timeout: "{{ (timeout * presence_multiplier) | int if occupancy_on else timeout }}"
+      illuminance_threshold: "{{ room_config.get('illuminance_threshold', 10) | int }}"
+    conditions:
+      - condition: template
+        value_template: "{{ not bypass }}"
+     # - condition: template
+     #   value_template: >
+     #     {{ (states('sensor.kitchen_illuminance_beta') | float(9999)) < illuminance_threshold }}
+    actions:
+      - action: light.turn_on
+        target: { entity_id: light.adaptive_kitchen_light_group }
+        data: { transition: 2 }
+      - action: rest_command.room_db_update_config
+        data:
+          room_id: "kitchen"
+          domain: "motion_lighting"
+          config_data: >-
+            {{ dict(room_config, **{
+              'last_triggered': now().isoformat(),
+              'trigger_count': (room_config.get('trigger_count', 0) | int) + 1
+            }) }}
+          schema_expected: 1
+      - wait_for_trigger:
+          - trigger: state
+            entity_id: binary_sensor.kitchen_motion_beta
+            to: "off"
+            for:
+              seconds: "{{ effective_timeout }}"
+        continue_on_timeout: false
+      - action: light.turn_off
+        target: { entity_id: light.adaptive_kitchen_light_group }
+        data: { transition: 10 }
+
+  - alias: "Motion Lights — Living Room (SQL v1.5)"
+    id: motion_lights_living_room_sql_v15
+    mode: restart
+    triggers:
+      - trigger: state
+        entity_id: binary_sensor.living_room_motion_beta
+        to: "on"
+    variables:
+      _raw: "{{ state_attr('sensor.room_configs_motion_lighting_dict','payload') }}"
+      _cfgs: "{{ _raw if _raw is mapping else {} }}"
+      room_config: >-
+        {% if _cfgs and 'living_room' in _cfgs %}
+          {% set cfg = _cfgs.living_room %}
+          {% if cfg is mapping %}
+            {{ cfg }}
+          {% elif cfg is string %}
+            {{ cfg | from_json }}
+          {% else %}
+            {}
+          {% endif %}
+        {% else %}
+          {}
+        {% endif %}
+      timeout: "{{ room_config.get('timeout', 120) | int }}"
+      bypass: "{{ room_config.get('bypass', false) | bool }}"
+      presence_multiplier: "{{ room_config.get('presence_timeout_multiplier', 1.0) | float }}"
+      occupancy_entity: "binary_sensor.living_room_occupancy_beta"
+      occupancy_on: >
+        {% set e = occupancy_entity %}
+        {% if e and states(e) in ['on','off','unknown','unavailable'] %}
+          {{ is_state(e, 'on') }}
+        {% else %}
+          {{ is_state('person.evert','home') }}
+        {% endif %}
+      effective_timeout: "{{ (timeout * presence_multiplier) | int if occupancy_on else timeout }}"
+      illuminance_threshold: "{{ room_config.get('illuminance_threshold', 10) | int }}"
+    conditions:
+      - condition: template
+        value_template: "{{ not bypass }}"
+      - condition: template
+        value_template: >
+          {{ (states('sensor.living_room_illuminance_beta') | float(9999)) < illuminance_threshold }}
+    actions:
+      - action: light.turn_on
+        target: { entity_id: light.adaptive_living_room_light_group }
+        data: { transition: 2 }
+      - action: rest_command.room_db_update_config
+        data:
+          room_id: "living_room"
+          domain: "motion_lighting"
+          config_data: >-
+            {{ dict(room_config, **{
+              'last_triggered': now().isoformat(),
+              'trigger_count': (room_config.get('trigger_count', 0) | int) + 1
+            }) }}
+          schema_expected: 1
+      - wait_for_trigger:
+          - trigger: state
+            entity_id: binary_sensor.living_room_motion_beta
+            to: "off"
+            for:
+              seconds: "{{ effective_timeout }}"
+        continue_on_timeout: false
+      - action: light.turn_off
+        target: { entity_id: light.adaptive_living_room_light_group }
+        data: { transition: 10 }
+
+  - alias: "Motion Lights — Ensuite (SQL v1.5)"
+    id: motion_lights_ensuite_sql_v15
+    mode: restart
+    triggers:
+      - trigger: state
+        entity_id: binary_sensor.ensuite_motion_beta
+        to: "on"
+    variables:
+      _raw: "{{ state_attr('sensor.room_configs_motion_lighting_dict','payload') }}"
+      _cfgs: "{{ _raw if _raw is mapping else {} }}"
+      room_config: >-
+        {% if _cfgs and 'ensuite' in _cfgs %}
+          {% set cfg = _cfgs.ensuite %}
+          {% if cfg is mapping %}
+            {{ cfg }}
+          {% elif cfg is string %}
+            {{ cfg | from_json }}
+          {% else %}
+            {}
+          {% endif %}
+        {% else %}
+          {}
+        {% endif %}
+      timeout: "{{ room_config.get('timeout', 120) | int }}"
+      bypass: "{{ room_config.get('bypass', false) | bool }}"
+      presence_multiplier: "{{ room_config.get('presence_timeout_multiplier', 0.8) | float }}"
+      occupancy_entity: "binary_sensor.ensuite_occupancy_beta"
+      occupancy_on: >
+        {% set e = occupancy_entity %}
+        {% if e and states(e) in ['on','off','unknown','unavailable'] %}
+          {{ is_state(e, 'on') }}
+        {% else %}
+          {{ is_state('person.evert','home') }}
+        {% endif %}
+      effective_timeout: "{{ (timeout * presence_multiplier) | int if occupancy_on else timeout }}"
+      illuminance_threshold: "{{ room_config.get('illuminance_threshold', 10) | int }}"
+    conditions:
+      - condition: template
+        value_template: "{{ not bypass }}"
+      - condition: template
+        value_template: >
+          {{ (states('sensor.ensuite_illuminance_beta') | float(9999)) < illuminance_threshold }}
+    action:
+      - action: light.turn_on
+        target: { entity_id: light.adaptive_ensuite_light_group }
+        data: { transition: 2 }
+      - action: rest_command.room_db_update_config
+        data:
+          room_id: "ensuite"
+          domain: "motion_lighting"
+          config_data: >-
+            {{ dict(room_config, **{
+              'last_triggered': now().isoformat(),
+              'trigger_count': (room_config.get('trigger_count', 0) | int) + 1
+            }) }}
+          schema_expected: 1
+      - wait_for_trigger:
+          - trigger: state
+            entity_id: binary_sensor.ensuite_motion_beta
+            to: "off"
+            for:
+              seconds: "{{ effective_timeout }}"
+        continue_on_timeout: false
+      - action: light.turn_off
+        target: { entity_id: light.adaptive_ensuite_light_group }
+        data: { transition: 10 }
+
+  - alias: "Motion Lights — Desk (SQL v1.5)"
+    id: motion_lights_desk_sql_v15
+    mode: restart
+    triggers:
+      - trigger: state
+        entity_id: binary_sensor.desk_motion_beta
+        to: "on"
+    variables:
+      _raw: "{{ state_attr('sensor.room_configs_motion_lighting_dict','payload') }}"
+      _cfgs: "{{ _raw if _raw is mapping else {} }}"
+      room_config: >-
+        {% if _cfgs and 'desk' in _cfgs %}
+          {% set cfg = _cfgs.desk %}
+          {% if cfg is mapping %}
+            {{ cfg }}
+          {% elif cfg is string %}
+            {{ cfg | from_json }}
+          {% else %}
+            {}
+          {% endif %}
+        {% else %}
+          {}
+        {% endif %}
+      timeout: "{{ room_config.get('timeout', 300) | int }}"
+      bypass: "{{ room_config.get('bypass', false) | bool }}"
+      presence_multiplier: "{{ room_config.get('presence_timeout_multiplier', 2.0) | float }}"
+      occupancy_entity: "binary_sensor.desk_occupancy_beta"
+      occupancy_on: >
+        {% set e = occupancy_entity %}
+        {% if e and states(e) in ['on','off','unknown','unavailable'] %}
+          {{ is_state(e, 'on') }}
+        {% else %}
+          {{ is_state('person.evert','home') }}
+        {% endif %}
+      effective_timeout: "{{ (timeout * presence_multiplier) | int if occupancy_on else timeout }}"
+      illuminance_threshold: "{{ room_config.get('illuminance_threshold', 20) | int }}"
+    conditions:
+      - condition: template
+        value_template: "{{ not bypass }}"
+      - condition: template
+        value_template: >
+          {{ (states('sensor.desk_illuminance_beta') | float(9999)) < illuminance_threshold }}
+    actions:
+      - action: light.turn_on
+        target: { entity_id: light.adaptive_desk_light_group }
+        data: { transition: 2 }
+      - action: rest_command.room_db_update_config
+        data:
+          room_id: "desk"
+          domain: "motion_lighting"
+          config_data: >-
+            {{ dict(room_config, **{
+              'last_triggered': now().isoformat(),
+              'trigger_count': (room_config.get('trigger_count', 0) | int) + 1
+            }) }}
+          schema_expected: 1
+      - wait_for_trigger:
+        - trigger: state
+          entity_id: binary_sensor.desk_motion_beta
+          to: "off"
+          for:
+            seconds: "{{ effective_timeout }}"
+        continue_on_timeout: false
+      - action: light.turn_off
+        target: { entity_id: light.adaptive_desk_light_group }
+        data: { transition: 10 }

@@ -1,12 +1,24 @@
 ---
 id: ADR-0002
-title: "Home Assistant Jinja Pattern Normalization"
-date: 2025-09-11
+title: Home Assistant Jinja Pattern Normalization
+slug: home-assistant-jinja-pattern-normalization
 status: Accepted
-tags: ["jinja", "patterns", "normalization", "templates", "automation", "adr", "error-handling", "datetime", "state", "comparison"]
 related: []
 supersedes: []
-last_updated: 2025-09-11
+last_updated: '2025-10-15'
+date: 2025-09-11
+decision: 'The following patterns should be used to normalize and gate Jinja logic:'
+tags:
+- jinja
+- patterns
+- normalization
+- templates
+- automation
+- adr
+- error-handling
+- datetime
+- state
+- comparison
 author: Evert Appels
 ---
 

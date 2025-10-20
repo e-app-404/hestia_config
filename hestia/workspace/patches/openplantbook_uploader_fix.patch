@@ -1,0 +1,16 @@
+# OpenPlantbook Uploader.py Bug Fix
+# Fixes UnboundLocalError for 'latest_data' variable
+# Reference: ADR-0020 Error Canonicalization
+
+--- custom_components/openplantbook/uploader.py.orig
++++ custom_components/openplantbook/uploader.py
+@@ -320,6 +320,9 @@
+     """
+     _LOGGER.debug("plant_data_upload called for config entry %s" % entry.entry_id)
+ 
++    # Initialize latest_data to prevent UnboundLocalError
++    latest_data = None
++
+     jts_doc = JSONTimeSeriesDocument()
+ 
+     # Fetch plant sensors via Plant-config-state

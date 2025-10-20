@@ -1,0 +1,395 @@
+extracted_config:
+  system:
+    platform: home_assistant
+    config_root: /config
+    domain_templates_path: /config/domain/templates/
+
+  hestia_framework:
+    config_file: /config/hestia/config/system/hestia.toml
+    tools_directory: /config/hestia/tools/
+    reports_directory: /config/hestia/reports/
+
+  template_files:
+    motion_logic:
+      path: /config/domain/templates/motion_logic.yaml
+      entity_count: 15
+      tier_levels: [α, β]
+      subsystems: [hermes]
+
+    occupancy_logic:
+      path: /config/domain/templates/occupancy_logic.yaml
+      entity_count: 14
+      tier_levels: [β, η]
+      subsystems: [hermes]
+
+    presence_logic:
+      path: /config/domain/templates/presence_logic.yaml
+      entity_count: 11
+      tier_levels: [γ, β]
+      subsystems: [perseus, hermes]
+
+    mqtt_native:
+      path: /config/domain/templates/mqtt_native.yaml
+      entity_count: 1
+      tier_levels: [α]
+      protocols: [mqtt, zigbee2mqtt]
+
+    desk_presence_inferred:
+      path: /config/domain/templates/desk_presence_inferred.yaml
+      entity_count: 3
+      tier_levels: [γ, δ]
+
+    ensuite_presence_inferred:
+      path: /config/domain/templates/ensuite_presence_inferred.yaml
+      entity_count: 1
+      tier_levels: [ε]
+
+    humidity_logic:
+      path: /config/domain/templates/humidity_logic.yaml
+      entity_count: 5
+      tier_levels: [η]
+      subsystems: [aether]
+
+    temperature_logic:
+      path: /config/domain/templates/temperature_logic.yaml
+      entity_count: 10
+      tier_levels: [β, η]
+      subsystems: [aether, hestia]
+
+    illuminance_logic:
+      path: /config/domain/templates/illuminance_logic.yaml
+      entity_count: 5
+      tier_levels: [β, η]
+      subsystems: [aether]
+
+    illuminance_decay:
+      path: /config/domain/templates/illuminance_decay.yaml
+      entity_count: 1
+      tier_levels: [δ]
+
+    time_logic:
+      path: /config/domain/templates/time_logic.yaml
+      entity_count: 5
+      tier_levels: [α, γ, β]
+      subsystems: [chronos]
+
+    tracking_logic:
+      path: /config/domain/templates/tracking_logic.yaml
+      entity_count: 12
+      tier_levels: [unspecified]
+
+  entity_domains:
+    valid_domains:
+      - binary_sensor
+      - sensor
+      - light
+      - switch
+      - automation
+      - script
+      - person
+      - input_boolean
+      - input_text
+      - input_number
+      - input_datetime
+      - device_tracker
+      - climate
+
+  entity_metadata_schema:
+    required_fields:
+      - unique_id
+      - state
+      - attributes
+
+    lineage_fields:
+      - upstream_sources  # Jinja JSON array
+      - downstream_consumers  # Jinja JSON array
+      - source_count  # Quoted string, entity IDs only
+      - last_updated  # ISO date YYYY-MM-DD
+
+    classification_fields:
+      - tier  # α, β, γ, δ, ε, η
+      - canonical_id
+      - subsystem
+      - module
+      - role
+      - type
+
+  areas_and_zones:
+    floors:
+      - sanctum
+      - upstairs
+      - downstairs
+
+    areas:
+      - bedroom
+      - desk
+      - ensuite
+      - wardrobe
+      - ottoman
+      - kitchen
+      - living_room
+      - hallway
+      - entrance
+      - home
+
+  subsystems:
+    hermes: presence and motion detection
+    perseus: zone tracking and presence inference
+    aether: climate and environmental sensors
+    hestia: aggregation and home-wide metrics
+    hypnos: sleep tracking
+    chronos: time and scheduling
+    soteria: security and connectivity
+
+  protocols:
+    - mqtt
+    - zigbee2mqtt
+    - matter
+    - tplink
+    - wifi
+    - bluetooth
+    - bluetooth_le
+    - gps
+```
+
+## Transient State
+
+```yaml
+transient_state:
+  workflow_status:
+    current_step: "STEP_3_COMPLETE"
+    next_step: "STEP_4_illuminance_logic"
+    steps_completed: 3
+    steps_remaining: 8
+
+  processing_queue:
+    - illuminance_logic.yaml
+    - illuminance_decay.yaml
+    - desk_presence_inferred.yaml
+    - ensuite_presence_inferred.yaml
+    - humidity_logic.yaml
+    - temperature_logic.yaml
+    - tracking_logic.yaml
+    - time_logic.yaml
+
+  corrections_applied:
+    motion_logic:
+      - entity: bedroom_motion_beta
+        change: downstream_consumers added sanctum_motion_beta
+        timestamp: "2025-10-16"
+
+      - entity: bedroom_wardrobe_motion_beta
+        change: naming corrected from wardrobe_motion_beta
+        timestamp: "2025-10-16"
+
+    occupancy_logic:
+      - entity: desk_occupancy_beta
+        change: source_count corrected from "1" to "2"
+        timestamp: "2025-10-16"
+
+      - entity: bed_occupancy_beta
+        change: upstream reference corrected to bedroom_ottoman_motion_proxy
+        timestamp: "2025-10-16"
+
+      - entity: zone_upstairs_occupancy_beta
+        change: upstream reference corrected to desk_occupancy_beta
+        timestamp: "2025-10-16"
+
+    mqtt_native:
+      - entity: ensuite_motion_real_time
+        change: MQTT topic removed from upstream_sources
+        timestamp: "2025-10-16"
+
+  validation_status:
+    files_validated: 3
+    entities_updated: 11
+    anomalies_detected: 5
+    anomalies_resolved: 5
+
+  session_metadata:
+    model: claude_sonnet_4
+    processing_mode: stepwise_lineage_correction
+    dry_run: false
+    backup_created: true
+```
+
+## Relationships
+
+```yaml
+relationships:
+  entity_dependencies:
+    binary_sensor.sanctum_motion_beta:
+      upstream:
+        - binary_sensor.sanctum_motion_alpha
+        - binary_sensor.bedroom_motion_beta
+        - binary_sensor.ensuite_motion_beta
+      downstream:
+        - binary_sensor.sanctum_motion_recent_beta
+        - binary_sensor.sanctum_occupancy_beta
+
+    binary_sensor.bedroom_occupancy_beta:
+      upstream:
+        - binary_sensor.bedroom_occupancy_alpha_occupancy
+        - binary_sensor.bedroom_wardrobe_occupancy_matter_alpha
+        - binary_sensor.desk_occupancy_beta
+        - binary_sensor.bedroom_motion_beta
+      downstream:
+        - binary_sensor.sanctum_occupancy_beta
+        - binary_sensor.zone_upstairs_occupancy_beta
+        - binary_sensor.merged_home_occupancy_eta
+        - binary_sensor.bedroom_presence_beta
+
+    binary_sensor.desk_occupancy_beta:
+      upstream:
+        - binary_sensor.desk_presence_inferred
+        - binary_sensor.desk_motion_proxy
+      downstream:
+        - binary_sensor.bedroom_occupancy_beta
+        - binary_sensor.zone_upstairs_occupancy_beta
+        - binary_sensor.merged_home_occupancy_eta
+        - binary_sensor.bedroom_presence_beta
+        - binary_sensor.desk_presence_beta
+
+  cross_file_dependencies:
+    motion_to_occupancy:
+      - binary_sensor.bedroom_motion_beta → binary_sensor.bedroom_occupancy_beta
+      - binary_sensor.desk_motion_proxy → binary_sensor.desk_occupancy_beta
+      - binary_sensor.ensuite_motion_beta → binary_sensor.ensuite_occupancy_beta
+
+    occupancy_to_presence:
+      - binary_sensor.bedroom_occupancy_beta → binary_sensor.bedroom_presence_beta
+      - binary_sensor.desk_occupancy_beta → binary_sensor.desk_presence_beta
+
+    mqtt_to_motion:
+      - binary_sensor.ensuite_motion_real_time → binary_sensor.ensuite_motion_beta
+
+  subsystem_relationships:
+    hermes_chain:
+      - motion_logic (α/β sensors)
+      - occupancy_logic (β sensors)
+      - presence_logic (β sensors)
+
+    aether_chain:
+      - temperature sensors (α level)
+      - humidity sensors (α level)
+      - illuminance sensors (α level)
+      - merged metrics (η level)
+
+  macro_dependencies:
+    template.library.jinja:
+      imported_by:
+        - motion_logic.yaml (preference_select, get_active_source)
+        - occupancy_logic.yaml (preference_select, get_active_source)
+      functions_used:
+        - preference_select
+        - get_active_source
+```
+
+## Suggested Commands
+
+```yaml
+suggested_commands:
+  - name: validate_yaml_syntax
+    command: |
+      yamllint /config/domain/templates/*.yaml
+    purpose: Validate YAML syntax after lineage corrections
+    related_topics: [system, diagnostics]
+
+  - name: check_ha_config
+    command: |
+      ha core check
+    purpose: Verify Home Assistant configuration validity
+    related_topics: [system, diagnostics]
+
+  - name: reload_template_entities
+    command: |
+      ha core reload --service template
+    purpose: Reload template entities without full restart
+    related_topics: [system, automation]
+
+  - name: backup_templates
+    command: |
+      tar -czf /config/backups/templates_$(date +%Y%m%d_%H%M%S).tar.gz /config/domain/templates/
+    purpose: Create timestamped backup of template directory
+    related_topics: [storage, system]
+
+  - name: find_entity_references
+    command: |
+      grep -r "binary_sensor.desk_occupancy_beta" /config/domain/templates/
+    purpose: Find all references to specific entity across templates
+    related_topics: [diagnostics, cli]
+
+  - name: count_entities_per_file
+    command: |
+      for file in /config/domain/templates/*.yaml; do
+        echo "$file: $(grep -c 'unique_id:' $file)";
+      done
+    purpose: Count entities defined in each template file
+    related_topics: [diagnostics, cli]
+
+  - name: verify_jinja_syntax
+    command: |
+      python3 -c "from jinja2 import Template; import sys; Template(sys.stdin.read())" < /config/domain/templates/motion_logic.yaml
+    purpose: Validate Jinja2 template syntax
+    related_topics: [diagnostics, system]
+
+  - name: check_duplicate_entity_ids
+    command: |
+      grep -h "unique_id:" /config/domain/templates/*.yaml | sort | uniq -d
+    purpose: Detect duplicate entity IDs across templates
+    related_topics: [diagnostics, system]
+```
+
+## Notes
+
+```yaml
+notes:
+  architecture_decisions:
+    - "Lineage metadata uses Jinja JSON format: {{ [...] | tojson }}"
+    - "source_count excludes macro files, counts only entity IDs"
+    - "last_updated field only modified when lineage keys change"
+    - "Per-entity updates only; no file-wide comment additions"
+    - "Bidirectional consistency enforced: A→B requires B→A"
+
+  naming_conventions:
+    - "Tier suffixes: _alpha, _beta, _gamma, _delta, _epsilon, _eta"
+    - "Recent variants: _recent suffix for delay_off entities"
+    - "Proxy entities: _proxy suffix for derived motion signals"
+    - "Canonical format: {area}_{type}_{tier}"
+
+  workflow_patterns:
+    - "Stepwise processing: one file per instruction"
+    - "Pre-flight fixes before each step"
+    - "Unified diff + JSONL findings log per step"
+    - "Cross-file reference parsing but deferred updates"
+
+  quality_gates:
+    - "All entities get per-entity updates"
+    - "Arrays are Jinja JSON + deduplicated"
+    - "source_count matches entity-ID count"
+    - "last_updated only when changed"
+    - "No self-references in downstream_consumers"
+    - "MQTT topics filtered out"
+
+  anomalies_resolved:
+    - "Wardrobe naming: wardrobe_motion_beta → bedroom_wardrobe_motion_beta"
+    - "Ottoman motion: bedroom_ottoman_motion_beta → bedroom_ottoman_motion_proxy"
+    - "Desk reference: desk_presence_inferred → desk_occupancy_beta"
+    - "MQTT topic: zigbee2mqtt/ensuite_motion_alpha removed from upstream_sources"
+    - "Source count mismatches: corrected for desk_occupancy_beta, bedroom_wardrobe_occupancy_beta, bed_occupancy_beta"
+
+  pending_files:
+    - "illuminance_logic.yaml - Step 4"
+    - "illuminance_decay.yaml - Step 5"
+    - "desk_presence_inferred.yaml - Step 6"
+    - "ensuite_presence_inferred.yaml - Step 7"
+    - "humidity_logic.yaml - Step 8"
+    - "temperature_logic.yaml - Step 9"
+    - "tracking_logic.yaml - Step 10"
+    - "time_logic.yaml - Step 11"
+
+  compliance:
+    - "ADR-0024: Using /config canonical path"
+    - "ADR-0018: Workspace lifecycle with proper metadata"
+    - "Tier system: α (alpha/raw) → β (beta/standardized) → γ (gamma/inference) → δ (delta/decay) → ε (epsilon/composite) → η (eta/aggregation)"
+

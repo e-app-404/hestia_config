@@ -1,0 +1,161 @@
+# ═══════════════════════════════════════════════════════════════
+# ▶ LOGIC SENSOR: MacBook Display Presence ◀
+# Display/casting context sensors for automations & ambient logic
+# Loader: !include_dir_merge_list from domain/templates/
+# Tier: δ  •  Domain: logic  •  Created: 2025-07-25
+# ═══════════════════════════════════════════════════════════════
+- binary_sensor:
+    - name: "MacBook Retina Display Active"
+      unique_id: "macbook_retina_display_active"
+      icon: mdi:laptop
+      state: >
+        {% set app_active = is_state('binary_sensor.macbook_active', 'on') %}
+        {% if not app_active %}
+          {{ none }}
+        {% else %}
+          {% set displays = state_attr('sensor.macbook_displays', 'Display Names') or [] %}
+          {{ 'Built-in Retina Display' in displays }}
+        {% endif %}
+      attributes:
+        display: "Built-in Retina Display"
+        ha_app_active: "{{ is_state('binary_sensor.macbook_active', 'on') }}"
+        display_data_reliable: "{{ is_state('binary_sensor.macbook_active', 'on') }}"
+        rationale: "True if MacBook built-in display is active. Returns unknown when HA app is closed (display data may be stale)."
+        last_updated: "{{ now().isoformat() }}"
+        tier: "γ"
+        area_id: "desk"
+        floor_id: "sanctum"
+        upstream_sources: >-
+          {{ ["sensor.macbook_displays", "binary_sensor.macbook_active"] | tojson }}
+        source_count: "2"
+
+    - name: "MacBook HP32 Monitor Active"
+      unique_id: "macbook_hp32_monitor_active"
+      icon: mdi:monitor
+      state: >
+        {% set app_active = is_state('binary_sensor.macbook_active', 'on') %}
+        {% if not app_active %}
+          {{ none }}
+        {% else %}
+          {% set displays = state_attr('sensor.macbook_displays', 'Display Names') or [] %}
+          {{ 'HP 32 Display' in displays }}
+        {% endif %}
+      attributes:
+        display: "HP 32 Display"
+        ha_app_active: "{{ is_state('binary_sensor.macbook_active', 'on') }}"
+        display_data_reliable: "{{ is_state('binary_sensor.macbook_active', 'on') }}"
+        rationale: "True if HP 32 monitor is active. Returns unknown when HA app is closed (display data may be stale)."
+        last_updated: "{{ now().isoformat() }}"
+        tier: "γ"
+        area_id: "desk"
+        floor_id: "sanctum"
+        upstream_sources: >-
+          {{ ["sensor.macbook_displays", "binary_sensor.macbook_active"] | tojson }}
+        source_count: "2"
+
+    - name: "MacBook Bedroom TV (AirPlay) Active"
+      unique_id: "macbook_bedroom_tv_airplay_active"
+      icon: mdi:cast-variant
+      state: >
+        {% set app_active = is_state('binary_sensor.macbook_active', 'on') %}
+        {% if not app_active %}
+          {{ none }}
+        {% else %}
+          {% set displays = state_attr('sensor.macbook_displays', 'Display Names') or [] %}
+          {{ 'Bedroom TV (AirPlay)' in displays }}
+        {% endif %}
+      attributes:
+        display: "Bedroom TV (AirPlay)"
+        ha_app_active: "{{ is_state('binary_sensor.macbook_active', 'on') }}"
+        display_data_reliable: "{{ is_state('binary_sensor.macbook_active', 'on') }}"
+        rationale: "True if Bedroom TV is connected via AirPlay. Returns unknown when HA app is closed (display data may be stale)."
+        last_updated: "{{ now().isoformat() }}"
+        tier: "γ"
+        area_id: "bedroom"
+        floor_id: "sanctum"
+        upstream_sources: >-
+          {{ ["sensor.macbook_displays", "binary_sensor.macbook_active"] | tojson }}
+        source_count: "2"
+
+    - name: "MacBook Apple TV Bedroom TV (AirPlay) Active"
+      unique_id: "macbook_appletv_bedroom_airplay_active"
+      icon: mdi:apple
+      state: >
+        {% set app_active = is_state('binary_sensor.macbook_active', 'on') %}
+        {% if not app_active %}
+          {{ none }}
+        {% else %}
+          {% set displays = state_attr('sensor.macbook_displays', 'Display Names') or [] %}
+          {{ 'Apple MaTuVu (AirPlay)' in displays }}
+        {% endif %}
+      attributes:
+        display: "Apple MaTuVu (AirPlay)"
+        ha_app_active: "{{ is_state('binary_sensor.macbook_active', 'on') }}"
+        display_data_reliable: "{{ is_state('binary_sensor.macbook_active', 'on') }}"
+        rationale: "True if Apple TV in Bedroom is connected via AirPlay. Returns unknown when HA app is closed (display data may be stale)."
+        last_updated: "{{ now().isoformat() }}"
+        tier: "γ"
+        area_id: "bedroom"
+        floor_id: "sanctum"
+        upstream_sources: >-
+          {{ ["sensor.macbook_displays", "binary_sensor.macbook_active"] | tojson }}
+        source_count: "2"
+
+    - name: "Desk MacBook Recent Connectivity"
+      unique_id: "desk_macbook_recent_connectivity"
+      device_class: connectivity
+      icon: mdi:desk
+      delay_off:
+        seconds: 240
+      state: >-
+        {% set ct = states('sensor.macbook_connection_type') | lower %}
+        {% set ssid = states('sensor.macbook_ssid') %}
+        {% set home_ssids = ['Router? I barely know her!', 'Aethernet_IoT', 'Archer_IoT'] %}
+        {% set is_wifi = ct in ['wifi','wi-fi','wi_fi','wlan'] %}
+        {% set is_eth  = ct == 'ethernet' %}
+        {{ is_eth or (is_wifi and ssid in home_ssids) }}
+      attributes:
+        connection_type_raw: "{{ states('sensor.macbook_connection_type') }}"
+        ssid: "{{ states('sensor.macbook_ssid') }}"
+        home_ssids: "{{ ['Router? I barely know her!', 'Aethernet_IoT', 'Archer_IoT'] | tojson }}"
+        delay_duration: "240s"
+        rationale: >-
+          True if connection is Ethernet OR Wi-Fi on a known home SSID. When it turns off, it decays after 120s (delay_off) to smooth brief link changes.
+        last_updated: "{{ now().isoformat() }}"
+        upstream_sources: >-
+          {{ ["sensor.macbook_connection_type", "sensor.macbook_ssid"] | tojson }}
+        source_count: "2"
+        role: "inference"
+        type: "proxy"
+        subsystem: "soteria"
+        module: "presence"
+        tier: "γ"
+        canonical_id: "desk_macbook_recent_connectivity_γ"
+        fusion_strategy: >
+          {{ ['connection_type_raw','ssid'] | tojson }}
+        area_id: "desk"
+        floor_id: "sanctum"
+
+    - name: "Glances (MacBook) API Healthy"
+      unique_id: glances_macbook_health_ok
+      device_class: connectivity
+      state: >
+        {{ states('sensor.macbook_cpu_percent') | float(0) > 0 }}
+      attributes:
+        upstream_sources: >
+          {{ ['sensor.macbook_cpu_percent'] | tojson}}
+        tier: "μ"
+        canonical_id: "glances_macbook_health_ok_μ"
+        file: "/domain/templates/system_glances_macbook.yaml"
+        date_created: "2025-07-30"
+        last_updated: "2025-08-02"
+        is_multi_source: "false"
+        source_count: "1"
+        data_quality: "diagnostic"
+        subsystem: "hades"
+        module: "system_health_monitor"
+        role: "diagnostic_flag"
+        type: "connectivity"
+        diagnostic_type: "api_health"
+        target_tier: "α"
+        description: "Diagnostic flag indicating Glances MacBook API is up, inferred from CPU sensor responsiveness"

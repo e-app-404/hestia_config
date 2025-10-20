@@ -1,19 +1,35 @@
 ---
 id: ADR-0014
-title: "OOM Mitigation & Recorder Policy"
-version: v2 (canonical-path + guardrails)
-date: 2025-09-18
+title: OOM Mitigation & Recorder Policy
+slug: oom-mitigation-recorder-policy
 status: Accepted
-tags: ["performance", "memory", "oom", "recorder", "database", "policy", "automation", "guardrails", "ci", "hestia", "configuration", "sql"]
 related:
-  - ADR-0010
-  - ADR-0012
-last_updated: 2025-09-25
+- ADR-0010
+- ADR-0012
+supersedes:
+- ADR-0014.v1
+last_updated: '2025-10-15'
+date: 2025-09-18
+decision: Adopt a **single, canonical recorder configuration** with short retention
+  and strict excludes, enforce **OOM sentinel**, and implement **repo-level guardrails**
+  to make the policy machine-checkable.
+version: v2 (canonical-path + guardrails)
+tags:
+- performance
+- memory
+- oom
+- recorder
+- database
+- policy
+- automation
+- guardrails
+- ci
+- hestia
+- configuration
+- sql
 references:
-  - .github/workflows/ha-governance.yml
+- .github/workflows/ha-governance.yml
 author: Strategos (governance)
-supersedes: []
-
 ---
 
 # ADR-0014: Recorder Policy, OOM Guard & Repo Guardrails (v2)
@@ -64,7 +80,7 @@ Adopt a **single, canonical recorder configuration** with short retention and st
 
 ## Operational Policy (Effective YAML)
 
-*This YAML **lives only** at `packages/integrations/recorder.yaml`.*
+_This YAML **lives only** at `packages/integrations/recorder.yaml`._
 
 ```yaml
 recorder:
@@ -85,7 +101,7 @@ recorder:
       - updater
       - zone
     event_types:
-      - call_service         # keep 'automation_triggered' (DO NOT exclude)
+      - call_service # keep 'automation_triggered' (DO NOT exclude)
     entity_globs:
       - sensor.sun*
       - sensor.time*
@@ -111,8 +127,11 @@ recorder:
       - sensor.disabled_device_entities
       - group.unavailable_entities
       - group.smartthings_entities
-      - var.plex_tv_index
-      - var.plex_movie_index
+      - input_text.plex_tv_index
+      - input_text.plex_movie_index
+      - input_number.plex_tv_episode_count
+      - input_number.plex_movie_count
+      # Migrated from HACS Variable (var.*) to native HA helpers 2025-10-10
   include:
     domains:
       - binary_sensor

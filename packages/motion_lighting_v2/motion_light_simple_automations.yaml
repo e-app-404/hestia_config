@@ -1,0 +1,22 @@
+# ══════════════════════════════════════════════════════
+# ⟫⟫ Blueprint-based Simple Motion Lighting Automations
+automation:
+  - alias: "Motion Lights — Wardrobe (Blueprint v1.0)"
+    id: motion_lights_wardrobe_blueprint_v10
+    use_blueprint:
+      path: homeassistant/motion_light.yaml
+      input:
+        motion_entity: binary_sensor.bedroom_wardrobe_motion_beta
+        light_target:
+          entity_id: light.group_wardrobe_light
+        no_motion_wait: 120
+
+  - alias: "Motion Lights — Ottoman (Blueprint v1.0)"
+    id: motion_lights_ottoman_blueprint_v10
+    use_blueprint:
+      path: homeassistant/motion_light.yaml
+      input:
+        motion_entity: binary_sensor.bedroom_ottoman_motion_proxy
+        light_target:
+          entity_id: light.group_ottoman_light
+        no_motion_wait: 45

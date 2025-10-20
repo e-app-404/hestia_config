@@ -1,15 +1,31 @@
 ---
 id: ADR-0018
-title: "Workspace hygiene, lifecycle & quarantine policy"
+title: Workspace hygiene, lifecycle & quarantine policy
+slug: workspace-hygiene-lifecycle-quarantine-policy
 status: Proposed (Ready to adopt)
-owners: [hestia-core]
-references:
-  - ".github/workflows/adr-0018-include-scan.yml"
-author: "Evert Appels"
-related: ["ADR-0008", "ADR-0009", "ADR-0012"]
+related:
+- ADR-0008
+- ADR-0009
+- ADR-0012
+supersedes: []
+last_updated: '2025-10-15'
 date: 2025-09-26
-last_updated: 2025-09-26
-tags: ["architecture", "workspace", "lifecycle", "quarantine", "trash", "archive", "bundles", "guardrails", "automation"]
+decision: Architectural decision documented in this ADR.
+owners:
+- hestia-core
+references:
+- .github/workflows/adr-0018-include-scan.yml
+author: Evert Appels
+tags:
+- architecture
+- workspace
+- lifecycle
+- quarantine
+- trash
+- archive
+- bundles
+- guardrails
+- automation
 ---
 
 # 1) Purpose

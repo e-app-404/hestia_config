@@ -1,0 +1,14 @@
+title: Dashboard View Title
+path: dashboard-view-topic
+type: sections
+icon: {mdi:icon}
+max_columns: 4
+header:
+  card:
+    type: markdown
+    text_only: true
+    content: |-
+      # {{ topic }} dashboard view
+      Add a brief intro text here, template variables are supported.
+
+sections: []

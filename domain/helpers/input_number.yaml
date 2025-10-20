@@ -19,3 +19,21 @@ desk_presence_ethernet_decay_delta:
   step: 0.1
   mode: slider
   icon: mdi:lan-connect
+
+plex_tv_episode_count:
+  name: "Plex TV Episode Count"
+  min: 0
+  max: 50000
+  step: 1
+  mode: box
+  unit_of_measurement: "episodes"
+  icon: mdi:television-box
+
+plex_movie_count:
+  name: "Plex Movie Count"
+  min: 0
+  max: 10000
+  step: 1
+  mode: box
+  unit_of_measurement: "movies"
+  icon: mdi:movie

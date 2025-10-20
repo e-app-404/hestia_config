@@ -1,0 +1,24 @@
+planned_change: "Introduce meta-capture processing pipeline (orchestrator + components) with DRY-RUN and governed merge."
+deliverable:
+  - "CLI tool: /config/hestia/tools/meta_capture/meta_capture.py (periodic + ad-hoc)"
+  - "Schemas: intake v1 + APU v1"
+  - "Reporter outputs: human summary + JSONL _index"
+  - "hestia.toml section: [automation.meta_capture] with routing"
+action_needed:
+  - "Decide canonical repo root (/config/hestia/config)"
+  - "Approve validator secret rules + pin policy"
+  - "Approve traffic-light thresholds"
+rationale: "Deterministic, safe ingestion of conversational captures into canonical config with audit and rollback."
+status: "proposed"
+RACI_matrix:
+  responsible: ["Workspace Eng"]
+  accountable: ["Ops Lead"]
+  consulted: ["Security", "HA Maintainers"]
+  informed: ["Stakeholders"]
+acceptance_criteria:
+  - "All MVP gates above pass on provided samples"
+  - "Zero red on allowed paths during a controlled non-dry-run against a sandbox repo"
+risk_assessment:
+  level: "low-medium"
+  notes:
+    - "Main risks: schema drift, router misconfiguration, secret false positives"

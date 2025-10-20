@@ -29,15 +29,15 @@ meta:
       - ...
     output_contract:
       format: string (e.g., "yaml + markdown")
-      required_fields:                  # Contractual output anchors
+      required_fields:
         - dir_layout_assertion
         - file_traceability_map
         - ...
-      fallback_behavior: string         # If incomplete, emit fallback behavior
+      fallback_behavior: string
     governance_constraint:
       - string (e.g., "Must tag all merges with tier origin and rationale")
       - ...
-    fallback_behavior:                 # On failures or ambiguity
+    fallback_behavior:
       on_missing_trace: string
       on_schema_mismatch: string
       on_ambiguous_role: string

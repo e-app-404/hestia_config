@@ -1,0 +1,10 @@
+# ═══════════════════════════════════════════════════════════════════════════════
+# ⟫⟫ HESTIA CUSTOMIZE • Loads default entity customizations ◀
+# ⟫⟫ Loader: .config.yaml    •    customize: !include domain/core/customize.yaml
+# ⟫⟫ Domain: core • Subsystem: hestia •  Updated: 2025-10-19
+# ═══════════════════════════════════════════════════════════════════════════════
+
+sensor.bedroom_monstera_soil_alpha_soil_moisture:
+  device_class: moisture
+  unit_of_measurement: "%"
+  icon: mdi:water-percent

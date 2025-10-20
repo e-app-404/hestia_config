@@ -1,0 +1,11 @@
+blueprint_matrix:
+- blueprint_guide: "hestia/library/docs/reference/blueprint_usage_guide.md"
+- blueprint_matrix: "hestia/library/blueprints/blueprint-matrix.yaml"
+- link_entities: "alexdelprete/ha-blueprint-linked-entities.yaml"
+- ha-blueprint-linked-lights: "jnrcorp/ha-blueprint-linked-lights.yaml"
+- auto_off_manual_light: "Blackshome/manual-light.yaml"
+- motion_lights: "homeassistant/motion_light.yaml"
+- motion_light_triggered: "smenzer/motion-triggered-lights-with-timer-blueprint.yaml"
+- add_on: "Blackshome/sensor-light-add-on.yaml"
+- sensor_light_pattern: "giannisigalotti/motion-activated-light.yaml"
+- core_executor: "Blackshome/sensor-light.yaml"

@@ -1,0 +1,290 @@
+extracted_config:
+  repo_integration:
+    storage_repo_base: "/config/hestia/core/config"
+    default_subdir: "prompts"
+    filename: "meta_capture.promptset.v1.yaml"
+    schema_version: "1.0"
+  home_assistant:
+    config_dir: "/config"
+    core_ui_port: 8123
+    packages:
+      - path: "/config/packages/package_room_database.yaml"
+        components:
+          rest_command:
+            room_db_update_config:
+              url: "http://a0d7b954-appdaemon:5050/api/appdaemon/room_db/update_config"
+              method: "POST"
+              content_type: "application/json"
+              payload_schema:
+                room_id: "<slug>"
+                domain: "motion_lighting|vacuum_control|shared"
+                config_data: "<object>"
+                schema_expected: 1
+            room_db_health:
+              url: "http://a0d7b954-appdaemon:5050/api/appdaemon/room_db/health"
+              method: "GET"
+          sql_sensors:
+            motion_lighting:
+              entity_id: "sensor.room_configs_motion_lighting"
+              db_url: "sqlite:////config/room_database.db"
+              table: "room_configs"
+              where: "config_domain = 'motion_lighting'"
+              payload_attr: "payload"
+            vacuum_control:
+              entity_id: "sensor.room_configs_vacuum_control"
+              db_url: "sqlite:////config/room_database.db"
+              table: "room_configs"
+              where: "config_domain = 'vacuum_control'"
+              payload_attr: "payload"
+            rooms_needing_cleaning:
+              entity_id: "sensor.rooms_needing_cleaning"
+              db_url: "sqlite:////config/room_database.db"
+              table: "room_configs"
+              where: "json_extract(config_data, '$.needs_cleaning') = 1 AND config_domain='vacuum_control'"
+          shell_command:
+            update_room_config:
+              sqlite_file: "/config/room_database.db"
+              tables_created:
+                - "write_guard(domain TEXT PRIMARY KEY, last_ts INTEGER)"
+                - "schema_version(version INTEGER)"
+                - "room_configs(room_id TEXT, config_domain TEXT, config_data TEXT, updated_at TEXT, PRIMARY KEY(room_id, config_domain))"
+              guards:
+                - "SCHEMA_VERSION_MISMATCH"
+                - "DOMAIN_NOT_ALLOWED"
+                - "BAD_ROOM_ID"
+                - "CONFIG_TOO_LARGE"
+                - "WRITE_RATE_LIMIT"
+            update_motion_timeout:
+              operation: "json_set(config_data,'$.timeout',<int>) WHERE (room_id,domain)=(<room_id>,'motion_lighting')"
+            mark_room_cleaned:
+              operation: "json_set(config_data,'$.last_cleaned',now(),'$.needs_cleaning',0) WHERE (room_id,domain)=(<room_id>,'vacuum_control')"
+          recorder:
+            excluded_entities:
+              - "sensor.room_configs_*"
+              - "sensor.rooms_needing_cleaning"
+    domain_templates_dir: "/config/domain/templates/"
+    domain_templates_files_observed:
+      - "motion_logic.yaml"
+      - "occupancy_logic.yaml"
+      - "presence_logic.yaml"
+      - "desk_presence_inferred.yaml"
+      - "ensuite_presence_inferred.yaml"
+      - "illuminance_logic.yaml"
+      - "mqtt_native.yaml"
+    automations_motion_sql_v15:
+      rooms:
+        - "bedroom"
+        - "upstairs"
+        - "downstairs"
+        - "kitchen"
+        - "living_room"
+        - "ensuite"
+      shared_variables:
+        sql_source_attr: "sensor.room_configs_motion_lighting.payload"
+        defaults:
+          timeout: 120
+          bypass: false
+          presence_timeout_multiplier: 1.0
+          illuminance_threshold: 10
+      light_groups:
+        bedroom: "light.adaptive_bedroom_light_group"
+        upstairs: "light.adaptive_upstairs_light_group"
+        downstairs: "light.adaptive_downstairs_light_group"
+        kitchen: "light.adaptive_kitchen_light_group"
+        living_room: "light.adaptive_living_room_light_group"
+        ensuite: "light.adaptive_ensuite_light_group"
+    adaptive_lighting:
+      switches:
+        - "switch.adaptive_lighting_bedroom"
+        - "switch.adaptive_lighting_desk"
+        - "switch.adaptive_lighting_ensuite"
+        - "switch.adaptive_lighting_kitchen"
+        - "switch.adaptive_lighting_hallway_downstairs"
+        - "switch.adaptive_lighting_hallway_upstairs"
+  appdaemon_addon:
+    supervisor_hostname: "a0d7b954-appdaemon"
+    http_port: 5050
+    apps_config_path: "/addon_configs/a0d7b954_appdaemon/apps/apps.yaml"
+    apps_yaml:
+      db_path: "/config/room_database.db"
+    app_room_db_updater:
+      endpoints:
+        - "GET /api/appdaemon/room_db/health"
+        - "POST /api/appdaemon/room_db/update_config"
+      allowed_domains:
+        - "motion_lighting"
+        - "vacuum_control"
+        - "shared"
+      schema_expected_default: 1
+  database_sqlite:
+    file: "/config/room_database.db"
+    tables:
+      - "schema_version(version INTEGER)"
+      - "write_guard(domain TEXT PRIMARY KEY, last_ts INTEGER)"
+      - "room_configs(room_id TEXT, config_domain TEXT, config_data TEXT, updated_at TEXT, PRIMARY KEY(room_id, config_domain))"
+    primary_keys:
+      room_configs: ["room_id", "config_domain"]
+  robot_vacuum:
+    script_entity: "script.clean_room_with_sql_tracking"
+    sql_source_attr: "sensor.room_configs_vacuum_control.payload"
+    mqtt:
+      base_topic_entity: "input_text.valetudo_base_topic"
+      expected_topic_example: "valetudo/robot/MapSegmentationCapability/action/start_segment_action"
+  lineage_governance:
+    bidirectional_expected: true
+    arrays_to_maintain:
+      - "attributes.upstream_sources"
+      - "attributes.downstream_consumers"
+    counts_to_enforce:
+      - "attributes.source_count == len(entity_ids_in_upstream_sources)"
+
+transient_state:
+  recent_failures:
+    - when: "2025-10-11T19:09:07Z"
+      action: "service: rest_command.room_db_update_config (empty payload)"
+      result:
+        status: 404
+        body: "404: Not Found"
+      notes: "AppDaemon endpoint reachable host-wise, but handler rejected empty body or path incorrect in environment."
+    - when: "2025-10-11T19:10:xxZ"
+      action: "service: rest_command.room_db_update_config (with room/domain/config_data in same call)"
+      result:
+        error: "extra keys not allowed @ data['sequence'][0]['config_data'|'domain'|'room_id']"
+      root_cause: "Service call likely embedded inside a script/automation under `sequence:` with wrong nesting. Developer Tools → Services expects flat `data:` keys at top level."
+  db_alignment_check:
+    observation: "Developer Tools Template did not reflect expected 'timeout' test value."
+    implication: "HA SQL sensor and AppDaemon writer may not be reading/writing the same file or schema version check is failing and preventing writes."
+  lineage_refactors_applied:
+    - change: "binary_sensor.wardrobe_motion_beta → binary_sensor.bedroom_wardrobe_motion_beta"
+      files: ["motion_logic.yaml"]
+      status: "applied"
+    - change: "bedroom_ottoman_motion_beta → bedroom_ottoman_motion_proxy"
+      files: ["occupancy_logic.yaml (state & upstream_sources)"]
+      status: "applied"
+  health:
+    appdaemon_http: "unknown (needs /api/appdaemon/room_db/health test)"
+    sqlite_access: "unknown (needs sqlite3 test)"
+    sql_sensors_state:
+      - "sensor.room_configs_motion_lighting"
+      - "sensor.room_configs_vacuum_control"
+      - "sensor.rooms_needing_cleaning"
+    adaptive_lighting_switches_enabled: "unknown (UI toggle)"
+  pending_alignment_items:
+    - "Ensure /config/www/area_mapping.yaml contains all room_id slugs (bedroom, upstairs, downstairs, kitchen, living_room, ensuite)"
+    - "Confirm schema_version table exists and equals 1"
+
+relationships:
+  data_flow:
+    - from: "Developer Tools → Services (HA)"
+      to: "rest_command.room_db_update_config"
+      via: "http://a0d7b954-appdaemon:5050/api/appdaemon/room_db/update_config"
+    - from: "AppDaemon room_db_updater"
+      to: "SQLite /config/room_database.db"
+      guardrails:
+        - "write_guard rate limit ≥2s per domain"
+        - "schema_version == 1"
+    - from: "SQLite /config/room_database.db"
+      to: "sensor.room_configs_motion_lighting / sensor.room_configs_vacuum_control (SQL sensors)"
+    - from: "sensor.room_configs_motion_lighting.payload"
+      to: "motion automations (SQL v1.5) variables.room_config"
+    - from: "motion automations"
+      to: "light.adaptive_*_light_group"
+    - from: "sensor.room_configs_vacuum_control.payload"
+      to: "script.clean_room_with_sql_tracking → MQTT segment action"
+  entity_groups:
+    adaptive_groups:
+      bedroom: "light.adaptive_bedroom_light_group"
+      upstairs: "light.adaptive_upstairs_light_group"
+      downstairs: "light.adaptive_downstairs_light_group"
+      kitchen: "light.adaptive_kitchen_light_group"
+      living_room: "light.adaptive_living_room_light_group"
+      ensuite: "light.adaptive_ensuite_light_group"
+  lineage_constraints:
+    - "If A lists B in upstream_sources, B should list A in downstream_consumers."
+    - "source_count equals number of entity IDs (exclude macro filenames)."
+  containers_and_hosts:
+    - container: "a0d7b954-appdaemon"
+      service: "AppDaemon HTTP"
+      port: 5050
+      reachable_from: "Home Assistant container network"
+
+suggested_commands:
+  # 1) AppDaemon API health check (HA → AppDaemon)
+  - name: "REST health"
+    type: "service_call"
+    service: "rest_command.room_db_health"
+    data: {}
+    expect: 'HTTP 200 with JSON {"status":"healthy"}'
+  # 2) Write a known config row (correct flat data structure from Developer Tools → Services)
+  - name: "Seed bedroom motion config"
+    type: "service_call"
+    service: "rest_command.room_db_update_config"
+    data:
+      room_id: "bedroom"
+      domain: "motion_lighting"
+      config_data:
+        timeout: 240
+        bypass: false
+        illuminance_threshold: 10
+        presence_timeout_multiplier: 3.0
+      schema_expected: 1
+    expect: 'HTTP 200/OK body {"status":"ok",...} and SQL sensor shows timeout: 240'
+  # 3) Verify SQL sensor shows seed (Templates)
+  - name: "Template echo"
+    type: "template"
+    jinja: "{{ state_attr('sensor.room_configs_motion_lighting','payload') }}"
+    expect_contains: "bedroom"
+  # 4) sqlite3 direct check (inside HA container host)
+  - name: "SQLite sanity"
+    type: "shell"
+    cmd: >
+      sqlite3 /config/room_database.db "
+        .headers on;
+        SELECT room_id, config_domain, substr(config_data,1,120) AS snippet, updated_at
+        FROM room_configs
+        ORDER BY updated_at DESC LIMIT 5;"
+  # 5) Enforce schema version = 1 (if missing)
+  - name: "Ensure schema_version"
+    type: "shell"
+    cmd: >
+      sqlite3 /config/room_database.db "
+        CREATE TABLE IF NOT EXISTS schema_version(version INTEGER);
+        INSERT OR REPLACE INTO schema_version(version) VALUES(1);"
+  # 6) Validate area mapping contains room_ids
+  - name: "Check area_mapping"
+    type: "shell"
+    cmd: "grep -E '^(bedroom|upstairs|downstairs|kitchen|living_room|ensuite):' /config/www/area_mapping.yaml"
+  # 7) Vacuum spot test (after vacuum_control row exists with segment_id)
+  - name: "Vacuum clean kitchen"
+    type: "service_call"
+    service: "script.clean_room_with_sql_tracking"
+    data:
+      room: "kitchen"
+    expect: "MQTT publish to start_segment_action with kitchen segment_id"
+  # 8) Motion lighting: extend timeout for bedroom using shell fallback (rate-limited)
+  - name: "Extend bedroom timeout via shell"
+    type: "service_call"
+    service: "shell_command.update_motion_timeout"
+    data:
+      room_id: "bedroom"
+      timeout: 240
+      schema_expected: 1
+  # 9) Presence-aware timeout multiplier (write via REST)
+  - name: "Set presence multiplier"
+    type: "service_call"
+    service: "rest_command.room_db_update_config"
+    data:
+      room_id: "bedroom"
+      domain: "motion_lighting"
+      config_data:
+        presence_timeout_multiplier: 3.0
+      schema_expected: 1
+
+notes:
+  - "The 404 error occurred when calling the REST endpoint with an empty payload; always provide required keys."
+  - "The 'extra keys not allowed ... sequence[0]' error indicates the call was made *inside a script's sequence block* with wrong nesting; use Developer Tools → Services and pass keys at top-level `data:`."
+  - "DB alignment: both AppDaemon and SQL sensors are configured to /config/room_database.db; if values still diverge, confirm schema_version=1 and that AppDaemon container can write to the mapped /config volume."
+  - "Ensure /config/www/area_mapping.yaml includes all room_id slugs to satisfy shell_command validation."
+  - "Lineage cleanups applied: wardrobe & ottoman sensor names, plus added downstream links; keep bidirectional arrays synchronized."
+  - "Adaptive Lighting: motion automations handle on/off timing; AL handles brightness/CT; use `take_over_control` in AL if you need manual override behavior."
+  - "Next: run the suggested commands in order; if any step fails, capture the exact error + timestamp and update this meta-capture YAML for repository history."

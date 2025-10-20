@@ -1,0 +1,210 @@
+extracted_config:
+  timezone: Europe/London
+  database:
+    path: /config/room_database.db
+  appdaemon:
+    addon_host: a0d7b954-appdaemon
+    port: 5050
+    app_name: room_db_updater
+    endpoints:
+      health: /api/appdaemon/room_db_health
+      test: /api/appdaemon/room_db_test
+      update_config: /api/appdaemon/room_db_update_config
+    services_from_ha:
+      # AppDaemon expects domain/service with slash form
+      room_db_update_service: rest_command/room_db_update_config
+  homeassistant:
+    schedule_gate: schedule.valetudo_allowed   # on = allowed, off = blocked
+    presence_sensor_suffix: _presence_beta     # binary_sensor.<room>_presence_beta
+    rest_commands:
+      - rest_command.room_db_health
+      - rest_command.room_db_test
+      - rest_command.room_db_update_config
+    scripts:
+      - script.valetudo_clean_room_ad_hoc
+      - script.clean_room_with_sql_tracking
+    sensors:
+      - sensor.room_configs_motion_lighting   # attribute: payload (JSON dict)
+      - sensor.room_configs_vacuum_control    # attribute: payload (JSON dict)
+      - sensor.appdaemon_health_appdaemon_global
+      - sensor.appdaemon_test_appdaemon_global
+    recorder:
+      exclude_entity_globs:
+        - sensor.room_configs_*
+        - sensor.rooms_needing_cleaning
+  mqtt:
+    base_topic_entity: input_text.valetudo_base_topic
+    base_topic_initial: "valetudo/robot"
+    command_topic_template: "<base>/MapSegmentationCapability/action/start_segment_action"
+    action_payload_shape:
+      action: clean
+      segment_ids: [<int>]
+      iterations: 1
+      customOrder: true
+  valetudo_activity:
+    app_module: valetudo_default_activity
+    class: ValetudoDefaultActivity
+    policy:
+      batch_size: 2
+      require_presence_clear: true
+      optimistic_writeback: true
+      optimistic_job_seconds: 90
+      rate_limit_seconds: 2
+  room_db:
+    allowed_domains:
+      - vacuum_control
+      - shared
+      - motion_lighting
+    schema_expected: 1
+    write_path: AppDaemon REST
+    sql_read_only: true
+  canonical_mapping_file:
+    path: /addon_configs/a0d7b954_appdaemon/www/area_mapping.yaml
+    nodes_summary:
+      areas:
+        - bedroom
+        - kitchen
+        - living_room
+        - ensuite
+        - upstairs
+        - downstairs
+        - hallway
+        - powder_room
+      subareas:
+        - desk
+        - wardrobe
+        - downstairs_hallway
+        - laundry_room
+    segment_mapping:
+      living_room:
+        segment_id: 19
+        name: "Living Room"
+        description: "Main living area"
+      kitchen:
+        segment_id: 17
+        name: "Kitchen"
+        description: "Kitchen and dining area"
+      powder_room:
+        segment_id: 20
+        name: "Powder Room"
+        description: "Downstairs bathroom"
+      downstairs_hallway:
+        segment_id: 18
+        name: "Downstairs Hallway"
+        description: "Main hallway downstairs"
+      laundry_room:
+        segment_id: 16
+        name: "Laundry Room"
+        description: "Laundry and utility room"
+
+transient_state:
+  appdaemon_http:
+    health:
+      status: 200
+      body.status: healthy
+      body.canonical_rooms_count: 21
+      body.allowed_domains: [vacuum_control, shared, motion_lighting]
+      server: "Python/3.12 aiohttp/3.11.18"
+    test:
+      status: 200
+      body.status: test_success
+      body.app_name: room_db_updater
+  motion_lighting_sample:
+    bedroom:
+      timeout: 120
+      presence_timeout_multiplier: 1.5
+      effective_timeout_seconds: 180
+      template_payload_is_json: true
+  schedule_gate:
+    entity: schedule.valetudo_allowed
+    semantics: "on=allowed, off=blocked"
+  presence_gate:
+    pattern: binary_sensor.<room>_presence_beta
+    semantics: "on=occupied → routine deferred (adhoc may force), off=clear"
+  rate_limit:
+    room_db_write_seconds_min: 2
+
+relationships:
+  services:
+    - source: homeassistant.rest_command.room_db_update_config
+      talks_to: appdaemon.http.update_config
+      url: "http://a0d7b954-appdaemon:5050/api/appdaemon/room_db_update_config"
+    - source: homeassistant.rest_command.room_db_health
+      talks_to: appdaemon.http.health
+      url: "http://a0d7b954-appdaemon:5050/api/appdaemon/room_db_health"
+    - source: homeassistant.rest_command.room_db_test
+      talks_to: appdaemon.http.test
+      url: "http://a0d7b954-appdaemon:5050/api/appdaemon/room_db_test"
+  data_flow:
+    - from: sensor.room_configs_vacuum_control.payload (JSON dict)
+      to: AppDaemon.valetudo_default_activity.queue_builder
+      via: read-only SQL sensors
+    - from: AppDaemon.valetudo_default_activity
+      to: mqtt.<base>/MapSegmentationCapability/action/start_segment_action
+      payload: {"action":"clean","segment_ids":[<int>],"iterations":1,"customOrder":true}
+    - from: AppDaemon.valetudo_default_activity
+      to: rest_command/room_db_update_config
+      purpose: "writeback last_cleaned, needs_cleaning, last_result"
+  gating:
+    - gate: schedule.valetudo_allowed
+      applies_to: routine_jobs
+      effect: "off blocks routine; adhoc can set force=true"
+    - gate: binary_sensor.<room>_presence_beta
+      applies_to: routine_jobs
+      effect: "on defers routine; adhoc can force_presence=true"
+  mapping:
+    - room: living_room
+      segment_id: 19
+      source: canonical_mapping_file.segment_mapping
+    - room: kitchen
+      segment_id: 17
+      source: canonical_mapping_file.segment_mapping
+    - room: powder_room
+      segment_id: 20
+      source: canonical_mapping_file.segment_mapping
+    - room: downstairs_hallway
+      segment_id: 18
+      source: canonical_mapping_file.segment_mapping
+    - room: laundry_room
+      segment_id: 16
+      source: canonical_mapping_file.segment_mapping
+
+suggested_commands:
+  curl_health:
+    cmd: >
+      curl -sS http://a0d7b954-appdaemon:5050/api/appdaemon/room_db_health | jq .
+  curl_test:
+    cmd: >
+      curl -sS http://a0d7b954-appdaemon:5050/api/appdaemon/room_db_test | jq .
+  curl_update_example_bedroom:
+    cmd: >
+      curl -sS -X POST http://a0d7b954-appdaemon:5050/api/appdaemon/room_db_update_config
+      -H 'Content-Type: application/json'
+      -d '{"room_id":"bedroom","domain":"vacuum_control",
+           "config_data":{"needs_cleaning":0,"last_cleaned":"'"$(date -Iseconds)"'"},
+           "schema_expected":1}' | jq .
+  mqtt_segment_clean_example:
+    note: "Replace <BASE> with the value of input_text.valetudo_base_topic (default val: valetudo/robot). Replace <SEG> with segment id."
+    cmd: >
+      mosquitto_pub -h 127.0.0.1 -t '<BASE>/MapSegmentationCapability/action/start_segment_action'
+      -m '{"action":"clean","segment_ids":[<SEG>],"iterations":1,"customOrder":true}'
+  ha_service_seed_segment:
+    cmd: |
+      # Developer Tools → YAML
+      - service: rest_command.room_db_update_config
+        data:
+          room_id: kitchen
+          domain: vacuum_control
+          config_data:
+            segment_id: 17
+            needs_cleaning: 1
+            default_mode: deep
+          schema_expected: 1
+      - delay: "00:00:02"
+
+notes:
+  - SQL sensors are read-only; all mutations go through AppDaemon REST to prevent double-encoding.
+  - Routine vacuum jobs are gated by schedule.valetudo_allowed and room presence; ad-hoc jobs can explicitly override.
+  - MQTT command topic is derived from input_text.valetudo_base_topic and uses the Valetudo MapSegmentationCapability action.
+  - Recorder excludes bulk JSON dict sensors to reduce database load.
+  - System governance enforces no proactive offers; communication stays task-focused and deterministic.

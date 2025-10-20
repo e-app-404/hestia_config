@@ -1,0 +1,4 @@
+# merge_policy.yaml
+format: { indent: 2, line_width: 120, sort_keys: true }
+comments: { preserve: true, pin_marker: "# @pin", conflict_on_pin_change: true }
+anchors: { preserve: true }

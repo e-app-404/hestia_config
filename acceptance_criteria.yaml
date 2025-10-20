@@ -1,0 +1,72 @@
+acceptance_criteria:
+  - id: db.init
+    desc: "SQLite DB created at /config/room_database.db via database_init.sql; PRAGMA journal_mode=WAL; synchronous=NORMAL."
+    verify: "sqlite3 /config/room_database.db '.tables' | grep room_configs"
+
+  - id: db.schema_version
+    desc: "schema_version table exists with version == 1."
+    verify: "test \"$(sqlite3 /config/room_database.db 'SELECT version FROM schema_version LIMIT 1;')\" = '1'"
+
+  - id: db.index
+    desc: "Index idx_room_configs_domain_room exists."
+    verify: "sqlite3 /config/room_database.db ".indexes room_configs" | grep idx_room_configs_domain_room"
+
+  - id: sensors.platform
+    desc: "sql_sensors.yaml uses single platform; scan_interval: 30; db_url points to /config/room_database.db."
+    verify: "grep -E 'platform: sql|scan_interval: 30|sqlite:////config/room_database.db' /config/packages/room_database/sql_sensors.yaml"
+
+  - id: sensors.queries
+    desc: "Exactly three queries: motion_lighting, vacuum_control, rooms_needing_cleaning."
+    verify: "test $(grep -c '^\\s*- name: \"Room Configs — ' /config/packages/room_database/sql_sensors.yaml) -eq 2 && grep -q '^\\s*- name: \"Rooms Needing Cleaning\"' /config/packages/room_database/sql_sensors.yaml"
+
+  - id: sensors.columns
+    desc: "Each query returns two columns; column: state or column: count; structured data in attribute 'payload' only."
+    verify: "manual: inspect yaml & HA states"
+
+  - id: writes.shell_only
+    desc: "Automation uses shell_command.update_room_config (no REST fallback); config_data sent as real JSON (| tojson)."
+    verify: "grep -A5 'shell_command.update_room_config' /config/packages/motion_lighting_v2/automations.yaml | grep tojson"
+
+  - id: writes.txn_guard
+    desc: "Shell writes are transactional (BEGIN IMMEDIATE/COMMIT) with schema_version guard and write rate limit."
+    verify: "inspect /config/packages/room_database/shell_commands.yaml"
+
+  - id: writes.domain_whitelist
+    desc: "Allowed domains restricted to motion_lighting, vacuum_control, shared."
+    verify: "inspect /config/packages/room_database/shell_commands.yaml"
+
+  - id: writes.room_id_regex
+    desc: "room_id validated against ^[a-z0-9_]+$."
+    verify: "inspect /config/packages/room_database/shell_commands.yaml"
+
+  - id: writes.size_cap
+    desc: "config_data size ≤ 4096 bytes enforced."
+    verify: "inspect /config/packages/room_database/shell_commands.yaml"
+
+  - id: motion.automation
+    desc: "Motion automation uses template conditions; presence modulates timeout; no JSON in state."
+    verify: "inspect /config/packages/motion_lighting_v2/automations.yaml"
+
+  - id: vacuum.script
+    desc: "Vacuum script publishes to {{ states('input_text.valetudo_base_topic') }} with tojson payload; marks room cleaned."
+    verify: "inspect /config/packages/vacuum_control_v2/scripts.yaml"
+
+  - id: valetudo.topic_source
+    desc: "Single source of truth exists: input_text.valetudo_base_topic."
+    verify: "test -f /config/packages/vacuum_control_v2/mqtt_commands.yaml"
+
+  - id: recorder.excludes
+    desc: "Recorder excludes sensor.room_configs_* and sensor.rooms_needing_cleaning."
+    verify: "grep -E 'sensor\.room_configs_\*|sensor\.rooms_needing_cleaning' /config/packages/room_database/recorder_policy.yaml"
+
+  - id: performance.reads
+    desc: "SQL sensors p50 < 100ms."
+    verify: "HA profiler/logbook sampling (run-time)"
+
+  - id: performance.writes
+    desc: "Write p50 < 200ms (shell path)."
+    verify: "HA service call timings"
+
+  - id: rollback
+    desc: "Rollback procedure documented (stop HA, restore DB and files, restart)."
+    verify: "ops doc present"

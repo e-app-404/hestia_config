@@ -11,17 +11,6 @@
 #   • No dedicated privacy switch → control master: switch.bedroom_security_cam_alpha
 #   • Zone enter/leave for person.evert handles named zones reliably.
 #   • Occupancy decisions use occupancy-only sensors (no motion in decision path).
-#
-# How to use
-#   1) Save as /config/packages/package_ha_camera_privacy.yaml (or merge).
-#   2) Reload Automations or restart Home Assistant.
-#   3) Set input_select.camera_privacy_mode:
-#        - home  → private whenever Evert is in the Home zone
-#        - room  → private only while BEDROOM/SANCTUM is occupied by Evert
-#        - off   → disable all privacy automations in this package
-#   4) Ensure input_boolean.presence_detection_enabled is ON.
-# ============================================================================
-
 # ---------------------------------------------------------------------------
 # MODE SELECTOR
 # ---------------------------------------------------------------------------
@@ -77,7 +66,7 @@ template:
               {% set hits.n = hits.n + 1 %}
             {% endif %}
           {% endfor %}
-          {% set desk = is_state('binary_sensor.desk_presence_inferred','on') %}
+          {% set desk = is_state('binary_sensor.desk_occupancy_inferred','on') %}
           {{ occ and is_state('person.evert','home') and (hits.n > 0 or desk) }}
         attributes:
           rationale: "Private only if room is occupied AND a trusted token for Evert is present."
@@ -87,7 +76,7 @@ template:
                 'apple_watch': is_state('sensor.apple_watch_presence','Home'),
                 'iphone14': is_state('sensor.iphone14_presence','Home'),
                 'macbook': is_state('sensor.macbook_presence','Home'),
-                'desk_presence_inferred': is_state('binary_sensor.desk_presence_inferred','on')
+                'desk_occupancy_inferred': is_state('binary_sensor.desk_occupancy_inferred','on')
               } | tojson
             }}
           source_entities: >
@@ -100,7 +89,7 @@ template:
                 'sensor.apple_watch_presence',
                 'sensor.iphone14_presence',
                 'sensor.macbook_presence',
-                'binary_sensor.desk_presence_inferred',
+                'binary_sensor.desk_occupancy_inferred',
                 'person.evert'
               ] | tojson
             }}
@@ -133,19 +122,19 @@ automation:
     alias: "Bedroom Cam · Private when operator ENTERS Home (Home mode)"
     initial_state: true
     mode: restart
-    trigger:
+    triggers:
       - trigger: zone
         entity_id: person.evert
         zone: zone.home
         event: enter
-    condition:
+    conditions:
       - condition: state
         entity_id: input_boolean.presence_detection_enabled
         state: "on"
       - condition: state
         entity_id: input_select.camera_privacy_mode
         state: "home"
-    action:
+    actions:
       - delay: "00:02:00"
       - condition: state
         entity_id: person.evert
@@ -169,19 +158,19 @@ automation:
     alias: "Bedroom Cam · Enable when Evert LEAVES Home (Home mode)"
     initial_state: true
     mode: restart
-    trigger:
+    triggers:
       - trigger: zone
         entity_id: person.evert
         zone: zone.home
         event: leave
-    condition:
+    conditions:
       - condition: state
         entity_id: input_boolean.presence_detection_enabled
         state: "on"
       - condition: state
         entity_id: input_select.camera_privacy_mode
         state: "home"
-    action:
+    actions:
       - delay: "00:05:00"
       - condition: template
         value_template: "{{ states('person.evert') != 'home' }}"
@@ -205,12 +194,12 @@ automation:
     alias: "Bedroom Cam · Private when Bedroom Occupied (Room mode)"
     initial_state: true
     mode: restart
-    trigger:
+    triggers:
       - trigger: state
         entity_id: binary_sensor.bedroom_privacy_trusted_occupied
         to: "on"
         for: "00:01:00"
-    condition:
+    conditions:
       - condition: state
         entity_id: input_boolean.presence_detection_enabled
         state: "on"
@@ -220,7 +209,7 @@ automation:
       - condition: state
         entity_id: person.evert
         state: "home"
-    action:
+    actions:
       - choose:
           - conditions:
               - condition: state
@@ -240,12 +229,12 @@ automation:
     alias: "Bedroom Cam · Enable when Bedroom Clears (Room mode)"
     initial_state: true
     mode: restart
-    trigger:
+    triggers:
       - trigger: state
         entity_id: binary_sensor.bedroom_privacy_trusted_occupied
         to: "off"
         for: "00:10:00"
-    condition:
+    conditions:
       - condition: state
         entity_id: input_boolean.presence_detection_enabled
         state: "on"
@@ -255,7 +244,7 @@ automation:
       - condition: state
         entity_id: person.evert
         state: "home"
-    action:
+    actions:
       - choose:
           - conditions:
               - condition: state
@@ -273,19 +262,19 @@ automation:
     alias: "Bedroom Cam · Enable when Evert LEAVES Home (Room mode)"
     initial_state: true
     mode: restart
-    trigger:
+    triggers:
       - trigger: zone
         entity_id: person.evert
         zone: zone.home
         event: leave
-    condition:
+    conditions:
       - condition: state
         entity_id: input_boolean.presence_detection_enabled
         state: "on"
       - condition: state
         entity_id: input_select.camera_privacy_mode
         state: "room"
-    action:
+    actions:
       - delay: "00:05:00"
       - condition: template
         value_template: "{{ states('person.evert') != 'home' }}"
@@ -309,12 +298,12 @@ automation:
     alias: "Bedroom Cam · ALERT on unknown occupancy (Room mode)"
     initial_state: true
     mode: single
-    trigger:
+    triggers:
       - trigger: state
         entity_id: binary_sensor.bedroom_privacy_unknown_intrusion
         to: "on"
         for: "00:00:10"
-    condition:
+    conditions:
       - condition: state
         entity_id: input_boolean.presence_detection_enabled
         state: "on"
@@ -327,7 +316,7 @@ automation:
       - condition: state
         entity_id: binary_sensor.bedroom_privacy_trusted_occupied
         state: "off"
-    action:
+    actions:
       - action: logbook.log
         data:
           name: "Privacy Alert"
@@ -348,14 +337,14 @@ automation:
     alias: "Bedroom Cam · Rehydrate on HA Start"
     initial_state: true
     mode: single
-    trigger:
+    triggers:
       - trigger: homeassistant
         event: start
-    condition:
+    conditions:
       - condition: state
         entity_id: input_boolean.presence_detection_enabled
         state: "on"
-    action:
+    actions:
       - choose:
           - conditions:
               - condition: state
@@ -401,14 +390,14 @@ automation:
     alias: "Bedroom Cam · Apply immediately on mode change"
     initial_state: true
     mode: restart
-    trigger:
+    triggers:
       - trigger: state
         entity_id: input_select.camera_privacy_mode
-    condition:
+    conditions:
       - condition: state
         entity_id: input_boolean.presence_detection_enabled
         state: "on"
-    action:
+    actions:
       - choose:
           - conditions:
               - condition: state

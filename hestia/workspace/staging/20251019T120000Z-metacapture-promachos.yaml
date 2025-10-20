@@ -1,0 +1,166 @@
+extracted_config:
+  canonical_path_policy:
+    adr: ADR-0024
+    canonical_root: "/config"
+    macos_firmlink_target: "/System/Volumes/Data/homeassistant"
+    containers_bind_mount: true
+    ci_bind_mount: true
+    ro_allowed_when: "REQUIRE_CONFIG_WRITABLE=0"
+  devices:
+    - id: operator-macos
+      role: "developer_host"
+      os: "macOS"
+      paths:
+        firmlink_root: "/config"
+        data_target: "/System/Volumes/Data/homeassistant"
+        logs_dir: "/Users/evertappels/Library/Logs"
+      launchagent:
+        label: "com.hestia.mount.homeassistant"
+        path: "/Users/evertappels/Library/LaunchAgents/com.hestia.mount.homeassistant.plist"
+        program: "/Users/evertappels/bin/ha-mount.sh"
+        keepalive_network: true
+        start_interval_sec: 60
+        stdout: "/Users/evertappels/Library/Logs/hestia.mount.out"
+        stderr: "/Users/evertappels/Library/Logs/hestia.mount.err"
+      smb_mount:
+        remote: "//evertappels@homeassistant.local/config"
+        local: "/System/Volumes/Data/homeassistant"
+        tool: "mount_smbfs"
+      vscode:
+        env_overrides:
+          CONFIG_ROOT: "/config"
+          HA_MOUNT: "/config"        # legacy alias mapped to canonical
+          PATH_prefix: "/opt/homebrew/bin"
+        python:
+          interpreter: "${workspaceFolder}/.venv/bin/python"
+          useEnvFile: true
+          envFile: "${workspaceFolder}/.env"
+    - id: homeassistant
+      role: "ha_host"
+      hostname: "homeassistant.local"
+      services:
+        - name: "ha_web"
+          port: 8123
+          proto: "tcp"
+        - name: "smb_config_share"
+          share: "config"
+      config_root: "/config"
+  tooling:
+    guards:
+      - path: "tools/lib/require-config-root.sh"
+        behavior: "assert /config directory; supports RO via REQUIRE_CONFIG_WRITABLE"
+      - path: "bin/config-health"
+        behavior: "binary checks; prints realpath"
+    linters:
+      - path: "tools/lint_paths.sh"
+        disallowed_patterns:
+          - "\\$HOME/"
+          - "~/hass"
+          - "/Volumes/"
+          - "/n/ha"
+          - "actions-runner/.+?/hass"
+        exclusions:
+          - "ADR/deprecated/**"
+          - "docs/history/**"
+          - "library/docs/ADR-imports/**"
+          - "**/.git/**"
+    fixers:
+      - path: "tools/fix_path_drift.sh"
+        scope:
+          - "config/**"
+          - "tools/**"
+          - "scripts/**"
+  containers_and_ci:
+    devcontainer:
+      mount: "${localWorkspaceFolder}:/config"
+    compose:
+      volumes:
+        - "/System/Volumes/Data/homeassistant:/config"  # macOS host → container
+    github_actions:
+      container_first:
+        image: "ghcr.io/home-assistant/home-assistant:stable"
+        bind: "${{ github.workspace }}:/config"
+  home_assistant:
+    config_files:
+      - "/config/configuration.yaml"
+      - "/config/secrets.yaml"
+    shell_command_examples:
+      ha_git_push: "/config/tools/ha_git_push.sh /config"
+  tailscale:
+    installed: true
+    cli_path_candidates:
+      - "/Applications/Tailscale.app/Contents/MacOS/Tailscale"
+      - "tailscale"
+    known_issue:
+      code: "not-in-map-poll"
+      message: "Out Of Sync"
+      platform: "macOS"
+
+transient_state:
+  timestamp_utc: "2025-10-19T00:00:00Z"
+  macos:
+    firmlink_materialized: true
+    config_realpath: "/System/Volumes/Data/homeassistant"
+    launchagent_loaded: true
+  smb_mount:
+    mounted: true
+    mountpoint: "/System/Volumes/Data/homeassistant"
+    remote: "//evertappels@homeassistant.local/config"
+  vscode_env:
+    CONFIG_ROOT: "/config"
+    HA_MOUNT: "/config"
+  ci:
+    linter_passed: true
+  tailscale:
+    state_observed: "Out Of Sync"
+    error_code: "not-in-map-poll"
+    remediation_required: true
+
+relationships:
+  - from: "operator-macos"
+    to: "homeassistant"
+    via: "smbfs"
+    local_path: "/System/Volumes/Data/homeassistant"
+    remote: "//evertappels@homeassistant.local/config"
+  - from: "containers/devcontainer"
+    to: "/config"
+    type: "bind_mount"
+  - from: "github_actions"
+    to: "/config"
+    type: "bind_mount"
+  - from: "tools/lib/require-config-root.sh"
+    to: "/config"
+    type: "guard_dependency"
+  - from: "tailscale_client(operator-macos)"
+    to: "tailscale_control"
+    type: "long_poll"
+
+suggested_commands:
+  - name: "Verify firmlink"
+    run: 'python3 -c "import os; print(os.path.realpath(\"/config\"))"'
+    expect: "/System/Volumes/Data/homeassistant"
+  - name: "Check SMB mount"
+    run: "mount | grep -E 'homeassistant.*smbfs' || true"
+  - name: "Guard (RO)"
+    run: "REQUIRE_CONFIG_WRITABLE=0 bash tools/lib/require-config-root.sh"
+  - name: "Path linter"
+    run: "bash tools/lint_paths.sh"
+  - name: "Tailscale health"
+    run: '/Applications/Tailscale.app/Contents/MacOS/Tailscale status --json || tailscale status || true'
+  - name: "Tailscale quick remediate (macOS)"
+    run: |
+      launchctl kickstart -k "gui/$UID/io.tailscale.ipn.macos" 2>/dev/null || true
+      /Applications/Tailscale.app/Contents/MacOS/Tailscale down || true
+      /Applications/Tailscale.app/Contents/MacOS/Tailscale up || true
+  - name: "Persist this capture"
+    run: |
+      mkdir -p /config/hestia/core/config/prompts
+      cat > /config/hestia/core/config/prompts/meta_capture.promptset.v1.yaml <<'YAML'
+      # paste this YAML block to persist
+      YAML
+
+notes:
+  - ADR-0024: `/config` is the sole public interface; on macOS it resolves to `/System/Volumes/Data/homeassistant` via APFS synthetic entry (firmlink).
+  - Tailscale `not-in-map-poll` indicates the client is out of sync with the control plane; on macOS, restarting the `io.tailscale.ipn.macos` agent and re-upping usually restores map-poll; reauth may be required if the node key expired.
+  - Cross-repo ADR imports must remain read-only and excluded from path drift linting at `library/docs/ADR-imports/**`.
+  - All commands here are non-destructive and safe on the operator macOS host; they do not change HA runtime beyond verification.

@@ -17,5 +17,5 @@
       state: "on"
   action:
     - alias: "Execute shell command for Git push"
-      service: shell_command.git_push_config
+      action: shell_command.git_push_config
   mode: single

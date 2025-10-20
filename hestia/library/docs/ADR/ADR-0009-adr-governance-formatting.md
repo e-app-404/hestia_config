@@ -1,30 +1,52 @@
 ---
 id: ADR-0009
-title: "ADR Governance, Redaction, and Formatting Policy"
-date: 2025-09-13
+title: ADR Governance, Redaction, and Formatting Policy
+slug: adr-governance-redaction-formatting-policy
 status: Accepted
-author: "Evert Appels"
 related:
-  - ADR-0001
-  - ADR-0004
-  - ADR-0008
-  - ADR-0017
-  - ADR-0018
+- ADR-0001
+- ADR-0004
+- ADR-0008
+- ADR-0017
+- ADR-0018
 supersedes: []
-last_updated: 2025-09-13
-tags: ["governance", "formatting", "redaction", "tokens", "automation", "adr", "policy", "metadata"]
+last_updated: '2025-10-15'
+date: 2025-09-13
+decision: All ADRs must comply with standardized structure, formatting, and machine-parseability
+  requirements including mandatory frontmatter fields, token blocks, and redaction
+  procedures.
+author: Evert Appels
+tags:
+- governance
+- formatting
+- redaction
+- tokens
+- automation
+- adr
+- policy
+- metadata
 rollout:
   include_scan:
-    phase_A: {mode: report, start: "2025-09-25T00:00:00+01:00", end: "2025-09-27T00:00:00+01:00"}
-    phase_B: {mode: fail,   start: "2025-09-27T00:00:01+01:00"}
+    phase_A:
+      mode: report
+      start: '2025-09-25T00:00:00+01:00'
+      end: '2025-09-27T00:00:00+01:00'
+    phase_B:
+      mode: fail
+      start: '2025-09-27T00:00:01+01:00'
 ci_policy:
-  include_scan: {mode: fail, start: "2025-09-27T00:00:01+01:00"}
-  packaging: {deterministic: true, manifest: sha256}
+  include_scan:
+    mode: fail
+    start: '2025-09-27T00:00:01+01:00'
+  packaging:
+    deterministic: true
+    manifest: sha256
 ---
 
 # ADR-0009: ADR Governance, Redaction, and Formatting Policy
 
 ## Table of Contents
+
 1. Context
 2. Decision
 3. Lifecycle & Status Model
@@ -50,16 +72,18 @@ The project requires robust, machine-friendly governance for ADRs, including cle
 
 **Allowed `status` values (canonical):**
 
-- `Draft` → `Proposed` → `Accepted` → (`Amended`)* → `Deprecated` → `Superseded`
+- `Draft` → `Proposed` → `Accepted` → (`Amended`)\* → `Deprecated` → `Superseded`
 - Terminal: `Rejected`, `Withdrawn`
-- *`Amended` applies to Accepted ADRs when a follow-up ADR narrows/clarifies scope without replacing it.*
+- _`Amended` applies to Accepted ADRs when a follow-up ADR narrows/clarifies scope without replacing it._
 
 **Rules**
+
 - Only `Draft` and `Proposed` may change text substantially without a superseding ADR.
 - Moving from `Accepted` requires either `Amended`, `Deprecated`, or `Superseded` with links.
 - `Approved` (legacy) is treated as an alias of `Accepted` in automation but SHOULD NOT be used.
 
 **Maintenance fields**
+
 - `last_updated` (ISO-8601) MUST change on any edit.
 - Optional: `last_reviewed` (ISO-8601) for periodic audits; ADRs older than 365 days SHOULD be reviewed.
 
@@ -73,18 +97,38 @@ The project requires robust, machine-friendly governance for ADRs, including cle
 
 ## 5. Required Front-Matter (Schema v1)
 
-Required keys: `title`, `date`, `status`, `author`, `related`, `supersedes`, `last_updated`
+Required keys: `id`, `title`, `slug`, `status`, `related`, `supersedes`, `last_updated`, `date`, `decision`
 
-Optional keys (recommended):
+Optional keys (recommended): `author`, `tags`, `implementation_date`, `rollout`, `ci_policy`
+
+**Field Specifications:**
+
+- `id`: Format ADR-XXXX (zero-padded, monotonically increasing)
+- `title`: Full descriptive title including ADR-XXXX prefix
+- `slug`: Kebab-case derived from title summary (exclude ADR-XXXX prefix)
+- `status`: Canonical lifecycle value (Draft/Proposed/Accepted/etc.)
+- `related`: Array of related ADR-XXXX references (empty array if none)
+- `supersedes`: Array of superseded ADR-XXXX references (empty array if none)
+- `last_updated`: ISO-8601 date, MUST change on any edit
+- `date`: ISO-8601 creation/original decision date
+- `decision`: Brief summary of architectural decision (max 200 chars)
 
 **Constraints**
 
 **YAML Formatting Rules**
+
 - Indentation: Use spaces only (no tabs) for all YAML front-matter. Indent lists with two spaces per level.
 - Key Order: Required keys MUST appear in the following order:
-  1. `title`
-  2. `date`
-  3. `status`
+
+  1. `id`
+  2. `title`
+  3. `slug`
+  4. `status`
+  5. `related`
+  6. `supersedes`
+  7. `last_updated`
+  8. `date`
+  9. `decision`
 
 - New ADRs must use the canonical template, including YAML front-matter and section headers.
 - ADR numbers are assigned sequentially and referenced in the index.
@@ -131,4 +175,3 @@ TOKEN_BLOCK:
     - DRIFT: missing_token_block
     - DRIFT: adr_redaction_untracked
 ```
-

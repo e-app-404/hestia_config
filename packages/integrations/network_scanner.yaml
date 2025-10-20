@@ -1,4 +1,9 @@
 #═══════════════════════════════════════════════════════════════
-# DEPRECATED. 
-# File moved to packages/hacs/hacs_network_scanner.yaml
+# ▶ HACS custom integration network_scanner ◀
+# Loader: !include domain/rest/rest.yaml
+# Schema: rest
 #═══════════════════════════════════════════════════════════════
+
+network_scanner:
+  scan_interval: 1800    # 30 minutes, aligns with your verifier’s default
+  ip_range: "192.168.0.0/24"

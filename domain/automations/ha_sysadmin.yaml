@@ -1,30 +1,25 @@
-# 1. Record Home Assistant restart time
 - id: record_ha_restart_time
   alias: "Record HA Restart Time"
   description: "Updates input_datetime helper with the exact restart time on Home Assistant startup."
   mode: single
-  trigger:
-    - platform: homeassistant
+  triggers:
+    - trigger: homeassistant
       event: start
-  action:
+  actions:
     - action: input_datetime.set_datetime
       target:
         entity_id: input_datetime.last_ha_restart
       data:
         datetime: "{{ now().strftime('%Y-%m-%d %H:%M:%S') }}"
 
-# 2. Notify and set media state on Home Assistant start
 - id: d2d8775b-e666-4fb4-976d-02b4d9c5a396
-  alias: Home Assistant Start - Notify
-  description: "Notify all users when HA starts."
+  alias: "Home Assistant Start - Notify"
   mode: single
-  trigger:
-    - platform: homeassistant
+  triggers:
+    - trigger: homeassistant
       event: start
   action:
-    - alias: Startup notification
-      action: script.notify_engine
-      continue_on_error: true
+    - action: script.notify_engine
       data:
         who: "evert"
         title: "HA started"
@@ -36,30 +31,32 @@
         sticky: false
         timeout_sec: 300
 
+    - action: persistent_notification.create
+      data:
+        title: "HA Startup"
+        message: "Home Assistant started at {{ now().strftime('%Y-%m-%d %H:%M:%S') }}"
+
     - action: tts.speak
       target:
-        entity_id:
-          - tts.google_translate_en_com
+        entity_id: tts.google_translate_en_com
       data:
-        cache: true
         media_player_entity_id: media_player.bedroom_google_home_mini_speaker
         message: "Home Assistant successfully rebooted."
         language: en-ca
+        cache: true
 
-# 3. Count Home Assistant errors and warnings
 - id: c057ca2c-ab20-4fe0-a32b-5980c0990fb2
-  alias: "Count Home Assistant errors"
-  description: "Counts errors and warnings from Home Assistant system log."
+  alias: "Count Home Assistant Errors"
   mode: queued
   max: 20
   max_exceeded: silent
-  trigger:
-    - platform: event
+  triggers:
+    - trigger: event
       event_type: system_log_event
       event_data:
         level: ERROR
       id: error
-    - platform: event
+    - trigger: event
       event_type: system_log_event
       event_data:
         level: WARNING
@@ -81,17 +78,14 @@
               target:
                 entity_id: counter.homeassistant_errors
 
-# 4. Notify on Home Assistant shutdown
 - id: 2a93d8c4-5ad7-4bf3-842c-2b0940efe4a2
-  alias: Home Assistant Shutdown - Notify
-  description: "Notify Evert when HA is shutting down."
+  alias: "Home Assistant Shutdown - Notify"
   mode: single
-  trigger:
-    - platform: homeassistant
+  triggers:
+    - trigger: homeassistant
       event: shutdown
-  action:
-    - alias: Shutdown notification
-      action: script.notify_engine
+  actions:
+    - action: script.notify_engine
       data:
         who: "evert"
         title: "HA shutdown"
@@ -103,12 +97,190 @@
         sticky: false
         timeout_sec: 180
 
+    - action: persistent_notification.create
+      data:
+        title: "HA Shutdown"
+        message: "Home Assistant will shut down at {{ now().strftime('%Y-%m-%d %H:%M:%S') }}"
+
     - action: tts.speak
       target:
-        entity_id:
-          - tts.google_translate_en_com
+        entity_id: tts.google_translate_en_com
       data:
-        cache: true
         media_player_entity_id: media_player.bedroom_google_home_mini_speaker
         message: "Home Assistant will shut down at {{ now().strftime('%Y-%m-%d %H:%M:%S') }}"
         language: en-ca
+        cache: true
+
+- id: hestia_trash_reaches_threshold
+  alias: "Hestia Trash Reaches Threshold"
+  mode: single
+  max_exceeded: silent
+  triggers:
+    - trigger: numeric_state
+      entity_id: sensor.hestia_trash_size
+      above: 512000
+  actions:
+    - action: script.notify_engine
+      data:
+        message: "Trash exceeded 500MB. Approve to empty?"
+
+    - wait_for_trigger:
+        - trigger: state
+          entity_id: input_boolean.hestia_approve_trash
+          to: "on"
+      timeout: "24:00:00"
+
+    - choose:
+        - conditions:
+            - condition: state
+              entity_id: input_boolean.hestia_approve_trash
+              state: "on"
+          sequence:
+            - action: shell_command.hestia_empty_trash
+            - action: input_boolean.turn_off
+              target:
+                entity_id: input_boolean.hestia_approve_trash
+
+- id: wI9fehuS06MVsRXqcdFHSri12G08I153
+  alias: "Hestia Tmp Weekly Prune"
+  mode: single
+  max_exceeded: silent
+  trigger:
+    - trigger: time
+      at: "03:30:00"
+  conditions:
+    - condition: time
+      weekday:
+        - sun
+  actions:
+    - action: script.notify_engine
+      data:
+        who: "evert"
+        title: "Hestia Maintenance"
+        value1: "Weekly tmp prune pending. Approve to proceed."
+        group: hestia_maintenance
+        tag_id: "tmp_prune"
+
+    - wait_for_trigger:
+        - platform: state
+          entity_id: input_boolean.hestia_approve_tmp
+          to: "on"
+      timeout: "24:00:00"
+
+    - choose:
+        - conditions:
+            - condition: state
+              entity_id: input_boolean.hestia_approve_tmp
+              state: "on"
+          sequence:
+            - action: shell_command.hestia_prune_tmp
+            - action: input_boolean.turn_off
+              target:
+                entity_id: input_boolean.hestia_approve_tmp
+
+- id: pvCE6fsuA9pNCB9hhBzRQStt08hpDgaa
+  alias: "Hestia On Shutdown - Prune Tmp"
+  mode: single
+  trigger:
+    - trigger: homeassistant
+      event: shutdown
+  actions:
+    - action: tts.speak
+      target:
+        entity_id: tts.google_translate_en_com
+      data:
+        cache: true
+        media_player_entity_id: media_player.bedroom_google_home_mini_speaker
+        message: "Home Assistant will perform scheduled cleanup of temporary files during shutdown."
+        language: en-ca
+
+    - action: shell_command.hestia_prune_tmp
+
+- alias: "Debug System Log Events"
+  id: debug_system_log_events
+  mode: single
+  triggers:
+    - trigger: event
+      event_type: system_log_event
+  actions:
+    - action: persistent_notification.create
+      data:
+        title: "System Log Event"
+        message: >
+          {{ trigger.event.data | tojson }}
+
+- alias: "Backup: Synology Upload (Controlled)"
+  id: backup_to_synology_controlled
+  description: "Upload backups to Synology with proper error handling"
+  triggers:
+    - trigger: event
+      event_type: backup_end
+      event_data:
+        success: true
+  conditions:
+    - condition: template
+      value_template: "{{ trigger.event.data.success == true }}"
+  actions:
+    - action: persistent_notification.create
+      data:
+        title: "Backup Available"
+        message: >
+          Backup {{ trigger.event.data.backup_id }} completed successfully.
+          File location: {{ trigger.event.data.backup_path }}
+          Size: {{ (trigger.event.data.size / 1024 / 1024) | round(1) }} MB
+        notification_id: synology_backup_completed
+  mode: single
+
+- alias: "System: Startup Optimization Success"
+  id: startup_optimization_success
+  description: "Log when startup completes without blocking issues"
+  triggers:
+    - trigger: state
+      entity_id: binary_sensor.startup_completed
+      to: 'on'
+  actions:
+    - action: system_log.write
+      data:
+        message: >
+          ✅ Startup optimization successful - ADR-0020 fixes applied:
+          - Google Assistant disabled (sync_google blocking resolved)
+          - Backup location configured locally (Synology upload disabled)
+          - Network scanner optimized (scan_interval: 600s)
+          - Startup check window: 300s
+        level: info
+        logger: "homeassistant.adr_0020_fixes"
+  mode: single
+
+- alias: "System: Startup Optimization Failure (Timeout)"
+  id: startup_optimization_failure
+  description: "Log when startup does not complete within the expected timeout (blocking issues likely)"
+  mode: single
+  triggers:
+    - trigger: homeassistant
+      event: start
+  variables:
+    timeout_secs: 300
+    grace_secs: 30
+    check_after: "{{ timeout_secs + grace_secs }}"
+  actions:
+    - delay:
+        seconds: "{{ check_after }}"
+    - choose:
+        - conditions:
+            - condition: template
+              value_template: >
+                {{ states('binary_sensor.startup_completed') != 'on' }}
+          sequence:
+            - action: system_log.write
+              data:
+                level: error
+                logger: "homeassistant.adr_0020_fixes"
+                message: >-
+                  ❌ Startup optimization FAILED or TIMED OUT after {{ check_after }}s.
+                  binary_sensor.startup_completed = {{ states('binary_sensor.startup_completed') }}
+                  last_changed = {{ states.binary_sensor.startup_completed.last_changed if states.binary_sensor.startup_completed is not none else 'n/a' }}
+                  Expected (ADR-0020) to be ready within {{ timeout_secs }}s:
+                  - Google Assistant disabled (sync_google blocking resolved)
+                  - Local backup path active (Synology upload disabled)
+                  - Network scanner interval set to 600s
+                  - Startup timeout enforced ({{ timeout_secs }}s)

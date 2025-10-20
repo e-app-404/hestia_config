@@ -9,11 +9,11 @@
   id: "desk_presence_decay_combined"
   mode: single
   trigger:
-    - platform: time_pattern
+    - trigger: time_pattern
       seconds: "/10"
   variables:
     items:
-      - entity: binary_sensor.desk_presence_inferred
+      - entity: binary_sensor.desk_occupancy_inferred
         input: input_number.desk_presence_decay_delta
       - entity: binary_sensor.desk_macbook_recent_connectivity_desk
         input: input_number.desk_presence_ethernet_decay_delta
@@ -28,10 +28,10 @@
         sequence:
           - variables:
               entity: "{{ repeat.item.entity }}"
-              input:  "{{ repeat.item.input }}"
-              valid:  "{{ states(entity) not in ['unavailable','unknown','none'] }}"
+              input: "{{ repeat.item.input }}"
+              valid: "{{ states(entity) not in ['unavailable','unknown','none'] }}"
               current: "{{ is_state(entity, 'on') if valid else false }}"
-              prev:    "{{ states(input) | float(0) }}"
+              prev: "{{ states(input) | float(0) }}"
               raw_result: >-
                 {{ reset_value if current else (prev - decay_rate) }}
               result: >-
@@ -42,7 +42,7 @@
                   - condition: template
                     value_template: "{{ (delta | abs) > epsilon }}"
                 sequence:
-                  - service: input_number.set_value
+                  - action: input_number.set_value
                     target:
                       entity_id: "{{ input }}"
                     data:

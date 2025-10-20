@@ -1,0 +1,42 @@
+---
+# ═════════════════════════════════════════════════════════════════════════════
+# ⟫⟫ SHELL_COMMANDS  ◀  Updated: 2025-10-06  •  Domain: logic
+# ⟫⟫ loader: configuration.yaml  • packages: !include_dir_named packages
+# ⟫⟫ path: config/packages/integrations/shell_commands.yaml
+# ⟫⟫ https://www.home-assistant.io/integrations/shell_command/
+# ⟫⟫ Migration: ADR-0024 compliant (domain/shell_commands → hestia/tools/)
+# ═════════════════════════════════════════════════════════════════════════════
+
+shell_command:
+  # === Existing Commands (preserved) ===
+  dump_auth_list: "ha auth list --raw-json > /config/hestia/workspace/operations/diagnostics/logs/ha_cli_dump.log"
+  hestia_empty_trash: "APPROVE=1 APPLY=1 /config/hestia/tools/workspace_manager.sh /config/hestia/workspace/workspace_policy.yaml sweep-trash --apply"
+  hestia_prune_tmp: "APPROVE=1 APPLY=1 /config/hestia/tools/workspace_manager.sh /config/hestia/workspace/workspace_policy.yaml sweep-tmp --days 7 --apply"
+
+  # === Migrated Commands (ADR-0024 compliant) ===
+  # System tools
+  git_push_logger: "/config/hestia/tools/system/git_push_logger.sh"
+  ha_host_verification_supervisor: "/config/hestia/tools/system/ha_host_verification_supervisor.sh"
+
+  # Operations tools  
+  addons_runtime_fetch: "/config/hestia/tools/ops/addons_runtime_fetch.sh"
+  addons_runtime_preflight: "/config/hestia/tools/ops/addons_runtime_preflight.sh"
+
+  # Evidence/verification tools
+  github_auth_setup: "/config/hestia/tools/evidence/github_auth_setup.sh"
+  ha_bb8_verification_heartbeat: "/config/hestia/tools/evidence/ha_bb8_verification_heartbeat.sh"
+  ha_bb8_verification: "/config/hestia/tools/evidence/ha_bb8_verification.sh"
+  llm_entry: "/config/hestia/tools/evidence/llm_entry.sh"
+  stp5_supervisor_ble_attest: "/config/hestia/tools/evidence/stp5_supervisor_ble_attest.sh"
+  stp5_tiny_smoke_test: "/config/hestia/tools/evidence/stp5_tiny_smoke_test.sh"
+
+  # BB8 Attestation Suite (migrated from domain/shell_commands)
+  attest_stp5_telemetry: "/config/hestia/tools/evidence/bb8_attest/attest_stp5_telemetry.sh"
+  stp5_attest: "/config/hestia/tools/evidence/bb8_attest/stp5_attest.sh"
+  stp5_attest_2: "/config/hestia/tools/evidence/bb8_attest/stp5_attest-2.sh"
+  stp5_attest_closure: "/config/hestia/tools/evidence/bb8_attest/stp5_attest-closure.sh"
+  stp5_attest_runner: "/config/hestia/tools/evidence/bb8_attest/stp5_attest-runner.sh"
+  stp5_probe: "/config/hestia/tools/evidence/bb8_attest/stp5_probe.sh"
+
+  # Legacy (keep existing)
+  ha_git_push: "cd /config && /config/hestia/tools/ha_git_push.sh /config 2>/dev/null || true"

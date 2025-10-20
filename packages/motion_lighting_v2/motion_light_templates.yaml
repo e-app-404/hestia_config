@@ -1,0 +1,497 @@
+template:
+  # ═════════════════════════════════════════════════════════════════
+  # SQL Payload Parser - Converts SQL sensor string to proper dict
+  # Root cause: json_group_object returns JSON string, not object
+  # ═════════════════════════════════════════════════════════════════
+  - sensor:
+      - name: "Room Configs Motion Lighting Dict"
+        unique_id: room_configs_motion_lighting_dict
+        state: "ok"
+        attributes:
+          payload: >-
+            {# Prefer dict sensor when available, and guard unknown/unavailable #}
+            {% set alt = state_attr('sensor.room_configs_motion_lighting', 'payload') %}
+            {% set raw = state_attr('sensor.room_configs_motion_lighting_dict', 'payload') or alt %}
+            {% if raw in [none, 'unknown', 'unavailable', ''] %}
+              {{ {} }}
+            {% elif raw is string %}
+              {{ (raw | from_json) if (raw | regex_search('^[\[{]')) else {} }}
+            {% else %}
+              {{ raw }}
+            {% endif %}
+
+      - name: "Room Configs Vacuum Control Dict"
+        unique_id: room_configs_vacuum_control_dict
+        state: "ok"
+        attributes:
+          payload: >-
+            {% set raw = state_attr('sensor.room_configs_vacuum_control', 'payload') %}
+            {% if raw in [none, 'unknown', 'unavailable', ''] %}
+              {{ {} }}
+            {% elif raw is string %}
+              {{ (raw | from_json) if (raw | regex_search('^[\[{]')) else {} }}
+            {% else %}
+              {{ raw }}
+            {% endif %}
+  - sensor:
+      - name: "Motion Timeout — Bedroom (SQL)"
+        unique_id: "motion_timeout_bedroom_sql_v15"
+        state: >-
+          {% set raw = state_attr('sensor.room_configs_motion_lighting_dict','payload') %}
+          {% if raw not in [none, 'unknown', 'unavailable', ''] %}
+            {% set parsed = raw if raw is mapping else (raw | from_json) %}
+            {% if parsed is mapping and 'bedroom' in parsed %}
+              {% set cfg = parsed.bedroom %}
+              {% if cfg is mapping %}
+                {{ cfg.get('timeout', 120) }}
+              {% elif cfg is string %}
+                {% set double_parsed = cfg | from_json %}
+                {{ double_parsed.get('timeout', 120) if double_parsed is mapping else 120 }}
+              {% else %}
+                120
+              {% endif %}
+            {% else %}
+              120
+            {% endif %}
+          {% else %}
+            120
+          {% endif %}
+        attributes:
+          bypass: >-
+            {% set raw = state_attr('sensor.room_configs_motion_lighting_dict','payload') %}
+            {% if raw not in [none, 'unknown', 'unavailable', ''] %}
+              {% set parsed = raw if raw is mapping else (raw | from_json) %}
+              {% if parsed is mapping and 'bedroom' in parsed %}
+                {% set cfg = parsed.bedroom %}
+                {% if cfg is mapping %}
+                  {{ cfg.get('bypass', false) }}
+                {% elif cfg is string %}
+                  {% set double_parsed = cfg | from_json %}
+                  {{ double_parsed.get('bypass', false) if double_parsed is mapping else false }}
+                {% else %}
+                  false
+                {% endif %}
+              {% else %}
+                false
+              {% endif %}
+            {% else %}
+              false
+            {% endif %}
+          last_triggered: >-
+            {% set raw = state_attr('sensor.room_configs_motion_lighting_dict','payload') %}
+            {% if raw not in [none, 'unknown', 'unavailable', ''] %}
+              {% set parsed = raw if raw is mapping else (raw | from_json) %}
+              {% if parsed is mapping and 'bedroom' in parsed %}
+                {% set cfg = parsed.bedroom %}
+                {% if cfg is mapping %}
+                  {{ cfg.get('last_triggered', '') }}
+                {% elif cfg is string %}
+                  {% set double_parsed = cfg | from_json %}
+                  {{ double_parsed.get('last_triggered', '') if double_parsed is mapping else '' }}
+                {% else %}
+                  ''
+                {% endif %}
+              {% else %}
+                ''
+              {% endif %}
+            {% else %}
+              ''
+            {% endif %}
+          room_id: "bedroom"
+          source: "room_database_sql"
+
+      - name: "Motion Timeout — Upstairs (SQL)"
+        unique_id: "motion_timeout_upstairs_sql_v15"
+        state: >-
+          {% set raw = state_attr('sensor.room_configs_motion_lighting_dict','payload') %}
+          {% if raw not in [none, 'unknown', 'unavailable', ''] %}
+            {% set parsed = raw if raw is mapping else (raw | from_json) %}
+            {% if parsed is mapping and 'upstairs' in parsed %}
+              {% set cfg = parsed.upstairs %}
+              {% if cfg is mapping %}
+                {{ cfg.get('timeout', 180) }}
+              {% elif cfg is string %}
+                {% set double_parsed = cfg | from_json %}
+                {{ double_parsed.get('timeout', 180) if double_parsed is mapping else 180 }}
+              {% else %}
+                180
+              {% endif %}
+            {% else %}
+              180
+            {% endif %}
+          {% else %}
+            180
+          {% endif %}
+        attributes:
+          bypass: >-
+            {% set raw = state_attr('sensor.room_configs_motion_lighting_dict','payload') %}
+            {% if raw not in [none, 'unknown', 'unavailable', ''] %}
+              {% set parsed = raw if raw is mapping else (raw | from_json) %}
+              {% if parsed is mapping and 'upstairs' in parsed %}
+                {% set cfg = parsed.upstairs %}
+                {% if cfg is mapping %}
+                  {{ cfg.get('bypass', false) }}
+                {% elif cfg is string %}
+                  {% set double_parsed = cfg | from_json %}
+                  {{ double_parsed.get('bypass', false) if double_parsed is mapping else false }}
+                {% else %}
+                  false
+                {% endif %}
+              {% else %}
+                false
+              {% endif %}
+            {% else %}
+              false
+            {% endif %}
+          last_triggered: >-
+            {% set raw = state_attr('sensor.room_configs_motion_lighting_dict','payload') %}
+            {% if raw not in [none, 'unknown', 'unavailable', ''] %}
+              {% set parsed = raw if raw is mapping else (raw | from_json) %}
+              {% if parsed is mapping and 'upstairs' in parsed %}
+                {% set cfg = parsed.upstairs %}
+                {% if cfg is mapping %}
+                  {{ cfg.get('last_triggered', '') }}
+                {% elif cfg is string %}
+                  {% set double_parsed = cfg | from_json %}
+                  {{ double_parsed.get('last_triggered', '') if double_parsed is mapping else '' }}
+                {% else %}
+                  ''
+                {% endif %}
+              {% else %}
+                ''
+              {% endif %}
+            {% else %}
+              ''
+            {% endif %}
+          room_id: "upstairs"
+          source: "room_database_sql"
+
+      - name: "Motion Timeout — Downstairs (SQL)"
+        unique_id: "motion_timeout_downstairs_sql_v15"
+        state: >-
+          {% set raw = state_attr('sensor.room_configs_motion_lighting_dict','payload') %}
+          {% if raw not in [none, 'unknown', 'unavailable', ''] %}
+            {% set parsed = raw if raw is mapping else (raw | from_json) %}
+            {% if parsed is mapping and 'downstairs' in parsed %}
+              {% set cfg = parsed.downstairs %}
+              {% if cfg is mapping %}
+                {{ cfg.get('timeout', 180) }}
+              {% elif cfg is string %}
+                {% set double_parsed = cfg | from_json %}
+                {{ double_parsed.get('timeout', 180) if double_parsed is mapping else 180 }}
+              {% else %}
+                180
+              {% endif %}
+            {% else %}
+              180
+            {% endif %}
+          {% else %}
+            180
+          {% endif %}
+        attributes:
+          bypass: >-
+            {% set raw = state_attr('sensor.room_configs_motion_lighting_dict','payload') %}
+            {% if raw not in [none, 'unknown', 'unavailable', ''] %}
+              {% set parsed = raw if raw is mapping else (raw | from_json) %}
+              {% if parsed is mapping and 'downstairs' in parsed %}
+                {% set cfg = parsed.downstairs %}
+                {% if cfg is mapping %}
+                  {{ cfg.get('bypass', false) }}
+                {% elif cfg is string %}
+                  {% set double_parsed = cfg | from_json %}
+                  {{ double_parsed.get('bypass', false) if double_parsed is mapping else false }}
+                {% else %}
+                  false
+                {% endif %}
+              {% else %}
+                false
+              {% endif %}
+            {% else %}
+              false
+            {% endif %}
+          last_triggered: >-
+            {% set raw = state_attr('sensor.room_configs_motion_lighting_dict','payload') %}
+            {% if raw not in [none, 'unknown', 'unavailable', ''] %}
+              {% set parsed = raw if raw is mapping else (raw | from_json) %}
+              {% if parsed is mapping and 'downstairs' in parsed %}
+                {% set cfg = parsed.downstairs %}
+                {% if cfg is mapping %}
+                  {{ cfg.get('last_triggered', '') }}
+                {% elif cfg is string %}
+                  {% set double_parsed = cfg | from_json %}
+                  {{ double_parsed.get('last_triggered', '') if double_parsed is mapping else '' }}
+                {% else %}
+                  ''
+                {% endif %}
+              {% else %}
+                ''
+              {% endif %}
+            {% else %}
+              ''
+            {% endif %}
+          room_id: "downstairs"
+          source: "room_database_sql"
+
+      - name: "Motion Timeout — Kitchen (SQL)"
+        unique_id: "motion_timeout_kitchen_sql_v15"
+        state: >-
+          {% set raw = state_attr('sensor.room_configs_motion_lighting_dict','payload') %}
+          {% if raw not in [none, 'unknown', 'unavailable', ''] %}
+            {% set parsed = raw if raw is mapping else (raw | from_json) %}
+            {% if parsed is mapping and 'kitchen' in parsed %}
+              {% set cfg = parsed.kitchen %}
+              {% if cfg is mapping %}
+                {{ cfg.get('timeout', 300) }}
+              {% elif cfg is string %}
+                {% set double_parsed = cfg | from_json %}
+                {{ double_parsed.get('timeout', 300) if double_parsed is mapping else 300 }}
+              {% else %}
+                300
+              {% endif %}
+            {% else %}
+              300
+            {% endif %}
+          {% else %}
+            300
+          {% endif %}
+        attributes:
+          bypass: >-
+            {% set raw = state_attr('sensor.room_configs_motion_lighting_dict','payload') %}
+            {% if raw not in [none, 'unknown', 'unavailable', ''] %}
+              {% set parsed = raw if raw is mapping else (raw | from_json) %}
+              {% if parsed is mapping and 'kitchen' in parsed %}
+                {% set cfg = parsed.kitchen %}
+                {% if cfg is mapping %}
+                  {{ cfg.get('bypass', false) }}
+                {% elif cfg is string %}
+                  {% set double_parsed = cfg | from_json %}
+                  {{ double_parsed.get('bypass', false) if double_parsed is mapping else false }}
+                {% else %}
+                  false
+                {% endif %}
+              {% else %}
+                false
+              {% endif %}
+            {% else %}
+              false
+            {% endif %}
+          last_triggered: >-
+            {% set raw = state_attr('sensor.room_configs_motion_lighting_dict','payload') %}
+            {% if raw not in [none, 'unknown', 'unavailable', ''] %}
+              {% set parsed = raw if raw is mapping else (raw | from_json) %}
+              {% if parsed is mapping and 'kitchen' in parsed %}
+                {% set cfg = parsed.kitchen %}
+                {% if cfg is mapping %}
+                  {{ cfg.get('last_triggered', '') }}
+                {% elif cfg is string %}
+                  {% set double_parsed = cfg | from_json %}
+                  {{ double_parsed.get('last_triggered', '') if double_parsed is mapping else '' }}
+                {% else %}
+                  ''
+                {% endif %}
+              {% else %}
+                ''
+              {% endif %}
+            {% else %}
+              ''
+            {% endif %}
+          room_id: "kitchen"
+          source: "room_database_sql"
+
+      - name: "Motion Timeout — Living Room (SQL)"
+        unique_id: "motion_timeout_living_room_sql_v15"
+        state: >-
+          {% set raw = state_attr('sensor.room_configs_motion_lighting_dict','payload') %}
+          {% if raw not in [none, 'unknown', 'unavailable', ''] %}
+            {% set parsed = raw if raw is mapping else (raw | from_json) %}
+            {% if parsed is mapping and 'living_room' in parsed %}
+              {% set cfg = parsed.living_room %}
+              {% if cfg is mapping %}
+                {{ cfg.get('timeout', 240) }}
+              {% elif cfg is string %}
+                {% set double_parsed = cfg | from_json %}
+                {{ double_parsed.get('timeout', 240) if double_parsed is mapping else 240 }}
+              {% else %}
+                240
+              {% endif %}
+            {% else %}
+              240
+            {% endif %}
+          {% else %}
+            240
+          {% endif %}
+        attributes:
+          bypass: >-
+            {% set raw = state_attr('sensor.room_configs_motion_lighting_dict','payload') %}
+            {% if raw not in [none, 'unknown', 'unavailable', ''] %}
+              {% set parsed = raw if raw is mapping else (raw | from_json) %}
+              {% if parsed is mapping and 'living_room' in parsed %}
+                {% set cfg = parsed.living_room %}
+                {% if cfg is mapping %}
+                  {{ cfg.get('bypass', false) }}
+                {% elif cfg is string %}
+                  {% set double_parsed = cfg | from_json %}
+                  {{ double_parsed.get('bypass', false) if double_parsed is mapping else false }}
+                {% else %}
+                  false
+                {% endif %}
+              {% else %}
+                false
+              {% endif %}
+            {% else %}
+              false
+            {% endif %}
+          last_triggered: >-
+            {% set raw = state_attr('sensor.room_configs_motion_lighting_dict','payload') %}
+            {% if raw not in [none, 'unknown', 'unavailable', ''] %}
+              {% set parsed = raw if raw is mapping else (raw | from_json) %}
+              {% if parsed is mapping and 'living_room' in parsed %}
+                {% set cfg = parsed.living_room %}
+                {% if cfg is mapping %}
+                  {{ cfg.get('last_triggered', '') }}
+                {% elif cfg is string %}
+                  {% set double_parsed = cfg | from_json %}
+                  {{ double_parsed.get('last_triggered', '') if double_parsed is mapping else '' }}
+                {% else %}
+                  ''
+                {% endif %}
+              {% else %}
+                ''
+              {% endif %}
+            {% else %}
+              ''
+            {% endif %}
+          room_id: "living_room"
+          source: "room_database_sql"
+
+      - name: "Motion Timeout — Ensuite (SQL)"
+        unique_id: "motion_timeout_ensuite_sql_v15"
+        state: >-
+          {% set raw = state_attr('sensor.room_configs_motion_lighting_dict','payload') %}
+          {% if raw not in [none, 'unknown', 'unavailable', ''] %}
+            {% set parsed = raw if raw is mapping else (raw | from_json) %}
+            {% if parsed is mapping and 'ensuite' in parsed %}
+              {% set cfg = parsed.ensuite %}
+              {% if cfg is mapping %}
+                {{ cfg.get('timeout', 120) }}
+              {% elif cfg is string %}
+                {% set double_parsed = cfg | from_json %}
+                {{ double_parsed.get('timeout', 120) if double_parsed is mapping else 120 }}
+              {% else %}
+                120
+              {% endif %}
+            {% else %}
+              120
+            {% endif %}
+          {% else %}
+            120
+          {% endif %}
+        attributes:
+          bypass: >-
+            {% set raw = state_attr('sensor.room_configs_motion_lighting_dict','payload') %}
+            {% if raw not in [none, 'unknown', 'unavailable', ''] %}
+              {% set parsed = raw if raw is mapping else (raw | from_json) %}
+              {% if parsed is mapping and 'ensuite' in parsed %}
+                {% set cfg = parsed.ensuite %}
+                {% if cfg is mapping %}
+                  {{ cfg.get('bypass', false) }}
+                {% elif cfg is string %}
+                  {% set double_parsed = cfg | from_json %}
+                  {{ double_parsed.get('bypass', false) if double_parsed is mapping else false }}
+                {% else %}
+                  false
+                {% endif %}
+              {% else %}
+                false
+              {% endif %}
+            {% else %}
+              false
+            {% endif %}
+          last_triggered: >-
+            {% set raw = state_attr('sensor.room_configs_motion_lighting_dict','payload') %}
+            {% if raw not in [none, 'unknown', 'unavailable', ''] %}
+              {% set parsed = raw if raw is mapping else (raw | from_json) %}
+              {% if parsed is mapping and 'ensuite' in parsed %}
+                {% set cfg = parsed.ensuite %}
+                {% if cfg is mapping %}
+                  {{ cfg.get('last_triggered', '') }}
+                {% elif cfg is string %}
+                  {% set double_parsed = cfg | from_json %}
+                  {{ double_parsed.get('last_triggered', '') if double_parsed is mapping else '' }}
+                {% else %}
+                  ''
+                {% endif %}
+              {% else %}
+                ''
+              {% endif %}
+            {% else %}
+              ''
+            {% endif %}
+          room_id: "ensuite"
+          source: "room_database_sql"
+
+      - name: "Motion Timeout — Desk (SQL)"
+        unique_id: "motion_timeout_desk_sql_v15"
+        state: >-
+          {% set raw = state_attr('sensor.room_configs_motion_lighting_dict','payload') %}
+          {% if raw not in [none, 'unknown', 'unavailable', ''] %}
+            {% set parsed = raw if raw is mapping else (raw | from_json) %}
+            {% if parsed is mapping and 'desk' in parsed %}
+              {% set cfg = parsed.desk %}
+              {% if cfg is mapping %}
+                {{ cfg.get('timeout', 300) }}
+              {% elif cfg is string %}
+                {% set double_parsed = cfg | from_json %}
+                {{ double_parsed.get('timeout', 300) if double_parsed is mapping else 300 }}
+              {% else %}
+                300
+              {% endif %}
+            {% else %}
+              300
+            {% endif %}
+          {% else %}
+            300
+          {% endif %}
+        attributes:
+          bypass: >-
+            {% set raw = state_attr('sensor.room_configs_motion_lighting_dict','payload') %}
+            {% if raw not in [none, 'unknown', 'unavailable', ''] %}
+              {% set parsed = raw if raw is mapping else (raw | from_json) %}
+              {% if parsed is mapping and 'desk' in parsed %}
+                {% set cfg = parsed.desk %}
+                {% if cfg is mapping %}
+                  {{ cfg.get('bypass', false) }}
+                {% elif cfg is string %}
+                  {% set double_parsed = cfg | from_json %}
+                  {{ double_parsed.get('bypass', false) if double_parsed is mapping else false }}
+                {% else %}
+                  false
+                {% endif %}
+              {% else %}
+                false
+              {% endif %}
+            {% else %}
+              false
+            {% endif %}
+          last_triggered: >-
+            {% set raw = state_attr('sensor.room_configs_motion_lighting_dict','payload') %}
+            {% if raw not in [none, 'unknown', 'unavailable', ''] %}
+              {% set parsed = raw if raw is mapping else (raw | from_json) %}
+              {% if parsed is mapping and 'desk' in parsed %}
+                {% set cfg = parsed.desk %}
+                {% if cfg is mapping %}
+                  {{ cfg.get('last_triggered', '') }}
+                {% elif cfg is string %}
+                  {% set double_parsed = cfg | from_json %}
+                  {{ double_parsed.get('last_triggered', '') if double_parsed is mapping else '' }}
+                {% else %}
+                  ''
+                {% endif %}
+              {% else %}
+                ''
+              {% endif %}
+            {% else %}
+              ''
+            {% endif %}
+          room_id: "desk"
+          source: "room_database_sql"

@@ -25,7 +25,7 @@ def main():
         return 0
 
     cutoff = (
-        dt.datetime.now(dt.timezone.utc)
+        dt.datetime.now(dt.UTC)
         - dt.timedelta(days=args.keep_days)
     )
     keep, move = [], []

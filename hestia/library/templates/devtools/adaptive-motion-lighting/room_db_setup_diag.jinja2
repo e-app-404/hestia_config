@@ -1,0 +1,131 @@
+{#
+  Room-DB Setup Diagnostic (Developer Tools Template)
+  - Quick snapshot to confirm AppDaemon endpoints, SQL payloads, and HA wiring
+  - Paste into Home Assistant → Developer Tools → Template
+
+  This report prefers the working global endpoints (room_db_*). It also shows
+  app-scoped/compat sensors if present to help spot drift.
+
+  Sensors expected:
+    - sensor.appdaemon_health_appdaemon_global
+    - sensor.appdaemon_test_appdaemon_global
+    - sensor.room_configs_motion_lighting_dict
+    - sensor.room_configs_vacuum_control_dict
+    - sensor.rooms_needing_cleaning
+#}
+
+{%- set now_iso = now().isoformat() -%}
+
+{%- macro exists(eid) -%}
+  {{- eid in states -}}
+{%- endmacro -%}
+
+{%- macro valid_state(eid) -%}
+  {%- if not eid or eid not in states -%}False{%- else -%}
+    {%- set raw = states(eid) -%}
+    {{ (raw not in ['unknown','unavailable','']) | string }}
+  {%- endif -%}
+{%- endmacro -%}
+
+{%- macro s(eid) -%}
+  {%- if eid and eid in states -%}
+    {%- if valid_state(eid) == 'True' -%}
+      {{ states(eid) }}
+    {%- else -%}
+      {{ 'missing' if states(eid) == 'unknown' else 'unavailable' }}
+    {%- endif -%}
+  {%- else -%}
+    missing
+  {%- endif -%}
+{%- endmacro -%}
+
+{%- macro a(eid, key) -%}
+  {%- if eid and eid in states -%}
+    {%- set v = state_attr(eid, key) -%}
+    {{ v if v is not none else '' }}
+  {%- else -%}
+    {{ '' }}
+  {%- endif -%}
+{%- endmacro -%}
+
+{%- macro as_obj(raw) -%}
+  {%- if raw is string -%}
+    {%- set t = raw | trim -%}
+    {{ (t | from_json) if (t|length>0) else {} }}
+  {%- elif raw is mapping -%}{{ raw }}{%- elif raw is iterable -%}{{ raw }}{%- else -%}{{ {} }}{%- endif -%}
+{%- endmacro -%}
+
+{%- set eid_health = 'sensor.appdaemon_health_appdaemon_global' -%}
+{%- set eid_test   = 'sensor.appdaemon_test_appdaemon_global' -%}
+{%- set eid_ml_d   = 'sensor.room_configs_motion_lighting_dict' -%}
+{%- set eid_vc_d   = 'sensor.room_configs_vacuum_control_dict' -%}
+{%- set eid_clean  = 'sensor.rooms_needing_cleaning' -%}
+
+{%- set ml = as_obj(state_attr(eid_ml_d, 'payload')) -%}
+{%- set vc = as_obj(state_attr(eid_vc_d, 'payload')) -%}
+{%- set rn = (states(eid_clean) | int(0) if valid_state(eid_clean) == 'True' else 0) -%}
+
+{%- set missing_rooms_for_ml = [] -%}
+{%- set missing_rooms_for_vc = [] -%}
+{%- set rooms = ml.keys() if ml is mapping else [] -%}
+{%- if ml is mapping and vc is mapping -%}
+  {%- for r in rooms -%}
+    {%- if ml.get(r) is not mapping -%}
+      {%- set _ = missing_rooms_for_ml.append(r) -%}
+    {%- endif -%}
+    {%- if vc.get(r) is not mapping -%}
+      {%- set _ = missing_rooms_for_vc.append(r) -%}
+    {%- endif -%}
+  {%- endfor -%}
+{%- endif -%}
+
+{%- set setup = {
+  'timestamp': now_iso,
+  'endpoints': {
+    'health': {
+      'entity': eid_health,
+      'present': exists(eid_health),
+      'state': s(eid_health),
+      'status': a(eid_health,'status'),
+      'message': a(eid_health,'message'),
+    },
+    'test': {
+      'entity': eid_test,
+      'present': exists(eid_test),
+      'state': s(eid_test),
+      'status': a(eid_test,'status'),
+      'message': a(eid_test,'message'),
+    }
+  },
+  'sql_payloads': {
+    'motion_lighting': {
+      'entity': eid_ml_d,
+      'present': exists(eid_ml_d),
+      'dict_state': s(eid_ml_d),
+      'rooms_count': (ml | length) if (ml is mapping) else 0,
+      'missing_rooms': missing_rooms_for_ml
+    },
+    'vacuum_control': {
+      'entity': eid_vc_d,
+      'present': exists(eid_vc_d),
+      'dict_state': s(eid_vc_d),
+      'rooms_count': (vc | length) if (vc is mapping) else 0,
+      'missing_rooms': missing_rooms_for_vc
+    },
+    'rooms_needing_cleaning': {
+      'entity': eid_clean,
+      'present': exists(eid_clean),
+      'state': s(eid_clean),
+      'count': rn
+    }
+  },
+  'recommendations': [
+    'If endpoints.health.state != healthy, check AppDaemon logs and endpoint URLs.',
+    'If endpoints.test.state != test_success, confirm handler registration and path.',
+    'If any *_dict sensor is missing/unavailable, check SQL sensors and recorder exclusions.',
+    'Ensure /config/www/area_mapping.yaml exists and covers all canonical rooms.',
+    'Consider pruning 404 probe sensors once global endpoints are stable.'
+  ]
+} -%}
+
+{{ setup | tojson(indent=2) }}

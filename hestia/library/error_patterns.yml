@@ -1,0 +1,1609 @@
+# Home Assistant Error Patterns and Resolution Guide
+# This file documents common error patterns in Home Assistant and their fixes
+# Used by diagnostic tools and documentation
+
+patterns:
+  - name: "template_variable_undefined"
+    category: "jinja_template"
+    description: "Template errors when variables don't exist or are undefined"
+    error_format: "UndefinedError: 'variable_name' is undefined"
+    symptoms:
+      - "Template errors in Home Assistant logs"
+      - "Sensors showing 'unavailable' state"
+      - "Automations failing to execute"
+    root_causes:
+      - "Missing existence checks before using template variables"
+      - "Improper Jinja whitespace control leading to empty strings"
+      - "Using template functions on undefined variables"
+    solution:
+      - "Add defensive checks: {% if trigger.to_state is not none %}"
+      - "Use whitespace control: {%- set var = value -%}"
+      - "Check state validity: {{ raw not in ['unknown','unavailable',''] }}"
+    examples:
+      bad: |
+        value_template: "{{ trigger.to_state.state | abs }}"
+      good: |
+        value_template: >-
+          {%- set state = trigger.to_state -%}
+          {{ state is not none and state.state not in ['unknown','unavailable','']
+             and state.state | abs or 0 }}
+    references:
+      - "Home Assistant Template Documentation"
+      - "Jinja2 Template Documentation"
+      - "ADR-0020: Template Error Patterns"
+
+  - name: "backup_agent_upload_failure"
+    category: "backup"
+    description: "Backup uploads failing to configured remote locations like Synology NAS"
+    error_format: "backup could not be uploaded to the configured locations [location]"
+    symptoms:
+      - "Automatic backup upload failed notifications"
+      - "Backup agent showing failed uploads in storage"
+      - "Synology NAS backup errors"
+      - "Backup warning notifications in Home Assistant"
+    root_causes:
+      - "Multi-factor authentication enabled on NAS user account"
+      - "Backup target path does not exist or lacks write permissions"
+      - "Network connectivity issues or firewall blocking access"
+      - "Insufficient storage space on backup destination"
+      - "Expired or invalid authentication credentials"
+      - "NAS service disabled or configuration changed"
+    solution:
+      - "Disable MFA for backup service account on NAS"
+      - "Verify backup path exists and has proper permissions"
+      - "Test network connectivity and API access"
+      - "Reconfigure Home Assistant backup integration"
+    examples:
+      bad: |
+        # .storage/backup showing failed uploads
+        {
+          "backup_id": "abc123",
+          "failed_agent_ids": ["synology_dsm.2330RLRDXJ1F8"],
+          "failed_folders": []
+        }
+      good: |
+        # .storage/backup with successful uploads
+        {
+          "backup_id": "abc123",
+          "failed_agent_ids": [],
+          "failed_folders": []
+        }
+    resolution_steps:
+      - "Run backup validation: hestia/tools/backup_validator.sh"
+      - "Check NAS user MFA and privilege settings"
+      - "Verify backup path permissions and disk space"
+      - "Test API connectivity to backup destination"
+      - "Reconfigure integration if authentication fails"
+    tooling:
+      - "hestia/tools/backup_validator.sh - comprehensive backup agent testing"
+      - "jq '.data.backups[] | select(.failed_agent_ids | length > 0)' /config/.storage/backup"
+
+  - name: "entity_registry_duplication"
+    category: "entity_registry"
+    description: "Duplicate entities with _2 suffix from device re-registration"
+    error_format: "Multiple entities with same name but different unique_id patterns"
+    symptoms:
+      - "Entities appearing with _2, _3 suffixes in entity registry"
+      - "Original entities showing as 'unavailable' with 'restored: true'"
+      - "Duplicate mobile app or integration device registrations"
+      - "Entity conflicts after device re-pairing or integration reload"
+    root_causes:
+      - "Mobile app re-registration creating new device with different device_id"
+      - "Integration reload without proper cleanup of old entities"
+      - "Device pairing conflicts with existing entity unique_ids"
+      - "Orphaned entities from removed integrations not cleaned up"
+      - "Entity restore state conflicts with new registrations"
+    solution:
+      - "Remove duplicate entities via Developer Tools > Entities"
+      - "For unavailable base + active suffixed: disable base, rename suffixed to take base entity_id"
+      - "Clean up orphaned config entries from removed integrations"
+      - "Disable old entities before re-registering devices"
+      - "Use entity registry cleanup tools to remove suffixed duplicates"
+    examples:
+      bad: |
+        # Entity registry showing duplicates
+        sensor.ephone_uk_activity (unavailable, restored: true)
+        sensor.ephone_uk_activity_2 (active, new device_id)
+      good: |
+        # Clean entity registry
+        sensor.ephone_uk_activity (active, single registration)
+    resolution_steps:
+      - "Identify duplicate entities: grep '_2.*entity_id' .storage/core.entity_registry"
+      - "Find associated config entries with different device_ids"
+      - "For unavailable base + active suffixed pattern:"
+      - "  1. Disable the unavailable base entity"
+      - "  2. Change suffixed entity_id to take over base entity_id (via Developer Tools)"
+      - "  3. Verify the renamed entity maintains functionality"
+      - "Clean up orphaned device registrations"
+      - "Restart Home Assistant to refresh entity states"
+    tooling:
+      - "Developer Tools > Entities - search for _2, _3 suffixes"
+      - "jq '.data.entities[] | select(.entity_id | contains(\"_2\"))' .storage/core.entity_registry"
+
+  - name: "blueprint_path_resolution"
+    category: "automation_blueprint"
+    description: "Blueprint loading errors due to incorrect path references"
+    error_format: "Unable to find [path]/blueprint.yaml"
+    symptoms:
+      - "Blueprint loading failures in Home Assistant"
+      - "Automations showing as 'unknown' or failing to load"
+      - "Configuration validation errors for blueprint paths"
+    root_causes:
+      - "Incorrect blueprint path references in automation files"
+      - "Missing 'hestia/' prefix in blueprint paths"
+      - "Blueprint files moved but automation paths not updated"
+    solution:
+      - "Use canonical blueprint path: hestia/library/blueprints/"
+      - "Verify blueprint file exists at referenced path"
+      - "Update all automation files with correct blueprint paths"
+    examples:
+      bad: |
+        use_blueprint:
+          path: library/blueprints/sensor-light.yaml
+      good: |
+        use_blueprint:
+          path: hestia/library/blueprints/sensor-light.yaml
+    resolution_steps:
+      - "Search for incorrect blueprint references: grep -r 'path: library/blueprints/' **/*.yaml"
+      - "Verify blueprint files exist: ls hestia/library/blueprints/"
+      - "Replace incorrect paths with canonical paths"
+      - "Validate Home Assistant configuration after changes"
+    references:
+      - "ADR-0016: Canonical Workspace Structure"
+
+  - name: "recorder_invalid_action_parameter"
+    category: "automation_action"
+    description: "Invalid parameters used with Home Assistant recorder actions"
+    error_format: "extra keys not allowed @ data['parameter_name']"
+    symptoms:
+      - "Automation execution failures with recorder actions"
+      - "Error messages about extra keys not allowed"
+      - "Script execution errors in recorder actions"
+    root_causes:
+      - "Using parameters valid for one recorder action with another action"
+      - "Incorrect parameter names or deprecated parameters"
+      - "Mixing recorder.purge and recorder.purge_entities parameters"
+    solution:
+      - "Use correct parameters for each recorder action"
+      - "Remove invalid parameters from action data"
+      - "Consult Home Assistant documentation for valid parameters"
+    examples:
+      bad: |
+        action: recorder.purge_entities
+        data:
+          keep_days: 0
+          entity_id: sensor.example
+          apply_filter: true  # Invalid for purge_entities
+      good: |
+        action: recorder.purge_entities
+        data:
+          keep_days: 0
+          entity_id: sensor.example
+        # OR use recorder.purge with apply_filter
+        action: recorder.purge
+        data:
+          keep_days: 7
+          apply_filter: true
+    resolution_steps:
+      - "Identify the failing automation from error logs"
+      - "Check Home Assistant documentation for valid action parameters"
+      - "Remove invalid parameters from automation action data"
+      - "Test automation execution after fix"
+    references:
+      - "Home Assistant Recorder Integration Documentation"
+
+  - name: "shell_command_path_error"
+    category: "shell_command"
+    description: "Shell command execution failures due to incorrect file paths"
+    error_format: "Error running command: `command`, return code: 127"
+    symptoms:
+      - "Shell command returning exit code 127 (command not found)"
+      - "Scripts failing to execute from Home Assistant"
+      - "File not found errors in shell command execution"
+    root_causes:
+      - "Incorrect file paths in shell command configuration"
+      - "Scripts moved but configuration not updated"
+      - "Missing executable permissions on script files"
+    solution:
+      - "Use correct canonical paths to script files"
+      - "Verify script files exist at specified locations"
+      - "Ensure scripts have executable permissions"
+    examples:
+      bad: |
+        shell_command:
+          git_push: "bash -lc '/config/tools/script.sh'"
+      good: |
+        shell_command:
+          git_push: "bash -lc '/config/hestia/tools/script.sh'"
+    resolution_steps:
+      - "Check if script file exists at the specified path"
+      - "Update path to use canonical workspace structure"
+      - "Verify script has executable permissions: chmod +x script.sh"
+      - "Test shell command execution from Home Assistant"
+    references:
+      - "ADR-0016: Canonical Workspace Structure"
+
+  - name: "missing_integration_reference"
+    category: "integration_loading"
+    description: "WebSocket errors when frontend tries to access non-existent integrations"
+    error_format: "Integration 'integration_name' not found"
+    symptoms:
+      - "WebSocket API errors in Home Assistant logs"
+      - "Frontend elements failing to load"
+      - "Unknown error messages in browser console"
+    root_causes:
+      - "Custom integrations removed but still referenced in frontend"
+      - "Cached references to removed integrations"
+      - "UI elements trying to access non-existent integration manifests"
+    solution:
+      - "Clear browser cache and restart Home Assistant"
+      - "Remove any lingering configuration references"
+      - "Check for custom UI elements referencing the integration"
+    examples:
+      symptoms: |
+        homeassistant.loader.IntegrationNotFound: Integration 'icloud3' not found.
+      resolution: |
+        1. Clear browser cache
+        2. Check custom_components directory
+        3. Search configuration files for references
+        4. Restart Home Assistant
+    resolution_steps:
+      - "Identify the missing integration from error logs"
+      - "Search configuration files for any references: grep -r 'integration_name' ."
+      - "Clear browser cache and Home Assistant frontend cache"
+      - "Restart Home Assistant to clear cached references"
+    references:
+      - "Home Assistant Integration Loading Documentation"
+
+  - name: "command_line_curl_ssl_error"
+    category: "command_line_sensor"
+    description: "Command line sensors failing due to SSL/TLS connection issues with curl"
+    error_format: "Command failed (with return code 35): bash -lc '.*curl.*'"
+    symptoms:
+      - "Command line sensors showing 'unknown' or 'unavailable' states"
+      - "Return code 35 errors in Home Assistant logs"
+      - "SSL connect error messages in command line integration logs"
+      - "Intermittent sensor failures"
+    root_causes:
+      - "SSL/TLS handshake failures with remote servers"
+      - "Certificate validation issues or expired certificates"
+      - "Network connectivity problems during SSL negotiation"
+      - "Cloudflare or proxy SSL configuration issues"
+      - "Insufficient error handling in curl commands"
+    solution:
+      - "Add error handling with fallback values using || echo 'fallback'"
+      - "Redirect stderr to /dev/null to suppress SSL noise: 2>/dev/null"
+      - "Use appropriate fallback values in value_template"
+      - "Consider adding curl SSL options like --insecure for internal services (with caution)"
+    examples:
+      bad: |
+        command: >-
+          bash -lc '
+            set -eo pipefail
+            curl -s -o /dev/null -w "%{http_code}" https://example.com/api | tr -d "\n"
+          '
+        value_template: "{{ value | default('unknown') | trim }}"
+      good: |
+        command: >-
+          bash -lc '
+            set -eo pipefail
+            curl -s -o /dev/null -w "%{http_code}" https://example.com/api 2>/dev/null | tr -d "\n" || echo "000"
+          '
+        value_template: "{{ value | default('000') | trim }}"
+    resolution_steps:
+      - "Identify the failing command from error logs"
+      - "Add error handling to curl commands with || echo 'fallback_value'"
+      - "Redirect stderr to /dev/null to suppress SSL error noise"
+      - "Update value_template to use appropriate default values"
+      - "Test manually: bash -lc 'your_curl_command || echo fallback'"
+      - "Consider certificate verification if using internal services"
+    prevention_strategies:
+      - "Always include error handling in curl-based command line sensors"
+      - "Use appropriate timeouts with --connect-timeout and --max-time"
+      - "Monitor SSL certificate expiration dates"
+      - "Test commands in various network conditions"
+    tooling:
+      detector: "grep -r 'Command failed.*return code 35' /config/home-assistant.log"
+      validator: "Test curl commands manually with verbose output: curl -v"
+    references:
+      - "Home Assistant Command Line Integration Documentation"
+      - "curl manual and error codes documentation"
+      - "SSL/TLS troubleshooting guides"
+
+  - name: "yaml_duplicate_key_error"
+    category: "yaml_configuration"
+    description: "YAML parsing errors due to duplicate keys in configuration files"
+    error_format: "YAML file [path] contains duplicate key \"[key]\". Check lines [n] and [m]"
+    symptoms:
+      - "YAML parsing warnings in Home Assistant logs"
+      - "Configuration sections not loading as expected"
+      - "Duplicate key warnings during startup"
+    root_causes:
+      - "Multiple sections with the same key in a single YAML file"
+      - "Copy-paste errors creating duplicate configuration blocks"
+      - "Legacy cache files accidentally being loaded"
+      - "Incorrect file includes or symlinks"
+    solution:
+      - "Merge duplicate sections into a single configuration block"
+      - "Remove redundant key definitions"
+      - "Check for accidental file inclusions from cache directories"
+      - "Validate YAML structure before deployment"
+    examples:
+      bad: |
+        input_boolean:
+          setting_one: true
+        # Later in same file...
+        input_boolean:
+          setting_two: false
+      good: |
+        input_boolean:
+          setting_one: true
+          setting_two: false
+    resolution_steps:
+      - "Identify the file and line numbers from error message"
+      - "Open the file and locate the duplicate key sections"
+      - "Merge the configurations into a single block"
+      - "Remove any redundant or conflicting definitions"
+      - "Validate YAML syntax after changes"
+    references:
+      - "Home Assistant Configuration Documentation"
+      - "YAML Specification"
+
+  - name: "yaml_heredoc_parsing_error"
+    category: "yaml_configuration"
+    description: "YAML parsing errors when using heredoc syntax within folded scalars"
+    error_format: "while scanning a simple key...could not find expected ':'"
+    symptoms:
+      - "Configuration loading failures with cryptic YAML parsing errors"
+      - "Shell command configurations failing to load"
+      - "Error messages pointing to line numbers with colon expectations"
+      - "Home Assistant failing to start due to configuration syntax errors"
+    root_causes:
+      - "Using heredoc syntax (<<\"DELIMITER\") within YAML folded scalar blocks (>-)"
+      - "Complex shell commands with embedded quotes conflicting with YAML parsing"
+      - "Multi-line SQL or shell scripts incorrectly formatted in YAML"
+      - "YAML parser unable to handle nested quoting structures"
+    solution:
+      - "Convert from folded scalar (>-) to literal scalar (|) block style"
+      - "Eliminate heredoc syntax and use inline SQL with proper escaping"
+      - "Escape all internal quotes within the command string"
+      - "Use single-line format for complex SQL operations"
+    examples:
+      bad: |
+        shell_command:
+          update_room_config: >-
+            /bin/sh -c 'sqlite3 /config/room_database.db <<"SQL"
+            PRAGMA journal_mode=WAL;
+            UPDATE table SET data = "{{ value }}";
+        SQL'
+      good: |
+        shell_command:
+          update_room_config: |
+            /bin/sh -c 'sqlite3 /config/room_database.db "PRAGMA journal_mode=WAL; UPDATE table SET data = \"{{ value }}\";"'
+    resolution_steps:
+      - "Identify the problematic YAML file from error message line numbers"
+      - "Locate shell commands or complex multi-line strings using >- folded scalars"
+      - "Convert folded scalar (>-) to literal scalar (|) block style"
+      - "Remove heredoc syntax and inline the SQL/shell commands"
+      - "Escape all internal quotes: \" becomes \\\" within the command string"
+      - "Test configuration loading with: /config/bin/config-health /config"
+      - "Verify shell commands execute properly after YAML fixes"
+    prevention_strategies:
+      - "Use literal scalar (|) for complex shell commands instead of folded scalar (>-)"
+      - "Avoid heredoc syntax within YAML; use inline commands with proper escaping"
+      - "Test YAML parsing after adding complex shell commands"
+      - "Consider external script files for very complex multi-line operations"
+    tooling:
+      detector: "Look for error patterns: 'while scanning a simple key' + 'could not find expected':'"
+      validator: "/config/bin/config-health /config - validates Home Assistant YAML configuration"
+      test_yaml: "python -c \"import yaml; yaml.safe_load(open('file.yaml'))\" - test YAML parsing"
+    references:
+      - "YAML Specification - Block Scalar Styles"
+      - "Home Assistant Shell Command Integration Documentation"
+      - "ADR-0018: Configuration Normalization Standards"
+
+  - name: "blueprint_loading_error"
+    category: "automation_blueprint"
+    description: "Blueprint loading failures due to incorrect file paths or missing files"
+    error_format: "Failed to load blueprint: Unable to find [path]"
+    symptoms:
+      - "Blueprint automation generation failures"
+      - "Blueprint path resolution errors in logs"
+      - "Automations showing as unavailable or failing to load"
+    root_causes:
+      - "Incorrect blueprint file paths in blueprint matrix or automation files"
+      - "Missing hestia/ prefix in blueprint paths"
+      - "Blueprint files moved but references not updated"
+      - "Typos in blueprint file paths"
+    solution:
+      - "Use correct canonical blueprint paths with hestia/ prefix"
+      - "Verify blueprint files exist at referenced locations"
+      - "Update blueprint matrix with correct paths"
+      - "Fix typos in blueprint references"
+    examples:
+      bad: |
+        # Blueprint matrix with incorrect paths
+        - core_executor: "library/blueprints/sensor-light.yaml"
+        - link_entities: "library/blueprints/ha-blueprint-linked-entities.yaml"
+      good: |
+        # Blueprint matrix with correct canonical paths
+        - core_executor: "hestia/library/blueprints/sensor-light.yaml"
+        - link_entities: "hestia/library/blueprints/ha-blueprint-linked-entities.yaml"
+    resolution_steps:
+      - "Identify the missing blueprint path from error logs"
+      - "Verify the blueprint file exists: ls hestia/library/blueprints/"
+      - "Update blueprint matrix or automation files with correct paths"
+      - "Use canonical hestia/library/blueprints/ prefix for all blueprint references"
+      - "Test blueprint loading after path corrections"
+    references:
+      - "ADR-0016: Canonical Workspace Structure"
+      - "Home Assistant Blueprint Documentation"
+
+  - name: "script_selector_configuration_error"
+    category: "script_configuration"
+    description: "Script configuration errors due to malformed selector syntax in field definitions"
+    error_format: "Only one type can be specified. Found for dictionary value @ data['fields']['field_name']['selector']. Got OrderedDict()."
+    symptoms:
+      - "Scripts showing as 'not active' due to configuration errors"
+      - "Script configuration validation failures"
+      - "Error messages about dictionary values and multiple types in selectors"
+      - "Script field selectors not working properly in UI"
+    root_causes:
+      - "Using inline dictionary format for selectors: selector: { text: {} }"
+      - "YAML parser interpreting nested empty dictionaries as ambiguous types"
+      - "Selector syntax not following Home Assistant's expected block format"
+      - "Mixed selector syntax formats within the same configuration"
+    solution:
+      - "Convert inline selector format to explicit block format"
+      - "Use proper YAML indentation for selector definitions"
+      - "Ensure consistent selector syntax throughout configuration"
+      - "Remove unnecessary empty dictionary values"
+    examples:
+      bad: |
+        fields:
+          room:
+            description: "Room slug (e.g., 'bedroom')"
+            required: true
+            selector: { text: {} }
+      good: |
+        fields:
+          room:
+            description: "Room slug (e.g., 'bedroom')"
+            required: true
+            selector:
+              text:
+    resolution_steps:
+      - "Identify the problematic script from Home Assistant error messages"
+      - "Locate the script configuration file (usually in scripts.yaml or packages/)"
+      - "Find the fields section with selector definitions"
+      - "Convert inline selector format { type: {} } to block format"
+      - "Remove empty dictionary values and use proper YAML block structure"
+      - "Test configuration loading with: /config/bin/config-health /config"
+      - "Verify script shows as active in Home Assistant UI"
+    prevention_strategies:
+      - "Always use block format for selector definitions in scripts"
+      - "Avoid inline dictionary syntax for complex YAML structures"
+      - "Test script configurations after adding new fields"
+      - "Use consistent selector syntax patterns across all scripts"
+    tooling:
+      detector: "Look for error patterns: 'Only one type can be specified' + 'selector' + 'OrderedDict()'"
+      validator: "/config/bin/config-health /config - validates Home Assistant configuration"
+      script_check: "Check script status in Home Assistant Developer Tools > Services"
+    references:
+      - "Home Assistant Script Documentation"
+      - "Home Assistant Selector Documentation"
+      - "YAML Best Practices for Home Assistant"
+
+  - name: "automation_unknown_action_service"
+    category: "automation_action"
+    description: "Automation failures due to referencing non-existent or misnamed services"
+    error_format: "uses an unknown action...has an unknown action: [service_name]"
+    symptoms:
+      - "Automations showing error status and not executing"
+      - "Error messages about unknown actions in automation configuration"
+      - "Automation reported as having configuration errors"
+      - "Services not found during automation execution"
+    root_causes:
+      - "Referencing rest_command services that don't exist in configuration"
+      - "Typos in service names (e.g., rest_command vs shell_command)"
+      - "Services removed or renamed but automation not updated"
+      - "Missing integration providing the referenced service"
+      - "Incorrect service domain or action name"
+    solution:
+      - "Verify the correct service exists in Home Assistant configuration"
+      - "Update service calls to use correct service names and domains"
+      - "Check if service requires specific integration to be installed"
+      - "Add missing required parameters for the correct service"
+      - "Use Developer Tools > Services to verify available services"
+    examples:
+      bad: |
+        - service: rest_command.room_db_update_config
+          data:
+            room_id: "bedroom"
+            domain: "motion_lighting"
+            config_data: "{{ some_data | tojson }}"
+      good: |
+        - service: shell_command.update_room_config
+          data:
+            room_id: "bedroom"
+            domain: "motion_lighting"
+            config_data: "{{ some_data | tojson }}"
+            schema_expected: 1
+    resolution_steps:
+      - "Identify the failing automation from Home Assistant error messages"
+      - "Check what services are actually available in configuration"
+      - "Verify service domain: rest_command vs shell_command vs other domains"
+      - "Update service call to use correct service name and domain"
+      - "Add any required parameters that the correct service expects"
+      - "Test automation after fixing service references"
+      - "Use Developer Tools > Services to verify service is callable"
+    prevention_strategies:
+      - "Use Developer Tools > Services to verify service names before use"
+      - "Keep automation service references in sync with configuration changes"
+      - "Document service dependencies and parameter requirements"
+      - "Test automations after configuration changes"
+    troubleshooting:
+      service_discovery: "Developer Tools > Services - browse available services"
+      config_check: "/config/bin/config-health /config - validate configuration"
+      service_test: "Developer Tools > Services - test service calls manually"
+    references:
+      - "Home Assistant Services Documentation"
+      - "Home Assistant Automation Action Documentation"
+      - "Home Assistant Developer Tools Guide"
+
+  - name: "sql_sensor_invalid_configuration_option"
+    category: "sql_sensor_configuration"
+    description: "SQL sensor configuration errors due to using invalid or deprecated options"
+    error_format: "'[option_name]' is an invalid option for 'sql', check: sql->[index]->[option_name]"
+    symptoms:
+      - "Configuration warnings about invalid SQL sensor options"
+      - "SQL sensors not loading with expected configuration"
+      - "Home Assistant configuration validation failures"
+      - "Integration setup errors for SQL sensors"
+    root_causes:
+      - "Using scan_interval option which is not supported in individual SQL sensor entries"
+      - "Attempting to use sensor platform options in top-level sql configuration"
+      - "Mixing deprecated sensor platform syntax with modern sql integration syntax"
+      - "Using options from other integrations that don't apply to SQL sensors"
+    solution:
+      - "Remove invalid options like scan_interval from individual SQL sensor entries"
+      - "Use integration-level polling control instead of sensor-level scan_interval"
+      - "Consult Home Assistant SQL integration documentation for valid options"
+      - "Use automation-based polling for custom update intervals"
+    examples:
+      bad: |
+        sql:
+          - name: "My SQL Sensor"
+            db_url: sqlite:////config/database.db
+            scan_interval: 30  # Invalid option
+            query: "SELECT value FROM table;"
+            column: value
+      good: |
+        sql:
+          - name: "My SQL Sensor"
+            db_url: sqlite:////config/database.db
+            query: "SELECT value FROM table;"
+            column: value
+        # For custom polling, use automation:
+        # automation:
+        #   - trigger:
+        #       platform: time_pattern
+        #       seconds: "/30"
+        #     action:
+        #       service: homeassistant.update_entity
+        #       target:
+        #         entity_id: sensor.my_sql_sensor
+    resolution_steps:
+      - "Identify invalid options from Home Assistant configuration warnings"
+      - "Check SQL integration documentation for valid configuration options"
+      - "Remove scan_interval and other invalid options from sql sensor entries"
+      - "Use default 30-second polling or disable polling in Integration settings"
+      - "Create automation for custom polling intervals if needed"
+      - "Test configuration after removing invalid options"
+    prevention_strategies:
+      - "Always consult official Home Assistant documentation for integration options"
+      - "Don't mix sensor platform syntax with integration syntax"
+      - "Use configuration validation to catch invalid options early"
+      - "Test SQL sensor configuration after changes"
+    valid_options:
+      - "name (required): sensor name"
+      - "query (required): SQL query string"
+      - "column (required): column name for sensor state"
+      - "db_url (optional): database connection URL"
+      - "unit_of_measurement (optional): sensor unit"
+      - "value_template (optional): template for processing value"
+      - "unique_id (optional): unique identifier"
+      - "device_class (optional): sensor device class"
+      - "state_class (optional): sensor state class"
+      - "icon (optional): sensor icon template"
+      - "picture (optional): sensor picture template"
+      - "availability (optional): availability template"
+    polling_control:
+      - "Default: 30-second automatic polling"
+      - "Custom: Disable in Integration settings + use automation"
+      - "Integration-level: Settings > Devices & Services > SQL > System Options"
+    references:
+      - "Home Assistant SQL Integration Documentation"
+      - "Home Assistant Integration Configuration Guide"
+      - "SQL Sensor Migration Guide (sensor platform to sql integration)"
+
+  - name: "group_set_invalid_parameter"
+    category: "automation_action"
+    description: "Group.set service errors due to using invalid parameter names"
+    error_format: "extra keys not allowed @ data['parameter_name']"
+    symptoms:
+      - "Automation execution failures with group.set actions"
+      - "Error messages about extra keys not allowed in group service calls"
+      - "Group creation or modification automations failing"
+      - "Persistent automation error notifications"
+    root_causes:
+      - "Using deprecated or incorrect parameter names like 'default_entity_id'"
+      - "Confusion between different group service parameter schemas"
+      - "Copy-paste errors from outdated documentation or examples"
+      - "Mixing parameters from different Home Assistant versions"
+    solution:
+      - "Use correct parameter names for group.set service"
+      - "Replace 'default_entity_id' with 'object_id' parameter"
+      - "Remove group. prefix from entity_id when using object_id"
+      - "Consult current Home Assistant group service documentation"
+    examples:
+      bad: |
+        action: group.set
+        data:
+          default_entity_id: group.unavailable_entities
+          entities: []
+      good: |
+        action: group.set
+        data:
+          object_id: unavailable_entities
+          entities: []
+    resolution_steps:
+      - "Identify the failing automation from Home Assistant error messages"
+      - "Check Home Assistant documentation for current group.set parameters"
+      - "Replace 'default_entity_id' with 'object_id' in service calls"
+      - "Remove 'group.' prefix from object_id value"
+      - "Test automation execution after parameter fix"
+    prevention_strategies:
+      - "Always consult current Home Assistant documentation for service parameters"
+      - "Test service calls in Developer Tools before using in automations"
+      - "Avoid copy-paste from outdated examples or forums"
+      - "Validate automation configuration after Home Assistant updates"
+    tooling:
+      detector: "Look for error patterns: 'extra keys not allowed' + group.set service"
+      validator: "Developer Tools > Services - test group.set calls with correct parameters"
+      config_check: "/config/bin/config-health /config - validate automation configuration"
+    references:
+      - "Home Assistant Group Integration Documentation"
+      - "Home Assistant Services Documentation"
+      - "Home Assistant Automation Action Documentation"
+
+  - name: "template_json_parsing_error"
+    category: "jinja_template"
+    description: "Template errors when from_json filter fails and template tries to call methods on strings"
+    error_format: "UndefinedError: 'str object' has no attribute 'get'"
+    symptoms:
+      - "Template sensors showing 'unavailable' state with JSON parsing errors"
+      - "Error messages about string objects not having dictionary methods"
+      - "Template rendering failures in sensors or automations"
+      - "Intermittent template errors when JSON data is malformed"
+    root_causes:
+      - "Using from_json filter without checking if parsing succeeded"
+      - "Assuming from_json always returns a dictionary/mapping object"
+      - "Missing error handling when JSON parsing fails"
+      - "Calling dictionary methods (.get(), .keys(), etc.) on string results"
+    solution:
+      - "Add type checking after from_json: if parsed is mapping"
+      - "Use defensive programming with fallback values"
+      - "Check if parsed result is actually a dictionary before using dictionary methods"
+      - "Provide default empty dictionary when JSON parsing fails"
+    examples:
+      bad: |
+        {% set raw = state_attr('sensor.data','payload') %}
+        {% set cfg = (raw | from_json).get('key', {}) if raw else {} %}
+        {{ cfg.get('value', 'default') }}
+      good: |
+        {% set raw = state_attr('sensor.data','payload') %}
+        {% set parsed = raw | from_json if raw else {} %}
+        {% set cfg = parsed.get('key', {}) if parsed is mapping else {} %}
+        {{ cfg.get('value', 'default') }}
+    resolution_steps:
+      - "Identify the failing template from Home Assistant error messages"
+      - "Locate templates using from_json filter without type checking"
+      - "Add 'if parsed is mapping' checks before calling dictionary methods"
+      - "Provide fallback empty dictionary when JSON parsing fails"
+      - "Test template rendering with both valid and invalid JSON inputs"
+    prevention_strategies:
+      - "Always check if from_json result is a mapping before using dictionary methods"
+      - "Use defensive programming patterns in templates with external data"
+      - "Test templates with edge cases like malformed JSON or empty values"
+      - "Document expected JSON structure for template sensors"
+    defensive_patterns:
+      json_parsing: "{% set parsed = raw | from_json if raw else {} %}"
+      type_checking: "{% set data = parsed.get('key', {}) if parsed is mapping else {} %}"
+      fallback_values: "{{ data.get('field', 'default_value') }}"
+    tooling:
+      detector: "Look for error patterns: 'str object' has no attribute 'get' in template errors"
+      validator: "Test templates in Developer Tools > Templates with various JSON inputs"
+      json_validator: "Use jq or python -c 'import json; json.loads(data)' to validate JSON"
+    references:
+      - "Home Assistant Template Documentation"
+      - "Jinja2 Template Documentation"
+      - "Home Assistant Template Sensor Configuration"
+      - "ADR-0020: Template Error Patterns"
+
+  - name: "appdaemon_config_validation_error"
+    category: "appdaemon_configuration"
+    description: "AppDaemon configuration validation errors due to incorrect data types in YAML configuration"
+    error_format: "1 validation error for MainConfig\n[section]\n  Input should be a valid dictionary [type=dict_type, input_value=[value], input_type=[type]]"
+    symptoms:
+      - "AppDaemon add-on fails to start with configuration validation errors"
+      - "Pydantic validation error messages in AppDaemon startup logs"
+      - "Add-on exits with code 1 immediately after configuration loading"
+      - "Error messages about dictionary type requirements"
+    root_causes:
+      - "Using boolean values (true/false) for configuration sections that require dictionaries"
+      - "Incorrect YAML syntax for dictionary sections like 'api:', 'admin:', 'hadashboard:'"
+      - "Mixed data types in configuration sections that expect consistent formatting"
+      - "Copy-paste errors from different AppDaemon configuration examples"
+    solution:
+      - "Convert boolean sections to proper dictionary format: 'api: true' → 'api:'"
+      - "Use empty dictionary syntax for sections without specific configuration"
+      - "Ensure all top-level configuration sections use consistent YAML formatting"
+      - "Validate YAML syntax before deploying AppDaemon configuration"
+    examples:
+      bad: |
+        # AppDaemon configuration with type validation errors
+        appdaemon:
+          # ... other config
+        http:
+          url: http://0.0.0.0:5050
+        admin:
+        api: true  # Boolean not allowed - should be dictionary
+        hadashboard:
+      good: |
+        # AppDaemon configuration with correct types
+        appdaemon:
+          # ... other config
+        http:
+          url: http://0.0.0.0:5050
+        admin:
+        api:  # Empty dictionary format
+        hadashboard:
+    resolution_steps:
+      - "Identify the problematic configuration section from Pydantic error message"
+      - "Check AppDaemon documentation for correct configuration format"
+      - "Convert boolean or incorrect values to proper dictionary format"
+      - "Use 'section:' format for empty dictionary sections"
+      - "Restart AppDaemon add-on to validate configuration fixes"
+      - "Monitor startup logs for successful configuration loading"
+    prevention_strategies:
+      - "Always use official AppDaemon configuration documentation as reference"
+      - "Test configuration changes in development environment first"
+      - "Use YAML linters to validate syntax before deployment"
+      - "Keep configuration sections consistent with expected data types"
+    tooling:
+      detector: "Look for 'validation error for MainConfig' + 'Input should be a valid dictionary'"
+      validator: "AppDaemon add-on startup logs show configuration validation results"
+      config_test: "Restart AppDaemon add-on to test configuration changes"
+    references:
+      - "AppDaemon Configuration Documentation"
+      - "Pydantic Data Validation Documentation"
+      - "Home Assistant AppDaemon Add-on Documentation"
+
+  - name: "appdaemon_file_access_container_path_error"
+    category: "appdaemon_file_access"
+    description: "AppDaemon apps failing to access files due to container path limitations and incorrect file locations"
+    error_format: "FileNotFoundError: [Errno 2] No such file or directory: '/config/[path]/[filename]'"
+    symptoms:
+      - "App initialization failures with file not found errors"
+      - "AppDaemon apps unable to access configuration or data files"
+      - "Path resolution errors when apps try to load external files"
+      - "Apps failing to start due to missing canonical mapping or configuration files"
+    root_causes:
+      - "AppDaemon container has limited access to /config subdirectories"
+      - "Files placed in /config/domain/ or other paths not accessible from container"
+      - "Incorrect path assumptions about container vs host filesystem mapping"
+      - "Data files placed in locations not mounted into AppDaemon container"
+    solution:
+      - "Copy required files to AppDaemon-accessible locations: /config/apps/ or /config/www/"
+      - "Update app configuration to use container-accessible paths"
+      - "Use /config/www/ for data files to prevent parsing conflicts"
+      - "Verify file permissions and accessibility from container perspective"
+    examples:
+      bad: |
+        # apps.yaml referencing inaccessible path
+        room_db_updater:
+          module: room_db_updater
+          class: RoomDbUpdater
+          canonical_mapping_file: /config/domain/architecture/area_mapping.yaml  # Deprecated - use /addon_configs/www/area_mapping.yaml
+      good: |
+        # apps.yaml with container-accessible path
+        room_db_updater:
+          module: room_db_updater
+          class: RoomDbUpdater
+          canonical_mapping_file: /addon_configs/www/area_mapping.yaml  # Correct addon_configs path
+    resolution_steps:
+      - "Identify the missing file path from AppDaemon error logs"
+      - "Check if file exists on host filesystem in expected location"
+      - "Copy file to AppDaemon-accessible location (/config/www/ or /config/apps/)"
+      - "Update app configuration to reference new accessible path"
+      - "Restart AppDaemon to test file access from container"
+      - "Verify app initialization succeeds with accessible file path"
+    container_path_mapping:
+      host_addon_configs: "/Volumes/addon_configs/a0d7b954_appdaemon/"
+      container_config: "/config/"
+      accessible_paths:
+        - "/config/apps/ (app modules and configuration)"
+        - "/config/www/ (static data files)"
+        - "/config/compiled/ (compiled app cache)"
+      inaccessible_paths:
+        - "/config/domain/ (host-only directories)"
+        - "/config/hestia/ (host workspace directories)"
+        - "/config/custom_components/ (HA-specific directories)"
+    prevention_strategies:
+      - "Test file accessibility from AppDaemon container during development"
+      - "Use /config/www/ for data files that apps need to read"
+      - "Keep app-specific files within AppDaemon add-on directory structure"
+      - "Document container path limitations for future app development"
+    tooling:
+      detector: "Look for 'FileNotFoundError' in AppDaemon app initialization logs"
+      path_test: "Test file access: docker exec -it addon_a0d7b954_appdaemon ls /config/[path]"
+      validator: "Check AppDaemon app startup logs for successful file loading"
+    references:
+      - "Home Assistant AppDaemon Add-on Documentation"
+      - "Docker Container File System Documentation"
+      - "AppDaemon App Development Guide"
+
+  - name: "input_text_yaml_max_limit_exceeded"
+    category: "helper_configuration"
+    description: "YAML-defined input_text helpers failing validation due to exceeding 255 character limit"
+    error_format: "value must be at most 255 for dictionary value 'input_text->[helper_name]->max', got [value]"
+    symptoms:
+      - "Configuration validation errors for input_text helpers with large max values"
+      - "Helpers defined in YAML with max > 255 characters failing to load"
+      - "JSON storage requirements exceeding YAML input_text limits"
+    root_causes:
+      - "Home Assistant YAML input_text helpers limited to 255 characters maximum"
+      - "Large JSON storage needs (TTS registries, Plex indexes) requiring >255 chars"
+      - "Using YAML configuration instead of UI creation for large storage helpers"
+    solution:
+      - "Remove large storage helpers from YAML configuration files"
+      - "Create helpers via UI (Settings > Devices & Services > Helpers) for large storage"
+      - "UI-created helpers support up to 100,000 characters vs YAML's 255 limit"
+    examples:
+      bad: |
+        # domain/helpers/input_text.yaml
+        input_text:
+          large_json_storage:
+            name: "Large JSON Storage"
+            max: 4096  # Exceeds 255 limit
+            initial: "{}"
+      good: |
+        # Remove from YAML, create via UI instead
+        # Note: large_json_storage created via Settings > Helpers
+        # UI creation allows max: 4096+ characters
+    resolution_steps:
+      - "Remove helper definitions from YAML files in domain/helpers/"
+      - "Add helpers via UI: Settings > Devices & Services > Helpers > Add Helper"
+      - "Set appropriate max values (up to 100,000) in UI creation dialog"
+      - "Verify helpers appear in .storage/input_text after creation"
+    prevention_strategies:
+      - "Use UI creation for any input_text helper needing >255 characters"
+      - "Document large storage helpers as UI-only in configuration comments"
+      - "Check .storage/input_text to verify UI-created helper configuration"
+    tooling:
+      detector: "grep 'value must be at most 255.*input_text' home-assistant.log"
+      validator: "/config/bin/config-health /config - validate configuration after changes"
+      storage_check: "grep -E 'helper_name' /config/.storage/input_text - verify UI creation"
+    references:
+      - "Home Assistant Input Text Helper Documentation"
+      - "UI Helper Creation vs YAML Configuration Limits"
+
+  - name: "appdaemon_yaml_parsed_as_app_config"
+    category: "appdaemon_file_parsing"
+    description: "AppDaemon incorrectly parsing data files as app configurations causing startup errors"
+    error_format: "BadAppConfigFile: /config/apps/[filename].yaml\nBadAppConfig: The key/value pair of [data] is not valid"
+    symptoms:
+      - "AppDaemon startup errors about invalid app configuration files"
+      - "Data files in /config/apps/ being parsed as app configurations"
+      - "BadAppConfig errors for YAML files containing data rather than app definitions"
+      - "AppDaemon attempting to load non-app YAML files as applications"
+    root_causes:
+      - "Placing data files (area_mapping.yaml, configuration files) in /config/apps/ directory"
+      - "AppDaemon automatically parsing all YAML files in apps/ directory as app configurations"
+      - "Data file structure not matching expected app configuration schema"
+      - "Incorrect file organization mixing app definitions with data files"
+    solution:
+      - "Move data files from /config/apps/ to /config/www/ directory"
+      - "Keep only app module files (.py) and apps.yaml in /config/apps/ directory"
+      - "Update app configuration references to point to new data file locations"
+      - "Use /config/www/ for static data files that apps need to access"
+    examples:
+      bad: |
+        # File organization causing parsing conflicts
+        /config/apps/
+        ├── apps.yaml              # App configuration (correct)
+        ├── room_db_updater.py     # App module (correct)
+        └── area_mapping.yaml      # Data file (WRONG - parsed as app config)
+      good: |
+        # Proper file organization
+        /config/apps/
+        ├── apps.yaml              # App configuration
+        └── room_db_updater.py     # App module
+        /config/www/
+        └── area_mapping.yaml      # Data file (correct location)
+    resolution_steps:
+      - "Identify data files incorrectly placed in /config/apps/ from error messages"
+      - "Move data files from apps/ directory to www/ directory"
+      - "Update app configuration (apps.yaml) to reference new file paths"
+      - "Ensure only app modules (.py) and apps.yaml remain in apps/ directory"
+      - "Restart AppDaemon to verify clean startup without parsing errors"
+      - "Test app functionality with data files in new locations"
+    file_organization_best_practices:
+      apps_directory:
+        purpose: "App modules and configuration only"
+        allowed_files: ["apps.yaml", "*.py"]
+        prohibited_files: ["data files", "configuration files", "mapping files"]
+      www_directory:
+        purpose: "Static data files and resources"
+        allowed_files: ["*.yaml (data)", "*.json (data)", "*.txt (data)"]
+        access_pattern: "Read-only access from apps"
+    prevention_strategies:
+      - "Maintain clear separation between app code and data files"
+      - "Use www/ directory for all static data files accessed by apps"
+      - "Review file organization when adding new data files"
+      - "Document file placement guidelines for AppDaemon app development"
+    tooling:
+      detector: "Look for 'BadAppConfigFile' + 'BadAppConfig' in AppDaemon startup logs"
+      file_check: "List files in apps directory: ls -la /Volumes/addon_configs/*/apps/"
+      validator: "Monitor AppDaemon startup for clean configuration loading"
+    references:
+      - "AppDaemon App Development Documentation"
+      - "AppDaemon File Organization Best Practices"
+      - "Home Assistant AppDaemon Add-on File Structure Guide"
+
+  # --- BEGIN: Hestia error pattern — LocalTuya fused-line SyntaxError ---
+  - id: localtuya_humidifier_fused_line_syntaxerror
+    title: "LocalTuya: humidifier import fails with SyntaxError (fused statements)"
+    sources:
+      includes:
+        - "homeassistant.loader"
+        - "homeassistant.config_entries"
+    level: error
+    match:
+      any:
+        - regex: "Unexpected exception importing platform custom_components\\.localtuya\\.humidifier"
+        - regex: "SyntaxError: invalid syntax"
+        - regex: "/custom_components/localtuya/humidifier\\.py"
+    classify: integration_patch_required
+    cause: |
+      Multi-line replacement collapsed two Python statements into one line:
+      `modes = {}        self._available_modes = DictSelector(modes)` causing SyntaxError at import.
+    fix:
+      steps:
+        - "Split fused line; ensure newline at EOF."
+        - "Normalize modes (list/dict/else) then assign: `self._available_modes = DictSelector(modes)` at the outer indent."
+        - "Compile-check: `python3 -m py_compile custom_components/localtuya/humidifier.py`."
+        - "Restart Home Assistant."
+    verify:
+      - "No SyntaxError in logs for localtuya.humidifier"
+      - "Component loads; entity state available"
+    suppress:
+      when:
+        - "file: custom_components/localtuya/humidifier.py"
+        - "grep contains: '^\\s*self\\._available_modes = DictSelector\\(modes\\)$'"
+  # --- END: Hestia error pattern — LocalTuya fused-line SyntaxError ---
+
+  # --- BEGIN: Hestia error pattern — LocalTuya blocking import (warning) ---
+  - id: localtuya_blocking_import_warning
+    title: "LocalTuya: blocking import detected in event loop"
+    sources:
+      includes:
+        - "homeassistant.util.loop"
+    level: warning
+    match:
+      all:
+        - regex: "Detected blocking call to import_module"
+        - regex: "custom_components\\.localtuya"
+    classify: upstream_warning
+    cause: |
+      LocalTuya forwards platform setups triggering a synchronous import inside the event loop.
+      This is noisy but not setup-fatal.
+    fix:
+      steps:
+        - "Monitor occurrence count after updates."
+        - "If frequency >3 per startup, file upstream issue with integration version & HA core version."
+    verify:
+      - "Integration still sets up successfully."
+    suppress:
+      policy:
+        - "treat as informational unless coupled with import failure"
+  # --- END: Hestia error pattern — LocalTuya blocking import (warning) ---
+
+  # --- BEGIN: Hestia advisory pattern — Copilot outside-workspace/sensitive-file gate ---
+  - id: copilot_outside_workspace_sensitive_gate
+    title: "Copilot: edit blocked by outside-workspace or sensitive-file gate"
+    sources:
+      includes:
+        - "copilot"
+        - "vscode"
+        - "workspace"
+    level: info
+    match:
+      any:
+        - regex: "Allow edits to sensitive files\\?"
+        - regex: "outside of your workspace"
+    classify: workspace_root_mismatch
+    cause: |
+      Edits were issued from a virtual chat buffer or non-primary root; Copilot's approval gate triggers.
+    fix:
+      steps:
+        - "Anchor edit to a real file under /config (open editor + Copilot: Edit)."
+        - "Keep /config as single-root workspace; avoid virtual `vscode-chat-code-block://` anchors."
+        - "Optionally scope `chat.tools.edits.autoApprove` in .vscode to known-safe paths."
+    verify:
+      - "Subsequent edits to files in /config proceed without the outside-workspace prompt (except truly sensitive cases)."
+  # --- END: Hestia advisory pattern — Copilot outside-workspace/sensitive-file gate ---
+
+  # --- BEGIN: Hestia error pattern — Template missing closing brace ---
+  - id: template_missing_closing_brace
+    title: "Template: missing closing brace breaks template rendering"
+    category: "jinja_template"
+    description: "Template syntax errors due to missing closing braces in Jinja expressions"
+    error_format: "TemplateSyntaxError: unexpected end of template, expected '}'"
+    symptoms:
+      - "Template rendering failures in Home Assistant"
+      - "Automation execution errors with template conditions/variables"
+      - "Sensor template evaluation failures"
+      - "Purple syntax highlighting in editors for content after the error"
+    root_causes:
+      - "Missing closing brace }} in Jinja template expressions"
+      - "Incomplete template expressions during copy/paste operations"
+      - "Syntax errors introduced during template editing"
+    solution:
+      - "Add missing closing braces to complete template expressions"
+      - "Validate template syntax before deployment"
+      - "Use template testing tools to verify expression completeness"
+    examples:
+      bad: |
+        room_config: >-
+          {% if cfg is string %}
+            {{ cfg | from_json %}  # Missing closing brace
+          {% endif %}
+      good: |
+        room_config: >-
+          {% if cfg is string %}
+            {{ cfg | from_json }}  # Properly closed
+          {% endif %}
+    resolution_steps:
+      - "Identify template syntax errors from Home Assistant logs"
+      - "Check for missing closing braces in template expressions"
+      - "Test template syntax using Developer Tools > Template"
+      - "Validate YAML configuration after template fixes"
+    prevention_strategies:
+      - "Use editor syntax highlighting to catch template errors"
+      - "Test templates in Developer Tools before deployment"
+      - "Use template validation in CI/CD pipelines"
+    tooling:
+      detector: "grep -r '{{.*[^}]$' **/*.yaml - find incomplete template expressions"
+      validator: "Home Assistant Developer Tools > Template - test template syntax"
+    references:
+      - "Home Assistant Template Documentation"
+      - "Jinja2 Template Syntax Reference"
+      - "ADR-0020: Template Error Patterns"
+  # --- END: Hestia error pattern — Template missing closing brace ---
+
+  - name: "command_line_sensor_availability_template_scope_error"
+    category: "command_line_sensor_configuration"
+    description: "Command line sensors failing to load due to availability templates referencing unavailable 'value' variable"
+    error_format: "Template variable 'value' is not available in availability template context"
+    symptoms:
+      - "Command line sensors not appearing in entity registry"
+      - "Sensors defined in configuration but not loading"
+      - "Silent failures during Home Assistant startup"
+      - "Template evaluation errors during sensor initialization"
+    root_causes:
+      - "Using 'value' variable in availability templates before command execution"
+      - "Misunderstanding template variable scope in command_line platform"
+      - "Availability templates execute before command runs, so 'value' is undefined"
+      - "Copy-paste errors from value_template into availability template"
+    solution:
+      - "Remove availability templates that reference 'value' variable"
+      - "Use value_template with proper defaults instead of availability checks"
+      - "Let Home Assistant handle availability automatically"
+      - "Move validation logic to value_template where 'value' is available"
+    examples:
+      bad: |
+        command_line:
+        - sensor:
+            name: "My Sensor"
+            command: 'echo "123"'
+            availability: >-
+              {{ value | int(-1) >= 0 }}  # ERROR: 'value' not available here
+      good: |
+        command_line:
+        - sensor:
+            name: "My Sensor"
+            command: 'echo "123"'
+            value_template: "{{ value | default('0') | trim }}"  # 'value' available here
+    resolution_steps:
+      - "Identify sensors not loading by checking entity registry"
+      - "Remove availability templates that reference 'value' variable"
+      - "Add proper value_template with default fallbacks"
+      - "Restart Home Assistant to reload sensor configuration"
+      - "Verify sensors appear in entity registry and have valid states"
+    prevention_strategies:
+      - "Use value_template for validation, not availability template"
+      - "Test sensor loading after configuration changes"
+      - "Follow patterns from working command_line sensor examples"
+    tooling:
+      detector: "Check if configured sensors are missing from entity registry"
+      validator: "grep -r 'availability:.*value' domain/command_line/"
+    references:
+      - "Home Assistant Command Line Integration Documentation"
+      - "Template Variable Scope in Home Assistant"
+
+  - name: "command_line_sensor_numeric_state_validation_error"
+    category: "command_line_sensor_configuration"
+    description: "Command line sensors with numeric indicators failing due to non-numeric state values"
+    error_format: "ValueError: Sensor [entity_id] has device class '[class]', state class 'measurement' unit '[unit]' and suggested precision 'None' thus indicating it has a numeric value; however, it has the non-numeric value: '[value]' (<class 'str'>)"
+    symptoms:
+      - "Sensors failing to load with ValueError about non-numeric values"
+      - "Entity registry errors for sensors with device_class and state_class"
+      - "Sensors with numeric indicators (units, device classes) returning text values"
+    root_causes:
+      - "Commands returning full output instead of extracted numeric values"
+      - "Incorrect awk field extraction in shell commands"
+      - "State_class measurement used with non-numeric template outputs"
+      - "Device_class data_size used with text-based value templates"
+    solution:
+      - "Fix command output extraction to return only numeric values"
+      - "Properly escape awk field selectors using appropriate quote handling"
+      - "Remove state_class from sensors that return non-numeric states"
+      - "Use int() filter in value_template for numeric conversion"
+    examples:
+      bad: |
+        # Issue 1: Command returns full output "1084        /config/.trash"
+        - sensor:
+            command: 'du -s /config/.trash | awk "{print $1}"'  # Wrong escaping
+            device_class: data_size
+            state_class: measurement
+
+        # Issue 2: Non-numeric state with numeric indicators
+        - sensor:
+            command: 'git status --porcelain | wc -l'
+            state_class: measurement
+            unit_of_measurement: "changes"
+            value_template: >-
+              {% if value | int == 0 %}
+                clean  # ERROR: Non-numeric value with measurement state_class
+              {% endif %}
+      good: |
+        # Fix 1: Proper awk escaping and numeric conversion
+        - sensor:
+            command: >-
+              sh -lc '
+                du -s /config/.trash | awk "{print \\$1}" || echo "0"
+              '
+            device_class: data_size
+            state_class: measurement
+            value_template: "{{ value | default('0') | trim | int(0) }}"
+
+        # Fix 2: Remove state_class for text-based status sensors
+        - sensor:
+            command: 'git status --porcelain | wc -l'
+            # No state_class or unit_of_measurement for text outputs
+            value_template: >-
+              {% if value | int == 0 %}
+                clean
+              {% endif %}
+    resolution_steps:
+      - "Identify failing sensors from Home Assistant error logs"
+      - "Check if command output includes unwanted text (paths, labels)"
+      - "Fix awk field extraction with proper escaping"
+      - "Remove state_class from sensors returning non-numeric states"
+      - "Add int() conversion in value_template for numeric sensors"
+      - "Test sensor states after configuration fixes"
+    prevention_strategies:
+      - "Test command output manually before using in sensors"
+      - "Use state_class measurement only for truly numeric sensors"
+      - "Always include proper fallback values in commands"
+      - "Validate sensor states match expected data types"
+    tooling:
+      detector: "grep 'ValueError.*non-numeric value' home-assistant.log"
+      command_test: "Test commands: sh -lc 'your_command_here'"
+      validator: "/config/bin/config-validate /config"
+    references:
+      - "Home Assistant Command Line Sensor Documentation"
+      - "Home Assistant Sensor Device Classes and State Classes"
+
+  - name: "command_line_sensor_shell_escaping_error"
+    category: "command_line_sensor_configuration"
+    description: "Command line sensors failing due to improper shell command escaping in YAML"
+    error_format: "Command returns fallback value 'Unknown' instead of expected output"
+    symptoms:
+      - "Sensors returning fallback values instead of command output"
+      - "Commands that work in terminal failing in Home Assistant"
+      - "Awk field extraction not working in sensor commands"
+      - "Shell commands returning error exit codes"
+    root_causes:
+      - "Incorrect escaping of shell command components in YAML"
+      - "Awk field selectors not properly escaped for YAML context"
+      - "Single quotes vs double quotes escaping conflicts"
+      - "Complex shell commands not formatted correctly for sh -lc wrapper"
+    solution:
+      - "Use proper awk escaping patterns for field extraction"
+      - "Test commands with sh -lc wrapper to match sensor execution"
+      - "Escape shell special characters correctly for YAML context"
+      - "Use multi-line YAML format for complex shell commands"
+    examples:
+      bad: |
+        # Wrong awk escaping causes command failure
+        command: >-
+          sh -lc '
+            du -sh . | awk "{print \\$1}" || echo "Unknown"
+          '
+        # Result: Returns "Unknown" instead of size
+      good: |
+        # Correct awk escaping with proper quote handling
+        command: >-
+          sh -lc '
+            du -sh . 2>/dev/null | awk "{print \\$1}" || echo "Unknown"
+          '
+        # Result: Returns "1.2G" as expected
+    resolution_steps:
+      - "Test sensor command manually with sh -lc wrapper"
+      - "Fix awk field extraction using proper quote escaping"
+      - "Verify command returns expected output, not fallback value"
+      - "Update sensor configuration with corrected command"
+      - "Test sensor state updates after configuration reload"
+    prevention_strategies:
+      - "Always test commands with sh -lc before using in sensors"
+      - "Use working command_line.yaml sensors as reference patterns"
+      - "Validate complex shell commands in terminal first"
+      - "Follow consistent escaping patterns across all command sensors"
+    shell_escaping_patterns:
+      awk_field_extraction: "Use proper quote nesting for awk commands in YAML"
+      simple_commands: "command_name args  # No special escaping needed"
+      complex_pipes: "cmd1 | cmd2 | awk_pattern || echo 'fallback'"
+    tooling:
+      test_command: "sh -lc 'your_command_here' # Test exact sensor execution"
+      validator: "Compare terminal output vs sensor state values"
+    references:
+      - "Shell Command Escaping in YAML"
+      - "Home Assistant Command Line Integration Examples"
+
+  - name: "automation_legacy_platform_trigger_syntax"
+    category: "automation_configuration"
+    description: "Legacy 'platform:' syntax in automation triggers - should use 'trigger:' instead"
+    error_format: "String does not match the pattern of \"LEGACY_SYNTAX^\". Legacy syntax, use \"trigger: [type]\" instead."
+    symptoms:
+      - "YAML schema validation errors in automation triggers"
+      - "VS Code linter showing legacy syntax warnings"
+      - "Configuration validation failures"
+    root_causes:
+      - "Using deprecated 'platform:' key in trigger definitions"
+      - "Old automation syntax from pre-2023.4 Home Assistant versions"
+      - "Copy-paste from outdated documentation or examples"
+    solution:
+      - "Replace 'platform:' with 'trigger:' in all automation trigger definitions"
+      - "Update trigger syntax to modern format"
+      - "Validate configuration after changes"
+    examples:
+      incorrect: |
+        trigger:
+          - platform: state
+            entity_id: binary_sensor.startup_completed
+            to: 'on'
+          - platform: homeassistant
+            event: start
+      correct: |
+        trigger:
+          - trigger: state
+            entity_id: binary_sensor.startup_completed
+            to: 'on'
+          - trigger: homeassistant
+            event: start
+    resolution_steps:
+      - "Find all instances of 'platform:' in automation triggers"
+      - "Replace 'platform:' with 'trigger:' maintaining same indentation"
+      - "Keep all other trigger properties unchanged"
+      - "Run Home Assistant configuration check"
+      - "Restart Home Assistant to apply changes"
+    prevention_strategies:
+      - "Use modern Home Assistant documentation for automation examples"
+      - "Enable YAML schema validation in editor"
+      - "Regular configuration validation checks"
+    tooling:
+      find_command: "grep -r -A3 -B3 'platform:' packages/ --include='*.yaml' | grep -E '(trigger:|automation:)'"
+      fix_command: "# ONLY change platform: to trigger: within automation trigger sections, NOT sensor platforms"
+      validator: "/config/bin/config-validate /config"
+    critical_warning: |
+      ⚠️  DO NOT BLINDLY REPLACE ALL 'platform:' WITH 'trigger:' ⚠️
+      - sensor: platform: snmp     ← CORRECT (sensor platform)
+      - automation trigger: state  ← CORRECT (trigger type)
+      - trigger: snmp              ← WRONG (not a valid trigger type)
+      Only change 'platform:' to 'trigger:' in automation trigger definitions.
+    references:
+      - "Home Assistant 2023.4 breaking changes documentation"
+      - "ADR-0020: Error canonicalization patterns"
+
+  - name: "automation_legacy_service_action_syntax"
+    category: "automation_action"
+    description: "Legacy 'service:' syntax in automation actions - should use 'action:' instead"
+    error_format: "String does not match the pattern of \"LEGACY_SYNTAX^\". Legacy syntax, use \"action: [service_name]\" instead."
+    symptoms:
+      - "YAML schema validation errors in automation actions"
+      - "VS Code linter showing legacy syntax warnings"
+      - "Script execution warnings about deprecated syntax"
+    root_causes:
+      - "Using deprecated 'service:' key in action definitions"
+      - "Old automation syntax from pre-2023.7 Home Assistant versions"
+      - "Outdated script and automation examples"
+    solution:
+      - "Replace 'service:' with 'action:' in all automation and script actions"
+      - "Update action syntax to modern format"
+      - "Maintain all other action properties unchanged"
+    examples:
+      incorrect: |
+        sequence:
+          - service: light.turn_off
+            target:
+              entity_id: light.group_hifi_area_lights
+          - service: notify.notify
+            data:
+              message: "Action completed"
+      correct: |
+        sequence:
+          - action: light.turn_off
+            target:
+              entity_id: light.group_hifi_area_lights
+          - action: notify.notify
+            data:
+              message: "Action completed"
+    resolution_steps:
+      - "Find all instances of 'service:' in automation and script actions"
+      - "Replace 'service:' with 'action:' maintaining same indentation"
+      - "Keep all other action properties (target, data, etc.) unchanged"
+      - "Test automation execution after changes"
+      - "Validate configuration and restart Home Assistant"
+    prevention_strategies:
+      - "Use current Home Assistant documentation for action examples"
+      - "Enable YAML schema validation to catch legacy syntax"
+      - "Regular configuration audits for deprecated syntax"
+    tooling:
+      find_command: "grep -r 'service:' packages/ --include='*.yaml' | grep -v 'platform: template'"
+      fix_command: "sed -i 's/service:/action:/g' file.yaml"
+      validator: "/config/bin/config-validate /config"
+    references:
+      - "Home Assistant 2023.7 breaking changes documentation"
+      - "Script and automation action syntax modernization"
+
+  - name: "script_selector_invalid_domain"
+    category: "script_configuration"
+    description: "Invalid domain specified in script field selectors causing validation errors"
+    error_format: "Property '[domain]' is not allowed for entity selector"
+    symptoms:
+      - "Script field validation errors in configuration check"
+      - "UI not displaying script fields properly"
+      - "Service call parameter validation failures"
+    root_causes:
+      - "Using non-existent or invalid domains in entity selectors"
+      - "Mixing integration names with actual entity domains"
+      - "Incorrect domain names like 'tts' instead of valid entity domains"
+    solution:
+      - "Use valid entity domains in selectors (media_player, light, switch, etc.)"
+      - "For TTS, use 'tts' as service domain, not entity selector domain"
+      - "Consult Home Assistant entity domain list for valid options"
+    examples:
+      incorrect: |
+        fields:
+          media_player:
+            selector: { entity: { domain: media_player } }
+          tts_service:
+            selector: { entity: { domain: tts } }
+      correct: |
+        fields:
+          media_player:
+            selector: { entity: { domain: media_player } }
+          tts_service:
+            selector: { select: { options: ["tts.google_translate", "tts.amazon_polly"] } }
+      alternative_correct: |
+        fields:
+          media_player:
+            selector: { entity: { domain: media_player } }
+          tts_service:
+            selector: { text: {} }
+            description: "TTS service name (e.g., tts.google_translate)"
+    resolution_steps:
+      - "Review all script field selectors for valid domain usage"
+      - "Replace invalid domains with appropriate selector types"
+      - "For TTS services, use text input or select from known TTS integrations"
+      - "Test script field display in Home Assistant UI"
+      - "Validate script execution with corrected selectors"
+    prevention_strategies:
+      - "Reference Home Assistant selector documentation when creating fields"
+      - "Test script field UI display after configuration changes"
+      - "Use entity registry to verify available domains"
+    valid_domains:
+      - "media_player: Media player entities"
+      - "light: Light entities"
+      - "switch: Switch entities"
+      - "sensor: Sensor entities"
+      - "binary_sensor: Binary sensor entities"
+      - "Note: 'tts' is a service domain, not an entity domain"
+    tooling:
+      validator: "Developer Tools > Services - check available TTS services"
+      entity_check: "Developer Tools > States - review entity domains"
+    references:
+      - "Home Assistant selector documentation"
+      - "Entity domain reference documentation"
+
+  - name: "appdaemon_rest_endpoint_404_error"
+    category: "appdaemon_rest_api"
+    description: "AppDaemon REST endpoint returns 404 'App Not Found' despite correct app registration"
+    error_format: "Error. Url: http://a0d7b954-appdaemon:5050/api/app/room_db_updater/[endpoint]. Status code 404"
+    symptoms:
+      - "REST commands returning 404 status with 'App Not Found' message"
+      - "AppDaemon app running successfully but endpoints inaccessible"
+      - "Home Assistant logs showing repeated 404 errors for REST commands"
+      - "Motion lighting automations failing to update room configurations"
+    root_causes:
+      - "Mismatch between endpoint registration names and REST command URLs"
+      - "AppDaemon register_endpoint() creates different URL paths than expected"
+      - "URL construction: /api/app/<app_name>/<endpoint_name> requires exact matching"
+      - "Endpoint names with slashes or prefixes create nested URL paths"
+    solution:
+      - "Match REST command URLs exactly to registered endpoint patterns"
+      - "Use simple endpoint names without slashes in register_endpoint()"
+      - "Update package_room_database.yaml URLs to match actual endpoints"
+      - "Add diagnostic logging to confirm endpoint registration"
+    examples:
+      problematic_registration: |
+        # AppDaemon app registration
+        self.register_endpoint(self.update_config, "room_db/update_config")
+        # Creates: /api/app/room_db_updater/room_db/update_config
+
+        # But REST command calls:
+        url: "http://a0d7b954-appdaemon:5050/api/app/room_db_updater/update_config"
+        # Missing room_db/ prefix → 404 error
+      corrected_urls: |
+        # Correct REST command URLs to match registered endpoints:
+        rest_command:
+          room_db_update_config:
+            url: "http://a0d7b954-appdaemon:5050/api/app/room_db_updater/room_db/update_config"
+          room_db_health:
+            url: "http://a0d7b954-appdaemon:5050/api/app/room_db_updater/room_db/health"
+    resolution_steps:
+      - "Examine AppDaemon logs for app initialization messages"
+      - "Check endpoint registration names in room_db_updater.py"
+      - "Match REST command URLs to actual registered endpoint paths"
+      - "Test endpoints with curl before updating REST commands"
+      - "Restart Home Assistant to reload REST command configuration"
+      - "Validate with Developer Tools service calls"
+    diagnostic_commands:
+      log_analysis: "grep -i 'appdaemon\\|rest_command\\|room_db' /config/home-assistant.log*"
+      url_validation: "grep -A 5 'rest_command:' /config/packages/package_room_database.yaml"
+      endpoint_test: "curl -v http://a0d7b954-appdaemon:5050/api/app/room_db_updater/room_db/health"
+    success_indicators:
+      - "REST commands return status 200 instead of 404"
+      - "Health endpoint returns JSON with status: healthy"
+      - "Room configuration updates succeed in database"
+      - "Motion lighting automations update room configs successfully"
+      - "No more 404 errors in Home Assistant logs"
+    prevention_strategies:
+      - "Always test AppDaemon endpoints with curl before Home Assistant integration"
+      - "Use consistent naming patterns for endpoint registration"
+      - "Document URL patterns clearly in app configuration"
+      - "Include endpoint URL examples in AppDaemon app documentation"
+    related_files:
+      - "room_db_updater.py - AppDaemon app with endpoint registration"
+      - "package_room_database.yaml - REST command definitions"
+      - "apps.yaml - AppDaemon app configuration"
+      - "motion_light_automations.yaml - Uses REST commands for config updates"
+    tooling:
+      prompt_file: "/config/.github/prompts/fix-appdaemon-rest-404.prompt.md"
+      detector: "grep 'Status code 404.*appdaemon' /config/home-assistant.log"
+      validator: "Test REST commands via Developer Tools > Services"
+    references:
+      - "AppDaemon API Documentation - register_endpoint() method"
+      - "Home Assistant REST Command Integration Documentation"
+      - "ADR-0020: Home Assistant Configuration Error Canonicalization"
+  - name: "appdaemon_rest_endpoint_404_error_continued"
+    description: "AppDaemon REST endpoint calls failing with 404 due to incorrect URL structure"
+    error_format: "WARNING AppDaemon: API Call to system: status: 404, App Not Found"
+    symptoms:
+      - "REST commands returning 404 errors with 'App Not Found' message"
+      - "AppDaemon endpoints not accessible despite successful app initialization"
+      - "HTML error responses instead of expected JSON from API calls"
+      - "Integration tests failing for AppDaemon HTTP API endpoints"
+    root_causes:
+      - "Using incorrect endpoint URL pattern for app-scoped endpoints"
+      - "REST commands pointing to /api/appdaemon/ instead of /api/app/<app_name>/"
+      - "Misunderstanding AppDaemon endpoint registration and URL routing"
+      - "Copy-paste errors from different AppDaemon configuration examples"
+    solution:
+      - "Use /api/app/<app_name>/<endpoint_name> URL pattern for registered endpoints"
+      - "Update all REST command URLs to include proper app name in path"
+      - "Verify endpoint registration matches expected URL structure"
+      - "Test endpoint accessibility after URL corrections"
+    examples:
+      bad: |
+        rest_command:
+          app_health:
+            url: "http://a0d7b954-appdaemon:5050/api/appdaemon/health"
+            # Results in 404 - no app name in URL path
+      good: |
+        rest_command:
+          app_health:
+            url: "http://a0d7b954-appdaemon:5050/api/app/room_db_updater/health"
+            # Success - includes app name in URL path
+    resolution_steps:
+      - "Identify all REST commands pointing to AppDaemon endpoints"
+      - "Update URLs from /api/appdaemon/ to /api/app/<app_name>/ pattern"
+      - "Verify app name matches the class name in AppDaemon apps.yaml"
+      - "Test REST command execution after URL corrections"
+      - "Check AppDaemon logs for successful API calls instead of 404 warnings"
+    prevention_strategies:
+      - "Document correct AppDaemon endpoint URL patterns for team reference"
+      - "Use consistent URL structure across all AppDaemon REST integrations"
+      - "Test REST endpoints immediately after AppDaemon app deployment"
+      - "Include endpoint testing in AppDaemon app development workflow"
+    tooling:
+      endpoint_test: "curl http://a0d7b954-appdaemon:5050/api/app/<app_name>/<endpoint> - test endpoint accessibility"
+      log_monitoring: "grep 'API Call.*404.*App Not Found' /addon_configs/*/appdaemon.log - monitor for 404 errors"
+      app_validation: "Check AppDaemon logs for successful app initialization and endpoint registration"
+    references:
+      - "AppDaemon HTTP API Documentation"
+      - "AppDaemon App Development Guide"
+      - "Home Assistant REST Command Integration"
+
+  - name: "automation_template_sensor_reference_mismatch"
+    category: "automation_template"
+    description: "Automation template errors due to referencing SQL sensors that return JSON strings instead of parsed dictionaries"
+    error_format: "invalid template (TemplateSyntaxError: unexpected '}') for dictionary value @ data['variables']['variable_name']"
+    symptoms:
+      - "Automations showing as 'not active' due to template configuration errors"
+      - "TemplateSyntaxError with 'unexpected }' in automation variable templates"
+      - "Template parsing failures when accessing SQL sensor payload attributes"
+      - "Variables expecting dictionary data receiving JSON string data"
+    root_causes:
+      - "Using raw SQL sensor that returns json_group_object() as JSON string"
+      - "Templates expecting parsed dictionary but receiving quoted JSON string"
+      - "Inconsistent sensor references across automations after sensor updates"
+      - "Missing template wrapper sensors to convert JSON strings to dictionaries"
+    solution:
+      - "Use template wrapper sensors that parse JSON strings to dictionaries"
+      - "Update all automation references to use consistent sensor names"
+      - "Add SQL payload parser sensors using | from_json filter"
+      - "Ensure all related automations use the same corrected sensor reference"
+    examples:
+      bad: |
+        variables:
+          _raw: "{{ state_attr('sensor.room_configs_motion_lighting','payload') }}"
+          # SQL sensor returns: '{"bedroom":{"timeout":120}}'  (JSON string)
+          room_config: "{{ _raw.bedroom }}"  # Fails - string has no .bedroom attribute
+      good: |
+        variables:
+          _raw: "{{ state_attr('sensor.room_configs_motion_lighting_dict','payload') }}"
+          # Template sensor returns: {"bedroom":{"timeout":120}}  (parsed dict)
+          room_config: "{{ _raw.bedroom }}"  # Success - dict has .bedroom key
+    resolution_steps:
+      - "Identify all automations using the problematic SQL sensor reference"
+      - "Create template wrapper sensor with | from_json filter for SQL payload parsing"
+      - "Update all automation variable references to use the wrapper sensor"
+      - "Validate YAML syntax after sensor reference updates"
+      - "Test automation functionality with corrected dictionary access"
+    prevention_strategies:
+      - "Use template wrapper sensors for all SQL sensors returning JSON data"
+      - "Maintain consistent sensor naming across all related automations"
+      - "Test template variable access patterns when updating sensor references"
+      - "Document sensor data types and expected template usage patterns"
+    tooling:
+      sensor_check: "grep -r 'sensor.room_configs.*payload' packages/ - find sensor references"
+      template_test: "Developer Tools > Template - test variable access patterns"
+      yaml_validator: "python -c \"import yaml; yaml.safe_load(open('file.yaml'))\" - validate syntax"
+    references:
+      - "Home Assistant Template Sensor Documentation"
+      - "SQL Integration JSON Payload Handling"
+      - "Jinja Template Variable Access Patterns"

@@ -68,6 +68,11 @@ hades-validate: venv
 	@echo "Running Hades config index validation..."
 	@$(PY) hestia/tools/utils/validators/hades_index_validator.py
 
+# Entity registry validator
+validate-entities: venv
+	@echo "Validating Home Assistant entities using validator_registry_entities.py"
+	@$(PY) hestia/tools/utils/validators/validator_registry_entities.py -i packages/motion_lighting/helpers.yaml || true
+
 adr-validate: venv
 	@echo "Validating ADR files..."
 	@for adr in $$(find hestia/library/docs/ADR -name "*.md" -not -name "*template*" 2>/dev/null || true); do \
@@ -96,16 +101,20 @@ backup-create: venv
 	@bash hestia/tools/utils/backup/hestia_tarball.sh
 
 tarball: venv
-	@echo "Creating Hestia workspace backup..."
-	@bash hestia/tools/utils/backup/hestia_tarball.sh
+	@echo "Creating Hestia workspace backup (excluding .storage)..."
+	@INCLUDE_STORAGE=false bash hestia/tools/utils/backup/hestia_tarball.sh
+
+storage-tarball: venv
+	@echo "Creating Hestia workspace backup with .storage included..."
+	@INCLUDE_STORAGE=true bash hestia/tools/utils/backup/hestia_tarball.sh
 
 backup-rename: venv
-	@echo "Normalizing legacy backup file names..."
-	@$(PY) hestia/tools/utils/legacy_backup_renamer.py --apply
+	@echo "Normalizing backup file names to ADR-0018 standard..."
+	@$(PY) hestia/tools/utils/normalize_backup_names.py --apply
 
 backup-rename-dry: venv
-	@echo "Checking legacy backup file names (dry run)..."
-	@$(PY) hestia/tools/utils/legacy_backup_renamer.py
+	@echo "Checking backup file names for ADR-0018 compliance (dry run)..."
+	@$(PY) hestia/tools/utils/normalize_backup_names.py --dry-run
 
 # Template Tools (ADR-0020)
 template-fix: venv

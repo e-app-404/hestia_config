@@ -1,26 +1,34 @@
 ---
 id: ADR-0017
-title: "Fallback local logging path for HA tooling (non-repo, cross-platform)"
-date: 2025-09-25
-author: "Evert Appels"
-status: Proposed
-deciders: [platform, ops]
+title: Fallback local logging path for HA tooling (non-repo, cross-platform)
+slug: fallback-local-logging-path-for-ha-tooling-non-repo-cross-platform
+status: Pending Validation
+related:
+- ADR-0016
+- ADR-0008
+- ADR-0009
 supersedes: []
-amends: []
-related: [ADR-0016, ADR-0008, ADR-0009]
+last_updated: '2025-10-15'
+date: 2025-09-25
 decision:
-  summary: "When ${HA_MOUNT} is not writable, tooling writes to an OS-specific local path outside the repo, with strict perms."
-  precedence: "Logs MUST NOT be written under ${HA_MOUNT} or the repo root."
+  summary: When ${HA_MOUNT} is not writable, tooling writes to an OS-specific local
+    path outside the repo, with strict perms.
+  precedence: Logs MUST NOT be written under ${HA_MOUNT} or the repo root.
+author: Evert Appels
 policy:
-  macOS: "$HOME/Library/Logs/Hestia"
-  linux: "${XDG_STATE_HOME:-$HOME/.local/state}/hestia/logs"
-  windows: "%LOCALAPPDATA%\\Hestia\\Logs"
+  macOS: ~/Library/Logs/Hestia/
+  linux: ${XDG_STATE_HOME:-$HOME/.local/state}/hestia/logs
+  windows: '%LOCALAPPDATA%\Hestia\Logs'
 security:
-  perms: "0700 (owner-only) on POSIX; private ACL on Windows"
+  perms: 0700 (owner-only) on POSIX; private ACL on Windows
 acceptance:
-  - "Simulate mount-down; tooling writes to the OS path and creates it with correct perms."
-  - "CI packaging proves logs are excluded from artifacts."
-enforcement_protocols: [validation_first_design, hestia_config_protocols, file_delivery_integrity_v2, include_scan_v2]
+- Simulate mount-down; tooling writes to the OS path and creates it with correct perms.
+- CI packaging proves logs are excluded from artifacts.
+enforcement_protocols:
+- validation_first_design
+- hestia_config_protocols
+- file_delivery_integrity_v2
+- include_scan_v2
 ---
 
 # ADR-0017 — Fallback local logging path for Home Assistant tooling (non-repo, cross-platform)
@@ -42,7 +50,7 @@ The Home Assistant configuration workspace is normally mounted from network stor
 
 When the primary Home Assistant config mount (the operator's `root config` mount) is unavailable, tooling and scripts MUST write fallback logs to the operator's local directory:
 
-`/Users/evertappels/Projects/HomeAssistant/logs`
+`~/Library/Logs/Hestia`
 
 This location is to be used only as a last-resort fallback when the canonical logging or config locations are unreachable.
 

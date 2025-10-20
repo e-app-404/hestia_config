@@ -1,0 +1,27 @@
+shell_command:
+  room_db_json1_preflight: >-
+    /bin/sh -c 'mkdir -p /config/.sql_room_db_tokens; rm -f /config/.sql_room_db_tokens/MIGRATION_TOKEN_JSON1_*; if sqlite3 /config/room_database.db "PRAGMA compile_options;" | grep -i JSON1 >/dev/null; then touch /config/.sql_room_db_tokens/MIGRATION_TOKEN_JSON1_OK; else touch /config/.sql_room_db_tokens/MIGRATION_TOKEN_JSON1_MISSING; fi'
+  room_db_sqlite_presence: >-
+    /bin/sh -c 'mkdir -p /config/.sql_room_db_tokens; rm -f /config/.sql_room_db_tokens/MIGRATION_TOKEN_SQLITE3_*; if command -v sqlite3 >/dev/null 2>&1; then touch /config/.sql_room_db_tokens/MIGRATION_TOKEN_SQLITE3_OK; else touch /config/.sql_room_db_tokens/MIGRATION_TOKEN_SQLITE3_MISSING; fi'
+automation:
+  - alias: "Room DB Preflight — On Start"
+    id: room_db_preflight_on_start
+    trigger:
+      - platform: homeassistant
+        event: start
+    action:
+      - service: shell_command.room_db_sqlite_presence
+      - service: shell_command.room_db_json1_preflight
+      - choose:
+          - conditions: "{{ not path_exists('/config/.sql_room_db_tokens/MIGRATION_TOKEN_SQLITE3_OK') }}"
+            sequence:
+              - service: persistent_notification.create
+                data:
+                  title: "Room DB Preflight"
+                  message: "> sqlite3 not found — shell fallback disabled; AppDaemon/Node-RED path required."
+          - conditions: "{{ path_exists('/config/.sql_room_db_tokens/MIGRATION_TOKEN_JSON1_MISSING') }}"
+            sequence:
+              - service: persistent_notification.create
+                data:
+                  title: "Room DB Preflight"
+                  message: "> SQLite JSON1 missing — using normalized schema + alternate sensors."

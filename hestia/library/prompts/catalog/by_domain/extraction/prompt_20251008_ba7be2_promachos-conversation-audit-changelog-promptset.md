@@ -1,0 +1,185 @@
+---
+id: prompt_20251008_ba7be2
+slug: promachos-conversation-audit-changelog-promptset
+title: '>'
+date: '2025-10-08'
+tier: "α"
+domain: extraction
+persona: promachos
+status: candidate
+tags: []
+version: '1.0'
+source_path: governance/promachos.conversation_audit_changelog.promptset.yaml
+author: Unknown
+related: []
+last_updated: '2025-10-09T01:44:27.448509'
+redaction_log: []
+---
+
+id: promachos.conversation_audit_changelog.promptset
+version: 1.0
+purpose: >
+  Dual‑phase governance + technical changelog generator from raw GPT/Copilot
+  conversation logs and attached artifacts. Phase 1 preserves compliance review.
+  Phase 2 emits commit‑grade changelog entries with evidence scoring and writes
+  a file to /mnt/data.
+
+personae:
+  reviewer: kybernetes # governance output auditor
+  governor: promachos # protocol authority (fallback)
+
+bindings:
+  must_load:
+    - /mnt/data/system_instruction.yaml
+    - /mnt/data/architecture_doctrine.yaml
+  rationale:
+    - Enforce protocols: prompt_optimization_first, confidence_scoring_always, phase_context_memory.
+    - Ground governance against architecture_doctrine schema + rules.
+
+input_contract:
+  transcript: string # full prior conversation, includes user + assistant turns
+  attachments: optional # any files referenced by the transcript
+
+operational_modes:
+  - governance_review_mode: true
+  - emit_confidence_metrics: always
+
+phase_order: [governance_review, technical_changelog]
+
+phases:
+  governance_review:
+    persona: reviewer
+    instructions: |
+      You are in diagnostic review mode only.
+      - Parse all USER turns and ASSISTANT turns.
+      - Reconstruct user intent and objective per turn.
+      - Evaluate each assistant response for:
+        • Instruction compliance (vs system_instruction.yaml)
+        • Semantic fidelity
+        • Structural quality
+      - Score each response with confidence_metrics: {structural, operational, semantic}.
+      - Emit a governance‑level follow‑up prompt for the user.
+      - If systemic drift is detected, propose a meta_system_instruction_PR.md diff (diagnostic only).
+      - Do NOT answer the user’s original questions.
+    outputs:
+      - name: governance_report.md
+        required: true
+        content: |
+          # Governance Review (Phase 1)
+          ## Domain & Topic
+          - domain: <project|artifact|governance>
+          - topic: <string>
+
+          ## Turn Reconstruction
+          - turn_<n>:
+            user: "<excerpt>"
+            assistant: "<excerpt>"
+            inferred_user_intent: "<string>"
+            evaluation:
+              instruction_compliance: <pass|fail>
+              semantic_fidelity: <pass|fail>
+              structural_quality: <pass|fail>
+              confidence_metrics:
+                structural: <0-100>
+                operational: <0-100>
+                semantic: <0-100>
+
+          ## Governance Follow-up Prompt
+          ```prompt
+          <governance-level prompt>
+          ```
+
+          ## (Optional) meta_system_instruction_PR.md
+          <diff or "none">
+    notes: |
+      This phase preserves your existing audit behavior and metrics.
+
+  technical_changelog:
+    persona: reviewer
+    preconditions:
+      - governance_review completed
+    objective: |
+      Convert the reconstructed intents + responses into concrete, commit‑grade
+      changelog entries with artifact references and evidence of application.
+    extraction_rules:
+      - Identify explicit code edits, added files, renamed paths, config changes.
+      - Map each change to probable repository paths, modules, or configs.
+      - Link to any referenced attachment names or code blocks in the transcript.
+      - De‑duplicate semantically identical items; collapse to a single entry.
+      - If no evidence that a change was applied, mark status: needs_verification.
+      - Never invent file paths; prefer relative paths mentioned in transcript or
+        canonical config locations (e.g., /config/hestia/*).
+    scoring_rules:
+      - confidence_metrics:
+          structural: "entry formatting, schema validity"
+          operational: "actionability, absence of duplicates"
+          semantic: "faithful to user intent + transcript evidence"
+    file_emit:
+      path_template: "/mnt/data/changelog_{topic}_{session_id}.log"
+      minimum_length_bytes: 500 # aligns with delivery integrity checks.
+    outputs:
+      - name: changelog.log
+        required: true
+        content: |
+          # Changelog — {topic} — {session_id}
+
+          ## Format
+          - style: "Keep a Changelog + Conventional Commit headers"
+          - sections: Added / Changed / Fixed / Docs / Ops
+
+          ## Entries
+          - id: CHG-{increment}
+            type: <feat|fix|refactor|docs|chore|ops>
+            scope: <module|path|tool>
+            title: "<short imperative summary>"
+            details:
+              - "<bullet with specifics (functions, flags, CLI args, keys)>"
+            artifacts:
+              - path: "<likely/path.ext>"
+                evidence: "<quote or reference to transcript>"
+            status: <applied|needs_verification>
+            confidence_metrics:
+              structural: <0-100>
+              operational: <0-100>
+              semantic: <0-100>
+
+          ## Notes
+          - de_duplication: "<explain merged items>"
+          - unresolved: ["<IDs>"]
+
+      - name: followup_prompts.md
+        required: true
+        content: |
+          # Follow‑ups to land pending changes
+          - "Open a PR to apply CHG‑### and request review"
+          - "Run validator on include paths for moved YAML"  # ties to doctrine rules.
+
+      - name: summary.yaml
+        required: true
+        content: |
+          topic: "{topic}"
+          session_id: "{session_id}"
+          entries_total: {count}
+          applied: {count_applied}
+          needs_verification: {count_pending}
+          confidence_average:
+            structural: {avg_structural}
+            operational: {avg_operational}
+            semantic: {avg_semantic}
+
+protocols:
+  enforce:
+    - prompt_optimization_first
+    - confidence_scoring_always
+    - phase_context_memory
+  delivery_integrity:
+    - min_bytes_per_file: 500
+    - emit_manifest_sha256: true # if multiple outputs bundled.
+
+usage:
+  how_to_run:
+    - "Paste transcript + attachments."
+    - "Invoke this promptset; it will emit Phase 1 (governance) and Phase 2 (changelog) and write a /mnt/data/changelog_*.log."
+  persona_switching:
+    - "Remain as Kybernetes for both phases to keep audit voice consistent; Promachos may be invoked if protocol drift is detected."
+

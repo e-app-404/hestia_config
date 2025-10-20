@@ -1,0 +1,51 @@
+{# SQL Room Database Architecture — Diagnostics (thin) #}
+{# Usage: Developer Tools → Templates → paste this template to render a compact health report. #}
+
+{%- set ml_raw = state_attr('sensor.room_configs_motion_lighting','payload') %}
+{%- set vc_raw = state_attr('sensor.room_configs_vacuum_control','payload') %}
+{%- set ml_ok = ml_raw is string and (ml_raw.startswith('{') or ml_raw.startswith('[')) %}
+{%- set vc_ok = vc_raw is string and (vc_raw.startswith('{') or vc_raw.startswith('[')) %}
+{%- set rn_state = states('sensor.rooms_needing_cleaning') %}
+{%- set rn_ok = (rn_state | regex_match('^-?\d+$')) %}
+{%- set topic = states('input_text.valetudo_base_topic') %}
+{%- set topic_ok = (topic | length) > 0 and topic != 'unknown' and topic != 'unavailable' %}
+{%- set auto_states = {
+  'bedroom': states('automation.motion_lights_bedroom_sql_v15'),
+  'upstairs': states('automation.motion_lights_upstairs_sql_v15'),
+  'downstairs': states('automation.motion_lights_downstairs_sql_v15'),  
+  'kitchen': states('automation.motion_lights_kitchen_sql_v15'),
+  'living_room': states('automation.motion_lights_living_room_sql_v15'),
+  'ensuite': states('automation.motion_lights_ensuite_sql_v15')
+} %}
+{%- set auto_ok = auto_states.values() | reject('in', ['unknown','unavailable']) | list | length == 6 %}
+
+{%- set checks = {
+  'sensor.room_configs_motion_lighting.payload_present': ml_ok,
+  'sensor.room_configs_vacuum_control.payload_present': vc_ok,
+  'sensor.rooms_needing_cleaning.state_is_count': rn_ok,
+  'input_text.valetudo_base_topic.present': topic_ok,
+  'motion_lighting_automations.all_present': auto_ok
+} %}
+
+{%- set failures = namespace(items=[]) %}
+{%- for key, value in checks.items() %}
+  {%- if not value %}
+    {%- set failures.items = failures.items + [key] %}
+  {%- endif %}
+{%- endfor %}
+
+{%- set report = {
+  'status': 'ok' if failures.items | length == 0 else 'needs_attention',
+  'failures': failures.items,
+  'details': {
+    'rooms_needing_cleaning_count': rn_state,
+    'valetudo_base_topic': topic,
+    'automation_states': auto_states,
+    'ml_payload_sample': (ml_raw[:50] + '...') if ml_ok else ml_raw,
+    'vc_payload_sample': (vc_raw[:50] + '...') if vc_ok else vc_raw,
+    'motion_lighting_rooms_count': (ml_raw | from_json).keys() | list | length if ml_ok else 0,
+    'vacuum_control_rooms_count': (vc_raw | from_json).keys() | list | length if vc_ok else 0
+  }
+} %}
+
+{{ report | tojson }}

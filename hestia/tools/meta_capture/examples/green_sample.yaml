@@ -1,0 +1,6 @@
+extracted_config: { project: Room-DB }
+transient_state:  { last_validation: 2025-01-01T00:00:00Z, health: healthy }
+relationships:    []
+suggested_commands:
+  - { label: Health, cmd: "curl -sS http://a0d7b954-appdaemon:5050/api/appdaemon/room_db_health | jq ." }
+notes: ["canonical green sample"]

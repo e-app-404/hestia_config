@@ -1,0 +1,153 @@
+blueprint:
+  name: Group Sonos on Motion
+  description: "# Group Sonos on Motion\n**Version: 1.0**\nGroup a Sonos device to
+    a main device when presence (e.g. motion) is detected and the main device is playing
+    music. Can be extended with custom conditions, for example, only group the Sonos
+    when you're not asleep.\nLet us know what you think of this blueprint and for
+    community support including updates: [Click Here](https://community.home-assistant.io/t/sonos-grouping-and-ungrouping-using-motion-detection/575452)\n**The
+    Automation Process:**\n - In this example we will use a motion sensor as the trigger
+    but you can use one or multiple [Binary Sensors](https://www.home-assistant.io/integrations/binary_sensor/)
+    as the trigger/s.\n - Triggers on a motion sensor and adds the Sonos speaker (target)
+    in the room to a group (source).\n - When no motion is detected, a time delay
+    is activated and removes the Sonos player from the group Automatically.\n - The
+    Sonos speaker will remain GROUPED if the motion sensor detects motion before the
+    time delay removes the Sonos speaker from the group. It will then reset the time
+    delay after last motion is detected.\n - You have the option to add \"Custom conditions\".
+    This allows you to extend this blueprint with more advanced YAML syntax.\n - You
+    have the option to set the \"Allow TV\" option. When selected, the target Sonos
+    Speaker will join the group even if the group is playing audio from the TV.\n
+    - You have the option to adjust the \"Time Delay\". This will increase or decrease
+    the amount of time it will take before the target Sonos Speaker will leave the
+    group again.\n"
+  domain: automation
+  input:
+    motion_trigger:
+      name: Trigger Sensor - Binary Sensors *
+      description: The Sensor/s that will make a Sonos speaker join a group. The trigger
+        can be any [Binary Sensors](https://www.home-assistant.io/integrations/binary_sensor/)
+        you like.
+      selector:
+        entity:
+          domain:
+          - binary_sensor
+          multiple: true
+          reorder: false
+    sonos_source:
+      name: Sonos source
+      description: The sonos player which this player will join. Probably located
+        in a different room.
+      selector:
+        entity:
+          integration: sonos
+          domain:
+          - media_player
+          reorder: false
+          multiple: false
+    sonos_target:
+      name: Sonos target
+      description: The Sonos player that will be joining the existing group. Probably
+        the player which is located in the room where the motion has been triggered.
+      selector:
+        entity:
+          integration: sonos
+          domain:
+          - media_player
+          reorder: false
+          multiple: false
+    time_delay:
+      name: Time Delay
+      description: The delay time to leave the sonos player in the group after the
+        last trigger is detected.
+      default: 5
+      selector:
+        number:
+          min: 0.0
+          max: 30.0
+          step: 0.5
+          unit_of_measurement: minutes
+          mode: slider
+    custom_conditions:
+      name: Custom conditions
+      default: []
+      description: A list of custom condititions that also have to be met before grouping
+        the sonos. Only available via YAML mode.
+    allow_tv:
+      name: Allow TV grouping
+      description: Whether to also group the Sonos when the source is playing TV audio.
+      default: false
+      selector:
+        boolean: {}
+  source_url: https://gist.github.com/legovaer/b0211044a36411d8089220687ffda1d8
+mode: restart
+max_exceeded: silent
+variables:
+  motion_trigger: !input motion_trigger
+  sonos_source: !input sonos_source
+  sonos_target: !input sonos_target
+  allow_tv: !input allow_tv
+  time_delay: !input time_delay
+trigger:
+- platform: state
+  entity_id: !input motion_trigger
+  from: 'off'
+  to: 'on'
+  id: t1
+- platform: state
+  entity_id: !input motion_trigger
+  from: 'on'
+  to: 'off'
+  id: t2
+- platform: state
+  entity_id: !input sonos_source
+  to: playing
+  id: t3
+- platform: homeassistant
+  event: start
+  id: t4
+- platform: event
+  event_type: automation_reloaded
+  id: t5
+condition:
+- condition: and
+  conditions:
+  - condition: state
+    entity_id: !input sonos_source
+    state: playing
+  - condition: or
+    conditions:
+    - condition: state
+      entity_id: !input sonos_target
+      state: paused
+    - condition: state
+      entity_id: !input sonos_target
+      state: idle
+    - '{{ sonos_target in state_attr(sonos_source, "group_members") }}'
+  - '{{ allow_tv or state_attr(sonos_source, "source")  != "TV" }}'
+  - condition: and
+    conditions: !input custom_conditions
+action:
+- choose:
+  - alias: Motion has been detected - group speakers
+    conditions:
+    - condition: trigger
+      id: t1
+    sequence:
+    - alias: Add the speaker to the group
+      service: media_player.join
+      data:
+        group_members:
+        - !input sonos_target
+      target:
+        entity_id: !input sonos_source
+  - alias: Motion has no longer been detected - unjoin after delay
+    conditions:
+    - condition: trigger
+      id: t2
+    sequence:
+    - alias: Wait the number of minutes set in the time delay
+      delay:
+        minutes: !input time_delay
+    - alias: Unjoin the speaker from the group
+      service: media_player.unjoin
+      target:
+        entity_id: !input sonos_target

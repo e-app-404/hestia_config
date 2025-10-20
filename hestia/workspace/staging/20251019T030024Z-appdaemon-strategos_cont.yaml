@@ -1,0 +1,78 @@
+extracted_config:
+  project: Room-DB
+  goal: SQLite-backed room configuration system for Home Assistant using AppDaemon 4.5.11 with capability-based admission control
+  platform:
+    home_assistant:
+      os_version: '16.2'
+      hardware: Raspberry Pi 5
+      web_port: 8123
+    appdaemon:
+      addon_slug: a0d7b954_appdaemon
+      version: '4.5.11'
+      api:
+        host_alias: a0d7b954-appdaemon
+        port: 5050
+        base_path: /api/appdaemon
+  paths:
+    container_db_path: /config/room_database.db
+    host_db_path: /addon_configs/a0d7b954_appdaemon/room_database.db
+    apps_dir: /addon_configs/a0d7b954_appdaemon/apps/
+    area_mapping: /config/www/area_mapping.yaml
+    export_file: /config/room_db_export.json
+  apps:
+    - room_db_updater.py
+    - room_db_exporter.py
+    - activity_tracker.py
+  endpoints:
+    health: {path: /api/appdaemon/room_db_health, method: GET}
+    test: {path: /api/appdaemon/room_db_test, method: GET}
+    export: {path: /api/appdaemon/room_db_export, method: GET}
+    update_config: {path: /api/appdaemon/room_db_update_config, method: POST, content_type: application/json}
+    bulk_update: {path: /api/appdaemon/room_db_bulk_update, method: POST, content_type: application/json}
+    reload_mapping: {path: /api/appdaemon/room_db_reload_mapping, method: POST, content_type: application/json}
+    export_write_once: {path: /api/appdaemon/room_db_export_write_once, method: POST, content_type: application/json}
+  mapping:
+    canonical_rooms_count: 11
+  admission_control_examples:
+    entrance+motion_lighting: allowed
+    powder_room+motion_lighting: denied_no_capability
+    upstairs+vacuum_control: denied_no_segment_id
+    kitchen+vacuum_control: allowed
+  rate_limits:
+    write_rate_limit_seconds: 2
+    scope: per-domain
+
+transient_state:
+  last_validation: 2025-10-19T00:00:00Z
+  health: healthy
+  export_counts: {motion_lighting: 5, vacuum_control: 1}
+  endpoints_verified: [health, test, export, update_config, export_write_once]
+  export_path: /config/room_db_export.json
+  notes:
+    - All endpoints returning JSON 200 when POSTs include Content-Type: application/json
+    - Previous POST failure due to missing Content-Type header has been resolved
+
+relationships:
+  - {from: "AppDaemon add-on (a0d7b954_appdaemon)", to: "API service", via: "port 5050/tcp"}
+  - {from: "Home Assistant", to: "AppDaemon HTTP API", via: "http://a0d7b954-appdaemon:5050/api/appdaemon"}
+  - {from: "/config/room_database.db", to: "/addon_configs/a0d7b954_appdaemon/room_database.db", type: container_to_host_path_mapping}
+  - {from: "room_db_exporter.py", to: "/config/room_db_export.json", type: file_export}
+  - {from: "area_mapping.yaml", to: "canonical_rooms", count: 11}
+
+suggested_commands:
+  - label: Health
+    cmd: curl -sS http://a0d7b954-appdaemon:5050/api/appdaemon/room_db_health | jq .
+  - label: Export (GET)
+    cmd: curl -sS http://a0d7b954-appdaemon:5050/api/appdaemon/room_db_export | jq '.status,.counts'
+  - label: Update Config (POST)
+    cmd: curl -sS -X POST -H 'Content-Type: application/json' -d '{"room_id":"bedroom","domain":"motion_lighting","config_data":{"timeout":180}}' http://a0d7b954-appdaemon:5050/api/appdaemon/room_db_update_config | jq .
+  - label: Export Write Once (POST)
+    cmd: curl -sS -X POST -H 'Content-Type: application/json' -d '{}' http://a0d7b954-appdaemon:5050/api/appdaemon/room_db_export_write_once | jq .
+  - label: Verify export file
+    cmd: cat /addon_configs/a0d7b954_appdaemon/room_db_export.json | jq '.counts'
+  - label: HA template check (motion timeout)
+    cmd: "{{ state_attr('sensor.room_configs_motion_lighting_dict','payload').bedroom.timeout }}"
+
+notes:
+  - System is production-ready; optional optimization: use motion sensors in wait_for_trigger instead of occupancy sensors for faster light-off timing in some rooms.
+  - Keep POST Content-Type header to avoid AppDaemon/Tornado serialization quirks on empty bodies.

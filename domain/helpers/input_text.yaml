@@ -8,3 +8,6 @@ last_motion:
   name: "Text helper for last motion"
   initial: "Last motion"
   max: 100
+
+# Note: Large JSON storage helpers (tts_gate_registry, plex_tv_index, plex_movie_index)
+# are created via UI to exceed 255 character YAML limit. See .storage/input_text

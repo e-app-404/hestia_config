@@ -1,0 +1,949 @@
+title: AML Diagnostics
+path: aml-diagnostics-sections
+icon: mdi:stethoscope
+type: sections
+sections:
+  - cards:
+      - type: markdown
+        content: >-
+          {% set auto=is_state('automation.motion_lights_bedroom','on') %} {%
+          set bypass=is_state('binary_sensor.motion_bypass_bedroom','on') %} {%
+          set al=is_state('switch.adaptive_lighting_bedroom','on') %} {% set
+          state = '✅ AML On' if (auto and not bypass and al)
+                          else '🟧 Motion Only' if (auto and not bypass and not al)
+                          else '⛔ Bypassed' if bypass
+                          else '⛔ Off' %}
+          ### Bedroom — {{ state }}
+
+          Last motion: {{
+          relative_time(states.binary_sensor.bedroom_motion_beta.last_changed)
+          }} ago
+      - type: glance
+        show_name: true
+        show_state: true
+        entities:
+          - entity: automation.motion_lights_bedroom_sql_v1_5
+            name: Motion automation
+          - entity: binary_sensor.motion_bypass_bedroom
+            name: Bypass
+          - entity: switch.adaptive_lighting_bedroom
+            name: AL switch
+          - entity: light.al_adaptive_bedroom_light_group
+            name: Light group
+          - entity: binary_sensor.bedroom_motion_beta
+            name: Motion (β)
+      - type: entities
+        entities:
+          - type: attribute
+            entity: var.motion_profile_bedroom
+            name: Timeout (s)
+            attribute: timeout_seconds
+          - type: attribute
+            entity: var.motion_profile_bedroom
+            name: Last triggered
+            attribute: last_triggered
+      - type: history-graph
+        hours_to_show: 2
+        entities:
+          - entity: binary_sensor.bedroom_motion_beta
+            name: Motion
+          - entity: light.bedroom_accent_alpha
+            name: Lights
+          - entity: light.bedroom_main_alpha_matter
+          - entity: light.bedroom_wall_alpha
+          - entity: light.bedroom_nightstand_left_alpha_matter
+          - entity: light.bedroom_nightstand_right_alpha_matter
+      - type: conditional
+        conditions:
+          - entity: automation.motion_lights_bedroom
+            state_not: "on"
+        card:
+          type: markdown
+          content: ⛔ **Automation OFF** — enable `automation.motion_lights_bedroom`.
+      - type: conditional
+        conditions:
+          - entity: binary_sensor.motion_bypass_bedroom
+            state: "on"
+        card:
+          type: markdown
+          content: >-
+            ⛔ **Bypass ON** — set `bypass: false` on
+            `var.motion_profile_bedroom`.
+      - type: conditional
+        conditions:
+          - entity: switch.adaptive_lighting_bedroom
+            state_not: "on"
+        card:
+          type: markdown
+          content: >-
+            🟧 **AL OFF** — lights will use last state; turn on AL if adaptation
+            desired.
+      - type: conditional
+        conditions:
+          - entity: light.al.adaptive_bedroom_light_group
+            state: unavailable
+        card:
+          type: markdown
+          content: ⛔ **Light group unavailable** — check group membership/devices.
+  - cards:
+      - type: markdown
+        content: >
+          {% set auto=is_state('automation.motion_lights_desk','on') %}
+
+          {% set bypass=is_state('binary_sensor.motion_bypass_desk','on') %}
+
+          {% set al=is_state('switch.adaptive_lighting_desk','on') %}
+
+          {% set obj=states.binary_sensor.desk_motion_beta %}
+
+          {% set state = '✅ AML On' if (auto and not bypass and al)
+                         else '🟧 Motion Only' if (auto and not bypass and not al)
+                         else '⛔ Bypassed' if bypass
+                         else '⛔ Off' %}
+          ### Desk — {{ state }}
+
+          Last motion: {{ (relative_time(obj.last_changed) if obj is not none
+          else '—') }} ago
+      - type: glance
+        entities:
+          - entity: automation.motion_lights_desk
+            name: Motion automation
+          - entity: binary_sensor.motion_bypass_desk
+            name: Bypass
+          - entity: switch.adaptive_lighting_desk
+            name: AL switch
+          - entity: light.al_adaptive_desk_light_group
+            name: Light group
+          - entity: binary_sensor.desk_motion_beta
+            name: Motion (β)
+      - type: entities
+        entities:
+          - type: attribute
+            entity: var.motion_profile_desk
+            name: Timeout (s)
+            attribute: timeout_seconds
+          - type: attribute
+            entity: var.motion_profile_desk
+            name: Last triggered
+            attribute: last_triggered
+      - type: history-graph
+        hours_to_show: 2
+        entities:
+          - entity: binary_sensor.desk_motion_beta
+            name: Motion
+          - entity: light.bedroom_desk_alpha_matter
+            name: Lights
+          - entity: light.bedroom_desk_corner_alpha
+          - entity: light.bedroom_desk_lightstrip_alpha_matter
+          - entity: light.bedroom_desk_wall_alpha_matter
+      - type: conditional
+        conditions:
+          - entity: automation.motion_lights_desk
+            state_not: "on"
+        card:
+          type: markdown
+          content: ⛔ **Automation OFF** — enable `automation.motion_lights_desk`.
+      - type: conditional
+        conditions:
+          - entity: binary_sensor.motion_bypass_desk
+            state: "on"
+        card:
+          type: markdown
+          content: "⛔ **Bypass ON** — set `bypass: false` on `var.motion_profile_desk`."
+      - type: conditional
+        conditions:
+          - entity: switch.adaptive_lighting_desk
+            state_not: "on"
+        card:
+          type: markdown
+          content: >-
+            🟧 **AL OFF** — lights will use last state; turn on AL if adaptation
+            desired.
+  - cards:
+      - type: markdown
+        content: >-
+          {% set auto=is_state('automation.motion_lights_ensuite','on') %} {%
+          set bypass=is_state('binary_sensor.motion_bypass_ensuite','on') %} {%
+          set al=is_state('switch.adaptive_lighting_ensuite','on') %} {% set
+          state = '✅ AML On' if (auto and not bypass and al)
+                          else '🟧 Motion Only' if (auto and not bypass and not al)
+                          else '⛔ Bypassed' if bypass
+                          else '⛔ Off' %}
+
+          ### Ensuite — {{ state }}
+
+          Last motion: {{
+          relative_time(states.binary_sensor.ensuite_motion_beta.last_changed)
+          }} ago
+      - type: glance
+        entities:
+          - entity: automation.motion_lights_ensuite_sql_v1_5
+            name: Motion automation
+          - entity: binary_sensor.motion_bypass_ensuite
+            name: Bypass
+          - entity: switch.adaptive_lighting_ensuite
+            name: AL switch
+          - entity: light.group_ensuite_lights
+            name: Light group
+          - entity: binary_sensor.ensuite_motion_beta
+            name: Motion (β)
+      - type: entities
+        entities:
+          - type: attribute
+            entity: var.motion_profile_ensuite
+            name: Timeout (s)
+            attribute: timeout_seconds
+          - type: attribute
+            entity: var.motion_profile_ensuite
+            name: Last triggered
+            attribute: last_triggered
+      - type: history-graph
+        hours_to_show: 2
+        entities:
+          - entity: binary_sensor.ensuite_motion_beta
+            name: Motion
+          - entity: light.ensuite_accent_alpha
+            name: Lights
+          - entity: light.ensuite_lightstrip_alpha_matter
+          - entity: light.ensuite_main_alpha_matter
+      - type: conditional
+        conditions:
+          - entity: automation.motion_lights_ensuite
+            state_not: "on"
+        card:
+          type: markdown
+          content: ⛔ **Automation OFF** — enable `automation.motion_lights_ensuite`.
+      - type: conditional
+        conditions:
+          - entity: binary_sensor.motion_bypass_ensuite
+            state: "on"
+        card:
+          type: markdown
+          content: >-
+            ⛔ **Bypass ON** — set `bypass: false` on
+            `var.motion_profile_ensuite`.
+      - type: conditional
+        conditions:
+          - entity: switch.adaptive_lighting_ensuite
+            state_not: "on"
+        card:
+          type: markdown
+          content: >-
+            🟧 **AL OFF** — lights will use last state; turn on AL if adaptation
+            desired.
+  - cards:
+      - type: heading
+        heading: Kitchen
+      - type: glance
+        entities:
+          - entity: automation.motion_lights_kitchen_sql_v1_5
+            name: Motion automation
+          - entity: binary_sensor.motion_bypass_kitchen
+            name: Bypass
+          - entity: switch.adaptive_lighting_kitchen
+            name: AL switch
+          - entity: light.al_adaptive_kitchen_light_group
+            name: Light group
+          - entity: binary_sensor.kitchen_motion_beta
+            name: Motion (β)
+      - type: markdown
+        content: >-
+          {% set auto=is_state('automation.motion_lights_kitchen','on') %} {%
+          set bypass=is_state('binary_sensor.motion_bypass_kitchen','on') %} {%
+          set al=is_state('switch.adaptive_lighting_kitchen','on') %} {% set
+          state = '✅ AML On' if (auto and not bypass and al)
+                          else '🟧 Motion Only' if (auto and not bypass and not al)
+                          else '⛔ Bypassed' if bypass
+                          else '⛔ Off' %}
+          ### Kitchen — {{ state }} Last motion: {{
+          relative_time(states.binary_sensor.kitchen_motion_beta.last_changed)
+          }} ago
+      - type: entities
+        entities:
+          - type: attribute
+            entity: var.motion_profile_kitchen
+            name: Timeout (s)
+            attribute: timeout_seconds
+          - type: attribute
+            entity: var.motion_profile_kitchen
+            name: Last triggered
+            attribute: last_triggered
+      - type: history-graph
+        hours_to_show: 2
+        entities:
+          - entity: binary_sensor.kitchen_motion_beta
+            name: Motion
+          - entity: light.kitchen_ceiling_alpha
+            name: Lights
+          - entity: light.laundry_ceiling_alpha
+          - entity: light.kitchen_cupboards_lightstrip_alpha
+      - type: conditional
+        conditions:
+          - entity: automation.motion_lights_kitchen
+            state_not: "on"
+        card:
+          type: markdown
+          content: ⛔ **Automation OFF** — enable `automation.motion_lights_kitchen`.
+      - type: conditional
+        conditions:
+          - entity: binary_sensor.motion_bypass_kitchen
+            state: "on"
+        card:
+          type: markdown
+          content: >-
+            ⛔ **Bypass ON** — set `bypass: false` on
+            `var.motion_profile_kitchen`.
+      - type: conditional
+        conditions:
+          - entity: switch.adaptive_lighting_kitchen
+            state_not: "on"
+        card:
+          type: markdown
+          content: >-
+            🟧 **AL OFF** — lights will use last state; turn on AL if adaptation
+            desired.
+  - cards:
+      - type: heading
+        heading: Hallways
+      - type: markdown
+        content: >-
+          {% set
+          dn_auto=is_state('automation.motion_lights_hallway_downstairs','on')
+          %} {% set
+          dn_bypass=is_state('binary_sensor.motion_bypass_hallway_downstairs','on')
+          %} {% set
+          dn_al=is_state('switch.adaptive_lighting_hallway_downstairs','on') %}
+          {% set dn_state = '✅ AML On' if (dn_auto and not dn_bypass and dn_al)
+                             else '🟧 Motion Only' if (dn_auto and not dn_bypass and not dn_al)
+                             else '⛔ Bypassed' if dn_bypass
+                             else '⛔ Off' %}
+          {% set
+          up_auto=is_state('automation.motion_lights_hallway_upstairs','on') %}
+          {% set
+          up_bypass=is_state('binary_sensor.motion_bypass_hallway_upstairs','on')
+          %} {% set
+          up_al=is_state('switch.adaptive_lighting_hallway_upstairs','on') %} {%
+          set up_state = '✅ AML On' if (up_auto and not up_bypass and up_al)
+                             else '🟧 Motion Only' if (up_auto and not up_bypass and not up_al)
+                             else '⛔ Bypassed' if up_bypass
+                             else '⛔ Off' %}
+          ### Hallways • **Downstairs** — {{ dn_state }} (last motion: {{
+          relative_time(states.binary_sensor.hallway_downstairs_motion_beta.last_changed)
+          }} ago)   • **Upstairs** — {{ up_state }} (last motion: {{
+          relative_time(states.binary_sensor.hallway_upstairs_motion_beta.last_changed)
+          }} ago)
+      - type: glance
+        entities:
+          - entity: automation.motion_lights_downstairs_sql_v1_5
+            name: Dn automation
+          - entity: binary_sensor.motion_bypass_hallway_downstairs
+            name: Dn bypass
+          - entity: switch.adaptive_lighting_hallway_downstairs
+            name: Dn AL
+          - entity: light.group_hallway_lights_downstairs
+            name: Dn lights
+          - entity: binary_sensor.hallway_downstairs_motion_beta
+            name: Dn motion (β)
+          - entity: automation.motion_lights_upstairs_sql_v1_5
+            name: Up automation
+          - entity: binary_sensor.motion_bypass_hallway_upstairs
+            name: Up bypass
+          - entity: switch.adaptive_lighting_hallway_upstairs
+            name: Up AL
+          - entity: light.group_hallway_lights_upstairs
+            name: Up lights
+          - entity: binary_sensor.hallway_upstairs_motion_beta
+            name: Up motion (β)
+      - type: history-graph
+        hours_to_show: 2
+        entities:
+          - entity: binary_sensor.hallway_downstairs_motion_beta
+            name: Dn motion
+          - entity: binary_sensor.hallway_downstairs_motion_recent_beta
+          - entity: light.group_hallway_lights_downstairs
+          - entity: binary_sensor.hallway_upstairs_motion_beta
+            name: Up motion
+          - entity: binary_sensor.hallway_upstairs_motion_recent_beta
+          - entity: light.group_hallway_lights_upstairs
+      - type: conditional
+        conditions:
+          - entity: automation.motion_lights_hallway_downstairs
+            state_not: "on"
+        card:
+          type: markdown
+          content: >-
+            ⛔ **Hall Dn automation OFF** — enable
+            `automation.motion_lights_hallway_downstairs`.
+      - type: conditional
+        conditions:
+          - entity: binary_sensor.motion_bypass_hallway_downstairs
+            state: "on"
+        card:
+          type: markdown
+          content: "⛔ **Hall Dn bypass ON** — set `bypass: false`."
+      - type: conditional
+        conditions:
+          - entity: switch.adaptive_lighting_hallway_downstairs
+            state_not: "on"
+        card:
+          type: markdown
+          content: 🟧 **Hall Dn AL OFF** — turn on AL if adaptation desired.
+      - type: conditional
+        conditions:
+          - entity: automation.motion_lights_hallway_upstairs
+            state_not: "on"
+        card:
+          type: markdown
+          content: >-
+            ⛔ **Hall Up automation OFF** — enable
+            `automation.motion_lights_hallway_upstairs`.
+      - type: conditional
+        conditions:
+          - entity: binary_sensor.motion_bypass_hallway_upstairs
+            state: "on"
+        card:
+          type: markdown
+          content: "⛔ **Hall Up bypass ON** — set `bypass: false`."
+      - type: conditional
+        conditions:
+          - entity: switch.adaptive_lighting_hallway_upstairs
+            state_not: "on"
+        card:
+          type: markdown
+          content: 🟧 **Hall Up AL OFF** — turn on AL if adaptation desired.
+  - cards:
+      - type: heading
+        heading: Subareas — Motion Only
+      - type: markdown
+        content: >-
+          {% set ot_auto=is_state('automation.motion_lights_ottoman','on') %} {%
+          set ot_bypass=is_state('binary_sensor.motion_bypass_ottoman','on') %}
+          {% set ot_state = '✅ Motion On' if (ot_auto and not ot_bypass)
+                             else '⛔ Bypassed' if ot_bypass
+                             else '⛔ Off' %}
+          {% set wd_auto=is_state('automation.motion_lights_wardrobe','on') %}
+          {% set wd_bypass=is_state('binary_sensor.motion_bypass_wardrobe','on')
+          %} {% set wd_state = '✅ Motion On' if (wd_auto and not wd_bypass)
+                             else '⛔ Bypassed' if wd_bypass
+                             else '⛔ Off' %}
+          ### Subareas • **Ottoman** — {{ ot_state }} (last motion: {{
+          relative_time(states.binary_sensor.bedroom_ottoman_motion_proxy.last_changed)
+          }} ago)   • **Wardrobe** — {{ wd_state }} (last motion: {{
+          relative_time(states.binary_sensor.wardrobe_motion_beta.last_changed)
+          }} ago)
+      - type: glance
+        entities:
+          - entity: automation.motion_lights_ottoman
+            name: Ottoman automation
+          - entity: binary_sensor.motion_bypass_ottoman
+            name: Ottoman bypass
+          - entity: light.group_ottoman_light
+            name: Ottoman lights
+          - entity: binary_sensor.bedroom_ottoman_motion_proxy
+            name: Ottoman motion (proxy β)
+          - entity: automation.motion_lights_wardrobe
+            name: Wardrobe automation
+          - entity: binary_sensor.motion_bypass_wardrobe
+            name: Wardrobe bypass
+          - entity: light.group_wardrobe_light
+            name: Wardrobe lights
+          - entity: binary_sensor.wardrobe_motion_beta
+            name: Wardrobe motion (β)
+      - type: history-graph
+        hours_to_show: 2
+        entities:
+          - entity: binary_sensor.bedroom_ottoman_motion_proxy
+            name: Ottoman motion
+          - entity: light.bedroom_ottoman_lightstrip_alpha_matter
+            name: Ottoman lights
+          - entity: binary_sensor.wardrobe_motion_beta
+            name: Wardrobe motion
+          - entity: light.bedroom_wardrobe_lightstrip_alpha
+            name: Wardrobe lights
+      - type: conditional
+        conditions:
+          - entity: automation.motion_lights_ottoman
+            state_not: "on"
+        card:
+          type: markdown
+          content: >-
+            ⛔ **Ottoman automation OFF** — enable
+            `automation.motion_lights_ottoman`.
+      - type: conditional
+        conditions:
+          - entity: binary_sensor.motion_bypass_ottoman
+            state: "on"
+        card:
+          type: markdown
+          content: "⛔ **Ottoman bypass ON** — set `bypass: false`."
+      - type: conditional
+        conditions:
+          - entity: automation.motion_lights_wardrobe
+            state_not: "on"
+        card:
+          type: markdown
+          content: >-
+            ⛔ **Wardrobe automation OFF** — enable
+            `automation.motion_lights_wardrobe`.
+      - type: conditional
+        conditions:
+          - entity: binary_sensor.motion_bypass_wardrobe
+            state: "on"
+        card:
+          type: markdown
+          content: "⛔ **Wardrobe bypass ON** — set `bypass: false`."
+  - type: grid
+    cards:
+      - type: logbook
+        hours_to_show: 4
+        entities:
+          - automation.motion_lights_bedroom
+          - automation.motion_lights_desk
+          - automation.motion_lights_ensuite
+          - automation.motion_lights_kitchen
+          - automation.motion_lights_hallway_downstairs
+          - automation.motion_lights_hallway_upstairs
+          - light.adaptive_bedroom_light_group
+          - light.adaptive_desk_light_group
+          - light.group_ensuite_lights
+          - light.group_kitchen_lights
+          - light.group_hallway_lights_downstairs
+          - light.group_hallway_lights_upstairs
+  - type: grid
+    cards:
+      - type: markdown
+        title: Issues
+        content: >-
+          {% set rooms = {
+            'Bedroom':  {'auto':'automation.motion_lights_bedroom','bypass':'binary_sensor.motion_bypass_bedroom','al':'switch.adaptive_lighting_bedroom','light':'light.al_adaptive_bedroom_light_group'},
+            'Desk':     {'auto':'automation.motion_lights_desk','bypass':'binary_sensor.motion_bypass_desk','al':'switch.adaptive_lighting_desk','light':'light.al_adaptive_desk_light_group'},
+            'Ensuite':  {'auto':'automation.motion_lights_ensuite','bypass':'binary_sensor.motion_bypass_ensuite','al':'switch.adaptive_lighting_ensuite','light':'light.group_ensuite_lights'},
+            'Kitchen':  {'auto':'automation.motion_lights_kitchen','bypass':'binary_sensor.motion_bypass_kitchen','al':'switch.adaptive_lighting_kitchen','light':'light.al_adaptive_kitchen_light_group'},
+            'Hall Dn':  {'auto':'automation.motion_lights_hallway_downstairs','bypass':'binary_sensor.motion_bypass_hallway_downstairs','al':'switch.adaptive_lighting_hallway_downstairs','light':'light.group_hallway_lights_downstairs'},
+            'Hall Up':  {'auto':'automation.motion_lights_hallway_upstairs','bypass':'binary_sensor.motion_bypass_hallway_upstairs','al':'switch.adaptive_lighting_hallway_upstairs','light':'light.group_hallway_lights_upstairs'},
+            'Ottoman':  {'auto':'automation.motion_lights_ottoman','bypass':'binary_sensor.motion_bypass_ottoman','al':'','light':'light.group_ottoman_light'},
+            'Wardrobe': {'auto':'automation.motion_lights_wardrobe','bypass':'binary_sensor.motion_bypass_wardrobe','al':'','light':'light.group_wardrobe_light'}
+          } %} {% set issues = [] %} {% for n,m in rooms.items() %}
+            {% set motion_ok = (states(m.auto) == 'on') and (states(m.bypass) in ['off','unavailable','unknown','']) %}
+            {% set al_ok     = (m.al == '') or (states(m.al) == 'on') %}
+            {% set light_ok  = states(m.light) not in ['unavailable','unknown'] and (state_attr(m.light,'assumed_state') != true) %}
+            {% if not motion_ok or not al_ok or not light_ok %}
+              {% set reason = [] %}
+              {% if states(m.auto) != 'on' %}{% set reason = reason + ['automation OFF'] %}{% endif %}
+              {% if states(m.bypass) == 'on' %}{% set reason = reason + ['bypass ON'] %}{% endif %}
+              {% if m.al != '' and states(m.al) != 'on' %}{% set reason = reason + ['AL OFF'] %}{% endif %}
+              {% if not light_ok %}{% set reason = reason + ['light entity unavailable'] %}{% endif %}
+              {% set issues = issues + ['• ' ~ n ~ ' → ' ~ (reason | join(', '))] %}
+            {% endif %}
+          {% endfor %} {% if issues | length == 0 -%} ✅ All OK — no issues
+          detected. {%- else -%} ## ⛔ Issues ({{ issues | length }}) {{ issues |
+          join('\n') }} {%- endif %}
+      - type: vertical-stack
+        cards:
+          - type: custom:bubble-card
+            card_type: button
+            button_type: slider
+            entity: light.group_ottoman_light
+            name: Ottoman
+            show_attribute: false
+            show_last_changed: false
+            show_last_updated: true
+            sub_button:
+              - entity: automation.motion_lights_ottoman
+                show_icon: true
+                show_name: false
+              - entity: binary_sensor.bedroom_ottoman_motion_proxy
+                show_icon: true
+                show_state: true
+              - entity: binary_sensor.motion_bypass_ottoman
+                name: Bypass
+                show_state: true
+            rows: "1"
+            card_layout: large-sub-buttons-grid
+          - type: custom:bubble-card
+            card_type: button
+            button_type: slider
+            entity: light.group_wardrobe_light
+            name: Wardrobe
+            show_attribute: false
+            show_last_changed: false
+            show_last_updated: true
+            sub_button:
+              - entity: automation.motion_lights_wardrobe
+                show_icon: true
+                show_name: false
+              - entity: binary_sensor.wardrobe_motion_beta
+                show_icon: true
+                show_state: true
+              - entity: binary_sensor.motion_bypass_wardrobe
+                name: Bypass
+                show_state: true
+            rows: "1"
+            card_layout: large-sub-buttons-grid
+  - type: grid
+    cards:
+      - type: heading
+        heading: New section
+      - type: custom:bubble-card
+        card_type: button
+        button_type: slider
+        entity: light.al_adaptive_bedroom_light_group
+        name: Bedroom
+        show_attribute: false
+        show_last_changed: false
+        show_last_updated: true
+        sub_button:
+          - entity: switch.adaptive_lighting_adapt_brightness_bedroom
+          - entity: switch.adaptive_lighting_adapt_color_bedroom
+          - entity: switch.adaptive_lighting_bedroom
+            show_name: false
+          - entity: switch.adaptive_lighting_sleep_mode_bedroom
+            show_last_updated: false
+          - show_icon: true
+            entity: automation.motion_lights_bedroom
+            show_name: false
+          - entity: binary_sensor.bedroom_motion_beta
+            show_icon: true
+            show_state: true
+          - entity: binary_sensor.motion_bypass_bedroom
+            show_name: true
+            name: Bypass
+            show_last_changed: false
+            show_state: true
+        rows: "2"
+        card_layout: large-sub-buttons-grid
+      - type: vertical-stack
+        cards:
+          - type: horizontal-stack
+            cards:
+              - type: custom:bubble-card
+                card_type: button
+                button_type: switch
+                entity: automation.motion_lights_ottoman
+                name: ""
+              - type: custom:bubble-card
+                card_type: button
+                button_type: switch
+                entity: binary_sensor.motion_bypass_ottoman
+              - type: custom:bubble-card
+                card_type: button
+                button_type: switch
+                entity: light.group_ottoman_light
+              - type: custom:bubble-card
+                card_type: button
+                button_type: switch
+                entity: binary_sensor.bedroom_ottoman_motion_proxy
+          - type: horizontal-stack
+            cards:
+              - type: custom:bubble-card
+                card_type: button
+                button_type: switch
+                entity: automation.motion_lights_wardrobe
+              - type: custom:bubble-card
+                card_type: button
+                button_type: switch
+                entity: binary_sensor.motion_bypass_wardrobe
+              - type: custom:bubble-card
+                card_type: button
+                button_type: switch
+                entity: light.group_wardrobe_light
+              - type: custom:bubble-card
+                card_type: button
+                button_type: switch
+                entity: binary_sensor.wardrobe_motion_beta
+      - type: grid
+        columns: 2
+        square: false
+        cards:
+          - type: custom:bubble-card
+            card_type: button
+            button_type: slider
+            entity: light.al_adaptive_bedroom_light_group
+            name: Bedroom
+            show_attribute: false
+            show_last_changed: false
+            show_last_updated: true
+            sub_button:
+              - entity: switch.adaptive_lighting_bedroom
+                show_name: false
+              - entity: switch.adaptive_lighting_adapt_brightness_bedroom
+              - entity: switch.adaptive_lighting_adapt_color_bedroom
+              - entity: switch.adaptive_lighting_sleep_mode_bedroom
+                show_last_updated: false
+              - entity: automation.motion_lights_bedroom
+                show_icon: true
+                show_name: false
+              - entity: binary_sensor.bedroom_motion_beta
+                show_icon: true
+                show_state: true
+              - entity: binary_sensor.motion_bypass_bedroom
+                name: Bypass
+                show_state: true
+            rows: "2"
+            card_layout: large-sub-buttons-grid
+          - type: custom:bubble-card
+            card_type: button
+            button_type: slider
+            entity: light.al_adaptive_desk_light_group
+            name: Desk
+            show_attribute: false
+            show_last_changed: false
+            show_last_updated: true
+            sub_button:
+              - entity: switch.adaptive_lighting_desk
+                show_name: false
+              - entity: switch.adaptive_lighting_adapt_brightness_desk
+              - entity: switch.adaptive_lighting_adapt_color_desk
+              - entity: switch.adaptive_lighting_sleep_mode_desk
+                show_last_updated: false
+              - entity: automation.motion_lights_desk
+                show_icon: true
+                show_name: false
+              - entity: binary_sensor.desk_motion_beta
+                show_icon: true
+                show_state: true
+              - entity: binary_sensor.motion_bypass_desk
+                name: Bypass
+                show_state: true
+            rows: "2"
+            card_layout: large-sub-buttons-grid
+          - type: custom:bubble-card
+            card_type: button
+            button_type: slider
+            entity: light.group_ensuite_lights
+            name: Ensuite
+            show_attribute: false
+            show_last_changed: false
+            show_last_updated: true
+            sub_button:
+              - entity: switch.adaptive_lighting_ensuite
+                show_name: false
+              - entity: switch.adaptive_lighting_adapt_brightness_ensuite
+              - entity: switch.adaptive_lighting_adapt_color_ensuite
+              - entity: switch.adaptive_lighting_sleep_mode_ensuite
+                show_last_updated: false
+              - entity: automation.motion_lights_ensuite
+                show_icon: true
+                show_name: false
+              - entity: binary_sensor.ensuite_motion_beta
+                show_icon: true
+                show_state: true
+              - entity: binary_sensor.motion_bypass_ensuite
+                name: Bypass
+                show_state: true
+            rows: "2"
+            card_layout: large-sub-buttons-grid
+          - type: custom:bubble-card
+            card_type: button
+            button_type: slider
+            entity: light.al_adaptive_kitchen_light_group
+            name: Kitchen
+            show_attribute: false
+            show_last_changed: false
+            show_last_updated: true
+            sub_button:
+              - entity: switch.adaptive_lighting_kitchen
+                show_name: false
+              - entity: switch.adaptive_lighting_adapt_brightness_kitchen
+              - entity: switch.adaptive_lighting_adapt_color_kitchen
+              - entity: switch.adaptive_lighting_sleep_mode_kitchen
+                show_last_updated: false
+              - entity: automation.motion_lights_kitchen
+                show_icon: true
+                show_name: false
+              - entity: binary_sensor.kitchen_motion_beta
+                show_icon: true
+                show_state: true
+              - entity: binary_sensor.motion_bypass_kitchen
+                name: Bypass
+                show_state: true
+            rows: "2"
+            card_layout: large-sub-buttons-grid
+          - type: custom:bubble-card
+            card_type: button
+            button_type: slider
+            entity: light.group_hallway_lights_downstairs
+            name: Hallway Downstairs
+            show_attribute: false
+            show_last_changed: false
+            show_last_updated: true
+            sub_button:
+              - entity: switch.adaptive_lighting_hallway_downstairs
+                show_name: false
+              - entity: switch.adaptive_lighting_adapt_brightness_hallway_downstairs
+              - entity: switch.adaptive_lighting_adapt_color_hallway_downstairs
+              - entity: switch.adaptive_lighting_sleep_mode_hallway_downstairs
+                show_last_updated: false
+              - entity: automation.motion_lights_hallway_downstairs
+                show_icon: true
+                show_name: false
+              - entity: binary_sensor.hallway_downstairs_motion_beta
+                show_icon: true
+                show_state: true
+              - entity: binary_sensor.motion_bypass_hallway_downstairs
+                name: Bypass
+                show_state: true
+            rows: "2"
+            card_layout: large-sub-buttons-grid
+          - type: custom:bubble-card
+            card_type: button
+            button_type: slider
+            entity: light.group_hallway_lights_upstairs
+            name: Hallway Upstairs
+            show_attribute: false
+            show_last_changed: false
+            show_last_updated: true
+            sub_button:
+              - entity: switch.adaptive_lighting_hallway_upstairs
+                show_name: false
+              - entity: switch.adaptive_lighting_adapt_brightness_hallway_upstairs
+              - entity: switch.adaptive_lighting_adapt_color_hallway_upstairs
+              - entity: switch.adaptive_lighting_sleep_mode_hallway_upstairs
+                show_last_updated: false
+              - entity: automation.motion_lights_hallway_upstairs
+                show_icon: true
+                show_name: false
+              - entity: binary_sensor.hallway_upstairs_motion_beta
+                show_icon: true
+                show_state: true
+              - entity: binary_sensor.motion_bypass_hallway_upstairs
+                name: Bypass
+                show_state: true
+            rows: "2"
+            card_layout: large-sub-buttons-grid
+cards: []
+header:
+  card:
+    type: markdown
+    content: |
+      # Adaptive Motion Lighting — Diagnostics
+      **Legend:** ✅ OK · 🟧 Partial (Motion only) · ⛔ Action needed · ◻️ Unknown
+    text_only: true
+badges:
+  - type: custom:mushroom-template-badge
+    icon: >-
+      {% set rooms = {
+        'Bedroom':  {'auto':'automation.motion_lights_bedroom','bypass':'binary_sensor.motion_bypass_bedroom','al':'switch.adaptive_lighting_bedroom'},
+        'Desk':     {'auto':'automation.motion_lights_desk','bypass':'binary_sensor.motion_bypass_desk','al':'switch.adaptive_lighting_desk'},
+        'Ensuite':  {'auto':'automation.motion_lights_ensuite','bypass':'binary_sensor.motion_bypass_ensuite','al':'switch.adaptive_lighting_ensuite'},
+        'Kitchen':  {'auto':'automation.motion_lights_kitchen','bypass':'binary_sensor.motion_bypass_kitchen','al':'switch.adaptive_lighting_kitchen'},
+        'Hall Dn':  {'auto':'automation.motion_lights_hallway_downstairs','bypass':'binary_sensor.motion_bypass_hallway_downstairs','al':'switch.adaptive_lighting_hallway_downstairs'},
+        'Hall Up':  {'auto':'automation.motion_lights_hallway_upstairs','bypass':'binary_sensor.motion_bypass_hallway_upstairs','al':'switch.adaptive_lighting_hallway_upstairs'},
+        'Ottoman':  {'auto':'automation.motion_lights_ottoman','bypass':'binary_sensor.motion_bypass_ottoman','al':''},
+        'Wardrobe': {'auto':'automation.motion_lights_wardrobe','bypass':'binary_sensor.motion_bypass_wardrobe','al':''}
+      } %}
+
+      {% set issues = [] %}
+
+      {% set critical = [] %}
+
+      {% for n,m in rooms.items() %}
+        {% set light =
+          'light.al.adaptive_bedroom_light_group' if n == 'Bedroom' else
+          'light.al.adaptive_desk_light_group'    if n == 'Desk' else
+          'light.group_ensuite_lights'         if n == 'Ensuite' else
+          'light.al.adaptive_kitchen_light_group'         if n == 'Kitchen' else
+          'light.group_hallway_lights_downstairs' if n == 'Hall Dn' else
+          'light.group_hallway_lights_upstairs'   if n == 'Hall Up' else
+          'light.group_ottoman_light'         if n == 'Ottoman' else
+          'light.group_wardrobe_light' %}
+        {% set motion_ok = (states(m.auto) == 'on') and (states(m.bypass) in ['off','unavailable','unknown','']) %}
+        {% set al_ok     = (m.al == '') or (states(m.al) == 'on') %}
+        {% set light_ok  = states(light) not in ['unavailable','unknown'] %}
+
+        {% if not motion_ok or not al_ok or not light_ok %}
+          {% set reason = [] %}
+          {% if states(m.auto) != 'on' %}{% set reason = reason + ['automation OFF'] %}{% endif %}
+          {% if states(m.bypass) == 'on' %}{% set reason = reason + ['bypass ON'] %}{% endif %}
+          {% if m.al != '' and states(m.al) != 'on' %}{% set reason = reason + ['AL OFF'] %}{% endif %}
+          {% if not light_ok %}{% set reason = reason + ['light group unavailable'] %}{% endif %}
+          {% set issues = issues + [n] %}
+          {% if ('automation OFF' in reason) or ('bypass ON' in reason) or ('light group unavailable' in reason) %}
+            {% set critical = critical + [n] %}
+          {% endif %}
+        {% endif %}
+      {% endfor %}
+
+      {{ 'mdi:lightbulb-group-outline' if (issues | length == 0) else
+      ('mdi:alert-circle' if (critical | length > 0) else 'mdi:alert') }}
+    content: >-
+      {% set rooms = {
+        'Bedroom':  {'auto':'automation.motion_lights_bedroom','bypass':'binary_sensor.motion_bypass_bedroom','al':'switch.adaptive_lighting_bedroom'},
+        'Desk':     {'auto':'automation.motion_lights_desk','bypass':'binary_sensor.motion_bypass_desk','al':'switch.adaptive_lighting_desk'},
+        'Ensuite':  {'auto':'automation.motion_lights_ensuite','bypass':'binary_sensor.motion_bypass_ensuite','al':'switch.adaptive_lighting_ensuite'},
+        'Kitchen':  {'auto':'automation.motion_lights_kitchen','bypass':'binary_sensor.motion_bypass_kitchen','al':'switch.adaptive_lighting_kitchen'},
+        'Hall Dn':  {'auto':'automation.motion_lights_hallway_downstairs','bypass':'binary_sensor.motion_bypass_hallway_downstairs','al':'switch.adaptive_lighting_hallway_downstairs'},
+        'Hall Up':  {'auto':'automation.motion_lights_hallway_upstairs','bypass':'binary_sensor.motion_bypass_hallway_upstairs','al':'switch.adaptive_lighting_hallway_upstairs'},
+        'Ottoman':  {'auto':'automation.motion_lights_ottoman','bypass':'binary_sensor.motion_bypass_ottoman','al':''},
+        'Wardrobe': {'auto':'automation.motion_lights_wardrobe','bypass':'binary_sensor.motion_bypass_wardrobe','al':''}
+      } %}
+
+      {% set issues = [] %}
+
+      {% for n,m in rooms.items() %}
+        {% set light =
+          'light.al.adaptive_bedroom_light_group' if n == 'Bedroom' else
+          'light.al.adaptive_desk_light_group'    if n == 'Desk' else
+          'light.group_ensuite_lights'         if n == 'Ensuite' else
+          'light.al.adaptive_kitchen_light_group'         if n == 'Kitchen' else
+          'light.group_hallway_lights_downstairs' if n == 'Hall Dn' else
+          'light.group_hallway_lights_upstairs'   if n == 'Hall Up' else
+          'light.group_ottoman_light'         if n == 'Ottoman' else
+          'light.group_wardrobe_light' %}
+        {% set motion_ok = (states(m.auto) == 'on') and (states(m.bypass) in ['off','unavailable','unknown','']) %}
+        {% set al_ok     = (m.al == '') or (states(m.al) == 'on') %}
+        {% set light_ok  = states(light) not in ['unavailable','unknown'] %}
+        {% if not motion_ok or not al_ok or not light_ok %}
+          {% set issues = issues + [n] %}
+        {% endif %}
+      {% endfor %}
+
+      Adaptive Motion Lighting: {{ 'All On' if (issues | length == 0) else
+      ((issues | length) ~ ' issue' ~ ('s' if (issues | length) != 1 else ''))
+      }}
+    color: >-
+      {% set rooms = {
+        'Bedroom':  {'auto':'automation.motion_lights_bedroom','bypass':'binary_sensor.motion_bypass_bedroom','al':'switch.adaptive_lighting_bedroom'},
+        'Desk':     {'auto':'automation.motion_lights_desk','bypass':'binary_sensor.motion_bypass_desk','al':'switch.adaptive_lighting_desk'},
+        'Ensuite':  {'auto':'automation.motion_lights_ensuite','bypass':'binary_sensor.motion_bypass_ensuite','al':'switch.adaptive_lighting_ensuite'},
+        'Kitchen':  {'auto':'automation.motion_lights_kitchen','bypass':'binary_sensor.motion_bypass_kitchen','al':'switch.adaptive_lighting_kitchen'},
+        'Hall Dn':  {'auto':'automation.motion_lights_hallway_downstairs','bypass':'binary_sensor.motion_bypass_hallway_downstairs','al':'switch.adaptive_lighting_hallway_downstairs'},
+        'Hall Up':  {'auto':'automation.motion_lights_hallway_upstairs','bypass':'binary_sensor.motion_bypass_hallway_upstairs','al':'switch.adaptive_lighting_hallway_upstairs'},
+        'Ottoman':  {'auto':'automation.motion_lights_ottoman','bypass':'binary_sensor.motion_bypass_ottoman','al':''},
+        'Wardrobe': {'auto':'automation.motion_lights_wardrobe','bypass':'binary_sensor.motion_bypass_wardrobe','al':''}
+      } %}
+
+      {% set critical = [] %}
+
+      {% set issues = [] %}
+
+      {% for n,m in rooms.items() %}
+        {% set light =
+          'light.al.adaptive_bedroom_light_group' if n == 'Bedroom' else
+          'light.al.adaptive_desk_light_group'    if n == 'Desk' else
+          'light.group_ensuite_lights'         if n == 'Ensuite' else
+          'light.al.adaptive_kitchen_light_group'         if n == 'Kitchen' else
+          'light.group_hallway_lights_downstairs' if n == 'Hall Dn' else
+          'light.group_hallway_lights_upstairs'   if n == 'Hall Up' else
+          'light.group_ottoman_light'         if n == 'Ottoman' else
+          'light.group_wardrobe_light' %}
+        {% set motion_ok = (states(m.auto) == 'on') and (states(m.bypass) in ['off','unavailable','unknown','']) %}
+        {% set al_ok     = (m.al == '') or (states(m.al) == 'on') %}
+        {% set light_ok  = states(light) not in ['unavailable','unknown'] %}
+        {% if not motion_ok or not al_ok or not light_ok %}
+          {% set issues = issues + [n] %}
+          {% if states(m.auto) != 'on' or states(m.bypass) == 'on' or not light_ok %}
+            {% set critical = critical + [n] %}
+          {% endif %}
+        {% endif %}
+      {% endfor %}
+
+      {{ 'green' if (issues | length == 0) else ('red' if (critical | length >
+      0) else 'amber') }}
+    tap_action:
+      action: none
+    hold_action:
+      action: none
+    double_tap_action:
+      action: none
+max_columns: 3

@@ -39,7 +39,9 @@
         description: "Real-time motion event inferred from Zigbee2MQTT occupancy/action"
         created: "2024-09-03"
         file: "/config/domain/templates/mqtt_native.yaml"
-        upstream_sources: "{{ ['zigbee2mqtt/ensuite_motion_alpha'] | tojson }}"
+        source_count: "0"
+        downstream_consumers: >-
+          {{ ['binary_sensor.ensuite_motion_beta'] | tojson }}
         protocols: "mqtt"
         version: "1.1"
-        last_updated: "2025-09-04"
+        last_updated: "2025-10-16"

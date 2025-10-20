@@ -1,0 +1,4 @@
+# tests_meta_capture.yaml
+samples:
+  - file: samples/room_db.meta.yaml
+    expect: { schema: pass, traffic_light: green, apus: 1, target_path: /config/hestia/config/automation/room_db.meta.yaml }

@@ -1,0 +1,222 @@
+# User Profile Configuration for AI Assistant Optimization
+# Provides contextual information about operator environment, preferences, and technical constraints
+# Version: 1.0
+# Last Updated: 2025-10-17
+# Purpose: Enable personalized, context-aware AI assistant behavior
+
+[meta]
+version = "1.0"
+created = "2025-10-17T20:22:00Z"
+last_updated = "2025-10-17T20:22:00Z"
+profile_type = "home_assistant_operator"
+description = "Technical operator profile for Home Assistant workspace management"
+
+[operator]
+username = "evertappels"
+technical_level = "advanced"
+role = "home_assistant_administrator"
+primary_focus = "configuration_management"
+experience_level = "expert"
+
+[operator.preferences]
+communication_style = "technical_detailed"
+documentation_depth = "comprehensive"
+command_examples = "always_include"
+safety_approach = "dry_run_first"
+troubleshooting_style = "systematic_validation"
+error_handling = "detailed_diagnostics"
+
+[operator.workflow_patterns]
+preferred_editor = "vscode"
+configuration_approach = "package_based"
+backup_strategy = "atomic_operations"
+testing_methodology = "validation_gates"
+deployment_style = "incremental_with_rollback"
+
+[system]
+hostname = "macbook"
+operating_system = "macOS"
+os_version = "15.5"
+build_version = "24F74"
+kernel = "Darwin 24.5.0"
+architecture = "arm64"
+chip = "Apple Silicon M1"
+
+[system.hardware]
+platform = "apple_silicon"
+architecture_family = "aarch64"
+container_compatibility = "arm64_native"
+homebrew_prefix = "/opt/homebrew"
+python_architecture = "arm64"
+
+[development_environment]
+shell = "zsh"
+shell_path = "/bin/zsh"
+terminal = "xterm-256color"
+python_version = "3.13.7"
+git_version = "2.39.5"
+make_version = "3.81"
+docker_version = "28.3.3"
+
+[development_environment.package_managers]
+homebrew = { installed = true, path = "/opt/homebrew/bin/brew" }
+pipx = { installed = true, path = "/Users/evertappels/.local/bin" }
+pip = { installed = true, multiple_venvs = true }
+
+[development_environment.editors]
+primary = "vscode"
+vscode_extensions = ["home_assistant", "yaml", "python"]
+configuration_files = [".vscode/tasks.json", ".vscode/settings.json"]
+
+[development_environment.version_control]
+git_configured = true
+hooks_path = ".githooks"
+pre_commit_enabled = true
+governance_enabled = true
+
+[home_assistant]
+installation_type = "home_assistant_os"
+platform = "raspberry_pi"
+access_method = "ssh_terminal"
+configuration_path = "/config"
+mount_type = "smb"
+mount_source = "//evertappels@homeassistant.local/config"
+
+[home_assistant.network]
+local_hostname = "homeassistant.local"
+tailscale_enabled = true
+internal_communication = "container_hostnames"
+addon_networking = "addon_slug_hostnames"
+
+[home_assistant.addons]
+critical_addons = [
+    "a0d7b954_ssh",
+    "a0d7b954_appdaemon",
+    "45df7312_zigbee2mqtt",
+    "core_mosquitto",
+    "a0d7b954_tailscale"
+]
+development_addons = ["core_configurator"]
+monitoring_addons = ["a0d7b954_glances"]
+
+[home_assistant.configuration_style]
+organization = "package_based"
+template_system = "jinja_macros"
+automation_approach = "motion_lighting_focused"
+integration_patterns = ["rest_sensors", "mqtt", "mobile_apps"]
+
+[workspace]
+config_root = "/config"
+workspace_root = "/config/hestia/workspace"
+tools_directory = "/config/hestia/tools"
+reports_directory = "/config/hestia/reports"
+vault_directory = "/config/hestia/workspace/archive/vault"
+
+[workspace.virtual_environments]
+ha_governance = { path = ".venv_ha_governance", purpose = "workspace_tools" }
+primary_venv = { path = ".venv", purpose = "home_assistant_dev" }
+
+[workspace.storage]
+total_space = "235Gi"
+used_space = "95Gi"
+available_space = "139Gi"
+usage_percentage = 41
+mount_point = "/System/Volumes/Data/homeassistant"
+
+[governance]
+adr_compliance_required = true
+canonical_paths_enforced = true
+write_broker_mandatory = true
+backup_before_modify = true
+atomic_operations_required = true
+
+[governance.active_adrs]
+path_standards = "ADR-0024"
+file_governance = "ADR-0027"
+backup_lifecycle = "ADR-0018"
+template_patterns = "ADR-0020"
+jinja_normalization = "ADR-0002"
+
+[governance.safety_requirements]
+dry_run_default = true
+validation_gates = true
+rollback_capability = true
+audit_trail = true
+path_enforcement = true
+
+[ai_assistant_behavior]
+provide_command_examples = true
+include_validation_steps = true
+explain_safety_rationale = true
+reference_adr_compliance = true
+use_canonical_paths = true
+suggest_dry_run_first = true
+
+[ai_assistant_behavior.response_style]
+technical_depth = "expert_level"
+command_format = "copy_paste_ready"
+error_handling = "comprehensive_troubleshooting"
+documentation_links = "include_when_relevant"
+safety_warnings = "always_when_destructive"
+
+[ai_assistant_behavior.home_assistant_specific]
+assume_package_organization = true
+prefer_rest_over_direct_api = false
+suggest_template_validation = true
+recommend_backup_first = true
+use_addon_hostnames = true
+validate_yaml_syntax = true
+
+[ai_assistant_behavior.workflow_optimization]
+batch_similar_operations = true
+suggest_makefile_targets = true
+recommend_vscode_tasks = true
+prefer_atomic_operations = true
+include_rollback_instructions = true
+
+[troubleshooting]
+preferred_approach = "systematic_validation_gates"
+diagnostic_depth = "comprehensive"
+log_analysis = "structured_pattern_matching"
+error_escalation = "provide_multiple_solutions"
+
+[troubleshooting.common_patterns]
+networking_issues = "check_hostnames_first"
+permission_errors = "suggest_write_broker"
+yaml_errors = "provide_syntax_validation"
+path_issues = "enforce_adr_0024_compliance"
+template_errors = "reference_adr_0020_patterns"
+
+[backup_and_recovery]
+strategy = "atomic_with_rollback"
+naming_convention = "adr_0018_compliant"
+retention_policy = "vault_managed"
+verification_required = true
+metadata_tracking = true
+
+[monitoring_and_reporting]
+health_scoring = true
+trend_analysis = true
+compliance_tracking = true
+operational_metrics = true
+maintenance_logging = true
+
+[integration_endpoints]
+appdaemon_base = "http://a0d7b954-appdaemon:5050"
+zigbee2mqtt_frontend = "http://zigbee2mqtt:8099"
+glances_monitoring = "http://glances:61208"
+home_assistant_api = "http://homeassistant.local:8123"
+
+[security_and_compliance]
+secrets_management = "vault_uris_only"
+no_plaintext_credentials = true
+path_traversal_protection = true
+audit_trail_required = true
+governance_enforcement = true
+
+[performance_considerations]
+apple_silicon_optimized = true
+container_arm64_native = true
+parallel_processing_capable = true
+memory_constraints_moderate = false
+storage_constraints_minimal = false

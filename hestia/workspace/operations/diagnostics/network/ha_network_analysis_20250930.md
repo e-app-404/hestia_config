@@ -207,3 +207,7 @@ LocalTuya discovery should automatically find all three devices and offer them f
 **Analysis Date:** 2025-09-30 14:10:00 UTC  
 **Network Status:** ✅ **OPTIMAL FOR LOCALTUYA DISCOVERY**  
 **Recommendation:** Proceed with LocalTuya integration setup
+
+## TODO: network_scanner mapping normalization
+
+This workspace contains a deferred task to normalize the HACS `network_scanner` `mac_mapping_N` format to a canonical 3-column mapping (MAC ; DEVICE_OR_ENTITY ; PLATFORM). See: `hestia/workspace/todo/0003-normalize-network_scanner_mapping.md` for details and acceptance criteria.

@@ -1,0 +1,7 @@
+shell_command:
+  update_room_config: >-
+    /bin/sh -c 'command -v sqlite3 >/dev/null 2>&1 || exit 123; sqlite3 /config/room_database.db <<"SQL"\nBEGIN IMMEDIATE;\nSELECT CASE WHEN (SELECT version FROM schema_version)=1 THEN 1 ELSE RAISE(ABORT,"SCHEMA_VERSION_MISMATCH") END;\nINSERT OR REPLACE INTO room_configs (room_id, config_domain, config_data, updated_at)\nVALUES ("{{ room_id }}","{{ domain }}","{{ config_data | tojson }}", datetime("now"));\nCOMMIT;\nSQL'
+  update_motion_timeout: >-
+    /bin/sh -c 'command -v sqlite3 >/dev/null 2>&1 || exit 123; sqlite3 /config/room_database.db <<"SQL"\nBEGIN IMMEDIATE;\nSELECT CASE WHEN (SELECT version FROM schema_version)=1 THEN 1 ELSE RAISE(ABORT,"SCHEMA_VERSION_MISMATCH") END;\nUPDATE room_configs\nSET config_data = json_set(config_data, "$.timeout", {{ timeout }}), updated_at = datetime("now")\nWHERE room_id="{{ room_id }}" AND config_domain="motion_lighting";\nCOMMIT;\nSQL'
+  mark_room_cleaned: >-
+    /bin/sh -c 'command -v sqlite3 >/dev/null 2>&1 || exit 123; sqlite3 /config/room_database.db <<"SQL"\nBEGIN IMMEDIATE;\nSELECT CASE WHEN (SELECT version FROM schema_version)=1 THEN 1 ELSE RAISE(ABORT,"SCHEMA_VERSION_MISMATCH") END;\nUPDATE room_configs\nSET config_data = json_set(config_data, "$.last_cleaned", datetime("now"), "$.needs_cleaning", 0), updated_at = datetime("now")\nWHERE room_id="{{ room_id }}" AND config_domain="vacuum_control";\nCOMMIT;\nSQL'

@@ -1,36 +1,45 @@
 ---
 id: ADR-0022
-title: "ADR-0022: Home Assistant Mount Keychain Credentials and Telemetry System"
-date: 2025-10-04
-status: Accepted
-author: "Evert Appels"
+title: 'ADR-0022: Home Assistant Mount Keychain Credentials and Telemetry System'
+slug: home-assistant-mount-keychain-credentials-and-telemetry-system
+status: Superseded
 related:
-  - ADR-0009
-supersedes: []
-last_updated: 2025-10-04
-tags: ["homeassistant", "mount", "telemetry", "keychain", "automation", "smbfs", "webhook", "launchagent", "macos"]
-rollout:
-  include_scan:
-    phase_A: {mode: report, start: "2025-10-04T18:00:00+01:00", end: "2025-10-05T00:00:00+01:00"}
-    phase_B: {mode: enforce, start: "2025-10-05T00:00:01+01:00"}
-ci_policy:
-  include_scan: {mode: enforce, start: "2025-10-05T00:00:01+01:00"}
-  packaging: {deterministic: true, manifest: sha256}
+- ADR-0009
+- ADR-0024
+superseded_by: 
+- ADR-0029
+date: 2025-10-04
+decision: 'Implement a comprehensive mount reliability and telemetry system'
+author: Evert Appels
+tags:
+- homeassistant
+- mount
+- telemetry
+- keychain
+- automation
+- smbfs
+- webhook
+- launchagent
+- macos
+last_updated: 2025-10-20
 ---
 
 # ADR-0022: Home Assistant Mount Keychain Credentials and Telemetry System
 
+> Decision: To resolve the issues, we will update the LaunchAgent to invoke a hardened helper script for secure credential management, integrate webhook-based telemetry for real-time mount status in Home Assistant, deploy automated health checks, and provide robust rollback procedures for safe reversion.
+
 ## Table of Contents
-1. Context
-2. Problem Statement
-3. Decision
-4. Solution Architecture
-5. Implementation Details
-6. Verification Framework
-7. Consequences
-8. Rollback Strategy
-9. Enforcement
-10. Token Block
+
+1. [Context](#1-context)
+2. [Problem Statement](#2-problem-statement)
+3. [Decision](#3-decision)
+4. [Solution Architecture](#4-solution-architecture)
+5. [Implementation Details](#5-implementation-details)
+6. [Verification Framework](#6-verification-framework)
+7. [Consequences](#7-consequences)
+8. [Rollback Strategy](#8-rollback-strategy)
+9. [Enforcement](#9-enforcement)
+10. [Token Block](#10-token-block)
 
 ## 1. Context
 

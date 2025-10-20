@@ -1,13 +1,45 @@
 ---
 id: ADR-0003
-title: "Canonical Tier Definitions for Home Assistant Entity Architecture"
-date: 2025-09-11
+title: Canonical Tier Definitions for Home Assistant Entity Architecture
+slug: canonical-tier-definitions-for-home-assistant-entity-architecture
 status: Accepted
 related: []
 supersedes: []
-tags: ["architecture", "tier", "entity", "contract", "adr", "α", "β", "μ", "σ", "η", "γ", "δ", "ε", "ζ", "canonical", "validation", "signal plane", "abstraction", "diagnostics", "system configuration", "formatting", "merge", "computation", "scoring", "temporal memory", "decay", "validation", "thresholding", "suppression", "decision"]
-last_updated: 2025-09-11
-author: "Evert Appels"
+last_updated: '2025-10-15'
+date: 2025-09-11
+decision: 'The following canonical tiers are defined:'
+tags:
+- architecture
+- tier
+- entity
+- contract
+- adr
+- α
+- β
+- μ
+- σ
+- η
+- γ
+- δ
+- ε
+- ζ
+- canonical
+- validation
+- signal plane
+- abstraction
+- diagnostics
+- system configuration
+- formatting
+- merge
+- computation
+- scoring
+- temporal memory
+- decay
+- validation
+- thresholding
+- suppression
+- decision
+author: Evert Appels
 ---
 
 

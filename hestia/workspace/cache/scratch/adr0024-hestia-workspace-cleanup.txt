@@ -1,0 +1,383 @@
+```operator
+Strategic governance review (ADR-0024) + decisions & info needs
+
+## 1) Review targets
+**Paths to assess (recursive):**
+- `/System/Volumes/Data/homeassistant/domain/shell_commands`
+- `/System/Volumes/Data/homeassistant/includes`
+
+**Intent:** classify contents (runtime vs. tooling vs. archive), detect non-canonical items, and confirm Home Assistant references.
+
+## 2) Root files — decisions
+- `.env` / `.env.adr0024` → **KEEP (runtime params)**. Document variables in `/config/README.local.md` and source from tasks/scripts.  
+- `.hestia_path_hits.txt` (empty) → **REMOVE** (noise).  
+- `.yamllint.yml` → **KEEP** (linting policy). If not HA-specific, move to `/config/hestia/workspace/ops/lint/` and reference from CI.  
+- `PR_BODY_chore-parameterize-ha-mount.md` → **ARCHIVE** → `/config/hestia/workspace/archive/dev_envs/<TS>/`.  
+- `ruff.toml` (you listed “ruff.toml” & earlier “.ruff.toml”) → **KEEP one** policy file. If Python linting is repo-wide, place at root as `ruff.toml` and remove duplicates; else move to `/config/hestia/workspace/ops/lint/ruff.toml`.  
+- `worker-portal-no-store.js` → **DECIDE BY USAGE**:  
+  - If referenced by HA `www/` or themes/custom panel: **MOVE** to `/config/www/assets/worker-portal-no-store.js`.  
+  - If not referenced: **ARCHIVE** to `/config/hestia/workspace/archive/ingest/<TS>/`.
+
+## 3) Info needed to propose robust layouts (request artifacts)
+To finalize consistent folder layouts, I need **non-destructive diagnostics**:
+- **Workspace & reports structure**
+  - Tree & sizes under `/config/hestia/workspace` and `/config/hestia/workspace/reports`
+  - Count of checkpoints, weekly archives, cache buckets
+  - Last 30 modified items across those paths
+- **Tools structure**
+  - Tree for `/config/hestia/tools` grouped by top-level buckets
+  - Presence of shebang, exec bits, and shellcheck/ruff compliance signals
+  - Which tools are referenced by HA (`includes/shell_command.yaml`, automations, scripts)
+
+All of the above will be produced by the `copilot` commands below (read-only unless `APPLY=1` for gated fixes).
+
+## 4) What “good” looks like (target layouts to validate against)
+- `/config/hestia/workspace`
+  - `reports/` → `checkpoints/<NAME>/…`, `ops/` (CI helpers), `summaries/`  
+  - `archive/` → `tarballs/<YYYY-Www>/`, `backups/<YYYY-Www>/`, `analysis/<YYYY-Www>/`, `dev_envs/<TS>/`, `ingest/<TS>/`, `bleedthrough/<TS>/`, `adr/deprecated/`  
+  - `cache/` → `python/`, `tmp/`, `scanner/`
+  - `operations/` → `logs/`, `playbooks/`, `runbooks/`
+- `/config/hestia/reports` (legacy) → should be **empty** and retired; everything lives under `workspace/reports/`.
+- `/config/hestia/tools`
+  - `system/`, `utils/backup/`, `utils/validators/`, `python_scripts/`, `evidence/`, `diagnostics/`, `ci/`, `ops/`
+  - All scripts executable with proper shebang, no writes outside `workspace/{cache|archive}` without operator approval.
+
+## 5) Executive instructions
+- Run the **diagnostics** block now (read-only).  
+- I’ll review outputs and, if all signals align, green-light **gated** moves (APPLY=1) to tidy root files and normalize any stragglers under `domain/shell_commands` and `includes`.
+
+Acceptance (binary)
+- Diagnostics artifacts exist and show no write operations occurred.  
+- Root file decisions applied only when **APPLY=1**.  
+- No changes to HA runtime behavior (includes remain valid).
+```
+
+```copilot
+# === CONFIG GOVERNANCE DIAGNOSTICS & SAFE ACTIONS ===
+# Mode: read-only by default. Set APPLY=1 to apply gated fixes.
+# Requirements: bash, find, grep, awk, jq (optional), python3 (optional)
+
+set -euo pipefail
+ROOT="/System/Volumes/Data/homeassistant"
+CFG="$ROOT/config"
+OUT="$CFG/hestia/workspace/reports/checkpoints/CONFIG_GOV_AUDIT"
+TS="$(date -u +%Y%m%dT%H%M%SZ)"
+APPLY="${APPLY:-0}"
+
+mkdir -p "$OUT"
+
+note(){ echo "[$(date -u +%H:%M:%SZ)] $*"; }
+json_escape(){ python3 - <<'PY' "$1"; import json,sys; print(json.dumps(sys.argv[1])); PY; }
+
+# --- 1) Deep inventories (read-only) ---
+
+note "Inventory: domain/shell_commands"
+if [ -d "$ROOT/domain/shell_commands" ]; then
+  (cd "$ROOT" && find "domain/shell_commands" -maxdepth 5 -print0 \
+    | xargs -0 stat -f '{"path":"%N","size":%z,"mode":"%Sp","mtime":"%Sm","type":"%HT"}' \
+    | sed 's/  / /g') > "$OUT/domain_shell_commands_inventory.jsonl" || true
+else
+  echo "MISSING: $ROOT/domain/shell_commands" > "$OUT/domain_shell_commands_inventory.MISSING"
+fi
+
+note "Inventory: includes"
+if [ -d "$CFG/includes" ]; then
+  (cd "$CFG" && find "includes" -maxdepth 5 -print0 \
+    | xargs -0 stat -f '{"path":"%N","size":%z,"mode":"%Sp","mtime":"%Sm","type":"%HT"}') \
+    > "$OUT/includes_inventory.jsonl" || true
+else
+  echo "MISSING: $CFG/includes" > "$OUT/includes_inventory.MISSING"
+fi
+
+# --- 2) HA references to includes & shell_command usage ---
+note "Scan: configuration.yaml references & shell_command usage"
+if [ -f "$CFG/configuration.yaml" ]; then
+  cp -a "$CFG/configuration.yaml" "$OUT/configuration.yaml.snapshot"
+  grep -nE '(!include|shell_command:|script:|automation:)' "$CFG/configuration.yaml" > "$OUT/configuration.refs.txt" || true
+fi
+grep -RInE 'shell_command:' "$CFG" | head -200 > "$OUT/shell_command_refs.txt" || true
+grep -RInE '!include(_dir(_merge_(named|list)|_list|_named))?\s' "$CFG" | head -400 > "$OUT/include_refs.txt" || true
+
+# --- 3) Top sizes & recent changes under target paths ---
+note "Sizes & recent changes"
+du -sh "$ROOT/domain/shell_commands" 2>/dev/null || true
+du -sh "$CFG/includes" 2>/dev/null || true
+{ 
+  echo "# Recent 30 (domain/shell_commands)"; 
+  find "$ROOT/domain/shell_commands" -type f -printf '%T@ %p\n' 2>/dev/null | sort -nr | head -30; 
+  echo "# Recent 30 (includes)"; 
+  find "$CFG/includes" -type f -printf '%T@ %p\n' 2>/dev/null | sort -nr | head -30; 
+} > "$OUT/recent_activity.txt" || true
+
+# --- 4) Root files: classify and optionally act (gated) ---
+note "Classify root files"
+ROOT_FILES=( ".env" ".env.adr0024" ".hestia_path_hits.txt" ".yamllint.yml" "PR_BODY_chore-parameterize-ha-mount.md" "ruff.toml" "worker-portal-no-store.js" )
+for f in "${ROOT_FILES[@]}"; do
+  p="$CFG/$f"
+  if [ -e "$p" ]; then
+    echo "{\"path\":\"$p\",\"size\":$(stat -f %z "$p"),\"mtime\":\"$(stat -f %Sm "$p")\"}" >> "$OUT/root_files_present.jsonl"
+  else
+    echo "{\"path\":\"$p\",\"present\":false}" >> "$OUT/root_files_present.jsonl"
+  fi
+done
+
+# Gated actions for root files
+if [ "$APPLY" = "1" ]; then
+  note "APPLY=1: executing gated root file actions"
+  # remove empty path hits file
+  if [ -f "$CFG/.hestia_path_hits.txt" ] && [ ! -s "$CFG/.hestia_path_hits.txt" ]; then
+    rm -f "$CFG/.hestia_path_hits.txt" && note "removed: .hestia_path_hits.txt"
+  fi
+  # PR body -> archive
+  if [ -f "$CFG/PR_BODY_chore-parameterize-ha-mount.md" ]; then
+    DEST="$CFG/hestia/workspace/archive/dev_envs/$TS"
+    install -d "$DEST"
+    mv "$CFG/PR_BODY_chore-parameterize-ha-mount.md" "$DEST/" && note "archived: PR_BODY* -> $DEST"
+  fi
+  # ruff.toml policy: if duplicate .ruff.toml exists move the duplicate into ops/lint
+  if [ -f "$CFG/.ruff.toml" ] && [ -f "$CFG/ruff.toml" ]; then
+    install -d "$CFG/hestia/workspace/ops/lint"
+    mv "$CFG/.ruff.toml" "$CFG/hestia/workspace/ops/lint/ruff.toml.duplicate.$TS"
+    note "moved duplicate .ruff.toml to ops/lint"
+  fi
+  # worker-portal-no-store.js: relocate to www/assets if not referenced under www
+  if [ -f "$CFG/worker-portal-no-store.js" ]; then
+    if [ ! -f "$CFG/www/assets/worker-portal-no-store.js" ]; then
+      install -d "$CFG/www/assets"
+      mv "$CFG/worker-portal-no-store.js" "$CFG/www/assets/" && note "moved worker-portal-no-store.js -> www/assets"
+    fi
+  fi
+fi
+
+# --- 5) Probing includes structure correctness ---
+note "Validate includes structure"
+# Ensure includes is a directory (not nested incorrectly)
+if [ -d "$CFG/includes" ]; then
+  # flag any non-yaml files at top level
+  find "$CFG/includes" -maxdepth 1 -type f ! -name "*.yaml" -printf '%p\n' > "$OUT/includes_non_yaml.txt" || true
+  # report empty yaml files (potential cruft)
+  awk 'FNR==1{file=FILENAME} { if (NF>0) has=1 } END{ if (!has) print file }' $(find "$CFG/includes" -maxdepth 1 -type f -name "*.yaml" 2>/dev/null) \
+    > "$OUT/includes_empty_yaml.txt" 2>/dev/null || true
+fi
+
+# --- 6) Summarize for operator ---
+note "Write SUMMARY.md"
+{
+  echo "# CONFIG GOVERNANCE AUDIT — $TS"
+  echo "Artifacts: $(realpath "$OUT")"
+  echo "## Paths audited"
+  echo "- $ROOT/domain/shell_commands"
+  echo "- $CFG/includes"
+  echo "## Root files checked"
+  printf -- "- %s\n" "${ROOT_FILES[@]}"
+  echo "## Next actions"
+  echo "- Review inventories (*.jsonl) and recent_activity.txt"
+  echo "- If OK, re-run with APPLY=1 to archive PR body, clean path hits, dedupe ruff, relocate worker script"
+} > "$OUT/SUMMARY.md"
+
+note "DONE. Audit outputs stored at $OUT"
+
+# === OPTIONAL: follow-up fixes for domain/shell_commands & includes (template; gated) ===
+# To be used after reviewing inventories:
+#   APPLY=1 FIX_SHELL=1 FIX_INCLUDES=1 bash this_script.sh
+if [ "${FIX_SHELL:-0}" = "1" ] && [ "$APPLY" = "1" ]; then
+  note "FIX_SHELL enabled — (example) ensure only YAML & scripts; archive others"
+  install -d "$CFG/hestia/workspace/archive/ingest/$TS"
+  find "$ROOT/domain/shell_commands" -type f ! -name "*.yaml" ! -name "*.sh" -print0 \
+    | xargs -0 -I{} mv "{}" "$CFG/hestia/workspace/archive/ingest/$TS"/
+fi
+
+if [ "${FIX_INCLUDES:-0}" = "1" ] && [ "$APPLY" = "1" ]; then
+  note "FIX_INCLUDES enabled — (example) archive non-YAML, empty YAMLs"
+  install -d "$CFG/hestia/workspace/archive/legacy/$TS"
+  # Non-YAML at includes root → archive
+  find "$CFG/includes" -maxdepth 1 -type f ! -name "*.yaml" -print0 \
+    | xargs -0 -I{} mv "{}" "$CFG/hestia/workspace/archive/legacy/$TS"/
+  # Empty YAMLs → archive
+  while IFS= read -r -d '' y; do
+    if [ ! -s "$y" ]; then mv "$y" "$CFG/hestia/workspace/archive/legacy/$TS"/; fi
+  done < <(find "$CFG/includes" -maxdepth 1 -type f -name "*.yaml" -print0)
+fi
+```
+
+```operator
+What I’ll look for in the outputs (and how I’ll decide)
+
+- **domain/shell_commands**  
+  - Expect only declarative YAMLs consumed by HA `shell_command:` key under `configuration.yaml` or packaged includes.  
+  - Any stray binaries/scripts belong under `hestia/tools` (if operational) or `workspace/archive` (if legacy).
+
+- **includes**  
+  - Expect only YAML files and directories used via `!include*`.  
+  - Non-YAML and empty YAMLs → archive; nested “config/includes” ghost path should be gone (you already fixed it).
+
+- **Root files**  
+  - `.env*` retained.  
+  - PR_BODY archived.  
+  - `worker-portal-no-store.js` in `www/assets` unless currently referenced elsewhere (grep check in summary).  
+  - Single source of truth for `ruff.toml`.
+
+When you run the diagnostics (read-only), send me:
+- `SUMMARY.md` from `CONFIG_GOV_AUDIT`  
+- the first ~100 lines of `includes_inventory.jsonl` and `domain_shell_commands_inventory.jsonl`  
+- and I’ll issue the APPLY plan (if any) for final moves.
+
+Binary acceptance after APPLY
+- Inventories show **no non-YAML** at `includes` root.  
+- `domain/shell_commands` contains YAML (and only supporting `.sh` if truly needed).  
+- Root files resolved per decisions above.  
+- Hygiene check still OK.
+```
+
+```operator
+Decision: normalize `domain/shell_commands` to **declarative YAML only**. All `*.sh` move to tools; HA calls them via `shell_command:` entries in `includes/shell_command.yaml`.
+
+Approved placements
+- Runtime scripts: `/config/hestia/tools/{system|evidence|ops}/…/*.sh`
+- HA declarations: `/config/includes/shell_command.yaml` (YAML only)
+- Project-side review copy (your request): `/Users/evertappels/actions-runner/Projects/HA-BB8/ops/migrated-for-review/…`
+
+Four “unclear” scripts — classification
+- `git_push_logger.sh` → **tools/system/**
+- `ha_host_verification_supervisor.sh` → **tools/system/**
+- `addons_runtime_fetch.sh` → **tools/ops/**
+- `addons_runtime_preflight.sh` → **tools/ops/**
+
+Binary acceptance gates
+1) `/System/Volumes/Data/homeassistant/domain/shell_commands` contains **no** `*.sh` files (YAML only).  
+2) New `includes/shell_command.yaml` points to `/config/hestia/tools/**` paths only.  
+3) Rollback artifact created: timestamped tarball with the original directory.
+
+Rollback
+- Untar `hestia/workspace/archive/backups/shell_commands_<TS>.tar.gz` back to the original path.
+
+Proceed with the `copilot` block below to perform a **safe, non-destructive** migration (creates backups, copies to both targets, and emits a ready-to-commit YAML fragment).
+```
+
+```copilot
+# SAFE MIGRATION: domain/shell_commands → tools + YAML declarations
+# Mode: DRY-RUN by default. Set APPLY=1 to execute file moves/edits.
+# Creates: backup tarball, project review copy, updated includes/shell_command.yaml (with guard).
+
+set -euo pipefail
+
+HA_ROOT="/System/Volumes/Data/homeassistant"
+CFG="$HA_ROOT"                  # equals /config
+SRC="$HA_ROOT/domain/shell_commands"
+TOOLS_BASE="$CFG/hestia/tools"
+REVIEW_BASE="/Users/evertappels/actions-runner/Projects/HA-BB8/ops/migrated-for-review"
+TS="$(date -u +%Y%m%dT%H%M%SZ)"
+APPLY="${APPLY:-0}"
+
+echo "=== DRY RUN (APPLY=$APPLY) — shell_commands normalization ==="
+
+# 0) Preconditions
+[ -d "$SRC" ] || { echo "ERROR: missing $SRC"; exit 1; }
+mkdir -p "$CFG/hestia/workspace/archive/backups" "$TOOLS_BASE/system" "$TOOLS_BASE/evidence" "$TOOLS_BASE/ops" "$REVIEW_BASE"
+
+# 1) Backup the current shell_commands directory
+BACKUP="$CFG/hestia/workspace/archive/backups/shell_commands_$TS.tar.gz"
+echo "backup: $SRC -> $BACKUP"
+if [ "$APPLY" = "1" ]; then
+  tar -C "$HA_ROOT/domain" -czf "$BACKUP" "shell_commands"
+fi
+
+# 2) Inventory & routing rules
+echo "classify: *.sh under $SRC"
+mapfile -t SHS < <(find "$SRC" -maxdepth 1 -type f -name "*.sh" 2>/dev/null | sort || true)
+
+# Route the four “unclear” ones explicitly; others by heuristic (keep default -> tools/evidence)
+route_path() {
+  case "$(basename "$1")" in
+    git_push_logger.sh) echo "$TOOLS_BASE/system";;
+    ha_host_verification_supervisor.sh) echo "$TOOLS_BASE/system";;
+    addons_runtime_fetch.sh) echo "$TOOLS_BASE/ops";;
+    addons_runtime_preflight.sh) echo "$TOOLS_BASE/ops";;
+    *) echo "$TOOLS_BASE/evidence";;
+  esac
+}
+
+# 3) Copy for project-side review (requested)
+for f in "${SHS[@]}"; do
+  dest="$REVIEW_BASE/$(basename "$f")"
+  echo "review-copy: $f -> $dest"
+  [ "$APPLY" = "1" ] && cp -a "$f" "$dest"
+done
+
+# 4) Move scripts into canonical tools buckets
+for f in "${SHS[@]}"; do
+  bucket="$(route_path "$f")"
+  echo "tools-move: $(basename "$f") -> $bucket/"
+  if [ "$APPLY" = "1" ]; then
+    install -d "$bucket"
+    # preserve mode, ensure executable
+    install -m 0755 "$f" "$bucket/$(basename "$f")"
+  fi
+done
+
+# 5) Generate (or update) includes/shell_command.yaml to declaratively call tools
+INCLUDES_DIR="$CFG/includes"
+YAML="$INCLUDES_DIR/shell_command.yaml"
+install -d "$INCLUDES_DIR"
+
+# Build YAML fragment for discovered scripts
+TMP_YAML="$(mktemp)"
+{
+  echo "# === GENERATED by Strategos normalization ($TS) ==="
+  echo "# Declarative shell commands mapped to /config/hestia/tools paths"
+  echo "shell_command:"
+  for f in "${SHS[@]}"; do
+    name="$(basename "${f%.sh}")"
+    bucket="$(route_path "$f")"
+    # command line: quoted full path; allow args via templating later if needed
+    echo "  ${name}: \"${bucket}/$(basename "$f")\""
+  done
+} > "$TMP_YAML"
+
+echo "emit: YAML fragment for shell_command.yaml (preview below)"
+cat "$TMP_YAML"
+
+# Merge strategy:
+# - if shell_command.yaml absent → create with generated content
+# - if present and contains 'shell_command:' key → append new keys guarded by comment block
+if [ "$APPLY" = "1" ]; then
+  if [ ! -f "$YAML" ] || ! grep -qE '^\s*shell_command:' "$YAML"; then
+    cp -a "$TMP_YAML" "$YAML"
+  else
+    {
+      echo ""; echo "# === BEGIN Strategos fragment ($TS) ==="
+      tail -n +2 "$TMP_YAML"  # skip duplicate 'shell_command:' root if appending
+      echo "# === END Strategos fragment ($TS) ==="
+    } >> "$YAML"
+  fi
+fi
+rm -f "$TMP_YAML" || true
+
+# 6) Remove *.sh from domain/shell_commands (directory becomes YAML-only)
+for f in "${SHS[@]}"; do
+  echo "prune-domain: remove $(basename "$f") from $SRC"
+  [ "$APPLY" = "1" ] && rm -f "$f"
+done
+
+# 7) Keep any YAMLs in place (declarative only); ensure directory remains
+mapfile -t NONYAML < <(find "$SRC" -maxdepth 1 -type f ! -name "*.yaml" 2>/dev/null | sort || true)
+if [ "${#NONYAML[@]}" -gt 0 ]; then
+  echo "note: non-YAML still present in $SRC:"
+  printf " - %s\n" "${NONYAML[@]}"
+fi
+
+echo "=== DONE (APPLY=$APPLY). Re-run with APPLY=1 to execute. ==="
+echo "Post-steps:"
+echo " - Validate HA config: hass --script check_config (or HA UI Check configuration)"
+echo " - Reload YAML or restart HA"
+```
+
+```operator
+Acceptance-test checklist (run after APPLY=1)
+1) `ls -la /System/Volumes/Data/homeassistant/domain/shell_commands` shows only YAML (no `.sh`).  
+2) `cat /System/Volumes/Data/homeassistant/includes/shell_command.yaml` contains commands pointing to `/config/hestia/tools/**`.  
+3) `hass --script check_config` (or HA UI Check configuration) passes.  
+4) Trigger one or two migrated shell_commands from Developer Tools → Services to confirm execution.  
+
+If you want me to also normalize names (convert `ha_bb8_verification.sh` → `bb8_verification` etc.) and group them into logical blocks in the YAML, say the word and I’ll generate a clean, commented layout with idempotent renames.
+```

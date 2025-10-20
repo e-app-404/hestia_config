@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+set -euo pipefail
+# Enforce meta-capture report policy using TOML limits.fail_level
+J=$(ls -1t /config/hestia/workspace/reports/meta_capture/*__dry_run.json | head -1)
+if [[ -z "${J}" || ! -f "${J}" ]]; then
+  echo "E-CI-001: no dry_run report found under /config/hestia/workspace/reports/meta_capture" >&2
+  exit 2
+fi
+RED=$(jq -r '.severity_counts.red' "$J")
+ORANGE=$(jq -r '.severity_counts.orange' "$J")
+FL=$(jq -r '.limits.fail_level // empty' /config/hestia/config/system/hestia.toml | tr '[:upper:]' '[:lower:]')
+# Fallback if limits.fail_level not present in report: look directly in TOML
+if [[ -z "$FL" || "$FL" == "null" ]]; then
+  FL=$(python3 - <<'PY'
+import tomllib,sys
+C=tomllib.load(open('/config/hestia/config/system/hestia.toml','rb'))
+print((C.get('automation',{}).get('meta_capture',{}).get('limits',{}).get('fail_level','red') or 'red').lower())
+PY
+  )
+fi
+# Mandatory: no RED
+if [[ "$RED" != "0" ]]; then
+  echo "E-CI-RED: red findings present ($RED)" >&2
+  exit 3
+fi
+# Optional: block ORANGE if configured
+if [[ "$FL" == "orange" ]] && [[ "$ORANGE" != "0" ]]; then
+  echo "E-CI-ORANGE: orange findings present ($ORANGE) and fail_level=orange" >&2
+  exit 4
+fi
+echo "OK: meta-capture report passes policy (fail_level=$FL, red=$RED, orange=$ORANGE)"

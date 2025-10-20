@@ -1,0 +1,124 @@
+template:
+  - sensor:
+      - name: "Room Configs Activity Tracking Dict"
+        unique_id: room_configs_activity_tracking_dict
+        state: "ok"
+        attributes:
+          payload: >-
+            {% set raw = state_attr('sensor.room_configs_activity_tracking', 'payload') %}
+            {% if raw is string %}
+              {{ raw | from_json }}
+            {% else %}
+              {{ raw }}
+            {% endif %}
+
+  - sensor:
+      - name: "Bedroom Minutes Since Activity"
+        unique_id: bedroom_minutes_since_activity_v2
+        state: >
+          {% set activity = state_attr('sensor.room_configs_activity_tracking_dict', 'payload') %}
+          {% if activity and 'bedroom' in activity %}
+            {% set last = activity.bedroom.last_activity %}
+            {% if last %}
+              {{ ((now() - (last | as_datetime | as_local)).total_seconds() / 60) | round(0) }}
+            {% else %}
+              99999
+            {% endif %}
+          {% else %}
+            99999
+          {% endif %}
+        unit_of_measurement: "min"
+        device_class: duration
+        attributes:
+          last_activity: >
+            {% set activity = state_attr('sensor.room_configs_activity_tracking_dict', 'payload') %}
+            {{ activity.bedroom.last_activity if activity and 'bedroom' in activity else 'unknown' }}
+          trigger_count: >
+            {% set activity = state_attr('sensor.room_configs_activity_tracking_dict', 'payload') %}
+            {{ activity.bedroom.trigger_count if activity and 'bedroom' in activity else 0 }}
+          source: "room_database"
+
+      - name: "Kitchen Minutes Since Activity"
+        unique_id: kitchen_minutes_since_activity_v2
+        state: >
+          {% set activity = state_attr('sensor.room_configs_activity_tracking_dict', 'payload') %}
+          {% if activity and 'kitchen' in activity %}
+            {% set last = activity.kitchen.last_activity %}
+            {% if last %}
+              {{ ((now() - (last | as_datetime | as_local)).total_seconds() / 60) | round(0) }}
+            {% else %}
+              99999
+            {% endif %}
+          {% else %}
+            99999
+          {% endif %}
+        unit_of_measurement: "min"
+        device_class: duration
+
+      - name: "Living Room Minutes Since Activity"
+        unique_id: living_room_minutes_since_activity_v2
+        state: >
+          {% set activity = state_attr('sensor.room_configs_activity_tracking_dict', 'payload') %}
+          {% if activity and 'living_room' in activity %}
+            {% set last = activity.living_room.last_activity %}
+            {% if last %}
+              {{ ((now() - (last | as_datetime | as_local)).total_seconds() / 60) | round(0) }}
+            {% else %}
+              99999
+            {% endif %}
+          {% else %}
+            99999
+          {% endif %}
+        unit_of_measurement: "min"
+        device_class: duration
+
+      - name: "Ensuite Minutes Since Activity"
+        unique_id: ensuite_minutes_since_activity_v2
+        state: >
+          {% set activity = state_attr('sensor.room_configs_activity_tracking_dict', 'payload') %}
+          {% if activity and 'ensuite' in activity %}
+            {% set last = activity.ensuite.last_activity %}
+            {% if last %}
+              {{ ((now() - (last | as_datetime | as_local)).total_seconds() / 60) | round(0) }}
+            {% else %}
+              99999
+            {% endif %}
+          {% else %}
+            99999
+          {% endif %}
+        unit_of_measurement: "min"
+        device_class: duration
+
+      - name: "Downstairs Minutes Since Activity"
+        unique_id: downstairs_minutes_since_activity_v2
+        state: >
+          {% set activity = state_attr('sensor.room_configs_activity_tracking_dict', 'payload') %}
+          {% if activity and 'downstairs' in activity %}
+            {% set last = activity.downstairs.last_activity %}
+            {% if last %}
+              {{ ((now() - (last | as_datetime | as_local)).total_seconds() / 60) | round(0) }}
+            {% else %}
+              99999
+            {% endif %}
+          {% else %}
+            99999
+          {% endif %}
+        unit_of_measurement: "min"
+        device_class: duration
+
+      - name: "Upstairs Minutes Since Activity"
+        unique_id: upstairs_minutes_since_activity_v2
+        state: >
+          {% set activity = state_attr('sensor.room_configs_activity_tracking_dict', 'payload') %}
+          {% if activity and 'upstairs' in activity %}
+            {% set last = activity.upstairs.last_activity %}
+            {% if last %}
+              {{ ((now() - (last | as_datetime | as_local)).total_seconds() / 60) | round(0) }}
+            {% else %}
+              99999
+            {% endif %}
+          {% else %}
+            99999
+          {% endif %}
+        unit_of_measurement: "min"
+        device_class: duration

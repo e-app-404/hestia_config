@@ -1,13 +1,27 @@
 ---
 id: ADR-0004
-title: "Canonical Area Hierarchy & Spatial Relationship Contract"
-date: 2025-09-11
-related: ["ADR-0021"]
-supersedes: []
+title: Canonical Area Hierarchy & Spatial Relationship Contract
+slug: canonical-area-hierarchy-spatial-relationship-contract
 status: Accepted
-tags: ["architecture", "area", "hierarchy", "spatial", "relationship", "contract", "adr"]
-last_updated: 2025-10-04
-author: "Evert Appels"
+related:
+- ADR-0021
+supersedes: []
+last_updated: '2025-10-15'
+date: 2025-09-11
+decision: '### Contract Metadata - **Contract ID:** area_relationships_contract -
+  **Version:** 1.1 - **Author:** Evert - **Status:** canonical_draft - **File Path:**
+  canonical/support/contracts/area_hierarchy.yaml - **Live Registry Consistency:**
+  improved - **Coverage Percent:** 100.0 - **Last Validated:** 2025-10-04 - **Notes:**
+  Programmatically validated against live Home Assistant registry data.'
+tags:
+- architecture
+- area
+- hierarchy
+- spatial
+- relationship
+- contract
+- adr
+author: Evert Appels
 ---
 
 # ADR-0004: Canonical Area Hierarchy & Spatial Relationship Contract

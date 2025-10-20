@@ -12,12 +12,12 @@ template:
         unique_id: "bedroom_matrix_last_route"
         state: >-
           A: {{
-            states('input_select.bedroom_matrix_video_source') 
-            if states('input_select.bedroom_matrix_video_source') not in ['unknown', 'unavailable'] 
+            states('input_select.bedroom_matrix_video_source')
+            if states('input_select.bedroom_matrix_video_source') not in ['unknown', 'unavailable']
             else '—'
           }} | B: {{
-            states('input_select.bedroom_matrix_audio_source') 
-            if states('input_select.bedroom_matrix_audio_source') not in ['unknown', 'unavailable'] 
+            states('input_select.bedroom_matrix_audio_source')
+            if states('input_select.bedroom_matrix_audio_source') not in ['unknown', 'unavailable']
             else '—'
           }}
         attributes:
@@ -25,6 +25,13 @@ template:
           last_command: "{{ states('input_text.bedroom_matrix_last_command') }}"
           last_updated: "{{ states('input_datetime.bedroom_matrix_last_updated') }}"
           file: "/config/packages/package_universal_media.yaml"
+          subarea_id: "hifi_configuration"
+          area_id: "bedroom"
+          floor_id: "sanctum"
+          domain: "orpheus"
+          module: "virtual_matrix"
+          role: "convenience"
+          type: "selector"
 
       - name: "Bedroom TV Status"
         unique_id: "bedroom_tv_status_beta"
@@ -40,6 +47,9 @@ template:
           {{ app or src or ch_ok or guess or 'Unknown' }}
         attributes:
           tier: "β"
+          subarea_id: "hifi_configuration"
+          area_id: "bedroom"
+          floor_id: "sanctum"
           canonical_id: "bedroom_tv_status_β"
           subsystem: "orpheus"
           module: "television"
@@ -76,11 +86,15 @@ template:
             \"A single “active displays” sensor gives you the ground truth for all your display-based logic, and can serve as the universal input for higher-tier logic, automations, and UI.\"
           created: "2025-07-25"
           subsystem: "orpheus"
-          type: "status_proxy"
-          role: "display_status"
-          domain: "status"
+          type: "proxy"
+          role: "status"
+          domain: "macbook"
           module: "entertainment"
+          area_id: "desk"
+          floor_id: "bedroom"
           file: "/config/packages/package_universal_media.yaml"
+          note: |
+            "#TODO inspect Samsung TV integration and fix correct channel and power attribution"
 
       - name: "Bedroom TV App (Beta)"
         unique_id: "bedroom_tv_app_beta"
@@ -94,6 +108,11 @@ template:
           rationale: "Tracks which TV app is currently active for scene/automation logic."
           description: "Abstraction for current app/channel running on Bedroom TV."
           file: "/config/packages/package_universal_media.yaml"
+          subarea_id: "hifi_configuration"
+          area_id: "bedroom"
+          floor_id: "sanctum"
+          note: |
+            "#TODO inspect Samsung TV integration and fix correct channel and power attribution"
 
       - name: "PS4: Telemetry (diag)"
         unique_id: "ps4_telemetry_diag"
@@ -109,13 +128,16 @@ template:
           upstream_sources: >
             {{ ["media_player.playstation_4"] | tojson }}
           rationale: "Diagnostic telemetry sensor for PS4 media_player state and attributes."
-          description: >
-            \"Diagnostic sensor to expose raw PS4 media_player state and key attributes for troubleshooting and validation
-            of higher-tier logic sensors.\"
+          description: |
+            "Diagnostic sensor to expose raw PS4 media_player state and key attributes for
+            troubleshooting and validation of higher-tier logic sensors."
           created: "2025-07-25"
           subsystem: "orpheus"
           module: "gaming"
           domain: "status"
+          subarea_id: "hifi_configuration"
+          area_id: "bedroom"
+          floor_id: "sanctum"
           file: "/config/packages/package_universal_media.yaml"
 
       - name: "Media Player STANDBY Diagnostic"
@@ -123,7 +145,7 @@ template:
         state: >
           {% set children = [
             'media_player.bedroom_tv_alpha',
-            'media_player.bedroom_tv_alpha_hub', 
+            'media_player.bedroom_tv_alpha_hub',
             'media_player.bedroom_tv_alpha_plex',
             'media_player.bedroom_tv_alpha_dlna',
             'media_player.bedroom_apple_tv_alpha',
@@ -146,7 +168,7 @@ template:
             {% set children = [
               'media_player.bedroom_tv_alpha',
               'media_player.bedroom_tv_alpha_hub',
-              'media_player.bedroom_tv_alpha_plex', 
+              'media_player.bedroom_tv_alpha_plex',
               'media_player.bedroom_tv_alpha_dlna',
               'media_player.bedroom_apple_tv_alpha',
               'media_player.bedroom_apple_tv_alpha_plex',
@@ -691,7 +713,6 @@ script:
       - action: mqtt.publish
         data: { topic: ha/bedroom_hdmi_matrix/cmd, payload: "b_{{ a }}" }
 
-  # ⟫⟫ MEDIA LOGIC  •  PLEX ROUTING
   plex_route_and_open_app:
     alias: "Plex: Route to Apple TV & Open Plex"
     mode: single
@@ -708,7 +729,6 @@ script:
         data:
           source: "Plex"
 
-  # ⟫⟫ MEDIA LOGIC  •  RADIO STATIONS
   play_selected_radio:
     alias: "Play Selected Radio Station"
     mode: single
@@ -783,7 +803,6 @@ script:
               name: Radio Script
               message: "Unknown station selected: {{ station }}"
 
-  # ⟫⟫ MEDIA LOGIC  •  PLAYSTATION 4
   ps4_prepare_av:
     alias: "PS4: Prepare AV (A3/B3)"
     mode: single
@@ -877,16 +896,16 @@ automation:
               "device": {"identifiers":["bedroom_hdmi_matrix"],"name":"Bedroom HDMI Matrix","manufacturer":"Virtual","model":"IR HDMI Matrix","suggested_area":"bedroom"},
               "o": {"name":"matrix-virtual","sw":"1.1.0","url":"homeassistant://settings"},
               "cmps": {
-                "power":{"p":"button","unique_id":"bedroom_hdmi_matrix_power","object_id":"bedroom_matrix_power","name":"Power","command_topic":"ha/bedroom_hdmi_matrix/cmd","payload_press":"power","availability_topic":"ha/bedroom_hdmi_matrix/status","qos":1,"retain":false},
-                "arc":{"p":"button","unique_id":"bedroom_hdmi_matrix_arc","object_id":"bedroom_matrix_arc","name":"ARC","command_topic":"ha/bedroom_hdmi_matrix/cmd","payload_press":"arc","availability_topic":"ha/bedroom_hdmi_matrix/status","qos":1,"retain":false},
-                "a_1":{"p":"button","unique_id":"bedroom_hdmi_matrix_a_1","object_id":"bedroom_matrix_a1","name":"A • 1 (Apple TV)","command_topic":"ha/bedroom_hdmi_matrix/cmd","payload_press":"a_1","availability_topic":"ha/bedroom_hdmi_matrix/status","qos":1,"retain":false},
-                "a_2":{"p":"button","unique_id":"bedroom_hdmi_matrix_a_2","object_id":"bedroom_matrix_a2","name":"A • 2 (Switch)","command_topic":"ha/bedroom_hdmi_matrix/cmd","payload_press":"a_2","availability_topic":"ha/bedroom_hdmi_matrix/status","qos":1,"retain":false},
-                "a_3":{"p":"button","unique_id":"bedroom_hdmi_matrix_a_3","object_id":"bedroom_matrix_a3","name":"A • 3 (PS4)","command_topic":"ha/bedroom_hdmi_matrix/cmd","payload_press":"a_3","availability_topic":"ha/bedroom_hdmi_matrix/status","qos":1,"retain":false},
-                "a_4":{"p":"button","unique_id":"bedroom_hdmi_matrix_a_4","object_id":"bedroom_matrix_a4","name":"A • 4 (Wii)","command_topic":"ha/bedroom_hdmi_matrix/cmd","payload_press":"a_4","availability_topic":"ha/bedroom_hdmi_matrix/status","qos":1,"retain":false},
-                "b_1":{"p":"button","unique_id":"bedroom_hdmi_matrix_b_1","object_id":"bedroom_matrix_b1","name":"B • 1 (Apple TV)","command_topic":"ha/bedroom_hdmi_matrix/cmd","payload_press":"b_1","availability_topic":"ha/bedroom_hdmi_matrix/status","qos":1,"retain":false},
-                "b_2":{"p":"button","unique_id":"bedroom_hdmi_matrix_b_2","object_id":"bedroom_matrix_b2","name":"B • 2 (Switch)","command_topic":"ha/bedroom_hdmi_matrix/cmd","payload_press":"b_2","availability_topic":"ha/bedroom_hdmi_matrix/status","qos":1,"retain":false},
-                "b_3":{"p":"button","unique_id":"bedroom_hdmi_matrix_b_3","object_id":"bedroom_matrix_b3","name":"B • 3 (PS4)","command_topic":"ha/bedroom_hdmi_matrix/cmd","payload_press":"b_3","availability_topic":"ha/bedroom_hdmi_matrix/status","qos":1,"retain":false},
-                "b_4":{"p":"button","unique_id":"bedroom_hdmi_matrix_b_4","object_id":"bedroom_matrix_b4","name":"B • 4 (Wii)","command_topic":"ha/bedroom_hdmi_matrix/cmd","payload_press":"b_4","availability_topic":"ha/bedroom_hdmi_matrix/status","qos":1,"retain":false}
+                "power":{"p":"button","unique_id":"bedroom_hdmi_matrix_power","default_entity_id":"button.bedroom_matrix_power","name":"Power","command_topic":"ha/bedroom_hdmi_matrix/cmd","payload_press":"power","availability_topic":"ha/bedroom_hdmi_matrix/status","qos":1,"retain":false},
+                "arc":{"p":"button","unique_id":"bedroom_hdmi_matrix_arc","default_entity_id":"button.bedroom_matrix_arc","name":"ARC","command_topic":"ha/bedroom_hdmi_matrix/cmd","payload_press":"arc","availability_topic":"ha/bedroom_hdmi_matrix/status","qos":1,"retain":false},
+                "a_1":{"p":"button","unique_id":"bedroom_hdmi_matrix_a_1","default_entity_id":"button.bedroom_matrix_a1","name":"A • 1 (Apple TV)","command_topic":"ha/bedroom_hdmi_matrix/cmd","payload_press":"a_1","availability_topic":"ha/bedroom_hdmi_matrix/status","qos":1,"retain":false},
+                "a_2":{"p":"button","unique_id":"bedroom_hdmi_matrix_a_2","default_entity_id":"button.bedroom_matrix_a2","name":"A • 2 (Switch)","command_topic":"ha/bedroom_hdmi_matrix/cmd","payload_press":"a_2","availability_topic":"ha/bedroom_hdmi_matrix/status","qos":1,"retain":false},
+                "a_3":{"p":"button","unique_id":"bedroom_hdmi_matrix_a_3","default_entity_id":"button.bedroom_matrix_a3","name":"A • 3 (PS4)","command_topic":"ha/bedroom_hdmi_matrix/cmd","payload_press":"a_3","availability_topic":"ha/bedroom_hdmi_matrix/status","qos":1,"retain":false},
+                "a_4":{"p":"button","unique_id":"bedroom_hdmi_matrix_a_4","default_entity_id":"button.bedroom_matrix_a4","name":"A • 4 (Wii)","command_topic":"ha/bedroom_hdmi_matrix/cmd","payload_press":"a_4","availability_topic":"ha/bedroom_hdmi_matrix/status","qos":1,"retain":false},
+                "b_1":{"p":"button","unique_id":"bedroom_hdmi_matrix_b_1","default_entity_id":"button.bedroom_matrix_b1","name":"B • 1 (Apple TV)","command_topic":"ha/bedroom_hdmi_matrix/cmd","payload_press":"b_1","availability_topic":"ha/bedroom_hdmi_matrix/status","qos":1,"retain":false},
+                "b_2":{"p":"button","unique_id":"bedroom_hdmi_matrix_b_2","default_entity_id":"button.bedroom_matrix_b2","name":"B • 2 (Switch)","command_topic":"ha/bedroom_hdmi_matrix/cmd","payload_press":"b_2","availability_topic":"ha/bedroom_hdmi_matrix/status","qos":1,"retain":false},
+                "b_3":{"p":"button","unique_id":"bedroom_hdmi_matrix_b_3","default_entity_id":"button.bedroom_matrix_b3","name":"B • 3 (PS4)","command_topic":"ha/bedroom_hdmi_matrix/cmd","payload_press":"b_3","availability_topic":"ha/bedroom_hdmi_matrix/status","qos":1,"retain":false},
+                "b_4":{"p":"button","unique_id":"bedroom_hdmi_matrix_b_4","default_entity_id":"button.bedroom_matrix_b4","name":"B • 4 (Wii)","command_topic":"ha/bedroom_hdmi_matrix/cmd","payload_press":"b_4","availability_topic":"ha/bedroom_hdmi_matrix/status","qos":1,"retain":false}
               }
             } | tojson }}
 
@@ -998,7 +1017,81 @@ automation:
     action:
       - action: script.plex_route_and_open_app
 
-# ═══ INTEGRATION: UNIVERSAL MEDIA PLAYER ═══
+  - alias: "Bedroom Universal Media Accent Light Sync"
+    id: bedroom_universal_media_accent_light_sync_v1
+    mode: restart
+    trigger:
+      - trigger: state
+        entity_id: media_player.bedroom_universal
+      - trigger: state
+        entity_id: media_player.bedroom_universal
+        attribute: active_child
+      - trigger: state
+        entity_id:
+          - binary_sensor.bedroom_presence_beta
+          - binary_sensor.bedroom_occupancy_beta
+    variables:
+      univ_state: "{{ states('media_player.bedroom_universal') }}"
+      active_child: "{{ state_attr('media_player.bedroom_universal', 'active_child') or '' }}"
+      presence_on: >-
+        {{ is_state('binary_sensor.bedroom_presence_beta','on')
+           or is_state('binary_sensor.bedroom_occupancy_beta','on') }}
+      src: >-
+        {% set a = active_child %}
+        {% if 'playstation_4' in a %}ps
+        {% elif 'apple_tv_alpha_plex' in a %}atv_plex
+        {% elif 'apple_tv_alpha' in a %}atv
+        {% elif 'bedroom_tv_alpha' in a %}tv
+        {% else %}other{% endif %}
+    action:
+      - choose:
+          - conditions:
+              - condition: template
+                value_template: >
+                  {{ univ_state in ['off','standby','unknown','unavailable'] or not presence_on }}
+            sequence:
+              - action: light.turn_off
+                target:
+                  entity_id: light.group_hifi_area_lights
+                data:
+                  transition: 0.6
+          - conditions:
+              - condition: template
+                value_template: "{{ src == 'ps' }}"
+            sequence:
+              - action: light.turn_on
+                target: { entity_id: light.group_hifi_area_lights }
+                data:
+                  { hs_color: [220, 100], brightness_pct: 60, transition: 0.3 }
+          - conditions:
+              - condition: template
+                value_template: "{{ src == 'atv_plex' }}"
+            sequence:
+              - action: light.turn_on
+                target: { entity_id: light.group_hifi_area_lights }
+                data:
+                  { hs_color: [280, 100], brightness_pct: 55, transition: 0.3 }
+          - conditions:
+              - condition: template
+                value_template: "{{ src == 'atv' }}"
+            sequence:
+              - action: light.turn_on
+                target: { entity_id: light.group_hifi_area_lights }
+                data:
+                  { hs_color: [180, 95], brightness_pct: 60, transition: 0.3 }
+          - conditions:
+              - condition: template
+                value_template: "{{ src == 'tv' }}"
+            sequence:
+              - action: light.turn_on
+                target: { entity_id: light.group_hifi_area_lights }
+                data:
+                  { hs_color: [120, 100], brightness_pct: 50, transition: 0.3 }
+        default:
+          - action: light.turn_on
+            target: { entity_id: light.group_hifi_area_lights }
+            data: { hs_color: [120, 90], brightness_pct: 50, transition: 0.3 }
+
 media_player:
   - platform: universal
     name: Bedroom Universal
@@ -1069,21 +1162,21 @@ media_player:
       volume_level: media_player.bedroom_sonos_ray|volume_level
     commands:
       turn_on:
-        service: media_player.turn_on
+        action: media_player.turn_on
         target:
           entity_id: media_player.bedroom_tv_alpha
       turn_off:
-        service: media_player.turn_off
+        action: media_player.turn_off
         target:
           entity_id: media_player.bedroom_tv_alpha
       select_source:
-        service: script.turn_on
+        action: script.turn_on
         data:
           entity_id: script.bedroom_universal_route_for_source
           variables:
             source: "{{ source }}"
       volume_set:
-        service: media_player.volume_set
+        action: media_player.volume_set
         target:
           entity_id: >-
             {% set active = ['playing','paused','buffering'] %}
@@ -1094,7 +1187,7 @@ media_player:
         data:
           volume_level: "{{ volume_level }}"
       volume_up:
-        service: media_player.volume_up
+        action: media_player.volume_up
         target:
           entity_id: >-
             {% set active = ['playing','paused','buffering'] %}
@@ -1103,7 +1196,7 @@ media_player:
             {% elif states('media_player.ensuite_sonos_roam') in active %} media_player.ensuite_sonos_roam
             {% else %} media_player.bedroom_sonos_ray {% endif %}
       volume_down:
-        service: media_player.volume_down
+        action: media_player.volume_down
         target:
           entity_id: >-
             {% set active = ['playing','paused','buffering'] %}
@@ -1112,7 +1205,7 @@ media_player:
             {% elif states('media_player.ensuite_sonos_roam') in active %} media_player.ensuite_sonos_roam
             {% else %} media_player.bedroom_sonos_ray {% endif %}
       volume_mute:
-        service: media_player.volume_mute
+        action: media_player.volume_mute
         target:
           entity_id: >-
             {% set active = ['playing','paused','buffering'] %}
@@ -1168,21 +1261,21 @@ media_player:
       volume_level: media_player.bedroom_sonos_ray|volume_level
     commands:
       turn_on:
-        service: media_player.turn_on
+        action: media_player.turn_on
         data:
           entity_id: media_player.bedroom_tv_alpha
       turn_off:
-        service: media_player.turn_off
+        action: media_player.turn_off
         data:
           entity_id: media_player.bedroom_tv_alpha
       select_source:
-        service: script.turn_on
+        action: script.turn_on
         data:
           entity_id: script.bedroom_universal_route_for_source
           variables:
             source: "{{ source }}"
       volume_set:
-        service: media_player.volume_set
+        action: media_player.volume_set
         data:
           entity_id: >-
             {% set active = ['playing','paused','buffering'] %}
@@ -1192,7 +1285,7 @@ media_player:
             {% else %} media_player.bedroom_sonos_ray {% endif %}
           volume_level: "{{ volume_level }}"
       volume_up:
-        service: media_player.volume_up
+        action: media_player.volume_up
         data:
           entity_id: >-
             {% set active = ['playing','paused','buffering'] %}
@@ -1201,7 +1294,7 @@ media_player:
             {% elif states('media_player.ensuite_sonos_roam') in active %} media_player.ensuite_sonos_roam
             {% else %} media_player.bedroom_sonos_ray {% endif %}
       volume_down:
-        service: media_player.volume_down
+        action: media_player.volume_down
         data:
           entity_id: >-
             {% set active = ['playing','paused','buffering'] %}
@@ -1210,7 +1303,7 @@ media_player:
             {% elif states('media_player.ensuite_sonos_roam') in active %} media_player.ensuite_sonos_roam
             {% else %} media_player.bedroom_sonos_ray {% endif %}
       volume_mute:
-        service: media_player.volume_mute
+        action: media_player.volume_mute
         data:
           entity_id: >-
             {% set active = ['playing','paused','buffering'] %}

@@ -1,14 +1,30 @@
 ---
 id: ADR-0021
-title: "Motion, Occupancy, and Presence Signal Architecture (beta abstractions)"
-authors: 
-  - "Strategos Governance"
-  - "Evert Appels"
-status: Proposed
+title: Motion, Occupancy, and Presence Signal Architecture (beta abstractions)
+slug: motion-occupancy-and-presence-signal-architecture-beta-abstractions
+status: Accepted
+related: []
+supersedes: []
+last_updated: '2025-10-15'
 date: 2025-10-03
-last_updated: 2025-10-03
-tags: ["home-automation","adr","motion","occupancy","presence","lighting"]
-notes:
+decision: 'Hestia’s lighting automations historically referenced **raw (alpha-tier)**
+  device entities (e.g., PIRs, cameras). This created brittleness: false-offs during
+  stillness, sensitivity drift, and device o...'
+authors:
+- Strategos Governance
+- Evert Appels
+tags:
+- home-automation
+- adr
+- motion
+- occupancy
+- presence
+- lighting
+- architecture
+- beta-tier
+- abstractions
+- blueprints
+notes: null
 ---
 
 # ADR-0021 — Motion, Occupancy, and Presence Signal Architecture (beta abstractions)
@@ -27,7 +43,6 @@ Hestia’s lighting automations historically referenced **raw (alpha-tier)** dev
 
 1. **Single abstraction layer**: Automations **must consume beta-tier room composites** for motion/occupancy and eta-tier group lights. **No additional layer** is introduced above beta.
 2. **Signal roles**:
-
    * **Motion** → *fast trigger* (enter/leave detection).
    * **Occupancy** → *stickiness* (stillness tolerance; extends hold).
    * **Presence** → *context only* (never a hard gate in our household).

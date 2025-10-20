@@ -1,0 +1,16 @@
+#═══════════════════════════════════════════════════════════════
+# ▶ SQL SENSORS: Default version ◀
+# Loader: !include_dir_merge_list domain/sensor
+# Schema: sql (integration format)
+# Info: https://www.home-assistant.io/integrations/sql/
+#═══════════════════════════════════════════════════════════════
+
+- name: "Recorder DB Size (MiB)"
+  query: >
+    SELECT ROUND(page_count * page_size / 1024.0 / 1024.0, 1) AS size
+    FROM pragma_page_count(), pragma_page_size();
+  column: "size"
+  unit_of_measurement: MiB
+  device_class: data_size
+  state_class: measurement
+  unique_id: recorder_db_size_mib

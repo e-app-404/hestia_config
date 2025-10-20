@@ -1,0 +1,85 @@
+- binary_sensor:
+    # ───────────────────────────────────────────────────────────────────────────────
+    # ▶ Desk Inferred Presence Composite Sensor ◀
+    - name: "Desk Occupancy Inferred"
+      unique_id: "desk_occupancy_inferred"
+      icon: mdi:desk
+      device_class: occupancy
+      state: >-
+        {% set app_active = is_state('binary_sensor.macbook_active', 'on') %}
+        {% if not app_active %}
+          unknown
+        {% else %}
+          {% set displays = state_attr('sensor.macbook_displays','Display Names') or [] %}
+          {% set display_ok = 'HP 32 Display' in displays %}
+          {% set ac = state_attr('sensor.macbook_internal_battery_state','Power Source State') or '' %}
+          {% set ac_power = (ac == 'AC Power') %}
+          {% set at_home = is_state('device_tracker.macbook','home') %}
+          {% set conn = states('binary_sensor.desk_macbook_recent_connectivity_desk') %}
+          {% set connection_ok = (conn == 'on') %}
+          {{ display_ok and ac_power and at_home and connection_ok }}
+        {% endif %}
+      attributes:
+        ha_app_active: "{{ is_state('binary_sensor.macbook_active', 'on') }}"
+        display_data_reliable: "{{ is_state('binary_sensor.macbook_active', 'on') }}"
+        display_connected: >-
+          {% if is_state('binary_sensor.macbook_active', 'on') %}
+            {{ 'HP 32 Display' in (state_attr('sensor.macbook_displays','Display Names') or []) }}
+          {% else %}
+            unknown (HA app closed)
+          {% endif %}
+        power_source: "{{ state_attr('sensor.macbook_internal_battery_state','Power Source State') }}"
+        at_home: "{{ is_state('device_tracker.macbook','home') }}"
+        connectivity_recent: "{{ states('binary_sensor.desk_macbook_recent_connectivity_desk') }}"
+        rationale: >-
+          On when external monitor is connected, on AC power, at home, and connectivity is either a
+          known home Wi-Fi SSID or Ethernet (current/recent). Returns unknown when HA app is closed
+          because display data may be stale.
+        fusion_strategy: "{{ ['display','ac_power','at_home','connectivity_recent'] | tojson }}"
+        last_updated: "{{ now().isoformat() }}"
+        subsystem: "hermes"
+        module: "presence"
+        type: "inference"
+        tier: "γ"
+        canonical_id: "desk_occupancy_inferred_γ"
+        role: "composite_occupancy"
+        upstream_sources: >-
+          {{ [
+            "sensor.macbook_displays",
+            "sensor.macbook_internal_battery_state",
+            "device_tracker.macbook",
+            "binary_sensor.desk_macbook_recent_connectivity_desk",
+            "binary_sensor.macbook_active"
+          ] | tojson }}
+        source_count: "5"
+        downstream_consumers: >-
+          {{ ["binary_sensor.desk_presence_beta"] | tojson }}
+        area_id: "desk"
+        floor_id: "sanctum"
+
+    # ───────────────────────────────────────────────────────────────────────────────
+    # ▶ Ensuite Shower Occupancy Composite Sensor ◀
+    - name: "Ensuite Shower Occupancy (Epsilon)"
+      unique_id: ensuite_shower_occupancy_epsilon
+      device_class: occupancy
+      state: >
+        {% set detected = is_state('binary_sensor.ensuite_shower_detected', 'on') %}
+        {% set recent = is_state('binary_sensor.ensuite_shower_recent', 'on') %}
+        {% set ended = is_state('binary_sensor.ensuite_shower_end_detected', 'on') %}
+        {{ (detected or recent) and not ended }}
+      attributes:
+        tier: "ε"
+        canonical_id: "ensuite_shower_occupancy_ε"
+        file: "/config/domain/templates/humidity_logic.yaml"
+        subsystem: "hermes"
+        module: "room_occupancy"
+        role: "composite_occupancy"
+        type: "inference"
+        composite_logic: "recent OR detected AND NOT end"
+        upstream_sources: >-
+          {{ ['binary_sensor.ensuite_shower_detected', 'binary_sensor.ensuite_shower_recent', 'binary_sensor.ensuite_shower_end_detected'] | tojson }}
+
+        source_count: "3"
+        last_updated: "2025-10-16"
+        area_id: "ensuite"
+        floor_id: "sanctum"

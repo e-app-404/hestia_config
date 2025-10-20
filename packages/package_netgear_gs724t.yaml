@@ -6,33 +6,6 @@
 # ⟫⟫ Home Assistant package for Netgear GS724T v3 (SNMP)
 # ══════════════════════════════════════════════════════════════════
 
-homeassistant:
-  customize:
-    sensor.gs724t_sys_name:
-      icon: mdi:ethernet
-    sensor.gs724t_sys_uptime_seconds:
-      icon: mdi:ethernet
-    sensor.gs724t_if_count:
-      icon: mdi:ethernet
-    sensor.gs724t_port1_oper_status_raw:
-      icon: mdi:ethernet
-    sensor.gs724t_port2_oper_status_raw:
-      icon: mdi:ethernet
-    sensor.gs724t_port1_in_octets:
-      icon: mdi:ethernet
-    sensor.gs724t_port1_out_octets:
-      icon: mdi:ethernet
-    sensor.gs724t_ifname_1:
-      icon: mdi:ethernet
-    sensor.gs724t_ifname_2:
-      icon: mdi:ethernet
-    sensor.gs724t_port1_in_Bps:
-      icon: mdi:ethernet
-    sensor.gs724t_port1_out_Bps:
-      icon: mdi:ethernet
-    sensor.gs724t_sys_name_v3:
-      icon: mdi:ethernet
-
 sensor:
   - platform: snmp
     name: gs724t_sys_name

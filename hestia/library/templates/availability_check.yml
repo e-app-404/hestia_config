@@ -1,0 +1,9 @@
+# Simple formula for ensuring the availability field integration_version_compatibility
+# avail([entity1, entity2, /]) -> expects a list
+# entity1: counts nr of entities
+# entity2: counts nr of not unknown, unavailable, empty or false
+# returns true if entity1 = entity2 
+
+availability: >-
+    {% from 'availability_template.jinja' import avail %}
+    {{- avail(['entity_1','entity_2']) | bool -}}

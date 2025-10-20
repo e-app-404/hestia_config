@@ -1,0 +1,181 @@
+---
+id: prompt_20251007_7c6d94
+slug: ai-optimized-library-restructure-promptset
+title: AI-Optimized Library Restructure Promptset
+date: '2025-10-07'
+tier: "α"
+domain: instructional
+persona: promachos
+status: candidate
+tags: []
+version: '1.0'
+source_path: library_restructure_ai_optimization.promptset
+author: Unknown
+related: []
+last_updated: '2025-10-09T01:44:26.672663'
+redaction_log: []
+---
+
+# AI-Optimized Library Restructure Promptset
+# Non-destructive transformation of HA documentation for AI consumption
+# Created: 2025-10-07
+
+promptset:
+  id: library_restructure_ai_optimization.promptset.v1
+  version: 1.0
+  created: "2025-10-07"
+  description: |
+    Transform existing Home Assistant documentation library into machine-consumable patterns
+    while preserving original content for human consultation. Analyzes current content
+    structure and proposes AI-friendly organization based on content types and consumption models.
+  persona: knowledge_architect
+  purpose: |
+    Restructure hestia/library content for optimal AI assistant consumption without
+    destructive modification. Create parallel AI-optimized structure alongside preserved
+    originals to support both human consultation and machine processing.
+  legacy_compatibility: true
+  schema_version: 1.0
+
+  # Artifacts & Bindings
+  artifacts:
+    required:
+      - path: /config/hestia/library/docs/playbooks/
+      - path: /config/hestia/library/docs/reference/
+      - path: /config/hestia/library/guides/
+      - path: /config/hestia/library/guides/ha_implementation/
+      - path: /config/hestia/library/templates/devtools/
+      - path: /config/hestia/library/templates/lovelace/
+      - path: /config/hestia/library/error_patterns.yml
+    optional:
+      - path: /config/hestia/config/system/hestia_workspace.conf
+      - path: /config/hestia/library/docs/ADR/
+  bindings:
+    protocols:
+      - content_preservation_first
+      - non_destructive_transformation
+      - dual_structure_maintenance
+    persona: knowledge_architect
+
+  retrieval_tags:
+    - library_restructure
+    - ai_optimization
+    - content_analysis
+    - documentation_architecture
+    - home_assistant_patterns
+
+  operational_modes:
+    - content_audit_mode
+    - structure_design_mode
+    - transformation_planning_mode
+
+  # Prompts Section
+  prompts:
+    - id: library_restructure.content_audit.v1
+      persona: knowledge_architect
+      label: "Content Audit — Library Analysis"
+      mode: content_audit_mode
+      protocols:
+        - content_preservation_first
+        - non_destructive_transformation
+      bindings:
+        - /config/hestia/library/docs/playbooks/
+        - /config/hestia/library/docs/reference/
+        - /config/hestia/library/guides/
+        - /config/hestia/library/guides/ha_implementation/
+        - /config/hestia/library/templates/devtools/
+        - /config/hestia/library/templates/lovelace/
+        - /config/hestia/library/error_patterns.yml
+      prompt: |
+        ## **Scope: AI-Optimized Library Restructure**
+
+        **Objective**: Transform existing documentation into machine-consumable patterns while preserving original content for human consultation.
+
+        **Approach**: Non-destructive dual-structure - maintain originals alongside AI-optimized versions in parallel folder hierarchies.
+
+        **Analysis Required**: Walk current content structure to determine optimal AI-friendly organization based on content types, patterns, and consumption models.
+
+        ### **Target Paths for Analysis & Restructure:**
+        ```
+        hestia/library/docs/playbooks/          # Operational procedures (11 files, mixed formats)
+        hestia/library/docs/reference/          # Technical references (4 files, static docs)
+        hestia/library/guides/                  # Implementation tutorials (22 files)
+        hestia/library/guides/ha_implementation/ # HA dev docs (17 files, systematic)
+        hestia/library/templates/devtools/      # Development templates
+        hestia/library/templates/lovelace/      # UI templates
+        hestia/library/error_patterns.yml      # Structured error knowledge
+        ```
+
+        ### **Deliverables:**
+        1. **Content audit** - Categorize existing content by type and AI-consumption suitability
+        2. **Proposed structure** - AI-optimized hierarchy alongside preserved originals
+        3. **Transformation plan** - Non-destructive migration strategy maintaining dual access
+
+        ### **Constraints:**
+        - ✅ **Preserve all originals** - No deletion or destructive modification
+        - ✅ **Parallel structure** - AI-optimized versions in separate folders
+        - ✅ **Content-driven design** - Structure follows actual content patterns found
+
+        **Ready to proceed with content analysis and structure proposal?**
+      phases:
+        - name: content_inventory
+          persona: knowledge_architect
+          instructions: |
+            Walk all target paths recursively. Categorize files by type, format, and content purpose.
+            Identify patterns, duplications, and AI-consumption readiness. Generate comprehensive
+            inventory with metadata for each content piece.
+          outputs:
+            - name: content_inventory.md
+              required: true
+              content: |
+                # Library Content Inventory
+                ## File Distribution by Path
+                ## Content Type Analysis
+                ## AI-Consumption Readiness Assessment
+                ## Duplication and Overlap Detection
+        - name: structure_design
+          persona: knowledge_architect
+          instructions: |
+            Based on content inventory, design AI-optimized parallel structure. Define folder
+            hierarchy, naming conventions, and transformation rules. Map original locations
+            to AI-optimized equivalents while preserving access to originals.
+          outputs:
+            - name: ai_optimized_structure.md
+              required: true
+              content: |
+                # AI-Optimized Library Structure
+                ## Proposed Hierarchy
+                ## Transformation Mapping
+                ## AI-Friendly Formats
+                ## Original Preservation Strategy
+        - name: migration_planning
+          persona: knowledge_architect  
+          instructions: |
+            Create detailed migration plan with specific commands, validation steps, and rollback
+            procedures. Include content transformation rules, quality checks, and success criteria.
+          outputs:
+            - name: migration_plan.md
+              required: true
+              content: |
+                # Non-Destructive Migration Plan
+                ## Transformation Steps
+                ## Validation Procedures
+                ## Rollback Strategy
+                ## Success Criteria
+
+  # Migration Guidance
+  migration:
+    strategy: |
+      This promptset transforms the library restructure request into a systematic multi-phase
+      workflow. Phase 1 analyzes current content, Phase 2 designs optimal structure, Phase 3
+      creates migration plan. All phases preserve original content while creating AI-optimized
+      parallel structure.
+
+  # Extensibility & Documentation
+  extensibility:
+    - Add content type analyzers for new file formats discovered
+    - Extend transformation rules for specific Home Assistant patterns
+    - Include validation tools for AI-consumption quality checks
+  documentation:
+    - Original request: AI-optimized library restructure with content preservation
+    - Target: Dual structure supporting both human and machine consumption
+    - Scope: 7 library paths containing HA documentation and templates

@@ -1,9 +1,0 @@
-# Boot Sequence
-
-1) Paste **00_BOOTLOADER_STRATEGOS.md** to open the session.
-2) Paste **01_CONTEXT_TIMELINE.md** to hydrate validated history.
-3) Paste **03_CONTRACT_PATCHES.diff** and instruct Strategos/Copilot to apply.
-4) Paste **04_RUNTIME_CHECKLIST.yaml** and **06_ASSERTIONS.yaml**; instruct to execute checks.
-5) Start with **05_START_PROMPT.txt** and proceed.
-
-Scope cut: **ignore all transcript content at and after page 26**; treat pre‑26 as canonical.

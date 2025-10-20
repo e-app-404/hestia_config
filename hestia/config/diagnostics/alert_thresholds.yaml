@@ -1,6 +1,7 @@
 ---
 # Diagnostics: Alert thresholds
 # Purpose: Centralized thresholds for alerts referenced by diagnostics probes.
+# to incorporate in hestia.toml
 name: alert_thresholds
 description: |
   Placeholder for alert thresholds used by diagnostics. Define severity levels,

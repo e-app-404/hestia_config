@@ -5,13 +5,13 @@
 automation:
   - alias: "MacBook HA Mount Telemetry Webhook"
     id: "macbook_ha_mount_telemetry_webhook"
-    trigger:
+    triggers:
       - trigger: webhook
         webhook_id: !secret macbook_hass_mount_webhook_id
         allowed_methods:
           - POST
         local_only: true
-    action:
+    actions:
       - event: macbook_mount_telemetry_received
         event_data:
           state: "{{ trigger.json.state }}"
@@ -27,16 +27,113 @@ automation:
           last_run: "{{ trigger.json.last_run }}"
           age_s: "{{ trigger.json.age_s }}"
           mount_details: "{{ trigger.json.mount_details }}"
+  # Alert automations
+  - alias: "MacBook HA Mount Down Alert"
+    id: "macbook_ha_mount_down_alert"
+    mode: restart
+    triggers:
+      - trigger: state
+        entity_id: binary_sensor.macbook_ha_mount
+        to: "off"
+        for: "00:05:00"
+    actions:
+      - action: persistent_notification.create
+        data:
+          title: "MacBook HA Mount DOWN"
+          message: >
+            MacBook Home Assistant mount has been offline for 5+ minutes.
+            Last status: {{ states('sensor.macbook_ha_mount_status') }}
+            Details: {{ state_attr('sensor.macbook_ha_mount_status', 'mount_details') }}
+          notification_id: "macbook_mount_down"
 
-# Template sensors triggered by webhook events
+  - alias: "MacBook HA Mount Recovery"
+    id: "macbook_ha_mount_recovery"
+    mode: restart
+    triggers:
+      - trigger: state
+        entity_id: binary_sensor.macbook_ha_mount
+        to: "on"
+    actions:
+      - action: persistent_notification.dismiss
+        data:
+          notification_id: "macbook_mount_down"
+      - action: persistent_notification.create
+        data:
+          title: "MacBook HA Mount RECOVERED"
+          message: >
+            MacBook Home Assistant mount is back online.
+            Mount details: {{ state_attr('sensor.macbook_ha_mount_status', 'mount_details') }}
+            Last run: {{ state_attr('sensor.macbook_ha_mount_status', 'last_run') }}
+          notification_id: "macbook_mount_recovery"
+# File sensor fallback for mount health
+# NOTE: The File integration must be created via the Home Assistant UI (Integrations -> Add Integration -> File).
+# The following shows the three UI fields you need to set when creating the File sensor (do NOT add a file platform sensor entry in YAML):
+#
+# - File path: /config/hestia/config/diagnostics/.last_mount_status.json
+# - Value template:
+# {{ value_json.health.summary | default('unknown') if value_json is defined else 'unknown' }}
+# {{ value_json.health.summary if value_json is defined and value_json.health is defined else 'unknown' }}
+# - Unit of measurement: (leave empty or use a short label, e.g. "status")
+#
+# Additional attributes (if you want them) can be created using a separate Template Sensor or in the UI templates:
+# Example Template Sensor (YAML or UI template) to surface attributes from the JSON file content:
+# template:
+#   - sensor:
+#       - name: "Macbook HASS Mount Health Attributes"
+#         state: "{{ (states('sensor.macbook_hass_mount_health') | default('unknown')) }}"
+#         attributes:
+#           mounted: "{{ (value_json_from_file.mount.mounted | default(false)) }}"
+#           write_ok: "{{ (value_json_from_file.mount.write_ok | default(false)) }}"
+#
+
 template:
+  - sensor:
+      - name: "Macbook HASS Mount Health Attributes"
+        unique_id: "macbook_hass_mount_health"
+        state: >
+          {{ states('sensor.macbook_hass_mount_health') | default('unknown') }}
+        attributes:
+          mounted: >
+            {{ (state_attr('sensor.macbook_hass_mount_health','mounted') | default(false)) }}
+          write_ok: >
+            {{ (state_attr('sensor.macbook_hass_mount_health','write_ok') | default(false)) }}
+          agent_state: >
+            {{ (state_attr('sensor.macbook_hass_mount_health','agent_state') | default('unknown')) }}
+          last_update: >
+            {{ (state_attr('sensor.macbook_hass_mount_health','last_update') | default('never')) }}
+          upstream_sources: >
+            {{ ['sensor.file_last_mount_status_json'] | tojson }}
+          downstream_consumers: >
+            {{ ['sensor.macbook_ha_mount_status', 'binary_sensor.macbook_ha_mount'] | tojson }}
+          file: "/config/packages/hestia/ha_mount_telemetry_webhook.yaml"
+          date: "2025-01-04"
+          subsystem: "hades"
+          integration: "macbook"
+          role: "diagnostics"
+          module: "hass mount"
+          type: "file sensor"
+          tier: "μ"
+          canonical_id: "macbook_hass_mount_health_μ"
+
+  # Template sensors triggered by webhook events
   - trigger:
-      - platform: event
+      - trigger: event
         event_type: macbook_mount_telemetry_received
+      # Periodic refresh to mark the sensor OFF if telemetry is stale
+      - trigger: time_pattern
+        minutes: "/2"
     sensor:
       - name: "MacBook HA Mount Status"
         unique_id: "macbook_ha_mount_status"
-        state: "{{ trigger.event.data.state }}"
+        state: >
+          {% if trigger.platform == 'event' %}
+            {{ trigger.event.data.state }}
+          {% else %}
+            {# On time ticks, compute freshness from last_run and force OFF if stale #}
+            {% set lr = as_datetime(state_attr('sensor.macbook_ha_mount_status','last_run')) %}
+            {% set age = (now() - lr).total_seconds() if lr else 999999 %}
+            {{ 'ON' if age < 300 else 'OFF' }}
+          {% endif %}
         icon: "mdi:harddisk-plus"
         attributes:
           mounted: "{{ trigger.event.data.mounted | bool }}"
@@ -51,75 +148,30 @@ template:
           last_run: "{{ trigger.event.data.last_run }}"
           age_s: "{{ trigger.event.data.age_s | int }}"
           mount_details: "{{ trigger.event.data.mount_details }}"
+          upstream_sources: >
+            {{ ['sensor.file_last_mount_status_json', 'sensor.macbook_hass_mount_health'] | tojson }}
 
   - trigger:
-      - platform: event
+      - trigger: event
         event_type: macbook_mount_telemetry_received
+      # Periodic refresh to mark the sensor OFF if telemetry is stale
+      - trigger: time_pattern
+        minutes: "/2"
     binary_sensor:
       - name: "MacBook HA Mount"
         unique_id: "macbook_ha_mount"
-        state: "{{ trigger.event.data.state == 'ON' }}"
+        state: >
+          {% if trigger.platform == 'event' %}
+            {{ trigger.event.data.state == 'ON' }}
+          {% else %}
+            {# On time ticks, compute freshness from last_run and force OFF if stale #}
+            {% set lr = as_datetime(state_attr('sensor.macbook_ha_mount_status','last_run')) %}
+            {% set age = (now() - lr).total_seconds() if lr else 999999 %}
+            {% set fresh = age < 300 %}
+            {{ fresh and states('sensor.macbook_ha_mount_status') == 'ON' }}
+          {% endif %}
         device_class: connectivity
         icon: "mdi:harddisk-plus"
-
-# Alert automations
-  - alias: "MacBook HA Mount Down Alert"
-    id: "macbook_ha_mount_down_alert"
-    mode: restart
-    trigger:
-      - platform: state
-        entity_id: binary_sensor.macbook_ha_mount
-        to: "off"
-        for: "00:05:00"
-    action:
-      - service: persistent_notification.create
-        data:
-          title: "MacBook HA Mount DOWN"
-          message: >
-            MacBook Home Assistant mount has been offline for 5+ minutes.
-            Last status: {{ states('sensor.macbook_ha_mount_status') }}
-            Details: {{ state_attr('sensor.macbook_ha_mount_status', 'mount_details') }}
-          notification_id: "macbook_mount_down"
-
-  - alias: "MacBook HA Mount Recovery"
-    id: "macbook_ha_mount_recovery"
-    mode: restart
-    trigger:
-      - platform: state
-        entity_id: binary_sensor.macbook_ha_mount
-        to: "on"
-    condition:
-      - condition: state
-        entity_id: binary_sensor.macbook_ha_mount
-        state: "off"
-        for: "00:01:00"
-    action:
-      - service: persistent_notification.dismiss
-        data:
-          notification_id: "macbook_mount_down"
-      - service: persistent_notification.create
-        data:
-          title: "MacBook HA Mount RECOVERED"
-          message: >
-            MacBook Home Assistant mount is back online.
-            Mount details: {{ state_attr('sensor.macbook_ha_mount_status', 'mount_details') }}
-            Last run: {{ state_attr('sensor.macbook_ha_mount_status', 'last_run') }}
-          notification_id: "macbook_mount_recovery"
-# File sensor fallback for mount health
-sensor:
-  - platform: file
-    name: "Macbook HASS Mount Health"
-    file_path: "/config/hestia/config/diagnostics/.last_mount_status.json"
-    value_template: "{{ value_json.health.summary | default('unknown') }}"
-    json_attributes_template: >
-      {
-        "mounted": {{ value_json.mount.mounted | default(false) }},
-        "write_ok": {{ value_json.mount.write_ok | default(false) }},
-        "config_present": {{ value_json.mount.config_present | default(false) }},
-        "keychain_ok": {{ value_json.authentication.keychain_ok | default(false) }},
-        "agent_loaded": {{ value_json.agent.loaded | default(false) }},
-        "agent_state": "{{ value_json.agent.state | default('unknown') }}",
-        "agent_exit_code": {{ value_json.agent.exit_code | default(-1) }},
-        "last_update": "{{ value_json.health.timestamp | default('never') }}",
-        "host": "{{ value_json.health.host | default('unknown') }}"
-      }
+        attributes:
+          upstream_sources: >
+            {{ ['sensor.macbook_ha_mount_status', 'sensor.macbook_hass_mount_health' ] | tojson }}

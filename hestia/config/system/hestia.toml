@@ -1,0 +1,398 @@
+# Hestia System Configuration
+# Configuration-driven parameters for workspace lifecycle, automation, and governance
+# Version: 1.0
+# Last Updated: 2025-10-15
+# Compliance: ADR-0018, ADR-0024, ADR-0027
+
+[meta]
+version = "1.0"
+last_updated = "2025-10-15T12:00:00Z"
+config_schema_version = "2025.10"
+description = "Hestia workspace lifecycle and automation configuration"
+maintainer = "hestia-core"
+compliance_adrs = ["ADR-0018", "ADR-0024", "ADR-0027"]
+
+[paths]
+config_root = "/config"
+workspace_root = "/config/hestia/workspace"
+adr_library = "/config/hestia/library/docs/ADR"
+tools_root = "/config/hestia/tools"
+meta_config = "/config/hestia/config/meta"
+
+[paths.workspace]
+trash = "/config/.trash"
+quarantine = "/config/.quarantine"
+artifacts = "/config/artifacts"
+archive = "/config/archive"
+reports = "/config/hestia/reports"
+vault = "/config/hestia/workspace/archive/vault"
+
+[paths.vault]
+backups = "/config/hestia/workspace/archive/vault/backups"
+bundles = "/config/hestia/workspace/archive/vault/bundles"
+deprecated = "/config/hestia/workspace/archive/vault/deprecated"
+
+[paths.gitignored]
+runtime_state = [".storage", ".cloud", ".venv*", "deps", "__pycache__", ".mypy_cache"]
+workspace_temp = [".trash", ".quarantine", "artifacts", "hestia/reports"]
+backups = ["*.bk.*", "*.bak*"]
+
+[backup]
+canonical_format = "{basename}.bk.{timestamp}Z"
+timestamp_format = "YYYYMMDDTHHMMSSZ"
+timestamp_timezone = "UTC"
+file_permissions = "0600"
+atomic_writes = true
+
+[backup.legacy_patterns]
+patterns = [
+    "*.bak",
+    "*.bak-*",
+    "*_backup*",
+    "*_restore*",
+    "*.perlbak"
+]
+migration_required = true
+grace_period_expires = "2025-10-27T00:00:00Z"
+
+[backup.retention]
+in_place_ttl_days = 7
+trash_ttl_days = 14
+vault_keep_latest_count = 5
+reports_ttl_days = 90
+
+[backup.locations]
+in_place = "same_directory"
+vault_long_term = "/config/hestia/workspace/archive/vault/backups"
+staging = "/config/.trash"
+
+[naming]
+backup_canonical = "{basename}.bk.{utc_timestamp}Z"
+report_batch = "{date}/{utc_timestamp}__{tool}__{label}"
+bundle_release = "{label}__{utc_timestamp}__{tag}.tgz"
+quarantine = "{reason}__{utc_timestamp}__{original_name}"
+
+[naming.timestamps]
+utc_compact = "YYYYMMDDTHHMMSSZ"
+utc_iso = "YYYY-MM-DDTHH:MM:SSZ"
+date_only = "YYYY-MM-DD"
+batch_date = "YYYYMMDD"
+
+[retention]
+in_place_backups = { ttl_days = 7, auto_prune = true, location = "same_directory" }
+trash = { ttl_days = 14, auto_prune = true, location = "/config/.trash" }
+vault_backups = { keep_latest = 5, auto_prune = true, location = "/config/hestia/workspace/archive/vault/backups" }
+reports = { ttl_days = 90, auto_prune = true, location = "/config/hestia/reports", keep_latest_per_tool = 3 }
+quarantine = { ttl_days = -1, auto_prune = false, location = "/config/.quarantine" }
+artifacts = { ttl_days = -1, auto_prune = false, location = "/config/artifacts", require_manifest = true }
+
+[automation]
+sweeper_enabled = true
+sweeper_schedule = "daily"
+sweeper_script = "/config/hestia/tools/backup_sweeper.py"
+pre_commit_hooks = true
+ci_enforcement = true
+
+[automation.sweeper]
+dry_run_default = false
+verbose_logging = true
+error_handling = "continue"
+backup_before_deletion = true
+log_location = "/config/hestia/reports/{date}/sweeper__{timestamp}__cleanup.log"
+log_rotation_count = 30
+workspace_scan_recursive = true
+scope_patterns = [
+    "/config/**/*.bak*",
+    "/config/**/*.bk.*",
+    "/config/**/*backup*",
+    "/config/**/*_restore*"
+]
+
+[automation.sweeper.performance]
+max_workers = 4
+batch_size = 100
+enable_parallel = true
+
+[automation.sweeper.components]
+base_path = "/config/hestia/tools/sweeper"
+index_scanner = "index.py"
+naming_standardizer = "naming_convention.py"
+file_processor = "sweeper.py"
+vault_manager = "vault_warden.py"
+report_generator = "sweeper_report.py"
+
+[automation.sweeper.naming_rules]
+scope_validation_required = true
+before_patterns = ["*.bak", "*.bak-*", "*_backup*", "*_restore*"]
+after_pattern = "{basename}.bk.{utc_timestamp}Z"
+guardrail_regex = "^[a-zA-Z0-9._-]+\\.(bak|backup|restore)"
+recursive_folder_paths = ["/config"]
+
+[automation.lineage_guardian]
+enabled = true
+schedule_cron = "0 3 * * *"
+verbose_logging = true
+log_location = "/config/hestia/workspace/operations/logs/{date}/lineage__{timestamp}__validation.log"
+tool_location = "/config/hestia/tools/lineage_guardian"
+
+[automation.lineage_guardian.scanner]
+template_directory = "/config/domain/templates/"
+recursive = true
+file_patterns = ["*.yaml", "*.yml"]
+exclude_patterns = ["*_test.yaml", "*_backup.yaml"]
+parse_macros = true
+macro_files = ["template.library.jinja"]
+
+[automation.lineage_guardian.validator]
+enforce_bidirectional = true
+allow_self_references = false
+require_source_count = true
+valid_domains = [
+    "binary_sensor","sensor","light","switch",
+    "automation","script","person","input_boolean","device_tracker"
+]
+
+[automation.lineage_guardian.corrector]
+backup_before_modify = true
+backup_suffix = ".lineage_backup"
+atomic_writes = true
+preserve_formatting = true
+update_timestamp_field = "last_updated"
+timestamp_format = "%Y-%m-%d"
+
+[automation.lineage_guardian.integrity]
+check_circular_dependencies = true
+check_orphaned_entities = true
+check_missing_references = true
+check_duplicate_ids = true
+health_score_threshold = 95.0
+
+[automation.lineage_guardian.safety]
+dry_run_default = true
+scope_validation_required = true
+allowed_paths = ["/config/domain/templates/"]
+max_file_size_mb = 5
+backup_retention_days = 30
+
+[validation]
+banned_prefixes = [
+    ".storage/",
+    ".cloud/",
+    ".venv",
+    "deps/",
+    "__pycache__/",
+    ".mypy_cache/",
+    "hestia/reports/",
+    ".trash/",
+    ".quarantine/",
+    "artifacts/"
+]
+
+[validation.extensions]
+backup_files = [".bk.*"]
+archive_blobs = [".tar.gz", ".tgz", ".zip", ".bundle"]
+config_files = [".yaml", ".yml", ".toml", ".json"]
+documentation = [".md", ".rst", ".txt"]
+
+[validation.ci]
+include_scan_enabled = true
+hard_fail_on_storage = true
+hard_fail_on_archives = true
+legacy_allowlist_path = "/config/.github/adr0018_allowlist.txt"
+grace_period_mode = true
+enforcement_after = "2025-10-27T00:00:00Z"
+
+[safety]
+atomic_writes = true
+backup_before_modify = true
+file_permissions = "0600"
+verify_checksums = true
+rollback_on_failure = true
+
+[reporting]
+enable_batch_logging = true
+report_location = "/config/hestia/reports"
+index_file = "/config/hestia/reports/_index.jsonl"
+metadata_required = true
+
+[reporting.structure]
+base_path = "/config/hestia/reports"
+date_structure = "{YYYY}/{MM}/{DD}"
+batch_structure = "{utc_timestamp}__{tool}__{label}"
+metadata_format = "frontmatter"
+
+[reporting.metadata]
+required_fields = [
+    "tool", "script", "created_at", "batch_id",
+    "input_path", "rows_processed", "content_hash"
+]
+timestamp_format = "iso8601_utc"
+
+[integration]
+git_hooks = true
+pre_commit_validation = true
+ci_cd_integration = true
+notification_system = false
+
+[integration.external]
+governance_index_trigger = true
+knowledge_base_update = true
+git_commit_hook = false
+api_endpoints = false
+
+[adr]
+library_path = "/config/hestia/library/docs/ADR"
+meta_config = "/config/hestia/config/meta/adr.toml"
+index_output = "/config/.workspace/governance_index.md"
+backup_on_update = true
+validate_frontmatter = true
+
+[adr.processing]
+frontmatter_processor = "/config/hestia/tools/adr/frontmatter_update.py"
+index_renderer = "/config/bin/adr-index.py"
+backup_format = "{basename}.bk.{utc_timestamp}Z"
+field_processors_path = "/config/hestia/tools/adr"
+
+[adr.validation]
+required_frontmatter = [
+    "id", "title", "slug", "status", "date",
+    "decision", "last_updated"
+]
+optional_frontmatter = ["related", "supersedes", "author", "tags"]
+status_transitions = [
+    "Draft → Proposed",
+    "Proposed → Accepted",
+    "Proposed → Rejected",
+    "Accepted → Superseded",
+    "Draft → Superseded"
+]
+
+[automation.meta_capture]
+# Dynamic discovery first: this file is authoritative.
+# Never hard-code absolute paths in code; resolve from these keys.
+repo_root       = "/config"                           # repo workspace root
+config_root     = "/config/hestia/config"             # canonical config root
+allowed_root    = "/config/hestia"                    # traversal boundary
+report_dir      = "/config/hestia/workspace/reports/meta_capture"
+index_dir       = "/config/hestia/workspace/.hestia/index"
+tool_version    = "1.0.0"
+
+schemas.intake  = "/config/hestia/tools/meta_capture/meta_capture_intake.schema.json"
+schemas.apu     = "/config/hestia/tools/meta_capture/meta_capture_apu.schema.json"
+secrets.rules   = "/config/hestia/tools/meta_capture/meta_capture_secret_rules.yaml"
+merge.policy    = "/config/hestia/tools/meta_capture/merge_policy.yaml"
+
+[automation.meta_capture.limits]
+max_files       = 100
+max_apus        = 2000
+oversize_bytes  = 5242880
+fail_level      = "red"   # "orange" or "red"
+
+[automation.meta_capture.paths]
+routing_template = "/config/hestia/tools/meta_capture/routing_suggestions_template.yaml"
+jsonl_index      = "/config/hestia/workspace/.hestia/index/meta_capture__index.jsonl"
+
+[automation.meta_capture.apply]
+use_write_broker = true
+write_broker_cmd = "/config/bin/write-broker"
+write_broker_mode = ""
+
+[automation.meta_capture.routing]
+"automation.meta_capture" = "/config/hestia/config/automation/meta_capture.meta.yaml"
+
+[automation.meta_capture.retention]
+reports_days = 14
+ledger_lines = 20000
+
+[automation.meta_capture.env_fallbacks]
+# Use only if fields are absent above; otherwise ignore .env
+repo_root_key    = "CONFIG_ROOT"
+config_root_key  = "HESTIA_CONFIG"
+allowed_root_key = "HESTIA_ADR"  # optional; keeps us inside /config/hestia
+
+[security]
+sensitive_file_permissions = "0600"
+backup_file_permissions = "0600"
+quarantine_permissions = "0700"
+vault_permissions = "0750"
+
+[security.sensitive_paths]
+vault = "/config/hestia/workspace/archive/vault"
+secrets = "/config/secrets*"
+storage = "/config/.storage"
+quarantine = "/config/.quarantine"
+
+[performance]
+max_file_size_mb = 100
+max_batch_size = 1000
+parallel_processing = true
+max_workers = 4
+memory_limit_mb = 512
+
+[performance.thresholds]
+large_file_warning_mb = 10
+batch_size_warning = 500
+processing_time_warning_seconds = 30
+disk_usage_warning_percent = 85
+
+[error_handling]
+default_mode = "continue"
+backup_on_error = true
+detailed_logging = true
+rollback_on_critical = true
+
+[error_handling.categories]
+file_not_found = { mode = "warn", continue = true }
+permission_denied = { mode = "stop", backup = true }
+disk_full = { mode = "stop", cleanup = true }
+corruption_detected = { mode = "quarantine", notify = true }
+
+[maintenance]
+daily_sweeper = { enabled = true, time = "02:00", timezone = "UTC" }
+weekly_reports = { enabled = true, day = "Sunday", time = "01:00" }
+monthly_vault_audit = { enabled = true, day = 1, time = "00:30" }
+quarterly_index_rebuild = { enabled = true, month = [1, 4, 7, 10], day = 15 }
+
+[maintenance.operations]
+prune_expired_backups = true
+cleanup_trash = true
+rotate_reports = true
+update_indexes = true
+verify_vault_integrity = true
+generate_health_report = true
+
+[features]
+experimental_parallel_processing = false
+beta_api_endpoints = false
+advanced_deduplication = false
+compressed_backups = false
+encrypted_vault = false
+
+[debug]
+verbose_logging = false
+dry_run_mode = false
+trace_file_operations = false
+preserve_temp_files = false
+debug_output_path = "/config/.trash/debug"
+
+[environment]
+production = true
+ci_cd = false
+development = false
+testing = false
+
+[environment.overrides]
+ci_cd_overrides = { interactive = false, strict_validation = true, fail_fast = true }
+dev_overrides = { verbose_logging = true, relaxed_validation = true, dry_run_default = true }
+
+[compatibility]
+min_python_version = "3.10"
+config_format_version = "1.0"
+adr_format_version = "2025.10"
+last_migration = "2025-10-15"
+
+[deprecated]
+old_backup_formats = ["*.bak", "*.bak-*"]
+legacy_paths = ["/tmp", "~/hass", "/n/ha", "/private/var/ha_real"]
+deprecated_since = "2025-10-15"
+removal_target = "2025-12-01"

@@ -1,0 +1,332 @@
+---
+id: ADR-0027
+title: "File Writing Governance and Path Enforcement System"
+slug: file-writing-governance-and-path-enforcement-system
+status: Accepted
+related:
+- ADR-0024
+- ADR-0009
+- ADR-0018
+- ADR-0008
+supersedes: []
+last_updated: '2025-10-15'
+date: 2025-10-12
+decision: 'Implement a comprehensive three-layer file writing governance system:'
+author: hestia-operator
+tags:
+- governance
+- file-operations
+- path-enforcement
+- audit-trail
+- write-verification
+- atomic-operations
+- backup-strategy
+workspace_allocation:
+  tools: /config/bin/write-broker, /config/.git/hooks/pre-commit
+  configuration: /config/.vscode/settings.json, /config/.vscode/tasks.json
+  logs: /config/hestia/workspace/operations/logs/write_broker_*.json
+  backups: '*.wbak.YYYYMMDDTHHMMSSZ pattern throughout /config'
+---
+
+# ADR-0027: File Writing Governance and Path Enforcement System
+
+## STATUS_BLOCK
+
+```yaml
+status: Accepted
+implementation_date: 2025-10-12
+governance_level: Critical
+enforcement: Automated
+rollback_complexity: Low
+```
+
+## TOKEN_BLOCK
+```yaml
+accepted_tokens:
+  - WRITE_BROKER_GOVERNANCE
+  - PATH_ENFORCEMENT_SYSTEM
+  - ATOMIC_FILE_OPERATIONS
+  - AUDIT_TRAIL_COMPLETENESS
+  - SILENT_FAILURE_ELIMINATION
+
+requirements:
+  - file_operations_must_use_write_broker: true
+  - path_validation_required: "/config only (ADR-0024 canonical)"
+  - sha256_verification_mandatory: true
+  - backup_creation_required: ".wbak.timestamp pattern"
+  - audit_logging_required: "JSON format in operations/logs/"
+
+produces:
+  - verified_file_modifications: "SHA-256 before/after verification"
+  - timestamped_backups: "Every change creates rollback point"
+  - audit_trail_logs: "Complete operation history with diffs"
+  - path_enforcement: "Prevents edits outside canonical locations"
+  - atomic_operations: "No partial writes or inconsistent states"
+
+drift_codes:
+  - WRITE_TOOL_BYPASS: "Direct file editing tools used instead of write-broker"
+  - PATH_VIOLATION: "Attempts to write outside canonical paths"
+  - SILENT_FAILURE: "File operations reporting success without actual changes"
+  - MISSING_AUDIT_TRAIL: "File modifications without proper logging"
+  - BACKUP_MISSING: "Changes made without timestamped backup creation"
+```
+
+## Problem Statement
+
+The Home Assistant configuration management system has suffered from multiple file writing reliability issues:
+
+1. **Silent Failure Epidemic**: File editing tools (`replace_string_in_file`, `multi_replace_string_in_file`) consistently report success while making no actual changes, leading to operational confusion and debugging overhead.
+
+2. **Path Governance Violations**: Accidental edits to non-canonical paths (`/System/Volumes/Data/homeassistant`, `/Volumes/HA`) instead of the canonical `/config` mount, violating ADR-0024 requirements.
+
+3. **Audit Trail Gaps**: File modifications occur without proper logging, making it impossible to track changes, verify operations, or establish accountability.
+
+4. **Recovery Complexity**: No systematic backup strategy means file corruption or incorrect changes require manual intervention and potential data loss.
+
+5. **Tool Fragmentation**: Multiple editing approaches (direct tools, terminal commands, manual edits) create inconsistent governance and verification patterns.
+
+## Decision
+
+Implement a comprehensive three-layer file writing governance system:
+
+### Layer A: Governance & Guardrails
+
+1. **VS Code Read-Only Protection**
+   - Mark non-canonical paths as read-only via `.vscode/settings.json`
+   - Prevent accidental UI edits to `/System/Volumes/Data/homeassistant/**` and `/Volumes/HA/**`
+   - Enable `files.readonlyFromPermissions` for additional protection
+
+2. **Git Pre-Commit Path Enforcement**
+   - Block commits that reference non-canonical path segments or symlinks escaping `/config`
+   - Automated rejection with clear error messages
+   - Zero-configuration enforcement for all repository operations
+
+3. **Task Naming Clarity**
+   - Maintain clear separation between "Path Health" and "HA YAML validation"
+   - Prevent confusion between different validation types
+   - Explicit task descriptions and dependencies
+
+### Layer B: Write Broker - Single Source of Truth
+
+Implement `/config/bin/write-broker` as the mandatory file editing tool with:
+
+**Core Features (mandatory):**
+- **Path Enforcement**: Only allows writes under `/config` or `/System/Volumes/Data/homeassistant`
+- **SHA-256 Verification**: Prevents silent failures with before/after hash comparison
+- **Atomic + Durable**: Temp file write, `fsync`, then `mv` on same filesystem
+- **Concurrency Lock**: Per-target advisory lock to avoid concurrent edits
+- **Audit Logging**: JSON logs in `/config/hestia/workspace/operations/logs/`
+- **Backup Creation**: Every change creates `.wbak.timestamp` files
+- **Diff Generation**: Unified diffs track exact changes
+
+**Operations Supported:**
+- `replace`: Regex-based search and replace with Perl robustness
+- `patch`: Apply unified diff patches with rollback on failure
+- `rewrite`: Complete file replacement from source with verification
+
+**Integration Features:**
+- Optional git commit integration with custom messages
+- macOS compatibility with symbolic link structure handling
+- Comprehensive error reporting with specific exit codes
+
+### Layer C: Discoverability & Automation
+
+1. **VS Code Task Integration**
+   - "Strategos: Replace (write-broker)" task with interactive prompts
+   - Command Palette accessibility
+   - Built-in input validation and confirmation
+
+2. **Home Assistant UI Compatibility**
+   - Ensure `.storage/automation` exists to prevent UI save failures
+   - Maintain proper storage format for HA component interaction
+
+## Implementation Details
+
+### Write Broker Architecture
+
+```bash
+/config/bin/write-broker replace --file <path> --search <regex> --replace <string> [--commit] [--msg <message>]
+```
+
+**Path Validation Logic:**
+```bash
+# Accept both canonical and resolved paths
+if [[ "$real" != /config/* ]] && [[ "$real" != /System/Volumes/Data/homeassistant/* ]]; then
+  echo "ERR: file not under /config (or canonical equivalent)"
+  exit 65
+fi
+```
+
+**Verification Pattern:**
+```bash
+b4cs="$(md5sum "$real" | awk '{print $1}')"
+# ... perform operation ...
+aftcs="$(md5sum "$real" | awk '{print $1}')"
+echo "OK: wrote $real  bytes:${b4sz}->${aftsz}  md5:${b4cs}->${aftcs}"
+```
+
+**Audit Log Format:**
+```json
+{
+  "ts": "20251012T074103Z",
+  "file": "/config/test_broker.txt",
+  "before_bytes": 20,
+  "after_bytes": 19,
+  "before_md5": "639bed94445f4c83c5f20497e22c6601",
+  "after_md5": "950d1323a5c655b15eab8ecac49e5675",
+  "backup": "/config/test_broker.txt.wbak.20251012T074103Z"
+}
+```
+
+### VS Code Integration
+
+**Settings Protection:**
+```json
+{
+  "files.readonlyInclude": {
+    "/System/Volumes/Data/homeassistant/**": true,
+    "/Volumes/HA/**": true
+  },
+  "files.readonlyFromPermissions": true
+}
+```
+
+**Task Definition:**
+```json
+{
+  "label": "Strategos: Replace (write-broker)",
+  "type": "shell",
+  "command": "/config/bin/write-broker",
+  "args": ["replace","--file","${input:file}","--search","${input:search}","--replace","${input:replace}","--commit","--msg","${input:msg}"],
+  "options": { "cwd": "/config" }
+}
+```
+
+### Git Hook Protection
+
+```bash
+#!/usr/bin/env bash
+set -euo pipefail
+bad=$(git diff --cached --name-only -z | tr '\0' '\n' | grep -E '^(/System/Volumes/Data/homeassistant|Volumes/HA)/' || true)
+[ -z "$bad" ] || { echo "Blocked non-canonical paths:"; echo "$bad"; exit 1; }
+```
+
+## Acceptance Criteria
+
+1. **Path Enforcement**: Attempts to write outside `/config` fail with error code 65
+2. **Edit Proof**: Sample replacement shows different before/after MD5 with JSON audit log  
+3. **Copilot Compliance**: Tool outputs broker stdout and log path for verification
+4. **UI Saves**: UI can save automations (`.storage/automation` exists)
+5. **Read-Only Guard**: VS Code prevents edits to non-canonical paths
+
+**Validation Results:**
+```bash
+# Path enforcement test
+/config/bin/write-broker replace --file /tmp/outside_config.txt --search "test" --replace "blocked"
+# Result: ERR: file not under /config (or canonical equivalent) (exit code 65)
+
+# Write verification test  
+OK: wrote /config/test_broker.txt  bytes:20->19  md5:639bed94445f4c83c5f20497e22c6601->950d1323a5c655b15eab8ecac49e5675
+```
+
+## Consequences
+
+### Positive
+
+1. **Silent Failure Elimination**: MD5 verification makes "success with no change" impossible
+2. **Complete Audit Trail**: Every modification logged with before/after state and timestamps
+3. **Path Governance Enforcement**: Impossible to accidentally edit non-canonical paths
+4. **Atomic Operations**: No partial writes or inconsistent file states
+5. **Systematic Rollback**: Every change creates timestamped backup for easy recovery
+6. **Unified Interface**: Single tool replaces multiple unreliable editing approaches
+
+### Negative
+
+1. **Learning Curve**: Operators must adapt to mandatory write-broker usage
+2. **Performance Overhead**: MD5 calculation and backup creation add latency
+3. **Disk Usage**: Backup files accumulate over time (mitigated by ADR-0018 lifecycle policies)
+4. **Tool Dependency**: Critical path operations depend on write-broker availability
+
+### Neutral
+
+1. **Workflow Change**: Existing file editing patterns require migration to write-broker
+2. **Log Volume**: Audit logs increase storage requirements in operations workspace
+3. **Git Integration**: Optional automatic commits may increase repository size
+
+## Compliance and Enforcement
+
+### ADR-0024 Alignment
+- Enforces canonical `/config` path usage
+- Prevents drift to deprecated mount points
+- Supports macOS symbolic link structure transparently
+
+### ADR-0018 Integration  
+- Backup files follow `.wbak.YYYYMMDDTHHMMSSZ` pattern
+- Audit logs stored in `/config/hestia/workspace/operations/logs/`
+- Lifecycle policies apply to generated artifacts
+
+### ADR-0009 Governance
+- Proper YAML frontmatter with all required fields
+- TOKEN_BLOCK sections enable automated validation
+- Machine-parseable structure for tooling integration
+
+## Rollback Strategy
+
+**Individual File Rollback:**
+```bash
+mv /path/to/file.wbak.20251012T074103Z /path/to/file
+```
+
+**System Rollback:**
+1. Disable write-broker: `chmod -x /config/bin/write-broker`
+2. Remove VS Code protection: `rm /config/.vscode/settings.json`
+3. Disable git hook: `chmod -x /config/.git/hooks/pre-commit`
+4. Restore original editing workflows
+
+**Risk Assessment:** Low - All components can be individually disabled without affecting Home Assistant core functionality.
+
+## Monitoring and Maintenance
+
+### Success Metrics
+- Zero silent file editing failures
+- 100% audit trail coverage for configuration changes  
+- Zero path governance violations
+- Complete rollback capability for all modifications
+
+### Monitoring Commands
+```bash
+# Check for write-broker compliance
+find /config -name "*.wbak.*" | wc -l
+
+# Verify audit trail completeness
+ls -la /config/hestia/workspace/operations/logs/write_broker_*.json | tail -5
+
+# Test path enforcement
+/config/bin/write-broker replace --file /tmp/test --search "x" --replace "y" 2>&1 | grep -q "ERR: file not under /config"
+```
+
+### Maintenance Schedule
+- **Weekly**: Review audit log volume and backup accumulation
+- **Monthly**: Validate path enforcement and rollback capabilities
+- **Quarterly**: Assess tool performance and operator compliance
+
+## Related ADRs
+
+- **ADR-0024**: Canonical Config Path - Provides foundational path governance requirements
+- **ADR-0009**: ADR Governance Formatting - Defines structure and TOKEN_BLOCK requirements  
+- **ADR-0018**: Workspace Lifecycle Policy - Defines backup patterns and log management
+- **ADR-0008**: Normalization and Determinism Rules - Establishes file consistency standards
+
+## Implementation Timeline
+
+- **Phase 1** (Complete): Core write-broker implementation with path enforcement
+- **Phase 2** (Complete): VS Code integration and read-only protection
+- **Phase 3** (Complete): Git hook enforcement and audit logging
+- **Phase 4** (In Progress): Operator training and workflow migration
+- **Phase 5** (Planned): Automated compliance monitoring and reporting
+
+---
+
+**Acceptance Date**: 2025-10-12  
+**Implementation Status**: Complete  
+**Next Review**: 2025-11-12 (30-day validation period)

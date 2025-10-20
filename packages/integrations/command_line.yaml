@@ -1,7 +1,7 @@
 # ════════════════════════════════════════════════════════════════
 # ▶ INTEGRATION: Command Line Sensors ◀
 # File: /config/domain/shell_commands/git_push_logger.sh
-# Loader: packages  •  Domain: integration  •  Last Updated: 2025-08-06
+# Loader: packages  •  Domain: command_line  •  Last Updated: 2025-08-06
 # ════════════════════════════════════════════════════════════════
 
 command_line:
@@ -71,8 +71,6 @@ command_line:
       command_timeout: 30
       value_template: "{{ value | default('unknown') | trim }}"
 
-  # Ensure no duplicate unique_id values exist for sensors and binary_sensors.
-
   # ──  Debugging (Cloudflare Tunnel) ─────────────────────────────
 
   - binary_sensor:
@@ -97,11 +95,11 @@ command_line:
       command: >-
         bash -lc '
           set -eo pipefail
-          curl -s -o /dev/null -w "%{http_code}" https://plex.xplab.io/identity | tr -d "\n"
+          curl -s -o /dev/null -w "%{http_code}" https://plex.xplab.io/identity 2>/dev/null | tr -d "\n" || echo "000"
         '
       scan_interval: 60
       command_timeout: 30
-      value_template: "{{ value | default('unknown') | trim }}"
+      value_template: "{{ value | default('000') | trim }}"
 
   - sensor:
       name: "Plex HTTPS TTFB ms"
@@ -110,12 +108,12 @@ command_line:
       command: >-
         bash -lc '
           set -eo pipefail
-          T=$(curl -o /dev/null -s -w "%{time_starttransfer}" https://plex.xplab.io/identity || echo 0);
+          T=$(curl -o /dev/null -s -w "%{time_starttransfer}" https://plex.xplab.io/identity 2>/dev/null || echo 0);
           awk -v t="$T" "BEGIN{printf \"%d\", t*1000}" | tr -d "\n"
         '
       scan_interval: 60
       command_timeout: 30
-      value_template: "{{ value | default('unknown') | trim }}"
+      value_template: "{{ value | default('0') | trim }}"
 
   # ── Tailscale (direct private WAN) ─────────────────────────────
 

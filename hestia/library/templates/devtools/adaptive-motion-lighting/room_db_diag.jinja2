@@ -1,0 +1,158 @@
+{#
+  Room-DB status snapshot (Developer Tools Template)
+  - Summarizes endpoint health (compat, app path, appdaemon variants) and SQL status
+  - Resilient to missing/unknown sensors; safe to paste in HA Developer Tools → Template
+
+  Entity IDs assumed (some may not exist; we probe alternatives):
+    - sensor.appdaemon_health_raw                                     # compat health (/api/app/room_db_updater/room_db/health)
+    - sensor.appdaemon_health_app_path                                # app path health (/api/app/room_db_updater/health)
+    - sensor.appdaemon_health_appdaemon_path                          # appdaemon health (/api/appdaemon/room_db/health)
+    - sensor.appdaemon_health_appdaemon_app_name_path                 # appdaemon health (/api/appdaemon/room_db_updater/health)
+    - sensor.appdaemon_test_raw_app_path                              # app path test  (/api/app/room_db_updater/test)
+    - sensor.appdaemon_test_raw_appdaemon_path                        # appdaemon test (/api/appdaemon/room_db_updater/test)
+    - sensor.room_configs_motion_lighting, sensor.room_configs_motion_lighting_dict
+    - sensor.room_configs_vacuum_control,  sensor.room_configs_vacuum_control_dict
+    - sensor.rooms_needing_cleaning
+#}
+
+{%- set now_iso = now().isoformat() -%}
+
+{%- macro exists(eid) -%}
+  {{- eid in states -}}
+{%- endmacro -%}
+
+{%- macro first_existing(eids) -%}
+  {%- for e in eids -%}
+    {%- if e in states -%}{{ e }}{%- break -%}{%- endif -%}
+  {%- endfor -%}
+{%- endmacro -%}
+
+{%- macro valid_state(eid) -%}
+  {%- if not eid or eid not in states -%}False{%- else -%}
+    {%- set raw = states(eid) -%}
+    {{ (raw not in ['unknown','unavailable','']) | string }}
+  {%- endif -%}
+{%- endmacro -%}
+
+{%- macro s(eid) -%}
+  {%- if eid and eid in states -%}
+    {%- if valid_state(eid) == 'True' -%}
+      {{ states(eid) }}
+    {%- else -%}
+      {{ 'missing' if states(eid) == 'unknown' else 'unavailable' }}
+    {%- endif -%}
+  {%- else -%}
+    missing
+  {%- endif -%}
+{%- endmacro -%}
+
+{%- macro a(eid, key) -%}
+  {%- if eid and eid in states -%}
+    {%- set v = state_attr(eid, key) -%}
+    {{ v if v is not none else '' }}
+  {%- else -%}
+    {{ '' }}
+  {%- endif -%}
+{%- endmacro -%}
+
+{%- macro payload_obj(eid) -%}
+  {%- if not eid or eid not in states -%}{{ {} }}{%- else -%}
+    {%- set raw = state_attr(eid, 'payload') -%}
+    {%- if raw is string -%}
+      {%- if raw|trim|length > 0 -%}{{ (raw | from_json) }}{%- else -%}{{ {} }}{%- endif -%}
+    {%- elif raw is not none -%}{{ raw }}{%- else -%}{{ {} }}{%- endif -%}
+  {%- endif -%}
+{%- endmacro -%}
+
+{%- macro payload_count(eid) -%}
+  {%- set obj = payload_obj(eid) -%}
+  {%- if obj is mapping -%}{{ obj | length }}{% elif obj is iterable %}{{ obj | length }}{% else %}0{%- endif -%}
+{%- endmacro -%}
+
+{# Entity candidates #}
+{%- set eid_compat_health = first_existing(['sensor.appdaemon_health_raw']) -%}
+{%- set eid_compat_test   = first_existing([]) -%} {# no compat test sensor is defined #}
+{%- set eid_app_health    = first_existing(['sensor.appdaemon_health_app_path']) -%}
+{%- set eid_app_test      = first_existing(['sensor.appdaemon_test_raw_app_path']) -%}
+{%- set eid_adm_health    = first_existing(['sensor.appdaemon_health_appdaemon_app_name_path','sensor.appdaemon_health_appdaemon_path']) -%}
+{%- set eid_adm_test      = first_existing(['sensor.appdaemon_test_raw_appdaemon_path']) -%}
+
+{%- set eid_sql_motion    = first_existing(['sensor.room_configs_motion_lighting']) -%}
+{%- set eid_sql_motion_d  = first_existing(['sensor.room_configs_motion_lighting_dict']) -%}
+{%- set eid_sql_vac       = first_existing(['sensor.room_configs_vacuum_control']) -%}
+{%- set eid_sql_vac_d     = first_existing(['sensor.room_configs_vacuum_control_dict']) -%}
+{%- set eid_sql_clean     = first_existing(['sensor.rooms_needing_cleaning']) -%}
+
+{%- set status = {
+  'timestamp': now_iso,
+
+  'endpoints': {
+    'compat': {
+      'health': {
+        'present': exists(eid_compat_health),
+        'state': s(eid_compat_health),
+        'attr_status': a(eid_compat_health, 'status'),
+        'message': a(eid_compat_health, 'message'),
+        'last_changed': (states[eid_compat_health].last_changed if eid_compat_health in states else none)
+      },
+      'test': {
+        'present': exists(eid_compat_test),
+        'state': s(eid_compat_test),
+        'attr_status': a(eid_compat_test, 'status'),
+        'message': a(eid_compat_test, 'message'),
+        'last_changed': (states[eid_compat_test].last_changed if eid_compat_test in states else none)
+      }
+    },
+    'app_path': {
+      'health': {
+        'present': exists(eid_app_health),
+        'state': s(eid_app_health),
+        'attr_status': a(eid_app_health, 'status'),
+        'message': a(eid_app_health, 'message'),
+        'last_changed': (states[eid_app_health].last_changed if eid_app_health in states else none)
+      },
+      'test': {
+        'present': exists(eid_app_test),
+        'state': s(eid_app_test),
+        'attr_status': a(eid_app_test, 'status'),
+        'message': a(eid_app_test, 'message'),
+        'last_changed': (states[eid_app_test].last_changed if eid_app_test in states else none)
+      }
+    },
+    'appdaemon_path': {
+      'health': {
+        'present': exists(eid_adm_health),
+        'state': s(eid_adm_health),
+        'attr_status': a(eid_adm_health, 'status'),
+        'message': a(eid_adm_health, 'message'),
+        'last_changed': (states[eid_adm_health].last_changed if eid_adm_health in states else none)
+      },
+      'test': {
+        'present': exists(eid_adm_test),
+        'state': s(eid_adm_test),
+        'attr_status': a(eid_adm_test, 'status'),
+        'message': a(eid_adm_test, 'message'),
+        'last_changed': (states[eid_adm_test].last_changed if eid_adm_test in states else none)
+      }
+    }
+  },
+
+  'sql': {
+    'motion_lighting': {
+      'state': s(eid_sql_motion),
+      'payload_keys': payload_count(eid_sql_motion),
+      'dict_state': s(eid_sql_motion_d)
+    },
+    'vacuum_control': {
+      'state': s(eid_sql_vac),
+      'payload_keys': payload_count(eid_sql_vac),
+      'dict_state': s(eid_sql_vac_d)
+    },
+    'rooms_needing_cleaning': {
+      'state': s(eid_sql_clean),
+      'count': (states(eid_sql_clean) | int(0) if valid_state(eid_sql_clean) == 'True' else 0)
+    }
+  }
+} -%}
+
+{{ status | tojson(indent=2) }}

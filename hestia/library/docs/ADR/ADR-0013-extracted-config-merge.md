@@ -1,44 +1,56 @@
 ---
 id: ADR-0013
-title: "Source→Core Config Merge via extracted_config (Meta-Capture Pipeline)"
-date: 2025-09-20
-status: Proposed
-author:
-  - "Platform / Home-Ops"
-  - "GitHub Copilot (assisted)"
-  - "Strategos"
-related: ["ADR-0007", "ADR-0008", "ADR-0009", "ADR-0010", "ADR-0016"]
+title: Source→Core Config Merge via extracted_config (Meta-Capture Pipeline)
+slug: sourcecore-config-merge-via-extracted_config-meta-capture-pipeline
+status: Accepted
+related:
+- ADR-0007
+- ADR-0008
+- ADR-0009
+- ADR-0010
+- ADR-0016
 supersedes: []
-last_updated: 2025-09-30
-tags: ["meta-capture", "configuration", "merge", "governance", "secrets"]
+last_updated: '2025-10-15'
+date: 2025-09-20
+decision: Adopt a deterministic, token-guided merge pipeline for captured config snippets
+  into canonical core configuration, ensuring idempotency, auditability, and safety.
+author:
+- Platform / Home-Ops
+- GitHub Copilot (assisted)
+- Strategos
+tags:
+- meta-capture
+- configuration
+- merge
+- governance
+- secrets
 acceptance_criteria:
-  - "Idempotent merge: same inputs ⇒ byte-identical outputs"
-  - "Stable ordering: maps sorted consistently; lists deterministic"
-  - "Artifacts: human-readable diff + rollback bundle emitted"
-conformance:
-  - "Must comply with ADR-0008 determinism & manifest rules"
+- 'Idempotent merge: same inputs ⇒ byte-identical outputs'
+- 'Stable ordering: maps sorted consistently; lists deterministic'
+- 'Artifacts: human-readable diff + rollback bundle emitted'
 ---
 
 # ADR-0013 — Source→Core Config Merge via `extracted_config` (Meta-Capture Pipeline)
 
 ## Table of Contents
-1. Context  
-2. Decision  
-3. Scope  
-4. Methodology  
-5. Functional & Non-Functional Requirements  
-6. Emitted Tokens (Governance Annotations)  
-7. Expected I/O  
-8. Merge Rules (Deterministic)  
-9. Tooling & Runtime Behavior (incl. Copilot)  
-10. Security & Compliance  
-11. Rollout Plan  
-12. Consequences  
-13. Examples  
-14. Acceptance Criteria  
-15. Enforcement & Compliance with ADR-0009  
-16. Open Questions  
-17. TOKEN_BLOCK
+
+1. [Context](#1-context)
+2. [Decision](#2-decision)
+3. [Scope](#3-scope)
+4. [Methodology](#4-methodology)
+5. [Functional & Non-Functional Requirements](#5-functional--non-functional-requirements)
+6. [Emitted Tokens (Governance Annotations)](#6-emitted-tokens-governance-annotations)
+7. [Expected I/O](#7-expected-io)
+8. [Merge Rules (Deterministic)](#8-merge-rules-deterministic)
+9. [Tooling & Runtime Behavior (incl. Copilot)](#9-tooling--runtime-behavior-incl-github-copilot)
+10. [Security & Compliance](#10-security--compliance)
+11. [Rollout Plan](#11-rollout-plan)
+12. [Consequences](#12-consequences)
+13. [Examples](#13-examples)
+14. [Acceptance Criteria](#14-acceptance-criteria)
+15. [Enforcement & Compliance with ADR-0009](#15-enforcement--compliance-with-adr-0009)
+16. [Open Questions](#16-open-questions)
+17. [TOKEN_BLOCK](#17-token_block)
 
 ## 1) Context
 
@@ -80,14 +92,16 @@ workspace/operations/audits/ # before/after snapshots, diffs, changelogs
 
 ### 4.2 Pipeline Phases
 
-1) **Intake & Sanity**
+1. **Intake & Sanity**
+
 - Drop `*.yaml` in `workspace/staging/` as `{ISO8601}-{source}.yaml`.
 - Validate minimal schema:
   - MUST contain `.extracted_config` (map).
   - `.transient_state`, `.relationships`, `.suggested_commands`, `.notes` optional.
 - Normalize quoting and map ordering for stable diffs.
 
-2) **Routing**
+2. **Routing**
+
 - Split `extracted_config` into **domain files**:
   - `.home_assistant` → `config/core/homeassistant.yaml`
   - `.mqtt` → `config/core/mqtt.yaml`
@@ -96,26 +110,31 @@ workspace/operations/audits/ # before/after snapshots, diffs, changelogs
   - `.devices` → `config/core/devices.yaml`
   - `.repo` → `config/core/repo.yaml`
 
-3) **Merge (Keyed Upsert)**
+3. **Merge (Keyed Upsert)**
+
 - **Maps:** Shallow merge; incoming **non-empty** wins unless target key is **pinned**.
 - **Sequences of objects:** Treat as maps keyed by stable field (`slug`, `id`, `device_ieee`), then upsert.
 - **Ephemeral** fields (timestamps, RSSI, last_seen) **ignored** unless whitelisted.
 
-4) **Stability & Safety Guards**
+4. **Stability & Safety Guards**
+
 - Serial ports: rewrite `/dev/ttyUSB*` → `/dev/serial/by-id/...` when known.
 - Secrets: values matching `/password|token|key|secret/i` or `x-governance.secret: true` are moved to `secrets.yaml` and referenced via `!secret`.
 - Respect governance tokens (see §6).
 
-5) **Audit & Gate**
+5. **Audit & Gate**
+
 - Emit unified diff + human summary into `workspace/operations/audits/`.
 - CI checks: YAML validity, schema, secrets leakage, pinned-key integrity, shellcheck for scripts.
 
-6) **Write-Back (Optional)**
+6. **Write-Back (Optional)**
+
 - If canonical files are deployment sources, copy to service paths and restart via existing HA commands under an explicit `DEPLOY_WRITEBACK=1` flag.
 
 ## 5) Functional & Non-Functional Requirements
 
 ### Functional
+
 - **R-F1**: Accept any compliant meta-capture YAML; reject otherwise with actionable error.
 - **R-F2**: Deterministic routing and merge per domain.
 - **R-F3**: Keyed upsert for lists using stable identifiers.
@@ -124,6 +143,7 @@ workspace/operations/audits/ # before/after snapshots, diffs, changelogs
 - **R-F6**: Honor governance tokens (§6).
 
 ### Non-Functional
+
 - **R-NF1**: Idempotent merges (re-running yields no change).
 - **R-NF2**: Stable, minimal diffs.
 - **R-NF3**: No plaintext secrets post-merge (CI enforced).
@@ -132,24 +152,25 @@ workspace/operations/audits/ # before/after snapshots, diffs, changelogs
 
 ## 6) Emitted Tokens (Governance Annotations)
 
-| Token / Field                         | Type        | Meaning / Effect                                                                 |
-|--------------------------------------|-------------|----------------------------------------------------------------------------------|
-| `# @pin`                              | comment     | Do not overwrite this key during merge.                                          |
-| `# @temp`                             | comment     | Temporary value; auto-replace when stable source available.                      |
-| `x-governance.managed: true`          | boolean     | Section is tool-managed (automated merges allowed).                              |
-| `x-governance.secret: true`           | boolean     | Extract to `secrets.yaml`; replace with `!secret` reference.                     |
-| `x-merge.key: <field>`                | string      | For list items: key field to index object (e.g., `slug`).                        |
-| `x-merge.strategy: prefer-nonempty`   | string      | Incoming non-empty overrides; empty values ignored.                              |
-| `x-merge.strategy: replace`           | string      | Replace entire map/array at this node.                                           |
-| `x-origin.source: <name>`             | string      | Provenance (e.g., `ha-cli`, `z2m-scan`).                                         |
-| `x-origin.timestamp: <ISO8601>`       | string      | Capture time; ignored in diffs but kept for audit.                               |
-| `x-stability.device-path: stable`     | string      | Enforce `/dev/serial/by-id` rewrite.                                             |
+| Token / Field                       | Type    | Meaning / Effect                                             |
+| ----------------------------------- | ------- | ------------------------------------------------------------ |
+| `# @pin`                            | comment | Do not overwrite this key during merge.                      |
+| `# @temp`                           | comment | Temporary value; auto-replace when stable source available.  |
+| `x-governance.managed: true`        | boolean | Section is tool-managed (automated merges allowed).          |
+| `x-governance.secret: true`         | boolean | Extract to `secrets.yaml`; replace with `!secret` reference. |
+| `x-merge.key: <field>`              | string  | For list items: key field to index object (e.g., `slug`).    |
+| `x-merge.strategy: prefer-nonempty` | string  | Incoming non-empty overrides; empty values ignored.          |
+| `x-merge.strategy: replace`         | string  | Replace entire map/array at this node.                       |
+| `x-origin.source: <name>`           | string  | Provenance (e.g., `ha-cli`, `z2m-scan`).                     |
+| `x-origin.timestamp: <ISO8601>`     | string  | Capture time; ignored in diffs but kept for audit.           |
+| `x-stability.device-path: stable`   | string  | Enforce `/dev/serial/by-id` rewrite.                         |
 
 > We prefer `x-*` vendor extensions over YAML tags to avoid tooling friction.
 
 ## 7) Expected I/O
 
 ### Inputs
+
 - One or more `staging/*.yaml` files conforming to meta-capture schema, minimally:
   ```yaml
   extracted_config:
@@ -163,26 +184,27 @@ workspace/operations/audits/ # before/after snapshots, diffs, changelogs
 
 ### Outputs
 
-* Updated canonical domain files under `config/core/` (e.g., `zigbee2mqtt.yaml`, `mqtt.yaml`, `devices.yaml`).
-* `workspace/operations/audits/{timestamp}-changes.diff` and human summary.
-* Optional: updated `secrets.yaml` with newly extracted entries.
-* CI logs for validation, lints, guard results.
-* (When enabled) write-backs to runtime paths and service restart logs.
+- Updated canonical domain files under `config/core/` (e.g., `zigbee2mqtt.yaml`, `mqtt.yaml`, `devices.yaml`).
+- `workspace/operations/audits/{timestamp}-changes.diff` and human summary.
+- Optional: updated `secrets.yaml` with newly extracted entries.
+- CI logs for validation, lints, guard results.
+- (When enabled) write-backs to runtime paths and service restart logs.
 
 ### Standardized Errors
 
-* `E-SCHEMA-001`: missing `.extracted_config`
-* `E-ROUTE-404`: no routable domains found
-* `E-GOV-009`: attempted overwrite of `@pin`
-* `E-SECRET-013`: plaintext secret detected post-merge
-* `E-STAB-021`: unstable device path unresolved
+- `E-SCHEMA-001`: missing `.extracted_config`
+- `E-ROUTE-404`: no routable domains found
+- `E-GOV-009`: attempted overwrite of `@pin`
+- `E-SECRET-013`: plaintext secret detected post-merge
+- `E-STAB-021`: unstable device path unresolved
 
 ## 8) Merge Rules (Deterministic)
 
 1. **Map merge**: `target = target * incoming` with **field-level guards**:
 
-   * Skip if `@pin` on target key.
-   * Skip if incoming is `null`/empty **and** strategy is `prefer-nonempty`.
+   - Skip if `@pin` on target key.
+   - Skip if incoming is `null`/empty **and** strategy is `prefer-nonempty`.
+
 2. **Array of objects**: convert to map by `x-merge.key` (heuristics fallback: `slug`, `id`, `ieee`, `name`), upsert, then re-emit as array sorted by key.
 3. **Secrets**: move to `secrets.yaml` with key path normalized (`<domain>_<key>`); replace with `!secret <name>`.
 4. **Device paths**: normalize to `/dev/serial/by-id/...` when resolvable; else mark with `# @temp`.
@@ -191,34 +213,34 @@ workspace/operations/audits/ # before/after snapshots, diffs, changelogs
 
 **Pinned tools:**
 
-* `yq` v4.x
-* `jq`
-* `shellcheck`
+- `yq` v4.x
+- `jq`
+- `shellcheck`
 
 **Scripts:**
 
-* `tools/pipelines/route.sh` — domain splitting
-* `tools/pipelines/merge_*.yq` — domain merges
-* `tools/pipelines/validate.sh` — schema + yaml + guards
-* `tools/pipelines/secrets_guard.sh` — extraction + references
+- `tools/pipelines/route.sh` — domain splitting
+- `tools/pipelines/merge_*.yq` — domain merges
+- `tools/pipelines/validate.sh` — schema + yaml + guards
+- `tools/pipelines/secrets_guard.sh` — extraction + references
 
 **CI:**
 
-* Runs validate/merge in **dry-run**; posts diff artifact and status checks.
-* Blocks merge on any `E-*` error.
+- Runs validate/merge in **dry-run**; posts diff artifact and status checks.
+- Blocks merge on any `E-*` error.
 
 **GitHub Copilot — Impact & Guardrails**
 
-* **Allowed:** scaffolding shell/YQ snippets, router templates, test fixtures.
-* **Not Allowed:** auto-committing generated changes, inventing secret names/values, bypassing guards.
-* **Runtime Impact:** None. Copilot suggestions are reviewed and become static scripts; only pinned tools execute. CI enforces compliance.
+- **Allowed:** scaffolding shell/YQ snippets, router templates, test fixtures.
+- **Not Allowed:** auto-committing generated changes, inventing secret names/values, bypassing guards.
+- **Runtime Impact:** None. Copilot suggestions are reviewed and become static scripts; only pinned tools execute. CI enforces compliance.
 
 ## 10) Security & Compliance
 
-* Secrets never stored in canonical domain files; enforced by `E-SECRET-013`.
-* Diffs scrub `!secret` values; only keys are shown.
-* Optional SARIF export for secret-scan results.
-* Provenance retained via `x-origin.*`.
+- Secrets never stored in canonical domain files; enforced by `E-SECRET-013`.
+- Diffs scrub `!secret` values; only keys are shown.
+- Optional SARIF export for secret-scan results.
+- Provenance retained via `x-origin.*`.
 
 ## 11) Rollout Plan
 
@@ -249,7 +271,7 @@ zigbee2mqtt:
 
 ```yaml
 mqtt:
-  server: mqtt://192.168.0.129:1883  # @pin
+  server: mqtt://192.168.0.129:1883 # @pin
 ```
 
 **Add-on keyed upsert:**
@@ -263,21 +285,21 @@ addons:
 
 ## 14) Acceptance Criteria
 
-* Re-running merge on unchanged staging yields empty diff.
-* Attempting to overwrite a `# @pin` field fails with `E-GOV-009`.
-* Any detected plaintext secret post-merge fails CI (`E-SECRET-013`).
-* Serial device paths in canonical Z2M config use `/dev/serial/by-id/*` (unless explicitly `# @temp`).
+- Re-running merge on unchanged staging yields empty diff.
+- Attempting to overwrite a `# @pin` field fails with `E-GOV-009`.
+- Any detected plaintext secret post-merge fails CI (`E-SECRET-013`).
+- Serial device paths in canonical Z2M config use `/dev/serial/by-id/*` (unless explicitly `# @temp`).
 
 ## 15) Enforcement & Compliance with ADR-0009
 
-* This ADR complies with ADR-0009 formatting and governance: required front-matter keys, section headers, ToC, fenced machine-parseable blocks.
-* CI/githooks validate ADR structure, token block presence, and cross-links (`related`, `supersedes`).
-* `last_updated` MUST increment on edits; status changes follow ADR-0009 lifecycle rules.
+- This ADR complies with ADR-0009 formatting and governance: required front-matter keys, section headers, ToC, fenced machine-parseable blocks.
+- CI/githooks validate ADR structure, token block presence, and cross-links (`related`, `supersedes`).
+- `last_updated` MUST increment on edits; status changes follow ADR-0009 lifecycle rules.
 
 ## 16) Open Questions
 
-* Should per-domain JSON Schemas be enforced in CI for stricter typing?
-* Should `transient_state` persist to a telemetry ledger instead of being ignored at merge?
+- Should per-domain JSON Schemas be enforced in CI for stricter typing?
+- Should `transient_state` persist to a telemetry ledger instead of being ignored at merge?
 
 ## 17) TOKEN_BLOCK
 

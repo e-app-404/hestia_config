@@ -76,7 +76,7 @@
   use_blueprint:
     path: Raukze/contact-sensor-left-open-notification.yaml
     input:
-      trigger_entity: binary_sensor.entrance_door_alpha_contact
+      trigger_entity: binary_sensor.entrance_door_contact_alpha_door
       friendly_name: Front door
       duration_issue_state:
         hours: 0
@@ -342,7 +342,7 @@
   - condition: template
     value_template: '{{ trigger.from_state.state != trigger.to_state.state }}'
   action:
-  - service: persistent_notification.create
+  - action: persistent_notification.create
     data:
       notification_id: evert_zone_change
       title: 'Zone Change: Evert'
@@ -355,12 +355,12 @@
 - id: '1754732569560'
   alias: Fridge left open alert
   triggers:
-  - entity_id: binary_sensor.kitchen_fridge_contact_omega_door
+  - entity_id: binary_sensor.kitchen_fridge_contact_alpha_door
     to: 'on'
     for: 00:03:00
     id: send_alert
     trigger: state
-  - entity_id: binary_sensor.kitchen_fridge_contact_omega_door
+  - entity_id: binary_sensor.kitchen_fridge_contact_alpha_door
     from: 'on'
     for: 00:00:05
     id: clear_alert
@@ -432,7 +432,7 @@
   max_exceeded: silent
   variables:
     custom_friendly_name: Fridge
-    trigger_entity: binary_sensor.kitchen_fridge_contact_omega_door
+    trigger_entity: binary_sensor.kitchen_fridge_contact_alpha_door
     issue_state: 'on'
     notify_services_string: notify.notify
     notification_title: ⚠️ The fridge was left open
@@ -549,11 +549,11 @@
       notification_id: plex_alert_01
 - id: bedroom_matrix_mqtt_online_20250910_a
   alias: 'Bedroom Matrix: availability online at HA start'
-  trigger:
-  - platform: homeassistant
+  triggers:
+  - trigger: homeassistant
     event: start
-  action:
-  - service: mqtt.publish
+  actions:
+  - action: mqtt.publish
     data:
       topic: ha/bedroom_hdmi_matrix/status
       payload: online
@@ -592,4 +592,427 @@
         device_id:
         - 438784bcd85b3be95a17452bc3a5c966
         - d6c5d8ce01882c8bb93eb5f40ff9d15b
-        - d90e30e2f88b73d9ad58d1fea898837e
+        - 57eb5e861c91a7d371b478c74d9d069d
+- id: '1759847047776'
+  alias: Group Sonos Roam on Motion
+  description: ''
+  use_blueprint:
+    path: legovaer/group-sonos-on-motion.yaml
+    input:
+      motion_trigger:
+      - binary_sensor.ensuite_shower_occupancy_epsilon
+      - binary_sensor.ensuite_presence_beta
+      sonos_source: media_player.bedroom_sonos_ray
+      sonos_target: media_player.ensuite_sonos_roam
+      allow_tv: true
+  mode: restart
+  max_exceeded: silent
+- id: '1760026857122'
+  alias: Ensuite — Join Roam to Ray on presence manual
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - binary_sensor.ensuite_occupancy_beta
+    - binary_sensor.ensuite_shower_occupancy_epsilon
+    from:
+    to: 'on'
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 5
+  conditions:
+  - condition: device
+    device_id: 9ed135979a4cdc695ec6d8659da30cb9
+    domain: media_player
+    entity_id: 2f978c7fbb17fac3e7d58092c5e9df83
+    type: is_playing
+  - condition: not
+    conditions:
+    - condition: device
+      device_id: df67ffc2e83ad13b1f3fec4361e33184
+      domain: media_player
+      entity_id: 6ad14ba8679af799eab31a3e0169bd8c
+      type: is_playing
+  - condition: time
+    after: 07:00:00
+    before: '22:00:00'
+  actions:
+  - action: media_player.join
+    metadata: {}
+    data:
+      group_members:
+      - media_player.ensuite_sonos_roam
+    target:
+      device_id: 9ed135979a4cdc695ec6d8659da30cb9
+  mode: single
+- id: group_sonos_roam_on_motion
+  alias: Group Sonos Roam on Motion (quiet hours + reconcile + volume cap)
+  description: ''
+  triggers:
+  - entity_id:
+    - binary_sensor.ensuite_presence_beta
+    - binary_sensor.ensuite_occupancy_beta
+    from: 'off'
+    to: 'on'
+    id: t1
+    trigger: state
+  - entity_id:
+    - binary_sensor.ensuite_presence_beta
+    - binary_sensor.ensuite_occupancy_beta
+    from: 'on'
+    to: 'off'
+    id: t2
+    trigger: state
+  - event: start
+    id: t4
+    trigger: homeassistant
+  - event_type: automation_reloaded
+    id: t5
+    trigger: event
+  conditions: []
+  actions:
+  - choose:
+    - alias: Join on presence (respect quiet hours)
+      conditions:
+      - condition: template
+        value_template: '{{ trigger.id == ''t1'' }}'
+      - condition: template
+        value_template: '{{ not quiet_hours }}'
+      - condition: template
+        value_template: '{{ is_state(''media_player.bedroom_sonos_ray'',''playing'')
+          }}'
+      - condition: template
+        value_template: "{{ allow_tv or\n   state_attr('media_player.bedroom_sonos_ray','source')
+          != 'TV' }}\n"
+      sequence:
+      - choose:
+        - alias: Already joined — adjust volume & unmute
+          conditions:
+          - condition: template
+            value_template: "{{ 'media_player.ensuite_sonos_roam' in\n   (state_attr('media_player.bedroom_sonos_ray','group_members')
+              or []) }}\n"
+          sequence:
+          - action: media_player.volume_set
+            target:
+              entity_id: media_player.ensuite_sonos_roam
+            data:
+              volume_level: "{% set src = (state_attr('media_player.bedroom_sonos_ray','volume_level')
+                | default(0.20)) | float %} {% if quiet_hours %}\n  {{ [src, 0.2]
+                | min }}\n{% else %}\n  {{ src }}\n{% endif %}\n"
+          - alias: Ensure muted before unmuting
+            action: media_player.volume_mute
+            target:
+              entity_id: media_player.ensuite_sonos_roam
+            data:
+              is_volume_muted: true
+          - alias: Unmute ensuite speaker
+            action: media_player.volume_mute
+            target:
+              entity_id: media_player.ensuite_sonos_roam
+            data:
+              is_volume_muted: false
+        - alias: Not yet joined — set volume, unmute, join
+          conditions: []
+          sequence:
+          - action: media_player.volume_set
+            target:
+              entity_id: media_player.ensuite_sonos_roam
+            data:
+              volume_level: "{% set src = (state_attr('media_player.bedroom_sonos_ray','volume_level')
+                | default(0.20)) | float %} {% if quiet_hours %}\n  {{ [src, 0.2]
+                | min }}\n{% else %}\n  {{ src }}\n{% endif %}\n"
+          - alias: Ensure muted before unmuting
+            action: media_player.volume_mute
+            target:
+              entity_id: media_player.ensuite_sonos_roam
+            data:
+              is_volume_muted: true
+          - alias: Unmute ensuite speaker
+            action: media_player.volume_mute
+            target:
+              entity_id: media_player.ensuite_sonos_roam
+            data:
+              is_volume_muted: false
+          - alias: Join group
+            action: media_player.join
+            target:
+              entity_id: media_player.bedroom_sonos_ray
+            data:
+              group_members:
+              - media_player.ensuite_sonos_roam
+    - alias: Unjoin after presence clears (no blackout)
+      conditions:
+      - condition: template
+        value_template: '{{ trigger.id == ''t2'' }}'
+      sequence:
+      - delay:
+          minutes: '{{ time_delay }}'
+      - alias: Unjoin ensuite speaker
+        action: media_player.unjoin
+        target:
+          entity_id: media_player.ensuite_sonos_roam
+    - alias: Reconcile on start/reload if presence is on (respect quiet hours)
+      conditions:
+      - condition: template
+        value_template: '{{ trigger.id in [''t4'',''t5''] }}'
+      - condition: template
+        value_template: '{{ not quiet_hours }}'
+      - condition: template
+        value_template: "{{ is_state('binary_sensor.ensuite_occupancy_beta','on')\n
+          \  or is_state('binary_sensor.ensuite_presence_beta','on') }}\n"
+      - condition: template
+        value_template: '{{ is_state(''media_player.bedroom_sonos_ray'',''playing'')
+          }}'
+      - condition: template
+        value_template: "{{ allow_tv or\n   state_attr('media_player.bedroom_sonos_ray','source')
+          != 'TV' }}\n"
+      sequence:
+      - choose:
+        - alias: Already joined — adjust volume & unmute
+          conditions:
+          - condition: template
+            value_template: "{{ 'media_player.ensuite_sonos_roam' in\n   (state_attr('media_player.bedroom_sonos_ray','group_members')
+              or []) }}\n"
+          sequence:
+          - action: media_player.volume_set
+            target:
+              entity_id: media_player.ensuite_sonos_roam
+            data:
+              volume_level: "{% set src = (state_attr('media_player.bedroom_sonos_ray','volume_level')
+                | default(0.20)) | float %} {% if quiet_hours %}\n  {{ [src, 0.2]
+                | min }}\n{% else %}\n  {{ src }}\n{% endif %}\n"
+          - alias: Ensure muted before unmuting
+            action: media_player.volume_mute
+            target:
+              entity_id: media_player.ensuite_sonos_roam
+            data:
+              is_volume_muted: true
+          - alias: Unmute ensuite speaker
+            action: media_player.volume_mute
+            target:
+              entity_id: media_player.ensuite_sonos_roam
+            data:
+              is_volume_muted: false
+        - alias: Not yet joined — set volume, unmute, join
+          conditions: []
+          sequence:
+          - action: media_player.volume_set
+            target:
+              entity_id: media_player.ensuite_sonos_roam
+            data:
+              volume_level: "{% set src = (state_attr('media_player.bedroom_sonos_ray','volume_level')
+                | default(0.20)) | float %} {% if quiet_hours %}\n  {{ [src, 0.2]
+                | min }}\n{% else %}\n  {{ src }}\n{% endif %}\n"
+          - alias: Ensure muted before unmuting
+            action: media_player.volume_mute
+            target:
+              entity_id: media_player.ensuite_sonos_roam
+            data:
+              is_volume_muted: true
+          - alias: Unmute ensuite speaker
+            action: media_player.volume_mute
+            target:
+              entity_id: media_player.ensuite_sonos_roam
+            data:
+              is_volume_muted: false
+          - alias: Join group
+            action: media_player.join
+            target:
+              entity_id: media_player.bedroom_sonos_ray
+            data:
+              group_members:
+              - media_player.ensuite_sonos_roam
+  variables:
+    allow_tv: true
+    time_delay: 5
+    quiet_hours: '{{ now().hour >= 22 or now().hour < 1 }}
+
+      '
+  mode: restart
+  max_exceeded: silent
+- id: group_sonos_roam_on_motion_duplicate
+  alias: Group Sonos Roam on Motion (Duplicate)
+  description: Group Sonos Roam on Motion (quiet hours + reconcile + volume cap)
+  triggers:
+  - entity_id:
+    - binary_sensor.ensuite_presence_beta
+    - binary_sensor.ensuite_occupancy_beta
+    from: 'off'
+    to: 'on'
+    id: t1
+    trigger: state
+  - entity_id:
+    - binary_sensor.ensuite_presence_beta
+    - binary_sensor.ensuite_occupancy_beta
+    from: 'on'
+    to: 'off'
+    id: t2
+    trigger: state
+  - event: start
+    id: t4
+    trigger: homeassistant
+  - event_type: automation_reloaded
+    id: t5
+    trigger: event
+  conditions: []
+  actions:
+  - choose:
+    - alias: Join on presence (respect quiet hours)
+      conditions:
+      - condition: template
+        value_template: '{{ trigger.id == ''t1'' }}'
+      - condition: template
+        value_template: '{{ not quiet_hours }}'
+      - condition: template
+        value_template: '{{ is_state(''media_player.bedroom_sonos_ray'',''playing'')
+          }}'
+      - condition: template
+        value_template: "{{ allow_tv or\n   state_attr('media_player.bedroom_sonos_ray','source')
+          != 'TV' }}\n"
+      sequence:
+      - choose:
+        - alias: Already joined — adjust volume & unmute
+          conditions:
+          - condition: template
+            value_template: "{{ 'media_player.ensuite_sonos_roam' in\n   (state_attr('media_player.bedroom_sonos_ray','group_members')
+              or []) }}\n"
+          sequence:
+          - action: media_player.volume_set
+            target:
+              entity_id: media_player.ensuite_sonos_roam
+            data:
+              volume_level: "{% set src = (state_attr('media_player.bedroom_sonos_ray','volume_level')
+                | default(0.20)) | float %} {% if quiet_hours %}\n  {{ [src, 0.2]
+                | min }}\n{% else %}\n  {{ src }}\n{% endif %}\n"
+          - alias: Ensure muted before unmuting
+            action: media_player.volume_mute
+            target:
+              entity_id: media_player.ensuite_sonos_roam
+            data:
+              is_volume_muted: true
+          - alias: Unmute ensuite speaker
+            action: media_player.volume_mute
+            target:
+              entity_id: media_player.ensuite_sonos_roam
+            data:
+              is_volume_muted: false
+        - alias: Not yet joined — set volume, unmute, join
+          conditions: []
+          sequence:
+          - action: media_player.volume_set
+            target:
+              entity_id: media_player.ensuite_sonos_roam
+            data:
+              volume_level: "{% set src = (state_attr('media_player.bedroom_sonos_ray','volume_level')
+                | default(0.20)) | float %} {% if quiet_hours %}\n  {{ [src, 0.2]
+                | min }}\n{% else %}\n  {{ src }}\n{% endif %}\n"
+          - alias: Ensure muted before unmuting
+            action: media_player.volume_mute
+            target:
+              entity_id: media_player.ensuite_sonos_roam
+            data:
+              is_volume_muted: true
+          - alias: Unmute ensuite speaker
+            action: media_player.volume_mute
+            target:
+              entity_id: media_player.ensuite_sonos_roam
+            data:
+              is_volume_muted: false
+          - alias: Join group
+            action: media_player.join
+            target:
+              entity_id: media_player.bedroom_sonos_ray
+            data:
+              group_members:
+              - media_player.ensuite_sonos_roam
+    - alias: Unjoin after presence clears (no blackout)
+      conditions:
+      - condition: template
+        value_template: '{{ trigger.id == ''t2'' }}'
+      sequence:
+      - delay:
+          minutes: '{{ time_delay }}'
+      - alias: Unjoin ensuite speaker
+        action: media_player.unjoin
+        target:
+          entity_id: media_player.ensuite_sonos_roam
+    - alias: Reconcile on start/reload if presence is on (respect quiet hours)
+      conditions:
+      - condition: template
+        value_template: '{{ trigger.id in [''t4'',''t5''] }}'
+      - condition: template
+        value_template: '{{ not quiet_hours }}'
+      - condition: template
+        value_template: "{{ is_state('binary_sensor.ensuite_occupancy_beta','on')\n
+          \  or is_state('binary_sensor.ensuite_presence_beta','on') }}\n"
+      - condition: template
+        value_template: '{{ is_state(''media_player.bedroom_sonos_ray'',''playing'')
+          }}'
+      - condition: template
+        value_template: "{{ allow_tv or\n   state_attr('media_player.bedroom_sonos_ray','source')
+          != 'TV' }}\n"
+      sequence:
+      - choose:
+        - alias: Already joined — adjust volume & unmute
+          conditions:
+          - condition: template
+            value_template: "{{ 'media_player.ensuite_sonos_roam' in\n   (state_attr('media_player.bedroom_sonos_ray','group_members')
+              or []) }}\n"
+          sequence:
+          - action: media_player.volume_set
+            target:
+              entity_id: media_player.ensuite_sonos_roam
+            data:
+              volume_level: "{% set src = (state_attr('media_player.bedroom_sonos_ray','volume_level')
+                | default(0.20)) | float %} {% if quiet_hours %}\n  {{ [src, 0.2]
+                | min }}\n{% else %}\n  {{ src }}\n{% endif %}\n"
+          - alias: Ensure muted before unmuting
+            action: media_player.volume_mute
+            target:
+              entity_id: media_player.ensuite_sonos_roam
+            data:
+              is_volume_muted: true
+          - alias: Unmute ensuite speaker
+            action: media_player.volume_mute
+            target:
+              entity_id: media_player.ensuite_sonos_roam
+            data:
+              is_volume_muted: false
+        - alias: Not yet joined — set volume, unmute, join
+          conditions: []
+          sequence:
+          - action: media_player.volume_set
+            target:
+              entity_id: media_player.ensuite_sonos_roam
+            data:
+              volume_level: "{% set src = (state_attr('media_player.bedroom_sonos_ray','volume_level')
+                | default(0.20)) | float %} {% if quiet_hours %}\n  {{ [src, 0.2]
+                | min }}\n{% else %}\n  {{ src }}\n{% endif %}\n"
+          - alias: Ensure muted before unmuting
+            action: media_player.volume_mute
+            target:
+              entity_id: media_player.ensuite_sonos_roam
+            data:
+              is_volume_muted: true
+          - alias: Unmute ensuite speaker
+            action: media_player.volume_mute
+            target:
+              entity_id: media_player.ensuite_sonos_roam
+            data:
+              is_volume_muted: false
+          - alias: Join group
+            action: media_player.join
+            target:
+              entity_id: media_player.bedroom_sonos_ray
+            data:
+              group_members:
+              - media_player.ensuite_sonos_roam
+  variables:
+    allow_tv: true
+    time_delay: 5
+    quiet_hours: '{{ now().hour >= 22 or now().hour < 1 }}
+
+      '
+  mode: restart
+  max_exceeded: silent

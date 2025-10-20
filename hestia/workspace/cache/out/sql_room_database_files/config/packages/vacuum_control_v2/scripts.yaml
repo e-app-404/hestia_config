@@ -1,0 +1,38 @@
+script:
+  clean_room_with_sql_tracking:
+    alias: "Clean Room with SQL Database Tracking"
+    fields:
+      room:
+        description: "Room to clean"
+        required: true
+        selector:
+          text:
+    variables:
+      _raw: "{{ state_attr('sensor.room_configs_vacuum_control','payload') }}"
+      _cfgs: "{{ _raw | from_json if _raw else {} }}"
+      room_config: "{{ _cfgs.get(room, {}) }}"
+      segment_id: "{{ room_config.get('segment_id', 1) | int }}"
+      base_topic: "{{ states('input_text.valetudo_base_topic') }}"
+    sequence:
+      - service: mqtt.publish
+        data:
+          topic: "{{ base_topic }}/MapSegmentationCapability/action/start_segment_action"
+          payload: "{{ {'action':'clean','segment_ids':[segment_id],'iterations':1,'customOrder':True} | tojson }}"
+      - choose:
+          - conditions: "{{ path_exists('/config/.sql_room_db_tokens/MIGRATION_TOKEN_SQLITE3_OK') }}"
+            sequence:
+              - service: shell_command.mark_room_cleaned
+                data:
+                  room_id: "{{ room }}"
+          - conditions: "{{ not path_exists('/config/.sql_room_db_tokens/MIGRATION_TOKEN_SQLITE3_OK') }}"
+            sequence:
+              - service: rest_command.room_db_update_config
+                data:
+                  room_id: "{{ room }}"
+                  domain: "vacuum_control"
+                  config_data: "{{ dict(room_config, **{'last_cleaned': now().isoformat(), 'needs_cleaning': false}) }}"
+      - service: persistent_notification.create
+        data:
+          title: "Vacuum Control"
+          message: "Started cleaning {{ room }} (segment {{ segment_id }})"
+          notification_id: "vacuum_{{ room }}"

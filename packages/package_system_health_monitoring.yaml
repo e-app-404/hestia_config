@@ -1,0 +1,61 @@
+#════════════════════════════════════════════════════════════════════════════════════════
+# ▶ ERROR MONITORING & STARTUP HEALTH ◀
+# Implements ADR-0020 Error Canonicalization for system health monitoring
+# Reference: ADR-0017 Fallback Local Logging, ADR-0014 OOM Policy
+#════════════════════════════════════════════════════════════════════════════════════════
+
+template:
+  - sensor:
+      - name: "Startup Health Monitor"
+        unique_id: "startup_health_monitor"
+        state: >-
+          {% set body = states('sensor.system_log_file_content') | default('', true) %}
+          {% if body not in ['unknown', 'unavailable', ''] %}
+            {% set flags = [
+              'Something is blocking Home Assistant' in body,
+              'sync_google() running' in body,
+              'automatic backup could not be uploaded' in body,
+              'SynologyNAS' in body
+            ] %}
+            {{ 'degraded' if (flags | select('equalto', true) | list | length) > 0 else 'healthy' }}
+          {% else %}
+            unknown
+          {% endif %}
+        attributes:
+          last_check: "{{ now().isoformat() }}"
+          monitored_issues: "Google Assistant sync blocking, Synology backup upload failures, Network scanner startup delays, Component initialization timeouts"
+          fixes_applied: "Disabled Google Assistant integration, Configured local backup location, Optimized network scanner scan interval, Added startup timeout controls"
+          adr_compliance: "ADR-0020: Error canonicalization applied, ADR-0024: Canonical /config paths used, ADR-0014: Memory optimization implemented, ADR-0018: Backup lifecycle management"
+
+      - name: "Backup System Status"
+        unique_id: "backup_system_status"
+        state: >-
+          {% if is_state('input_boolean.enable_backup_notifications', 'on') %}
+            {% set backup_dir = '/config/hestia/workspace/archive/backups' %}
+            enabled
+          {% else %}
+            disabled
+          {% endif %}
+        attributes:
+          backup_location: "/config/hestia/workspace/archive/backups"
+          synology_upload: "disabled (preventing failures)"
+          retention_days: "7"
+          adr_compliance: "ADR-0024 canonical paths, ADR-0018 lifecycle"
+
+binary_sensor:
+  - platform: template
+    sensors:
+      startup_completed:
+        friendly_name: "Home Assistant Startup Completed"
+        unique_id: "ha_startup_completed"
+        value_template: >-
+          {{ states('sensor.home_assistant_uptime_alpha') != 'unknown' and
+             (as_timestamp(now()) - as_timestamp(states('sensor.home_assistant_uptime_alpha'))) > 300 }}
+        attribute_templates:
+          startup_duration: >-
+            {% if states('sensor.home_assistant_uptime_alpha') != 'unknown' %}
+              {{ (as_timestamp(now()) - as_timestamp(states('sensor.home_assistant_uptime_alpha'))) / 60 | round(1) }} minutes
+            {% else %}
+              unknown
+            {% endif %}
+

@@ -7,8 +7,21 @@
 
 # Logger configuration for troubleshooting integrations
 logger:
-  default: info
+#  default: info
 #  logs:
 #    homeassistant.components.influxdb: debug
 #    influxdb_client.client.write: debug
 #    influxdb_client.client.influxdb_client: debug
+
+  default: warning
+  logs:
+    # Monitor startup-blocking components identified in error log
+    homeassistant.core: info
+    homeassistant.bootstrap: info
+    homeassistant.setup: warning
+    # Specific problematic integrations
+    homeassistant.components.google_assistant: error
+    homeassistant.components.synology_dsm: warning
+    homeassistant.components.network_scanner: warning  # 116 MAC mappings causing timeout
+    # Track ADR-0014 memory management
+    homeassistant.util.executor: warning

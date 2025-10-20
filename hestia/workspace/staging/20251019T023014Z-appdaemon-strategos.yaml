@@ -1,0 +1,158 @@
+extracted_config:
+  system:
+    name: homeassistant
+    os: "Home Assistant OS 16.2"
+    arch: "aarch64 (Raspberry Pi 5)"
+  services:
+    home_assistant:
+      hostname: homeassistant.local
+      ip: 192.168.0.129
+      port: 8123/tcp
+      api_base: "http://homeassistant.local:8123"
+    appdaemon_addon:
+      addon_slug: a0d7b954_appdaemon
+      version: "4.5.11"
+      host_alias: a0d7b954-appdaemon
+      listen:
+        - "http://a0d7b954-appdaemon:5050"
+      endpoints_global:
+        index:          "/api/appdaemon/room_db_index"
+        health:         "/api/appdaemon/room_db_health"
+        test:           "/api/appdaemon/room_db_test"
+        update_config:  "/api/appdaemon/room_db_update_config"
+        bulk_update:    "/api/appdaemon/room_db_bulk_update"
+        reload_mapping: "/api/appdaemon/room_db_reload_mapping"
+        export_get:     "/api/appdaemon/room_db_export"
+        export_write:   "/api/appdaemon/room_db_export_write_once"
+  storage_paths:
+    db:
+      container: "/config/room_database.db"
+      host: "/addon_configs/a0d7b954_appdaemon/room_database.db"
+    export_json:
+      container: "/config/room_db_export.json"
+      host: "/addon_configs/a0d7b954_appdaemon/room_db_export.json"
+    apps_dir: "/addon_configs/a0d7b954_appdaemon/apps"
+    mapping_file: "/config/www/area_mapping.yaml"
+  apps:
+    room_db_updater:
+      file: "room_db_updater.py"
+      args:
+        db_path: "/config/room_database.db"
+        canonical_mapping_file: "/config/www/area_mapping.yaml"
+        allowed_domains: ["activity_tracking","motion_lighting","shared","vacuum_control"]
+        write_rate_limit_seconds: 5
+        schema_expected: 1
+    room_db_exporter:
+      file: "room_db_exporter.py"
+      args:
+        db_path: "/config/room_database.db"
+        export_path: "/config/room_db_export.json"
+    activity_tracker:
+      file: "activity_tracker.py"
+    valetudo_default_activity:
+      file: "valetudo_default_activity.py"
+  mapping_v3_1:
+    canonical_rooms_count: 11
+    motion_lighting_allowed:
+      - bedroom
+      - desk
+      - downstairs
+      - entrance
+      - ensuite
+      - kitchen
+      - living_room
+      - upstairs
+      - wardrobe
+    vacuum_control_allowed:
+      - downstairs
+      - kitchen
+      - laundry_room
+      - living_room
+      - powder_room
+
+transient_state:
+  appdaemon_health:
+    status: healthy
+    reported:
+      schema_expected: 1
+      mapping_path: "/config/www/area_mapping.yaml"
+      allowed_domains: ["activity_tracking","motion_lighting","shared","vacuum_control"]
+      canonical_rooms_count: 11
+  endpoints_behavior:
+    reload_mapping_get: "OK (JSON)"
+    reload_mapping_post: "environment-dependent; GET is reliable"
+    update_config_json_required: true
+    bulk_update_accepts:
+      - object_items_array: true
+      - raw_array: true
+  db_observations:
+    schema: "room_configs(config_domain,room_id,config_data,version,created_at,updated_at)"
+    upserts: "working"
+  rate_limit:
+    domain_scoped_seconds: 5
+    jitter_seconds: "~1.0"
+    contention_sources: ["activity_tracker", "valetudo_default_activity"]
+  exporter_status:
+    get_json: "expected JSON"
+    write_once_post: "expected JSON and file write"
+    last_known_file: "ensure exists at /addon_configs/a0d7b954_appdaemon/room_db_export.json"
+  helper_functions:
+    ha_terminal_curl_helper: "aj(){ curl -sS -H \"Content-Type: application/json\" \"$@\"; }"
+
+relationships:
+  - subject: appdaemon_addon
+    relation: serves
+    object: room_db_endpoints
+  - subject: room_db_updater
+    relation: writes_to
+    object: "/config/room_database.db"
+  - subject: room_db_updater
+    relation: reads_from
+    object: "/config/www/area_mapping.yaml"
+  - subject: room_db_exporter
+    relation: reads_from
+    object: "/config/room_database.db"
+  - subject: room_db_exporter
+    relation: writes_to
+    object: "/config/room_db_export.json"
+  - subject: activity_tracker
+    relation: can_collide_with
+    object: room_db_updater_rate_limit
+  - subject: valetudo_default_activity
+    relation: can_collide_with
+    object: room_db_updater_rate_limit
+  - subject: container_path:/config/room_database.db
+    relation: same_file_as
+    object: host_path:/addon_configs/a0d7b954_appdaemon/room_database.db
+
+suggested_commands:
+  ha_terminal_setup_helper:
+    - 'echo '\''aj(){ curl -sS -H "Content-Type: application/json" "$@"; }'\'' >> /root/.bashrc && . /root/.bashrc'
+  health_check:
+    - 'curl -s http://a0d7b954-appdaemon:5050/api/appdaemon/room_db_index | jq .'
+    - 'curl -s http://a0d7b954-appdaemon:5050/api/appdaemon/room_db_health | jq .'
+  reload_mapping:
+    - 'curl -s http://a0d7b954-appdaemon:5050/api/appdaemon/room_db_reload_mapping | jq .'
+  single_write_examples:
+    - 'aj -X POST -d '\''{"domain":"motion_lighting","room_id":"entrance","config_data":{"timeout":120,"illuminance_threshold":15}}'\'' http://a0d7b954-appdaemon:5050/api/appdaemon/room_db_update_config | jq .'
+    - 'aj -X POST -d '\''{"domain":"motion_lighting","room_id":"powder_room","config_data":{}}'\'' http://a0d7b954-appdaemon:5050/api/appdaemon/room_db_update_config | jq .'
+    - 'aj -X POST -d '\''{"domain":"vacuum_control","room_id":"upstairs","config_data":{}}'\'' http://a0d7b954-appdaemon:5050/api/appdaemon/room_db_update_config | jq .'
+  bulk_write_example:
+    - 'aj -X POST -d '\''{"items":[{"domain":"motion_lighting","room_id":"bedroom","config_data":{}},{"domain":"motion_lighting","room_id":"entrance","config_data":{}},{"domain":"motion_lighting","room_id":"powder_room","config_data":{}},{"domain":"vacuum_control","room_id":"upstairs","config_data":{}}]}'\'' http://a0d7b954-appdaemon:5050/api/appdaemon/room_db_bulk_update | jq .'
+  exporter_ops:
+    - 'curl -s http://a0d7b954-appdaemon:5050/api/appdaemon/room_db_export | jq .'
+    - 'aj -X POST -d '\''{}'\'' http://a0d7b954-appdaemon:5050/api/appdaemon/room_db_export_write_once | jq .'
+    - 'ls -l /addon_configs/a0d7b954_appdaemon/room_db_export.json'
+  db_introspection:
+    - "sqlite3 /addon_configs/a0d7b954_appdaemon/room_database.db 'PRAGMA table_info(room_configs); SELECT config_domain, room_id FROM room_configs ORDER BY 1,2 LIMIT 50;'"
+  minimize_contention_during_reseed:
+    - 'ha addons restart a0d7b954_appdaemon'
+    - 'sleep 5'
+    - 'aj -X POST -d '\''{"items":[{"domain":"motion_lighting","room_id":"kitchen","config_data":{}},{"domain":"motion_lighting","room_id":"living_room","config_data":{}},{"domain":"motion_lighting","room_id":"ensuite","config_data":{}},{"domain":"motion_lighting","room_id":"powder_room","config_data":{}},{"domain":"motion_lighting","room_id":"laundry_room","config_data":{}}]}'\'' http://a0d7b954-appdaemon:5050/api/appdaemon/room_db_bulk_update | jq .'
+
+notes:
+  - POST requests must include Content-Type: application/json; missing header yields HTML or malformed responses.
+  - Prefer GET for reload_mapping in this environment; POST support can vary by add-on build.
+  - Rate-limit collisions are domain-scoped; stagger writes or temporarily pause other writers during reseed.
+  - Container vs host path: /config inside add-on == /addon_configs/a0d7b954_appdaemon on the HA host.
+  - Mapping v3.1 admission control is authoritative; ML denied for rooms without capability; VC requires segment_id.
