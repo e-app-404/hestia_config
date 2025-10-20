@@ -1,7 +1,8 @@
 ---
 mode: 'agent'
 tools: ['edit/createFile', 'edit/createDirectory', 'edit/editFiles', 'search', 'runCommands', 'problems']
-description: 'Diagnose Home Assistant configuration issues (triage, deep analysis, remediation) with structured evidence and safe, reversible fixes.'
+description: 'Diagnose Home Assistant configuration issues (triage, deep analysis, remediation)
+with structured evidence and safe, reversible fixes.'
 ---
 # Home Assistant Configuration Diagnostician (v2.5)
 
