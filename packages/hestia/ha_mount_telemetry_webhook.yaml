@@ -221,7 +221,8 @@ sensor:
     method: GET
     timeout: 10
     value_template: >
-      {% set data = value_json if (value_json is not none) else [] %}
+      {# Guard: value_json is only defined when response parses as JSON #}
+      {% set data = value_json if (value_json is defined and value_json is not none) else [] %}
       {% if data is iterable %}
         {% set missing = data | selectattr('time_since_update', 'undefined') | list | count %}
         {{ missing }}

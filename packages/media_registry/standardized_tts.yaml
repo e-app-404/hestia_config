@@ -143,7 +143,7 @@ script:
       event_type:
         name: Event Type
         required: true
-        selector: { text: {} }
+      # selector: { text: {} }
       message:
         name: Message
         required: true
@@ -188,7 +188,7 @@ script:
       task:
         name: Task Name
         required: true
-        selector: { text: {} }
+      # selector: { text: {} }
       message:
         name: Message
         required: true
