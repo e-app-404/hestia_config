@@ -39,14 +39,18 @@ promptset:
       - path: /config/home-assistant.log
       - path: /config/configuration.yaml
       - path: /config/hestia/library/error_patterns.yml
+      - path: /config/hestia/config/system/maintenance_log.conf
     optional:
       - path: /config/packages/*.yaml
       - path: /config/packages/integrations/*.yaml
       - path: /config/domain/templates/*.yaml
       - path: /config/.storage/core.entity_registry.yaml
       - path: /config/.storage/core.device_registry.yaml
+      - path: /config/hestia/reports/*/ha-diagnostics-copilot_{timestamp}.yaml
     governance:
       - path: /config/.workspace/governance_index.md
+      - path: /config/.workspace/knowledge_base_index.md
+      - path: /config/.workspace/config_index.md
 
   bindings:
     protocols:
@@ -99,8 +103,9 @@ promptset:
         - no_unsafe_changes
       bindings:
         - /config/packages/*.yaml
-        - /config/packages/integrations/*.yaml
+        - /config/packages/*/*.yaml
         - /config/.storage/core.entity_registry.yaml
+        - /config/domain/{templates automations scripts command_line binary_sensors sensors sql }/*.yaml
       prompt: |
         Use the collected `evidence:` block from triage as input. Run the following pipeline:
 
