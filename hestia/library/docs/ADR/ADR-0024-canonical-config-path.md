@@ -3,7 +3,8 @@ id: ADR-0024
 title: "Canonical Home Assistant Config Path (Single-Source-of-Truth)"
 slug: canonical-config-path
 status: Implemented
-related: []
+related:
+- ADR-0029: Operational companion. See ADR-0029 for macOS mount & telemetry implementation details.
 supersedes:
   - ADR-0016
   - ADR-0010
