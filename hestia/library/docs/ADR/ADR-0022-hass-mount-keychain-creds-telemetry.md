@@ -8,8 +8,7 @@ related:
 supersedes: []
 last_updated: '2025-10-15'
 date: 2025-10-04
-decision: 'Implement a comprehensive mount reliability and telemetry system with the
-  following components: 1.'
+decision: 'Implement a comprehensive mount reliability and telemetry system'
 author: Evert Appels
 tags:
 - homeassistant
@@ -41,17 +40,20 @@ ci_policy:
 
 # ADR-0022: Home Assistant Mount Keychain Credentials and Telemetry System
 
+> Decision: To resolve the issues, we will update the LaunchAgent to invoke a hardened helper script for secure credential management, integrate webhook-based telemetry for real-time mount status in Home Assistant, deploy automated health checks, and provide robust rollback procedures for safe reversion.
+
 ## Table of Contents
-1. Context
-2. Problem Statement
-3. Decision
-4. Solution Architecture
-5. Implementation Details
-6. Verification Framework
-7. Consequences
-8. Rollback Strategy
-9. Enforcement
-10. Token Block
+
+1. [Context](#1-context)
+2. [Problem Statement](#2-problem-statement)
+3. [Decision](#3-decision)
+4. [Solution Architecture](#4-solution-architecture)
+5. [Implementation Details](#5-implementation-details)
+6. [Verification Framework](#6-verification-framework)
+7. [Consequences](#7-consequences)
+8. [Rollback Strategy](#8-rollback-strategy)
+9. [Enforcement](#9-enforcement)
+10. [Token Block](#10-token-block)
 
 ## 1. Context
 

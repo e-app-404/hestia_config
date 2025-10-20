@@ -15,7 +15,6 @@ decision:
   `/config`** across all environments (Home Assistant Host/Supervisor/Core, macOS
   operator workstation, containers, and CI/CD including GitHub Actions)."
 authors: Strategos GPT
-implementation_date: 2025-10-05
 amends:
   - ADR-0015
   - ADR-0019
@@ -23,11 +22,8 @@ amends:
   - ADR-0022
 superseded_by: null
 implementation_notes:
-  "Successfully implemented using macOS synthetic.conf entries.
-
-  Current setup uses symlink fallback (functional equivalent).
-
-  All development workflows operational and validated.
+  "Successfully implemented using macOS synthetic.conf entries. Current setup uses symlink fallback
+  (functional equivalent). All development workflows operational and validated.
 
   "
 ---
