@@ -40,7 +40,7 @@ DEFAULT_CFG = {
     "repo_root": "/config",
     "config_root": "/config/hestia/config",
     "allowed_root": "/config/hestia",
-    "report_dir": "/config/hestia/workspace/reports/glances_bridge",
+    "report_dir": "/config/hestia/workspace/operations/logs/glances-bridge",
     "index_dir": "/config/hestia/workspace/.hestia/index",
     "runtime": {
         "upstream_url": "http://127.0.0.1:61208",
