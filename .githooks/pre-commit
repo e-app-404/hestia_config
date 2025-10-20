@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+# ## dispatcher: pre-commit.d (idempotent)
+set -euo pipefail
+
+# Resolve this scripts

@@ -10,7 +10,7 @@ adaptive_lighting:
     include_config_in_attributes: true
     initial_transition: 0.3
     lights: [ light.adaptive_bedroom_light_group]
-    max_color_temp: 4500
+    max_color_temp: 4000
     min_color_temp: 2700
     multi_light_intercept: true
     only_once: true
