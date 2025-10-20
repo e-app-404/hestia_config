@@ -128,24 +128,87 @@ template:
           {% if trigger.platform == 'event' %}
             {{ trigger.event.data.state }}
           {% else %}
-            {# On time ticks, compute freshness from last_run and force OFF if stale #}
-            {% set lr = as_datetime(state_attr('sensor.macbook_ha_mount_status','last_run')) %}
-            {% set age = (now() - lr).total_seconds() if lr else 999999 %}
+            {# On time ticks, compute freshness from last_run and force OFF if stale (ADR-0002 guards) #}
+            {% set raw = state_attr('sensor.macbook_ha_mount_status','last_run') %}
+            {% set lr = as_datetime(raw) if (raw is not none and raw not in ['unknown','unavailable','']) else None %}
+            {% set age = (now() - lr).total_seconds() if (lr is not none) else 999999 %}
             {{ 'ON' if age < 300 else 'OFF' }}
           {% endif %}
         icon: "mdi:harddisk-plus"
         attributes:
-          mounted: "{{ trigger.event.data.mounted | bool }}"
-          write_ok: "{{ trigger.event.data.write_ok | bool }}"
-          config_present: "{{ trigger.event.data.config_present | bool }}"
-          keychain_ok: "{{ trigger.event.data.keychain_ok | bool }}"
-          agent_loaded: "{{ trigger.event.data.agent_loaded | bool }}"
-          agent_state: "{{ trigger.event.data.agent_state }}"
-          agent_exit_code: "{{ trigger.event.data.agent_exit_code | int }}"
-          host: "{{ trigger.event.data.host }}"
-          user: "{{ trigger.event.data.user }}"
-          last_run: "{{ trigger.event.data.last_run }}"
-          age_s: "{{ trigger.event.data.age_s | int }}"
-          mount_details: "{{ trigger.event.data.mount_details }}"
+          mounted: >
+            {% if trigger.platform == 'event' %}
+              {{ trigger.event.data.mounted | bool }}
+            {% else %}
+              {{ state_attr('sensor.macbook_ha_mount_status','mounted') | default(false) }}
+            {% endif %}
+          write_ok: >
+            {% if trigger.platform == 'event' %}
+              {{ trigger.event.data.write_ok | bool }}
+            {% else %}
+              {{ state_attr('sensor.macbook_ha_mount_status','write_ok') | default(false) }}
+            {% endif %}
+          config_present: >
+            {% if trigger.platform == 'event' %}
+              {{ trigger.event.data.config_present | bool }}
+            {% else %}
+              {{ state_attr('sensor.macbook_ha_mount_status','config_present') | default(false) }}
+            {% endif %}
+          keychain_ok: >
+            {% if trigger.platform == 'event' %}
+              {{ trigger.event.data.keychain_ok | bool }}
+            {% else %}
+              {{ state_attr('sensor.macbook_ha_mount_status','keychain_ok') | default(false) }}
+            {% endif %}
+          agent_loaded: >
+            {% if trigger.platform == 'event' %}
+              {{ trigger.event.data.agent_loaded | bool }}
+            {% else %}
+              {{ state_attr('sensor.macbook_ha_mount_status','agent_loaded') | default(false) }}
+            {% endif %}
+          agent_state: >
+            {% if trigger.platform == 'event' %}
+              {{ trigger.event.data.agent_state }}
+            {% else %}
+              {{ state_attr('sensor.macbook_ha_mount_status','agent_state') | default('unknown') }}
+            {% endif %}
+          agent_exit_code: >
+            {% if trigger.platform == 'event' %}
+              {{ trigger.event.data.agent_exit_code | int }}
+            {% else %}
+              {{ state_attr('sensor.macbook_ha_mount_status','agent_exit_code') | int(0) }}
+            {% endif %}
+          host: >
+            {% if trigger.platform == 'event' %}
+              {{ trigger.event.data.host }}
+            {% else %}
+              {{ state_attr('sensor.macbook_ha_mount_status','host') | default('unknown') }}
+            {% endif %}
+          user: >
+            {% if trigger.platform == 'event' %}
+              {{ trigger.event.data.user }}
+            {% else %}
+              {{ state_attr('sensor.macbook_ha_mount_status','user') | default('unknown') }}
+            {% endif %}
+          last_run: >
+            {% if trigger.platform == 'event' %}
+              {{ trigger.event.data.last_run }}
+            {% else %}
+              {{ state_attr('sensor.macbook_ha_mount_status','last_run') | default('') }}
+            {% endif %}
+          age_s: >
+            {% if trigger.platform == 'event' %}
+              {{ trigger.event.data.age_s | int }}
+            {% else %}
+              {% set raw = state_attr('sensor.macbook_ha_mount_status','last_run') %}
+              {% set lr = as_datetime(raw) if (raw is not none and raw not in ['unknown','unavailable','']) else None %}
+              {{ ((now() - lr).total_seconds() | int) if (lr is not none) else 999999 }}
+            {% endif %}
+          mount_details: >
+            {% if trigger.platform == 'event' %}
+              {{ trigger.event.data.mount_details }}
+            {% else %}
+              {{ state_attr('sensor.macbook_ha_mount_status','mount_details') | default('') }}
+            {% endif %}
           upstream_sources: >
             {{ ['sensor.file_last_mount_status_json', 'sensor.macbook_hass_mount_health'] | tojson }}
