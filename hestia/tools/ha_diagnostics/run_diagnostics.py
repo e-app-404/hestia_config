@@ -1,12 +1,20 @@
 #!/usr/bin/env python3
-import argparse, os, sys, re, json, uuid, time, pathlib
-from datetime import datetime, timezone
+import argparse
+import json
+import os
+import pathlib
+import re
+import sys
+import time
+import uuid
+from datetime import UTC, datetime
+
 import yaml  # PyYAML
 
 TOML = "/config/hestia/config/system/hestia.toml"
 
 def nowz():
-    return datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00","Z")
+    return datetime.now(UTC).replace(microsecond=0).isoformat().replace("+00:00", "Z")
 
 def read_toml(path=TOML):
     try:
@@ -30,7 +38,7 @@ def atomic_write(path, text):
 
 def tail_lines(path, n=1000):
     try:
-        with open(path, "r", encoding="utf-8", errors="replace") as f:
+        with open(path, encoding="utf-8", errors="replace") as f:
             return "".join(f.readlines()[-n:])
     except FileNotFoundError:
         return ""
@@ -60,7 +68,7 @@ OPTIONAL_GLOBS = [
 
 def find_patterns(path):
     try:
-        data = yaml.safe_load(open(path, "r", encoding="utf-8")) or {}
+        data = yaml.safe_load(open(path, encoding="utf-8")) or {}
     except Exception:
         return []
     pats = []
@@ -105,7 +113,7 @@ def classify(log_text, patterns):
 def smallest_fragment(config_file, key_hint):
     if not os.path.exists(config_file): return ""
     try:
-        text = open(config_file, "r", encoding="utf-8").read()
+        text = open(config_file, encoding="utf-8").read()
         if not key_hint: return "\n".join(text.splitlines()[:40])
         lines = text.splitlines()
         idx = next((i for i,l in enumerate(lines) if key_hint in l), None)
