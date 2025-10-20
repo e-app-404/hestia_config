@@ -10,8 +10,8 @@ template:
       - name: "Plex TV Index (Legacy Compatibility)"
         unique_id: "plex_tv_index_compat"
         state: >-
-          {% set payload = state_attr('sensor.room_configs_shared_registry', 'payload') %}
-          {% if payload and 'plex_tv_index' in payload %}
+          {% set payload = state_attr('sensor.room_configs_shared_registry_dict', 'payload') %}
+          {% if payload and payload is mapping and 'plex_tv_index' in payload %}
             {% set data = payload['plex_tv_index'] %}
             {{ data.get('episodes', []) | length }}
           {% else %}
@@ -19,32 +19,32 @@ template:
           {% endif %}
         attributes:
           shows: >-
-            {% set payload = state_attr('sensor.room_configs_shared_registry', 'payload') %}
-            {% if payload and 'plex_tv_index' in payload %}
+            {% set payload = state_attr('sensor.room_configs_shared_registry_dict', 'payload') %}
+            {% if payload and payload is mapping and 'plex_tv_index' in payload %}
               {% set data = payload['plex_tv_index'] %}
               {{ data.get('shows', {}) }}
             {% else %}
               {}
             {% endif %}
           seasons: >-
-            {% set payload = state_attr('sensor.room_configs_shared_registry', 'payload') %}
-            {% if payload and 'plex_tv_index' in payload %}
+            {% set payload = state_attr('sensor.room_configs_shared_registry_dict', 'payload') %}
+            {% if payload and payload is mapping and 'plex_tv_index' in payload %}
               {% set data = payload['plex_tv_index'] %}
               {{ data.get('seasons', {}) }}
             {% else %}
               {}
             {% endif %}
           episodes: >-
-            {% set payload = state_attr('sensor.room_configs_shared_registry', 'payload') %}
-            {% if payload and 'plex_tv_index' in payload %}
+            {% set payload = state_attr('sensor.room_configs_shared_registry_dict', 'payload') %}
+            {% if payload and payload is mapping and 'plex_tv_index' in payload %}
               {% set data = payload['plex_tv_index'] %}
               {{ data.get('episodes', []) }}
             {% else %}
               []
             {% endif %}
           updated: >-
-            {% set payload = state_attr('sensor.room_configs_shared_registry', 'payload') %}
-            {% if payload and 'plex_tv_index' in payload %}
+            {% set payload = state_attr('sensor.room_configs_shared_registry_dict', 'payload') %}
+            {% if payload and payload is mapping and 'plex_tv_index' in payload %}
               {% set data = payload['plex_tv_index'] %}
               {{ data.get('updated', '') }}
             {% else %}
@@ -59,8 +59,8 @@ template:
       - name: "Plex Movie Index (Legacy Compatibility)"
         unique_id: "plex_movie_index_compat"
         state: >-
-          {% set payload = state_attr('sensor.room_configs_shared_registry', 'payload') %}
-          {% if payload and 'plex_movie_index' in payload %}
+          {% set payload = state_attr('sensor.room_configs_shared_registry_dict', 'payload') %}
+          {% if payload and payload is mapping and 'plex_movie_index' in payload %}
             {% set data = payload['plex_movie_index'] %}
             {{ data.get('movies', []) | length }}
           {% else %}
@@ -68,24 +68,24 @@ template:
           {% endif %}
         attributes:
           movies: >-
-            {% set payload = state_attr('sensor.room_configs_shared_registry', 'payload') %}
-            {% if payload and 'plex_movie_index' in payload %}
+            {% set payload = state_attr('sensor.room_configs_shared_registry_dict', 'payload') %}
+            {% if payload and payload is mapping and 'plex_movie_index' in payload %}
               {% set data = payload['plex_movie_index'] %}
               {{ data.get('movies', []) }}
             {% else %}
               []
             {% endif %}
           year_released: >-
-            {% set payload = state_attr('sensor.room_configs_shared_registry', 'payload') %}
-            {% if payload and 'plex_movie_index' in payload %}
+            {% set payload = state_attr('sensor.room_configs_shared_registry_dict', 'payload') %}
+            {% if payload and payload is mapping and 'plex_movie_index' in payload %}
               {% set data = payload['plex_movie_index'] %}
               {{ data.get('year_released', {}) }}
             {% else %}
               {}
             {% endif %}
           updated: >-
-            {% set payload = state_attr('sensor.room_configs_shared_registry', 'payload') %}
-            {% if payload and 'plex_movie_index' in payload %}
+            {% set payload = state_attr('sensor.room_configs_shared_registry_dict', 'payload') %}
+            {% if payload and payload is mapping and 'plex_movie_index' in payload %}
               {% set data = payload['plex_movie_index'] %}
               {{ data.get('updated', '') }}
             {% else %}
@@ -94,41 +94,7 @@ template:
         unit_of_measurement: "movies"
         icon: mdi:movie
 
-      # ──────────────────────────────────────────────────────────────────
-      # Plex Recently Added (Example Query Sensor)
-      # ──────────────────────────────────────────────────────────────────
-      - name: "Plex Recently Added"
-        unique_id: "plex_recently_added"
-        state: >-
-          {% set payload = state_attr('sensor.room_configs_shared_registry', 'payload') %}
-          {% set tv_data = payload.get('plex_tv_index', {}) if payload else {} %}
-          {% set movie_data = payload.get('plex_movie_index', {}) if payload else {} %}
-          {% set tv_episodes = tv_data.get('episodes', []) %}
-          {% set movies = movie_data.get('movies', []) %}
-          {% set all_items = tv_episodes + movies %}
-          {% if all_items %}
-            {% set sorted_items = all_items | sort(attribute='added_at', reverse=true) %}
-            {% set recent = sorted_items[:10] %}
-            {{ recent | length }}
-          {% else %}
-            0
-          {% endif %}
-        unit_of_measurement: "items"
-        icon: mdi:new-box
-        attributes:
-          items: >-
-            {% set payload = state_attr('sensor.room_configs_shared_registry', 'payload') %}
-            {% set tv_data = payload.get('plex_tv_index', {}) if payload else {} %}
-            {% set movie_data = payload.get('plex_movie_index', {}) if payload else {} %}
-            {% set tv_episodes = tv_data.get('episodes', []) %}
-            {% set movies = movie_data.get('movies', []) %}
-            {% set all_items = tv_episodes + movies %}
-            {% if all_items %}
-              {% set sorted_items = all_items | sort(attribute='added_at', reverse=true) %}
-              {{ sorted_items[:10] }}
-            {% else %}
-              []
-            {% endif %}
+# NOTE: sensor.plex_recently_added removed - defined in mr_src.yaml to avoid duplication
 
 # ════════════════════════════════════════════════════════════════════════
 # ▶ PLEX ROOM-DB SCRIPTS  •  Write Plex media indexes to Room-DB storage ◀

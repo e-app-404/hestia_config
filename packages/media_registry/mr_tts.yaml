@@ -56,18 +56,18 @@ script:
         selector: { number: { min: 0, max: 10, step: 1 } }
     sequence:
       - variables:
-          # Read from Room-DB SQL sensor (shared registry)
-          payload: "{{ state_attr('sensor.room_configs_shared_registry', 'payload') }}"
+          # Read from Room-DB wrapper dict sensor (not SQL sensor directly)
+          payload: "{{ state_attr('sensor.room_configs_shared_registry_dict', 'payload') }}"
           reg: >-
-            {% if payload and 'tts_gate_registry' in payload %}
+            {% if payload and payload is mapping and 'tts_gate_registry' in payload %}
               {{ payload['tts_gate_registry'] }}
             {% else %}
               {}
             {% endif %}
           key_str: "{{ key | string }}"
-          entry: "{{ reg.get(key_str, {}) }}"
-          last_ts: "{{ entry.get('last_ts', 0) }}"
-          prev_count: "{{ entry.get('count', 0) }}"
+          entry: "{{ reg.get(key_str, {}) if reg is mapping else {} }}"
+          last_ts: "{{ entry.get('last_ts', 0) if entry is mapping else 0 }}"
+          prev_count: "{{ entry.get('count', 0) if entry is mapping else 0 }}"
           now_ts: "{{ as_timestamp(now()) | float }}"
           cooldown: "{{ cooldown_sec | int(0) }}"
           window_ok: "{{ (now_ts - (last_ts|float)) >= cooldown }}"
