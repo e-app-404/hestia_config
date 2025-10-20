@@ -1,0 +1,14 @@
+# Lovelace snippet: Lineage Guardian artifacts (paths & run hints)
+# Self-contained markdown card; optional sensors can be added later.
+
+type: vertical-stack
+cards:
+  - type: markdown
+    content: |
+      ### Lineage Guardian
+      Artifacts and quick commands
+      - Artifacts: `/config/hestia/tools/lineage_guardian/.artifacts/`
+      - Wrapper: `cd /config/hestia/tools/lineage_guardian && python lineage_guardian_cli.py --verbose`
+      - Scanner: `python lineage_guardian/graph_scanner.py --output ./.artifacts/graph.json --template-dir /config/domain/templates/ --verbose`
+      - Validator: `python lineage_guardian/lineage_validator.py --graph-file ./.artifacts/graph.json --output ./.artifacts/violations.json --verbose`
+      - Report: `python lineage_guardian/lineage_report.py --graph ./.artifacts/graph.json --violations ./.artifacts/violations.json --integrity ./.artifacts/integrity.json --outdir ./.artifacts/report`

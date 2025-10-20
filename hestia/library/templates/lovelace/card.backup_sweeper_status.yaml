@@ -1,0 +1,13 @@
+# Lovelace snippet: Backup Sweeper status
+# Lists report index path and basic run commands
+
+type: vertical-stack
+cards:
+  - type: markdown
+    content: |
+      ### Backup Sweeper
+      Reports & commands
+      - Reports index: `/config/hestia/reports/_index.jsonl`
+      - Run full: `python /config/hestia/tools/backup_sweeper.py`
+      - Dry run: `python /config/hestia/tools/backup_sweeper.py --dry-run`
+      - Validate: `python /config/hestia/tools/backup_sweeper.py --validate-only`
