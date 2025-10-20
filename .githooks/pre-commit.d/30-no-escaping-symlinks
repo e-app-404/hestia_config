@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+set -euo pipefail
+mapfile -t files < <(git diff --cached --name-only)
+for f in "${files[@]}"; do
+  [ -L "$f" ] || continue
+  tgt=$(python3 - <<PY
+import os,sys
+print(os.path.realpath(sys.argv[1]))
+PY
+"$f")
+  case "$tgt" in
+    /config/*) : ;;
+    *) echo "E-ADR0015: Blocked symlink escaping /config: $f -> $tgt" >&2; exit 43 ;;
+  esac
+done

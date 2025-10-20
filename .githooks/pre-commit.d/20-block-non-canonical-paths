@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+set -euo pipefail
+bad=$(git diff --cached --name-only -z | tr "\0" "\n" | grep -E "^(System/Volumes/Data/homeassistant|Volumes/HA)/" || true)
+if [ -n "${bad:-}" ]; then
+  echo "E-ADR0024: Blocked non-canonical staged paths in repo:" >&2
+  echo "$bad" >&2
+  exit 42
+fi
