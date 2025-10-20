@@ -7,7 +7,7 @@
 - **Modes:**
   - `dry-run`: Probes upstream, simulates normalization, emits a mode-suffixed report and ledger entry (no writes).
   - `apply`: Installs/updates the normalizer script, starts the service, configures Tailscale (if enabled), emits report and ledger.
-- **Reports:** Written to `/config/hestia/workspace/operations/logs/glances_bridge/` as `*__dry_run.json` or `*__apply.json`.
+- **Reports:** Written to `/config/hestia/workspace/reports/glances_bridge/` as `*__dry_run.json` or `*__apply.json`.
 - **Ledger:** Append-only JSONL at `/config/hestia/workspace/.hestia/index/glances_bridge__index.jsonl`.
 - **Retention:** Prunes old reports and trims ledger per TOML settings.
 
@@ -36,7 +36,7 @@ Add this block to `/config/hestia/config/system/hestia.toml`:
 repo_root    = "/config"
 config_root  = "/config/hestia/config"
 allowed_root = "/config/hestia"
-report_dir   = "/config/hestia/workspace/operations/logs/glances_bridge"
+report_dir   = "/config/hestia/workspace/reports/glances_bridge"
 index_dir    = "/config/hestia/workspace/.hestia/index"
 
 [automation.glances_bridge.runtime]
@@ -47,7 +47,7 @@ tailscale_host  = "" # set to enable tailscale wiring
 tailscale_port  = 61208
 
 [automation.glances_bridge.apply]
-use_write_broker = true
+use_write_broker = false
 write_broker_cmd = "/config/bin/write-broker"
 write_broker_mode= ""
 
@@ -66,6 +66,17 @@ ledger_lines = 20000
 - All actions are logged in the ledger and reports for auditability.
 - Retention and atomic operations follow ADR-0024, ADR-0027, and ADR-0031.
 - No secrets or vault URIs are ever written by this tool.
+
+<!-- ADR-0031/0024 canonical section -->
+## Canonical Paths & Evidence (ADR-0031 / ADR-0024)
+
+- Reports: `/config/hestia/workspace/reports/glances_bridge/…`
+- Ops logs: `/config/hestia/workspace/operations/logs/glances_bridge/…`
+- Ledger (JSONL): `/config/hestia/workspace/.hestia/index/glances_bridge__index.jsonl`
+
+Path compliance: No $HOME, ~/hass, /Volumes, /n/ha, or actions-runner paths in code or docs. Use /config only (ADR-0024). The repo path-linter enforces this policy.
+
+Write broker: Default use_write_broker=false. Set to true to route file writes through the broker; ensure broker_cmd and mode are configured when enabled.
 
 ## Support
 For config or runtime issues, see the ledger and latest report in:

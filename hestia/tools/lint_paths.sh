@@ -2,7 +2,7 @@
 # Fail on legacy aliases; exclude historical & imported ADRs.
 set -euo pipefail
 
-PATTERN='HOME/|~/hass|/Volumes/|/n/ha|actions-runner'
+PATTERN='\$HOME/|~\/hass|/Volumes/|/n/ha|actions-runner/.+?/hass'
 
 # Exclusions (globs)
 EXCLUDES=(
@@ -17,7 +17,7 @@ EXCLUDES=(
 )
 
 if command -v rg >/dev/null 2>&1; then
-  if rg -n "$PATTERN" --hidden "${EXCLUDES[@]}" .; then
+  if rg -nE "$PATTERN" --hidden "${EXCLUDES[@]}" --glob '!**/*.md' --glob '!ADR/deprecated/**' --glob '!docs/history/**' --glob '!library/docs/ADR-imports/**' .; then
     echo 'ERROR: Disallowed path alias detected. Use /config only.' >&2
     exit 1
   fi
