@@ -20,18 +20,20 @@ rest_command:
 #        "config_data": {{ config_data | tojson }},
 #        "schema_expected": {{ schema_expected|default(1) }}
 #      }
+
   room_db_update_config:
     url: "http://a0d7b954-appdaemon:5050/api/appdaemon/room_db_update_config"
     method: POST
-    content_type: "application/json"
+    content_type: "application/json; charset=utf-8"
     timeout: 30
     payload: >
       {
         "room_id": "{{ room_id }}",
         "config_domain": "{{ config_domain }}",
-        "config_data": {{ config_data }},
-        "schema_expected": {{ schema_expected | default(1) }}
+        "config_data": {{ config_data | tojson }},
+        "schema_expected": {{ schema_expected | default(1) | int }}
       }
+
   room_db_health:
     url: "http://a0d7b954-appdaemon:5050/api/appdaemon/room_db_health"
     method: GET
