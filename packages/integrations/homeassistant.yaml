@@ -1,3 +1,0 @@
- HACS custom integration network_scanner
-# Loader: !include domain/rest/rest.yaml
-# Schema: rest

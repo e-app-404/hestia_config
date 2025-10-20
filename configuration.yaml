@@ -1,10 +1,8 @@
 #═════════════════════════════════════════════════════════════════════════════
-# ▶  HOME ASSISTANT CONFIGURATION   Minimalist config split package setup ◀
-# Each package is titled 'integration_key' and front-loaded as an
-# integration
+# ▶  HOME ASSISTANT CONFIGURATION  •  Minimalist config split package setup ◀
+# Each package is titled 'integration_key' and front-loaded as an integration
 # related: /config/hestia/library/ha_implementation/homeassistant/ha.split-configuration.md
 #═════════════════════════════════════════════════════════════════════════════
-
 
 homeassistant:
   name: "Hestia"

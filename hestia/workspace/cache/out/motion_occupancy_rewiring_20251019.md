@@ -1,3 +1,6 @@
+PROCESSED 2025-19-10
+
+
 Title: Wire `*_motion_recent_beta` into `*_occupancy_beta` (no loops; keep existing behavior)
 
 Context:
