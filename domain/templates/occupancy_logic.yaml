@@ -31,17 +31,18 @@
         file: "/config/domain/templates/occupancy_logic"
         protocols: "Matter(1), Logic(2,3)"
         upstream_sources: >
-          {{ ['template.library.jinja','binary_sensor.sanctum_occupancy_matter_alpha','binary_sensor.bedroom_occupancy_beta','binary_sensor.ensuite_occupancy_beta'] | tojson }}
+          {{ ['template.library.jinja','sanctum_motion_recent_beta','binary_sensor.sanctum_occupancy_matter_alpha','binary_sensor.bedroom_occupancy_beta','binary_sensor.ensuite_occupancy_beta'] | tojson }}
         aggregation_strategy: "preference-based selection (occupancy-only)"
         active_source: >
           {% from 'template.library.jinja' import get_active_source %}
           {% set sources = [
             {'entity': 'binary_sensor.sanctum_occupancy_matter_alpha','preference': 1},
             {'entity': 'binary_sensor.bedroom_occupancy_beta','preference': 2},
-            {'entity': 'binary_sensor.ensuite_occupancy_beta','preference': 3}
+            {'entity': 'binary_sensor.ensuite_occupancy_beta','preference': 3},
+            {'entity': 'binary_sensor.sanctum_motion_recent_beta','preference': 4}
           ] %}
           {{ get_active_source(sources) or 'unknown' }}
-        source_count: "3"
+        source_count: "4"
         related_motion_entity: "binary_sensor.sanctum_motion_beta"
         related_motion_recent_entity: "binary_sensor.sanctum_motion_recent_beta"
         version: "1.1"
@@ -232,8 +233,10 @@
         {% from 'template.library.jinja' import preference_select %}
         {% set sources = [
           {'entity': 'binary_sensor.bedroom_occupancy_alpha_occupancy',      'protocol': 'mqtt',   'preference': 1, 'type': 'occupancy'},
-          {'entity': 'binary_sensor.bedroom_wardrobe_occupancy_matter_alpha','protocol': 'matter', 'preference': 2, 'type': 'occupancy'},
-          {'entity': 'binary_sensor.desk_occupancy_beta',                    'protocol': 'wifi',   'preference': 4, 'type': 'occupancy'}
+          {'entity': 'binary_sensor.bed_occupancy_beta',                     'protocol': 'mqtt',   'preference': 2, 'type': 'occupancy'},
+          {'entity': 'binary_sensor.bedroom_wardrobe_occupancy_matter_alpha','protocol': 'matter', 'preference': 3, 'type': 'occupancy'},
+          {'entity': 'binary_sensor.desk_occupancy_beta',                    'protocol': 'wifi',   'preference': 4, 'type': 'occupancy'},
+          {'entity': 'binary_sensor.bedroom_motion_recent_beta',             'protocol': 'recency','preference': 5, 'type': 'motion'}
         ] %}
         {{ preference_select(sources) == 'on' }}
       attributes:
@@ -246,7 +249,7 @@
         file: "/config/domain/templates/occupancy_logic"
         protocols: "MQTT(1), Matter(2), WiFi(4)"
         upstream_sources: >-
-          {{ ['template.library.jinja','binary_sensor.bedroom_occupancy_alpha_occupancy','binary_sensor.bedroom_wardrobe_occupancy_matter_alpha','binary_sensor.desk_occupancy_beta'] | tojson }}
+          {{ ['template.library.jinja','binary_sensor.bedroom_ottoman_alpha_vibration','binary_sensor.bedroom_occupancy_alpha_occupancy','binary_sensor.bedroom_wardrobe_occupancy_matter_alpha','binary_sensor.desk_occupancy_beta'] | tojson }}
         downstream_consumers: >-
           {{ ['binary_sensor.sanctum_occupancy_beta','binary_sensor.zone_upstairs_occupancy_beta','binary_sensor.merged_home_occupancy_eta'] | tojson }}
         aggregation_strategy: "preference-based selection (occupancy-only)"
@@ -254,11 +257,13 @@
           {% from 'template.library.jinja' import get_active_source %}
           {% set sources = [
             {'entity': 'binary_sensor.bedroom_occupancy_alpha_occupancy','preference': 1},
-            {'entity': 'binary_sensor.bedroom_wardrobe_occupancy_matter_alpha','preference': 2},
+            {'entity': 'binary_sensor.bed_occupancy_beta','preference': 2},
+            {'entity': 'binary_sensor.bedroom_wardrobe_occupancy_matter_alpha','preference': 3},
             {'entity': 'binary_sensor.desk_occupancy_beta','preference': 4}
+            {'entity': 'binary_sensor.bedroom_motion_recent_beta','preference': 5}
           ] %}
           {{ get_active_source(sources) or 'unknown' }}
-        source_count: "3"
+        source_count: "5"
         related_motion_entity: "binary_sensor.bedroom_motion_beta"
         related_motion_recent_entity: "binary_sensor.bedroom_motion_recent_beta"
         replacements_note: "desk_occupancy_macbook_inference → desk_occupancy_beta; ethernet inference removed"
@@ -274,7 +279,7 @@
         {% from 'template.library.jinja' import preference_select %}
         {% set sources = [
           {'entity': 'binary_sensor.desk_occupancy_inferred', 'protocol': 'gamma', 'preference': 1, 'type': 'occupancy'},
-          {'entity': 'binary_sensor.desk_motion_beta', 'protocol': 'mqtt',  'preference': 2, 'type': 'motion'}
+          {'entity': 'binary_sensor.desk_motion_recent_beta', 'protocol': 'mqtt',  'preference': 2, 'type': 'motion'},
         ] %}
         {{ preference_select(sources) == 'on' }}
       attributes:
@@ -287,7 +292,7 @@
         file: "/config/domain/templates/occupancy_logic"
         protocols: "gamma(1)"
         upstream_sources: >
-          {{ ['template.library.jinja','binary_sensor.desk_occupancy_inferred', 'binary_sensor.desk_motion_beta'] | tojson }}
+          {{ ['template.library.jinja','binary_sensor.desk_occupancy_inferred', 'binary_sensor.desk_motion_recent_beta'] | tojson }}
         aggregation_strategy: "preference-based selection"
         related_motion_recent_entity: "binary_sensor.desk_motion_recent_beta"
         source_count: "2"
