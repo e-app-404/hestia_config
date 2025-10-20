@@ -7,7 +7,7 @@ related: []
 supersedes: []
 last_updated: '2025-10-15'
 date: 2025-09-28
-decision: 1) **Source of truth** = `github/main`. 2) **NAS mirror** is **pull-only**
+decision: Source of truth** = `github/main`. 2) **NAS mirror** is **pull-only**
   (no dev pushes). It is updated by **fetching from GitHub**, not by direct developer
   force-pushes.
 author: "e-app-404"
