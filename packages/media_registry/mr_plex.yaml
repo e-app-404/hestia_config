@@ -1,9 +1,7 @@
 # ════════════════════════════════════════════════════════════════════════
-# ▶ PLEX PACKAGE (Room-DB Storage) ◀
-# Storage Backend: SQLite via Room-DB (shared domain)
-# Provides backward compatibility during transition from HACS Variable
+# ▶ PLEX PACKAGE (Room-DB Storage)  •  Backward compatibility support ◀
+# Backend: SQLite via Room-DB (shared domain)
 # ════════════════════════════════════════════════════════════════════════
-
 template:
   - sensor:
       # ──────────────────────────────────────────────────────────────────
@@ -133,8 +131,7 @@ template:
             {% endif %}
 
 # ════════════════════════════════════════════════════════════════════════
-# ▶ PLEX ROOM-DB SCRIPTS ◀
-# Purpose: Write Plex media indexes to Room-DB storage
+# ▶ PLEX ROOM-DB SCRIPTS  •  Write Plex media indexes to Room-DB storage ◀
 # Pattern: REST-based upserts via room_db_update_config
 # ════════════════════════════════════════════════════════════════════════
 script:

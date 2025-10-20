@@ -3,7 +3,6 @@
 # Purpose: Automated tests for Room-DB media registry migration
 # Usage: Run in Developer Tools → Services (one sequence at a time)
 # ════════════════════════════════════════════════════════════════════════
-
 script:
   # ──────────────────────────────────────────────────────────────────────
   # Test 1: AppDaemon Health Check
