@@ -11,3 +11,10 @@ cards:
       - Run full: `python /config/hestia/tools/backup_sweeper.py`
       - Dry run: `python /config/hestia/tools/backup_sweeper.py --dry-run`
       - Validate: `python /config/hestia/tools/backup_sweeper.py --validate-only`
+  - type: entities
+    title: Status
+    entities:
+      - entity: sensor.backup_sweeper_health_score
+        name: Health score
+      - entity: sensor.backup_sweeper_last_run
+        name: Last run

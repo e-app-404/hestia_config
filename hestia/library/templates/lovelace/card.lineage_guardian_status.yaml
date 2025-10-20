@@ -12,3 +12,10 @@ cards:
       - Scanner: `python lineage_guardian/graph_scanner.py --output ./.artifacts/graph.json --template-dir /config/domain/templates/ --verbose`
       - Validator: `python lineage_guardian/lineage_validator.py --graph-file ./.artifacts/graph.json --output ./.artifacts/violations.json --verbose`
       - Report: `python lineage_guardian/lineage_report.py --graph ./.artifacts/graph.json --violations ./.artifacts/violations.json --integrity ./.artifacts/integrity.json --outdir ./.artifacts/report`
+  - type: entities
+    title: Status
+    entities:
+      - entity: sensor.lineage_guardian_violations_count
+        name: Violations count
+      - entity: binary_sensor.lineage_guardian_integrity_ok
+        name: Integrity OK

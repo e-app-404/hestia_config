@@ -100,3 +100,10 @@ template:
           role: "diagnostics"
           type: "jsonl"
           tier: "μ"
+      # Backup Sweeper last run timestamp as first-class sensor
+      - name: "Backup Sweeper Last Run"
+        unique_id: "backup_sweeper_last_run"
+        state: >
+          {% set raw = states('sensor.backup_sweeper_last_index_line') %}
+          {% set obj = (raw | from_json(default={})) %}
+          {{ obj.get('created_at', '') if obj is mapping else '' }}
