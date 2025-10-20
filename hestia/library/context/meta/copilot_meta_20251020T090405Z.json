@@ -1,0 +1,10 @@
+{
+  "run_id": "d06b5e99-f666-4950-9541-5e65a239b0e7",
+  "mode": "triage",
+  "ts": "2025-10-20T09:04:05Z",
+  "report": "/config/hestia/reports/ha-diagnostics-copilot_20251020T090405Z.yaml",
+  "inputs": {
+    "selection_path": null,
+    "active_file": null
+  }
+}
