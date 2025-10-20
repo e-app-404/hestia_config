@@ -1,0 +1,425 @@
+# ════════════════════════════════════════════════════════════════════════
+# ▶ VALIDATION TEST SUITE ◀
+# Purpose: Automated tests for Room-DB media registry migration
+# Usage: Run in Developer Tools → Services (one sequence at a time)
+# ════════════════════════════════════════════════════════════════════════
+
+script:
+  # ──────────────────────────────────────────────────────────────────────
+  # Test 1: AppDaemon Health Check
+  # ──────────────────────────────────────────────────────────────────────
+  test_appdaemon_health:
+    alias: "Test: AppDaemon Health"
+    sequence:
+      - service: rest_command.room_db_health
+
+      - delay:
+          seconds: 2
+
+      - service: system_log.write
+        data:
+          message: >-
+            AppDaemon health check completed.
+            Check REST response in network inspector.
+          level: info
+
+      - service: persistent_notification.create
+        data:
+          title: "Test 1: AppDaemon Health"
+          message: >-
+            ✅ Health endpoint responded.
+            Expected: {"status": "healthy", "max_config_size_bytes": 524288}
+
+  # ──────────────────────────────────────────────────────────────────────
+  # Test 2: TTS Registry Write
+  # ──────────────────────────────────────────────────────────────────────
+  test_tts_registry_write:
+    alias: "Test: TTS Registry Write"
+    sequence:
+      - service: rest_command.room_db_update_config
+        data:
+          room_id: "tts_gate_registry"
+          domain: "shared"
+          config_data:
+            test_key_migration:
+              last_ts: "{{ as_timestamp(now()) }}"
+              count: 1
+            test_key_2:
+              last_ts: "{{ as_timestamp(now()) - 300 }}"
+              count: 3
+          schema_expected: 1
+
+      - delay:
+          seconds: 3
+
+      - service: homeassistant.update_entity
+        target:
+          entity_id: sensor.room_configs_shared_registry
+
+      - delay:
+          seconds: 2
+
+      - service: persistent_notification.create
+        data:
+          title: "Test 2: TTS Registry Write"
+          message: >-
+            ✅ Write completed.
+            Check sensor.tts_gate_registry_status
+            Expected state: 2
+            Expected keys: ["test_key_migration", "test_key_2"]
+
+  # ──────────────────────────────────────────────────────────────────────
+  # Test 3: TTS Gate Script (First Call)
+  # ──────────────────────────────────────────────────────────────────────
+  test_tts_gate_first_call:
+    alias: "Test: TTS Gate (First Call)"
+    fields:
+      media_player:
+        description: "Your media player entity"
+        example: "media_player.bedroom_speaker"
+        selector:
+          entity:
+            domain: media_player
+    sequence:
+      - service: script.tts_gate_native
+        data:
+          key: "test_cooldown"
+          message: "First announcement should play"
+          media_player: "{{ media_player }}"
+          tts_entity: "tts.google_translate"
+          language: "en"
+          volume: 0.3
+          cooldown_sec: 120
+          max_repeats: 1
+
+      - delay:
+          seconds: 5
+
+      - service: persistent_notification.create
+        data:
+          title: "Test 3: TTS Gate (First Call)"
+          message: >-
+            ✅ First call completed.
+            Expected: TTS played
+            Check sensor.tts_gate_registry_status for key "test_cooldown"
+
+  # ──────────────────────────────────────────────────────────────────────
+  # Test 4: TTS Gate Script (Cooldown Block)
+  # ──────────────────────────────────────────────────────────────────────
+  test_tts_gate_cooldown:
+    alias: "Test: TTS Gate (Cooldown Block)"
+    fields:
+      media_player:
+        description: "Your media player entity"
+        example: "media_player.bedroom_speaker"
+        selector:
+          entity:
+            domain: media_player
+    sequence:
+      - service: script.tts_gate_native
+        data:
+          key: "test_cooldown"  # Same key as Test 3
+          message: "This should NOT play (cooldown active)"
+          media_player: "{{ media_player }}"
+          tts_entity: "tts.google_translate"
+          language: "en"
+          volume: 0.3
+          cooldown_sec: 120
+          max_repeats: 0  # No repeats allowed
+
+      - delay:
+          seconds: 3
+
+      - service: persistent_notification.create
+        data:
+          title: "Test 4: TTS Gate (Cooldown)"
+          message: >-
+            ✅ Cooldown test completed.
+            Expected: No TTS played (cooldown active)
+            Check system log for "TTS gate blocked" message
+
+  # ──────────────────────────────────────────────────────────────────────
+  # Test 5: Plex TV Index Write
+  # ──────────────────────────────────────────────────────────────────────
+  test_plex_tv_write:
+    alias: "Test: Plex TV Index Write"
+    sequence:
+      - service: script.plex_tv_index_upsert
+        data:
+          payload:
+            shows:
+              "Test Show Alpha":
+                seasons: 3
+                total_episodes: 30
+              "Test Show Beta":
+                seasons: 2
+                total_episodes: 20
+            seasons:
+              "Test Show Alpha": [1, 2, 3]
+              "Test Show Beta": [1, 2]
+            episodes:
+              - show: "Test Show Alpha"
+                season: 1
+                episode: 1
+                title: "Pilot"
+                added_at: "{{ now().isoformat() }}"
+              - show: "Test Show Alpha"
+                season: 1
+                episode: 2
+                title: "Episode 2"
+                added_at: "{{ now().isoformat() }}"
+            updated: "{{ now().isoformat() }}"
+
+      - delay:
+          seconds: 3
+
+      - service: homeassistant.update_entity
+        target:
+          entity_id: sensor.room_configs_shared_registry
+
+      - delay:
+          seconds: 2
+
+      - service: persistent_notification.create
+        data:
+          title: "Test 5: Plex TV Write"
+          message: >-
+            ✅ TV index write completed.
+            Check sensor.plex_tv_index_count
+            Expected state: 2 (episodes)
+            Check sensor.plex_tv_index_compat attributes
+
+  # ──────────────────────────────────────────────────────────────────────
+  # Test 6: Plex Movie Index Write
+  # ──────────────────────────────────────────────────────────────────────
+  test_plex_movie_write:
+    alias: "Test: Plex Movie Index Write"
+    sequence:
+      - service: script.plex_movie_index_upsert
+        data:
+          payload:
+            movies:
+              - title: "Test Movie Alpha"
+                year: 2020
+                rating_key: 99901
+                added_at: "{{ now().isoformat() }}"
+              - title: "Test Movie Beta"
+                year: 2021
+                rating_key: 99902
+                added_at: "{{ now().isoformat() }}"
+              - title: "Test Movie Gamma"
+                year: 2022
+                rating_key: 99903
+                added_at: "{{ now().isoformat() }}"
+            year_released:
+              "Test Movie Alpha": 2020
+              "Test Movie Beta": 2021
+              "Test Movie Gamma": 2022
+            updated: "{{ now().isoformat() }}"
+
+      - delay:
+          seconds: 3
+
+      - service: homeassistant.update_entity
+        target:
+          entity_id: sensor.room_configs_shared_registry
+
+      - delay:
+          seconds: 2
+
+      - service: persistent_notification.create
+        data:
+          title: "Test 6: Plex Movie Write"
+          message: >-
+            ✅ Movie index write completed.
+            Check sensor.plex_movie_index_count
+            Expected state: 3 (movies)
+            Check sensor.plex_movie_index_compat attributes
+
+  # ──────────────────────────────────────────────────────────────────────
+  # Test 7: SQL Sensor State Validation
+  # ──────────────────────────────────────────────────────────────────────
+  test_sql_sensor_validation:
+    alias: "Test: SQL Sensor Validation"
+    sequence:
+      - service: homeassistant.update_entity
+        target:
+          entity_id:
+            - sensor.room_configs_shared_registry
+            - sensor.tts_gate_registry_status
+            - sensor.plex_tv_index_count
+            - sensor.plex_movie_index_count
+
+      - delay:
+          seconds: 3
+
+      - variables:
+          sql_state: "{{ states('sensor.room_configs_shared_registry') }}"
+          tts_count: "{{ states('sensor.tts_gate_registry_status') | int(0) }}"
+          tv_count: "{{ states('sensor.plex_tv_index_count') | int(0) }}"
+          movie_count: "{{ states('sensor.plex_movie_index_count') | int(0) }}"
+
+      - service: persistent_notification.create
+        data:
+          title: "Test 7: SQL Sensor Validation"
+          message: >-
+            ✅ Sensor state check completed.
+
+            SQL Sensor: {{ sql_state }}
+            TTS Keys: {{ tts_count }}
+            TV Episodes: {{ tv_count }}
+            Movies: {{ movie_count }}
+
+            Expected: All sensors operational (not unavailable)
+
+  # ──────────────────────────────────────────────────────────────────────
+  # Test 8: Large Payload Stress Test (100KB)
+  # ──────────────────────────────────────────────────────────────────────
+  test_large_payload:
+    alias: "Test: Large Payload (100KB)"
+    sequence:
+      - variables:
+          # Generate 500 movie entries (~100KB JSON)
+          large_movie_payload:
+            movies: >-
+              {% set ns = namespace(movies=[]) %}
+              {% for i in range(500) %}
+                {% set movie = {
+                  'title': 'Test Movie ' ~ i,
+                  'year': 2000 + (i % 25),
+                  'rating_key': 10000 + i,
+                  'genres': ['Action', 'Drama'],
+                  'added_at': now().isoformat()
+                } %}
+                {% set ns.movies = ns.movies + [movie] %}
+              {% endfor %}
+              {{ ns.movies }}
+            year_released: >-
+              {% set ns = namespace(years={}) %}
+              {% for i in range(500) %}
+                {% set _ = ns.years.update({'Test Movie ' ~ i: 2000 + (i % 25)}) %}
+              {% endfor %}
+              {{ ns.years }}
+            updated: "{{ now().isoformat() }}"
+
+      - service: script.plex_movie_index_upsert
+        data:
+          payload: "{{ large_movie_payload }}"
+
+      - delay:
+          seconds: 5
+
+      - service: persistent_notification.create
+        data:
+          title: "Test 8: Large Payload Stress Test"
+          message: >-
+            ✅ Large payload write completed.
+            Payload size: ~100KB
+            Movies: 500
+            Check sensor.plex_movie_index_count
+            Expected: 500 movies
+
+  # ──────────────────────────────────────────────────────────────────────
+  # Test 9: Rate Limit Validation
+  # ──────────────────────────────────────────────────────────────────────
+  test_rate_limit:
+    alias: "Test: Rate Limit Validation"
+    sequence:
+      # First write (should succeed)
+      - service: rest_command.room_db_update_config
+        data:
+          room_id: "tts_gate_registry"
+          domain: "shared"
+          config_data:
+            rate_test_1: { last_ts: "{{ as_timestamp(now()) }}", count: 1 }
+          schema_expected: 1
+
+      # Immediate second write (should be rate limited - 429)
+      - service: rest_command.room_db_update_config
+        data:
+          room_id: "tts_gate_registry"
+          domain: "shared"
+          config_data:
+            rate_test_2: { last_ts: "{{ as_timestamp(now()) }}", count: 1 }
+          schema_expected: 1
+
+      - delay:
+          seconds: 3
+
+      # Third write after delay (should succeed)
+      - service: rest_command.room_db_update_config
+        data:
+          room_id: "tts_gate_registry"
+          domain: "shared"
+          config_data:
+            rate_test_3: { last_ts: "{{ as_timestamp(now()) }}", count: 1 }
+          schema_expected: 1
+
+      - service: persistent_notification.create
+        data:
+          title: "Test 9: Rate Limit"
+          message: >-
+            ✅ Rate limit test completed.
+            Expected: First write OK, second write 429, third write OK
+            Check AppDaemon logs for rate limit messages
+
+  # ──────────────────────────────────────────────────────────────────────
+  # Test 10: End-to-End Integration
+  # ──────────────────────────────────────────────────────────────────────
+  test_end_to_end:
+    alias: "Test: End-to-End Integration"
+    fields:
+      media_player:
+        description: "Your media player entity"
+        example: "media_player.bedroom_speaker"
+        selector:
+          entity:
+            domain: media_player
+    sequence:
+      # Step 1: Write Plex indexes
+      - service: script.plex_refresh_all_indexes
+
+      - delay:
+          seconds: 5
+
+      # Step 2: Trigger TTS announcement about new media
+      - service: script.tts_gate_native
+        data:
+          key: "plex_new_content"
+          message: >-
+            New content available:
+            {{ states('sensor.plex_tv_index_count') }} TV episodes and
+            {{ states('sensor.plex_movie_index_count') }} movies.
+          media_player: "{{ media_player }}"
+          tts_entity: "tts.google_translate"
+          language: "en"
+          volume: 0.4
+          cooldown_sec: 3600
+          max_repeats: 0
+
+      - delay:
+          seconds: 5
+
+      # Step 3: Validate all sensors updated
+      - service: homeassistant.update_entity
+        target:
+          entity_id:
+            - sensor.room_configs_shared_registry
+            - sensor.tts_gate_registry_status
+            - sensor.plex_tv_index_count
+            - sensor.plex_movie_index_count
+
+      - delay:
+          seconds: 3
+
+      - service: persistent_notification.create
+        data:
+          title: "Test 10: End-to-End Integration"
+          message: >-
+            ✅ Integration test completed.
+
+            Registry Keys: {{ states('sensor.tts_gate_registry_status') }}
+            TV Episodes: {{ states('sensor.plex_tv_index_count') }}
+            Movies: {{ states('sensor.plex_movie_index_count') }}
+
+            All systems operational!

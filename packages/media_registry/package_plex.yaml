@@ -1,0 +1,268 @@
+# ════════════════════════════════════════════════════════════════════════
+# ▶ PLEX PACKAGE (Room-DB Storage) ◀
+# Storage Backend: SQLite via Room-DB (shared domain)
+# Provides backward compatibility during transition from HACS Variable
+# ════════════════════════════════════════════════════════════════════════
+
+template:
+  - sensor:
+      # ──────────────────────────────────────────────────────────────────
+      # Plex TV Index (Legacy Compatibility)
+      # ──────────────────────────────────────────────────────────────────
+      - name: "Plex TV Index (Legacy Compatibility)"
+        unique_id: "plex_tv_index_compat"
+        state: >-
+          {% set payload = state_attr('sensor.room_configs_shared_registry', 'payload') %}
+          {% if payload and 'plex_tv_index' in payload %}
+            {% set data = payload['plex_tv_index'] %}
+            {{ data.get('episodes', []) | length }}
+          {% else %}
+            0
+          {% endif %}
+        attributes:
+          shows: >-
+            {% set payload = state_attr('sensor.room_configs_shared_registry', 'payload') %}
+            {% if payload and 'plex_tv_index' in payload %}
+              {% set data = payload['plex_tv_index'] %}
+              {{ data.get('shows', {}) }}
+            {% else %}
+              {}
+            {% endif %}
+          seasons: >-
+            {% set payload = state_attr('sensor.room_configs_shared_registry', 'payload') %}
+            {% if payload and 'plex_tv_index' in payload %}
+              {% set data = payload['plex_tv_index'] %}
+              {{ data.get('seasons', {}) }}
+            {% else %}
+              {}
+            {% endif %}
+          episodes: >-
+            {% set payload = state_attr('sensor.room_configs_shared_registry', 'payload') %}
+            {% if payload and 'plex_tv_index' in payload %}
+              {% set data = payload['plex_tv_index'] %}
+              {{ data.get('episodes', []) }}
+            {% else %}
+              []
+            {% endif %}
+          updated: >-
+            {% set payload = state_attr('sensor.room_configs_shared_registry', 'payload') %}
+            {% if payload and 'plex_tv_index' in payload %}
+              {% set data = payload['plex_tv_index'] %}
+              {{ data.get('updated', '') }}
+            {% else %}
+              ''
+            {% endif %}
+        unit_of_measurement: "episodes"
+        icon: mdi:television-box
+
+      # ──────────────────────────────────────────────────────────────────
+      # Plex Movie Index (Legacy Compatibility)
+      # ──────────────────────────────────────────────────────────────────
+      - name: "Plex Movie Index (Legacy Compatibility)"
+        unique_id: "plex_movie_index_compat"
+        state: >-
+          {% set payload = state_attr('sensor.room_configs_shared_registry', 'payload') %}
+          {% if payload and 'plex_movie_index' in payload %}
+            {% set data = payload['plex_movie_index'] %}
+            {{ data.get('movies', []) | length }}
+          {% else %}
+            0
+          {% endif %}
+        attributes:
+          movies: >-
+            {% set payload = state_attr('sensor.room_configs_shared_registry', 'payload') %}
+            {% if payload and 'plex_movie_index' in payload %}
+              {% set data = payload['plex_movie_index'] %}
+              {{ data.get('movies', []) }}
+            {% else %}
+              []
+            {% endif %}
+          year_released: >-
+            {% set payload = state_attr('sensor.room_configs_shared_registry', 'payload') %}
+            {% if payload and 'plex_movie_index' in payload %}
+              {% set data = payload['plex_movie_index'] %}
+              {{ data.get('year_released', {}) }}
+            {% else %}
+              {}
+            {% endif %}
+          updated: >-
+            {% set payload = state_attr('sensor.room_configs_shared_registry', 'payload') %}
+            {% if payload and 'plex_movie_index' in payload %}
+              {% set data = payload['plex_movie_index'] %}
+              {{ data.get('updated', '') }}
+            {% else %}
+              ''
+            {% endif %}
+        unit_of_measurement: "movies"
+        icon: mdi:movie
+
+      # ──────────────────────────────────────────────────────────────────
+      # Plex Recently Added (Example Query Sensor)
+      # ──────────────────────────────────────────────────────────────────
+      - name: "Plex Recently Added"
+        unique_id: "plex_recently_added"
+        state: >-
+          {% set payload = state_attr('sensor.room_configs_shared_registry', 'payload') %}
+          {% set tv_data = payload.get('plex_tv_index', {}) if payload else {} %}
+          {% set movie_data = payload.get('plex_movie_index', {}) if payload else {} %}
+          {% set tv_episodes = tv_data.get('episodes', []) %}
+          {% set movies = movie_data.get('movies', []) %}
+          {% set all_items = tv_episodes + movies %}
+          {% if all_items %}
+            {% set sorted_items = all_items | sort(attribute='added_at', reverse=true) %}
+            {% set recent = sorted_items[:10] %}
+            {{ recent | length }}
+          {% else %}
+            0
+          {% endif %}
+        unit_of_measurement: "items"
+        icon: mdi:new-box
+        attributes:
+          items: >-
+            {% set payload = state_attr('sensor.room_configs_shared_registry', 'payload') %}
+            {% set tv_data = payload.get('plex_tv_index', {}) if payload else {} %}
+            {% set movie_data = payload.get('plex_movie_index', {}) if payload else {} %}
+            {% set tv_episodes = tv_data.get('episodes', []) %}
+            {% set movies = movie_data.get('movies', []) %}
+            {% set all_items = tv_episodes + movies %}
+            {% if all_items %}
+              {% set sorted_items = all_items | sort(attribute='added_at', reverse=true) %}
+              {{ sorted_items[:10] }}
+            {% else %}
+              []
+            {% endif %}
+
+# ════════════════════════════════════════════════════════════════════════
+# ▶ PLEX ROOM-DB SCRIPTS ◀
+# Purpose: Write Plex media indexes to Room-DB storage
+# Pattern: REST-based upserts via room_db_update_config
+# ════════════════════════════════════════════════════════════════════════
+script:
+  # ──────────────────────────────────────────────────────────────────────
+  # Plex TV Index Upsert
+  # ──────────────────────────────────────────────────────────────────────
+  plex_tv_index_upsert:
+    alias: "Plex TV Index → Room-DB"
+    description: "Write TV shows index to Room-DB storage"
+    mode: single
+    fields:
+      payload:
+        name: Payload
+        description: "Full TV index JSON dict (shows, seasons, episodes, updated)"
+        required: true
+        selector: { object: {} }
+    sequence:
+      - service: rest_command.room_db_update_config
+        data:
+          room_id: "plex_tv_index"
+          domain: "shared"
+          config_data: "{{ payload }}"
+          schema_expected: 1
+
+      - service: system_log.write
+        data:
+          message: >-
+            Plex TV index updated:
+            {{ payload.get('shows', {}) | length }} shows,
+            {{ payload.get('episodes', []) | length }} episodes
+          level: info
+
+  # ──────────────────────────────────────────────────────────────────────
+  # Plex Movie Index Upsert
+  # ──────────────────────────────────────────────────────────────────────
+  plex_movie_index_upsert:
+    alias: "Plex Movie Index → Room-DB"
+    description: "Write movie index to Room-DB storage"
+    mode: single
+    fields:
+      payload:
+        name: Payload
+        description: "Full Movie index JSON dict (movies, year_released, updated)"
+        required: true
+        selector: { object: {} }
+    sequence:
+      - service: rest_command.room_db_update_config
+        data:
+          room_id: "plex_movie_index"
+          domain: "shared"
+          config_data: "{{ payload }}"
+          schema_expected: 1
+
+      - service: system_log.write
+        data:
+          message: >-
+            Plex movie index updated:
+            {{ payload.get('movies', []) | length }} movies
+          level: info
+
+  # ──────────────────────────────────────────────────────────────────────
+  # Example: Refresh All Plex Indexes (Wrapper)
+  # ──────────────────────────────────────────────────────────────────────
+  plex_refresh_all_indexes:
+    alias: "Plex Refresh All Indexes"
+    description: "Trigger full refresh of TV and Movie indexes (example implementation)"
+    mode: single
+    sequence:
+      # Step 1: Fetch data from Plex (placeholder - implement your Plex query logic)
+      - variables:
+          tv_payload:
+            shows:
+              "Breaking Bad":
+                seasons: 5
+                total_episodes: 62
+              "The Office":
+                seasons: 9
+                total_episodes: 201
+            seasons:
+              "Breaking Bad": [1, 2, 3, 4, 5]
+              "The Office": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+            episodes:
+              - show: "Breaking Bad"
+                season: 1
+                episode: 1
+                title: "Pilot"
+                added_at: "2024-01-15T10:00:00Z"
+              - show: "The Office"
+                season: 1
+                episode: 1
+                title: "Pilot"
+                added_at: "2024-02-20T14:30:00Z"
+            updated: "{{ now().isoformat() }}"
+
+          movie_payload:
+            movies:
+              - title: "The Matrix"
+                year: 1999
+                rating_key: 12345
+                added_at: "2024-01-10T08:00:00Z"
+              - title: "Inception"
+                year: 2010
+                rating_key: 12346
+                added_at: "2024-03-15T12:00:00Z"
+            year_released:
+              "The Matrix": 1999
+              "Inception": 2010
+            updated: "{{ now().isoformat() }}"
+
+      # Step 2: Write TV index
+      - service: script.plex_tv_index_upsert
+        data:
+          payload: "{{ tv_payload }}"
+
+      # Step 3: Wait for rate limit
+      - delay:
+          seconds: 3
+
+      # Step 4: Write movie index
+      - service: script.plex_movie_index_upsert
+        data:
+          payload: "{{ movie_payload }}"
+
+      # Step 5: Log completion
+      - service: persistent_notification.create
+        data:
+          title: "Plex Index Refresh Complete"
+          message: >-
+            TV: {{ tv_payload.episodes | length }} episodes
+            Movies: {{ movie_payload.movies | length }} movies
+            Updated: {{ now().strftime('%Y-%m-%d %H:%M:%S') }}
