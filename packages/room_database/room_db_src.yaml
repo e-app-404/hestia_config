@@ -86,7 +86,6 @@ rest_command:
     method: GET
     timeout: 10
 
-rest_command:
   room_db_reload_mapping:
     url: "http://a0d7b954-appdaemon:5050/api/appdaemon/room_db_reload_mapping"
     method: GET
