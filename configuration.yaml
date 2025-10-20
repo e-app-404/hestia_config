@@ -6,8 +6,8 @@
 
 homeassistant:
   name: "Hestia"
-  latitude: 51.4623937
-  longitude: -0.1289665
+  latitude: 51.463512836863835
+  longitude: -0.1328551769256592
   time_zone: "Europe/London"
   unit_system: metric
   packages: !include_dir_named packages
