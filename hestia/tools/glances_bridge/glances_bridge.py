@@ -194,7 +194,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.request import urlopen, Request
 from urllib.error import URLError, HTTPError
 
-UPSTREAM = "{upstream}"
+UPSTREAM = "__UPSTREAM__"
 
 
 def normalize_diskio_all(payload):
@@ -229,7 +229,8 @@ class H(BaseHTTPRequestHandler):
     protocol_version = "HTTP/1.1"
 
     def _proxy(self):
-        url = f"{UPSTREAM}{self.path}"
+        path = self.path
+        url = f"{UPSTREAM}{path}"
         body = None
         if self.command in ("POST", "PUT", "PATCH"):
             length = int(self.headers.get("Content-Length", "0"))
@@ -244,9 +245,29 @@ class H(BaseHTTPRequestHandler):
                 resp_body = r.read()
                 headers = dict(r.headers.items())
         except HTTPError as e:
-            status = e.code
-            resp_body = e.read()
-            headers = dict(e.headers.items())
+            # Fallback: if upstream doesn't support v4, retry against v3
+            if e.code == 404 and path.startswith("/api/4/"):
+                alt_path = path.replace("/api/4/", "/api/3/", 1)
+                alt_url = f"{UPSTREAM}{alt_path}"
+                alt_req = Request(alt_url, data=body, method=self.command)
+                for k, v in self.headers.items():
+                    if k.lower() not in ("host", "content-length"):
+                        alt_req.add_header(k, v)
+                try:
+                    with urlopen(alt_req, timeout=8) as r:
+                        status = r.status
+                        resp_body = r.read()
+                        headers = dict(r.headers.items())
+                except Exception as ee:
+                    status = getattr(ee, 'code', 502)
+                    resp_body = json.dumps(
+                        {"error": "upstream_unreachable", "detail": str(ee)}
+                    ).encode()
+                    headers = {"Content-Type": "application/json"}
+            else:
+                status = e.code
+                resp_body = e.read()
+                headers = dict(e.headers.items())
         except URLError as e:
             status = 502
             resp_body = json.dumps({"error": "upstream_unreachable", "detail": str(e)}).encode()
@@ -257,10 +278,10 @@ class H(BaseHTTPRequestHandler):
         status, headers, body = self._proxy()
         path = self.path
         mode = "pass"
-        if path.startswith("/api/4/all"):
+        if path.startswith("/api/4/all") or path.startswith("/api/3/all"):
             body, mode = normalize_diskio_all(body)
             headers["Content-Type"] = "application/json"
-        elif path.startswith("/api/4/diskio"):
+        elif path.startswith("/api/4/diskio") or path.startswith("/api/3/diskio"):
             body, mode = normalize_diskio_list(body)
             headers["Content-Type"] = "application/json"
         # write response
@@ -288,7 +309,7 @@ class H(BaseHTTPRequestHandler):
 
 
 if __name__ == "__main__":
-    host = "{listen_host}"
+    host = "__LISTEN_HOST__"
     port = int(sys.argv[1]) if len(sys.argv) > 1 else 61209
     srv = ThreadingHTTPServer((host, port), H)
     try:
@@ -305,18 +326,22 @@ def probe_upstream(upstream: str, timeout: int = 5) -> dict:
     """Probe upstream /api/4/all and /api/4/diskio to check data shapes."""
     import urllib.request
 
-    out = {"upstream": upstream, "ok": False, "errors": [], "samples": {}}
-    try:
-        with urllib.request.urlopen(f"{upstream}/api/4/diskio", timeout=timeout) as r:
-            b = r.read()
-            try:
-                j = json.loads(b)
-                out["samples"]["diskio"] = j
-            except Exception as e:
-                out["errors"].append(f"diskio: parse_error:{e}")
-        out["ok"] = True
-    except Exception as e:
-        out["errors"].append(str(e))
+    out = {"upstream": upstream, "ok": False, "errors": [], "samples": {}, "api_version": None}
+    versions = [4, 3]
+    for ver in versions:
+        try:
+            with urllib.request.urlopen(f"{upstream}/api/{ver}/diskio", timeout=timeout) as r:
+                b = r.read()
+                try:
+                    j = json.loads(b)
+                    out["samples"]["diskio"] = j
+                    out["api_version"] = ver
+                    out["ok"] = True
+                    break
+                except Exception as e:
+                    out["errors"].append(f"v{ver}.diskio: parse_error:{e}")
+        except Exception as e:
+            out["errors"].append(f"v{ver}:{e}")
     return out
 
 
@@ -351,6 +376,9 @@ def install_normalizer_script(cfg: dict, target_path: Path, content: str) -> dic
             return {"installed": True, "method": "broker", "sha": sha}
         # atomic write
         atomic_write_text(target_path, content)
+        # ensure executable bit on the installed script
+        with contextlib.suppress(Exception):
+            target_path.chmod(0o755)
         return {"installed": True, "method": "atomic", "sha": sha}
     finally:
         with contextlib.suppress(Exception):
@@ -482,7 +510,11 @@ def apply(cfg: dict, report_file: Path, index_file: Path, lock_fp) -> Report:
     rt = cfg.get("runtime", {})
     upstream = rt.get("upstream_url")
     listen_host = rt.get("listen_host", "127.0.0.1")
-    content = NORMALIZER_SCRIPT.format(upstream=upstream, listen_host=listen_host)
+    content = (
+        NORMALIZER_SCRIPT.replace("__UPSTREAM__", str(upstream))
+        .replace("__LISTEN_HOST__", str(listen_host))
+        .lstrip("\n")
+    )
     new_sha = sha256_bytes(content.encode())
     prev_ledger_sha = last_applied_sha(index_file, str(target))
     existing_sha = None
