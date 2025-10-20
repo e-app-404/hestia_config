@@ -36,14 +36,10 @@
         title: "HA Startup"
         message: "Home Assistant started at {{ now().strftime('%Y-%m-%d %H:%M:%S') }}"
 
-    - action: tts.speak
-      target:
-        entity_id: tts.google_translate_en_com
+    - action: script.tts_system_event
       data:
-        media_player_entity_id: media_player.bedroom_google_home_mini_speaker
+        event_type: "startup"
         message: "Home Assistant successfully rebooted."
-        language: en-ca
-        cache: true
 
 - id: c057ca2c-ab20-4fe0-a32b-5980c0990fb2
   alias: "Count Home Assistant Errors"
@@ -102,14 +98,10 @@
         title: "HA Shutdown"
         message: "Home Assistant will shut down at {{ now().strftime('%Y-%m-%d %H:%M:%S') }}"
 
-    - action: tts.speak
-      target:
-        entity_id: tts.google_translate_en_com
+    - action: script.tts_system_event
       data:
-        media_player_entity_id: media_player.bedroom_google_home_mini_speaker
+        event_type: "shutdown"
         message: "Home Assistant will shut down at {{ now().strftime('%Y-%m-%d %H:%M:%S') }}"
-        language: en-ca
-        cache: true
 
 - id: hestia_trash_reaches_threshold
   alias: "Hestia Trash Reaches Threshold"
@@ -185,14 +177,10 @@
     - trigger: homeassistant
       event: shutdown
   actions:
-    - action: tts.speak
-      target:
-        entity_id: tts.google_translate_en_com
+    - action: script.tts_maintenance
       data:
-        cache: true
-        media_player_entity_id: media_player.bedroom_google_home_mini_speaker
+        task: "tmp_prune"
         message: "Home Assistant will perform scheduled cleanup of temporary files during shutdown."
-        language: en-ca
 
     - action: shell_command.hestia_prune_tmp
 

@@ -23,7 +23,7 @@ This repository (Hestia) is a collection of operator tooling, configuration arti
 ### ❌ DEPRECATED PATHS (DO NOT USE)
 
 - `~/hass`, `/n/ha`, `/private/var/ha_real` (legacy paths)
-- `hestia/reports/` → use `hestia/workspace/operations/logs/` instead
+- `hestia/reports/` → use `hestia/workspace/reports/` instead
 - `hestia/core/` → use `hestia/config/` instead
 - `hestia/docs/ADR/` → use `hestia/library/docs/ADR/` instead
 - `/tmp` → use `tmp/` instead
@@ -37,7 +37,7 @@ This repository (Hestia) is a collection of operator tooling, configuration arti
 - `hestia/library/docs/ADR/` — Architecture Decision Records (follow ADR-0009 formatting)
 - `hestia/tools/` — Scripts, validators, pipelines (Mac-safe paths)
 - `hestia/workspace/archive/vault/` — Long-term backups and bundles
-- `hestia/workspace/operations/logs/` — Generated outputs and logs (use-case/timestamp structured)
+- `hestia/workspace/operations/logs/` — Generated ops logs (use-case/timestamp structured)
 - `.trash/` — Temporary files (auto-swept, gitignored)
 - `artifacts/` — Reproducible release bundles (gitignored)
 
@@ -45,7 +45,7 @@ This repository (Hestia) is a collection of operator tooling, configuration arti
 
 - **Backups**: Use pattern `<name>.bk.<YYYYMMDDTHHMMSSZ>` (UTC timestamps)
 - **Never commit**: `.storage/`, `.venv*/`, `deps/`, caches, secrets, runtime state
-- **Reports**: Write to `hestia/workspace/operations/logs/<use-case>/<UTC>__<tool>__<label>.log`
+- **Reports**: Write to `hestia/workspace/reports/<use-case>/<UTC>__<tool>__<label>.log`
 - **Atomic operations**: Use `os.replace()` for safe file updates
 
 ## Workspace Index & Discovery System 📋

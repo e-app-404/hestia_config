@@ -3,8 +3,9 @@ id: PROMPT_LIBRARY_WORKFLOW_V1
 title: "HESTIA Prompt Library Workflow Specification"
 version: "1.0.0"
 status: active
+type: workflow
 date: 2025-09-25
-authority: ADR-0015, ADR-0009, ADR-0013
+authority: ['ADR-0015', 'ADR-0009', 'ADR-0013']
 canonical_path: /config/hestia/library/prompts
 schema_version: 1
 ---
@@ -15,7 +16,7 @@ schema_version: 1
 
 storage_specification:
   canonical_root: /config/hestia/library/prompts
-  
+
   directory_structure:
     migration:
       incoming:
@@ -25,7 +26,7 @@ storage_specification:
         write_access: human_operator
         read_access: [human_operator, automation_tools]
         retention: "files_removed_after_processing"
-        
+
       processed:
         path: migration/processed
         purpose: "Normalized prompts with validated frontmatter"
@@ -34,7 +35,7 @@ storage_specification:
         read_access: [human_operator, automation_tools]
         file_permissions: "0444"  # read-only until sign-off
         retention: "moved_to_catalog_after_validation"
-        
+
       failed:
         path: migration/failed
         purpose: "Files that failed normalization or validation"
@@ -42,7 +43,7 @@ storage_specification:
         write_access: automation_tools
         read_access: [human_operator, automation_tools]
         action_required: manual_review
-        
+
       logs:
         path: logs
         purpose: "Automation logs (machine-readable)"
@@ -50,7 +51,7 @@ storage_specification:
         write_access: automation_tools
         read_access: [human_operator, automation_tools]
         retention: "90_days"
-    
+
     catalog:
       by_domain:
         path: catalog/by_domain
@@ -61,21 +62,21 @@ storage_specification:
         read_access: [human_operator, automation_tools, promptset_composer]
         is_primary_source: true
         status: active
-        
+
       by_tier:
         path: catalog/by_tier
         purpose: "Hard copies organized by Greek tier (STANDBY)"
         structure: "catalog/by_tier/{tier}/{prompt_id}_{slug}.md"
         status: standby
         notes: "On hold until catalog stabilizes"
-        
+
       by_persona:
         path: catalog/by_persona
         purpose: "Hard copies organized by persona (STANDBY)"
         structure: "catalog/by_persona/{persona}/{prompt_id}_{slug}.md"
         status: standby
         notes: "On hold until catalog stabilizes"
-    
+
     active:
       path: active
       purpose: "Production-ready promptsets"
@@ -84,7 +85,7 @@ storage_specification:
       write_access: human_operator_post_validation
       read_access: [human_operator, automation_tools, runtime_systems]
       validation_required: true
-      
+
     development:
       path: development/drafts
       purpose: "Untested, experimental prompt files"
@@ -94,7 +95,7 @@ storage_specification:
       validation_required: false
       promotion_path: "development → migration/incoming → catalog → active"
       notes: "This is where operators save new untested files"
-    
+
     historical:
       path: historical
       purpose: "Immutable time-series archive"
@@ -103,7 +104,7 @@ storage_specification:
       write_access: automation_tools_archive_only
       read_access: [human_operator, automation_tools]
       immutable: true
-      
+
     context:
       path: context
       purpose: "Supporting materials (conversations, seeds, scaffolds)"
@@ -119,14 +120,14 @@ storage_specification:
         date: "YYYYMMDD format"
         sequence: "001-999 zero-padded"
         slug: "kebab-case, derived from title"
-      
+
     promptset_production:
       pattern: "{name}.promptset.yaml"
       example: "hestia_cli_audit.promptset.yaml"
       components:
         name: "descriptive, kebab-case"
         extension: ".promptset.yaml or .promptset"
-      
+
     historical_archive:
       pattern: "isoweek{NN}-{original_name}.{ext}"
       example: "isoweek38-audit_20250502_001.md"
@@ -140,76 +141,76 @@ storage_specification:
     delimiter: "---"
     position: file_start
     encoding: utf-8
-    
+
     required_fields:
       - name: id
         type: string
         pattern: "^prompt_\\d{8}_[\\w]+$"
         example: "prompt_20250925_001"
-        
+
       - name: slug
         type: string
         pattern: "^[a-z0-9-]+$"
         example: "cli-tool-audit"
-        
+
       - name: title
         type: string
         min_length: 10
         max_length: 100
         example: "CLI Tool Audit Protocol"
-        
+
       - name: date
         type: string
         format: "YYYY-MM-DD"
         example: "2025-09-25"
-        
+
       - name: tier
         type: string
         enum: ["α", "β", "γ", "δ", "ε", "ζ", "η", "μ", "Ω"]
         example: "β"
-        
+
       - name: domain
         type: string
         enum: ["governance", "extraction", "operational", "validation", "diagnostic", "instructional", "emergency"]
         example: "operational"
-        
+
       - name: persona
         type: string
         example: "icaria"
-        
+
       - name: status
         type: string
         enum: ["draft", "proposed", "candidate", "approved", "active", "deprecated", "superseded", "rejected", "withdrawn"]
         example: "candidate"
-        
+
       - name: tags
         type: array
         items: string
         example: ["audit", "cli", "validation"]
-        
+
       - name: version
         type: string
         pattern: "^\\d+\\.\\d+(\\.\\d+)?$"
         example: "1.0"
-        
+
       - name: source_path
         type: string
         example: "batch1/audit_20250502_001.md"
-        
+
       - name: author
         type: string
         example: "Evert Appels"
-        
+
       - name: related
         type: array
         items: string
         example: []
-        
+
       - name: last_updated
         type: string
         format: iso8601
         example: "2025-09-25T00:00:00+01:00"
-        
+
       - name: redaction_log
         type: array
         items: object
@@ -218,16 +219,16 @@ storage_specification:
   parsing_rules:
     - rule: "Extract frontmatter using YAML parser"
       validation: "Must be valid YAML between --- delimiters"
-      
+
     - rule: "Validate all required fields present"
       validation: "Missing fields → migration/failed"
-      
+
     - rule: "Validate field values against enums and patterns"
       validation: "Invalid values → migration/failed"
-      
+
     - rule: "Extract body content after second --- delimiter"
       validation: "Must be valid Markdown"
-      
+
     - rule: "Preserve original content integrity"
       validation: "Body content unchanged during normalization"
 
@@ -237,90 +238,90 @@ storage_specification:
 
 promptset_specification:
   purpose: "Combine multiple normalized prompts into executable compositions"
-  
+
   file_format:
     extension: [".promptset", ".promptset.yaml"]
     format: yaml
     schema_reference: /config/hestia/library/prompts/_meta/promptset_schema.yaml
-    
+
   structure:
     root_keys:
       - promptset:
           required: true
           description: "Root container for promptset definition"
-          
+
       - id:
           required: true
           pattern: "^[a-z0-9_-]+\\.promptset(\\.[a-z0-9_-]+)?$"
           example: "hestia_cli_audit.v1"
-          
+
       - version:
           required: true
           pattern: "^\\d+\\.\\d+(\\.\\d+)?$"
           example: "1.0.0"
-          
+
       - created:
           required: true
           format: "YYYY-MM-DD"
-          
+
       - description:
           required: true
           type: string
-          
+
       - persona:
           required: false
           type: string
           example: "strategos"
-          
+
       - legacy_compatibility:
           required: false
           type: boolean
           default: false
-          
+
       - prompts:
           required: true
           type: array
           description: "List of prompt definitions"
-  
+
   binding_specification:
     purpose: "Reference canonical prompt files from catalog"
-    
+
     binding_format:
       - type: absolute_path
         pattern: "/config/hestia/library/prompts/catalog/by_domain/{domain}/{prompt_id}_{slug}.md"
         example: "/config/hestia/library/prompts/catalog/by_domain/operational/prompt_20250925_001_cli_tool_audit.md"
         required: true
-        
+
       - type: relative_path
         pattern: "../../catalog/by_domain/{domain}/{prompt_id}_{slug}.md"
         status: discouraged
         notes: "Use absolute paths for clarity"
-    
+
     validation_rules:
       - "All bindings must point to files in catalog/by_domain/"
       - "All bound files must exist and be readable"
       - "No bindings to development/ or migration/ directories"
       - "No symlinks allowed in binding paths (ADR-0015)"
-  
+
   legacy_format_integration:
     purpose: "Incorporate existing .md, .txt, .prompt files into promptsets"
-    
+
     workflow:
       - step: 1
         action: "Place legacy file in migration/incoming/"
-        
+
       - step: 2
         action: "Run prep_prompts.py to normalize"
         output: "migration/processed/{prompt_id}_{slug}.md"
-        
+
       - step: 3
         action: "Validate frontmatter"
         tool: "validate_frontmatter.py"
-        
+
       - step: 4
         action: "Place in catalog/by_domain/{domain}/"
         tool: "place_in_catalog.py"
-        
+
       - step: 5
         action: "Reference in promptset binding"
         example: |
@@ -328,28 +329,28 @@ promptset_specification:
             - id: legacy_audit_prompt
               bindings:
                 - /config/hestia/library/prompts/catalog/by_domain/operational/prompt_20250502_001_cli_tool_audit.md
-    
+
     supported_legacy_formats:
       - format: ".md"
         description: "Markdown files with or without frontmatter"
         processing: "Extract or infer frontmatter, preserve body"
-        
+
       - format: ".txt"
         description: "Plain text prompt files"
         processing: "Infer metadata, wrap in Markdown"
-        
+
       - format: ".prompt"
         description: "Custom prompt format"
         processing: "Parse structure, normalize to Markdown"
-        
+
       - format: ".yaml"
         description: "YAML configuration files"
         processing: "Extract prompt content, add frontmatter"
-        
+
       - format: ".csv.md"
         description: "CSV-formatted Markdown"
         processing: "Parse CSV structure, normalize"
-    
+
     combination_example:
       description: "Promptset combining multiple legacy formats"
       example: |
@@ -378,92 +379,92 @@ operator_workflow:
       purpose: "Workspace for new, untested prompt files"
       access: "Human operators have full write access"
       validation: "Not required - experimental workspace"
-      
+
     accepted_formats:
       - ".md": "Markdown prompt files"
       - ".txt": "Plain text prompts"
       - ".prompt": "Custom prompt format"
       - ".promptset": "Draft promptset compositions"
       - ".yaml": "YAML-based prompts"
-      
+
     naming_conventions:
       draft_prompt:
         pattern: "draft_{descriptive_name}.{ext}"
         example: "draft_network_diagnostic.md"
-        
+
       draft_promptset:
         pattern: "draft_{name}.promptset"
         example: "draft_automation_suite.promptset"
-    
+
     workflow_stages:
       - stage: 1_creation
         location: development/drafts
         action: "Create and iterate on new prompt"
         validation: none
         status: experimental
-        
+
       - stage: 2_testing
         location: development/drafts
         action: "Test prompt with target system/LLM"
         validation: manual
         status: under_review
-        
+
       - stage: 3_promotion_prep
         location: development/drafts
         action: "Add or enhance frontmatter metadata"
         validation: "Ensure required fields present"
         status: ready_for_normalization
-        
+
       - stage: 4_promotion
         location: migration/incoming
         action: "Copy tested file from development/drafts to migration/incoming"
         command: "cp development/drafts/draft_example.md migration/incoming/"
         validation: none
         status: queued_for_processing
-        
+
       - stage: 5_normalization
         location: migration/processed
         action: "Run prep_prompts.py to normalize"
         command: "python3 /config/hestia/tools/prompt_prep/prep_prompts.py --source migration/incoming --output migration/processed"
         validation: automatic
         status: normalized
-        
+
       - stage: 6_validation
         location: migration/processed
         action: "Validate frontmatter compliance"
         command: "python3 /config/hestia/tools/prompt_prep/validate_frontmatter.py --prep-dir migration/processed"
         validation: automatic
         status: validated
-        
+
       - stage: 7_catalog_placement
         location: catalog/by_domain/{domain}
         action: "Place in canonical catalog location"
         command: "python3 /config/hestia/tools/catalog/place_in_catalog.py --processed-dir migration/processed --catalog-root catalog"
         validation: automatic
         status: cataloged
-        
+
       - stage: 8_promptset_composition
         location: active/{category}
         action: "Create or update promptset referencing cataloged prompt"
         validation: "Binding validation required"
         status: production_ready
-  
+
   file_operations:
     creating_new_prompt:
       location: development/drafts
       command: "touch development/drafts/draft_my_new_prompt.md"
       editor: "vim development/drafts/draft_my_new_prompt.md"
-      
+
     testing_prompt:
       location: development/drafts
       action: "Use prompt with target LLM/system"
       iterations: "Modify and retest as needed"
-      
+
     promoting_to_normalization:
       source: development/drafts/draft_my_new_prompt.md
       destination: migration/incoming/my_new_prompt.md
       command: "cp development/drafts/draft_my_new_prompt.md migration/incoming/"
-      
+
     running_normalization:
       command: |
         # Dry run first
@@ -471,43 +472,43 @@ operator_workflow:
           --source migration/incoming \
           --output migration/processed \
           --dry-run
-        
+
         # Review output, then run for real
         python3 /config/hestia/tools/prompt_prep/prep_prompts.py \
           --source migration/incoming \
           --output migration/processed
-      
+
     validating_output:
       command: |
         python3 /config/hestia/tools/prompt_prep/validate_frontmatter.py \
           --prep-dir migration/processed \
           --report-path logs/validation_$(date +%Y%m%d_%H%M%S).json
-      
+
     placing_in_catalog:
       command: |
         python3 /config/hestia/tools/catalog/place_in_catalog.py \
           --processed-dir migration/processed \
           --catalog-root catalog
-  
+
   best_practices:
     - practice: "Always start in development/drafts"
       rationale: "Keeps untested content isolated from production"
-      
+
     - practice: "Use descriptive filenames with draft_ prefix"
       rationale: "Clear indication of file status"
-      
+
     - practice: "Test thoroughly before promoting"
       rationale: "Reduces failed normalization attempts"
-      
+
     - practice: "Add basic frontmatter before promotion"
       rationale: "Helps metadata extraction during normalization"
-      
+
     - practice: "Run dry-run mode first"
       rationale: "Preview changes before applying"
-      
+
     - practice: "Review validation reports"
       rationale: "Catch issues early in pipeline"
-      
+
     - practice: "Never edit files in migration/processed or catalog/"
       rationale: "These are managed by automation"
 
@@ -520,35 +521,35 @@ enforcement:
     - hook: check_no_symlinks
       path: /config/hestia/library/prompts/.git/hooks/pre-commit
       validation: "Fail on any symlink in prompt library (ADR-0015)"
-      
+
     - hook: validate_copy_consistency
       path: /config/hestia/library/prompts/.git/hooks/pre-commit
       validation: "Ensure catalog copies match (when by_tier/by_persona active)"
       status: standby
-  
+
   ci_pipeline:
     - check: symlink_detection
       command: "git ls-files -s -- hestia/library/prompts | awk '$1 ~ /^120/ { exit 1 }'"
       on_failure: "Block merge"
-      
+
     - check: frontmatter_validation
       command: "python3 /config/hestia/tools/prompt_prep/validate_frontmatter.py"
       on_failure: "Block merge"
-      
+
     - check: binding_validation
       command: "python3 /config/hestia/tools/catalog/validate_bindings.py"
       on_failure: "Block merge"
       status: active_when_promptsets_present
-  
+
   automated_maintenance:
     - task: archive_processed_files
       schedule: weekly
       action: "Move old processed files to historical/"
-      
+
     - task: generate_reports
       schedule: daily
       action: "Generate catalog statistics and health metrics"
-      
+
     - task: sync_copies
       schedule: on_catalog_update
       action: "Synchronize by_tier and by_persona copies"
