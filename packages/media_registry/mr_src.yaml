@@ -1,116 +1,158 @@
 # ════════════════════════════════════════════════════════════════════════
-# ▶ TTS-GATE PACKAGE (Room-DB Storage) ◀
-# Storage Backend: SQLite via Room-DB (shared domain, room_id: tts_gate_registry)
-# Replaces: input_text storage (4KB limit removed, now 512KB capacity)
-# Compliant: ADR-0001 TTS action template
+# ▶ SHARED MEDIA REGISTRY (Room-DB Backed) ◀
+# Purpose: Large JSON blob storage for Plex indexes and TTS gate registry
+# Storage: SQLite via Room-DB (shared domain, 512KB per entry)
+# Pattern: Read-only SQL sensors + REST write commands
 # ════════════════════════════════════════════════════════════════════════
 
-script:
-  tts_gate_native:
-    alias: "TTS Gate/Throttle (Room-DB)"
-    description: "Speak only if this key hasn't exceeded repeats within cooldown. Uses Room-DB for unlimited storage."
-    mode: parallel
-    max: 10
-    fields:
-      key:
-        name: Key
-        description: "Unique key (e.g., ha_startup, fridge_left_open)"
-        required: true
-        selector: { text: { multiline: false } }
-      message:
-        name: Message
-        description: "What to say"
-        required: true
-        selector: { text: { multiline: true } }
-      media_player:
-        name: Media player
-        description: "Media player to play on"
-        required: true
-        selector:
-          entity:
-            domain: media_player
-      tts_entity:
-        name: TTS engine
-        description: "TTS service to use (e.g., tts.google_translate)"
-        required: true
-        selector: { text: { multiline: false } }
-      volume:
-        name: Volume
-        description: "Volume level (0..1)"
-        default: 0.5
-        selector: { number: { min: 0, max: 1, step: 0.05, mode: slider } }
-      language:
-        name: Language
-        description: "TTS language code (e.g., en, en-ca)"
-        default: en
-        selector: { text: { multiline: false } }
-      cooldown_sec:
-        name: Cooldown (seconds)
-        description: "Within this window, repeats are limited"
-        default: 1800
-        selector: { number: { min: 0, max: 86400, step: 10, mode: slider } }
-      max_repeats:
-        name: Max repeats inside cooldown
-        description: "Extra repeats allowed within the cooldown window"
-        default: 1
-        selector: { number: { min: 0, max: 10, step: 1 } }
-    sequence:
-      - variables:
-          # Read from Room-DB SQL sensor (shared registry)
-          payload: "{{ state_attr('sensor.room_configs_shared_registry', 'payload') }}"
-          reg: >-
-            {% if payload and 'tts_gate_registry' in payload %}
-              {{ payload['tts_gate_registry'] }}
+sql:
+  # Primary SQL sensor - reads all shared registry keys in one query
+  - name: "Room Configs — Shared Registry"
+    db_url: sqlite:////config/room_database.db
+    query: >
+      SELECT 'ok' AS state,
+             json_group_object(
+               room_id,
+               CASE WHEN json_valid(config_data) = 1
+                    THEN json(config_data)
+                    ELSE NULL
+               END
+             ) AS payload
+      FROM room_configs
+      WHERE config_domain = 'shared'
+        AND room_id IN ('plex_tv_index', 'plex_movie_index', 'tts_gate_registry')
+      ORDER BY updated_at DESC;
+    column: state
+
+template:
+  - sensor:
+      # ──────────────────────────────────────────────────────────────────
+      # Plex TV Index Summary
+      # ──────────────────────────────────────────────────────────────────
+      - name: "Plex TV Index Count"
+        unique_id: "plex_tv_index_count"
+        state: >-
+          {% set payload = state_attr('sensor.room_configs_shared_registry', 'payload') %}
+          {% if payload and 'plex_tv_index' in payload %}
+            {% set data = payload['plex_tv_index'] %}
+            {{ data.get('episodes', []) | length }}
+          {% else %}
+            0
+          {% endif %}
+        unit_of_measurement: "episodes"
+        icon: mdi:television-box
+        attributes:
+          shows_count: >-
+            {% set payload = state_attr('sensor.room_configs_shared_registry', 'payload') %}
+            {% if payload and 'plex_tv_index' in payload %}
+              {% set data = payload['plex_tv_index'] %}
+              {{ data.get('shows', {}) | length }}
+            {% else %}
+              0
+            {% endif %}
+          seasons_count: >-
+            {% set payload = state_attr('sensor.room_configs_shared_registry', 'payload') %}
+            {% if payload and 'plex_tv_index' in payload %}
+              {% set data = payload['plex_tv_index'] %}
+              {{ data.get('seasons', {}) | length }}
+            {% else %}
+              0
+            {% endif %}
+          updated: >-
+            {% set payload = state_attr('sensor.room_configs_shared_registry', 'payload') %}
+            {% if payload and 'plex_tv_index' in payload %}
+              {% set data = payload['plex_tv_index'] %}
+              {{ data.get('updated', '') }}
+            {% else %}
+              ''
+            {% endif %}
+
+      # ──────────────────────────────────────────────────────────────────
+      # Plex Movie Index Summary
+      # ──────────────────────────────────────────────────────────────────
+      - name: "Plex Movie Index Count"
+        unique_id: "plex_movie_index_count"
+        state: >-
+          {% set payload = state_attr('sensor.room_configs_shared_registry', 'payload') %}
+          {% if payload and 'plex_movie_index' in payload %}
+            {% set data = payload['plex_movie_index'] %}
+            {{ data.get('movies', []) | length }}
+          {% else %}
+            0
+          {% endif %}
+        unit_of_measurement: "movies"
+        icon: mdi:movie
+        attributes:
+          by_decade: >-
+            {% set payload = state_attr('sensor.room_configs_shared_registry', 'payload') %}
+            {% if payload and 'plex_movie_index' in payload %}
+              {% set data = payload['plex_movie_index'] %}
+              {% set movies = data.get('movies', []) %}
+              {% set decades = namespace(d={}) %}
+              {% for movie in movies %}
+                {% set year = movie.get('year', 0) | int %}
+                {% if year > 0 %}
+                  {% set decade = (year // 10) * 10 %}
+                  {% set key = decade | string + 's' %}
+                  {% set _ = decades.d.update({key: (decades.d.get(key, 0) + 1)}) %}
+                {% endif %}
+              {% endfor %}
+              {{ decades.d }}
             {% else %}
               {}
             {% endif %}
-          key_str: "{{ key | string }}"
-          entry: "{{ reg.get(key_str, {}) }}"
-          last_ts: "{{ entry.get('last_ts', 0) }}"
-          prev_count: "{{ entry.get('count', 0) }}"
-          now_ts: "{{ as_timestamp(now()) | float }}"
-          cooldown: "{{ cooldown_sec | int(0) }}"
-          window_ok: "{{ (now_ts - (last_ts|float)) >= cooldown }}"
-          allow: "{{ window_ok or (prev_count | int(0)) < (max_repeats | int(1)) }}"
-          new_count: "{{ 1 if window_ok else (prev_count | int(0) + 1) }}"
+          updated: >-
+            {% set payload = state_attr('sensor.room_configs_shared_registry', 'payload') %}
+            {% if payload and 'plex_movie_index' in payload %}
+              {% set data = payload['plex_movie_index'] %}
+              {{ data.get('updated', '') }}
+            {% else %}
+              ''
+            {% endif %}
 
-      - choose:
-          - conditions: "{{ allow }}"
-            sequence:
-              - action: media_player.volume_set
-                target:
-                  entity_id: "{{ media_player }}"
-                data:
-                  volume_level: "{{ volume }}"
-
-              - action: tts.speak
-                target:
-                  entity_id: "{{ tts_entity }}"
-                data:
-                  cache: true
-                  media_player_entity_id: "{{ media_player }}"
-                  message: "{{ message }}"
-                  language: "{{ language }}"
-
-              # Update registry in Room-DB
-              - variables:
-                  new_reg: >-
-                    {% set r = (reg.copy() if reg is mapping else {}) %}
-                    {% set _ = r.update({ key_str: {'last_ts': now_ts, 'count': new_count } }) %}
-                    {{ r }}
-
-              # Write to Room-DB (replaces input_text.set_value)
-              - service: rest_command.room_db_update_config
-                data:
-                  room_id: "tts_gate_registry"
-                  domain: "shared"
-                  config_data: "{{ new_reg }}"
-                  schema_expected: 1
-
-        # Rate limit protection (optional log)
-        default:
-          - service: system_log.write
-            data:
-              message: "TTS gate blocked: {{ key }} (cooldown active, count={{ prev_count }})"
-              level: debug
-
+      # ──────────────────────────────────────────────────────────────────
+      # TTS Gate Registry Status
+      # ──────────────────────────────────────────────────────────────────
+      - name: "TTS Gate Registry Status"
+        unique_id: "tts_gate_registry_status"
+        state: >-
+          {% set payload = state_attr('sensor.room_configs_shared_registry', 'payload') %}
+          {% if payload and 'tts_gate_registry' in payload %}
+            {% set reg = payload['tts_gate_registry'] %}
+            {{ reg.keys() | list | length }}
+          {% else %}
+            0
+          {% endif %}
+        unit_of_measurement: "keys"
+        icon: mdi:gate-buffer
+        attributes:
+          keys: >-
+            {% set payload = state_attr('sensor.room_configs_shared_registry', 'payload') %}
+            {% if payload and 'tts_gate_registry' in payload %}
+              {% set reg = payload['tts_gate_registry'] %}
+              {{ reg.keys() | list }}
+            {% else %}
+              []
+            {% endif %}
+          registry_size_bytes: >-
+            {% set payload = state_attr('sensor.room_configs_shared_registry', 'payload') %}
+            {% if payload and 'tts_gate_registry' in payload %}
+              {% set reg = payload['tts_gate_registry'] %}
+              {{ reg | tojson | length }}
+            {% else %}
+              2
+            {% endif %}
+          oldest_entry: >-
+            {% set payload = state_attr('sensor.room_configs_shared_registry', 'payload') %}
+            {% if payload and 'tts_gate_registry' in payload %}
+              {% set reg = payload['tts_gate_registry'] %}
+              {% set entries = reg.values() | list %}
+              {% if entries %}
+                {% set oldest = entries | map(attribute='last_ts') | min %}
+                {{ oldest | timestamp_local }}
+              {% else %}
+                ''
+              {% endif %}
+            {% else %}
+              ''
+            {% endif %}
