@@ -16,3 +16,7 @@ homeassistant:
   safe_mode: false
   # Set reasonable timeouts for startup-blocking integrations (seconds)
   startup_timeout: 60
+
+  customize_glob:
+    sensor.gs724t_*:
+      icon: mdi:ethernet

@@ -6,12 +6,6 @@
 # ⟫⟫ Home Assistant package for Netgear GS724T v3 (SNMP)
 # ══════════════════════════════════════════════════════════════════
 
-homeassistant:
-  customize_glob:
-    sensor.gs724t_*:
-      icon: mdi:ethernet
-# TODO: verify correct yaml syntax for customze
-
 sensor:
   - platform: snmp
     name: gs724t_sys_name

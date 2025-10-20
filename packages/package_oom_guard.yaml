@@ -34,14 +34,14 @@ automation:
   - id: oom_notice_when_high_5min
     alias: "OOM: persistent notice when memory high for 5m"
     mode: restart
-    trigger:
+    triggers:
       # Use numeric_state for better performance than template trigger
       - trigger: numeric_state
         entity_id: sensor.system_monitor_memory_usage
         above: input_number.oom_threshold_percent
         for: "00:05:00"
-    condition: []
-    action:
+    conditions: []
+    actions:
       - alias: "Notify of high memory"
         action: persistent_notification.create
         data:
@@ -56,13 +56,13 @@ automation:
   - id: oom_clear_notice_when_memory_normal
     alias: "OOM: clear persistent notice when memory normal"
     mode: single
-    trigger:
+    triggers:
       # Clear notification when memory drops below threshold
       - trigger: numeric_state
         entity_id: sensor.system_monitor_memory_usage
         below: input_number.oom_threshold_percent
-    condition: []
-    action:
+    conditions: []
+    actions:
       - alias: "Clear OOM notification"
         action: persistent_notification.dismiss
         data:
