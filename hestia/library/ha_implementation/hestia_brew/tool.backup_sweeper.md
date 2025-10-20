@@ -14,11 +14,11 @@ config_file: "/config/hestia/config/system/hestia.toml → [automation.sweeper]"
 
 ## What it does
 - Orchestrates a 5-component cleanup pipeline to enforce workspace hygiene and retention:
-  1) index.py — discover files and classify by patterns
-  2) naming_convention.py — enforce naming rules and standardize
-  3) sweeper.py — apply TTL and lifecycle deletions/moves
-  4) vault_warden.py — prune vault artifacts by group/keep-N policy
-  5) sweeper_report.py — emit comprehensive report and health score
+  1) `index.py` — discover files and classify by patterns
+  2) `naming_convention.py` — enforce naming rules and standardize
+  3) `sweeper.py` — apply TTL and lifecycle deletions/moves
+  4) `vault_warden.py` — prune vault artifacts by group/keep-N policy
+  5) `sweeper_report.py` — emit comprehensive report and health score
 - Produces structured reports and updates a reports index for monitoring.
 
 ## When to use it
