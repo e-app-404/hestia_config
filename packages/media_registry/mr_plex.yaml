@@ -147,7 +147,6 @@ script:
         name: Payload
         description: "Full TV index JSON dict (shows, seasons, episodes, updated)"
         required: true
-        selector: { object: {} }
     sequence:
       - service: rest_command.room_db_update_config
         data:
@@ -176,7 +175,6 @@ script:
         name: Payload
         description: "Full Movie index JSON dict (movies, year_released, updated)"
         required: true
-        selector: { object: {} }
     sequence:
       - service: rest_command.room_db_update_config
         data:
