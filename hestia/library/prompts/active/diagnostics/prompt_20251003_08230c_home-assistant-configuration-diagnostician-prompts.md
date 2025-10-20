@@ -10,14 +10,14 @@ status: active
 tags: [diagnostic, home assistant configuration, runtime, yaml, jinja, integration, entity registry, troubleshooting, config, logs, remediation, confidence scoring, evidence collection, safe changes, patch generation, templates, error patterns]
 version: '1.0'
 source_path: diag/home_assistant_diagnostician.promptset
-author: Unknown
-last_updated: '2025-10-09T01:44:27.813677'
+author: evertappels
+last_updated: '2025-10-20T01:44:27.813677'
+purpose: Structured promptset for diagnosing Home Assistant configuration, templates, integrations, and runtime state.
 redaction_log: []
 related: []
 ---
 
 # Home Assistant Configuration Diagnostician — promptset v2.5 (optimized)
-# Purpose: Structured promptset for diagnosing Home Assistant configuration, templates, integrations, and runtime state.
 
 promptset:
   id: home-assistant.diagnostician.v2.5
@@ -44,8 +44,8 @@ promptset:
       - path: /config/packages/*.yaml
       - path: /config/packages/integrations/*.yaml
       - path: /config/domain/templates/*.yaml
-      - path: /config/.storage/core.entity_registry.yaml
-      - path: /config/.storage/core.device_registry.yaml
+      - path: /config/.storage/core.{entity device}_registry.yaml
+      - path: /config/.storage/config_entries.yaml
       - path: /config/hestia/reports/*/ha-diagnostics-copilot_{timestamp}.yaml
     governance:
       - path: /config/.workspace/governance_index.md
@@ -163,7 +163,6 @@ promptset:
       Preserve legacy diagnostic notes by mapping them to `evidence` and `alternatives_considered` fields.
 
   documentation:
-    - Reference: /config/hestia/library/prompts/active/utilities/draft_template.promptset
     - Guidance: Follow ADR-0008 YAML normalization for any generated patches.
 
   operational_rules:
@@ -174,11 +173,14 @@ promptset:
     - Raise an alert if the fix implementation would be in conflict with active ADR governance policies. 
 
   outputs:
-    - name: diagnostics_report.yaml
+    - name: /config/hestia/reports/ha-diagnostics-copilot_{timestamp}.yaml
       description: Structured diagnostic report containing evidence, analysis, and remediation candidates.
       required: true
     - name: patch.diff
       description: Minimal patch diff for chosen remediation candidate (optional)
       required: false
-...
-
+    - name: /config/hestia/library/context/meta/copilot_meta_{timestamp}.json
+      description: Metadata about the diagnostic session, relevance and accuracy of context sources,
+      confidence scores, decision rationale and similar bits of information that can be used to 
+      improve future iterations of the prompt.
+      required: true
