@@ -318,6 +318,7 @@ reports/
 # Meta-Capture workspace artifacts (reports + JSONL index)
 hestia/workspace/reports/meta_capture/
 hestia/workspace/.hestia/index/
+/config/hestia/workspace/staging/
 
 # Absolute path variants to ensure ignores in any checkout context
 /config/hestia/workspace/reports/meta_capture/
