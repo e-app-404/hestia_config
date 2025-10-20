@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+set -euo pipefail
+ROOT="$(git rev-parse --show-toplevel)"
+WRAP="$ROOT/config/hestia/tools/lineage_guardian/hooks/pre_commit_validate.py"
+if [ -x "$WRAP" ]; then
+  PRE_COMMIT_LINEAGE_STRICT="${PRE_COMMIT_LINEAGE_STRICT:-false}" python3 "$WRAP" "$@"
+else
+  echo "[lineage-guardian] wrapper not found; skipping" >&2
+fi
