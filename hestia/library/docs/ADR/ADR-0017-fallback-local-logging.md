@@ -16,7 +16,7 @@ decision:
   precedence: Logs MUST NOT be written under ${HA_MOUNT} or the repo root.
 author: Evert Appels
 policy:
-  macOS: $HOME/Library/Logs/Hestia
+  macOS: `~/Library/Logs/Hestia/
   linux: ${XDG_STATE_HOME:-$HOME/.local/state}/hestia/logs
   windows: '%LOCALAPPDATA%\Hestia\Logs'
 security:

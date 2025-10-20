@@ -20,7 +20,7 @@ Separates policy (ADR-0024) from operational implementation. Eliminates legacy p
 - `/config` is the sole public interface (per ADR-0024).
 - Mount target is `/System/Volumes/Data/homeassistant` only.
 - Keychain entries MUST exist for `homeassistant.local` and active IP, with trusted apps: `/sbin/mount_smbfs`, `/usr/bin/smbutil`, NetAuthAgent, Terminal.
-- LaunchAgent runs as user, logs to `~/Library/Logs/`.
+- LaunchAgent runs as user, logs to `~/Library/Logs/Hestia`.
 - Telemetry is local-only; payload includes `realpath(/config)`, `mounted`, `write_ok`, `agent_loaded`, `agent_exit_code`; no secrets.
 
 # Compliance & Validation
