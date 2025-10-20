@@ -1,11 +1,13 @@
 ---
-id: GUIDE-0001
-title: ADR-0030 macOS Finder Workflows - Implementation Guide
-slug: adr-0030-macos-finder-workflows-implementation-guide
+id: ADR-0030
+title:  macOS Finder Workflows Implementation
+slug: macos-finder-workflows
 status: Reference
 related:
-- ADR-0030
-- ADR-0009
+- ADR-0030: Workspace hygiene, lifecycle & quarantine policy
+- ADR-0009: ADR Governance, Redaction, and Formatting Policy
+- Workflows: `~/Library/Services/`
+- Documentation: `~/Library/Services/ADR-0030-Workflows-Documentation.md`
 supersedes: []
 date: 2025-10-20
 decision: Workspace maintenance, ops and procedures will go accompanied by the implementation of compliant macOS Finder workflows including architecture, logic patterns, modification procedures, and maintenance guidelines.
@@ -29,7 +31,7 @@ last_updated: 2025-10-20
 9. [References](#9-references)
 10. [Token Block](#10-token-block)
 
-## 1. Overview
+## 1. Context
 
 This document explains how six macOS Automator workflows were created to enforce ADR-0030 workspace lifecycle policies directly from Finder. These workflows provide right-click context menu actions for proper file management according to the architectural decision record.
 
@@ -370,39 +372,7 @@ exec 2>/tmp/workflow_debug.log
 set -x
 ```
 
-## 7. Best Practices
-
-1. **Error Handling:** Always check command return codes
-2. **User Feedback:** Provide notifications for all operations
-3. **Path Safety:** Use absolute paths and proper quoting
-4. **Atomic Operations:** Use temporary files and `mv` for final placement
-5. **Metadata:** Include comprehensive provenance information
-6. **TTL Communication:** Always inform users of retention policies
-
-## 8. Future Enhancements
-
-**Potential Additions:**
-- Bulk operations workflow for multiple directories
-- Cleanup workflow for expired TTL items
-- Migration workflow for legacy naming
-- Integration with git hooks for pre-commit validation
-- Compression level options for bundles
-- Encryption options for sensitive backups
-
-## 9. References
-
-### File Locations
-
-- **Workflows:** `~/Library/Services/`
-- **Documentation:** `~/Library/Services/ADR-0030-Workflows-Documentation.md`
-- **ADR Reference:** `/config/hestia/library/docs/ADR/ADR-0030-workspace-lifecycle-policy.md`
-
-### Related Documents
-
-- ADR-0030: Workspace hygiene, lifecycle & quarantine policy
-- ADR-0009: ADR Governance, Redaction, and Formatting Policy
-
-## 10. Token Block
+## 7. Token Block
 
 ```yaml
 TOKEN_BLOCK:
