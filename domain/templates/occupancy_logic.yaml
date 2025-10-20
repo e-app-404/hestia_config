@@ -442,7 +442,7 @@
         floor_id: "home"
 
     - name: "Zone Downstairs Occupancy (Eta)"
-      unique_id: zone_downstairs_occupancy_beta
+      unique_id: zone_downstairs_occupancy_eta
       device_class: occupancy
       state: |
         {% set sensors = [
@@ -475,7 +475,7 @@
         last_updated: "2025-09-20"
 
     - name: "Zone Upstairs Occupancy (Eta)"
-      unique_id: zone_upstairs_occupancy_beta
+      unique_id: zone_upstairs_occupancy_eta
       device_class: occupancy
       state: |
         {% set sensors = [
