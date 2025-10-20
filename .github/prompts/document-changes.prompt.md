@@ -1,5 +1,7 @@
 ---
 mode: 'agent'
+model: GPT-4.1
+tools: ['edit/createFile', 'edit/editFiles', 'search/fileSearch', 'search/textSearch', 'search/listDirectory', 'search/codebase', 'search/searchResults', 'runCommands', 'problems', 'changes']
 description: 'Document recent changes across the workspace: update maintenance logs, relationships, and relevant config docs with evidence and acceptance checks.'
 ---
 # /document_changes — Workspace Documentation Updater
