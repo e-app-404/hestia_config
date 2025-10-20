@@ -1,0 +1,339 @@
+# Direct HTTP test sensors to debug the endpoint issue
+# Normalized per ADR-0008 and aligned with actual AppDaemon routes
+
+template:
+  - sensor:
+      - name: "AppDaemon Health Direct Test"
+        state: >
+          {%- set candidates = [
+            'sensor.appdaemon_health_appdaemon_global',
+            'sensor.appdaemon_health_appdaemon_path',
+            'sensor.appdaemon_health_app_name_path',
+            'sensor.appdaemon_health_app_path',
+            'sensor.appdaemon_health_raw'
+          ] -%}
+          {%- set eid = '' -%}
+          {%- for e in candidates -%}
+            {%- if states(e) not in ['unknown','unavailable',''] -%}
+              {%- set eid = e -%}
+              {%- break -%}
+            {%- endif -%}
+          {%- endfor -%}
+          {%- set status = (state_attr(eid, 'status') if eid else none) -%}
+          {{ status if status is not none else 'unknown' }}
+        attributes:
+          last_test: "{{ now().isoformat() }}"
+          full_response: >
+            {%- set candidates = [
+              'sensor.appdaemon_health_appdaemon_global',
+              'sensor.appdaemon_health_appdaemon_path',
+              'sensor.appdaemon_health_app_name_path',
+              'sensor.appdaemon_health_app_path',
+              'sensor.appdaemon_health_raw'
+            ] -%}
+            {%- set eid = '' -%}
+            {%- for e in candidates -%}
+              {%- if states(e) not in ['unknown','unavailable',''] -%}
+                {%- set eid = e -%}
+                {%- break -%}
+              {%- endif -%}
+            {%- endfor -%}
+            {%- set obj = {
+              'picked_entity': eid,
+              'picked_entity_state': (states(eid) if eid else 'missing'),
+              'status': (state_attr(eid,'status') if eid else 'unknown'),
+              'message': (state_attr(eid,'message') if eid else 'no-message'),
+              'timestamp': (state_attr(eid,'timestamp') if eid else ''),
+              'candidates_tested': candidates
+            } -%}
+            {{ obj }}
+
+rest:
+  # Primary app-scoped route (as registered by RoomDbUpdater)
+  - resource: "http://a0d7b954-appdaemon:5050/api/app/room_db_updater/health"
+    method: GET
+    timeout: 10
+    scan_interval: 30
+    sensor:
+      - name: "AppDaemon Health (app path)"
+        value_template: >
+          {% if value_json is defined and value_json.status is defined %}
+            {{ value_json.status }}
+          {% else %}
+            {{ value | default('no_response') }}
+          {% endif %}
+        json_attributes:
+          - status
+          - message
+          - timestamp
+  # Trailing slash variant (some setups enforce slash)
+  - resource: "http://a0d7b954-appdaemon:5050/api/app/room_db_updater/health/"
+    method: GET
+    timeout: 10
+    scan_interval: 30
+    sensor:
+      - name: "AppDaemon Health (app path, slash)"
+        value_template: >
+          {% if value_json is defined and value_json.status is defined %}
+            {{ value_json.status }}
+          {% else %}
+            {{ value | default('no_response') }}
+          {% endif %}
+        json_attributes:
+          - status
+          - message
+          - timestamp
+        value_template: >
+          {% if value_json is defined and value_json.status is defined %}
+            {{ value_json.status }}
+          {% else %}
+            {{ value | default('no_response') }}
+          {% endif %}
+        json_attributes:
+          - status
+          - message
+          - timestamp
+
+  # Compat nested route also registered by the app
+  - resource: "http://a0d7b954-appdaemon:5050/api/app/room_db_updater/room_db/health"
+    method: GET
+    timeout: 10
+    scan_interval: 30
+    sensor:
+      - name: "AppDaemon Health Raw"
+        value_template: >
+          {% if value_json is defined and value_json.status is defined %}
+            {{ value_json.status }}
+          {% else %}
+            {{ value | default('no_response') }}
+          {% endif %}
+        json_attributes:
+          - status
+          - message
+          - timestamp
+  # Trailing slash variant for compat
+  - resource: "http://a0d7b954-appdaemon:5050/api/app/room_db_updater/room_db/health/"
+    method: GET
+    timeout: 10
+    scan_interval: 30
+    sensor:
+      - name: "AppDaemon Health Raw (slash)"
+        value_template: >
+          {% if value_json is defined and value_json.status is defined %}
+            {{ value_json.status }}
+          {% else %}
+            {{ value | default('no_response') }}
+          {% endif %}
+        json_attributes:
+          - status
+          - message
+          - timestamp
+        value_template: >
+          {% if value_json is defined and value_json.status is defined %}
+            {{ value_json.status }}
+          {% else %}
+            {{ value | default('no_response') }}
+          {% endif %}
+        json_attributes:
+          - status
+          - message
+          - timestamp
+
+  # AppDaemon compat routes for completeness
+  - resource: "http://a0d7b954-appdaemon:5050/api/appdaemon/room_db/health"
+    method: GET
+    timeout: 10
+    scan_interval: 30
+    sensor:
+      - name: "AppDaemon Health (appdaemon path)"
+        value_template: >
+          {% if value_json is defined and value_json.status is defined %}
+            {{ value_json.status }}
+          {% else %}
+            {{ value | default('no_response') }}
+          {% endif %}
+        json_attributes:
+          - status
+          - message
+          - timestamp
+
+  # AppDaemon legacy path variant with actual app name
+  - resource: "http://a0d7b954-appdaemon:5050/api/appdaemon/room_db_updater/health"
+    method: GET
+    timeout: 10
+    scan_interval: 30
+    sensor:
+      - name: "AppDaemon Health (appdaemon app-name path)"
+        value_template: >
+          {% if value_json is defined and value_json.status is defined %}
+            {{ value_json.status }}
+          {% else %}
+            {{ value | default('no_response') }}
+          {% endif %}
+        json_attributes:
+          - status
+          - message
+          - timestamp
+
+  # Test endpoint on primary app path
+  - resource: "http://a0d7b954-appdaemon:5050/api/app/room_db_updater/test"
+    method: GET
+    timeout: 10
+    scan_interval: 30
+    sensor:
+      - name: "AppDaemon Test Raw (app path)"
+  # Trailing slash variant for test
+  - resource: "http://a0d7b954-appdaemon:5050/api/app/room_db_updater/test/"
+    method: GET
+    timeout: 10
+    scan_interval: 30
+    sensor:
+      - name: "AppDaemon Test Raw (app path, slash)"
+        value_template: >
+          {% if value_json is defined and value_json.status is defined %}
+            {{ value_json.status }}
+          {% else %}
+            {{ value | default('no_response') }}
+          {% endif %}
+        json_attributes:
+          - status
+          - message
+        value_template: >
+          {% if value_json is defined and value_json.status is defined %}
+            {{ value_json.status }}
+          {% else %}
+            {{ value | default('no_response') }}
+          {% endif %}
+        json_attributes:
+          - status
+          - message
+
+  - resource: "http://a0d7b954-appdaemon:5050/api/appdaemon/room_db_updater/test"
+    method: GET
+    timeout: 10
+    scan_interval: 30
+    sensor:
+      - name: "AppDaemon Test Raw (appdaemon path)"
+        value_template: >
+          {% if value_json is defined and value_json.status is defined %}
+            {{ value_json.status }}
+          {% else %}
+            {{ value | default('no_response') }}
+          {% endif %}
+        json_attributes:
+          - status
+          - message
+
+  # AppDaemon global endpoints (confirmed working)
+  - resource: "http://a0d7b954-appdaemon:5050/api/appdaemon/room_db_health"
+    method: GET
+    timeout: 10
+    scan_interval: 30
+    sensor:
+      - name: "AppDaemon Health (appdaemon global)"
+        value_template: >
+          {% if value_json is defined and value_json.status is defined %}
+            {{ value_json.status }}
+          {% else %}
+            {{ value | default('no_response') }}
+          {% endif %}
+
+  - resource: "http://a0d7b954-appdaemon:5050/api/appdaemon/room_db_test"
+    method: GET
+    timeout: 10
+    scan_interval: 30
+    sensor:
+      - name: "AppDaemon Test (appdaemon global)"
+        value_template: >
+          {% if value_json is defined and value_json.status is defined %}
+            {{ value_json.status }}
+          {% else %}
+            {{ value | default('no_response') }}
+          {% endif %}
+
+  # Additional probes to discover actual base path mapping
+  - resource: "http://a0d7b954-appdaemon:5050/health"
+    method: GET
+    timeout: 10
+    scan_interval: 30
+    sensor:
+      - name: "AppDaemon Health (root path)"
+        value_template: >
+          {% if value_json is defined and value_json.status is defined %}
+            {{ value_json.status }}
+          {% else %}
+            {{ value | default('no_response') }}
+          {% endif %}
+
+  - resource: "http://a0d7b954-appdaemon:5050/api/health"
+    method: GET
+    timeout: 10
+    scan_interval: 30
+    sensor:
+      - name: "AppDaemon Health (api root path)"
+        value_template: >
+          {% if value_json is defined and value_json.status is defined %}
+            {{ value_json.status }}
+          {% else %}
+            {{ value | default('no_response') }}
+          {% endif %}
+
+  - resource: "http://a0d7b954-appdaemon:5050/api/app/room_db_updater/index"
+    method: GET
+    timeout: 10
+    scan_interval: 30
+    sensor:
+      - name: "AppDaemon Index (app path)"
+        value_template: >
+          {% if value_json is defined %}
+            {{ value_json | tojson }}
+          {% else %}
+            {{ value | default('no_response') }}
+          {% endif %}
+
+  - resource: "http://a0d7b954-appdaemon:5050/api/app/room_db_updater/room_db/index"
+    method: GET
+    timeout: 10
+    scan_interval: 30
+    sensor:
+      - name: "AppDaemon Index (compat nested path)"
+        value_template: >
+          {% if value_json is defined %}
+            {{ value_json | tojson }}
+          {% else %}
+            {{ value | default('no_response') }}
+          {% endif %}
+
+shell_command:
+  # AppDaemon endpoint discovery - test different URL patterns
+  test_appdaemon_endpoints: |
+    echo "=== AppDaemon Endpoint Discovery ===" > /tmp/appdaemon_test.log 2>&1
+    echo "Testing at $(date)" >> /tmp/appdaemon_test.log 2>&1
+    echo "" >> /tmp/appdaemon_test.log 2>&1
+
+    # Test different URL patterns
+    for path in \
+      "/api/app/room_db_updater/health" \
+      "/api/app/room_db_updater/test" \
+      "/api/appdaemon/room_db_updater/health" \
+      "/api/appdaemon/health" \
+      "/health" \
+      "/test" \
+      "/room_db_updater/health" \
+      "/room_db_updater/test"
+    do
+      echo "Testing: http://a0d7b954-appdaemon:5050$path" >> /tmp/appdaemon_test.log 2>&1
+      timeout 3 wget -q -O - "http://a0d7b954-appdaemon:5050$path" >> /tmp/appdaemon_test.log 2>&1 || echo "  -> FAILED" >> /tmp/appdaemon_test.log 2>&1
+      echo "" >> /tmp/appdaemon_test.log 2>&1
+    done
+
+    echo "=== Test Complete ===" >> /tmp/appdaemon_test.log 2>&1
+    cat /tmp/appdaemon_test.log
+
+  view_appdaemon_test_results: |
+    echo "=== AppDaemon Test Results ===" && echo ""
+    if [ -f /tmp/appdaemon_test.log ]; then
+      cat /tmp/appdaemon_test.log
+    else
+      echo "No test results found. Run shell_command.test_appdaemon_endpoints first."
+    fi
