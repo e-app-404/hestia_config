@@ -4,6 +4,5 @@
 # ⟫⟫ Domain: core • Subsystem: hestia •  Updated: 2025-10-19
 # ═══════════════════════════════════════════════════════════════════════════════
 
-customize_glob:
-  "sensor.gs724t_*":
-    icon: mdi:ethernet
+"sensor.gs724t_*":
+  icon: mdi:ethernet

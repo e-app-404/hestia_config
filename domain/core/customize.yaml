@@ -4,8 +4,7 @@
 # ⟫⟫ Domain: core • Subsystem: hestia •  Updated: 2025-10-19
 # ═══════════════════════════════════════════════════════════════════════════════
 
-customize:
-  sensor.bedroom_monstera_soil_alpha_soil_moisture:
-    device_class: moisture
-    unit_of_measurement: "%"
-    icon: mdi:water-percent
+sensor.bedroom_monstera_soil_alpha_soil_moisture:
+  device_class: moisture
+  unit_of_measurement: "%"
+  icon: mdi:water-percent

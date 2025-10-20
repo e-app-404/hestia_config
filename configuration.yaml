@@ -10,8 +10,6 @@ homeassistant:
   longitude: -0.1289665
   time_zone: "Europe/London"
   unit_system: metric
-  safe_mode: false
-  startup_timeout: 60
   packages: !include_dir_named packages
   customize: !include domain/core/customize.yaml
   customize_glob: !include domain/core/customize_glob.yaml

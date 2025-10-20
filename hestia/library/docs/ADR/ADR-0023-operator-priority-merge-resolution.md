@@ -27,6 +27,9 @@ last_updated: 2025-10-15
 
 # ADR-0023: Operator Priority Resolution for Workspace Merge Conflicts
 
+> Canonicalizes the merge strategy that prioritizes active development workspace over 
+> potentially stale main branch content
+
 ## 1. Table of Contents
 
 - [1. Table of Contents](#1-table-of-contents)
@@ -157,7 +160,7 @@ This ADR establishes the canonical merge resolution strategy for workspace confl
 - Operator training materials
 - CI/CD pipeline conflict handling
 
----
+## 7. Token Blocks
 
 ```yaml
 TOKEN_BLOCK:
