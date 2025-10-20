@@ -6,10 +6,6 @@
 # Replaces: package_tts_gate.yaml (HACS Variable dependency removed)
 # ════════════════════════════════════════════════════════════════════════
 
-# Note: tts_gate_registry input_text helper must be created via UI
-# to support large JSON storage (>255 chars). YAML config limited to 255 chars.
-# UI creation allows up to 100,000 characters for JSON registry storage.
-
 script:
   tts_gate_native:
     alias: "TTS Gate/Throttle (Native)"
@@ -99,7 +95,6 @@ script:
                 data:
                   value: "{{ new_reg | tojson }}"
 
-# Optional: Template sensor for monitoring TTS gate status
 template:
   - sensor:
       - name: "TTS Gate Registry Status"
@@ -118,4 +113,3 @@ template:
             {{ reg_src | length }}
         unit_of_measurement: "keys"
         icon: mdi:gate-buffer
-      

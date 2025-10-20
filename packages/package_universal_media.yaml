@@ -12,12 +12,12 @@ template:
         unique_id: "bedroom_matrix_last_route"
         state: >-
           A: {{
-            states('input_select.bedroom_matrix_video_source') 
-            if states('input_select.bedroom_matrix_video_source') not in ['unknown', 'unavailable'] 
+            states('input_select.bedroom_matrix_video_source')
+            if states('input_select.bedroom_matrix_video_source') not in ['unknown', 'unavailable']
             else '—'
           }} | B: {{
-            states('input_select.bedroom_matrix_audio_source') 
-            if states('input_select.bedroom_matrix_audio_source') not in ['unknown', 'unavailable'] 
+            states('input_select.bedroom_matrix_audio_source')
+            if states('input_select.bedroom_matrix_audio_source') not in ['unknown', 'unavailable']
             else '—'
           }}
         attributes:
@@ -128,9 +128,9 @@ template:
           upstream_sources: >
             {{ ["media_player.playstation_4"] | tojson }}
           rationale: "Diagnostic telemetry sensor for PS4 media_player state and attributes."
-          description: >
-            \"Diagnostic sensor to expose raw PS4 media_player state and key attributes for troubleshooting and validation
-            of higher-tier logic sensors.\"
+          description: |
+            "Diagnostic sensor to expose raw PS4 media_player state and key attributes for
+            troubleshooting and validation of higher-tier logic sensors."
           created: "2025-07-25"
           subsystem: "orpheus"
           module: "gaming"
@@ -145,7 +145,7 @@ template:
         state: >
           {% set children = [
             'media_player.bedroom_tv_alpha',
-            'media_player.bedroom_tv_alpha_hub', 
+            'media_player.bedroom_tv_alpha_hub',
             'media_player.bedroom_tv_alpha_plex',
             'media_player.bedroom_tv_alpha_dlna',
             'media_player.bedroom_apple_tv_alpha',
@@ -168,7 +168,7 @@ template:
             {% set children = [
               'media_player.bedroom_tv_alpha',
               'media_player.bedroom_tv_alpha_hub',
-              'media_player.bedroom_tv_alpha_plex', 
+              'media_player.bedroom_tv_alpha_plex',
               'media_player.bedroom_tv_alpha_dlna',
               'media_player.bedroom_apple_tv_alpha',
               'media_player.bedroom_apple_tv_alpha_plex',
