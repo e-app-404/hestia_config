@@ -1,0 +1,11 @@
+extracted_config:
+  key_a: 1  # @pin
+  key_b: two
+transient_state:
+  ok: true
+relationships:
+- {from: a, to: b, type: ref}
+suggested_commands:
+- {action: noop}
+notes:
+- "validation sample"

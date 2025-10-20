@@ -1,7 +1,7 @@
 ---
 id: ADR-0023
 title: Operator Priority Resolution for Workspace Merge Conflicts
-slug: operator-priority-resolution-for-workspace-merge-conflicts
+slug: operator-priority-merge-resolution
 status: Accepted
 related:
 - 'ADR-0016: Canonical HA edit root & non-interactive SMB mount'
@@ -9,26 +9,20 @@ related:
 - 'ADR-0013: Source→Core Config Merge via extracted_config'
 - 'ADR-0012: Four-Pillar Workspace Architecture'
 supersedes: []
-last_updated: '2025-10-15'
 date: 2025-10-04
-decision: '### 3.1 Operator Priority Principle **The active workspace (development
-  branch) takes precedence over main branch content during merge conflict resolution.**
-  This principle applies to: - Automation logic and YAML configurations - ADR documentation
-  and architectural decisions - Operational scripts and deployment pipelines - Testing
-  infrastructure and validation tools - Workspace organization and tooling enhancements'
+decision: 'During merge conflict resolution, the active workspace (development branch) always takes 
+precedence over main branch content. This applies to automation logic, YAML configurations, 
+ADR documentation, operational scripts, deployment pipelines, testing infrastructure, 
+and workspace organization, among others.'
 author:
 - Evert Appels
-requires:
+conditions:
 - Active workspace development branch
 - Main branch with potential staleness
 - Merge conflict resolution capability
-tags:
-- merge-strategy
-- operator-priority
-- workspace-governance
-- conflict-resolution
-notes: Canonicalizes the merge strategy that prioritizes active development workspace
-  over potentially stale main branch content
+tags: ['merge-strategy', 'operator-priority', 'workspace-governance', 'conflict-resolution', 
+  'development-workflow', 'git', 'branch-management']
+last_updated: 2025-10-15
 ---
 
 # ADR-0023: Operator Priority Resolution for Workspace Merge Conflicts
