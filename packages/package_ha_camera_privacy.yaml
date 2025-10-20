@@ -298,7 +298,7 @@ automation:
     alias: "Bedroom Cam · ALERT on unknown occupancy (Room mode)"
     initial_state: true
     mode: single
-    trigges:
+    triggers:
       - trigger: state
         entity_id: binary_sensor.bedroom_privacy_unknown_intrusion
         to: "on"

@@ -60,7 +60,7 @@ automation:
             - switch.adaptive_lighting_desk
         data:
           manual_control: false
-      - actions: light.turn_on
+      - action: light.turn_on
         target:
           entity_id:
             - light.adaptive_bedroom_light_group
