@@ -7,9 +7,15 @@
 house_alert_enabled:
   name: "House Alert"
   icon: mdi:package
-hestia_approve_trash: 
+hestia_approve_trash:
   name: "Approve Empty Trash"
   icon: mdi:trash-can-outline
 hestia_approve_tmp:
   name: "Approve Prune Tmp"
   icon: mdi:folder-remove-outline
+
+# Input boolean to control backup behavior
+enable_backup_notifications:
+  name: "Enable Backup Notifications"
+  initial: true
+  icon: mdi:backup-restore

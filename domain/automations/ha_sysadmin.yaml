@@ -206,3 +206,28 @@
         title: "System Log Event"
         message: >
           {{ trigger.event.data | tojson }}
+
+# Alternative: If Synology integration backup is needed, use automation approach
+# This provides better error handling and follows ADR-0020 error patterns
+
+  - alias: "Backup: Synology Upload (Controlled)"
+    id: backup_to_synology_controlled
+    description: "Upload backups to Synology with proper error handling"
+    trigger:
+      - platform: event
+        event_type: backup_end
+        event_data:
+          success: true
+    condition:
+      - condition: template
+        value_template: "{{ trigger.event.data.success == true }}"
+    action:
+      - service: persistent_notification.create
+        data:
+          title: "Backup Available"
+          message: >
+            Backup {{ trigger.event.data.backup_id }} completed successfully.
+            File location: {{ trigger.event.data.backup_path }}
+            Size: {{ (trigger.event.data.size / 1024 / 1024) | round(1) }} MB
+          notification_id: "backup_completed"
+    mode: single
