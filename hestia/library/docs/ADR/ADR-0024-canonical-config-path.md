@@ -1,6 +1,6 @@
 ---
 id: ADR-0024
-title: Canonical Home Assistant Config Path (Single-Source-of-Truth)
+title: "Canonical Home Assistant Config Path (Single-Source-of-Truth)"
 slug: canonical-config-path
 status: Implemented
 related: []
@@ -11,9 +11,9 @@ supersedes:
 last_updated: "2025-10-15"
 date: 2025-10-05
 decision:
-  "**The canonical and only supported Home Assistant configuration root is
-  `/config`** across all environments (Home Assistant Host/Supervisor/Core, macOS
-  operator workstation, containers, and CI/CD including GitHub Actions)."
+  "The canonical and only supported Home Assistant configuration root is `/config` across all 
+  environments (Home Assistant Host/Supervisor/Core, macOS operator workstation, containers, and 
+  CI/CD including GitHub Actions)."
 authors: Strategos GPT
 amends:
   - ADR-0015
@@ -23,9 +23,7 @@ amends:
 superseded_by: null
 implementation_notes:
   "Successfully implemented using macOS synthetic.conf entries. Current setup uses symlink fallback
-  (functional equivalent). All development workflows operational and validated.
-
-  "
+  (functional equivalent). All development workflows operational and validated."
 ---
 
 ## Table of Contents

@@ -3,6 +3,7 @@
 # artifact: /config/hestia/tools/meta_capture/meta_capture.py
 
 import argparse
+import fcntl
 import glob
 import hashlib
 import json
@@ -290,6 +291,20 @@ def merge_yaml_preserving(original_text: str | None, new_text: str) -> str:
     return buf.getvalue()
 
 def main():
+    # Single-run lock to prevent concurrent executions
+    LOCK_DIR = "/config/hestia/workspace/.locks"
+    os.makedirs(LOCK_DIR, exist_ok=True)
+    lock_path = os.path.join(LOCK_DIR, "meta_capture.lock")
+    # Use context manager for initial open, then dup FD to keep lock for process lifetime
+    with open(lock_path, "w") as _tmp_fh:
+        fd = os.dup(_tmp_fh.fileno())
+    _lock_fh = os.fdopen(fd, "w")
+    try:
+        fcntl.flock(_lock_fh, fcntl.LOCK_EX | fcntl.LOCK_NB)
+    except BlockingIOError:
+        print("E-LOCK-001: another meta_capture run is in progress", file=sys.stderr)
+        sys.exit(2)
+
     ap = argparse.ArgumentParser()
     ap.add_argument("mode", nargs="?", choices=["dry-run","apply"], default="dry-run")
     ap.add_argument("--inputs", nargs="+", required=True, help="Input YAMLs (globs ok)")
@@ -653,6 +668,13 @@ def main():
     )
     with open(jsonl_index, "a", encoding="utf-8") as f:
         f.write(line)
+
+    # release lock before computing exit and exiting
+    try:
+        fcntl.flock(_lock_fh, fcntl.LOCK_UN)
+        _lock_fh.close()
+    except Exception:
+        pass
 
     # exit codes
     red_present = any(("E-OVERSIZE" in e) or ("E-ROUTE-ROOT" in e) or ("E-FS-404" in e) or

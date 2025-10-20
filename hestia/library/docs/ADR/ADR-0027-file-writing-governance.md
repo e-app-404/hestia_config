@@ -1,6 +1,6 @@
 ---
 id: ADR-0027
-title: File Writing Governance and Path Enforcement System
+title: "File Writing Governance and Path Enforcement System"
 slug: file-writing-governance-and-path-enforcement-system
 status: Accepted
 related:
@@ -31,6 +31,7 @@ workspace_allocation:
 # ADR-0027: File Writing Governance and Path Enforcement System
 
 ## STATUS_BLOCK
+
 ```yaml
 status: Accepted
 implementation_date: 2025-10-12
