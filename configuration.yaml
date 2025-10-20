@@ -4,8 +4,9 @@
 # https://www.home-assistant.io/docs/configuration/splitting_configuration/
 
 homeassistant:
-  customize: !include customize.yaml
   packages: !include_dir_named packages
+  customize: !include domain/core/customize.yaml
+  customize_glob: !include domain/core/customize_glob.yaml
   allowlist_external_dirs:
     - "/config"
     - "/config/hestia/workspace/operations/logs"
@@ -44,4 +45,3 @@ input_number: !include domain/helpers/input_number.yaml
 input_datetime: !include domain/helpers/input_datetime.yaml
 input_text: !include domain/helpers/input_text.yaml
 counter: !include domain/helpers/counter.yaml
-

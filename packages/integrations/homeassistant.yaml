@@ -16,3 +16,4 @@ homeassistant:
   safe_mode: false
   # Set reasonable timeouts for startup-blocking integrations (seconds)
   startup_timeout: 60
+

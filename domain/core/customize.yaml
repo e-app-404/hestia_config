@@ -1,6 +1,6 @@
 # ═══════════════════════════════════════════════════════════════════════════════
 # ⟫⟫ HESTIA CUSTOMIZE • Loads default entity customizations ◀
-# ⟫⟫ Loader: .config.yaml    •    customize: !include customize.yaml
+# ⟫⟫ Loader: .config.yaml    •    customize: !include domain/core/customize.yaml
 # ⟫⟫ Domain: core • Subsystem: hestia •  Updated: 2025-10-19
 # ═══════════════════════════════════════════════════════════════════════════════
 
@@ -9,7 +9,3 @@ customize:
     device_class: moisture
     unit_of_measurement: "%"
     icon: mdi:water-percent
-
-customize_glob:
-  sensor.gs724t_*:
-    icon: mdi:ethernet
