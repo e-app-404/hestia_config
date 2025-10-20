@@ -1,11 +1,15 @@
-# -------------------------------------------------------------------
-# HESTIA - Customizations
-# File: /config/customize.yaml
-# version: "1.0"
-# Loads default set of integrations. Do not remove.
-# -------------------------------------------------------------------
+# ═══════════════════════════════════════════════════════════════════════════════
+# ⟫⟫ HESTIA CUSTOMIZE • Loads default entity customizations ◀
+# ⟫⟫ Loader: .config.yaml    •    customize: !include customize.yaml
+# ⟫⟫ Domain: core • Subsystem: hestia •  Updated: 2025-10-19
+# ═══════════════════════════════════════════════════════════════════════════════
 
-sensor.bedroom_monstera_soil_alpha_soil_moisture:
-  device_class: moisture
-  unit_of_measurement: "%"
-  icon: mdi:water-percent
+customize:
+  sensor.bedroom_monstera_soil_alpha_soil_moisture:
+    device_class: moisture
+    unit_of_measurement: "%"
+    icon: mdi:water-percent
+
+customize_glob:
+  sensor.gs724t_*:
+    icon: mdi:ethernet
