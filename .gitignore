@@ -311,6 +311,10 @@ tts/
 www/
 reports/
 
+# Meta-Capture workspace artifacts (reports + JSONL index)
+hestia/workspace/reports/meta_capture/
+hestia/workspace/.hestia/index/
+
 # Personal path information that may contain PII
 # Files containing hardcoded user paths, backup locations, or personal identifiers
 **/backup_source_info.txt
