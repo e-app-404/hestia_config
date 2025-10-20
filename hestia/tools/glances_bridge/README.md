@@ -79,6 +79,7 @@ Path compliance: No $HOME, ~/hass, /Volumes, /n/ha, or actions-runner paths in c
 Write broker: Default use_write_broker=false. Set to true to route file writes through the broker; ensure broker_cmd and mode are configured when enabled.
 
 ## Support
-For config or runtime issues, see the ledger and latest report in:
-- `/config/hestia/workspace/operations/logs/glances_bridge/`
+For config or runtime issues, see:
+- Reports: `/config/hestia/workspace/reports/glances_bridge/`
 - `/config/hestia/workspace/.hestia/index/glances_bridge__index.jsonl`
+- Process logs (normalizer stdout/err): `/config/hestia/workspace/operations/logs/glances_bridge/`
