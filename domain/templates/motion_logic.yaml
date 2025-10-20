@@ -294,6 +294,32 @@
         area_id: "bedroom"
         subarea: "ottoman"
 
+    - name: "Bedroom Ottoman Motion Recent (Beta)"
+      unique_id: bedroom_ottoman_motion_recent_beta
+      device_class: motion
+      delay_off:
+        minutes: 2
+      state: "{{ is_state('binary_sensor.bedroom_ottoman_motion_proxy','on') }}"
+      attributes:
+        tier: "β"
+        canonical_id: "bedroom_ottoman_motion_recent_β"
+        subsystem: "hermes"
+        module: "motion"
+        type: "delay"
+        role: "timeout"
+        file: "/config/domain/templates/motion_logic.yaml"
+        delay_duration: "120s"
+        timeout_behavior: "delay_off"
+        upstream_sources: >
+          {{ ['binary_sensor.bedroom_ottoman_motion_proxy'] | tojson }}
+        downstream_consumers: >
+          {{ ['binary_sensor.bed_occupancy_beta'] | tojson }}
+        version: "2.2"
+        last_updated: "2025-10-06"
+        floor_id: "bedroom"
+        area_id: "ottoman"
+
+
     - name: "Desk Motion (Beta)"
       unique_id: "desk_motion_beta"
       device_class: motion
