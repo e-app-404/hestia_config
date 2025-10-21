@@ -10,9 +10,12 @@ Rules (relaxed for compatibility with current repo):
 Exits non-zero only if front-matter missing or minimal keys absent.
 """
 from pathlib import Path
+import argparse
+import json
+import os
+from datetime import datetime, timezone
 import re
 import sys
-import lintgrep
 
 try:
     import yaml  # provided by CI step: pip install pyyaml
@@ -44,6 +47,11 @@ def extract_front_matter(text: str):
 
 
 def main() -> int:
+    parser = argparse.ArgumentParser(description="Verify ADR front-matter and optionally write a report")
+    parser.add_argument("--report", action="store_true", help="Write a structured report and index entry under /config/hestia/reports")
+    parser.add_argument("--report-dir", default="/config/hestia/reports", help="Base directory for reports (default: /config/hestia/reports)")
+    args = parser.parse_args()
+
     if not ADR_DIR.exists():
         print(f"WARNING: ADR directory not found: {ADR_DIR}")
         return 0
@@ -56,17 +64,30 @@ def main() -> int:
         return 0
     failures = 0
     warnings = 0
+    issues = []  # collect structured results
     for p in md_files:
         s = p.read_text(encoding='utf-8', errors='ignore')
         fm, raw = extract_front_matter(s)
         if fm is None:
             print(f"ERROR: No YAML front-matter found in {p}")
             failures += 1
+            issues.append({
+                "level": "ERROR",
+                "code": "ADR-FM-NO-FRONTMATTER",
+                "path": str(p),
+                "message": "No YAML front-matter found"
+            })
             continue
         # If YAML failed to parse, fm will be {} but raw present → warn only
         if fm == {} and raw:
             print(f"WARN: Front-matter present but not valid YAML in {p}")
             warnings += 1
+            issues.append({
+                "level": "WARN",
+                "code": "ADR-FM-PARSE",
+                "path": str(p),
+                "message": "Front-matter present but not valid YAML"
+            })
         else:
             # Allow 'date' or 'created' as the primary date key
             minimal = ['title', 'status']
@@ -76,9 +97,64 @@ def main() -> int:
             if missing:
                 print(f"WARN: Missing minimal keys {missing} in {p}")
                 warnings += 1
+                issues.append({
+                    "level": "WARN",
+                    "code": "ADR-FM-MINIMAL",
+                    "path": str(p),
+                    "missing": missing,
+                    "message": "Missing minimal front-matter keys"
+                })
         if 'TOKEN_BLOCK' not in s:
             print(f"WARN: TOKEN_BLOCK not found in {p}")
             warnings += 1
+            issues.append({
+                "level": "WARN",
+                "code": "ADR-FM-TOKENBLOCK",
+                "path": str(p),
+                "message": "TOKEN_BLOCK not found in document"
+            })
+
+    # Optional reporting
+    if args.report:
+        ts = datetime.now(timezone.utc)
+        day_dir = Path(args.report_dir) / ts.strftime("%Y%m%d")
+        day_dir.mkdir(parents=True, exist_ok=True)
+        tool = "adr-frontmatter"
+        report_name = f"{tool}__{ts.strftime('%Y%m%dT%H%M%SZ')}__report.log"
+        report_path = day_dir / report_name
+        meta = {
+            "tool": tool,
+            "created_at": ts.isoformat(),
+            "repo_root": str(REPO_ROOT),
+            "adr_dir": str(ADR_DIR),
+            "counts": {"errors": failures, "warnings": warnings, "files": len(md_files)},
+            "adr_refs": ["ADR-0009"],
+        }
+        payload = {
+            "issues": issues,
+            "files": [str(p) for p in md_files],
+        }
+        # Frontmatter + JSON body
+        with report_path.open("w", encoding="utf-8") as fh:
+            fh.write("---\n")
+            fh.write(json.dumps(meta, indent=2))
+            fh.write("\n---\n")
+            fh.write(json.dumps(payload, indent=2))
+            fh.write("\n")
+        # Index JSONL
+        index_path = Path(args.report_dir) / "_index.jsonl"
+        index_line = {
+            "created_at": ts.isoformat(),
+            "tool": tool,
+            "path": str(report_path),
+            "counts": meta["counts"],
+        }
+        try:
+            with index_path.open("a", encoding="utf-8") as idx:
+                idx.write(json.dumps(index_line) + "\n")
+        except Exception:
+            pass
+        print(f"Report written: {report_path}")
     if failures:
         print(f"Front-matter verification failures: {failures}")
         return 2
