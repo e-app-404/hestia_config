@@ -25,15 +25,17 @@ Orchestrates a 5-component cleanup pipeline to enforce workspace hygiene and ret
   3) `sweeper.py` — apply TTL and lifecycle deletions/moves
   4) `vault_warden.py` — prune vault artifacts by group/keep-N policy
   5) `sweeper_report.py` — emit comprehensive report and health score
-
-
+  
+- Produces structured reports and updates a reports index for monitoring.
 
 ## When to use it
+
 - Routine workspace maintenance (scheduled or ad-hoc).
 - Before backups or releases to minimize bloat and enforce naming.
 - To monitor workspace health (health score in the reports index).
 
 ## Execution modes
+
 - Full pipeline:
   - `python /config/hestia/tools/backup_sweeper.py` (execute)
   - `python /config/hestia/tools/backup_sweeper.py --dry-run` (preview)
@@ -46,6 +48,7 @@ Orchestrates a 5-component cleanup pipeline to enforce workspace hygiene and ret
   - `python /config/hestia/tools/sweeper/sweeper_report.py --help`
 
 ## Configuration (TOML)
+
 Location: `/config/hestia/config/system/hestia.toml`
 
 ```toml
