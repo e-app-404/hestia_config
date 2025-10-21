@@ -11,21 +11,13 @@ supersedes:
 - None
 last_updated: '2025-10-15'
 date: 2025-09-30
-decision: 'Create a systematic approach to configuration error management with three
-  components:'
+decision: Create a systematic approach to configuration error management with three components.
 author: Strategos GPT
 references:
-- hestia/library/error_patterns.yml (Machine-readable error patterns)
-- hestia/tools/template_patcher/ (Template fixing tools)
-- custom_templates/template.library.jinja (Jinja macro library)
-- .githooks/pre-commit (Git hooks for validation)
-decision_note:
-- Establish centralized repository of common Home Assistant configuration errors and
-  proven solutions.
-- Provide machine-readable error pattern documentation for automated detection and
-  fixing.
-- Focus on systematic prevention through tooling and validation.
----
+- (Machine-readable error patterns: hestia/library/error_patterns.yml
+- Template fixing tools: hestia/tools/template_patcher/
+- Macro library: custom_templates/template.library.jinja
+- Git hooks for validation: .githooks/pre-commit
 
 # ADR-0020 — Home Assistant Configuration Error Canonicalization
 

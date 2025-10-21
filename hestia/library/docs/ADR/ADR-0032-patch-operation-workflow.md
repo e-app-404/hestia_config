@@ -1,20 +1,32 @@
 ---
-adr: 0032
+id: ADR-0032
 title: Patch Operation Workflow (Todos, Staging, Patches, Plans, Ledger)
+slug: patch-operations-workflow
 date: 2025-10-21
-status: Accepted
 authors:
-  - workspace-maintainers
+  - copilot-gpt-5
+  - e-app-404
+decision: Reduce ambiguity around patch request lifecycle and storage locations by formalizing the workflow and directory structure.
+status: Accepted
 references:
   - ADR-0009-adr-governance-formatting
   - ADR-0018-normalization-and-determinism-rules
   - ADR-0024-canonical-config-path
   - ADR-0027-file-writing-governance
+last_updated: 2025-10-21
 ---
+
+## ADR-0032 — Patch Operation Workflow (Todos, Staging, Patches, Plans, Ledger)
 
 ## Context
 
 To reduce ambiguity around where patch requests and artifacts live, we are formalizing the patch operation workflow and directory structure used by humans and AI agents. This ADR clarifies the lifecycle from request → staging → plan → merge, the canonical storage locations, and the required logging/ledger behavior.
+
+## Table of Contents
+
+<!-- insert toc block -->
+
+## Considerations
 
 Key constraints from existing governance:
 - ADR-0024: All paths must use the single canonical config mount: /config
@@ -95,6 +107,10 @@ Notes:
 1. Agents update their instruction files to implement the Directive above.
 2. Maintain the ledger at `/config/hestia/workspace/operations/logs/patch-ledger.jsonl`.
 3. Validate new todos and staging artifacts appear in their canonical directories.
+
+## Token Blocks
+
+<!-- TODO insert token block -->
 
 ## References
 
