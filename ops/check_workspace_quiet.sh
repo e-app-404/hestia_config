@@ -2,22 +2,13 @@
 set -Eeuo pipefail
 IFS=$'\n\t'
 
-ROOT="${1:-.}"
+# Wrapper shim to maintain backward compatibility with CI and docs
+CONFIG_ROOT="${CONFIG_ROOT:-/config}"
+BACKING_SCRIPT="${CONFIG_ROOT}/hestia/tools/ops/check_workspace_quiet.sh"
 
-cd "$ROOT"
-
-# Ensure no uncommitted changes or untracked large binaries in critical areas
-if ! git diff --quiet || ! git diff --cached --quiet; then
-  echo "Workspace not quiet: uncommitted changes present" >&2
-  git status -s || true
-  exit 1
+if [[ -x "${BACKING_SCRIPT}" ]]; then
+  exec "${BACKING_SCRIPT}" "$@"
+else
+  echo "ERROR: backing script not found at ${BACKING_SCRIPT}" >&2
+  exit 127
 fi
-
-# Ban common large/binary types tracked in git
-if git ls-files -z | tr '\0' '\n' | grep -E '\.(bin|exe|dll|dmg|iso|img)$' >/dev/null; then
-  echo "Forbidden binary artifacts tracked in git" >&2
-  git ls-files | grep -E '\.(bin|exe|dll|dmg|iso|img)$' || true
-  exit 1
-fi
-
-echo "Workspace quiet."
