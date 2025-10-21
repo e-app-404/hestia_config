@@ -13,13 +13,14 @@ if [ ! -d "$guardrails_dir" ]; then
 fi
 
 # use python for robust regex and globbing
-python3 - <<'PY'
+python3 - <<PY
 import re, sys, yaml
 from pathlib import Path
 
 root = Path('')
 rules = {'rules': []}
-for y in Path('hestia/guardrails').glob('*_guardrails.yaml'):
+GUARDRAILS_DIR = Path("$guardrails_dir")
+for y in GUARDRAILS_DIR.glob('*_guardrails.yaml'):
     try:
         loaded = yaml.safe_load(y.read_text())
         if loaded and 'rules' in loaded:

@@ -6,33 +6,30 @@ status: Accepted
 related:
 - ADR-0021
 supersedes: []
-last_updated: '2025-10-15'
 date: 2025-09-11
-decision: '### Contract Metadata - **Contract ID:** area_relationships_contract -
-  **Version:** 1.1 - **Author:** Evert - **Status:** canonical_draft - **File Path:**
-  canonical/support/contracts/area_hierarchy.yaml - **Live Registry Consistency:**
-  improved - **Coverage Percent:** 100.0 - **Last Validated:** 2025-10-04 - **Notes:**
-  Programmatically validated against live Home Assistant registry data.'
-tags:
-- architecture
-- area
-- hierarchy
-- spatial
-- relationship
-- contract
-- adr
+decision: Establish a canonical contract through this ADR to agree on a shared understanding of area hierarchy, containment relationships, and inference propagation rules to ensure consistent spatial reasoning across Home Assistant deployments.
+tags: ["architecture", "area", "hierarchy", "spatial", "relationship", "contract", "adr"]
 author: "e-app-404"
+last_updated: 2025-10-21
 ---
 
 # ADR-0004: Canonical Area Hierarchy & Spatial Relationship Contract
 
 ## Table of Contents
 
-1. Context
-2. Decision
-3. Enforcement
-4. Tokens
-5. Last updated
+1. [Context](#1-context)
+2. [Decision](#2-decision)
+3. [Enforcement](#3-enforcement)
+  - [Contract Metadata](#contract-metadata)
+  - [Containment Graph](#containment-graph)
+  - [Nodes](#nodes)
+  - [Propagation Rules](#propagation-rules)
+  - [Output Contract](#output-contract)
+4. [Recent Improvements (2025-10-04)](#3-recent-improvements-2025-10-04)
+  - [Structural Fixes Applied](#structural-fixes-applied)
+  - [Registry Synchronization](#registry-synchronization)
+5. [Enforcement](#4-enforcement)
+6. [Tokens](#5-tokens)
 
 ## 1. Context
 
@@ -48,21 +45,22 @@ Establish a canonical contract through this ADR to agree on a shared understandi
 
 Defines key information about the contract:
 
-| Key                   | Value                                           |
-|-----------------------  |-------------------------------------------------|
-| **Contract ID**       | area_relationships_contract                     |
-| **Version**           | 1.1                                             |
-| **Author**            | Evert                                          |
-| **Status**                    | canonical_draft                                 |
-| **File Path**                 | canonical/support/contracts/area_hierarchy.yaml |
-| **Live Registry Consistency** | improved |
-| **Coverage Percent**  | 100.0 |
-| **Last Validated**    | 2025-10-04 |
+| Key                                | Value                                   |
+|-------------------------------------|----------------------------------------|
+| **Contract ID**                    | area_relationships_contract             |
+| **Version**                        | 1.1                                     |
+| **Author**                         | Evert                                   |
+| **Status**                         | canonical_draft                         |
+| **File Path**                      | www/area_hierarchy.yaml                 |
+| **Live Registry Consistency**      | improved                                |
+| **Coverage Percent**               | 100.0                                   |
+| **Last Validated**                 | 2025-10-04                              |
 
-- **Notes:** Programmatically validated against live Home Assistant registry data. Major structural improvements applied October 2025 including duplicate removal, missing node additions, and registry alignment.
+> Note: Programmatically validated against live Home Assistant registry data. Major structural improvements applied October 2025 including duplicate removal, missing node additions, and registry alignment.
 
 ### Containment Graph
-Defines parent-child relationships for areas, rooms, floors, and containers. Example:
+
+Defines parent-child relationships for areas, rooms, floors, and containers. For instance:
 - `ground_floor` contains: hallway, kitchen, laundry_room, living_room, powder_room
 - `bedroom` contains: bedroom_main, wardrobe, desk
 - ... (see full graph in source)
@@ -70,16 +68,20 @@ Defines parent-child relationships for areas, rooms, floors, and containers. Exa
 ### Nodes
 Each node defines:
 - `id`, `type`, `canonical_name`, `parents`, `container`, `devices`, `entities`, `services`, `tags`
-- Example:
+
+```yaml
   - id: hallway
     type: area
     canonical_name: Hallway
     parents: [ground_floor, top_floor]
     tags: [transit, structural_connector]
   - ...
+```
 
 ### Propagation Rules
+
 Defines how signals propagate through the hierarchy:
+
 - **motion:**
   - from_subarea_to_area: probable
   - from_area_to_subarea: improbable
@@ -98,7 +100,9 @@ Defines how signals propagate through the hierarchy:
   - transitive_inference: true
 
 ### Output Contract
+
 Defines the schema for emitting the area hierarchy:
+
 - `area_id`: string
 - `parent_room`: string | null
 - `floor_id`: string
@@ -108,7 +112,9 @@ Defines the schema for emitting the area hierarchy:
 - `inferred_by`: string | null
 
 ## 3. Recent Improvements (2025-10-04)
+
 ### Structural Fixes Applied
+
 - **Duplicate Resolution:** Removed duplicate `downstairs` entries in containment graph
 - **Missing Nodes:** Added `sanctum`, `clapham`, `warnings`, and completed `tailscale_vpn` definitions
 - **Registry Alignment:** Updated canonical names to match Home Assistant registry exactly
@@ -121,16 +127,15 @@ Defines the schema for emitting the area hierarchy:
 - Floor/area relationships accurately modeled based on current `core.area_registry` and `core.floor_registry`
 
 ## 4. Enforcement
+
 - All subarea relationships must be explicitly declared to avoid inference ambiguity.
 - Changes to inference propagation require a new contract version.
 - This contract does not govern device placement, but entity logic implication.
 - Registry consistency validation required before major automation deployments.
 
-## 5. Tokens
+## 5. Token Blocks
+
 - **Primary:** `containment_graph`, `nodes`, `propagation_rules`, `output_contract`, `contract_metadata`
 - **Schema:** `area_id`, `parent_room`, `floor_id`, `type`, `inference_weight`, `contributes_to`, `inferred_by`
 - **Registry:** `sanctum`, `clapham`, `tailscale_vpn`, `warnings`, `ottoman`, `hifi_configuration`
 - **Relationships:** `bedroom_subareas`, `network_infrastructure`, `service_organization`
-
----
-_Last updated: 2025-10-04_
