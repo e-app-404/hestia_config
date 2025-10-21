@@ -5,13 +5,13 @@ slug: glances-bridge-readme
 version: 1.0
 author: "e-app-404"
 created: 2025-10-20
+install_path: hestia/tools/glances_bridge
 adrs: ["ADR-0024", "ADR-0027", "ADR-0031"]
 content_type: readme
 last_updated: 2025-10-21
-hot_links:
-- reports: /config/hestia/workspace/reports/glances_bridge/
-- reports: /config/hestia/workspace/.hestia/index/glances_bridge__index.jsonl
-- process_logs: /config/hestia/workspace/operations/logs/glances_bridge/
+reporting: /config/hestia/workspace/reports/glances_bridge/
+ledger: /config/hestia/workspace/.hestia/index/glances_bridge__index.jsonl
+process_logs: /config/hestia/workspace/operations/logs/glances_bridge/
 ---
 
 # glances_bridge — ADR-0031-Compliant Glances Normalizer & Tailscale Proxy

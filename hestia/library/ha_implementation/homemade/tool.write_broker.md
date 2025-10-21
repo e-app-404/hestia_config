@@ -7,9 +7,8 @@ version: 1.0
 adrs: ["ADR-0027", "ADR-0024", "ADR-0008", "ADR-0009"]
 content_type: manual
 author: "e-app-404"
-hot_links:
-- entrypoint: "/config/bin/write-broker"
-- logs_dir: "/config/hestia/workspace/operations/logs"
+entrypoint: /config/bin/write-broker
+logs: /config/hestia/workspace/operations/logs
 last_updated: 2025-10-21
 ---
 

@@ -7,11 +7,10 @@ author: "e-app-404"
 created: 2025-10-20
 adrs: ["ADR-0009", "ADR-0020", "ADR-0024"]
 content_type: manual
+installation: hestia/tools/lineage_guardian
+entrypoint: /config/hestia/tools/lineage_guardian/lineage_guardian_cli.py
+configuration: "/config/hestia/config/system/hestia.toml → [automation.lineage_guardian] (optional)"
 last_updated: 2025-10-21
-hot_links:
-- entrypoint: "/config/hestia/tools/lineage_guardian/lineage_guardian_cli.py"
-- artifacts_dir: "/config/hestia/tools/lineage_guardian/.artifacts"
-- config_file: "/config/hestia/config/system/hestia.toml → [automation.lineage_guardian] (optional)"
 ---
 
 # lineage_guardian — operator guide
