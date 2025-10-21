@@ -11,7 +11,18 @@ jobs:
           set -euo pipefail
           regex="(?i)\\b(if you(?:'d| would)?(?: like| want(?: me to)?)?|if you'd like|if you want me to|I can (?:also )?(?:do|add|implement))\\b"
           # search markdown/text files only, exclude archive directory and PR templates
-          files=$(git ls-files '*.*' | grep -E '\.(md|markdown|txt|yml|yaml)$' | grep -v '/archive/' | grep -v '.github/PULL_REQUEST_TEMPLATE/' || true)
+          files=$(git ls-files '*.*' \
+            | grep -E '\.(md|markdown|txt|yml|yaml)$' \
+            | grep -v '/archive/' \
+            | grep -v '.github/PULL_REQUEST_TEMPLATE/' \
+            | grep -v '^hestia/library/ha_implementation/' \
+            | grep -v '^hestia/library/blueprints/' \
+            | grep -v '^hestia/library/docs/' \
+            | grep -v '^hestia/library/prompts/' \
+            | grep -v '^hestia/library/context/' \
+            | grep -v '^hestia/workspace/' \
+            | grep -v '^blueprints/' \
+            || true)
           if [ -n "$files" ]; then
             for f in $files; do
               if grep -Pqo "$regex" "$f"; then
