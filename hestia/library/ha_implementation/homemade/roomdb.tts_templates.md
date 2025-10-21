@@ -1,13 +1,26 @@
-```yaml
-# ════════════════════════════════════════════════════════════════════════
-# ▶ STANDARDIZED TTS CONFIGURATION (Room-DB Gate) ◀
-# Backend: Room-DB shared domain (tts_gate_registry)
-# Compliant: ADR-0001 TTS action template
-# ════════════════════════════════════════════════════════════════════════
+---
+id: DOCS-ROOMDB-TTS-TEMPLATES-001
+title: "TTS Implementation Templates (Room-DB Backed)"
+slug: roomdb-tts-templates
+date: "2025-10-20"
+author: "e-app-404"
+description: "Templates for TTS implementation using Room-DB"
+tags: ["tts", "roomdb", "ha", "templates"]
+last_updated: "2025-10-21"
+---
 
-# ──────────────────────────────────────────────────────────────────────
-# Default TTS Configuration (already loaded by configuration.yaml)
-# ──────────────────────────────────────────────────────────────────────
+# Standardized TTS Configuration Templates (Room-DB Backed)
+
+## Default TTS Configuration & Helpers
+
+The following YAML snippets are already included in `configuration.yaml` but can be adapted 
+and split as needed.
+
+### Helpers: Default Settings
+
+<!-- TODO: descriptive information. Move inline comments to this section -->
+
+```yaml
 input_text:
   default_tts_entity:
     name: "Default TTS Entity"
@@ -40,10 +53,13 @@ input_number:
     step: 60
     initial: 1800
     mode: slider
+```
 
-# ──────────────────────────────────────────────────────────────────────
-# Wrapper Script: TTS Announce (Simplified Interface)
-# ──────────────────────────────────────────────────────────────────────
+### Wrapper Script: TTS Announce (Simplified Interface)
+
+<!-- TODO: descriptive information. Move inline comments to this section -->
+
+```yaml
 script:
   tts_announce:
     alias: "TTS Announce (Standardized)"
@@ -130,10 +146,13 @@ script:
               language: "{{ final_language }}"
               cooldown_sec: "{{ final_cooldown }}"
               max_repeats: 1
+```
 
-# ──────────────────────────────────────────────────────────────────────
-# Convenience Scripts: Common Announcement Types
-# ──────────────────────────────────────────────────────────────────────
+### Convenience Scripts: Common Announcement Types
+
+<!-- TODO: descriptive information. Move inline comments to this section -->
+
+```yaml
 script:
   tts_system_event:
     alias: "TTS: System Event"
@@ -201,10 +220,10 @@ script:
           message: "{{ message }}"
           cooldown_sec: 3600
           bypass_gate: false
+```
 
-# ──────────────────────────────────────────────────────────────────────
-# Migration Examples: Convert Existing TTS Calls
-# ──────────────────────────────────────────────────────────────────────
+### Migration Examples: Convert Existing TTS Calls
+```yaml
 automation:
   # Example 1: Home Assistant Startup (Migrated)
   - alias: "Home Assistant Start - TTS Announce (Standardized)"
