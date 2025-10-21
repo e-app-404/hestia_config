@@ -12,11 +12,11 @@ related:
     - ADR-0027
     - ADR-0028
 supersedes: []
-last_updated: '2025-10-20'
 date: 2025-10-20
 decision: Formalize TOML-first, config-centric doctrine for all Hestia tools; require dynamic path resolution, dry-run/apply, governed writes, and canonical reporting/ledger structure.
 author: Strategos (Executive Project Strategist)
 tags: ["doctrine", "config-centric", "toml", "governance", "automation", "hestia", "development", "tools"]
+last_updated: 2025-10-21
 ---
 
 ## ADR-0031: Hestia Architectural Doctrine — Config-Centric Tooling (TOML-first)
@@ -73,6 +73,7 @@ We now formalize this doctrine so that **machine-operators** can construct new c
      - Follow ADR-0024: canonical root is `/config`.
      - Reports → `/config/hestia/workspace/reports/<tool>/…`
      - Ledgers → `/config/hestia/workspace/.hestia/index/<tool>__index.jsonl`
+     - Patch Ledger → `/config/hestia/workspace/operations/logs/patch-ledger.jsonl`
      - Ops logs → `/config/hestia/workspace/operations/logs/<tool>/…`
      - Locks → `/config/hestia/workspace/.locks/…`
      - **No tracked symlinks** (ADR-0015). CI/CLI must guard this.
