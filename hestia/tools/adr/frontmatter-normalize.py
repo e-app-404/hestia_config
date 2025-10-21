@@ -142,7 +142,12 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="ADR front-matter normalizer (dry-run default)")
     parser.add_argument("--config", default=str(DEFAULT_CONFIG), help="Path to adr.toml config")
     parser.add_argument("--adr-dir", default=None, help="Override ADR directory")
-    parser.add_argument("--level", choices=["basic", "standard", "strict"], default="basic", help="Normalization level")
+    parser.add_argument(
+        "--level",
+        choices=["basic", "standard", "strict"],
+        default="basic",
+        help="Normalization level",
+    )
     parser.add_argument("--apply", action="store_true", help="Apply changes (otherwise dry-run)")
     parser.add_argument("--report", action="store_true", help="Write normalization report & index")
     parser.add_argument("--report-dir", default="/config/hestia/reports", help="Reports directory")
@@ -159,7 +164,9 @@ def main() -> int:
     # Pull status aliases and other hints
     fields = cfg.get("fields", {})
     status_cfg = fields.get("status", {}) if isinstance(fields, dict) else {}
-    status_aliases = status_cfg.get("deprecated_aliases", {}) if isinstance(status_cfg, dict) else {}
+    status_aliases = (
+        status_cfg.get("deprecated_aliases", {}) if isinstance(status_cfg, dict) else {}
+    )
 
     # Determine ADR dir
     files_cfg = cfg.get("files", {}) if isinstance(cfg, dict) else {}
@@ -192,7 +199,13 @@ def main() -> int:
             if token_added and args.apply:
                 atomic_write(p, new_text)
                 total_changed += 1
-                changes.append({"path": str(p), "actions": ["token_block_added"], "note": "front-matter parse failed; only token block appended"})
+                changes.append(
+                    {
+                        "path": str(p),
+                        "actions": ["token_block_added"],
+                        "note": "front-matter parse failed; only token block appended",
+                    }
+                )
             elif token_added:
                 changes.append({"path": str(p), "actions": ["token_block_added (dry-run)"]})
             continue
@@ -242,7 +255,9 @@ def main() -> int:
 
         # If FM changed, rebuild the file text
         # Compare with string-coercion to handle YAML date objects safely
-        fm_changed = json.dumps(original_fm, sort_keys=True, default=str) != json.dumps(fm, sort_keys=True, default=str)
+        fm_changed = json.dumps(original_fm, sort_keys=True, default=str) != json.dumps(
+            fm, sort_keys=True, default=str
+        )
         if fm_changed or token_added:
             # Reconstruct document with updated front-matter
             # Extract fm block boundaries
