@@ -248,7 +248,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="Canonical, config-driven ADR front-matter verifier")
     parser.add_argument("--config", default=str(DEFAULT_CONFIG), help="Path to adr.toml configuration")
     parser.add_argument("--adr-dir", default=None, help="Override ADR directory (defaults to config files.adr_directory)")
-    parser.add_argument("--level", choices=["basic", "standard", "strict"], default="standard", help="Validation strictness level")
+    parser.add_argument("--level", choices=["basic", "standard", "strict"], default="basic", help="Validation strictness level")
     parser.add_argument("--report", action="store_true", help="Write structured report and index under /config/hestia/reports")
     parser.add_argument("--report-dir", default="/config/hestia/reports", help="Base directory for reports")
     args = parser.parse_args()
@@ -282,12 +282,20 @@ def main() -> int:
     warnings = 0
     issues_all: List[Dict] = []
 
+    # Severity mapping based on level: in 'basic', only front-matter presence/parse errors block
+    def map_level(level: str, issue: Dict) -> str:
+        if level == "basic":
+            if issue.get("code") in {"ADR-FM-NO-FRONTMATTER", "ADR-FM-PARSE"}:
+                return "ERROR"
+            return "WARN"
+        return issue.get("level", "WARN")
+
     for p in sorted(md_files):
         s = p.read_text(encoding="utf-8", errors="ignore")
         fm, _raw = extract_front_matter(s)
         issues = validate_file(p, s, fm, schema, id_to_path, seen_slugs)
         for it in issues:
-            lvl = it.get("level")
+            lvl = map_level(schema.validation_level, it)
             if lvl == "ERROR":
                 failures += 1
             elif lvl == "WARN":
@@ -296,6 +304,9 @@ def main() -> int:
             code = it.get("code")
             msg = it.get("message")
             print(f"{lvl}: {code} {p} - {msg}")
+        # Store mapped level in report
+        for it in issues:
+            it["level_effective"] = map_level(schema.validation_level, it)
         issues_all.extend(issues)
 
     # Reporting

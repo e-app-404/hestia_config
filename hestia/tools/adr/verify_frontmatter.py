@@ -59,20 +59,24 @@ def extract_front_matter(text: str):
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Verify ADR front-matter and optionally write a report")
-    parser.add_argument("--report", action="store_true", help="Write a structured report and index entry under /config/hestia/reports")
-    parser.add_argument("--report-dir", default="/config/hestia/reports", help="Base directory for reports (default: /config/hestia/reports)")
-    args = parser.parse_args()
+    parser = argparse.ArgumentParser(description="DEPRECATED: use frontmatter_verify.py instead")
+    parser.add_argument("--report", action="store_true", help="(deprecated)")
+    parser.add_argument("--report-dir", default="/config/hestia/reports", help="(deprecated)")
+    _ = parser.parse_args()
 
-    # Linter-style migration warning while this shim remains active
-    print(
-        "WARN: verify_frontmatter.py is a CI shim and will be deprecated — migrate to frontmatter_verify.py (canonical, adr.toml-integrated)",
-        file=sys.stderr,
+    # Immediate deprecation: exit with guidance
+    msg = (
+        "ERROR: verify_frontmatter.py is deprecated. Use the canonical tool:\n"
+        "  python hestia/tools/adr/frontmatter_verify.py --level basic --report\n"
+        "Optionally add --config /config/hestia/config/meta/adr.toml (defaults applied)."
     )
+    print(msg, file=sys.stderr)
+    return 3
 
+    # The legacy execution path is disabled.
+    # Keeping the remainder of the function for historical context.
     if not ADR_DIR.exists():
-        print(f"WARNING: ADR directory not found: {ADR_DIR}")
-        return 0
+        return 3
     md_files = sorted([
         p for p in ADR_DIR.rglob('ADR-*.md')
         if '/archive/' not in str(p) and '/deprecated/' not in str(p)
