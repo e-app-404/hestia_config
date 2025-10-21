@@ -19,8 +19,13 @@ except Exception as e:  # pragma: no cover
     print(f"ERROR: PyYAML not available: {e}")
     sys.exit(1)
 
-REPO_ROOT = Path(__file__).resolve().parents[3]
-ADR_DIR = REPO_ROOT / 'hestia' / 'library' / 'docs' / 'ADR'
+THIS = Path(__file__).resolve()
+# Hestia root is two levels up from this file: /config/hestia/tools/adr/verify_frontmatter.py
+# -> parents[2] == /config/hestia
+HESTIA_ROOT = THIS.parents[2]
+# Repo root is one level above hestia: /config
+REPO_ROOT = HESTIA_ROOT.parent
+ADR_DIR = HESTIA_ROOT / 'library' / 'docs' / 'ADR'
 
 FM_RE = re.compile(r"\n?---\s*\n(.*?)\n---\s*\n", flags=re.S)
 

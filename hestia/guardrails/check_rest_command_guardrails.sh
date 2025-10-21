@@ -21,22 +21,39 @@ check_file() {
   if ! grep -qE '^rest_command:' "$f" 2>/dev/null && ! grep -qE '\bservice:\s*rest_command\.' "$f" 2>/dev/null; then
     return 0
   fi
-  # Disallow bare http(s) to external domains; allow localhost/127.0.0.1, add-on hosts (a0d7b954-*), and 'homeassistant'
+  # Scope scanning to rest_command: block only; basic state machine
+  in_rest=0
   while IFS= read -r line; do
-    case "$line" in
-      *url:*)
-        url=$(echo "$line" | sed -E 's/.*url:\s*"?([^" ]*).*/\1/')
-        host=$(echo "$url" | sed -E 's#^https?://([^/:]+).*$#\1#')
-        if [[ -n "$host" ]]; then
-          if [[ "$host" == "localhost" || "$host" == "127.0.0.1" || "$host" == "homeassistant" || "$host" == a0d7b954-* ]]; then
-            :
-          else
-            echo "$f: ERROR disallowed host in rest_command URL: $host" >&2
-            fail=1
+    # detect top-level keys
+    if [[ "$line" =~ ^[A-Za-z0-9_]+: ]]; then
+      in_rest=0
+    fi
+    if [[ "$line" =~ ^rest_command: ]]; then
+      in_rest=1
+      continue
+    fi
+    if (( in_rest )); then
+      case "$line" in
+        *url:*)
+          url=$(echo "$line" | sed -E 's/.*url:\s*"?([^" ]*).*/\1/')
+          # Only http(s)
+          case "$url" in
+            http://*|https://*) ;;
+            *) continue ;;
+          esac
+          host=$(echo "$url" | sed -E 's#^https?://([^/:]+).*$#\1#')
+          if [[ -n "$host" ]]; then
+            # Allowlist: localhost, 127.0.0.1, homeassistant, a0d7b954-*, RFC1918 ranges
+            if [[ "$host" == "localhost" || "$host" == "127.0.0.1" || "$host" == "homeassistant" || "$host" == a0d7b954-* || "$host" == 10.* || "$host" == 192.168.* || "$host" == 172.16.* || "$host" == 172.17.* || "$host" == 172.18.* || "$host" == 172.19.* || "$host" == 172.2[0-9].* || "$host" == 172.3[0-1].* ]]; then
+              :
+            else
+              echo "$f: ERROR disallowed host in rest_command URL: $host" >&2
+              fail=1
+            fi
           fi
-        fi
-        ;;
-    esac
+          ;;
+      esac
+    fi
   done <"$f"
   # Methods must be GET or POST
   if grep -E "^\s*method:\s*(PUT|DELETE|PATCH)\b" "$f" -n; then
