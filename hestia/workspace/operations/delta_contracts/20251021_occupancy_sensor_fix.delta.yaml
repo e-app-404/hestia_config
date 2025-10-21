@@ -1,0 +1,19 @@
+planned_change: Fix latched Kitchen Occupancy (Beta) and calibrate SNZB-06P
+deliverable: Reliable β-layer occupancy signal with proper clear events
+action_needed:
+  - Replace trigger-based β binary_sensor with state-template (mirrors α) + smoothing
+  - Calibrate Z2M options to emit “no_occupancy_since” ticks (optional but recommended)
+rationale: Current β remains 'Detected' because only the ON transition is handled
+status: ready
+path: /config/  # or your HESTIA path for β sensors
+RACI_matrix:
+  responsible: You
+  accountable: Strategos
+  consulted: Home Assistant logs
+  informed: Stakeholders relying on automations
+acceptance_criteria:
+  - Beta turns OFF within the configured delay after α = OFF
+  - History graph shows alternating Detected/Clear consistent with α
+  - 3 consecutive manual tests pass (see Verification)
+risk_assessment:
+  - low: change is additive & easily reversible

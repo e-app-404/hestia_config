@@ -1,0 +1,137 @@
+extracted_config:
+  environment:
+    homeassistant:
+      host: homeassistant.local
+      os_version: "Home Assistant OS 16.2"
+      core_version: "2025.10.3"
+      ipv4_end0: "192.168.0.129/24"
+      ports:
+        web_ui: 8123/tcp
+        observer: 4357/tcp
+    appdaemon:
+      host: a0d7b954-appdaemon
+      port: 5050/tcp
+      endpoints_global:
+        - /api/appdaemon/room_db_health
+        - /api/appdaemon/room_db_test
+        - /api/appdaemon/room_db_update_config
+      health_sample:
+        status: healthy
+        schema_expected: 1
+        db_path: /config/room_database.db
+        mapping_path: /config/www/area_mapping.yaml
+        canonical_rooms_count: 11
+        allowed_domains: [activity_tracking, motion_lighting, shared, vacuum_control]
+  room_db_stack:
+    db: /config/room_database.db
+    schema_expected: 1
+    write_path: AppDaemon REST (global endpoints above)
+    rate_limit_seconds: 2
+    mapping_file: /config/www/area_mapping.yaml
+    mapping_updates:
+      metadata.allowed_domains_map:
+        shared: [tts_gate_registry, plex_tv_index, plex_movie_index]
+    rest_command_services (HA):
+      - rest_command.room_db_update_config
+      - rest_command.room_db_health
+      - rest_command.room_db_test
+      - rest_command.room_db_reload_mapping
+      - rest_command.room_db_export_write_once
+    sql_sensors_present (HA):
+      - sensor.room_configs_motion_lighting
+      - sensor.room_configs_motion_lighting_dict
+      - sensor.room_configs_vacuum_control
+      - sensor.room_configs_vacuum_control_dict
+      - sensor.rooms_needing_cleaning
+      - sensor.room_configs_activity_tracking
+      - sensor.room_configs_activity_tracking_dict
+    sql_sensor_missing_but_expected:
+      - sensor.room_configs_shared_registry   # defined in mr_src.yaml, not visible in HA runtime
+  valetudo_control:
+    mqtt:
+      base_topic_helper: input_text.valetudo_base_topic
+      default_initial: "valetudo/robot"
+      publish_example_topic: "<base>/MapSegmentationCapability/action/start_segment_action"
+    ha_script:
+      clean_room_with_sql_tracking: script.clean_room_with_sql_tracking
+      script_writes_back_via: rest_command.room_db_update_config (domain: vacuum_control)
+  workstation_integration:
+    smb:
+      mount_point: /Volumes/config
+      share: //homeassistant.local/config
+      user: evertappels
+    workspace:
+      rel_path: .vscode/hass-live.code-workspace
+  ssh_remote:
+    addon: "Home Assistant Community Add-on: Advanced SSH & Web Terminal"
+    login_user: root
+    status_vs_code_remote:
+      dynamic_port_forwarding: failing
+      error: "channel open failed: administratively prohibited"
+    required_setting_hint:
+      tcp_forwarding: enable   # AllowTcpForwarding / remote port forwarding must be allowed by the add-on
+      agent_forwarding: optional
+      note: "VS Code Remote needs TCP forwarding; reconfigure add-on and restart"
+
+transient_state:
+  room_db:
+    health: ok
+    test: ok
+    update_config_shared:
+      last_attempt:
+        room_id: tts_gate_registry
+        domain: shared
+        result: ok (200)
+  errors_history:
+    rest_sensors_404:
+      cause: legacy probe URLs (various /health paths)
+      action_taken: pruned to global endpoints; scan_interval relaxed to 300s
+      expectation: warning volume should drop after HA reload
+  shared_registry_pipeline:
+    current_issue: "sensor.room_configs_shared_registry not in state machine"
+    suspected_causes:
+      - mr_src.yaml not loaded by packages include
+      - include collision/ordering (dict last-key-wins) elsewhere
+    validation_needed:
+      - Confirm mr_src.yaml is in a path picked up by `packages: !include_dir_named packages`
+      - Ensure top-level key is `sql:` (list form) with unique list item names
+      - Check HA Server Controls → Check configuration → Reload Template/REST/SQL
+
+relationships:
+  - homeassistant.local:8123 → primary UI for HA Core
+  - a0d7b954-appdaemon:5050 → AppDaemon HTTP API (room_db_* global endpoints)
+  - HA rest_command.* → AppDaemon endpoints (writes & health/test)
+  - SQLite (/config/room_database.db) ↔ HA SQL sensors (read-only) ↔ HA templates/automations
+  - Valetudo MQTT topics ← HA script.clean_room_with_sql_tracking (segment-based cleaning)
+  - SMB mount (/Volumes/config) ↔ Workspace (.vscode/hass-live.code-workspace)
+  - VS Code Remote SSH ↔ Advanced SSH add-on (requires TCP forwarding enabled)
+
+suggested_commands:
+  macOS_mount_and_open:
+    - mkdir -p /Volumes/config
+    - 'mount -t smbfs "smb://evertappels@homeassistant.local/config" /Volumes/config'
+    - 'open -a "Visual Studio Code" "/Volumes/config/.vscode/hass-live.code-workspace"'
+  roomdb_smoke_tests:
+    - 'curl -sS http://a0d7b954-appdaemon:5050/api/appdaemon/room_db_health | jq .'
+    - 'curl -sS http://a0d7b954-appdaemon:5050/api/appdaemon/room_db_test | jq .'
+    - >
+      curl -sS -X POST 'http://a0d7b954-appdaemon:5050/api/appdaemon/room_db_update_config'
+      -H 'Content-Type: application/json'
+      --data '{"room_id":"tts_gate_registry","domain":"shared","config_data":{"_diag":{"ts":"'"$(date -u +%FT%TZ)"'","ok":true}},"schema_expected":1}' | jq .
+  ha_template_check_shared_registry (paste into Developer Tools → Template):
+    - |
+      {% set p = state_attr('sensor.room_configs_shared_registry','payload') or {} -%}
+      exists={{ states('sensor.room_configs_shared_registry') not in ['unknown','unavailable',''] }}
+      is_mapping={{ p is mapping }}
+      keys={{ p.keys() | list }}
+  ssh_forwarding_diag:
+    - 'ha addons list | grep -i ssh'
+    - 'ha addons logs <ssh_addon_slug> | tail -n 200'
+    - '# In add-on config: enable TCP forwarding (AllowTcpForwarding yes / allow_remote_port_forwarding: true), save, then:'
+    - 'ha addons restart <ssh_addon_slug>'
+
+notes:
+  - Use `domain` (not `config_domain`) in REST payloads for room_db_update_config.
+  - Respect 2s rate limit between sequential writes per domain.
+  - Keep REST diagnostics to the confirmed global endpoints only to avoid 404 spam.
+  - The shared registry data is now allowed in mapping; visibility depends on the SQL sensor being loaded via HA packages.
