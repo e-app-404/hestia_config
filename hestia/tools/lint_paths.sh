@@ -10,6 +10,8 @@ EXCLUDES=(
   '!ADR/deprecated/**'
   '!docs/history/**'
   '!library/docs/ADR-imports/**'
+  '!hestia/workspace/cache/**'
+  '!hestia/workspace/staging/**'
   '!**/.git/**'
   '!**/.venv/**'
   '!**/node_modules/**'
@@ -23,7 +25,7 @@ if command -v rg >/dev/null 2>&1; then
   fi
 else
   echo "[lint] ripgrep not found; falling back to grep (slower)." >&2
-  MATCHES=$(git ls-files | grep -vE '\.md$|^ADR/deprecated/|^docs/history/|^library/docs/ADR-imports/|^\.git/|^\.venv/|node_modules/|\.png$|\.jpg$|\.svg$|\.ico$' \
+  MATCHES=$(git ls-files | grep -vE '\.md$|^ADR/deprecated/|^docs/history/|^library/docs/ADR-imports/|^hestia/workspace/cache/|^hestia/workspace/staging/|^\.git/|^\.venv/|node_modules/|\.png$|\.jpg$|\.svg$|\.ico$' \
     | xargs grep -nE "$PATTERN" -- 2>/dev/null || true)
   if [[ -n "${MATCHES}" ]]; then
     echo "${MATCHES}"
