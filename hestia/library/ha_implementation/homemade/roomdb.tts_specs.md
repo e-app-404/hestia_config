@@ -1,13 +1,16 @@
 ---
 id: DOCS-ROOMDB-TTS-SPECS-001
 title: "TTS Implementation Specification (Room-DB Backed)"
-version: "1.0.0"
-created: "2025-10-20"
+version: 1.0.0
+date: 2025-10-20
+content_type: specification
 backend: "SQLite via Room-DB (shared domain)"
 adr_compliance: "ADR-0001"
 storage_capacity: "512KB per registry"
 rate_limit_enforcement: "AppDaemon (room_db_updater)"
 schema_version: 1
+description: "Specification for TTS implementation using Room-DB for rate limiting and configuration storage"
+last_updated: 2025-10-21
 ---
 
 # TTS Implementation Specification
@@ -47,7 +50,7 @@ behavior = "full_control"
 ## 1. STORAGE ARCHITECTURE
 
 ### 1.1 Database Schema
-```
+```yaml
 table: room_configs
   - room_id: "tts_gate_registry" (TEXT, PK part 1)
   - config_domain: "shared" (TEXT, PK part 2)
@@ -90,8 +93,6 @@ AppDaemon Validation (rate limit, schema check)
   ↓
 SQLite Transaction (BEGIN IMMEDIATE ... COMMIT)
 ```
-
----
 
 ## 2. SCRIPT INTERFACES
 
@@ -177,8 +178,6 @@ Cooldown: 3600s (1 hour)
 Key Pattern: "maintenance_{task}"
 ```
 
----
-
 ## 3. CONFIGURATION TEMPLATES
 
 ### 3.1 Service Call: tts_announce
@@ -222,8 +221,6 @@ data:
   cooldown_sec: 1800
   max_repeats: 2
 ```
-
----
 
 ## 4. MIGRATION PATTERNS
 
@@ -275,8 +272,6 @@ data:
     max_repeats: 0
 ```
 
----
-
 ## 5. RATE LIMIT BEHAVIOR
 
 ### 5.1 State Machine
@@ -318,8 +313,6 @@ T+10s:  Call 2 → BLOCK (no repeats allowed)
 T+610s: Call 3 → PLAY (cooldown expired)
 ```
 
----
-
 ## 6. ERROR HANDLING
 
 ### 6.1 Common Issues
@@ -346,33 +339,32 @@ T+610s: Call 3 → PLAY (cooldown expired)
 {% endif %}
 ```
 
----
-
 ## 7. PERFORMANCE CHARACTERISTICS
 
 ### 7.1 Latency
-```
-TTS Call → Room-DB Read:      ~10ms (SQL query)
-Registry Update → Room-DB:     ~50-100ms (REST + SQLite write)
-Total TTS Delay:               ~60-110ms (negligible)
-```
+
+| Operation | Duration | Description |
+|-----------|----------|-------------|
+| TTS Call → Room-DB Read | ~10ms | SQL query execution |
+| Registry Update → Room-DB | ~50-100ms | REST + SQLite write transaction |
+| Total TTS Delay | ~60-110ms | Overall impact (negligible) |
 
 ### 7.2 Capacity
-```
-Max Registry Size:        512 KB
-Avg Key Entry Size:       ~100 bytes
-Estimated Max Keys:       ~5,000 keys
-Recommended Max Keys:     ~1,000 keys (for performance)
-```
+
+| Metric | Value | Notes |
+|--------|-------|-------|
+| Max Registry Size | 512 KB | Hard limit enforced by AppDaemon |
+| Avg Key Entry Size | ~100 bytes | Including JSON overhead |
+| Estimated Max Keys | ~5,000 keys | Theoretical maximum |
+| Recommended Max Keys | ~1,000 keys | For optimal performance |
 
 ### 7.3 Maintenance
-```
-Cleanup Frequency:   Monthly (or as needed)
-Prune Strategy:      Remove keys with last_ts > 90 days
-Backup Before Prune: Always
-```
 
----
+| Task | Schedule | Strategy |
+|------|----------|----------|
+| Cleanup Frequency | Monthly | Or as needed based on usage |
+| Prune Strategy | Remove keys with last_ts > 90 days | Automatic cleanup |
+| Backup Before Prune | Always | Safety measure required |
 
 ## 8. TESTING CHECKLIST
 
@@ -395,20 +387,20 @@ Backup Before Prune: Always
 - [ ] Registry > 512KB → AppDaemon rejects write
 - [ ] Concurrent calls (10+) → Queues properly
 
----
-
 ## 9. OPERATIONAL COMMANDS
 
 ### 9.1 View Registry State
-```yaml
-# Developer Tools → Template
+
+How to run: copy and paste template snippet into Home Assistant Developer Tools → Template section.
+
+```jinja
 {% set payload = state_attr('sensor.room_configs_shared_registry_dict', 'payload') %}
 {{ payload.get('tts_gate_registry', {}) | tojson(indent=2) }}
 ```
 
 ### 9.2 Manual Prune Old Keys
+
 ```yaml
-# Developer Tools → Actions
 service: rest_command.room_db_update_config
 data:
   room_id: "tts_gate_registry"
@@ -426,8 +418,6 @@ data:
 {% set reg = payload.get('tts_gate_registry', {}) if payload else {} %}
 {{ reg.get('your_key_here', 'NOT_FOUND') }}
 ```
-
----
 
 ## 10. SCHEMA REFERENCE
 
@@ -468,8 +458,6 @@ sensor.tts_gate_registry_status:
     format_version: 1
 ```
 
----
-
 ## 11. BEST PRACTICES
 
 ### 11.1 Key Naming
@@ -501,7 +489,5 @@ Alerts:     0.6-0.7
 Critical:   0.7-0.8
 Quiet:      0.3-0.4
 ```
-
----
 
 **END OF SPECIFICATION**

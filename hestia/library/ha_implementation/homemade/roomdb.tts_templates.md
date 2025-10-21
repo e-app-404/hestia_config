@@ -2,11 +2,12 @@
 id: DOCS-ROOMDB-TTS-TEMPLATES-001
 title: "TTS Implementation Templates (Room-DB Backed)"
 slug: roomdb-tts-templates
+content_type: templates
 date: "2025-10-20"
 author: "e-app-404"
 description: "Templates for TTS implementation using Room-DB"
 tags: ["tts", "roomdb", "ha", "templates"]
-last_updated: "2025-10-21"
+last_updated: 2025-10-21
 ---
 
 # Standardized TTS Configuration Templates (Room-DB Backed)
@@ -223,6 +224,9 @@ script:
 ```
 
 ### Migration Examples: Convert Existing TTS Calls
+
+<!-- TODO: descriptive information. Move inline comments to this section -->
+
 ```yaml
 automation:
   # Example 1: Home Assistant Startup (Migrated)
@@ -276,5 +280,4 @@ automation:
       - action: script.tts_critical
         data:
           message: "Warning! System temperature has exceeded 85 degrees Celsius."
-
 ```

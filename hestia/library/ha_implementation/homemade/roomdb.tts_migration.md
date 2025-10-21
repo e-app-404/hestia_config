@@ -2,11 +2,13 @@
 id: DOCS-ROOMDB-TTS-MIGRATION-001
 title: "Room-DB TTS Migration Guide"
 slug: roomdb-tts-migration
-status: Draft
-created: "2025-10-20"
-last_updated: "2025-10-21"
+status: Accepted
+version: 1.0.0
+date: 2025-10-20
 author: "e-app-404"
 tags: ["tts", "migration", "roomdb", "ha"]
+description: "Guide for migrating existing TTS automations to Room-DB backed implementation"
+last_updated: 2025-10-21
 ---
 
 # MIGRATION GUIDE FOR EXISTING AUTOMATIONS
