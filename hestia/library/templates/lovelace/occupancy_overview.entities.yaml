@@ -1,6 +1,6 @@
 # Lovelace: Occupancy Overview (Beta sensors)
 # Uses custom:multiple-entity-row within an entities card
-# Displays β occupancy sensors and selected context details for rapid debugging
+# Simple view to validate β pipeline: state + upstream sources + active_source
 
 # Usage:
 #   - type: entities
@@ -22,9 +22,7 @@
     - entity: binary_sensor.kitchen_motion_recent_beta
       name: motion_recent
     - attribute: active_source
-      name: source
-    - attribute: selection_mode
-      name: mode
+      name: via
 
 - entity: binary_sensor.living_room_occupancy_beta
   type: custom:multiple-entity-row
@@ -34,9 +32,8 @@
   entities:
     - entity: binary_sensor.living_room_occupancy_alpha_occupancy
       name: α zigbee
-    - attribute: timeout
-      name: timeout
-      format: precision0
+    - attribute: active_source
+      name: via
 
 - entity: binary_sensor.bedroom_occupancy_beta
   type: custom:multiple-entity-row
@@ -49,7 +46,7 @@
     - entity: binary_sensor.bedroom_motion_recent_beta
       name: motion_recent
     - attribute: active_source
-      name: source
+      name: via
 
 - entity: binary_sensor.ensuite_occupancy_beta
   type: custom:multiple-entity-row
@@ -61,6 +58,5 @@
       name: α zigbee
     - entity: binary_sensor.ensuite_motion_recent_beta
       name: motion_recent
-    - attribute: timeout
-      name: timeout
-      format: precision0
+    - attribute: active_source
+      name: via
