@@ -110,7 +110,7 @@ def normalize_related(val) -> list[str]:
                     result.append(m.group(0))
             elif isinstance(item, dict):
                 # Use first key that matches ADR-####
-                for k in item.keys():
+                for k in item:
                     if ADR_ID_RE.match(str(k)):
                         result.append(str(k))
                         break
@@ -139,13 +139,13 @@ def atomic_write(path: Path, content: str) -> None:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="ADR front-matter normalizer (dry-run by default)")
-    parser.add_argument("--config", default=str(DEFAULT_CONFIG), help="Path to adr.toml configuration")
+    parser = argparse.ArgumentParser(description="ADR front-matter normalizer (dry-run default)")
+    parser.add_argument("--config", default=str(DEFAULT_CONFIG), help="Path to adr.toml config")
     parser.add_argument("--adr-dir", default=None, help="Override ADR directory")
     parser.add_argument("--level", choices=["basic", "standard", "strict"], default="basic", help="Normalization level")
     parser.add_argument("--apply", action="store_true", help="Apply changes (otherwise dry-run)")
-    parser.add_argument("--report", action="store_true", help="Write a normalization report and index")
-    parser.add_argument("--report-dir", default="/config/hestia/reports", help="Reports base directory")
+    parser.add_argument("--report", action="store_true", help="Write normalization report & index")
+    parser.add_argument("--report-dir", default="/config/hestia/reports", help="Reports directory")
     args = parser.parse_args()
 
     cfg = {}
@@ -217,22 +217,25 @@ def main() -> int:
         slug = fm.get("slug")
         title = fm.get("title")
         _id = fm.get("id")
-        if args.level in ("standard", "strict"):
-            if isinstance(title, str):
-                title_clean = title
-                if isinstance(_id, str) and title_clean.startswith(_id):
-                    # drop ADR-XXXX prefix
-                    title_clean = title_clean[len(_id):].lstrip(': ').lstrip()
-                new_slug = kebab(title_clean)
-                if not isinstance(slug, str) or not SLUG_RE.match(slug) or slug != new_slug:
-                    fm["slug"] = new_slug
-                    actions.append("slug_regenerated")
+        if args.level in ("standard", "strict") and isinstance(title, str):
+            title_clean = title
+            if isinstance(_id, str) and title_clean.startswith(_id):
+                # drop ADR-XXXX prefix
+                title_clean = title_clean[len(_id) :].lstrip(": ").lstrip()
+            new_slug = kebab(title_clean)
+            if not isinstance(slug, str) or not SLUG_RE.match(slug) or slug != new_slug:
+                fm["slug"] = new_slug
+                actions.append("slug_regenerated")
 
         # Title include ID prefix (strict)
-        if args.level == "strict":
-            if isinstance(title, str) and isinstance(_id, str) and _id not in title:
-                fm["title"] = f"{_id}: {title}"
-                actions.append("title_prefixed_with_id")
+        if (
+            args.level == "strict"
+            and isinstance(title, str)
+            and isinstance(_id, str)
+            and _id not in title
+        ):
+            fm["title"] = f"{_id}: {title}"
+            actions.append("title_prefixed_with_id")
 
         # Ensure TOKEN_BLOCK exists (basic+)
         new_text, token_added = ensure_token_block(text)
@@ -315,7 +318,8 @@ def main() -> int:
             pass
         print(f"Report written: {report_path}")
 
-    print(f"Normalization {'applied' if args.apply else 'completed (dry-run)'}; files changed: {total_changed}")
+    status = "applied" if args.apply else "completed (dry-run)"
+    print(f"Normalization {status}; files changed: {total_changed}")
     return 0
 
 

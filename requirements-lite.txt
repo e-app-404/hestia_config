@@ -1,0 +1,47 @@
+# Lightweight requirements for HA container (no native-build deps)
+# Generated to avoid psutil build in safety on musllinux/aarch64.
+# Use this in HA OS: /config/.venv/bin/pip install -r requirements-lite.txt
+
+########################################
+# Runtime dependencies
+########################################
+bleak==0.22.3
+paho-mqtt==2.1.0
+spherov2==0.12.1
+PyYAML==6.0.2
+
+########################################
+# Tooling / development dependencies (no safety)
+########################################
+jsonschema==4.*
+yamllint==1.*
+ruamel.yaml==0.18.*
+pandas==2.*
+click==8.*
+pre-commit==3.*
+tabulate==0.9.*
+monkeytype==23.3.*
+pytest==7.*
+coverage==7.*
+flake8==6.*
+pydocstyle==6.*
+mccabe==0.7.*
+isort==5.*
+black==23.*
+autoflake==2.*
+tinytuya==1.17.*
+cryptography==46.*
+colorama==0.4.*
+requests==2.*
+toml==0.10.*
+
+# Additional dev tools (unpinned)
+pip-tools
+pytest-asyncio
+ruff
+mypy
+tox
+types-requests
+types-setuptools
+pytest-cov
+bandit
