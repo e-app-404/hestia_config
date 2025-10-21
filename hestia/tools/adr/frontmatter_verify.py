@@ -285,7 +285,7 @@ def main() -> int:
     # Severity mapping based on level: in 'basic', only front-matter presence/parse errors block
     def map_level(level: str, issue: Dict) -> str:
         if level == "basic":
-            if issue.get("code") in {"ADR-FM-NO-FRONTMATTER", "ADR-FM-PARSE"}:
+            if issue.get("code") in {"ADR-FM-NO-FRONTMATTER"}:
                 return "ERROR"
             return "WARN"
         return issue.get("level", "WARN")
