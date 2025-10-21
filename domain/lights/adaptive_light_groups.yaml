@@ -15,6 +15,7 @@
     - light.bedroom_nightstand_right_alpha_matter
     - light.bedroom_main_alpha_matter
     - light.bedroom_wall_alpha
+    - light.bedroom_mirror_lightstrip_alpha
   # - light.bedroom_entrance_alpha_matter
 
 - platform: group
