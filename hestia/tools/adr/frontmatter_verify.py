@@ -215,8 +215,15 @@ def validate_file(
             issues.append({"level": "WARN", "code": "ADR-TITLE-SHORT", "path": str(path), "message": "Title should be at least 15 characters"})
         if tlen > 200:
             issues.append({"level": "WARN", "code": "ADR-TITLE-LONG", "path": str(path), "message": "Title should not exceed 200 characters"})
-        if _id and _id not in title:
-            issues.append({"level": "WARN", "code": "ADR-TITLE-ID-MISMATCH", "path": str(path), "message": "Title should include ADR ID prefix"})
+        # Governance update: Title should NOT repeat the ADR id to avoid redundancy.
+        # Warn if the title contains the ADR id string.
+        if _id and _id in title:
+            issues.append({
+                "level": "WARN",
+                "code": "ADR-TITLE-ID-REDUNDANT",
+                "path": str(path),
+                "message": "Title should NOT include ADR ID; it's redundant with the id field",
+            })
 
     # Slug checks (regex + uniqueness)
     slug = getk("slug")
