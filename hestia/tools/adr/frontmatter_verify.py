@@ -26,7 +26,6 @@ import sys
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
 
 import yaml
 
@@ -58,13 +57,13 @@ ADR_ID_RE = re.compile(r"^ADR-\d{4}$")
 class Schema:
     adr_dir: Path
     adr_pattern: str
-    required_fields: List[str]
-    status_allowed: List[str]
-    status_aliases: Dict[str, str]
+    required_fields: list[str]
+    status_allowed: list[str]
+    status_aliases: dict[str, str]
     validation_level: str
 
 
-def load_schema(config_path: Path, level: Optional[str]) -> Schema:
+def load_schema(config_path: Path, level: str | None) -> Schema:
     cfg = {}
     if config_path.exists():
         try:
@@ -110,7 +109,7 @@ def load_schema(config_path: Path, level: Optional[str]) -> Schema:
     )
 
 
-def extract_front_matter(text: str) -> Tuple[Optional[Dict], Optional[str]]:
+def extract_front_matter(text: str) -> tuple[dict | None, str | None]:
     m = FRONT_MATTER_RE.search(text)
     if not m:
         return None, None
@@ -132,8 +131,15 @@ def is_iso_date(s: str) -> bool:
         return False
 
 
-def validate_file(path: Path, text: str, fm: Optional[Dict], schema: Schema, id_to_path: Dict[str, Path], seen_slugs: Dict[str, Path]) -> List[Dict]:
-    issues: List[Dict] = []
+def validate_file(
+    path: Path,
+    text: str,
+    fm: dict | None,
+    schema: Schema,
+    id_to_path: dict[str, Path],
+    seen_slugs: dict[str, Path],
+) -> list[dict]:
+    issues: list[dict] = []
     if fm is None:
         issues.append({"level": "ERROR", "code": "ADR-FM-NO-FRONTMATTER", "path": str(path), "message": "No YAML front-matter found"})
         return issues
@@ -262,8 +268,9 @@ def main() -> int:
         return 2
 
     # Discover ADR files (recursive), excluding deprecated/archive
-    md_files: List[Path] = [
-        p for p in schema.adr_dir.rglob(schema.adr_pattern)
+    md_files: list[Path] = [
+        p
+        for p in schema.adr_dir.rglob(schema.adr_pattern)
         if "/deprecated/" not in str(p) and "/archive/" not in str(p)
     ]
     if not md_files:
@@ -271,19 +278,19 @@ def main() -> int:
         return 0
 
     # Preload IDs for cross-reference existence check
-    id_to_path: Dict[str, Path] = {}
+    id_to_path: dict[str, Path] = {}
     for p in md_files:
         m = re.match(r"^ADR-\d{4}", p.name)
         if m:
             id_to_path[m.group(0)] = p
 
-    seen_slugs: Dict[str, Path] = {}
+    seen_slugs: dict[str, Path] = {}
     failures = 0
     warnings = 0
-    issues_all: List[Dict] = []
+    issues_all: list[dict] = []
 
     # Severity mapping based on level: in 'basic', only front-matter presence/parse errors block
-    def map_level(level: str, issue: Dict) -> str:
+    def map_level(level: str, issue: dict) -> str:
         if level == "basic":
             if issue.get("code") in {"ADR-FM-NO-FRONTMATTER"}:
                 return "ERROR"

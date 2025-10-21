@@ -21,13 +21,13 @@ Reporting outputs:
 
 Exits non-zero only if front-matter missing or minimal keys absent.
 """
-from pathlib import Path
 import argparse
 import json
 import os
-from datetime import datetime, timezone
 import re
 import sys
+from datetime import UTC, datetime
+from pathlib import Path
 
 try:
     import yaml  # provided by CI step: pip install pyyaml
@@ -138,7 +138,7 @@ def main() -> int:
 
     # Optional reporting
     if args.report:
-        ts = datetime.now(timezone.utc)
+        ts = datetime.now(UTC)
         day_dir = Path(args.report_dir) / ts.strftime("%Y%m%d")
         day_dir.mkdir(parents=True, exist_ok=True)
         tool = "adr-frontmatter"

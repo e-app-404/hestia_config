@@ -140,15 +140,15 @@ We now formalize this doctrine so that **machine-operators** can construct new c
 
 - **Outputs** (must exist after each run):
 
-    - `…/__<ts>__dry_run.json` or `…/__<ts>__apply.json` (human JSON report)
-    - `…/<tool>__index.jsonl` (append-only ledger)
+  - `…/__<ts>__dry_run.json` or `…/__<ts>__apply.json` (human JSON report)
+  - `…/<tool>__index.jsonl` (append-only ledger)
 
 - **Error Classes** (examples):
     `E-LOCK-001` (run-lock), `E-PIN-LOCK-001`, `E-SECRETS-xxx`, `E-SCHEMA-xxx`, `E-BROKER-001`, `E-LIMIT-APU-001`, `E-PATH-ADR0024`.
 
 ## 5. Implementation Guidance (Python)
 
-**Config loader**
+### **Config loader**
 
 ```python
 # py311+: use tomllib; older: fall back to tomli
@@ -168,7 +168,7 @@ def load_cfg(tool: str):
         return cfg
 ```
 
-**Run-lock & idempotency**
+### **Run-lock & idempotency**
 
 ```python
 import fcntl, hashlib, json, time

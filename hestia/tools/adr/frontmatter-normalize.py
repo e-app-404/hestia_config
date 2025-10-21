@@ -27,9 +27,8 @@ import argparse
 import json
 import os
 import re
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
 
 import yaml
 
@@ -57,7 +56,7 @@ SLUG_RE = re.compile(r"^[a-z0-9-]+$")
 ISO_DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 
 
-def load_toml(config_path: Path) -> Dict:
+def load_toml(config_path: Path) -> dict:
     if getattr(_toml_loader, "__name__", "") == "tomllib":
         with open(config_path, "rb") as fp:
             return _toml_loader.load(fp) or {}
@@ -65,7 +64,7 @@ def load_toml(config_path: Path) -> Dict:
     return _toml_loader.load(str(config_path)) or {}
 
 
-def extract_front_matter(text: str) -> Tuple[Optional[Dict], Optional[str]]:
+def extract_front_matter(text: str) -> tuple[dict | None, str | None]:
     m = FM_RE.search(text)
     if not m:
         return None, None
@@ -95,8 +94,8 @@ def is_iso_date(s: str) -> bool:
         return False
 
 
-def normalize_related(val) -> List[str]:
-    result: List[str] = []
+def normalize_related(val) -> list[str]:
+    result: list[str] = []
     if val is None:
         return result
     if isinstance(val, list):
@@ -121,7 +120,7 @@ def normalize_related(val) -> List[str]:
     return deduped
 
 
-def ensure_token_block(text: str) -> Tuple[str, bool]:
+def ensure_token_block(text: str) -> tuple[str, bool]:
     if "TOKEN_BLOCK" in text:
         return text, False
     # Append a minimal token block at end with a newline separator
@@ -173,8 +172,8 @@ def main() -> int:
         print("No ADR files found; nothing to normalize.")
         return 0
 
-    ts = datetime.now(timezone.utc)
-    changes: List[Dict] = []
+    ts = datetime.now(UTC)
+    changes: list[dict] = []
     total_changed = 0
 
     for p in sorted(md_files):
@@ -195,7 +194,7 @@ def main() -> int:
             continue
 
         original_fm = dict(fm)
-        actions: List[str] = []
+        actions: list[str] = []
 
         # Normalize status aliases
         status = fm.get("status")

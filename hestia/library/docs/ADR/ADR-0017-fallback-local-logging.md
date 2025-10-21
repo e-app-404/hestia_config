@@ -1,26 +1,19 @@
----
 id: ADR-0017
-title: Fallback local logging path for HA tooling (non-repo, cross-platform)
+title: ADR-0017: Fallback local logging path for HA tooling (non-repo, cross-platform)
 slug: fallback-local-logging-path-for-ha-tooling-non-repo-cross-platform
-status: Pending Validation
+status: Proposed
 related:
-- ADR-0016
 - ADR-0008
 - ADR-0009
+- ADR-0024
+- ADR-0026
 supersedes: []
 last_updated: '2025-10-15'
 date: 2025-09-25
-decision:
-  summary: When ${HA_MOUNT} is not writable, tooling writes to an OS-specific local
-    path outside the repo, with strict perms.
-  precedence: Logs MUST NOT be written under ${HA_MOUNT} or the repo root.
+decision: When ${HA_MOUNT} is not writable, tooling writes to a platform-specific local path outside the repo with strict perms.
 author: "e-app-404"
-policy:
-  macOS: ~/Library/Logs/Hestia/
-  linux: ${XDG_STATE_HOME:-$HOME/.local/state}/hestia/logs
-  windows: '%LOCALAPPDATA%\Hestia\Logs'
 security:
-  perms: 0700 (owner-only) on POSIX; private ACL on Windows
+  perms: 0700 (owner-only) on POSIX.
 acceptance:
 - Simulate mount-down; tooling writes to the OS path and creates it with correct perms.
 - CI packaging proves logs are excluded from artifacts.
@@ -33,22 +26,13 @@ enforcement_protocols:
 
 # ADR-0017 — Fallback local logging path for Home Assistant tooling (non-repo, cross-platform)
 
-The ADR proposing `/Users/evertappels/Projects/HomeAssistant/logs` as a last-resort local log path has been created in `/tmp/adr_fallback_logpath.md`. Move or copy this file to your repository ADR directory (for example `docs/adr/`) when file access to the repo is available.
-
-Commands to move into repo once mount is healthy:
-
-```bash
-sudo mkdir -p /n/ha/path/to/repo/docs/adr
-sudo mv /tmp/adr_fallback_logpath.md /n/ha/path/to/repo/docs/adr/XXX-fallback-logpath.md
-```
-
 ## Context
 
-The Home Assistant configuration workspace is normally mounted from network storage (the NAS) at `/n/ha` or `/Volumes/ha`. In the event of network mount failures, automount placeholders (auto_smb) or lock issues, the tooling that writes logs or temporary operational files may be unable to persist data to the canonical config path. This causes diagnostic gaps and impedes incident response.
+Per ADR-0024, the canonical Home Assistant config path is `/config` (single canonical mount). If `/config` is unavailable or not writable, tooling that writes logs or temporary operational files may be unable to persist data to the canonical location. This causes diagnostic gaps and impedes incident response. This ADR defines a platform-specific fallback path outside the repo to preserve diagnostic logs safely when `/config` is not writable.
 
 ## Decision
 
-When the primary Home Assistant config mount (the operator's `root config` mount) is unavailable, tooling and scripts MUST write fallback logs to the operator's local directory:
+When the primary Home Assistant config mount (`/config`) is unavailable, tooling and scripts MUST write fallback logs to the operator's local directory:
 
 `~/Library/Logs/Hestia`
 
@@ -62,7 +46,7 @@ This location is to be used only as a last-resort fallback when the canonical lo
 
 ## Consequences
 
-- Scripts must detect mount readiness (e.g., verify `/n/ha` or configured `root config` path is mounted and writable) before writing to canonical locations; otherwise they should write to the fallback path.
+- Scripts must detect mount readiness (e.g., verify `/config` is mounted and writable) before writing to canonical locations; otherwise they should write to the fallback path.
 - The fallback path is not a replacement for central persistent logging; teams must still ensure logs are copied to central storage or attached to incident reports.
 - Access control and rotation must be implemented for the fallback path if it is used in production for extended durations.
 
@@ -71,7 +55,7 @@ This location is to be used only as a last-resort fallback when the canonical lo
 - Add helper `ensure_log_path()` used by scripts which:
   - verifies primary mount is writable; if not, ensures the fallback directory exists with 0700 permissions and returns its path.
 
-- Update `ha_autofs_hardened.sh` to write logs to `/var/log/ha_autofs_hardened.log` when possible, but fall back to `/Users/evertappels/Projects/HomeAssistant/logs/ha_autofs_hardened.log` if the mount is unavailable or unwritable.
+- Update `ha_autofs_hardened.sh` (or successor) to write logs to `/var/log/ha_autofs_hardened.log` when possible, but fall back to the platform-specific path above if `/config` is unavailable or unwritable.
 
 ## Follow-ups
 
@@ -81,16 +65,14 @@ This location is to be used only as a last-resort fallback when the canonical lo
 
 ## Token Blocks
 
-```bash
-# mount readiness probe (example)
-test -w "${HA_MOUNT:-$HOME/hass}" || echo "mount not writable"
-
-# fallback path chosen (macOS example)
-EXPECTED="$HOME/Library/Logs/Hestia"
-mkdir -p "$EXPECTED"; chmod 700 "$EXPECTED"
-test -d "$EXPECTED" && test "$(stat -f %Op "$EXPECTED")" = "drwx------"
-
-# guard: ensure repo contains no logs
-git ls-files | grep -E '/(logs|log)/' && { echo "❌ logs in repo"; exit 1; } || :
-echo "✅ no logs in repo"
+```yaml
+TOKEN_BLOCK:
+  notes: fallback logging contract validation snippets
+  checks:
+    - name: mount-writability
+      cmd: "test -w /config || echo 'mount not writable'"
+    - name: macos-fallback-perms
+      cmd: "EXPECTED=\"$HOME/Library/Logs/Hestia\"; mkdir -p \"$EXPECTED\"; chmod 700 \"$EXPECTED\"; test -d \"$EXPECTED\""
+    - name: repo-guard-no-logs
+      cmd: "! git ls-files | grep -E '/(logs|log)/'"
 ```
