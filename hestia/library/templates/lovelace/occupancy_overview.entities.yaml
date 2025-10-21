@@ -12,55 +12,67 @@
 - entity: binary_sensor.kitchen_occupancy_beta
   type: custom:multiple-entity-row
   name: Kitchen
+  state_header: occup. β 
+  toggle: true
   secondary_info: last-changed
   state_color: true
   entities:
     - entity: binary_sensor.kitchen_occupancy_alpha_occupancy
       name: α zigbee
+      toggle: true
     - entity: binary_sensor.kitchen_occupancy_alpha_matter_occupancy
       name: α matter
+      toggle: true
     - entity: binary_sensor.kitchen_motion_recent_beta
       name: motion_recent
+      toggle: true
     - attribute: active_source
       name: via
-    - entity: input_boolean.force_preferred_source_kitchen
-      name: force pref
-      toggle: true
-      hide_unavailable: true
 
 - entity: binary_sensor.living_room_occupancy_beta
   type: custom:multiple-entity-row
   name: Living Room
+  state_header: occup. β 
+  toggle: true
   secondary_info: last-changed
   state_color: true
   entities:
     - entity: binary_sensor.living_room_occupancy_alpha_occupancy
       name: α zigbee
+      toggle: true
     - attribute: active_source
       name: via
 
 - entity: binary_sensor.bedroom_occupancy_beta
   type: custom:multiple-entity-row
   name: Bedroom
+  state_header: occup. β 
+  toggle: true
   secondary_info: last-changed
   state_color: true
   entities:
     - entity: binary_sensor.bedroom_occupancy_alpha_occupancy
       name: α zigbee
+      toggle: true
     - entity: binary_sensor.bedroom_motion_recent_beta
       name: motion_recent
+      toggle: true
     - attribute: active_source
       name: via
 
 - entity: binary_sensor.ensuite_occupancy_beta
   type: custom:multiple-entity-row
   name: Ensuite
+  state_header: occup. β 
+  toggle: true
   secondary_info: last-changed
   state_color: true
   entities:
     - entity: binary_sensor.ensuite_occupancy_alpha_occupancy
       name: α zigbee
+      toggle: true
     - entity: binary_sensor.ensuite_motion_recent_beta
       name: motion_recent
+      toggle: true
     - attribute: active_source
       name: via
