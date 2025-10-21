@@ -1,4 +1,15 @@
 #!/usr/bin/env python3
+"""
+Canonical ADR front-matter verifier.
+
+This tool is intended to be integrated into the Hestia tool ecosystem and to
+consume adr.toml for dynamic, centrally configurable checks and custom alerts.
+
+Migration note:
+- Prefer this tool over the legacy CI shim `verify_frontmatter.py`.
+- The shim will be deprecated; use this canonical verifier for future
+    capability enhancements and policy controls.
+"""
 import pathlib
 import sys
 

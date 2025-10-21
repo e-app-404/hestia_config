@@ -2,10 +2,22 @@
 """
 CI shim: Verify ADR front-matter across ADR files using PyYAML.
 
+Governance note (shim/deprecation):
+- This script is the current lightweight shim used by CI. Do not add new feature
+    capabilities to this file beyond reporting plumbing. The canonical tool is
+    `frontmatter_verify.py`, which will integrate with adr.toml for dynamic
+    policy and custom alerts across the tool ecosystem.
+- Migration signal: While this shim remains the active logic component, it will
+    emit a linter-style warning to encourage migration to the canonical tool.
+
 Rules (relaxed for compatibility with current repo):
 - Must contain a YAML front-matter block delimited by '---' ... '---'
 - Must include at least: title, status, date (minimal governance keys)
 - TOKEN_BLOCK presence is WARN-only (printed but not failing)
+
+Reporting outputs:
+- Timestamped report remains under /config/hestia/reports/YYYYMMDD/adr-frontmatter__<ts>__report.log
+- Stable latest copy is atomically written to /config/hestia/reports/frontmatter-adr.latest.log
 
 Exits non-zero only if front-matter missing or minimal keys absent.
 """
@@ -51,6 +63,12 @@ def main() -> int:
     parser.add_argument("--report", action="store_true", help="Write a structured report and index entry under /config/hestia/reports")
     parser.add_argument("--report-dir", default="/config/hestia/reports", help="Base directory for reports (default: /config/hestia/reports)")
     args = parser.parse_args()
+
+    # Linter-style migration warning while this shim remains active
+    print(
+        "WARN: verify_frontmatter.py is a CI shim and will be deprecated — migrate to frontmatter_verify.py (canonical, adr.toml-integrated)",
+        file=sys.stderr,
+    )
 
     if not ADR_DIR.exists():
         print(f"WARNING: ADR directory not found: {ADR_DIR}")
@@ -141,6 +159,21 @@ def main() -> int:
             fh.write("\n---\n")
             fh.write(json.dumps(payload, indent=2))
             fh.write("\n")
+        # Stable latest copy (atomic replace) at /config/hestia/reports/frontmatter-adr.latest.log
+        try:
+            base_dir = Path(args.report_dir)
+            base_dir.mkdir(parents=True, exist_ok=True)
+            latest_path = base_dir / "frontmatter-adr.latest.log"
+            tmp_path = base_dir / (latest_path.name + ".tmp")
+            with tmp_path.open("w", encoding="utf-8") as fh:
+                fh.write("---\n")
+                fh.write(json.dumps(meta, indent=2))
+                fh.write("\n---\n")
+                fh.write(json.dumps(payload, indent=2))
+                fh.write("\n")
+            os.replace(tmp_path, latest_path)
+        except Exception as e:
+            print(f"WARN: failed to write latest report copy: {e}", file=sys.stderr)
         # Index JSONL
         index_path = Path(args.report_dir) / "_index.jsonl"
         index_line = {

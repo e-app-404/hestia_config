@@ -1,3 +1,19 @@
+---
+id: DOCS-SWEEPER-002
+title: "Hestia Backup Sweeper System README"
+slug: sweeper-readme
+version: 1.0
+created: 2025-10-20
+author: "e-app-404"
+adrs: ["ADR-0018", "ADR-0024", "ADR-0027", "ADR-0008"]
+hot_links:
+- entrypoint: "/config/hestia/tools/backup_sweeper.py"
+- reports_dir: "/config/hestia/reports"
+- config_file: "/config/hestia/config/system/hestia.toml → [automation.sweeper]"
+content_type: readme
+last_updated: 2025-10-21
+---
+
 # Hestia Backup Sweeper System
 
 Configuration-driven workspace lifecycle management for backup files with modular architecture and comprehensive reporting.
