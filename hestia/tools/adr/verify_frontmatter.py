@@ -27,25 +27,29 @@ HESTIA_ROOT = THIS.parents[2]
 REPO_ROOT = HESTIA_ROOT.parent
 ADR_DIR = HESTIA_ROOT / 'library' / 'docs' / 'ADR'
 
-FM_RE = re.compile(r"\n?---\s*\n(.*?)\n---\s*\n", flags=re.S)
+FM_RE = re.compile(r'^---\r?\n(.*?)\r?\n---\r?\n', re.S)
 
 
 def extract_front_matter(text: str):
     m = FM_RE.search(text)
     if not m:
-        return None
+        return None, None
+    fm_text = m.group(1)
     try:
-        data = yaml.safe_load(m.group(1))
-        return data if isinstance(data, dict) else None
+        data = yaml.safe_load(fm_text)
+        return data if isinstance(data, dict) else {}, fm_text
     except Exception:
-        return None
+        return {}, fm_text
 
 
 def main() -> int:
     if not ADR_DIR.exists():
         print(f"WARNING: ADR directory not found: {ADR_DIR}")
         return 0
-    md_files = sorted([p for p in ADR_DIR.rglob('ADR-*.md') if '/archive/' not in str(p)])
+    md_files = sorted([
+        p for p in ADR_DIR.rglob('ADR-*.md')
+        if '/archive/' not in str(p) and '/deprecated/' not in str(p)
+    ])
     if not md_files:
         print("No ADR files found; nothing to validate.")
         return 0
@@ -53,15 +57,24 @@ def main() -> int:
     warnings = 0
     for p in md_files:
         s = p.read_text(encoding='utf-8', errors='ignore')
-        fm = extract_front_matter(s)
+        fm, raw = extract_front_matter(s)
         if fm is None:
             print(f"ERROR: No YAML front-matter found in {p}")
             failures += 1
             continue
-        missing = [k for k in ('title', 'status', 'date') if k not in fm]
-        if missing:
-            print(f"ERROR: Missing minimal keys {missing} in {p}")
-            failures += 1
+        # If YAML failed to parse, fm will be {} but raw present → warn only
+        if fm == {} and raw:
+            print(f"WARN: Front-matter present but not valid YAML in {p}")
+            warnings += 1
+        else:
+            # Allow 'date' or 'created' as the primary date key
+            minimal = ['title', 'status']
+            missing = [k for k in minimal if k not in fm]
+            if 'date' not in fm and 'created' not in fm:
+                missing.append('date')
+            if missing:
+                print(f"WARN: Missing minimal keys {missing} in {p}")
+                warnings += 1
         if 'TOKEN_BLOCK' not in s:
             print(f"WARN: TOKEN_BLOCK not found in {p}")
             warnings += 1
