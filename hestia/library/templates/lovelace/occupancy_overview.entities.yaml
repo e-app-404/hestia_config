@@ -23,6 +23,10 @@
       name: motion_recent
     - attribute: active_source
       name: via
+    - entity: input_boolean.force_preferred_source_kitchen
+      name: force pref
+      toggle: true
+      hide_unavailable: true
 
 - entity: binary_sensor.living_room_occupancy_beta
   type: custom:multiple-entity-row
