@@ -26,6 +26,7 @@ workspace_allocation:
   configuration: /config/.vscode/settings.json, /config/.vscode/tasks.json
   logs: /config/hestia/workspace/operations/logs/write_broker_*.json
   backups: '*.wbak.YYYYMMDDTHHMMSSZ pattern throughout /config'
+  note: "write-broker and all hooks execute on the HA host (Remote‑SSH workspace). Client-side mounts must not bypass guardrails."
 ---
 
 # ADR-0027: File Writing Governance and Path Enforcement System

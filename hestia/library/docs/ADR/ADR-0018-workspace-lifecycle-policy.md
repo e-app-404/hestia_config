@@ -134,6 +134,12 @@ Times use compact UTC format `YYYYMMDDTHHMMSSZ`. Avoid spaces/colons.
 - All generated files include compact frontmatter with: tool, script, created_at (UTC), batch_id, input_path, rows/hash.
 - Atomic writes (`os.replace`) and `0600` perms best-effort for sensitive outputs.
 
+### 8.1 Access method and execution host (SSH-first)
+
+- Baseline: The workspace is accessed via VS Code Remote‑SSH on the HA host that owns `/config`.
+- Hygiene automations, sweepers, and retention jobs MUST execute on the host that owns `/config` to avoid drift.
+- Mounted shares (SMB/AFP) are optional for browsing/copying only and MUST NOT be used as an authoritative edit surface or for Git operations.
+
 ## 9) Folder standardization quick map
 
 ```arduino

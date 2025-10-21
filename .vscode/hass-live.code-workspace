@@ -29,49 +29,9 @@
         ],
 
         // Workspace-specific excludes to keep the UI responsive over SSH
-        "files.exclude": {
-            "**/__pycache__": true,
-            "**/*.db": true,
-            "**/.DS_Store": true,
-            "**/.venv": true,
-            "**/.git/**": false,
-            "**/.git": false,
-            "**/deps/**": true,
-            "**/www/community": true,
-            "**/www/icloud3": false,
-            "**/www/openplantbook": false,
-            "**/tts/**": true,
-            "**/*.pyc": true,
-            "**/*.egg-info/**": true,
-            "**/.trash/*": true,
-            "tmp/**": true,
-            "hestia/workspace/cache/**": false,
-            "hestia/workspace/archive/**": false,
-            "zigbee2mqtt/**": true,
-            "**/*.bak": true,
-            "**/*.bak*": true
-        },
-        "files.watcherExclude": {
-            "hestia/workspace/archive/**": true,
-            "**/*.egg-info/**": true,
-            "**/.trash/*": true,
-            "tmp/**": true
-        },
-        "search.exclude": {
-            "**/.storage": true,
-            "**/.venv": true,
-            "**/deps/**": true,
-            "**/www/**": true,
-            "**/tts/**": true,
-            "**/*.pyc": true,
-            "**/*.db": true,
-            "**/*.egg-info/**": true,
-            "hestia/workspace/cache/**": true,
-            "hestia/workspace/archive/**": true,
-            "zigbee2mqtt/**": true,
-            "**/.trash/*": true,
-            "tmp/**": true
-        },
+        "files.exclude": {},
+        "files.watcherExclude": {},
+        "search.exclude": {},
 
         // Terminal config (client macOS profile retained for convenience)
         "terminal.integrated.cwd": "/config",

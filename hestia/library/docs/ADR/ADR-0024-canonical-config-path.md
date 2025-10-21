@@ -1,3 +1,12 @@
+### 6.x Remote‑SSH workspace (preferred)
+
+The default workspace access method is VS Code Remote‑SSH directly on the HA host that owns `/config`.
+
+- Open the repository directly on the HA host via Remote‑SSH
+- Ensure `.vscode/` lives under `/config/.vscode` and tasks/hooks operate on the remote host
+- Git operations (commit, pre‑commit, hooks) run on the remote host against `/config`
+
+Mounted shares (SMB/AFP) are optional conveniences and MUST NOT be treated as authoritative workspaces.
 ---
 id: ADR-0024
 title: "Canonical Home Assistant Config Path (Single-Source-of-Truth)"

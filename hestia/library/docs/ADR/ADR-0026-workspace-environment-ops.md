@@ -106,6 +106,8 @@ make venv  # Creates and configures .venv_ha_governance automatically
 - No scripts write to `/config` root; mutating outputs go to `hestia/workspace/{reports,archive,cache}`
 - Makefile targets are **pure interfaces** with dry-run first, APPLY gated for mutation
 
+If `make` is unavailable (common in HA OS SSH environments), portable shims in `/config/bin/` are an approved equivalent for required operations (e.g., `/config/bin/adr-tarball`).
+
 ### Reference Makefile
 
 ```makefile
