@@ -21,11 +21,23 @@ check_file() {
   if ! grep -qE '^rest_command:' "$f" 2>/dev/null && ! grep -qE '\bservice:\s*rest_command\.' "$f" 2>/dev/null; then
     return 0
   fi
-  # Disallow bare http(s) to external domains; allow localhost and add-on hosts
-  if grep -E "url:\s*\"?https?://(?!localhost|127\.0\.0\.1|a0d7b954-|homeassistant)" "$f" -n; then
-    echo "ERROR: External URL usage in rest_command not allowed: $f" >&2
-    fail=1
-  fi
+  # Disallow bare http(s) to external domains; allow localhost/127.0.0.1, add-on hosts (a0d7b954-*), and 'homeassistant'
+  while IFS= read -r line; do
+    case "$line" in
+      *url:*)
+        url=$(echo "$line" | sed -E 's/.*url:\s*"?([^" ]*).*/\1/')
+        host=$(echo "$url" | sed -E 's#^https?://([^/:]+).*$#\1#')
+        if [[ -n "$host" ]]; then
+          if [[ "$host" == "localhost" || "$host" == "127.0.0.1" || "$host" == "homeassistant" || "$host" == a0d7b954-* ]]; then
+            :
+          else
+            echo "$f: ERROR disallowed host in rest_command URL: $host" >&2
+            fail=1
+          fi
+        fi
+        ;;
+    esac
+  done <"$f"
   # Methods must be GET or POST
   if grep -E "^\s*method:\s*(PUT|DELETE|PATCH)\b" "$f" -n; then
     echo "ERROR: Disallowed HTTP method in rest_command: $f" >&2

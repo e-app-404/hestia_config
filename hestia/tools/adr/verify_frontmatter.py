@@ -22,7 +22,7 @@ except Exception as e:  # pragma: no cover
 REPO_ROOT = Path(__file__).resolve().parents[3]
 ADR_DIR = REPO_ROOT / 'hestia' / 'library' / 'docs' / 'ADR'
 
-FM_RE = re.compile(r"^---\n(.*?)\n---\n", flags=re.S | re.M)
+FM_RE = re.compile(r"\n?---\s*\n(.*?)\n---\s*\n", flags=re.S)
 
 
 def extract_front_matter(text: str):
