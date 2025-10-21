@@ -1,3 +1,52 @@
+# Unified requirements for Hestia workspace (runtime + dev)
+# Consolidated on 2025-10-21. Previous files removed: requirements-dev.in, requirements-dev.txt, requirements.in, requirements.txt
+# Notes:
+# - 'make' is a system tool (not a Python package). Ensure it's installed on the host for artifact targets.
+
+########################################
+# Runtime dependencies
+########################################
+bleak==0.22.3
+paho-mqtt==2.1.0
+spherov2==0.12.1
+PyYAML==6.0.2
+
+########################################
+# Tooling / development dependencies
+########################################
+jsonschema==4.*
+yamllint==1.*
+ruamel.yaml==0.18.*
+pandas==2.*
+click==8.*
+pre-commit==3.*
+tabulate==0.9.*
+monkeytype==23.3.*
+pytest==7.*
+coverage==7.*
+flake8==6.*
+pydocstyle==6.*
+mccabe==0.7.*
+isort==5.*
+black==23.*
+autoflake==2.*
+tinytuya==1.17.*
+cryptography==46.*
+colorama==0.4.*
+requests==2.*
+toml==0.10.*
+
+# Additional dev tools (unpinned)
+pip-tools
+pytest-asyncio
+ruff
+mypy
+tox
+types-requests
+types-setuptools
+pytest-cov
+bandit
+safety
 # Locked runtime dependencies for the BB-8 add-on.
 # Ideally generated via: pip-compile --generate-hashes requirements.in
 # Hashes may be added in a follow-up commit; STRICT_HASH=1 will then enforce them.

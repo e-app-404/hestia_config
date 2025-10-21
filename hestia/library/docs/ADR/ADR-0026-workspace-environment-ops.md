@@ -8,23 +8,14 @@ related:
 - ADR-0024
 - ADR-0030
 supersedes: []
-last_updated: '2025-10-15'
+last_updated: 2025-10-21
 date: 2025-10-06
+version: 1.0
 decision: Architectural decision documented in this ADR.
 author:
-- Evert Appels
+- "e-app-404"
 - Strategos (Executive Project Strategist)
 tags: ["operations", "workspace", "home-assistant", "ha", "environment", "venv", "governance", "security", "recovery", "tooling", "macos", "ci-cd", "diagnostics", "ssh", "requirements", "ops"]
-- operation
-- environment
-- venv
-- governance
-- security
-- recovery
-- tooling
-- macos
-- ci-cd
-- diagnostics
 ---
 
 ## ADR-0026 — Workspace Operations & Environment Management
@@ -57,7 +48,7 @@ Adopt a **Workspace Operations & Environment Management** standard with the foll
 
 ## 3. Architecture Overview
 
-```
+```text
 /config
 ├── configuration.yaml (HA runtime)
 ├── includes/ (HA declarative includes)

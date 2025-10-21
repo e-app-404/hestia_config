@@ -16,15 +16,7 @@ decision: All ADRs must comply with standardized structure, formatting, and mach
   requirements including mandatory frontmatter fields, token blocks, and redaction
   procedures.
 author: "e-app-404"
-tags:
-- governance
-- formatting
-- redaction
-- tokens
-- automation
-- adr
-- policy
-- metadata
+tags: ["governance", "formatting", "redaction", "tokens", "automation", "adr", "policy", "metadata"]
 rollout:
   include_scan:
     phase_A:
@@ -47,16 +39,15 @@ ci_policy:
 
 ## Table of Contents
 
-1. Context
-2. Decision
-3. Lifecycle & Status Model
-4. Identification, Slugs, and Filenames
-5. Required Front-Matter (Schema v1)
-6. Redaction & Supersession
-7. Definition & Generation Rules
-8. Machine-Parseable Blocks
-9. Enforcement
-10. Token Block
+- [1. Context](#1-context)
+- [2. Decision](#2-decision)
+- [3. Lifecycle & Status Model](#3-lifecycle--status-model)
+- [4. Identification, Slugs, and Filenames](#4-identification-slugs-and-filenames)
+- [5. Required Front-Matter (Schema v1)](#5-required-front-matter-schema-v1)
+- [6. Formatting Standards](#6-formatting-standards)
+- [7. Machine-Parseable Blocks](#7-machine-parseable-blocks)
+- [8. Enforcement](#8-enforcement)
+- [9. Token Block](#9-token-block)
 
 ## 1. Context
 
@@ -76,13 +67,13 @@ The project requires robust, machine-friendly governance for ADRs, including cle
 - Terminal: `Rejected`, `Withdrawn`
 - _`Amended` applies to Accepted ADRs when a follow-up ADR narrows/clarifies scope without replacing it._
 
-**Rules**
+### **Rules**
 
 - Only `Draft` and `Proposed` may change text substantially without a superseding ADR.
 - Moving from `Accepted` requires either `Amended`, `Deprecated`, or `Superseded` with links.
 - `Approved` (legacy) is treated as an alias of `Accepted` in automation but SHOULD NOT be used.
 
-**Maintenance fields**
+### **Maintenance fields**
 
 - `last_updated` (ISO-8601) MUST change on any edit.
 - Optional: `last_reviewed` (ISO-8601) for periodic audits; ADRs older than 365 days SHOULD be reviewed.
@@ -101,7 +92,7 @@ The project requires robust, machine-friendly governance for ADRs, including cle
 
 **Optional** keys (recommended): `author`, `tags`, `implementation_date`, `rollout`, `ci_policy`
 
-**Field Specifications:**
+### **Field Specifications:**
 
 - `id`: Format ADR-XXXX (zero-padded, monotonically increasing)
 - `title`: Full descriptive title including ADR-XXXX prefix
@@ -113,9 +104,7 @@ The project requires robust, machine-friendly governance for ADRs, including cle
 - `date`: ISO-8601 creation/original decision date
 - `decision`: Brief summary of architectural decision (max 200 chars)
 
-**Constraints**
-
-**YAML Formatting Rules**
+### **Constraints: YAML Formatting Rules**
 
 - Indentation: Use spaces only (no tabs) for all YAML front-matter. Indent lists with two spaces per level.
 - Key Order: Required keys MUST appear in the following order:

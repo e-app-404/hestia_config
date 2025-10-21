@@ -28,7 +28,7 @@ shell: venv
 
 install: venv
 	@$(PIP) install --upgrade pip
-	@$(PIP) install -r requirements-dev.txt
+	@$(PIP) install -r requirements.txt
 
 lint: venv
 	@$(VENV)/bin/yamllint -f colored -s .
@@ -56,17 +56,39 @@ hygiene:
 bundle:
 	bash scripts/make_bundle.sh dist/bundle.tar.gz
 
-# ADR collection tarball (includes ADRs and deprecated subfolder; excludes ADR-000x template)
+# ADR collection artifact (artifacts/ with MANIFEST and SHA256SUMS; includes deprecated/, excludes ADR-000x-template.md)
 adr-tarball:
- 	@echo "Creating ADR tarball (including deprecated/, excluding ADR-000x-template.md)..."
- 	@ISO_WEEK=$$(date +"%G-W%V"); \
- 	  TS=$$(date -u +"%Y%m%dT%H%M%SZ"); \
- 	  DEST_DIR="hestia/workspace/archive/tarballs/$$ISO_WEEK"; \
- 	  mkdir -p "$$DEST_DIR"; \
- 	  NAME="adrs_$${ISO_WEEK}_$${TS}.tar.gz"; \
- 	  echo "Running: tar czf \"$$DEST_DIR/$$NAME\" -C hestia/library/docs --exclude 'ADR/ADR-000x-template.md' ADR"; \
- 	  tar czf "$$DEST_DIR/$$NAME" -C "hestia/library/docs" --exclude 'ADR/ADR-000x-template.md' ADR; \
- 	  echo "ADR tarball created at $$DEST_DIR/$$NAME"
+	@echo "Creating ADR artifact (including deprecated/, excluding ADR-000x-template.md)..."
+	@TS=$$(date -u +"%Y%m%dT%H%M%SZ"); \
+	  ART_DIR="artifacts"; \
+	  LABEL="adr-collection"; \
+	  BASE="$${LABEL}__$$TS"; \
+	  TARBALL="$$ART_DIR/$${BASE}__bundle.tgz"; \
+	  MANIFEST="$$ART_DIR/$${BASE}__MANIFEST.json"; \
+	  SUMS="$$ART_DIR/$${BASE}__SHA256SUMS"; \
+	  mkdir -p "$$ART_DIR"; \
+	  echo "Running: tar czf \"$$TARBALL\" -C hestia/library/docs --exclude 'ADR/ADR-000x-template.md' ADR"; \
+	  tar czf "$$TARBALL" -C "hestia/library/docs" --exclude 'ADR/ADR-000x-template.md' ADR; \
+	  if command -v sha256sum >/dev/null 2>&1; then \
+	    SUM=$$(sha256sum "$$TARBALL" | awk '{print $$1}'); \
+	  else \
+	    SUM=$$(openssl dgst -sha256 "$$TARBALL" | awk '{print $$2}'); \
+	  fi; \
+	  echo "$$SUM  $$(basename "$$TARBALL")" > "$$SUMS"; \
+	  cat > "$$MANIFEST" << EOF
+{
+  "label": "$$LABEL",
+  "created_at": "$$TS",
+  "path": "$$TARBALL",
+  "source": "hestia/library/docs/ADR",
+  "exclude": ["ADR-000x-template.md"],
+  "includes_deprecated": true,
+  "sha256": "$$SUM"
+}
+EOF
+	@echo "ADR artifact created: $$TARBALL"
+	@echo "MANIFEST: $$MANIFEST"
+	@echo "SHA256SUMS: $$SUMS"
 
 reports-latest:
 	@test -f $(PY) && $(PY) hestia/tools/utils/reportkit/link_latest.py || python3 hestia/tools/utils/reportkit/link_latest.py
