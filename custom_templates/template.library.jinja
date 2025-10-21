@@ -244,3 +244,76 @@
   'attributes': { 'cleaning_frequency_hours': (hours | int) }
 } | tojson }}
 {%- endmacro -%}
+
+{# --- NEW: prefer-or-any-on --- #}
+{% macro pick_preferred_or_any_on(sources, force_preference=false, force_flag_entity=None) -%}
+{# If force_preference or a flag entity is 'on', select by preference (first on/off available).
+   Otherwise choose: first ON by preference; if none ON, first OFF by preference; else '' #}
+{%- set force = force_preference -%}
+{%- if force_flag_entity and is_state(force_flag_entity, 'on') -%}
+  {%- set force = true -%}
+{%- endif -%}
+{%- set ordered = sources | sort(attribute='preference') -%}
+
+{%- if force -%}
+  {%- for s in ordered -%}
+    {%- set st = states(s.entity) -%}
+    {%- if st in ['on','off'] -%}
+      {{ s.entity }}
+      {%- break -%}
+    {%- endif -%}
+  {%- endfor -%}
+{%- else -%}
+  {# Any-ON branch #}
+  {%- set chosen = '' -%}
+  {%- for s in ordered -%}
+    {%- if is_state(s.entity, 'on') -%}
+      {%- set chosen = s.entity -%}
+      {%- break -%}
+    {%- endif -%}
+  {%- endfor -%}
+  {%- if not chosen -%}
+    {%- for s in ordered -%}
+      {%- if is_state(s.entity, 'off') -%}
+        {%- set chosen = s.entity -%}
+        {%- break -%}
+      {%- endif -%}
+    {%- endfor -%}
+  {%- endif -%}
+  {{ chosen }}
+{%- endif -%}
+{%- endmacro %}
+
+{# --- NEW: aggregate-any-on -> returns 'on'/'off'/'unknown' --- #}
+{% macro aggregate_any_on_state(sources) -%}
+{%- set on_found = false -%}
+{%- set off_count = 0 -%}
+{%- set avail_count = 0 -%}
+{%- for s in (sources | sort(attribute='preference')) -%}
+  {%- set st = states(s.entity) -%}
+  {%- if st in ['on','off'] -%}
+    {%- set avail_count = avail_count + 1 -%}
+    {%- if st == 'on' -%}
+      {%- set on_found = true -%}
+    {%- else -%}
+      {%- set off_count = off_count + 1 -%}
+    {%- endif -%}
+  {%- endif -%}
+{%- endfor -%}
+{%- if on_found -%}on
+{%- elif avail_count > 0 and off_count == avail_count -%}off
+{%- else -%}unknown
+{%- endif -%}
+{%- endmacro %}
+
+{# --- NEW: any-available? -> true/false --- #}
+{% macro any_available(sources) -%}
+{%- for s in sources -%}
+  {%- if states(s.entity) in ['on','off'] -%}
+    true
+    {%- break -%}
+  {%- endif -%}
+{%- else -%}
+false
+{%- endfor -%}
+{%- endmacro %}

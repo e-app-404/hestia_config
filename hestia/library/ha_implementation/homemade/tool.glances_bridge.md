@@ -28,11 +28,13 @@ config_file: "/config/hestia/config/system/hestia.toml"
 - You want optional remote access using Tailscale TCP forwarding without modifying Glances itself.
 
 ## Execution modes
-- dry-run
+
+### `dry-run` mode
   - Probes upstream, samples responses, previews normalization counts.
   - Writes a report and ledger entry (no file writes or service changes).
   - Exit code: 0 on success; 2 when upstream is unreachable or validation fails.
-- apply
+
+### `apply` mode
   - Writes/updates the normalizer script under `<repo_root>/bin/glances-normalize.py` using atomic or brokered writes.
   - Starts the normalizer process and optionally configures Tailscale TCP mapping.
   - Idempotent: skips install if content SHA matches previous or on-disk version.
