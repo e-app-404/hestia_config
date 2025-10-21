@@ -9,11 +9,11 @@ adrs: ["ADR-0031", "ADR-0024", "ADR-0027", "ADR-0008"]
 content_type: manual
 last_updated: 2025-10-21
 installation: hestia/tools/glances_bridge
-entrypoint: "/config/hestia/tools/glances_bridge/glances_bridge.py"
-- reports_dir: "/config/hestia/workspace/reports/glances_bridge"
-- logs_dir: "/config/hestia/workspace/operations/logs/glances_bridge"
+entrypoint: /config/hestia/tools/glances_bridge/glances_bridge.py
+reporting: /config/hestia/workspace/reports/glances_bridge/
 ledger: /config/hestia/workspace/.hestia/index/glances_bridge__index.jsonl
-configuration: "/config/hestia/config/system/hestia.toml"
+process_logs: /config/hestia/workspace/operations/logs/glances_bridge/
+configuration: "/config/hestia/config/system/hestia.toml  → [MISSING]"
 ---
 
 # glances_bridge — operator guide

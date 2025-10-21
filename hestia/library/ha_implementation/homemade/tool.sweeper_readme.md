@@ -5,12 +5,12 @@ slug: sweeper-readme
 version: 1.0
 created: 2025-10-20
 author: "e-app-404"
+content_type: readme
 adrs: ["ADR-0018", "ADR-0024", "ADR-0027", "ADR-0008"]
 installation: hestia/tools/sweeper
 entrypoint: /config/hestia/tools/backup_sweeper.py
 reporting: /config/hestia/reports
 configuration: "/config/hestia/config/system/hestia.toml → [automation.sweeper]"
-content_type: readme
 last_updated: 2025-10-21
 ---
 

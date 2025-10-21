@@ -8,8 +8,8 @@ author: "e-app-404"
 adrs: ["ADR-0002", "ADR-0020", "ADR-0024"]
 content_type: manual
 last_updated: 2025-10-21
-hot_links:
-- entrypoint: "/config/hestia/tools/template_patcher/patch_jinja_templates.sh"
+entrypoint: /config/hestia/tools/template_patcher/patch_jinja_templates.sh
+installation: hestia/tools/template_patcher
 ---
 
 # template_patcher — operator guide

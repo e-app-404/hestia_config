@@ -9,6 +9,8 @@ author: "e-app-404"
 description: "Templates for TTS implementation using Room-DB"
 tags: ["tts", "roomdb", "ha", "templates"]
 last_updated: 2025-10-21
+installation:
+entry_point:
 ---
 
 # Standardized TTS Configuration Templates (Room-DB Backed)
