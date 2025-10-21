@@ -315,6 +315,7 @@ This turns a niche script into a **first-class governed tool** that benefits fro
 
 ## 11. Decision Summary (one-screen)
 
+<!-- TOKEN_BLOCK: ADR-0031 | doctrine | toml-first | tooling -->
 - **Use `hestia.toml`** as the single configuration source.
 - **No hard-coded paths**; resolve via TOML.
 - **dry-run/apply** with **green-only apply**.
