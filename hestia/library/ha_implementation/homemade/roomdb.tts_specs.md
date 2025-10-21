@@ -1,6 +1,7 @@
 ---
 id: DOCS-ROOMDB-002
 title: "TTS Implementation Specification (Room-DB Backed)"
+slug: roomdb-tts-specs
 version: 1.0
 date: 2025-10-20
 content_type: specification
