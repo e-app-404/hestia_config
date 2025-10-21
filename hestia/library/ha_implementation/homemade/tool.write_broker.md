@@ -1,8 +1,9 @@
 ---
 id: DOCS-WRITE-BROKER-001
 title: "write-broker — governed, atomic file modifications"
+slug: write-broker-guide
 created: 2025-10-20
-version: 1.0.0
+version: 1.0
 adrs: ["ADR-0027", "ADR-0024", "ADR-0008", "ADR-0009"]
 content_type: manual
 author: "e-app-404"

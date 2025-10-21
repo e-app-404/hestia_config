@@ -1,3 +1,16 @@
+---
+id: DOCS-FRONTMATTER-001
+title: "Frontmatter Verification & ADR System Architecture"
+slug: "frontmatter-guide-architecture"
+date: 2025-10-15
+version: 1.0
+author: "e-app-404"
+adrs: []
+tags: ["adr", "architecture", "system", "design"]
+description: "Architecture Decision Record (ADR) System Architecture Overview"
+last_updated: 2025-10-15
+---
+
 # ADR System Architecture
 
 **Document Version**: 1.0  

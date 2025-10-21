@@ -3,7 +3,7 @@ id: DOCS-ROOMDB-003
 title: "TTS Implementation Templates (Room-DB Backed)"
 slug: roomdb-tts-templates
 content_type: templates
-version: 1.0.0
+version: 1.0
 date: 2025-10-20
 author: "e-app-404"
 description: "Templates for TTS implementation using Room-DB"

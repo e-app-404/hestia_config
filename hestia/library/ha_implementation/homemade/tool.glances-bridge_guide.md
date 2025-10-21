@@ -2,7 +2,7 @@
 id: DOCS-GLANCES-BRIDGE-001
 title: "glances_bridge — Glances normalizer & optional Tailscale proxy"
 slug: glances-bridge-guide
-version: 1.0.0
+version: 1.0
 author: "e-app-404"
 created: 2025-10-20
 adrs: ["ADR-0031", "ADR-0024", "ADR-0027", "ADR-0008"]

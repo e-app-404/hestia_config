@@ -2,7 +2,7 @@
 id: DOCS-SWEEPER-001
 title: "Sweeper guide — Workspace cleanup pipeline (index, naming, lifecycle, vault, report)"
 slug: sweeper-guide
-version: 1.0.0
+version: 1.0
 created: 2025-10-20
 author: "e-app-404"
 adrs: ["ADR-0018", "ADR-0024", "ADR-0027", "ADR-0008"]

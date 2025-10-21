@@ -1,8 +1,8 @@
 ---
 id: DOCS-LINEAGE-GUARDIAN-001
 title: "lineage_guardian — Template lineage scanner, validator, and reporter"
-slug: lineage-guardian-tool
-version: 1.0.0
+slug: lineage-guardian-guide
+version: 1.0
 author: "e-app-404"
 created: 2025-10-20
 adrs: ["ADR-0009", "ADR-0020", "ADR-0024"]

@@ -2,7 +2,7 @@
 id: DOCS-TEMPLATE-PATCHER-001
 title: "template_patcher — Jinja template validation and automated fixes"
 slug: template-patcher-guide
-version: 1.0.0
+version: 1.0
 created: 2025-10-20
 author: "e-app-404"
 adrs: ["ADR-0002", "ADR-0020", "ADR-0024"]
