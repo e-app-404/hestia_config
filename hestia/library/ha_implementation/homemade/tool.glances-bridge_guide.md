@@ -1,17 +1,19 @@
 ---
-id: DOCS-GLANCESBRIDGE-001
+id: DOCS-GLANCES-BRIDGE-001
 title: "glances_bridge — Glances normalizer & optional Tailscale proxy"
-slug: glances-bridge-tool
+slug: glances-bridge-guide
 version: 1.0.0
+author: "e-app-404"
 created: 2025-10-20
 adrs: ["ADR-0031", "ADR-0024", "ADR-0027", "ADR-0008"]
 content_type: manual
 last_updated: 2025-10-21
-entrypoint: "/config/hestia/tools/glances_bridge/glances_bridge.py"
-reports_dir: "/config/hestia/workspace/reports/glances_bridge"
-logs_dir: "/config/hestia/workspace/operations/logs/glances_bridge"
-ledger_file: "/config/hestia/workspace/.hestia/index/glances_bridge__index.jsonl"
-config_file: "/config/hestia/config/system/hestia.toml"
+hot_links:
+- entrypoint: "/config/hestia/tools/glances_bridge/glances_bridge.py"
+- reports_dir: "/config/hestia/workspace/reports/glances_bridge"
+- logs_dir: "/config/hestia/workspace/operations/logs/glances_bridge"
+- ledger_file: "/config/hestia/workspace/.hestia/index/glances_bridge__index.jsonl"
+- config_file: "/config/hestia/config/system/hestia.toml"
 ---
 
 # glances_bridge — operator guide

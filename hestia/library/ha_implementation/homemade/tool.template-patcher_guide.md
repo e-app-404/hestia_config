@@ -1,11 +1,15 @@
 ---
-id: HESTIA-TOOL-TEMPLATE-PATCHER
+id: DOCS-TEMPLATE-PATCHER-001
 title: "template_patcher — Jinja template validation and automated fixes"
-version: "1.0.0"
-created: "2025-10-20"
+slug: template-patcher-guide
+version: 1.0.0
+created: 2025-10-20
+author: "e-app-404"
 adrs: ["ADR-0002", "ADR-0020", "ADR-0024"]
-artifact_kind: tool
-entrypoint: "/config/hestia/tools/template_patcher/patch_jinja_templates.sh"
+content_type: manual
+last_updated: 2025-10-21
+hot_links:
+- entrypoint: "/config/hestia/tools/template_patcher/patch_jinja_templates.sh"
 ---
 
 # template_patcher — operator guide

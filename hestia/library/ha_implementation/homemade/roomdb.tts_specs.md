@@ -4,13 +4,15 @@ title: "TTS Implementation Specification (Room-DB Backed)"
 version: 1.0.0
 date: 2025-10-20
 content_type: specification
-backend: "SQLite via Room-DB (shared domain)"
-adr_compliance: "ADR-0001"
-storage_capacity: "512KB per registry"
-rate_limit_enforcement: "AppDaemon (room_db_updater)"
+adrs: ["ADR-0001"]
 schema_version: 1
 description: "Specification for TTS implementation using Room-DB for rate limiting and configuration storage"
+hot_links: []
 last_updated: 2025-10-21
+quick_specs:
+- backend: "SQLite via Room-DB (shared domain)"
+- storage_capacity: "512KB per registry"
+- rate_limit_enforcement: "AppDaemon (room_db_updater)"
 ---
 
 # TTS Implementation Specification
