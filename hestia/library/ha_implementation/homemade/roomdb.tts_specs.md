@@ -484,25 +484,15 @@ sensor.tts_gate_registry_status:
 
 ### 11.2 Recommended Settings
 
-| Use Case   | Setting | Recommended value  | Description |
-| Cooldown   | System Events | 300s (5 minutes) | Startup, shutdown, service changes |
-| Cooldown   | Maintenance | 3600s (1 hour) | Cleanup tasks, backups, updates |
-| Cooldown   | Alerts | 900s (15 minutes) | Non-critical notifications |
-| Volume Lvl | 0s (bypass) | Urgent alerts that must always play |
-|            |                     |                             |
-```yaml
-System events:      300s (5 minutes)
-Maintenance:        3600s (1 hour)
-Alerts:             900s (15 minutes)
-Critical:           0s (bypass)
-```
+| Category   | Setting       | TOML key            | Recommended value  | Description                         |
+|------------|---------------|---------------------|--------------------|-------------------------------------|
+| Cooldown   | System Events | cooldown            | 300s (5 minutes)   | Startup, shutdown, service changes  |
+| Cooldown   | Maintenance   | cooldown            | 3600s (1 hour)     | Cleanup tasks, backups, updates     |
+| Cooldown   | Alerts        | cooldown            | 900s (15 minutes)  | Non-critical notifications          |
+| Volume Lvl | Normal        | volume              | 0.5                | Default volume for TTS notifications|
+| Volume Lvl | Alerts        | volume              | 0.6-0.7            | Higher volume for TTS alerts        |
+| Volume Lvl | Critical      | volume              | 0.7-0.8            | Loudest for urgent messages         |
+| Volume Lvl | Quiet         | tts_gate_quiet      | 0.3-0.4            | Lower volume for discreet messages  |
 
-### 11.3 Volume Levels
-```yaml
-Normal:     0.5
-Alerts:     0.6-0.7
-Critical:   0.7-0.8
-Quiet:      0.3-0.4
-```
 
 **END OF SPECIFICATION**
