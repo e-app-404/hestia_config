@@ -1,8 +1,9 @@
 ---
-id: DOCS-ROOMDB-TTS-MIGRATION-001
+id: DOCS-ROOMDB-002
 title: "Room-DB TTS Migration Guide"
 slug: roomdb-tts-migration
 status: Accepted
+content_type: manual
 version: 1.0.0
 date: 2025-10-20
 author: "e-app-404"

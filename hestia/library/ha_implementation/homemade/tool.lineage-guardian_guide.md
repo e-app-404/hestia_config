@@ -1,10 +1,12 @@
 ---
 id: HESTIA-TOOL-LINEAGE-GUARDIAN
 title: "lineage_guardian — Template lineage scanner, validator, and reporter"
-version: "1.0.0"
-created: "2025-10-20"
+slug: lineage-guardian-tool
+version: 1.0.0
+created: 2025-10-20
 adrs: ["ADR-0009", "ADR-0020", "ADR-0024"]
-artifact_kind: tool
+content_type: manual
+last_updated: 2025-10-21
 entrypoint: "/config/hestia/tools/lineage_guardian/lineage_guardian_cli.py"
 artifacts_dir: "/config/hestia/tools/lineage_guardian/.artifacts"
 config_file: "/config/hestia/config/system/hestia.toml → [automation.lineage_guardian] (optional)"

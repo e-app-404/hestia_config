@@ -1,5 +1,5 @@
 ---
-id: DOCS-ROOMDB-TTS-SPECS-001
+id: DOCS-ROOMDB-002
 title: "TTS Implementation Specification (Room-DB Backed)"
 version: 1.0.0
 date: 2025-10-20

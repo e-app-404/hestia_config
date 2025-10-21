@@ -1,13 +1,16 @@
 ---
-id: HESTIA-TOOL-BACKUP-SWEEPER
+id: DOCS-SWEEPER-001
 title: "backup_sweeper — Workspace cleanup pipeline (index, naming, lifecycle, vault, report)"
-version: "1.0.0"
-created: "2025-10-20"
+slug: backup-sweeper-tool
+version: 1.0.0
+created: 2025-10-20
 adrs: ["ADR-0018", "ADR-0024", "ADR-0027", "ADR-0008"]
-artifact_kind: tool
-entrypoint: "/config/hestia/tools/backup_sweeper.py"
-reports_dir: "/config/hestia/reports"  # pipeline-level report index per existing docs
-config_file: "/config/hestia/config/system/hestia.toml → [automation.sweeper]"
+references:
+- entrypoint: "/config/hestia/tools/backup_sweeper.py"
+- reports_dir: "/config/hestia/reports"
+- config_file: "/config/hestia/config/system/hestia.toml → [automation.sweeper]"
+content_type: manual
+last_updated: 2025-10-21
 ---
 
 # backup_sweeper — operator guide

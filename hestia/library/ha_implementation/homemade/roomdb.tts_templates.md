@@ -1,5 +1,5 @@
 ---
-id: DOCS-ROOMDB-TTS-TEMPLATES-001
+id: DOCS-ROOMDB-003
 title: "TTS Implementation Templates (Room-DB Backed)"
 slug: roomdb-tts-templates
 content_type: templates
