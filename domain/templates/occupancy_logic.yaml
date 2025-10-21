@@ -53,11 +53,26 @@
     - name: "Kitchen Occupancy (Beta)"
       unique_id: kitchen_occupancy_beta
       device_class: occupancy
-      state: "{{ is_state('binary_sensor.kitchen_occupancy_alpha_occupancy', 'on') }}"
+      # --- Aggregate-OR state (any ON -> ON, all OFF -> OFF; else unknown) ---
+      state: >-
+        {% from 'template.library.jinja' import aggregate_any_on_state %}
+        {% set sources = [
+          {'entity': 'binary_sensor.kitchen_occupancy_alpha_occupancy',        'preference': 1},
+          {'entity': 'binary_sensor.kitchen_occupancy_alpha_matter_occupancy', 'preference': 2},
+          {'entity': 'binary_sensor.kitchen_motion_recent_beta',               'preference': 3}
+        ] %}
+        {{ aggregate_any_on_state(sources) }}
       delay_off:
         seconds: 30
-      availability: >
-        {{ states('binary_sensor.kitchen_occupancy_alpha_occupancy') in ['on','off'] }}
+      # --- Availability: true if any upstream is on/off ---
+      availability: >-
+        {% from 'template.library.jinja' import any_available %}
+        {% set sources = [
+          {'entity': 'binary_sensor.kitchen_occupancy_alpha_occupancy',        'preference': 1},
+          {'entity': 'binary_sensor.kitchen_occupancy_alpha_matter_occupancy', 'preference': 2},
+          {'entity': 'binary_sensor.kitchen_motion_recent_beta',               'preference': 3}
+        ] %}
+        {{ any_available(sources) }}
       attributes:
         tier: "β"
         canonical_id: "kitchen_occupancy_β"
@@ -67,7 +82,7 @@
         role: "standardized"
         file: "/config/domain/templates/occupancy_logic"
         protocols: "MQTT(1), Matter(2)"
-        refactor_note: "Occupancy-only, preference-based"
+        refactor_note: "Occupancy-only, aggregate-any-on with dormant preference override"
         upstream_sources: >-
           {{ [
             'template.library.jinja',
@@ -80,20 +95,23 @@
             'binary_sensor.zone_downstairs_occupancy_beta',
             'binary_sensor.merged_home_occupancy_eta'
           ] | tojson }}
-        aggregation_strategy: "preference-based occupancy"
+        aggregation_strategy: "any-on aggregate (fallback); preference forced via flag"
+        # Shows which upstream is currently representing the aggregate or preferred source.
         active_source: >-
-          {% from 'template.library.jinja' import get_active_source %}
+          {% from 'template.library.jinja' import pick_preferred_or_any_on %}
           {% set sources = [
-            {'entity': 'binary_sensor.kitchen_occupancy_alpha_occupancy', 'preference': 1},
+            {'entity': 'binary_sensor.kitchen_occupancy_alpha_occupancy',        'preference': 1},
             {'entity': 'binary_sensor.kitchen_occupancy_alpha_matter_occupancy', 'preference': 2},
-            {'entity': 'binary_sensor.kitchen_motion_recent_beta', 'preference': 3}
+            {'entity': 'binary_sensor.kitchen_motion_recent_beta',               'preference': 3}
           ] %}
-          {{ get_active_source(sources) or 'unknown' }}
+          {{ pick_preferred_or_any_on(sources, false, 'input_boolean.force_preferred_source_kitchen') or 'aggregate' }}
+        selection_mode: >-
+          {{ 'preferred' if is_state('input_boolean.force_preferred_source_kitchen','on') else 'aggregate_any_on' }}
         source_count: "3"
         timeout: >-
           {{ ["number.kitchen_occupancy_alpha_occupancy_timeout"] | tojson }}
-        version: "3.3"
-        last_updated: "2025-10-16"
+        version: "3.4"
+        last_updated: "2025-10-21"
         area_id: "kitchen"
 
     - name: "Living Room Occupancy (Beta)"
