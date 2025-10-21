@@ -53,7 +53,6 @@
     - name: "Kitchen Occupancy (Beta)"
       unique_id: kitchen_occupancy_beta
       device_class: occupancy
-      # --- Aggregate-OR state (any ON -> ON, all OFF -> OFF; else unknown) ---
       state: >-
         {% from 'template.library.jinja' import aggregate_any_on_state %}
         {% set sources = [
@@ -64,7 +63,6 @@
         {{ aggregate_any_on_state(sources) }}
       delay_off:
         seconds: 30
-      # --- Availability: true if any upstream is on/off ---
       availability: >-
         {% from 'template.library.jinja' import any_available %}
         {% set sources = [
@@ -117,42 +115,55 @@
     - name: "Living Room Occupancy (Beta)"
       unique_id: living_room_occupancy_beta
       device_class: occupancy
-      state: "{{ is_state('binary_sensor.living_room_occupancy_alpha_occupancy', 'on') }}"
+      state: >-
+        {% from 'template.library.jinja' import aggregate_any_on_state %}
+        {% set sources = [
+          {'entity': 'binary_sensor.living_room_occupancy_alpha_occupancy', 'preference': 1},
+          {'entity': 'binary_sensor.living_room_motion_recent_beta',        'preference': 2}
+        ] %}
+        {{ aggregate_any_on_state(sources) }}
       delay_off:
         seconds: 30
-      availability: >
-        {{ states('binary_sensor.living_room_occupancy_alpha_occupancy') in ['on','off'] }}
+      availability: >-
+        {% from 'template.library.jinja' import any_available %}
+        {% set sources = [
+          {'entity': 'binary_sensor.living_room_occupancy_alpha_occupancy', 'preference': 1},
+          {'entity': 'binary_sensor.living_room_motion_recent_beta',        'preference': 2}
+        ] %}
+        {{ any_available(sources) }}
       attributes:
         tier: "β"
         canonical_id: "living_room_occupancy_β"
         subsystem: "hermes"
         module: "occupancy"
-        type: "proxy"
+        type: "preference_proxy"
         role: "standardized"
         file: "/config/domain/templates/occupancy_logic"
         protocols: "MQTT(1)"
         upstream_sources: >-
           {{ [
             'template.library.jinja',
-            'binary_sensor.living_room_occupancy_alpha_occupancy'
+            'binary_sensor.living_room_occupancy_alpha_occupancy',
+            'binary_sensor.living_room_motion_recent_beta'
           ] | tojson }}
         downstream_consumers: >-
           {{ [
             'binary_sensor.zone_downstairs_occupancy_beta',
             'binary_sensor.merged_home_occupancy_eta'
           ] | tojson }}
-        aggregation_strategy: "single-source zigbee occupancy"
+        aggregation_strategy: "any-on aggregate (occupancy + motion_recent)"
         active_source: >-
-          {% from 'template.library.jinja' import get_active_source %}
+          {% from 'template.library.jinja' import pick_preferred_or_any_on %}
           {% set sources = [
-            {'entity': 'binary_sensor.living_room_occupancy_alpha_occupancy', 'preference': 1}
+            {'entity': 'binary_sensor.living_room_occupancy_alpha_occupancy', 'preference': 1},
+            {'entity': 'binary_sensor.living_room_motion_recent_beta',        'preference': 2}
           ] %}
-          {{ get_active_source(sources) or 'unknown' }}
-        source_count: "1"
+          {{ pick_preferred_or_any_on(sources) or 'aggregate' }}
+        source_count: "2"
         timeout: >-
           {{ ["number.living_room_occupancy_alpha_occupancy_timeout"] | tojson }}
-        version: "3.3"
-        last_updated: "2025-10-16"
+        version: "3.4"
+        last_updated: "2025-10-21"
         area_id: "living_room"
 
     - name: "Hallway Downstairs Occupancy (Beta)"

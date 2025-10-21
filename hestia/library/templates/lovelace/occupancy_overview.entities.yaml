@@ -12,7 +12,7 @@
 - entity: binary_sensor.kitchen_occupancy_beta
   type: custom:multiple-entity-row
   name: Kitchen
-  state_header: occup. β 
+  state_header: occup. β
   toggle: true
   secondary_info: last-changed
   state_color: true
@@ -32,7 +32,7 @@
 - entity: binary_sensor.living_room_occupancy_beta
   type: custom:multiple-entity-row
   name: Living Room
-  state_header: occup. β 
+  state_header: occup. β
   toggle: true
   secondary_info: last-changed
   state_color: true
@@ -46,7 +46,7 @@
 - entity: binary_sensor.bedroom_occupancy_beta
   type: custom:multiple-entity-row
   name: Bedroom
-  state_header: occup. β 
+  state_header: occup. β
   toggle: true
   secondary_info: last-changed
   state_color: true
@@ -63,7 +63,7 @@
 - entity: binary_sensor.ensuite_occupancy_beta
   type: custom:multiple-entity-row
   name: Ensuite
-  state_header: occup. β 
+  state_header: occup. β
   toggle: true
   secondary_info: last-changed
   state_color: true
