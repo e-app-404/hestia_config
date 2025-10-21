@@ -1,7 +1,8 @@
 # Unified requirements for Hestia workspace (runtime + dev)
-# Consolidated on 2025-10-21. Previous files removed: requirements-dev.in, requirements-dev.txt, requirements.in, requirements.txt
+# Consolidated on 2025-10-21. Previous files removed: requirements-dev.in, requirements-dev.txt, requirements.in
 # Notes:
-# - 'make' is a system tool (not a Python package). Ensure it's installed on the host for artifact targets.
+# - "requirements-ssh.txt" is the HA/SSH-friendly set (no native-build deps like safety).
+# - This full set is intended for CI and developer machines.
 
 ########################################
 # Runtime dependencies
@@ -36,7 +37,7 @@ colorama==0.4.*
 requests==2.*
 toml==0.10.*
 
-# Additional dev tools (unpinned)
+# Additional dev tools
 pip-tools
 pytest-asyncio
 ruff
@@ -47,17 +48,3 @@ types-setuptools
 pytest-cov
 bandit
 safety
-# Locked runtime dependencies for the BB-8 add-on.
-# Ideally generated via: pip-compile --generate-hashes requirements.in
-# Hashes may be added in a follow-up commit; STRICT_HASH=1 will then enforce them.
-#
-# Runtime pins
-
-bleak==0.22.3
-paho-mqtt>=2.0,<3.0
-spherov2==0.12.1
-pyyaml
-
-# (Optional) When hashes are available, switch Docker build with:
-#   docker build --build-arg STRICT_HASH=1 .
-PyYAML>=6.0.1

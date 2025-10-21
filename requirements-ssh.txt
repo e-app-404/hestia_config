@@ -1,6 +1,6 @@
 # Lightweight requirements for HA container (no native-build deps)
 # Generated to avoid psutil build in safety on musllinux/aarch64.
-# Use this in HA OS: /config/.venv/bin/pip install -r requirements-lite.txt
+# Use this in HA OS: /config/.venv/bin/pip install -r requirements-ssh.txt
 
 ########################################
 # Runtime dependencies
