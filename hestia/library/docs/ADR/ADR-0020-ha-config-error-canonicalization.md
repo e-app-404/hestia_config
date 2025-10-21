@@ -9,15 +9,16 @@ related:
 - ADR-0016 (Canonical HA edit root)
 supersedes:
 - None
-last_updated: '2025-10-15'
 date: 2025-09-30
 decision: Create a systematic approach to configuration error management with three components.
 author: Strategos GPT
 references:
-- (Machine-readable error patterns: hestia/library/error_patterns.yml
+- Machine-readable error patterns: hestia/library/error_patterns.yml
 - Template fixing tools: hestia/tools/template_patcher/
 - Macro library: custom_templates/template.library.jinja
 - Git hooks for validation: .githooks/pre-commit
+last_updated: 2025-10-21
+---
 
 # ADR-0020 — Home Assistant Configuration Error Canonicalization
 

@@ -13,6 +13,7 @@ references:
   - ADR-0018-normalization-and-determinism-rules
   - ADR-0024-canonical-config-path
   - ADR-0027-file-writing-governance
+ledger: hestia/workspace/operations/logs/patch-ledger.jsonl
 last_updated: 2025-10-21
 ---
 
@@ -24,7 +25,23 @@ To reduce ambiguity around where patch requests and artifacts live, we are forma
 
 ## Table of Contents
 
-<!-- insert toc block -->
+- [Context](#context)
+- [Table of Contents](#table-of-contents)
+- [Considerations](#considerations)
+- [Decision](#decision)
+    - [1) Patch Requests (tickets)](#1-patch-requests-tickets)
+    - [2) In-Progress Patch Files (pending integration)](#2-in-progress-patch-files-pending-integration)
+    - [3) Persistent Patch Artifacts (approved/kept)](#3-persistent-patch-artifacts-approvedkept)
+    - [4) Patch Plans (structured playbooks)](#4-patch-plans-structured-playbooks)
+    - [5) Logs and Reports](#5-logs-and-reports)
+    - [6) Patch Ledger (new)](#6-patch-ledger-new)
+- [Agent Directive (Copilot Behavior)](#agent-directive-copilot-behavior)
+- [Directory Summary](#directory-summary)
+- [Consequences](#consequences)
+- [Alternatives Considered](#alternatives-considered)
+- [Adoption Plan](#adoption-plan)
+- [Token Blocks](#token-blocks)
+- [References](#references)
 
 ## Considerations
 
