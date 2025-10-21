@@ -53,14 +53,11 @@
     - name: "Kitchen Occupancy (Beta)"
       unique_id: kitchen_occupancy_beta
       device_class: occupancy
-      state: |
-        {% from 'template.library.jinja' import preference_select %}
-        {% set sources = [
-          {'entity': 'binary_sensor.kitchen_occupancy_alpha_occupancy',         'protocol': 'mqtt',   'preference': 1, 'type': 'occupancy'},
-          {'entity': 'binary_sensor.kitchen_occupancy_alpha_matter_occupancy',  'protocol': 'matter', 'preference': 2, 'type': 'occupancy'},
-          {'entity': 'binary_sensor.kitchen_motion_recent_beta',               'protocol': 'recency','preference': 3, 'type': 'motion'}
-        ] %}
-        {{ preference_select(sources) == 'on' }}
+      state: "{{ is_state('binary_sensor.kitchen_occupancy_alpha_occupancy', 'on') }}"
+      delay_off:
+        seconds: 30
+      availability: >
+        {{ states('binary_sensor.kitchen_occupancy_alpha_occupancy') in ['on','off'] }}
       attributes:
         tier: "β"
         canonical_id: "kitchen_occupancy_β"
@@ -102,12 +99,11 @@
     - name: "Living Room Occupancy (Beta)"
       unique_id: living_room_occupancy_beta
       device_class: occupancy
-      state: |
-        {% from 'template.library.jinja' import preference_select %}
-        {% set sources = [
-          {'entity': 'binary_sensor.living_room_occupancy_alpha_occupancy', 'protocol': 'mqtt', 'preference': 1, 'type': 'occupancy'}
-        ] %}
-        {{ preference_select(sources) == 'on' }}
+      state: "{{ is_state('binary_sensor.living_room_occupancy_alpha_occupancy', 'on') }}"
+      delay_off:
+        seconds: 30
+      availability: >
+        {{ states('binary_sensor.living_room_occupancy_alpha_occupancy') in ['on','off'] }}
       attributes:
         tier: "β"
         canonical_id: "living_room_occupancy_β"
@@ -229,16 +225,11 @@
     - name: "Bedroom Occupancy (Beta)"
       unique_id: "bedroom_occupancy_beta"
       device_class: occupancy
-      state: |
-        {% from 'template.library.jinja' import preference_select %}
-        {% set sources = [
-          {'entity': 'binary_sensor.bedroom_occupancy_alpha_occupancy',      'protocol': 'mqtt',   'preference': 1, 'type': 'occupancy'},
-          {'entity': 'binary_sensor.bed_occupancy_beta',                     'protocol': 'mqtt',   'preference': 2, 'type': 'occupancy'},
-          {'entity': 'binary_sensor.bedroom_wardrobe_occupancy_beta',        'protocol': 'matter', 'preference': 3, 'type': 'occupancy'},
-          {'entity': 'binary_sensor.desk_occupancy_beta',                    'protocol': 'wifi',   'preference': 4, 'type': 'occupancy'},
-          {'entity': 'binary_sensor.bedroom_motion_recent_beta',             'protocol': 'recency','preference': 5, 'type': 'motion'}
-        ] %}
-        {{ preference_select(sources) == 'on' }}
+      state: "{{ is_state('binary_sensor.bedroom_occupancy_alpha_occupancy', 'on') }}"
+      delay_off:
+        seconds: 30
+      availability: >
+        {{ states('binary_sensor.bedroom_occupancy_alpha_occupancy') in ['on','off'] }}
       attributes:
         tier: "β"
         canonical_id: "bedroom_occupancy_β"
@@ -357,14 +348,11 @@
     - name: "Ensuite Occupancy (Beta)"
       unique_id: ensuite_occupancy_beta
       device_class: occupancy
-      state: |
-        {% from 'template.library.jinja' import preference_select %}
-        {% set sources = [
-          {'entity': 'binary_sensor.ensuite_occupancy_alpha_occupancy', 'protocol': 'mqtt', 'preference': 1, 'type': 'occupancy'},
-          {'entity': 'binary_sensor.ensuite_shower_occupancy_epsilon', 'protocol': 'logic','preference': 2, 'type': 'occupancy'},
-          {'entity': 'binary_sensor.ensuite_motion_recent_beta', 'protocol': 'recency','preference': 3, 'type': 'motion'}
-        ] %}
-        {{ preference_select(sources) == 'on' }}
+      state: "{{ is_state('binary_sensor.ensuite_occupancy_alpha_occupancy', 'on') }}"
+      delay_off:
+        seconds: 30
+      availability: >
+        {{ states('binary_sensor.ensuite_occupancy_alpha_occupancy') in ['on','off'] }}
       attributes:
         tier: "β"
         canonical_id: "ensuite_occupancy_β"

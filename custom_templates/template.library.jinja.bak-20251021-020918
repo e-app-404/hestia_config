@@ -1,0 +1,246 @@
+{# ===========================
+   template.library.jinja (Enhanced)
+   Unified Jinja macro library for HESTIA
+   Phase 3: Added preference selection and error tolerance macros
+   Version: 3.0.1
+   =========================== #}
+
+{# Phase 3 Enhancement: Centralized Preference Selection #}
+{# Returns 'on' or 'off' AND registers dependencies via expand(). #}
+{% macro preference_select(sources) -%}
+  {%- set ordered = sources | sort(attribute='preference') -%}
+  {%- set ids = ordered | map(attribute='entity') | list -%}
+  {%- set ents = expand(ids) -%}
+  {%- set result = namespace(state='off') -%}
+  {%- set found_ns = namespace(found=false) -%}
+  {%- for item in ordered -%}
+    {%- set e_list = ents | selectattr('entity_id','equalto', item.entity) | list -%}
+    {%- set e = e_list[0] if e_list|length > 0 else none -%}
+    {%- if e is not none and e.state not in ['unavailable','unknown','none'] and e.state == 'on' -%}
+      {%- set result.state = 'on' -%}
+      {%- set found_ns.found = true -%}
+    {%- endif -%}
+  {%- endfor -%}
+  {{- result.state if found_ns.found else 'off' -}}
+{%- endmacro %}
+
+{# Phase 3 Enhancement: Error-Tolerant Active Source Detection #}
+{% macro get_active_source(sources) -%}
+  {%- set ordered = sources | sort(attribute='preference') -%}
+  {%- set ids = ordered | map(attribute='entity') | list -%}
+  {%- set ents = expand(ids) -%}
+  {%- set found_ns = namespace(found=false) -%}
+  {%- set active_entity = none -%}
+  {%- if ordered | length == 0 -%}
+    {{- 'unknown' -}}
+  {%- else -%}
+    {%- for item in ordered -%}
+      {%- set match_list = ents | selectattr('entity_id','equalto', item.entity) | list -%}
+      {%- set e = match_list[0] if match_list|length > 0 else none -%}
+      {%- if e is not none and e.state not in ['unavailable','unknown','none'] and e.state == 'on' -%}
+        {%- set active_entity = item.entity -%}
+        {%- set found_ns.found = true -%}
+      {%- endif -%}
+    {%- endfor -%}
+    {{- active_entity if found_ns.found else 'unknown' -}}
+  {%- endif -%}
+{%- endmacro %}
+
+{# Phase 3 Enhancement: Context-Aware Timeout Calculation #}
+{% macro get_context_timeout(room, base_minutes=5) -%}
+  {% set base_seconds = base_minutes * 60 %}
+  {% if room == 'living_room' %}
+    {% if is_state('media_player.projector', 'playing') %}
+      {{ 15 * 60 }}  {# Entertainment mode: 15 minutes #}
+    {% elif is_state('switch.gaming_console', 'on') %}
+      {{ 12 * 60 }}  {# Gaming mode: 12 minutes #}
+    {% else %}
+      {{ base_seconds }}
+    {% endif %}
+  {% elif room == 'bedroom' %}
+    {% if is_state('input_boolean.sleep_mode', 'on') %}
+      {{ 20 * 60 }}  {# Sleep mode: 20 minutes #}
+    {% elif is_state('switch.monitor', 'on') %}
+      {{ 8 * 60 }}   {# Work mode: 8 minutes #}
+    {% else %}
+      {{ base_seconds }}
+    {% endif %}
+  {% elif room == 'kitchen' %}
+    {% if is_state('input_boolean.cooking_mode', 'on') %}
+      {{ 10 * 60 }}  {# Cooking mode: 10 minutes #}
+    {% else %}
+      {{ base_seconds }}
+    {% endif %}
+  {% else %}
+    {{ base_seconds }}
+  {% endif %}
+{%- endmacro %}
+
+{# Phase 3: Inferred Presence Integration #}
+{% macro evaluate_room_presence(room, motion_recent, occupancy_sources, inferred_sources=[]) -%}
+  {% set motion_active = is_state(motion_recent, 'on') %}
+  {% set occupancy_active = occupancy_sources | map('states') | select('eq', 'on') | list | count > 0 %}
+  {% set inferred_active = inferred_sources | map('states') | select('eq', 'on') | list | count > 0 %}
+  {% set device_present = is_state('device_tracker.iphone14', 'home') %}
+
+  {# Weighted presence calculation #}
+  {% set presence_score = 0 %}
+  {% if motion_active %}
+    {% set presence_score = presence_score + 40 %}
+  {% endif %}
+  {% if occupancy_active %}
+    {% set presence_score = presence_score + 30 %}
+  {% endif %}
+  {% if inferred_active %}
+    {% set presence_score = presence_score + 25 %}
+  {% endif %}
+  {% if device_present %}
+    {% set presence_score = presence_score + 5 %}
+  {% endif %}
+
+  {{ presence_score >= 30 }}
+{%- endmacro %}
+
+{# Macro: is_valid_datetime #}
+{% macro is_valid_datetime(val) -%}
+  {{ val not in ['unknown','unavailable','',none] }}
+{%- endmacro %}
+
+{# Macro: days_since_cleaned #}
+{% macro days_since_cleaned(cleaned) -%}
+  {% if is_valid_datetime(cleaned) %}
+    {% set cleaned_dt = as_local(strptime(cleaned, '%Y-%m-%d %H:%M:%S')) %}
+    {{ ((now() - cleaned_dt).days) }}
+  {% else %}
+    99
+  {% endif %}
+{%- endmacro %}
+
+{# ------------------------- #}
+{# Macro: first_active_child & any_child_active #}
+{# Centralized helpers for universal media_player templates. #}
+{% macro first_active_child(children, active_states=None) -%}
+  {%- set active_states = active_states or ['playing','paused','buffering','on','idle'] -%}
+  {# Explicitly excluding 'standby' (deprecated) and 'off' (not active) #}
+  {%- set children = [children] if (children is string) else children -%}
+  {%- set ns = namespace(found=false, first=None) -%}
+  {%- for c in children -%}
+    {%- if ns.found == false and (states(c) is defined and states(c) in active_states) -%}
+      {%- set ns.first = c -%}
+      {%- set ns.found = true -%}
+    {%- endif -%}
+  {%- endfor -%}
+  {{ ns.first if ns.found else '' }}
+{%- endmacro %}
+
+{% macro any_child_active(children, active_states=None, output='on') -%}
+  {%- set active_states = active_states or ['playing','paused','buffering','on'] -%}
+  {%- set children = [children] if (children is string) else children -%}
+  {%- set ns = namespace(found=false) -%}
+  {%- for c in children -%}
+    {%- if states(c) in active_states -%}
+      {%- set ns.found = true -%}
+    {%- endif -%}
+  {%- endfor -%}
+  {{ output if ns.found else ('off' if output == 'on' else 'false') }}
+{%- endmacro %}
+
+{# --------------------------------------------------------------------
+  Valetudo Template Library (v1.0)
+  Provides reusable Jinja macros for composite room sensors and scripts.
+  # Valetudo cleaning status templates
+# DEPRECATED: Variable-based room configs replaced by SQL room database
+# Current implementation uses sensor.room_configs_vacuum_control
+    last_cleaned, needs_cleaning, segment_id, cleaning_frequency_hours,
+    job_last_run, job_last_result
+--------------------------------------------------------------------- #}
+
+{# ----------------------------- helpers ----------------------------- #}
+{%- macro _attr(var_ent, key, default_val=None) -%}
+  {{ state_attr(var_ent, key) if state_attr(var_ent, key) is not none else default_val }}
+{%- endmacro -%}
+
+{%- macro _is_empty(val) -%}
+  {{ val in [none, '', 'unknown', 'unavailable'] }}
+{%- endmacro -%}
+
+{# -------------------------- time calculators ----------------------- #}
+{%- macro hours_since(var_ent) -%}
+  {%- set last = state_attr(var_ent, 'last_cleaned') -%}
+  {%- if last in [none, '', 'unknown', 'unavailable'] -%}{{ none }}
+  {%- else -%}{{ ((as_timestamp(now()) - as_timestamp(last)) / 3600) | round(1) }}{%- endif -%}
+{%- endmacro -%}
+
+{%- macro days_since(var_ent) -%}
+  {%- set last = state_attr(var_ent, 'last_cleaned') -%}
+  {%- if last in [none, '', 'unknown', 'unavailable'] -%}{{ none }}
+  {%- else -%}{{ ((as_timestamp(now()) - as_timestamp(last)) / 86400) | round(1) }}{%- endif -%}
+{%- endmacro -%}
+
+{%- macro next_due(var_ent, default_freq=24) -%}
+  {%- set last = state_attr(var_ent, 'last_cleaned') -%}
+  {%- set freq = (state_attr(var_ent, 'cleaning_frequency_hours') or default_freq) | int -%}
+  {%- if last in [none, '', 'unknown', 'unavailable'] -%}{{ none }}
+  {%- else -%}{{ (as_timestamp(last) + (freq*3600)) | timestamp_local }}{%- endif -%}
+{%- endmacro -%}
+
+{# --------------------------- sensor visuals ------------------------ #}
+{%- macro room_icon(var_ent) -%}
+  {%- set needs = state_attr(var_ent, 'needs_cleaning') | default(false) -%}
+  {{ 'mdi:alert' if needs else 'mdi:vacuum' }}
+{%- endmacro -%}
+
+{%- macro room_state(var_ent, default_freq=24) -%}
+  {%- set needs = state_attr(var_ent, 'needs_cleaning') | default(false) -%}
+  {%- set last = state_attr(var_ent, 'last_cleaned') -%}
+  {%- set freq = (state_attr(var_ent, 'cleaning_frequency_hours') or default_freq) | int -%}
+  {%- if needs %}needs_cleaning
+  {%- elif last in [none, '', 'unknown', 'unavailable'] %}never
+  {%- else %}
+    {%- set hours = ((as_timestamp(now()) - as_timestamp(last)) / 3600) -%}
+    {{ 'due' if hours >= freq else 'ok' }}
+  {%- endif -%}
+{%- endmacro -%}
+
+{# ----------------------------- getters ----------------------------- #}
+{%- macro get_segment_id(var_ent) -%}{{ state_attr(var_ent, 'segment_id') }}{%- endmacro -%}
+{%- macro get_needs_cleaning(var_ent) -%}{{ state_attr(var_ent, 'needs_cleaning') | default(false) }}{%- endmacro -%}
+{%- macro get_last_cleaned(var_ent) -%}{{ state_attr(var_ent, 'last_cleaned') }}{%- endmacro -%}
+{%- macro get_freq(var_ent, default_freq=24) -%}{{ (state_attr(var_ent, 'cleaning_frequency_hours') or default_freq) | int }}{%- endmacro -%}
+
+{# -------------------------- JSON builders -------------------------- #}
+{# DEPRECATED: Use AppDaemon room_db_updater REST API instead:
+   POST /api/appdaemon/room_db/update_config with domain: vacuum_control #}
+{%- macro json_update_mark_cleaned(var_ent) -%}
+{{ {
+  'variable': (var_ent.split('.')[1]),
+  'value': 'ok',
+  'attributes': {
+    'last_cleaned': now().isoformat(),
+    'needs_cleaning': false,
+    'job_last_run': now().isoformat(),
+    'job_last_result': 'success'
+  }
+} | tojson }}
+{%- endmacro -%}
+
+{%- macro json_update_needs_cleaning(var_ent, flag) -%}
+{{ {
+  'variable': (var_ent.split('.')[1]),
+  'attributes': { 'needs_cleaning': (true if flag else false) }
+} | tojson }}
+{%- endmacro -%}
+
+{%- macro json_update_segment_id(var_ent, seg_id) -%}
+{{ {
+  'variable': (var_ent.split('.')[1]),
+  'attributes': { 'segment_id': (seg_id | int) }
+} | tojson }}
+{%- endmacro -%}
+
+{%- macro json_update_frequency(var_ent, hours) -%}
+{{ {
+  'variable': (var_ent.split('.')[1]),
+  'attributes': { 'cleaning_frequency_hours': (hours | int) }
+} | tojson }}
+{%- endmacro -%}
