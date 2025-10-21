@@ -57,7 +57,10 @@
                 "PATH": "/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin"
             }
         },
-        "terminal.integrated.splitCwd": "workspaceRoot"
+        "terminal.integrated.splitCwd": "workspaceRoot",
+        "files.associations": {
+            "*.yaml": "home-assistant"
+        }
     }
 }
 
