@@ -1,19 +1,37 @@
 #!/usr/bin/env python3
-"""Wrapper delegating to canonical guardrails implementation.
-
-Canonical home: /config/hestia/guardrails/check_unique_unique_ids.py
-This wrapper lives under /config/hestia/tools to provide a unified tools namespace.
-"""
-import os
-import runpy
+import re
 import sys
+from pathlib import Path
 
-CONFIG_ROOT = os.environ.get("CONFIG_ROOT", "/config")
-TARGET = os.path.join(CONFIG_ROOT, "hestia/guardrails/check_unique_unique_ids.py")
+UID_RE = re.compile(r"^\s*unique_id:\s*['\"]?([^'\"\s]+)['\"]?\s*$")
 
-if not os.path.exists(TARGET):
-    sys.stderr.write(f"ERROR: canonical script not found at {TARGET}\n")
-    sys.exit(127)
+def main() -> int:
+    seen = {}
+    dup = False
+    files = [Path(x) for x in _git_ls_files('*.yaml')]
+    for p in files:
+        try:
+            for i, line in enumerate(
+                p.read_text(encoding="utf-8", errors="ignore").splitlines(), 1
+            ):
+                m = UID_RE.match(line)
+                if m:
+                    uid = m.group(1)
+                    if uid in seen:
+                        print(f"Duplicate unique_id '{uid}': {seen[uid]} and {p}:{i}")
+                        dup = True
+                    else:
+                        seen[uid] = f"{p}:{i}"
+        except Exception:
+            continue
+    if dup:
+        return 1
+    print("OK: unique_id values unique.")
+    return 0
 
-sys.argv[0] = TARGET
-runpy.run_path(TARGET, run_name="__main__")
+def _git_ls_files(pattern: str):
+    import subprocess
+    return subprocess.check_output(['git', 'ls-files', pattern]).decode().splitlines()
+
+if __name__ == '__main__':
+    sys.exit(main())

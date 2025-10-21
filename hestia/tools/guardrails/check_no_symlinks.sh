@@ -2,13 +2,10 @@
 set -Eeuo pipefail
 IFS=$'\n\t'
 
-# Wrapper for canonical guardrails implementation
-CONFIG_ROOT="${CONFIG_ROOT:-/config}"
-BACKING="${CONFIG_ROOT}/hestia/guardrails/check_no_symlinks.sh"
-
-if [[ -x "${BACKING}" ]]; then
-  exec "${BACKING}" "$@"
-else
-  echo "ERROR: backing script not found at ${BACKING}" >&2
-  exit 127
+BAD=$(git ls-files -z | xargs -0 -I{} bash -lc 'test -L "{}" && echo {}' || true)
+if [[ -n "$BAD" ]]; then
+  echo "ERROR: Tracked symlinks detected:" >&2
+  echo "$BAD" >&2
+  exit 1
 fi
+echo "OK: No tracked symlinks."

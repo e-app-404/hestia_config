@@ -23,5 +23,5 @@ jobs:
       - name: Run guardrails check
         working-directory: ./
         run: |
-          chmod +x hestia/guardrails/check_rest_command_guardrails.sh
-          hestia/guardrails/check_rest_command_guardrails.sh
+          chmod +x hestia/tools/guardrails/check_rest_command_guardrails.sh
+          hestia/tools/guardrails/check_rest_command_guardrails.sh

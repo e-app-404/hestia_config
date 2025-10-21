@@ -53,10 +53,10 @@ Adopt a **single, canonical recorder configuration** with short retention and st
 
 - **Canonical recorder path:** `packages/integrations/recorder.yaml`
 - **Documentation-only mirror:** `packages/recorder_policy.yaml` (commented out; no active config)
-- **Guardrails path:** `hestia/guardrails/`
+- **Guardrails path:** `hestia/tools/guardrails/`
 - **ADR ID:** `ADR-0014.v2`
 - **Enforcement tokens:** `single_recorder`, `idempotent_includes`, `no_dup_keys`, `oom_guard_present`, `no_symlinks`, `unique_automation_ids`, `unique_unique_ids`, `config_syntax_ok`
-- **Artifact paths (CI):** `.github/workflows/ha-governance.yml`, `hestia/guardrails/*`
+- **Artifact paths (CI):** `.github/workflows/ha-governance.yml`, `hestia/tools/guardrails/*`
 
 ## Invariants (Machine‑checkable)
 
@@ -70,12 +70,12 @@ Adopt a **single, canonical recorder configuration** with short retention and st
 - **Workflow:** `.github/workflows/ha-governance.yml`
 - **Checks:**
 
-  - `hestia/guardrails/check_recorder_uniqueness.sh` — count=1 and at canonical path.
-  - `hestia/guardrails/check_duplicate_keys.sh` — deny duplicate YAML keys.
-  - `hestia/guardrails/check_no_symlinks.sh` — deny symlinks in HA-loaded trees.
-  - `hestia/guardrails/check_unique_automation_ids.py` — unique automation `id:` across repo.
-  - `hestia/guardrails/check_unique_unique_ids.py` — unique `unique_id` across repo.
-  - `hestia/guardrails/validate_config.sh --syntax-only` — YAML parse sanity.
+  - `hestia/tools/guardrails/check_recorder_uniqueness.sh` — count=1 and at canonical path.
+  - `hestia/tools/guardrails/check_duplicate_keys.py` — deny duplicate YAML keys.
+  - `hestia/tools/guardrails/check_no_symlinks.sh` — deny symlinks in HA-loaded trees.
+  - `hestia/tools/guardrails/check_unique_automation_ids.py` — unique automation `id:` across repo.
+  - `hestia/tools/guardrails/check_unique_unique_ids.py` — unique `unique_id` across repo.
+  - `hestia/tools/guardrails/validate_config.sh --syntax-only` — YAML parse sanity.
   - **Containerized HA**: `python -m homeassistant --script check_config -c /config` via the Home Assistant stable container with repo mounted at `/config`.
 
 ## Operational Policy (Effective YAML)

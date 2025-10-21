@@ -24,22 +24,22 @@ jobs:
           python -m pip install --upgrade pip ruamel.yaml PyYAML yamllint
 
       - name: Duplicate-key scan (ruamel)
-        run: python hestia/guardrails/check_duplicate_keys.py
+        run: python hestia/tools/guardrails/check_duplicate_keys.py
 
       - name: YAML lint (duplicates too)
         run: 'yamllint -d "{\"extends\": \"default\", \"rules\": {\"key-duplicates\": {\"level\": \"error\"}}}" .'
 
       - name: Single-recorder invariant
-        run: bash hestia/guardrails/check_recorder_uniqueness.sh
+        run: bash hestia/tools/guardrails/check_recorder_uniqueness.sh
 
       - name: No symlinks in HA-loaded trees
-        run: bash hestia/guardrails/check_no_symlinks.sh
+        run: bash hestia/tools/guardrails/check_no_symlinks.sh
 
       - name: Unique automation ids
-        run: python hestia/guardrails/check_unique_automation_ids.py
+        run: python hestia/tools/guardrails/check_unique_automation_ids.py
 
       - name: Unique 'unique_id' across repo
-        run: python hestia/guardrails/check_unique_unique_ids.py
+        run: python hestia/tools/guardrails/check_unique_unique_ids.py
 
       - name: Lint for path drift
         run: tools/lint_paths.sh
