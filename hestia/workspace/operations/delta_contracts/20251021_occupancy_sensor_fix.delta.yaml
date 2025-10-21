@@ -75,4 +75,7 @@ Zigbee2MQTT calibration (SNZB-06P model):
 adjustments:
   - Occupancy sensitivity: medium (bump to high only if misses occur).
   - Occupancy timeout: 60 seconds (tune later as you like).
-  - Settings (specific) → No occupancy since: [10, 60, 300] (optional but recommended for diagnostics/advanced rules).
+  - Settings (specific):
+      description: No occupancy since options
+      values: [10, 60, 300]
+      note: optional but recommended for diagnostics/advanced rules
