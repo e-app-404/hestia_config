@@ -12,6 +12,7 @@ Exits non-zero only if front-matter missing or minimal keys absent.
 from pathlib import Path
 import re
 import sys
+import lintgrep
 
 try:
     import yaml  # provided by CI step: pip install pyyaml
