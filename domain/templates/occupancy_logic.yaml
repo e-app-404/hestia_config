@@ -94,7 +94,6 @@
             'binary_sensor.merged_home_occupancy_eta'
           ] | tojson }}
         aggregation_strategy: "any-on aggregate (fallback); preference forced via flag"
-        # Shows which upstream is currently representing the aggregate or preferred source.
         active_source: >-
           {% from 'template.library.jinja' import pick_preferred_or_any_on %}
           {% set sources = [
