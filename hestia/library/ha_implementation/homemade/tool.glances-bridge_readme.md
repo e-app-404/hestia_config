@@ -1,6 +1,23 @@
+---
+id: DOCS-GLANCES-BRIDGE-002
+title: "glances_bridge — Glances normalizer & optional Tailscale proxy"
+slug: glances-bridge-readme
+version: 1.0
+author: "e-app-404"
+created: 2025-10-20
+adrs: ["ADR-0024", "ADR-0027", "ADR-0031"]
+content_type: readme
+last_updated: 2025-10-21
+hot_links:
+- reports: /config/hestia/workspace/reports/glances_bridge/
+- reports: /config/hestia/workspace/.hestia/index/glances_bridge__index.jsonl
+- process_logs: /config/hestia/workspace/operations/logs/glances_bridge/
+---
+
 # glances_bridge — ADR-0031-Compliant Glances Normalizer & Tailscale Proxy
 
 ## Overview
+
 `glances_bridge.py` is a TOML-driven, idempotent tool for normalizing Glances API output and optionally exposing it via Tailscale TCP forwarding. It is designed for safe, evidence-rich automation in Home Assistant environments, following ADR-0031 doctrine.
 
 - **Config:** Reads from `/config/hestia/config/system/hestia.toml` under `[automation.glances_bridge]`.
@@ -14,6 +31,7 @@
 ## Usage
 
 ### Dry-run
+
 ```bash
 /config/.venv/bin/python /config/hestia/tools/glances_bridge/glances_bridge.py dry-run
 ```
@@ -21,16 +39,20 @@
 - No changes made to the system.
 
 ### Apply
+
 ```bash
 /config/.venv/bin/python /config/hestia/tools/glances_bridge/glances_bridge.py apply
 ```
+
 - Installs/updates the normalizer script at `<repo_root>/bin/glances-normalize.py`.
 - Starts the normalizer as a background process.
 - Optionally configures Tailscale TCP forwarding if `runtime.tailscale_host` is set and `tailscale` CLI is available.
 - Idempotent: skips install if content SHA matches last-applied or on-disk version.
 
 ## Configuration
+
 Add this block to `/config/hestia/config/system/hestia.toml`:
+
 ```toml
 [automation.glances_bridge]
 repo_root    = "/config"
