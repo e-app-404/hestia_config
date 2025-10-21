@@ -27,6 +27,7 @@ author: "e-app-404"
 # ADR-0004: Canonical Area Hierarchy & Spatial Relationship Contract
 
 ## Table of Contents
+
 1. Context
 2. Decision
 3. Enforcement
@@ -34,18 +35,30 @@ author: "e-app-404"
 5. Last updated
 
 ## 1. Context
-Spatial reasoning and containment relationships are essential for Home Assistant registry rehydration, automation, and entity logic. This ADR formalizes the canonical area, room, and floor hierarchy, including containment, propagation, and output contract rules.
+
+Spatial reasoning and containment relationships are essential for Home Assistant registry rehydration, automation, and entity logic. The same principles apply to the area hierarchy, where understanding the relationships between different areas, rooms, and floors is crucial for effective automation and control. 
 
 ## 2. Decision
+
+Establish a canonical contract through this ADR to agree on a shared understanding of area hierarchy, containment relationships, and inference propagation rules to ensure consistent spatial reasoning across Home Assistant deployments.
+
+## 3. Enforcement
+
 ### Contract Metadata
-- **Contract ID:** area_relationships_contract
-- **Version:** 1.1
-- **Author:** Evert
-- **Status:** canonical_draft
-- **File Path:** canonical/support/contracts/area_hierarchy.yaml
-- **Live Registry Consistency:** improved
-- **Coverage Percent:** 100.0
-- **Last Validated:** 2025-10-04
+
+Defines key information about the contract:
+
+| Key                   | Value                                           |
+|-----------------------  |-------------------------------------------------|
+| **Contract ID**       | area_relationships_contract                     |
+| **Version**           | 1.1                                             |
+| **Author**            | Evert                                          |
+| **Status**                    | canonical_draft                                 |
+| **File Path**                 | canonical/support/contracts/area_hierarchy.yaml |
+| **Live Registry Consistency** | improved |
+| **Coverage Percent**  | 100.0 |
+| **Last Validated**    | 2025-10-04 |
+
 - **Notes:** Programmatically validated against live Home Assistant registry data. Major structural improvements applied October 2025 including duplicate removal, missing node additions, and registry alignment.
 
 ### Containment Graph
