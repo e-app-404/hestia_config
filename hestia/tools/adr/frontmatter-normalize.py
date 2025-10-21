@@ -10,11 +10,12 @@ Key behaviors by level:
 - basic: status alias normalization, related/supersedes cleanup (extract ADR-#### ids),
          no content rewrite beyond front-matter normalization; TOKEN_BLOCK addition is allowed.
 - standard: includes basic + slug regeneration (if invalid), ensure TOKEN_BLOCK section present.
-- strict: includes standard + optionally prefix ADR ID in title (if missing) and auto-update last_updated on change.
+- strict: includes standard + optionally prefix ADR ID in title (if missing) and auto-update
+last_updated on change.
 
 Reporting:
-- Writes a timestamped report under /config/hestia/reports/YYYYMMDD/adr-frontmatter-normalize__<ts>__report.log
-- Writes a stable latest copy atomically at /config/hestia/reports/adr-frontmatter-normalize.latest.log
+- Timestamped report under hestia/reports/YYYYMMDD/adr-frontmatter-normalize__<ts>__report.log
+- Stable latest copy atomically at hestia/reports/adr-frontmatter-normalize.latest.log
 
 Writes:
 - Dry-run unless --apply is set. When applying, uses atomic replace (tmp file + os.replace).
@@ -41,7 +42,7 @@ except Exception:
         import toml as _toml_loader  # type: ignore
     except Exception as e:  # pragma: no cover
         print(f"ERROR: TOML parser not available: {e}")
-        raise SystemExit(1)
+        raise SystemExit(1) from e
 
 
 THIS = Path(__file__).resolve()
@@ -57,11 +58,14 @@ ISO_DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 
 
 def load_toml(config_path: Path) -> dict:
+    if _toml_loader is None:
+        return {}
     if getattr(_toml_loader, "__name__", "") == "tomllib":
         with open(config_path, "rb") as fp:
             return _toml_loader.load(fp) or {}
     # third-party toml
-    return _toml_loader.load(str(config_path)) or {}
+    with open(config_path, encoding="utf-8") as fp:
+        return _toml_loader.load(fp) or {}
 
 
 def extract_front_matter(text: str) -> tuple[dict | None, str | None]:

@@ -89,11 +89,11 @@ Adopt a **Workspace Operations & Environment Management** standard with the foll
 ```bash
 # product/dev venv (optional for local development)
 python3 -m venv .venv && source .venv/bin/activate && pip install --upgrade pip
-pip install -r requirements-dev.txt
+pip install -r requirements.txt
 
 # governance venv (primary operational environment)
 python3 -m venv .venv_ha_governance && source .venv_ha_governance/bin/activate
-pip install --upgrade pip && pip install -r requirements-dev.txt
+pip install --upgrade pip && pip install -r requirements.txt
 
 # OR use Makefile integration
 make venv  # Creates and configures .venv_ha_governance automatically
@@ -145,7 +145,7 @@ config-validate: adr-validate template-validate
 **Dependencies Strategy**:
 
 - **Pin interpreter**: Python 3.11+ (3.13.7 currently active)
-- **Shared requirements**: Both venvs use `requirements-dev.txt` containing governance tools:
+- **Shared requirements**: Both venvs use `requirements.txt` containing governance tools:
   - `yamllint==1.*` - YAML validation
   - `jsonschema==4.*` - Schema validation
   - `ruamel.yaml==0.18.*` - YAML processing
@@ -273,7 +273,7 @@ make hygiene  # Verify clean state
 python3 -m venv .venv_ha_governance
 source .venv_ha_governance/bin/activate
 pip install --upgrade pip
-pip install -r requirements-dev.txt
+pip install -r requirements.txt
 ```
 
 **ADR Linter Setup (External Venv):**

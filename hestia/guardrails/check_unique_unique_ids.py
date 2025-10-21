@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-import sys
 import re
+import sys
 from pathlib import Path
 
 UID_RE = re.compile(r"^\s*unique_id:\s*['\"]?([^'\"\s]+)['\"]?\s*$")
@@ -11,7 +11,9 @@ def main() -> int:
     files = [Path(x) for x in _git_ls_files('*.yaml')]
     for p in files:
         try:
-            for i, line in enumerate(p.read_text(encoding='utf-8', errors='ignore').splitlines(), 1):
+            for i, line in enumerate(
+                p.read_text(encoding="utf-8", errors="ignore").splitlines(), 1
+            ):
                 m = UID_RE.match(line)
                 if m:
                     uid = m.group(1)

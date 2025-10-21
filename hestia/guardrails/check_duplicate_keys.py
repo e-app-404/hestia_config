@@ -39,7 +39,6 @@ def scan_file(p: Path) -> bool:
         return True
 
 def main() -> int:
-    root = Path('.')
     files = [Path(f) for f in sys.stdin.read().splitlines() if f.endswith('.yaml')]
     if not files:
         # default to git tracked yaml

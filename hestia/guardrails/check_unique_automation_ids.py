@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-import sys
 import re
+import sys
 from pathlib import Path
 
 ID_RE = re.compile(r"^\s*id:\s*([A-Za-z0-9_\-]+)\s*$")
@@ -11,7 +11,9 @@ def main() -> int:
     files = [Path(x) for x in _git_ls_files('*.yaml')]
     for p in files:
         try:
-            for i, line in enumerate(p.read_text(encoding='utf-8', errors='ignore').splitlines(), 1):
+            for i, line in enumerate(
+                p.read_text(encoding="utf-8", errors="ignore").splitlines(), 1
+            ):
                 m = ID_RE.match(line)
                 if m:
                     k = m.group(1)
