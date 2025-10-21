@@ -275,6 +275,7 @@ data:
 ## 5. RATE LIMIT BEHAVIOR
 
 ### 5.1 State Machine
+
 ```
 State: FIRST_CALL
   → Play TTS
@@ -316,12 +317,13 @@ T+610s: Call 3 → PLAY (cooldown expired)
 ## 6. ERROR HANDLING
 
 ### 6.1 Common Issues
-| Error | Cause | Resolution |
-|-------|-------|------------|
+
+| Error                                 | Cause                          | Resolution |
+|---------------------------------------|--------------------------------|------------|
 | `'str object' has no attribute 'get'` | Reading SQL sensor instead of wrapper | Use `sensor.room_configs_shared_registry_dict` |
-| `WRITE_RATE_LIMIT` | AppDaemon rate limit | Wait 2+ seconds between writes |
-| `SCHEMA_VERSION_MISMATCH` | Wrong schema_expected | Set `schema_expected: 1` |
-| `CONFIG_TOO_LARGE` | Registry > 512KB | Prune old keys or increase limit |
+| `WRITE_RATE_LIMIT`                    | AppDaemon rate limit           | Wait 2+ seconds between writes |
+| `SCHEMA_VERSION_MISMATCH`             | Wrong schema_expected          | Set `schema_expected: 1` |
+| `CONFIG_TOO_LARGE`                    | Registry > 512KB               | Prune old keys or increase limit |
 
 ### 6.2 Diagnostic Queries
 ```jinja
@@ -343,28 +345,28 @@ T+610s: Call 3 → PLAY (cooldown expired)
 
 ### 7.1 Latency
 
-| Operation | Duration | Description |
-|-----------|----------|-------------|
-| TTS Call → Room-DB Read | ~10ms | SQL query execution |
+| Operation                 | Duration  | Description                     |
+|---------------------------|-----------|---------------------------------|
+| TTS Call → Room-DB Read   | ~10ms     | SQL query execution             |
 | Registry Update → Room-DB | ~50-100ms | REST + SQLite write transaction |
-| Total TTS Delay | ~60-110ms | Overall impact (negligible) |
+| Total TTS Delay           | ~60-110ms | Overall impact (negligible)     |
 
 ### 7.2 Capacity
 
-| Metric | Value | Notes |
-|--------|-------|-------|
-| Max Registry Size | 512 KB | Hard limit enforced by AppDaemon |
-| Avg Key Entry Size | ~100 bytes | Including JSON overhead |
-| Estimated Max Keys | ~5,000 keys | Theoretical maximum |
-| Recommended Max Keys | ~1,000 keys | For optimal performance |
+| Metric               | Value       | Notes                            |
+|----------------------|-------------|----------------------------------|
+| Max Registry Size    | 512 KB      | Hard limit enforced by AppDaemon |
+| Avg Key Entry Size   | ~100 bytes  | Including JSON overhead          |
+| Estimated Max Keys   | ~5,000 keys | Theoretical maximum              |
+| Recommended Max Keys | ~1,000 keys | For optimal performance          |
 
 ### 7.3 Maintenance
 
-| Task | Schedule | Strategy |
-|------|----------|----------|
-| Cleanup Frequency | Monthly | Or as needed based on usage |
-| Prune Strategy | Remove keys with last_ts > 90 days | Automatic cleanup |
-| Backup Before Prune | Always | Safety measure required |
+| Task                | Schedule                             | Strategy                    |
+|---------------------|--------------------------------------|-----------------------------|
+| Cleanup Frequency   | Monthly                              | Or as needed based on usage |
+| Prune Strategy      | Remove keys with `last_ts` > 90 days | Automatic cleanup           |
+| Backup Before Prune | Always                               | Safety measure required     |
 
 ## 8. TESTING CHECKLIST
 
@@ -484,15 +486,14 @@ sensor.tts_gate_registry_status:
 
 ### 11.2 Recommended Settings
 
-| Category   | Setting       | TOML key            | Recommended value  | Description                         |
-|------------|---------------|---------------------|--------------------|-------------------------------------|
-| Cooldown   | System Events | cooldown            | 300s (5 minutes)   | Startup, shutdown, service changes  |
-| Cooldown   | Maintenance   | cooldown            | 3600s (1 hour)     | Cleanup tasks, backups, updates     |
-| Cooldown   | Alerts        | cooldown            | 900s (15 minutes)  | Non-critical notifications          |
-| Volume Lvl | Normal        | volume              | 0.5                | Default volume for TTS notifications|
-| Volume Lvl | Alerts        | volume              | 0.6-0.7            | Higher volume for TTS alerts        |
-| Volume Lvl | Critical      | volume              | 0.7-0.8            | Loudest for urgent messages         |
-| Volume Lvl | Quiet         | tts_gate_quiet      | 0.3-0.4            | Lower volume for discreet messages  |
-
+| Category   | Setting       | Use Case Pattern   | Recommended value  | Description                         |
+|------------|---------------|--------------------|--------------------|------------------------------------|
+| Cooldown   | System Events | system_event       | 300s (5 minutes)  | Startup, shutdown, service changes |
+| Cooldown   | Maintenance   | maintenance_task   | 3600s (1 hour)    | Cleanup tasks, backups, updates    |
+| Cooldown   | Alerts        | general_announce   | 900s (15 minutes) | Non-critical notifications         |
+| Volume Lvl | Normal        | general_announce   | 0.5                | Default volume for TTS notifications|
+| Volume Lvl | Alerts        | general_announce   | 0.6-0.7            | Higher volume for TTS alerts       |
+| Volume Lvl | Critical      | critical_alert     | 0.7-0.8            | Loudest for urgent messages        |
+| Volume Lvl | Quiet         | custom_advanced    | 0.3-0.4            | Lower volume for discreet messages |
 
 **END OF SPECIFICATION**
