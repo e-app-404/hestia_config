@@ -6,12 +6,228 @@
       }
   ],
   "settings": {
+    "git.enabled": true,
+    "git.autorefresh": false,
+    "git.autoRepositoryDetection": "subFolders",
+    "git.openRepositoryInParentFolders": "always",
+    "git.countBadge": "off",
+    "git.repositoryScanIgnoredFolders": [
+        "share",
+        "zigbee2mqtt",
+        "tts",
+        "hestia/workspace/archive/vault",
+        "tmp",
+        ".trash",
+        ".venv",
+        "deprecated"
+    ],
+    "gitlens.currentLine.enabled": false,
+    "gitlens.hovers.enabled": false,
+    "gitlens.codeLens.enabled": false,
+    "gitlens.statusBar.enabled": false,
+    "python.defaultInterpreterPath": "/config/.venv/bin/python",
+    "python.envFile": "/config/.env",
+    "python.terminal.activateEnvironment": true,
+    "python.terminal.useEnvFile": true,
+    "python.analysis.typeCheckingMode": "basic",
+    "ruff.importStrategy": "useBundled",
+    "ruff.configuration": "pyproject.toml",
+    "ruff.lineLength": 100,
+    "files.exclude": {
+        "**/__pycache__": true,
+        "**/*.db": true,
+        "**/.DS_Store": true,
+        "**/.venv": true,
+        "**/.git/**": false,
+        "**/.git": false,
+        "**/deps/**": true,
+        "**/www/community": true,
+        "**/www/icloud3": false,
+        "**/www/openplantbook": false,
+        "**/tts/**": true,
+        "**/*.pyc": true,
+        "**/*.egg-info/**": true,
+        "**/.trash/*": true,
+        "tmp/**": true,
+        "hestia/workspace/cache/**": false,
+        "hestia/workspace/archive/**": false,
+        "zigbee2mqtt/**": true,
+        "**/*.bak": true,
+        "**/*.bak*": true
+    },
+    "files.watcherExclude": {
+        "hestia/workspace/archive/**": true,
+        "**/*.egg-info/**": true,
+        "**/.trash/*": true,
+        "tmp/**": true
+    },
+    "search.exclude": {
+        "**/.storage": true,
+        "**/.venv": true,
+        "**/deps/**": true,
+        "**/www/**": true,
+        "**/tts/**": true,
+        "**/*.pyc": true,
+        "**/*.db": true,
+        "**/*.egg-info/**": true,
+        "hestia/workspace/cache/**": true,
+        "hestia/workspace/archive/**": true,
+        "zigbee2mqtt/**": true,
+        "**/.trash/*": true,
+        "tmp/**": true
+    },
     "explorer.excludeGitIgnore": false,
-    "files.exclude": {},
-    "search.exclude": {},
-    "files.watcherExclude": {},
     "files.associations": {
-      "*.yaml": "home-assistant"
+        "*.yaml": "home-assistant",
+        "*.yml": "home-assistant",
+        "*.md": "markdown",
+        "*.markdown": "markdown"
+    },
+    "yaml.schemaStore.enable": true,
+    "yaml.schemaStore.url": "https://www.schemastore.org/api/json/catalog.json",
+    "yaml.validate": true,
+    "yaml.format.enable": true,
+    "yaml.customTags": [
+        "!include",
+        "!include_dir_merge_named",
+        "!include_dir_merge_list",
+        "!include_dir_list",
+        "!include_dir_named",
+        "!secret",
+        "!env_var"
+    ],
+    "yaml.schemas": {
+        "https://json.schemastore.org/home-assistant.json": [
+        "configuration.yaml",
+        "**/automations.yaml",
+        "**/scripts.yaml",
+        "**/scenes.yaml",
+        "**/blueprints/**/*.yaml",
+        "**/domain/templates/**/*.yaml",
+        "**/domain/automations/**/*.yaml",
+        "**/domain/scripts/**/*.yaml",
+        "**/domain/groups/**/*.yaml",
+        "**/domain/sensors/**/*.yaml",
+        "**/domain/binary_sensors/**/*.yaml",
+        "**/domain/lights/**/*.yaml",
+        "**/domain/helpers/**/*.yaml",
+        "**/entities/**/*.yaml",
+        "packages/**/*.yaml"
+        ]
+    },
+    "editor.codeActionsOnSave": {
+        "source.organizeImports.ruff": "explicit",
+        "source.fixAll.ruff": "explicit"
+    },
+
+    // ADR-0024: Enable Copilot instruction files for workspace
+    "github.copilot.chat.codeGeneration.useInstructionFiles": true,
+    "window.title": "HA Live — ${rootName} — ${activeEditorShort}",
+    "makefile.configureOnOpen": false,
+    "files.autoSaveWorkspaceFilesOnly": true,
+    "files.readonlyInclude": {
+        "**/.storage/**": true,
+        "**/deps/**": true,
+        "**/.git/**": false,
+        "zigbee2mqtt/database.db": true,
+        "zigbee2mqtt/state.json": true,
+        "zigbee2mqtt/coordinator_backup.json": true,
+        "home-assistant.log*": true,
+        "**/*.db": true,
+        "**/*.db-wal": true,
+        "**/*.db-shm": true,
+        ".HA_VERSION": true,
+        ".uuid": true,
+        "influx.cookie": true,
+        "/System/Volumes/Data/homeassistant/**": true,
+        "/Volumes/HA/**": true
+    },
+
+    // ===== ADR-0024 TERMINAL CONFIGURATION =====
+
+    "terminal.integrated.cwd": "/config",
+    "terminal.integrated.defaultProfile.osx": "zsh",
+    "terminal.integrated.profiles.osx": {
+        "zsh": { "path": "/bin/zsh", "args": ["-l"] }
+    },
+    // ADR-0024 compliant environment variables
+    "terminal.integrated.env.osx": {
+        "WORKSPACE_ROOT": "/config",
+        "CONFIG_ROOT": "/config",
+        "HA_CANONICAL_ROOT": "/config",
+        "CONFIG_MOUNT": "/config",
+        "PATH": "/opt/homebrew/bin:${env:PATH}",
+        "PYTHONPATH": "/config:${env:PYTHONPATH}"
+    },
+
+    // Clean automation profile for tasks
+    "terminal.integrated.automationProfile.osx": {
+        "path": "/bin/zsh",
+        "args": ["-l"],
+        "env": {
+        "WORKSPACE_ROOT": "/config",
+        "CONFIG_ROOT": "/config",
+        "CONFIG_MOUNT": "/config",
+        "PATH": "/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin"
+        }
+    },
+    // Split terminals start in workspace root
+    "terminal.integrated.splitCwd": "workspaceRoot",
+
+    // Use clean environment inheritance
+    "terminal.integrated.inheritEnv": true,
+
+    "workbench.editor.pinnedTabsOnSeparateRow": true,
+    "workbench.startupEditor": "none",
+    "window.openFilesInNewWindow": "off"
+    },
+    // Workspace-specific overrides for HA development
+    "python.analysis.typeCheckingMode": "basic",
+    "ruff.lineLength": 100,
+
+    // Workspace-specific editor behavior
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+        "source.organizeImports.ruff": "explicit",
+        "source.fixAll.ruff": "explicit"
+    },
+
+    // ADR-0024: Canonical path enforcement
+    "files.readonlyInclude": {
+        "/System/Volumes/Data/homeassistant/**": true,
+        "/Volumes/HA/**": true
+    },
+    "python-envs.pythonProjects": [
+        {
+        "path": "",
+        "envManager": "ms-python.python:venv",
+        "packageManager": "ms-python.python:pip"
+        }
+    ],
+
+    // GitHub Copilot: Auto-include instructions file in all conversations
+    "github.copilot.chat.defaultIncludes": [".github/copilot-instructions.md"],
+    "chat.modeFilesLocations": {
+        "chatmodes": true
+    },
+    "chat.promptFilesLocations": {
+        "prompts": true
+    },
+    "chat.instructionsFilesLocations": {
+        "instructions": true
+    },
+    "files.eol": "\n",
+    "files.insertFinalNewline": true,
+    "files.trimTrailingWhitespace": true,
+    "[markdown]": {
+        "files.trimTrailingWhitespace": false,
+        "editor.formatOnSave": true
+    },
+    "editor.rulers": [100],
+    "files.associations": {
+        "*.chatmode.md": "markdown",
+        "*.instructions.md": "markdown",
+        "*.prompt.md": "markdown",
+        "*.promptset": "yaml"
     }
-  }
-}
+    }

@@ -1,0 +1,38 @@
+{
+  "$schema": "https://raw.githubusercontent.com/DavidAnson/markdownlint/main/schema/markdownlint-config-schema.json",
+  "default": true,
+
+  // Line length: align with repo conventions; don't flag code blocks/tables/headings
+  "MD013": {
+    "line_length": 100,
+    "code_blocks": false,
+    "tables": false,
+    "headings": false
+  },
+
+  // Allow files to start with YAML front matter and H2 as first visible heading (ADR style)
+  "MD041": false,
+  "MD002": false,
+  "MD025": false,
+
+  // Allow limited inline HTML often used in docs
+  "MD033": { "allowed_elements": ["br", "details", "summary", "sup", "sub"] },
+
+  // Enforce fenced code blocks
+  "MD046": { "style": "fenced" },
+
+  // Lists indentation 2 spaces
+  "MD007": { "indent": 2 },
+
+  // Disallow identical headings only within sibling scope (more permissive for ADR sections)
+  "MD024": { "siblings_only": true },
+
+  // Up to 2 consecutive blank lines
+  "MD012": { "maximum": 2 },
+
+  // Strip trailing spaces
+  "MD009": true,
+
+  // Heading punctuation allowed (commas, colons, etc.)
+  "MD026": { "punctuation": ".,;:!。，；：！" }
+}
