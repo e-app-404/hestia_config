@@ -8,14 +8,13 @@ author: "e-app-404"
 adrs: []
 tags: ["adr", "architecture", "system", "design"]
 description: "Architecture Decision Record (ADR) System Architecture Overview"
+installation: hestia/tools/adr
+entrypoint: /config/hestia/tools/adr/frontmatter_update.py
+configuration: /config/hestia/config/meta/adr.toml
 last_updated: 2025-10-15
 ---
 
 # ADR System Architecture
-
-**Document Version**: 1.0  
-**Last Updated**: 2025-10-15  
-**Status**: Active
 
 ## Overview
 
@@ -23,28 +22,75 @@ The ADR (Architecture Decision Record) System is a comprehensive, configuration-
 
 ## System Architecture
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                     ADR Management System                       │
-├─────────────────────────────────────────────────────────────────┤
-│ Content Processing Layer                                        │
-│ ├─ frontmatter_update.py (Orchestrator)                        │
-│ ├─ frontmatter-id.py (ID validation & generation)              │
-│ ├─ frontmatter-title.py (Title normalization)                  │
-│ ├─ frontmatter-slug.py (URL-safe slug generation)              │
-│ ├─ frontmatter-status.py (Status validation)                   │
-│ ├─ frontmatter-date.py (Date validation & formatting)          │
-│ ├─ frontmatter-decision.py (Decision summary extraction)       │
-│ ├─ frontmatter-related.py (Cross-reference management)         │
-│ ├─ frontmatter-supersedes.py (Supersession tracking)           │
-│ └─ frontmatter-last_updated.py (Timestamp management)          │
-├─────────────────────────────────────────────────────────────────┤
-│ Configuration Layer                                             │
-│ └─ adr.toml (Meta-configuration & rendering specifications)    │
-├─────────────────────────────────────────────────────────────────┤
-│ Rendering Layer                                                 │
-│ └─ adr-index.py (Configuration-driven governance index)        │
-└─────────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TD
+  %% Content Processing Layer
+  subgraph CPL["Content Processing Layer"]
+    FU[frontmatter_update.py<br/>Orchestrator]
+    FI[frontmatter-id.py<br/>ID Validation]
+    FT[frontmatter-title.py<br/>Title Normalization]
+    FS[frontmatter-slug.py<br/>Slug Generation]
+    FST[frontmatter-status.py<br/>Status Validation]
+    FD[frontmatter-date.py<br/>Date Formatting]
+    FDE[frontmatter-decision.py<br/>Decision Extraction]
+    FR[frontmatter-related.py<br/>Cross-References]
+    FSU[frontmatter-supersedes.py<br/>Supersession Tracking]
+    FL[frontmatter-last_updated.py<br/>Timestamp Management]
+  end
+
+  %% Configuration Layer
+  subgraph CL["Configuration Layer"]
+    TOML[adr.toml<br/>Meta-Configuration]
+  end
+
+  %% Rendering Layer
+  subgraph RL["Rendering Layer"]
+    AI[adr-index.py<br/>Index Renderer]
+  end
+
+  %% Data Sources and Outputs
+  ADR_FILES[(ADR Files<br/>/config/hestia/library/docs/ADR/)]
+  MD_INDEX[governance_index.md]
+  JSON_INDEX[governance_index.json]
+
+  %% Flow connections
+  ADR_FILES --> FU
+  TOML --> FU
+  FU --> FI
+  FU --> FT
+  FU --> FS
+  FU --> FST
+  FU --> FD
+  FU --> FDE
+  FU --> FR
+  FU --> FSU
+  FU --> FL
+
+  FI --> ADR_FILES
+  FT --> ADR_FILES
+  FS --> ADR_FILES
+  FST --> ADR_FILES
+  FD --> ADR_FILES
+  FDE --> ADR_FILES
+  FR --> ADR_FILES
+  FSU --> ADR_FILES
+  FL --> ADR_FILES
+
+  ADR_FILES --> AI
+  TOML --> AI
+  AI --> MD_INDEX
+  AI --> JSON_INDEX
+
+  %% Styling
+  classDef processing fill:#e1f5fe,stroke:#0277bd,stroke-width:2px
+  classDef config fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
+  classDef rendering fill:#e8f5e8,stroke:#2e7d32,stroke-width:2px
+  classDef data fill:#fff3e0,stroke:#f57c00,stroke-width:2px
+
+  class FU,FI,FT,FS,FST,FD,FDE,FR,FSU,FL processing
+  class TOML config
+  class AI rendering
+  class ADR_FILES,MD_INDEX,JSON_INDEX data
 ```
 
 ## Core Components
