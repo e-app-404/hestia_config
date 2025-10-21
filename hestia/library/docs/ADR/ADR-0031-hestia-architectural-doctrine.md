@@ -19,7 +19,7 @@ author: Strategos (Executive Project Strategist)
 tags: ["doctrine", "config-centric", "toml", "governance", "automation", "hestia", "development", "tools"]
 ---
 
-# ADR-0031: Hestia Architectural Doctrine — Config-Centric Tooling (TOML-first)
+## ADR-0031: Hestia Architectural Doctrine — Config-Centric Tooling (TOML-first)
 
 ## Table of Contents
 
@@ -199,7 +199,7 @@ def last_applied_sha(index: Path, target: str) -> str | None:
         return None
 ```
 
-**Atomic write + broker**
+### **Atomic write + broker**
 
 ```python
 import os, subprocess, tempfile
@@ -220,7 +220,7 @@ def broker_rewrite(cfg_apply: dict, dst: Path, temp_src: Path) -> tuple[int, str
         return (p.returncode, p.stdout[-4000:], p.stderr[-4000:])
 ```
 
-**Report & ledger emission**
+###  **Report & ledger emission**
 
 ```python
 from datetime import datetime, UTC
@@ -236,10 +236,9 @@ def append_ledger(index: Path, payload: dict):
 ## 6. Migration & Backwards Compatibility
 
 - **Paths**: Replace legacy `/config/hestia/core/config/` with `/config/hestia/config/` (ADR-0024). A linter step MUST fail on old paths.
-- **Existing tools**:
-
-    - **sweeper**, **lineage-guardian**, **write-broker**, **meta_capture** already follow most tenets; ensure each reads from `hestia.toml` and writes reports/ledgers to the canonical locations.
 - **Phased adoption**: New tooling MUST follow this ADR. Existing scripts SHOULD be refactored when touched.
+
+Existing tools **sweeper**, **lineage-guardian**, **write-broker**, **meta_capture** already follow most tenets; ensure each reads from `hestia.toml` and writes reports/ledgers to the canonical locations.
 
 ## 7. Risks & Mitigations
 
@@ -250,14 +249,15 @@ def append_ledger(index: Path, payload: dict):
 
 ## 8. Acceptance Criteria
 
-- New tool PRs include:
+New tool PRs include:
 
-    - `[automation.<tool>]` block in `hestia.toml`, CLI wiring, dry-run & apply, report + ledger, run-lock, idempotency, secret/schema checks, optional broker, retention knobs.
-- CI:
+- `[automation.<tool>]` block in `hestia.toml`, CLI wiring, dry-run & apply, report + ledger, run-lock, idempotency, secret/schema checks, optional broker, retention knobs.
 
-    - **Zero-red** enforcement on dry-run; orange enforcement if `fail_level="orange"`.
-    - ADR-0024 path compliance linter passes.
-    - No tracked symlinks (ADR-0015).
+CI:
+
+- **Zero-red** enforcement on dry-run; orange enforcement if `fail_level="orange"`.
+- ADR-0024 path compliance linter passes.
+- No tracked symlinks (ADR-0015).
 
 ## 9. Worked Example — Folding “Glances → HA via Tailscale” into Doctrine
 
@@ -315,7 +315,6 @@ This turns a niche script into a **first-class governed tool** that benefits fro
 
 ## 11. Decision Summary (one-screen)
 
-<!-- TOKEN_BLOCK: ADR-0031 | doctrine | toml-first | tooling -->
 - **Use `hestia.toml`** as the single configuration source.
 - **No hard-coded paths**; resolve via TOML.
 - **dry-run/apply** with **green-only apply**.
@@ -325,8 +324,10 @@ This turns a niche script into a **first-class governed tool** that benefits fro
 - **ADR-0024/0015 compliance** enforced in CLI/CI.
 - **Retain context-dependence**: keep only while it benefits Hestia.
 
-
 This doctrine lets any machine-operator build **complementary, governed** tooling that plugs into Hestia’s ecosystem with minimal friction and maximum safety.
+
+<!-- TOKEN_BLOCK: ADR-0031 | doctrine | toml-first | tooling -->
+## 12. Token Block
 
 ```yaml
 TOKEN_BLOCK:
@@ -347,4 +348,3 @@ TOKEN_BLOCK:
         - DRIFT: non_atomic_write
         - DRIFT: missing_dry_run_apply
 ```
-

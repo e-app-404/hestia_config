@@ -1,15 +1,16 @@
 ---
 id: ADR-0018
-title: Workspace hygiene, lifecycle & quarantine policy
+title: "ADR-0018: Workspace hygiene, lifecycle & quarantine policy"
 slug: workspace-hygiene-lifecycle-quarantine-policy
-status: Proposed (Ready to adopt)
+status: "Accepted"
 related:
 - ADR-0008
 - ADR-0009
-- ADR-0012
+- ADR-0024
+- ADR-0027
 supersedes: []
 last_updated: '2025-10-15'
-date: 2025-09-26
+date: '2025-09-26'
 decision: Architectural decision documented in this ADR.
 owners:
 - hestia-core
@@ -27,6 +28,8 @@ tags:
 - guardrails
 - automation
 ---
+
+## ADR-0018 — Workspace hygiene, lifecycle & quarantine policy
 
 # 1) Purpose
 
@@ -173,5 +176,19 @@ hestia/workspace/archive/vault/deprecated/  # human-curated deprecated materials
 
 - **One-liner hygiene target**: `make hygiene` to (a) untrack banned paths, (b) move/rename legacy backups, (c) run ReportKit retention, (d) print a delta summary.
 - **Deterministic bundles by default**: template a `scripts/make_bundle.sh` that always writes MANIFEST + SHA256 and runs a reproducibility probe.
-- **Frontmatter verifier gate**: lightweight CI job `verify_frontmatter.py` over last batch to guarantee provenance headers are present.
+- **Frontmatter verifier gate**: lightweight CI job `frontmatter_verify.py` over last batch to guarantee provenance headers are present.
 - **Batch “latest” symlink**: keep `hestia/reports/latest` pointing to most recent batch for quick navigation.
+
+## Token Blocks
+
+```yaml
+TOKEN_BLOCK:
+  notes: lifecycle policy validation checks
+  checks:
+    - name: reports-structure
+      cmd: "test -d /config/hestia/reports || echo 'reports dir missing'"
+    - name: backups-pattern
+      cmd: "ls /config/**/*.bk.* >/dev/null 2>&1 || true"
+    - name: index-jsonl-exists
+      cmd: "test -f /config/hestia/reports/_index.jsonl || true"
+```

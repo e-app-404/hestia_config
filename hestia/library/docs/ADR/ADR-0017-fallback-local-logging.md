@@ -1,7 +1,8 @@
+---
 id: ADR-0017
-title: ADR-0017: Fallback local logging path for HA tooling (non-repo, cross-platform)
+title: "ADR-0017: Fallback local logging path for HA tooling (non-repo, cross-platform)"
 slug: fallback-local-logging-path-for-ha-tooling-non-repo-cross-platform
-status: Proposed
+status: "Proposed"
 related:
 - ADR-0008
 - ADR-0009
@@ -9,11 +10,10 @@ related:
 - ADR-0026
 supersedes: []
 last_updated: '2025-10-15'
-date: 2025-09-25
-decision: When ${HA_MOUNT} is not writable, tooling writes to a platform-specific local path outside the repo with strict perms.
+date: '2025-09-25'
+decision: "When ${HA_MOUNT} is not writable, tooling writes to a platform-specific local path outside the repo with strict perms."
 author: "e-app-404"
-security:
-  perms: 0700 (owner-only) on POSIX.
+security_perms: "0700 (owner-only) on POSIX."
 acceptance:
 - Simulate mount-down; tooling writes to the OS path and creates it with correct perms.
 - CI packaging proves logs are excluded from artifacts.
@@ -24,7 +24,7 @@ enforcement_protocols:
 - include_scan_v2
 ---
 
-# ADR-0017 — Fallback local logging path for Home Assistant tooling (non-repo, cross-platform)
+## ADR-0017 — Fallback local logging path for Home Assistant tooling (non-repo, cross-platform)
 
 ## Context
 
