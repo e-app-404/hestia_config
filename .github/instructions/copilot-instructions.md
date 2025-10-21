@@ -104,6 +104,38 @@ This repository (Hestia) is a collection of operator tooling, configuration arti
 - **Compliance tracking**: ADR compliance validation in all tool outputs
 - **Executive summaries**: High-level workspace status in comprehensive reports
 
+## Patch Operation Workflow (ADR-0032)
+
+When the operator submits a patch request (pastes a diff, drops a patch file, or links patch instructions), follow this mandatory workflow:
+
+1) Create or update a todo
+- Path: `/config/hestia/workspace/todo/`
+- Use `TODO_TEMPLATE.md` and include `agent: copilot` and a `human_owner:`
+- Link any provided patch instructions and include a brief proposed_patch snippet when safe
+
+2) Stage the patch artifact
+- Path: `/config/hestia/workspace/staging/`
+- Filename pattern: `<UTC>__<tool|agent>__<label>.<ext>`
+- Do not modify runtime configs at this step
+
+3) Append to the patch ledger
+- Path: `/config/hestia/workspace/operations/logs/patch-ledger.jsonl`
+- Format: JSONL with fields like `timestamp_utc`, `id`, `source`, `actor`, `title`, `status`, `todo_path`, `staging_paths`, `plan_path`, `pr_url`, `notes`
+
+4) Link or create a patch plan (optional)
+- Path: `/config/hestia/workspace/operations/patch_plans/`
+- Plans must include scope guards, validation steps, and ADR references
+
+5) Migrate approved artifacts
+- Move from `staging/` to `patches/` and update the ledger status
+- Use governed writes (ADR‑0027) for any changes to runtime configs; avoid direct in-place edits
+
+Guardrails
+- Honor ADR‑0024 canonical path `/config`
+- No secrets in todos or artifacts; reference vault URIs when needed
+
+Reference: ADR‑0032 — Patch Operation Workflow
+
 ## Code Quality & Formatting Standards
 
 ### YAML/Config Normalization (ADR-0008)
