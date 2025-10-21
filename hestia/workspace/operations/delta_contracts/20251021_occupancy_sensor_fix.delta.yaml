@@ -1,19 +1,66 @@
-planned_change: Fix latched Kitchen Occupancy (Beta) and calibrate SNZB-06P
-deliverable: Reliable β-layer occupancy signal with proper clear events
+contract: Delta contract — β occupancy sensors (multi-room)
+id: 20251021_occupancy_sensor_fix
+planned_change: Expand β-layer occupancy signals (mirror α, add smoothing)
+deliverable: 4 reliable β binary_sensors for Bedroom, Ensuite, Kitchen, Living Room
 action_needed:
-  - Replace trigger-based β binary_sensor with state-template (mirrors α) + smoothing
-  - Calibrate Z2M options to emit “no_occupancy_since” ticks (optional but recommended)
-rationale: Current β remains 'Detected' because only the ON transition is handled
+  - Remove/disable any prior trigger-based β entities for these rooms
+  - Add the state-template definitions below (mirrors α + delay_off)
+  - In Zigbee2MQTT, set model options consistently (see “Z2M calibration”)
+  - Reload Template Entities (or restart HA)
+rationale: Eliminate latched “Detected” states; standardize α→β pipeline
 status: ready
-path: /config/  # or your HESTIA path for β sensors
+path: /config/packages/occupancy_beta.yaml   # adjust if you use packages; otherwise in configuration.yaml
 RACI_matrix:
   responsible: You
   accountable: Strategos
-  consulted: Home Assistant logs
-  informed: Stakeholders relying on automations
+  consulted: HA logs, Zigbee2MQTT device pages
+  informed: Automations depending on occupancy
 acceptance_criteria:
-  - Beta turns OFF within the configured delay after α = OFF
-  - History graph shows alternating Detected/Clear consistent with α
-  - 3 consecutive manual tests pass (see Verification)
+  - Each β turns OFF within 30s (delay_off) after its α turns OFF
+  - History graphs show correct Detected/Clear alternation for all four rooms
+  - 3/3 passes of the verification checks per room (Clear → Detect → Clear)
 risk_assessment:
-  - low: change is additive & easily reversible
+  - low: config-only; rollback is file revert + reload
+
+template_entities:
+template:
+  - binary_sensor:
+      # BEDROOM
+      - name: "Bedroom Occupancy (Beta)"
+        unique_id: bedroom_occupancy_beta
+        device_class: occupancy
+        state: "{{ is_state('binary_sensor.bedroom_occupancy_alpha_occupancy', 'on') }}"
+        delay_off:
+          seconds: 30
+        availability: >
+          {{ states('binary_sensor.bedroom_occupancy_alpha_occupancy') in ['on','off'] }}
+
+      # ENSUITE
+      - name: "Ensuite Occupancy (Beta)"
+        unique_id: ensuite_occupancy_beta
+        device_class: occupancy
+        state: "{{ is_state('binary_sensor.ensuite_occupancy_alpha_occupancy', 'on') }}"
+        delay_off:
+          seconds: 30
+        availability: >
+          {{ states('binary_sensor.ensuite_occupancy_alpha_occupancy') in ['on','off'] }}
+
+      # KITCHEN
+      - name: "Kitchen Occupancy (Beta)"
+        unique_id: kitchen_occupancy_beta
+        device_class: occupancy
+        state: "{{ is_state('binary_sensor.kitchen_occupancy_alpha_occupancy', 'on') }}"
+        delay_off:
+          seconds: 30
+        availability: >
+          {{ states('binary_sensor.kitchen_occupancy_alpha_occupancy') in ['on','off'] }}
+
+      # LIVING ROOM
+      - name: "Living Room Occupancy (Beta)"
+        unique_id: living_room_occupancy_beta
+        device_class: occupancy
+        state: "{{ is_state('binary_sensor.living_room_occupancy_alpha_occupancy', 'on') }}"
+        delay_off:
+          seconds: 30
+        availability: >
+          {{ states('binary_sensor.living_room_occupancy_alpha_occupancy') in ['on','off'] }}
