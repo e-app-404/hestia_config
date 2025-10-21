@@ -34,6 +34,15 @@ check_file() {
     fi
     if (( in_rest )); then
       case "$line" in
+        *method:*)
+          method=$(echo "$line" | sed -E 's/.*method:\s*"?([^" ]*).*/\1/' | tr '[:lower:]' '[:upper:]')
+          case "$method" in
+            PUT|DELETE|PATCH)
+              echo "$f: ERROR disallowed HTTP method in rest_command: $method" >&2
+              fail=1
+              ;;
+          esac
+          ;;
         *url:*)
           url=$(echo "$line" | sed -E 's/.*url:\s*"?([^" ]*).*/\1/')
           # Only http(s)
@@ -55,11 +64,7 @@ check_file() {
       esac
     fi
   done <"$f"
-  # Methods must be GET or POST
-  if grep -E "^\s*method:\s*(PUT|DELETE|PATCH)\b" "$f" -n; then
-    echo "ERROR: Disallowed HTTP method in rest_command: $f" >&2
-    fail=1
-  fi
+  # end file
 }
 
 for f in "${files[@]}"; do
