@@ -5,7 +5,7 @@ PIP=$(VENV)/bin/pip
 
 .PHONY: activate venv shell install lint format format-apply validate autofix ci hygiene bundle reports-latest hooks \
 	hades-validate adr-validate adr-0016-validate vault-index vault-index-dry backup-create backup-rename backup-rename-dry \
-	template-fix template-fix-dry template-validate config-validate
+	template-fix template-fix-dry template-validate config-validate adr-tarball
 
 activate:
 	@echo "Run this command to activate the virtual environment:"
@@ -55,6 +55,18 @@ hygiene:
 
 bundle:
 	bash scripts/make_bundle.sh dist/bundle.tar.gz
+
+# ADR collection tarball (includes ADRs and deprecated subfolder; excludes ADR-000x template)
+adr-tarball:
+ 	@echo "Creating ADR tarball (including deprecated/, excluding ADR-000x-template.md)..."
+ 	@ISO_WEEK=$$(date +"%G-W%V"); \
+ 	  TS=$$(date -u +"%Y%m%dT%H%M%SZ"); \
+ 	  DEST_DIR="hestia/workspace/archive/tarballs/$$ISO_WEEK"; \
+ 	  mkdir -p "$$DEST_DIR"; \
+ 	  NAME="adrs_$${ISO_WEEK}_$${TS}.tar.gz"; \
+ 	  echo "Running: tar czf \"$$DEST_DIR/$$NAME\" -C hestia/library/docs --exclude 'ADR/ADR-000x-template.md' ADR"; \
+ 	  tar czf "$$DEST_DIR/$$NAME" -C "hestia/library/docs" --exclude 'ADR/ADR-000x-template.md' ADR; \
+ 	  echo "ADR tarball created at $$DEST_DIR/$$NAME"
 
 reports-latest:
 	@test -f $(PY) && $(PY) hestia/tools/utils/reportkit/link_latest.py || python3 hestia/tools/utils/reportkit/link_latest.py

@@ -14,8 +14,8 @@ decision: Architectural decision documented in this ADR.
 author:
 - Evert Appels
 - Strategos (Executive Project Strategist)
-tags:
-- operations
+tags: ["operations", "workspace", "home-assistant", "ha", "environment", "venv", "governance", "security", "recovery", "tooling", "macos", "ci-cd", "diagnostics", "ssh", "requirements", "ops"]
+- operation
 - environment
 - venv
 - governance
@@ -127,26 +127,26 @@ PIP=$(VENV)/bin/pip
 
 ## Root hygiene check (governance compliance)
 hygiene:
-	@bash hestia/tools/root_hygiene_check.sh
+  @bash hestia/tools/root_hygiene_check.sh
 
 ## Create workspace backup
 backup tarball:
-	@bash hestia/tools/utils/backup/hestia_tarball.sh
+  @bash hestia/tools/utils/backup/hestia_tarball.sh
 
 ## YAML linting
 lint: venv
-	@$(VENV)/bin/yamllint -f colored -s .
+  @$(VENV)/bin/yamllint -f colored -s .
 
 ## ADR validation
 adr-validate: venv
-	@for adr in $$(find hestia/library/docs/ADR -name "*.md" -not -name "*template*"); do \
-		echo "Validating $$adr..."; \
-		$(PY) hestia/tools/utils/validators/adr_validator.py "$$adr" || exit 1; \
-	done
+  @for adr in $$(find hestia/library/docs/ADR -name "*.md" -not -name "*template*"); do \
+    echo "Validating $$adr..."; \
+    $(PY) hestia/tools/utils/validators/adr_validator.py "$$adr" || exit 1; \
+  done
 
 ## Comprehensive config validation
 config-validate: adr-validate template-validate
-	@echo "✅ All configuration validation checks passed"
+  @echo "✅ All configuration validation checks passed"
 ```
 
 ## 4.3 Python Environment Management

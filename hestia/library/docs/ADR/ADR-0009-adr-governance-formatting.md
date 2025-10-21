@@ -43,7 +43,7 @@ ci_policy:
     manifest: sha256
 ---
 
-# ADR-0009: ADR Governance, Redaction, and Formatting Policy
+## ADR-0009: ADR Governance, Redaction, and Formatting Policy
 
 ## Table of Contents
 
@@ -97,9 +97,9 @@ The project requires robust, machine-friendly governance for ADRs, including cle
 
 ## 5. Required Front-Matter (Schema v1)
 
-Required keys: `id`, `title`, `slug`, `status`, `related`, `supersedes`, `last_updated`, `date`, `decision`
+**Required** keys: `id`, `title`, `slug`, `status`, `related`, `supersedes`, `last_updated`, `date`, `decision`
 
-Optional keys (recommended): `author`, `tags`, `implementation_date`, `rollout`, `ci_policy`
+**Optional** keys (recommended): `author`, `tags`, `implementation_date`, `rollout`, `ci_policy`
 
 **Field Specifications:**
 
