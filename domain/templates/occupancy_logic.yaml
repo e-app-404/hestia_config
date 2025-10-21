@@ -80,7 +80,7 @@
         role: "standardized"
         file: "/config/domain/templates/occupancy_logic"
         protocols: "MQTT(1), Matter(2)"
-        refactor_note: "Occupancy-only, aggregate-any-on with dormant preference override"
+        refactor_note: "Occupancy-only, aggregate-any-on"
         upstream_sources: >-
           {{ [
             'template.library.jinja',
@@ -93,7 +93,7 @@
             'binary_sensor.zone_downstairs_occupancy_beta',
             'binary_sensor.merged_home_occupancy_eta'
           ] | tojson }}
-        aggregation_strategy: "any-on aggregate (fallback); preference forced via flag"
+        aggregation_strategy: "any-on aggregate"
         active_source: >-
           {% from 'template.library.jinja' import pick_preferred_or_any_on %}
           {% set sources = [
@@ -101,9 +101,7 @@
             {'entity': 'binary_sensor.kitchen_occupancy_alpha_matter_occupancy', 'preference': 2},
             {'entity': 'binary_sensor.kitchen_motion_recent_beta',               'preference': 3}
           ] %}
-          {{ pick_preferred_or_any_on(sources, false, 'input_boolean.force_preferred_source_kitchen') or 'aggregate' }}
-        selection_mode: >-
-          {{ 'preferred' if is_state('input_boolean.force_preferred_source_kitchen','on') else 'aggregate_any_on' }}
+          {{ pick_preferred_or_any_on(sources) or 'aggregate' }}
         source_count: "3"
         timeout: >-
           {{ ["number.kitchen_occupancy_alpha_occupancy_timeout"] | tojson }}
