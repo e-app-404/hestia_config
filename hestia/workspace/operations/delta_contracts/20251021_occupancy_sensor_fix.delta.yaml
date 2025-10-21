@@ -23,6 +23,7 @@ risk_assessment:
   - low: config-only; rollback is file revert + reload
 
 template_entities:
+  - note: If your α entity IDs differ, swap the binary_sensor.<room>_occupancy_alpha_occupancy names accordingly.
 template:
   - binary_sensor:
       # BEDROOM
@@ -64,3 +65,14 @@ template:
           seconds: 30
         availability: >
           {{ states('binary_sensor.living_room_occupancy_alpha_occupancy') in ['on','off'] }}
+
+Zigbee2MQTT calibration (SNZB-06P model):
+  - bedroom_occupancy_alpha_occupancy
+  - ensuite_occupancy_alpha_occupancy
+  - kitchen_occupancy_alpha_occupancy
+  - living_room_occupancy_alpha_occupancy
+
+adjustments:
+  - Occupancy sensitivity: medium (bump to high only if misses occur).
+  - Occupancy timeout: 60 seconds (tune later as you like).
+  - Settings (specific) → No occupancy since: [10, 60, 300] (optional but recommended for diagnostics/advanced rules).
