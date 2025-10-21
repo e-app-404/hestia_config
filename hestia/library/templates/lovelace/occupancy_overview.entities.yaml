@@ -1,0 +1,66 @@
+# Lovelace: Occupancy Overview (Beta sensors)
+# Uses custom:multiple-entity-row within an entities card
+# Displays β occupancy sensors and selected context details for rapid debugging
+
+# Usage:
+#   - type: entities
+#     title: Occupancy Overview
+#     show_header_toggle: false
+#     entities:
+#       - !include /config/hestia/library/templates/lovelace/occupancy_overview.entities.yaml
+
+- entity: binary_sensor.kitchen_occupancy_beta
+  type: custom:multiple-entity-row
+  name: Kitchen
+  secondary_info: last-changed
+  state_color: true
+  entities:
+    - entity: binary_sensor.kitchen_occupancy_alpha_occupancy
+      name: α zigbee
+    - entity: binary_sensor.kitchen_occupancy_alpha_matter_occupancy
+      name: α matter
+    - entity: binary_sensor.kitchen_motion_recent_beta
+      name: motion_recent
+    - attribute: active_source
+      name: source
+    - attribute: selection_mode
+      name: mode
+
+- entity: binary_sensor.living_room_occupancy_beta
+  type: custom:multiple-entity-row
+  name: Living Room
+  secondary_info: last-changed
+  state_color: true
+  entities:
+    - entity: binary_sensor.living_room_occupancy_alpha_occupancy
+      name: α zigbee
+    - attribute: timeout
+      name: timeout
+      format: precision0
+
+- entity: binary_sensor.bedroom_occupancy_beta
+  type: custom:multiple-entity-row
+  name: Bedroom
+  secondary_info: last-changed
+  state_color: true
+  entities:
+    - entity: binary_sensor.bedroom_occupancy_alpha_occupancy
+      name: α zigbee
+    - entity: binary_sensor.bedroom_motion_recent_beta
+      name: motion_recent
+    - attribute: active_source
+      name: source
+
+- entity: binary_sensor.ensuite_occupancy_beta
+  type: custom:multiple-entity-row
+  name: Ensuite
+  secondary_info: last-changed
+  state_color: true
+  entities:
+    - entity: binary_sensor.ensuite_occupancy_alpha_occupancy
+      name: α zigbee
+    - entity: binary_sensor.ensuite_motion_recent_beta
+      name: motion_recent
+    - attribute: timeout
+      name: timeout
+      format: precision0
