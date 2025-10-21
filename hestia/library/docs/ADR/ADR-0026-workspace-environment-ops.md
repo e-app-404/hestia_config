@@ -27,7 +27,9 @@ tags:
 - diagnostics
 ---
 
-# 1. Context
+## ADR-0026 — Workspace Operations & Environment Management
+
+## 1. Context
 
 Operational knowledge for the HA workspace has grown organically and is fragmented across scripts, READMEs, and commit messages. Critical patterns—such as the dual virtual environment strategy, governance tooling isolation, and safety gates—exist in implementation but lack a single authoritative reference.
 
@@ -42,7 +44,7 @@ Operational knowledge for the HA workspace has grown organically and is fragment
 - CI/CD alignment
 - Diagnostics and maintenance workflows
 
-# 2. Decision
+## 2. Decision
 
 Adopt a **Workspace Operations & Environment Management** standard with the following pillars:
 
@@ -53,7 +55,7 @@ Adopt a **Workspace Operations & Environment Management** standard with the foll
 5. **Platform-aware ops**: macOS mount handling, cross-platform task shims, and VS Code tasks.
 6. **Observability & diagnostics**: Lightweight, structured evidence and standardized logs under workspace paths.
 
-# 3. Architecture Overview
+## 3. Architecture Overview
 
 ```
 /config
@@ -82,7 +84,7 @@ Adopt a **Workspace Operations & Environment Management** standard with the foll
 └── www/assets/             # web assets (e.g., worker-portal-no-store.js)
 ```
 
-# 4. Core Infrastructure
+## 4. Core Infrastructure
 
 ## 4.1 Dual Virtual Environment Strategy
 
@@ -91,7 +93,7 @@ Adopt a **Workspace Operations & Environment Management** standard with the foll
 
 **Rationale**: Prevents governance dependencies from leaking into HA runtime or add-on images; simplifies SBOM and troubleshooting.
 
-**Creation & Activation**
+### Creation & Activation
 
 ```bash
 # product/dev venv (optional for local development)
@@ -113,7 +115,7 @@ make venv  # Creates and configures .venv_ha_governance automatically
 - No scripts write to `/config` root; mutating outputs go to `hestia/workspace/{reports,archive,cache}`
 - Makefile targets are **pure interfaces** with dry-run first, APPLY gated for mutation
 
-**Reference Makefile**
+### Reference Makefile
 
 ```makefile
 VENV=.venv_ha_governance
@@ -168,7 +170,7 @@ config-validate: adr-validate template-validate
 - For HA add-ons, dependencies live in Docker image builds; **never** couple to host venvs
 - ADR linter installed separately: `pip install -e hestia/tools/utils/validators/adr_lint/[test]`
 
-# 5. Security & Secrets
+## 5. Security & Secrets
 
 ## 5.1 SSH Key Management
 
@@ -185,7 +187,7 @@ config-validate: adr-validate template-validate
 - `.venv_ha_governance` reads minimalist `.env.adr0024` for hygiene paths
 - Network credentials for diagnostics passed by env at call time; not stored
 
-# 6. Safety & Recovery
+## 6. Safety & Recovery
 
 ## 6.1 Safety Mechanisms & Validation Gates
 
@@ -202,7 +204,7 @@ config-validate: adr-validate template-validate
 - **Location**: `hestia/workspace/archive/backups/<YYYY-Www>/`
 - **Event-driven**: Automatic backups before migrations via ADR-0024 implementation
 
-**Tarball Implementation (hestia/tools/utils/backup/hestia_tarball.sh)**
+### Tarball Implementation (hestia/tools/utils/backup/hestia_tarball.sh)
 
 ```bash
 # Environment variable controls inclusion
@@ -226,7 +228,7 @@ tar -czf "$OUT_DIR/hestia_backup_$DATE.tar.gz" "${EXCLUDE_ARGS[@]}" -C "$BASE_DI
 - Each migration emits a timestamped backup in `archive/backups/<TS>.tar.gz`
 - Rollback uses `restore` target with **explicit confirmation** and validation after restore
 
-# 7. Platform Integration
+## 7. Platform Integration
 
 ## 7.1 macOS-Specific Tooling & Mounts
 
@@ -247,7 +249,7 @@ Single authoritative `.code-workspace` with:
 - watcher/search excludes for archive/cache/tmp
 - python interpreters pinned to venvs
 
-# 8. Technology Stack
+## 8. Technology Stack
 
 ## 8.1 Core Tools & Dependencies
 
@@ -265,7 +267,7 @@ Single authoritative `.code-workspace` with:
 - **Monitoring/Diagnostics**: Lightweight scripts under `hestia/tools/{system,ops,evidence}/` with evidence under `workspace/operations/reports/`
 - **Package Management**: Python entry points via `pyproject.toml` (e.g., `hestia-adr-lint`)
 
-# 9. Operational Procedures
+## 9. Operational Procedures
 
 ## 9.1 Environment Bootstrap
 
@@ -318,18 +320,18 @@ hestia-adr-lint /config/hestia/library/docs/ADR --format human
     # To: export VIRTUAL_ENV=/System/Volumes/Data/homeassistant/.venv_ha_governance
     ```
 
-* **Broken add-on deps**: Rebuild container; ensure `requirements.txt` copied into build context
-* **Schema errors**: Run `yamllint` and HA config check via `make lint config-validate`
-* **Path drift**: Run `hestia_neutralize_runner.sh` and `root_hygiene_check.sh`
-* **ADR linter issues**: Ensure installed in external venv (`~/.venv/hestia-adr`), not under `/config`
-* **Makefile target failures**: Verify `.venv_ha_governance` exists and is properly configured
+- **Broken add-on deps**: Rebuild container; ensure `requirements.txt` copied into build context
+- **Schema errors**: Run `yamllint` and HA config check via `make lint config-validate`
+- **Path drift**: Run `hestia_neutralize_runner.sh` and `root_hygiene_check.sh`
+- **ADR linter issues**: Ensure installed in external venv (`~/.venv/hestia-adr`), not under `/config`
+- **Makefile target failures**: Verify `.venv_ha_governance` exists and is properly configured
 
 ## 9.3 Maintenance & Hygiene Automation
 
 - Nightly hygiene job: root check, diagnostics snapshot, archive rotation
 - Weekly rollups under `archive/<YYYY-Www>/`
 
-# 10. Governance & Enforcement
+## 10. Governance & Enforcement
 
 ## 10.1 Root Hygiene System
 
@@ -357,13 +359,13 @@ ALLOWED_FILES="configuration.yaml scenes.yaml scripts.yaml automations.yaml cust
 - Operational PRs must include: preflight output, backup artifact link, hygiene check results
 - Binary pass/fail with machine-readable summaries
 
-# 11. Risks & Mitigations
+## 11. Risks & Mitigations
 
 - **Tool leakage into runtime** → Strict path discipline; CI guard
 - **Secrets exposure** → Vault patterns and `.env` minimization
 - **Rollback gaps** → Mandatory pre-mutation backups + manifests
 
-# 12. Acceptance Criteria (Binary)
+## 12. Acceptance Criteria (Binary)
 
 1. Two venvs exist and activate successfully; governance tools run from `.venv_ha_governance`.
 2. Makefile targets `hygiene`, `diag`, `backup`, `restore` work; `hygiene` is read-only.
@@ -371,7 +373,7 @@ ALLOWED_FILES="configuration.yaml scenes.yaml scripts.yaml automations.yaml cust
 4. Backups appear in `archive/tarballs/<YYYY-Www>/` with manifest.
 5. CI job fails on root hygiene violations.
 
-# 13. Implementation Plan
+## 13. Implementation Plan
 
 - **Phase 1**: ✅ **COMPLETED** - Governance venv + Makefile integration + hygiene scripts deployed
 - **Phase 2**: ✅ **COMPLETED** - Shell commands migration from executable scripts to declarative YAML
@@ -404,7 +406,7 @@ shell_command:
   ha_bb8_verification: "/config/hestia/tools/evidence/ha_bb8_verification.sh"
 ```
 
-# TOKEN_BLOCK
+## TOKEN_BLOCK
 
 ```yaml
 TOKEN_BLOCK:
@@ -438,7 +440,7 @@ TOKEN_BLOCK:
     - DRIFT: makefile_venv_target_missing
 ```
 
-# 14. References
+## 14. References
 
 - ADR-0009 Governance format
 - ADR-0024 Canonical paths & workspace hygiene
