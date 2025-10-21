@@ -137,7 +137,7 @@ or as an object with one or more of the options listed below.
 
 ## Examples
 
-![multiple-entity-row](https://raw.githubusercontent.com/benct/lovelace-multiple-entity-row/master/example.png)
+![multiple-entity-row](image-2.png)
 
 ```yaml
 type: entities
@@ -309,13 +309,3 @@ entities:
           width: 80px
           text-align: left
 ```
-
-## My cards
-
-[xiaomi-vacuum-card](https://github.com/benct/lovelace-xiaomi-vacuum-card) |
-[multiple-entity-row](https://github.com/benct/lovelace-multiple-entity-row) |
-[github-entity-row](https://github.com/benct/lovelace-github-entity-row) |
-[battery-entity-row](https://github.com/benct/lovelace-battery-entity-row) |
-[~~attribute-entity-row~~](https://github.com/benct/lovelace-attribute-entity-row)
-
-[![BMC](https://www.buymeacoffee.com/assets/img/custom_images/white_img.png)](https://www.buymeacoff.ee/benct)
