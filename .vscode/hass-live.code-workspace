@@ -100,4 +100,4 @@
         "terminal.integrated.splitCwd": "workspaceRoot"
     }
 }
-        "**/scripts.yaml",
+
