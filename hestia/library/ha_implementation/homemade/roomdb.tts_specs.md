@@ -391,7 +391,7 @@ T+610s: Call 3 → PLAY (cooldown expired)
 
 ### 9.1 View Registry State
 
-How to run: copy and paste template snippet into Home Assistant Developer Tools → Template section.
+How to use: copy and paste template snippet into Home Assistant Developer Tools → Template section.
 
 ```jinja
 {% set payload = state_attr('sensor.room_configs_shared_registry_dict', 'payload') %}
@@ -400,8 +400,10 @@ How to run: copy and paste template snippet into Home Assistant Developer Tools 
 
 ### 9.2 Manual Prune Old Keys
 
+How to use: copy and paste template snippet into Home Assistant Developer Tools → Actions section.
+
 ```yaml
-service: rest_command.room_db_update_config
+action: rest_command.room_db_update_config
 data:
   room_id: "tts_gate_registry"
   domain: "shared"
@@ -412,8 +414,10 @@ data:
 ```
 
 ### 9.3 Check Specific Key
+
+How to use: copy and paste template snippet into Home Assistant Developer Tools → Template section.
+
 ```yaml
-# Developer Tools → Template
 {% set payload = state_attr('sensor.room_configs_shared_registry_dict', 'payload') %}
 {% set reg = payload.get('tts_gate_registry', {}) if payload else {} %}
 {{ reg.get('your_key_here', 'NOT_FOUND') }}
@@ -422,6 +426,7 @@ data:
 ## 10. SCHEMA REFERENCE
 
 ### 10.1 REST Command Payload
+
 ```json
 {
   "room_id": "tts_gate_registry",
@@ -440,6 +445,7 @@ data:
 ```
 
 ### 10.2 Registry Entry
+
 ```json
 {
   "last_ts": 1729440000.123,
@@ -450,6 +456,7 @@ data:
 ```
 
 ### 10.3 Sensor Attributes
+
 ```yaml
 sensor.tts_gate_registry_status:
   state: 5  # Number of keys
@@ -461,6 +468,7 @@ sensor.tts_gate_registry_status:
 ## 11. BEST PRACTICES
 
 ### 11.1 Key Naming
+
 ```yaml
 ✅ GOOD:
   - "ha_startup"
@@ -474,7 +482,14 @@ sensor.tts_gate_registry_status:
   - user-generated strings  # Risk of collision
 ```
 
-### 11.2 Cooldown Selection
+### 11.2 Recommended Settings
+
+| Use Case   | Setting | Recommended value  | Description |
+| Cooldown   | System Events | 300s (5 minutes) | Startup, shutdown, service changes |
+| Cooldown   | Maintenance | 3600s (1 hour) | Cleanup tasks, backups, updates |
+| Cooldown   | Alerts | 900s (15 minutes) | Non-critical notifications |
+| Volume Lvl | 0s (bypass) | Urgent alerts that must always play |
+|            |                     |                             |
 ```yaml
 System events:      300s (5 minutes)
 Maintenance:        3600s (1 hour)
