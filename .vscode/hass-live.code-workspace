@@ -1,6 +1,9 @@
 {
   "folders": [
-    { "path": ".." }  // parent of .vscode == /config (full tree)
+    {
+      "path": "..",
+      "name": "Home Assistant | SSH Live Config"
+      }
   ],
   "settings": {
     "explorer.excludeGitIgnore": false,
