@@ -17,13 +17,16 @@ last_updated: 2025-10-21
 # backup_sweeper — operator guide
 
 ## What it does
-- Orchestrates a 5-component cleanup pipeline to enforce workspace hygiene and retention:
+
+Orchestrates a 5-component cleanup pipeline to enforce workspace hygiene and retention:
+
   1) `index.py` — discover files and classify by patterns
   2) `naming_convention.py` — enforce naming rules and standardize
   3) `sweeper.py` — apply TTL and lifecycle deletions/moves
   4) `vault_warden.py` — prune vault artifacts by group/keep-N policy
   5) `sweeper_report.py` — emit comprehensive report and health score
-- Produces structured reports and updates a reports index for monitoring.
+
+
 
 ## When to use it
 - Routine workspace maintenance (scheduled or ad-hoc).
