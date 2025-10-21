@@ -6,6 +6,9 @@
     "explorer.excludeGitIgnore": false,
     "files.exclude": {},
     "search.exclude": {},
-    "files.watcherExclude": {}
+    "files.watcherExclude": {},
+    "files.associations": {
+      "*.yaml": "home-assistant"
+    }
   }
 }
