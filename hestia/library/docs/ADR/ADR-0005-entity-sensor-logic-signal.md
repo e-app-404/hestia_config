@@ -120,3 +120,14 @@ Defines all signal sources, their domain, class, emitter score, confidence, and 
 
 ## 6. Last updated
 _Last updated: 2025-09-11_
+
+
+## Token Blocks
+
+```yaml
+TOKEN_BLOCK:
+	accepted:
+		- ENTITY_SIGNAL_CONTRACT_DEFINED
+	requires:
+		- ADR_SCHEMA_V1
+```

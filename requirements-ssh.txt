@@ -34,6 +34,7 @@ cryptography==46.*
 colorama==0.4.*
 requests==2.*
 toml==0.10.*
+ripgrep==15.0.*
 
 # Additional dev tools (unpinned)
 pip-tools

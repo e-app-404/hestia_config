@@ -38,3 +38,13 @@ tags:
 ...
 
 ---
+
+## Token Blocks
+
+```yaml
+TOKEN_BLOCK:
+	accepted:
+		- TEMPLATE_OK
+	requires:
+		- ADR_SCHEMA_V1
+```

@@ -180,3 +180,19 @@ recorder:
 
 - Keep OOM guard in `packages/package_oom_guard.yaml` with unique IDs; guard CI ensures no duplicates are introduced.
 - The documentation mirror at `packages/recorder_policy.yaml` remains fully commented to avoid duplicate keys.
+
+## Token Blocks
+
+```yaml
+TOKEN_BLOCK:
+  accepted:
+    - RECORDER_SINGLE_BLOCK_OK
+    - OOM_SENTINEL_PRESENT
+    - YAML_SYNTAX_OK
+  requires:
+    - ADR_SCHEMA_V1
+  drift:
+    - DRIFT: duplicate_recorder_blocks
+    - DRIFT: oom_guard_missing
+    - DRIFT: yaml_syntax_error
+```

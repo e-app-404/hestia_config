@@ -58,6 +58,16 @@ Home Assistant entity architecture benefits from a tiered model to organize, val
 
 ## 2. Decision
 The following canonical tiers are defined:
+ 
+## Token Blocks
+
+```yaml
+TOKEN_BLOCK:
+  accepted:
+    - TIER_CONTRACT_DEFINED
+  requires:
+    - ADR_SCHEMA_V1
+```
 
 ### α: Signal Plane Tier
 - **Symbol:** α

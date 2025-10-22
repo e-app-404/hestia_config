@@ -692,3 +692,13 @@ Before merging this addendum:
 **Document Status:** Proposed for review  
 **Next Review Date:** 2025-11-01  
 **Effective Date:** Upon approval and merge into ADR-0004 v2.0
+
+## Token Blocks
+
+```yaml
+TOKEN_BLOCK:
+  accepted:
+    - AREA_CONTRACT_DEFINED
+  requires:
+    - ADR_SCHEMA_V1
+```

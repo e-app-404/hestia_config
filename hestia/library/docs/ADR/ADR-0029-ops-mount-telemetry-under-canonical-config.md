@@ -146,3 +146,21 @@ Temporary allowance: `/homeassistant -> /config` symlink may be enabled to maint
 * VS Code/devcontainer/compose/CI mounting to `/config`.
 * Spotlight & watcher behavior on network share.
 * Backout and recovery procedures.
+
+## Token Blocks
+
+```yaml
+TOKEN_BLOCK:
+  accepted:
+    - CANONICAL_CONFIG_PATH_OK
+    - LAUNCHAGENT_MOUNT_OK
+    - KEYCHAIN_TRUST_OK
+    - TELEMETRY_LOCAL_OK
+  requires:
+    - ADR_0024
+    - ADR_SCHEMA_V1
+  drift:
+    - DRIFT: mount_on_/config
+    - DRIFT: interactive_auth_prompt
+    - DRIFT: telemetry_missing_or_unbounded
+```
