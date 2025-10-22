@@ -8,12 +8,14 @@ author: "e-app-404"
 context: production
 amends:
   - ADR-0024
-last_updated: 2025-10-20
 decision: "Operationalize ADR-0024 on macOS using synthetic mapping, LaunchAgent mounts, Keychain-backed SMB auth, and local-only mount telemetry."
 date: 2025-10-20
 related:
   - ADR-0024
 last_updated: 2025-10-22
+supersedes: []
+
+---
 
 # 1) Decision
 

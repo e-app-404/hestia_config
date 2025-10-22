@@ -1,3 +1,4 @@
+---
 id: ADR-0031
 title: Hestia Architectural Doctrine — Config-Centric Tooling (TOML-first)
 slug: hestia-architectural-doctrine-config-centric-tooling-toml-first

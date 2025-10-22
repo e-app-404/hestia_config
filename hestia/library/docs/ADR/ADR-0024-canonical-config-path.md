@@ -4,11 +4,8 @@ title: "Canonical Home Assistant Config Path (Single-Source-of-Truth)"
 slug: canonical-config-path
 status: Implemented
 related:
-- ADR-0029: Operational companion. See ADR-0029 for macOS mount & telemetry implementation details.
-supersedes:
-  - ADR-0016
-  - ADR-0010
-  - ADR-0012
+  - ADR-0029
+supersedes: []
 date: 2025-10-05
 decision:
   "The canonical and only supported Home Assistant configuration root is `/config` across all environments (Home Assistant Host/Supervisor/Core, macOS operator workstation, containers, and CI/CD including GitHub Actions)."
@@ -22,7 +19,7 @@ superseded_by: null
 implementation_notes:
   "Successfully implemented using macOS synthetic.conf entries. Current setup uses symlink fallback
   (functional equivalent). All development workflows operational and validated."
-last_updated: 2025-10-21
+last_updated: 2025-10-22
 ---
 
 ## Table of Contents
@@ -529,6 +526,21 @@ else
 fi
 
 echo "OK: path lint passed"
+```
+
+## Token Blocks
+
+```yaml
+TOKEN_BLOCK:
+  accepted:
+    - CANONICAL_CONFIG_PATH_OK
+    - PATH_LINTER_GUARDS_OK
+    - CONFIG_HEALTH_OK
+  requires:
+    - ADR_SCHEMA_V1
+  drift:
+    - DRIFT: legacy_path_reference
+    - DRIFT: dual_mounts_detected
 ```
 
 **bin/config-health (Path Health Validator)**

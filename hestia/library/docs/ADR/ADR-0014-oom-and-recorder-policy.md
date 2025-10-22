@@ -4,6 +4,7 @@ title: OOM Mitigation & Recorder Policy
 slug: oom-mitigation-recorder-policy
 status: Accepted
 related: []
+supersedes: []
 last_updated: '2025-10-22'
 date: 2025-09-18
 decision: Adopt a **single, canonical recorder configuration** with short retention

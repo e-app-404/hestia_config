@@ -240,4 +240,14 @@ var: !include_dir_merge_named domain/variables/
 - Primary: motion, occupancy, presence, illuminance
 - Policy: presence_not_gate, no_alpha_fallbacks_in_packages
 - Blueprint: sensor-light.yaml_inputs, eta_group_targets
-- Tokens: SIGNAL_ARCHITECTURE_CONTRACT_OK, ADR_SCHEMA_V1
+
+```yaml
+TOKEN_BLOCK:
+  accepted:
+    - SIGNAL_ARCHITECTURE_CONTRACT_OK
+  requires:
+    - ADR_SCHEMA_V1
+  drift:
+    - DRIFT_missing_beta_composites
+    - DRIFT_presence_used_as_gate
+```

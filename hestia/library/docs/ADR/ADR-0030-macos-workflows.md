@@ -1,3 +1,4 @@
+---
 id: ADR-0030
 title: macOS Finder Workflows Implementation
 slug: macos-finder-workflows
@@ -14,6 +15,7 @@ decision: Workspace maintenance, ops and procedures will be accompanied by compl
 author: "GitHub Copilot"
 tags: ["implementation", "workflows", "macos", "finder", "adr-0030", "automation", "governance", "documentation"]
 last_updated: 2025-10-22
+---
 
 # ADR-0030 macOS Finder Workflows - Implementation Guide
 

@@ -6,6 +6,7 @@ status: Accepted
 related:
   - ADR-0002
   - ADR-0009
+supersedes: []
 date: 2025-09-30
 decision: Create a systematic approach to configuration error management with three components.
 author: Strategos GPT
@@ -19,7 +20,7 @@ last_updated: 2025-10-22
 
 # ADR-0020 — Home Assistant Configuration Error Canonicalization
 
-> Establish a centralized, machine-readable repository of common Home Assistant configuration errors with proven detection methods and automated fixes to prevent recurring issues and improve configuration reliability.
+> note: *This ADR establishes systematic approach to configuration error management, starting with Jinja template patterns and expanding to comprehensive HA configuration reliability.*
 
 ## Context
 
@@ -32,6 +33,8 @@ Home Assistant configurations grow complex over time, leading to recurring patte
 The recent discovery of Jinja macro whitespace control issues exemplifies this problem: macros returning empty strings due to missing `{%-` and `-%}` whitespace control, which is difficult to debug through normal HA validation.
 
 ## Decision
+
+Establish a centralized, machine-readable repository of common Home Assistant configuration errors with proven detection methods and automated fixes to prevent recurring issues and improve configuration reliability.
 
 Create a systematic approach to configuration error management with three components:
 
@@ -186,34 +189,20 @@ Per ADR-0009 requirements:
 - **2025-09-30**: Initial ADR creation with Jinja whitespace control pattern
 - **2025-09-30**: Implemented tooling enhancements and Make target integration
 
----
-
-*This ADR establishes systematic approach to configuration error management, starting with Jinja template patterns and expanding to comprehensive HA configuration reliability.*
-
-## Token Block
-
-```yaml
-TOKEN_BLOCK:
-  accepted:
-    - ERROR_CANONICALIZATION_CONTRACT_OK
-  requires:
-    - ADR_SCHEMA_V1
-  drift:
-    - DRIFT: pattern_db_missing
-    - DRIFT: patcher_not_integrated
-```
-
 ## Token Blocks
 
 ```yaml
 TOKEN_BLOCK:
   accepted:
+    - ERROR_CANONICALIZATION_CONTRACT_OK
     - ERROR_PATTERN_DB_PRESENT
     - TEMPLATE_PATCHER_ENABLED
     - CI_GUARDS_ACTIVE
   requires:
     - ADR_SCHEMA_V1
   drift:
+    - DRIFT: pattern_db_missing
+    - DRIFT: patcher_not_integrated
     - DRIFT: missing_error_patterns
     - DRIFT: patcher_disabled
     - DRIFT: ci_validation_missing
