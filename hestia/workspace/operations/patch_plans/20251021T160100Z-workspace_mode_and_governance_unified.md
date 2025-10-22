@@ -1,6 +1,6 @@
 ### Patch Plan — Workspace Mode Detection & SSH-First Governance
 
-Status: proposed
+Status: in-progress
 Owner: e-app-404
 Agent: copilot
 Created: 2025-10-21T16:01:00Z
