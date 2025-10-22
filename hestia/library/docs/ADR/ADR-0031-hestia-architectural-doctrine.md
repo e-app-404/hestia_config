@@ -326,7 +326,6 @@ This turns a niche script into a **first-class governed tool** that benefits fro
 
 This doctrine lets any machine-operator build **complementary, governed** tooling that plugs into Hestia’s ecosystem with minimal friction and maximum safety.
 
-<!-- TOKEN_BLOCK: ADR-0031 | doctrine | toml-first | tooling -->
 ## 12. Token Block
 
 ```yaml

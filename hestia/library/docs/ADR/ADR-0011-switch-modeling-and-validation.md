@@ -5,7 +5,6 @@ slug: switch-modeling-validation-netgear-gs724t-v3-and-similar
 status: Accepted
 related: []
 supersedes: []
-last_updated: '2025-10-22'
 date: 2025-09-12
 decision: Adopt a canonical **Switch Model** with deterministic artifacts and strict
   validation. Treat the Netgear backup as the source of truth, transformed into normalized
@@ -24,6 +23,7 @@ tags:
 author:
 - Platform / Home-Ops
 - GitHub Copilot (assisted)
+last_updated: 2025-10-22
 ---
 
 # ADR-0011: Switch Modeling & Validation (Netgear GS724T v3 and Similar)

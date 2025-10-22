@@ -159,5 +159,10 @@ tar --sort=name
 - Tarball SHA256 stable across two consecutive builds with identical inputs
 - `manifest.sha256` verifies 100%
 
+## TOKEN_BLOCK
+
+```yaml
 TOKEN_BLOCK:
-signals: - TOKEN_BLOCK_OK
+  accepted: 
+    - TOKEN_BLOCK_OK
+```

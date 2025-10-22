@@ -5,7 +5,6 @@ slug: metagovernance-patterns-and-schema-definitions-contract
 status: Accepted
 related: []
 supersedes: []
-last_updated: '2025-10-15'
 date: 2025-09-11
 decision: '### Included Artifacts - `system_instruction.yaml` - `design_patterns.md`
   - `prompt_registry.md` - `metadata_schema.yaml` - `hades_config_index.yaml` - All
@@ -19,6 +18,7 @@ tags:
 - schema
 references:
 - docs/poa/architecture/POA-metadata-schema.md
+last_updated: 2025-10-21
 ---
 
 # ADR-0007: Meta/Governance Patterns and Schema Definitions Contract
@@ -59,8 +59,6 @@ This ADR formalizes the canonical meta and governance patterns, including schema
 ## 4. Tokens
 - `doctrine`, `pattern`, `schema`, `prompt`, `validation_rule`, `meta_instruction`, `index`, `governance_tag`
 
-_Last updated: 2025-09-11_
-
 ## Token Block
 
 ```yaml
@@ -73,3 +71,5 @@ TOKEN_BLOCK:
     - DRIFT: schema_out_of_sync
     - DRIFT: governance_tokens_missing
 ```
+
+_Last updated: 2025-09-21_

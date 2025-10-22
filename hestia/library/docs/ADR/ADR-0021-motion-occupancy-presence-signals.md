@@ -5,7 +5,7 @@ slug: motion-occupancy-and-presence-signal-architecture-beta-abstractions
 status: Accepted
 related: []
 supersedes: []
-last_updated: '2025-10-15'
+last_updated: '2025-10-22'
 date: 2025-10-03
 decision: 'Hestia’s lighting automations historically referenced **raw (alpha-tier)**
   device entities (e.g., PIRs, cameras). This created brittleness: false-offs during
@@ -234,3 +234,10 @@ var: !include_dir_merge_named domain/variables/
 * Hestia blueprints: `hestia/library/templates/blueprints/`
 * Variables pattern: `domain/variables/*.yaml`
 * Packages path: `packages/motion_lights/`
+
+## Token Blocks
+
+- Primary: motion, occupancy, presence, illuminance
+- Policy: presence_not_gate, no_alpha_fallbacks_in_packages
+- Blueprint: sensor-light.yaml_inputs, eta_group_targets
+- Tokens: SIGNAL_ARCHITECTURE_CONTRACT_OK, ADR_SCHEMA_V1

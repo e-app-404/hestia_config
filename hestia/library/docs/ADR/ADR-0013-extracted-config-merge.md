@@ -328,7 +328,3 @@ TOKEN_BLOCK:
     - DRIFT: missing_diff_artifact
     - DRIFT: adr0009_noncompliant
 ```
-
-```
-::contentReference[oaicite:0]{index=0}
-```
