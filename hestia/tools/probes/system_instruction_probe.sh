@@ -1,6 +1,88 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# System Instruction Probe — writes diagnostics to /config/hestia/reports/<YYYY-MM-DD>/system_instruction_probe/
+# ADR refs: ADR-0024 (canonical /config), ADR-0027 (write governance logs), ADR-0009 (reporting)
+
+UTC_TS=$(date -u +%Y%m%dT%H%M%SZ)
+OUT_DAY=$(date +%F)
+OUTDIR="/config/hestia/reports/${OUT_DAY}/system_instruction_probe"
+mkdir -p "${OUTDIR}"
+
+SUMMARY_JSON="${OUTDIR}/${UTC_TS}__summary.json"
+ENV_LOG="${OUTDIR}/${UTC_TS}__env.log"
+MODE_LOG="${OUTDIR}/${UTC_TS}__workspace_mode.json"
+HEALTH_LOG="${OUTDIR}/${UTC_TS}__config-health.log"
+YAML_LOG="${OUTDIR}/${UTC_TS}__config-validate.log"
+GIT_LOG="${OUTDIR}/${UTC_TS}__git-status.log"
+
+probe_status() {
+  local name=$1 code=$2
+  printf '  %-28s : %s\n' "$name" "$([ "$code" -eq 0 ] && echo PASS || echo FAIL)"
+}
+
+# Collect environment details
+{
+  echo "UTC_TS=${UTC_TS}"
+  echo "DATE_LOCAL=$(date)"
+  echo "UNAME=$(uname -a)"
+  echo "ID=$(id)"
+  command -v python3 >/dev/null 2>&1 && python3 --version || true
+  command -v node >/dev/null 2>&1 && node --version || true
+  echo "PWD=$(pwd)"
+} >"${ENV_LOG}" 2>&1 || true
+
+# Capture workspace mode info if present
+if [ -f "/config/.vscode/workspace_mode.json" ]; then
+  cp -f "/config/.vscode/workspace_mode.json" "${MODE_LOG}" || true
+fi
+
+# Run health checks
+HEALTH_RC=0
+if [ -x "/config/bin/config-health" ]; then
+  "/config/bin/config-health" "/config" >"${HEALTH_LOG}" 2>&1 || HEALTH_RC=$?
+else
+  echo "config-health not found" >"${HEALTH_LOG}"
+fi
+
+YAML_RC=0
+if [ -x "/config/bin/config-validate" ]; then
+  "/config/bin/config-validate" "/config" >"${YAML_LOG}" 2>&1 || YAML_RC=$?
+else
+  echo "config-validate not found" >"${YAML_LOG}"
+fi
+
+# Git snapshot (non-destructive)
+{
+  git rev-parse --abbrev-ref HEAD || true
+  git rev-parse HEAD || true
+  git status -sb || true
+} >"${GIT_LOG}" 2>&1 || true
+
+# Summary JSON
+cat >"${SUMMARY_JSON}" <<EOF
+{
+  "timestamp_utc": "${UTC_TS}",
+  "outdir": "${OUTDIR}",
+  "logs": {
+    "env": "$(basename "$ENV_LOG")",
+    "workspace_mode": "$(basename "$MODE_LOG")",
+    "config_health": "$(basename "$HEALTH_LOG")",
+    "config_validate": "$(basename "$YAML_LOG")",
+    "git_status": "$(basename "$GIT_LOG")"
+  },
+  "results": {
+    "config_health": ${HEALTH_RC},
+    "config_validate": ${YAML_RC}
+  }
+}
+EOF
+
+echo "Probe complete: OUTDIR=${OUTDIR} TS=${UTC_TS}"
+echo "Health: $( [ "$HEALTH_RC" -eq 0 ] && echo PASS || echo FAIL ), YAML: $( [ "$YAML_RC" -eq 0 ] && echo PASS || echo FAIL )"
+#!/usr/bin/env bash
+set -euo pipefail
+
 # System Instruction Probe
 # Writes outputs under /config/hestia/reports/<YYYY-MM-DD>/system_instruction_probe/<UTC_TS>/
 # Captures environment, git status, and local validation results.
