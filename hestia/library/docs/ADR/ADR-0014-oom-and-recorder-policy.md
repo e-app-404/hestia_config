@@ -3,12 +3,8 @@ id: ADR-0014
 title: OOM Mitigation & Recorder Policy
 slug: oom-mitigation-recorder-policy
 status: Accepted
-related:
-- ADR-0010
-- ADR-0012
-supersedes:
-- ADR-0014.v1
-last_updated: '2025-10-15'
+related: []
+last_updated: '2025-10-22'
 date: 2025-09-18
 decision: Adopt a **single, canonical recorder configuration** with short retention
   and strict excludes, enforce **OOM sentinel**, and implement **repo-level guardrails**

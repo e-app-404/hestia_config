@@ -14,7 +14,13 @@ references:
   - ADR-0024-canonical-config-path
   - ADR-0027-file-writing-governance
 ledger: hestia/workspace/operations/logs/patch-ledger.jsonl
-last_updated: 2025-10-21
+last_updated: 2025-10-22
+related:
+  - ADR-0009
+  - ADR-0018
+  - ADR-0024
+  - ADR-0027
+supersedes: []
 ---
 
 ## ADR-0032 — Patch Operation Workflow (Todos, Staging, Patches, Plans, Ledger)
@@ -127,7 +133,29 @@ Notes:
 
 ## Token Blocks
 
-<!-- TODO insert token block -->
+```yaml
+TOKEN_BLOCK:
+  accepted:
+    - PATCH_TODO_CREATED
+    - PATCH_STAGED_ARTIFACT
+    - PATCH_LEDGER_APPENDED
+    - PATCH_PLAN_LINKED
+    - PATCH_MIGRATED_TO_PERSISTENT
+  requires:
+    - ADR_SCHEMA_V1
+    - ADR_0009_COMPLIANCE
+    - GOVERNED_WRITES_ADR_0027
+  produces:
+    - TODO_ARTIFACT
+    - STAGING_ARTIFACT
+    - PATCH_LEDGER_ENTRY
+    - PATCH_PLAN
+  drift:
+    - DRIFT: missing_todo
+    - DRIFT: missing_ledger_entry
+    - DRIFT: untracked_staging_artifact
+    - DRIFT: direct_runtime_write_bypassing_broker
+```
 
 ## References
 

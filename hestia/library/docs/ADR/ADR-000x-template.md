@@ -1,5 +1,4 @@
----
-id: ADR-000x
+id: ADR-0000
 title: Example Policy
 slug: example-policy
 status: Draft

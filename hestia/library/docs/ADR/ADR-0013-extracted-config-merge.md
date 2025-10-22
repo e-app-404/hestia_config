@@ -1,16 +1,14 @@
 ---
 id: ADR-0013
 title: Source→Core Config Merge via extracted_config (Meta-Capture Pipeline)
-slug: sourcecore-config-merge-via-extracted_config-meta-capture-pipeline
+slug: source-core-config-merge-via-extracted-config-meta-capture-pipeline
 status: Accepted
 related:
 - ADR-0007
 - ADR-0008
 - ADR-0009
-- ADR-0010
-- ADR-0016
 supersedes: []
-last_updated: '2025-10-15'
+last_updated: '2025-10-22'
 date: 2025-09-20
 decision: Adopt a deterministic, token-guided merge pipeline for captured config snippets
   into canonical core configuration, ensuring idempotency, auditability, and safety.

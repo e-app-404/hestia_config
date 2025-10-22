@@ -42,7 +42,7 @@ last_updated: 2025-10-21
 
 ## 1. Decision
 
-decision: 'Establish /config as the single canonical Home Assistant configuration mount, blocking dual SMB mounts and legacy path aliases for operational simplicity.' All tools, scripts, documentation, examples, and templates **MUST** reference `/config` as the Home Assistant root. Any other path names (e.g., `~/hass`, `/homeassistant`, `/n/ha`, `/Volumes/HA/Config`, actions-runner workdirs) are considered implementation details and **MUST NOT** appear in application logic or normative documentation.
+Establish /config as the single canonical Home Assistant configuration mount, blocking dual SMB mounts and legacy path aliases for operational simplicity. All tools, scripts, documentation, examples, and templates **MUST** reference `/config` as the Home Assistant root. Any other path names (e.g., `~/hass`, `/homeassistant`, `/n/ha`, `/Volumes/HA/Config`, actions-runner workdirs) are considered implementation details and **MUST NOT** appear in application logic or normative documentation.
 
 ## 2. Status & Rationale
 

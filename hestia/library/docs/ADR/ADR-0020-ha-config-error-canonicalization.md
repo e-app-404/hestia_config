@@ -4,11 +4,8 @@ title: Home Assistant Configuration Error Canonicalization
 slug: home-assistant-configuration-error-canonicalization
 status: Accepted
 related:
-- ADR-0002 (Jinja patterns)
-- ADR-0009 (ADR governance formatting)
-- ADR-0016 (Canonical HA edit root)
-supersedes:
-- None
+  - ADR-0002
+  - ADR-0009
 date: 2025-09-30
 decision: Create a systematic approach to configuration error management with three components.
 author: Strategos GPT
@@ -17,7 +14,7 @@ references:
 - Template fixing tools: hestia/tools/template_patcher/
 - Macro library: custom_templates/template.library.jinja
 - Git hooks for validation: .githooks/pre-commit
-last_updated: 2025-10-21
+last_updated: 2025-10-22
 ---
 
 # ADR-0020 — Home Assistant Configuration Error Canonicalization

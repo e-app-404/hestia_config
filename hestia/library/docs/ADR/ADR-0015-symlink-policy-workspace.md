@@ -8,12 +8,10 @@ related:
 - ADR-0004
 - ADR-0008
 - ADR-0009
-- ADR-0010
-- ADR-0012
 - ADR-0013
 - ADR-0014
 supersedes: []
-last_updated: '2025-10-15'
+last_updated: '2025-10-22'
 date: 2025-09-21
 decision: Disallow symlinks in the HA runtime configuration tree, require direct imports
   for HA-loaded artifacts, allow symlinks only in designated non-runtime areas with
