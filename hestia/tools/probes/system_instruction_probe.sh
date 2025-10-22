@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -Eeuo pipefail
+set -euo pipefail
 
 # System Instruction Probe
 # Writes outputs under /config/hestia/reports/<YYYY-MM-DD>/system_instruction_probe/<UTC_TS>/
@@ -82,17 +82,21 @@ YAML_LOG="$OUTDIR/yaml_validate.log"
 PH_EXIT=0
 YAML_EXIT=0
 
+set +e
 if [ -x "$ROOT/bin/config-health" ]; then
-  if "$ROOT/bin/config-health" "$ROOT" >"$PH_LOG" 2>&1; then PH_EXIT=0; else PH_EXIT=$?; fi
+  "$ROOT/bin/config-health" "$ROOT" >"$PH_LOG" 2>&1
+  PH_EXIT=$?
 else
   echo "config-health not found at $ROOT/bin/config-health" >"$PH_LOG"; PH_EXIT=127
 fi
 
 if [ -x "$ROOT/bin/config-validate" ]; then
-  if "$ROOT/bin/config-validate" "$ROOT" >"$YAML_LOG" 2>&1; then YAML_EXIT=0; else YAML_EXIT=$?; fi
+  "$ROOT/bin/config-validate" "$ROOT" >"$YAML_LOG" 2>&1
+  YAML_EXIT=$?
 else
   echo "config-validate not found at $ROOT/bin/config-validate" >"$YAML_LOG"; YAML_EXIT=127
 fi
+set -e
 
 echo "$PH_EXIT" >"${PH_LOG%.log}.status"
 echo "$YAML_EXIT" >"${YAML_LOG%.log}.status"
