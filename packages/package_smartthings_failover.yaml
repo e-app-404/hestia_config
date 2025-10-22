@@ -34,8 +34,8 @@ group:
       # Active SmartThings entities verified in live system
       - binary_sensor.living_room_multipurpose_alpha_motion
       - media_player.bedroom_tv_alpha
-      - sensor.bedroom_illuminance_wifi_alpha_brightness_intensity
-      - sensor.bedroom_illuminance_wifi_alpha_illuminance
+      - sensor.bedroom_illuminance_alpha_brightness_intensity
+      - sensor.bedroom_illuminance_alpha_illuminance
       - sensor.bedroom_tv_alpha_energy
       - sensor.bedroom_tv_alpha_energy_difference
       - sensor.bedroom_tv_alpha_energy_saved

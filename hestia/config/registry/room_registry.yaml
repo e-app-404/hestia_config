@@ -476,7 +476,7 @@ _rooms:
             integration: plant
             device_name: Monstera
             model: Monstera deliciosa variegata
-          - entity_id: sensor.bedroom_illuminance_wifi_alpha_illuminance
+          - entity_id: sensor.bedroom_illuminance_alpha_illuminance
             integration: smartthings
             device_name: bedroom_illuminance_alpha
             manufacturer: Samsung Electronics
