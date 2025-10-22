@@ -190,6 +190,19 @@ Per ADR-0009 requirements:
 
 *This ADR establishes systematic approach to configuration error management, starting with Jinja template patterns and expanding to comprehensive HA configuration reliability.*
 
+## Token Block
+
+```yaml
+TOKEN_BLOCK:
+  accepted:
+    - ERROR_CANONICALIZATION_CONTRACT_OK
+  requires:
+    - ADR_SCHEMA_V1
+  drift:
+    - DRIFT: pattern_db_missing
+    - DRIFT: patcher_not_integrated
+```
+
 ## Token Blocks
 
 ```yaml

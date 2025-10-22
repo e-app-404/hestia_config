@@ -2,10 +2,10 @@
 id: ADR-0011
 title: Switch Modeling & Validation (Netgear GS724T v3 and Similar)
 slug: switch-modeling-validation-netgear-gs724t-v3-and-similar
-status: Approved
+status: Accepted
 related: []
 supersedes: []
-last_updated: '2025-10-15'
+last_updated: '2025-10-22'
 date: 2025-09-12
 decision: Adopt a canonical **Switch Model** with deterministic artifacts and strict
   validation. Treat the Netgear backup as the source of truth, transformed into normalized
@@ -198,3 +198,17 @@ snmp = v2c(ro, community=public, src=192.168.0.129)
 - `ports.csv`, `vlans.conf`, `switch.conf` mutually consistent
 - Relationship graph extended with `vlan` and `port` nodes and edges (`tagged_on`, `untagged_on`)
 - Reproducible tarball SHA256 recorded; manifest verification passes 100%
+
+## Token Block
+
+```yaml
+TOKEN_BLOCK:
+  accepted:
+    - SWITCH_MODEL_NORMALIZED
+    - VALIDATION_ARTIFACTS_PRESENT
+  requires:
+    - ADR_SCHEMA_V1
+  drift:
+    - DRIFT: inconsistent_vlan_port_mapping
+    - DRIFT: missing_validation_outputs
+```

@@ -1,6 +1,5 @@
----
 id: ADR-0031
-title: ADR-0031: Hestia Architectural Doctrine — Config-Centric Tooling (TOML-first)
+title: Hestia Architectural Doctrine — Config-Centric Tooling (TOML-first)
 slug: hestia-architectural-doctrine-config-centric-tooling-toml-first
 status: Accepted
 related:
@@ -16,7 +15,7 @@ date: 2025-10-20
 decision: Formalize TOML-first, config-centric doctrine for all Hestia tools; require dynamic path resolution, dry-run/apply, governed writes, and canonical reporting/ledger structure.
 author: Strategos (Executive Project Strategist)
 tags: ["doctrine", "config-centric", "toml", "governance", "automation", "hestia", "development", "tools"]
-last_updated: 2025-10-21
+last_updated: 2025-10-22
 ---
 
 ## ADR-0031: Hestia Architectural Doctrine — Config-Centric Tooling (TOML-first)

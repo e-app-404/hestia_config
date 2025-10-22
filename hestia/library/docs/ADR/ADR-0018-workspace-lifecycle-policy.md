@@ -1,6 +1,6 @@
 ---
 id: ADR-0018
-title: "ADR-0018: Workspace hygiene, lifecycle & quarantine policy"
+title: "Workspace hygiene, lifecycle & quarantine policy"
 slug: workspace-hygiene-lifecycle-quarantine-policy
 status: "Accepted"
 related:
@@ -9,7 +9,7 @@ related:
 - ADR-0024
 - ADR-0027
 supersedes: []
-last_updated: '2025-10-15'
+last_updated: '2025-10-22'
 date: '2025-09-26'
 decision: Architectural decision documented in this ADR.
 owners:

@@ -1,20 +1,19 @@
----
 id: ADR-0030
-title:  macOS Finder Workflows Implementation
+title: macOS Finder Workflows Implementation
 slug: macos-finder-workflows
-status: Reference
+status: Accepted
 related:
-- ADR-0030: Workspace hygiene, lifecycle & quarantine policy
-- ADR-0009: ADR Governance, Redaction, and Formatting Policy
-- Workflows: `~/Library/Services/`
-- Documentation: `~/Library/Services/ADR-0030-Workflows-Documentation.md`
+   - ADR-0009
+   - ADR-0018
+references:
+   - path: "~/Library/Services/"
+   - doc: "~/Library/Services/ADR-0030-Workflows-Documentation.md"
 supersedes: []
 date: 2025-10-20
-decision: Workspace maintenance, ops and procedures will go accompanied by the implementation of compliant macOS Finder workflows including architecture, logic patterns, modification procedures, and maintenance guidelines.
-author: GitHub Copilot (Claude Sonnet 4)
+decision: Workspace maintenance, ops and procedures will be accompanied by compliant macOS Finder workflows including architecture, logic patterns, modification procedures, and maintenance guidelines.
+author: "GitHub Copilot"
 tags: ["implementation", "workflows", "macos", "finder", "adr-0030", "automation", "governance", "documentation"]
-last_updated: 2025-10-20
----
+last_updated: 2025-10-22
 
 # ADR-0030 macOS Finder Workflows - Implementation Guide
 

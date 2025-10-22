@@ -121,6 +121,19 @@ Defines all signal sources, their domain, class, emitter score, confidence, and 
 ## 6. Last updated
 _Last updated: 2025-09-11_
 
+## Token Block
+
+```yaml
+TOKEN_BLOCK:
+	accepted:
+		- ENTITY_SENSOR_LOGIC_CONTRACT_OK
+	requires:
+		- ADR_SCHEMA_V1
+	drift:
+		- DRIFT: inconsistent_logic_paths
+		- DRIFT: registry_patch_missing
+```
+
 
 ## Token Blocks
 

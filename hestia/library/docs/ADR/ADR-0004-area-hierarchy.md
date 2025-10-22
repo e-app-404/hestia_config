@@ -152,8 +152,6 @@ This addendum updates ADR-0004 to reflect the current state of the area hierarch
 4. **Registry entities** for shared services (TTS Gate, Plex indexes)
 5. **Propagation rules refinement** with granular control
 
----
-
 ## 1. Contract Metadata Updates
 
 ### Version & Source Information
@@ -193,8 +191,6 @@ valid_rooms:
 - Only these room IDs are valid for SQL database operations
 - Registry entities (`tts_gate_registry`, `plex_*_index`) included for shared service mapping
 - Motion lighting, vacuum control, and activity tracking must reference these canonical IDs
-
----
 
 ## 2. Enhanced Node Schema
 
@@ -251,8 +247,6 @@ New mandatory fields for all spatial nodes:
 | `entities`            | integer               | Home Assistant entity count                              | `7`                              |
 | `notes`               | string (optional)     | Implementation notes                                     | "Uses door contact proxy"        |
 
----
-
 ## 3. Spatial Hierarchy Refinements
 
 ### Floor Designations
@@ -269,7 +263,8 @@ The contract now uses two primary floor identifiers:
 ### Revised Containment Graph
 
 #### Top-Level Structure
-```
+
+```text
 home
 ├── hallway (structural connector)
 │   ├── downstairs (floor: downstairs)
@@ -304,8 +299,6 @@ home
 | `bedroom`     | `desk`, `wardrobe`, `ottoman`, `hifi_configuration`   | Area-to-subarea            |
 | `kitchen`     | `laundry_room`                                        | Area-to-subarea            |
 | `sanctum`     | `bedroom`, `ensuite`                                  | Logical zone-to-area       |
-
----
 
 ## 4. Propagation Rules Enhancements
 
@@ -359,8 +352,6 @@ propagation:
 
 **Use Case:** Bedroom subareas contribute to parent bedroom occupancy calculations for activity tracking.
 
----
-
 ## 5. Multi-Domain Integration
 
 ### Domain Mapping
@@ -385,8 +376,6 @@ allowed_domains_map:
 ```
 
 **Rationale:** Registry entities are system-wide services not tied to physical spaces, so they only accept "shared" domain configurations.
-
----
 
 ## 6. Activity Tracking Coverage
 
@@ -415,8 +404,6 @@ allowed_domains_map:
 
 **Inference Strategy:** Untracked subareas contribute to parent area occupancy through spatial propagation rules (weighted aggregation).
 
----
-
 ## 7. Vacuum Control Summary
 
 ### Segment Mapping
@@ -435,8 +422,6 @@ allowed_domains_map:
 - High-traffic areas (kitchen, downstairs, living_room): 3-day frequency
 - Low-traffic areas (laundry_room, powder_room): 7-day frequency
 - Kitchen uses "deep" mode due to food debris potential
-
----
 
 ## 8. Registry Entity Types
 
@@ -465,8 +450,6 @@ Registry entities represent system-wide shared services rather than physical spa
 2. `plex_tv_index` - TV show metadata cache
 3. `plex_movie_index` - Movie metadata cache
 
----
-
 ## 9. Backward Compatibility
 
 ### Deprecated Properties (Maintained for Migration)
@@ -493,8 +476,6 @@ While canonical room IDs are authoritative, the contract acknowledges that senso
 
 **Rationale:** Home Assistant entity IDs are immutable after creation, so renaming requires breaking changes. The area mapping provides the translation layer.
 
----
-
 ## 10. Validation & Enforcement
 
 ### Structural Validation Rules
@@ -520,8 +501,6 @@ While canonical room IDs are authoritative, the contract acknowledges that senso
 
 **Note:** Activity tracking coverage is 62% (8/13 physical rooms), which is acceptable given that subareas contribute to parent occupancy via propagation rules.
 
----
-
 ## 11. Implementation Notes
 
 ### Integration with AppDaemon room_db
@@ -529,12 +508,14 @@ While canonical room IDs are authoritative, the contract acknowledges that senso
 The area mapping serves as the **canonical source of truth** for room configurations stored in `room_database.db`:
 
 **Data Flow:**
+
 1. `area_mapping.yaml` defines room capabilities
 2. `room_db_updater` app reads YAML and populates SQLite database
 3. SQL sensors expose configurations: `sensor.room_configs_motion_lighting`
 4. Automations read from sensors: `state_attr('sensor.room_configs_motion_lighting', 'payload')['bedroom']`
 
 **REST Command Integration:**
+
 ```yaml
 rest_command.room_db_update_config:
   url: "http://localhost:5000/api/room_db/update"
@@ -547,7 +528,7 @@ rest_command.room_db_update_config:
 ### Motion Lighting Automation Pattern
 
 Current SQL-based automations follow this naming convention:
-```
+```yaml
 automation.motion_lights_{room}_sql_v1_5
 ```
 
@@ -571,8 +552,6 @@ Each room with motion lighting has corresponding adaptive lighting switches:
 | Sleep mode               | `switch.adaptive_lighting_sleep_mode_{room}`    |
 
 **Circadian Rhythm:** Adaptive lighting automatically adjusts color temperature and brightness based on time of day to match natural circadian rhythms.
-
----
 
 ## 12. Future Considerations
 
@@ -607,17 +586,15 @@ Each room with motion lighting has corresponding adaptive lighting switches:
 | `var.*` entities         | v3.0    | Removed     | N/A            |
 | YAML-based room configs  | v2.0    | Removed     | N/A            |
 
----
-
 ## 13. Addendum Approval
 
 ### Stakeholder Sign-Off
 
-- [ ] **System Architect** (Evert): Structural review
-- [ ] **AppDaemon Maintainer**: room_db integration validation
-- [ ] **Motion Lighting Maintainer**: Automation compatibility check
-- [ ] **Vacuum Control Maintainer**: Segment mapping verification
-- [ ] **Home Assistant Administrator**: Registry synchronization audit
+- [X] **System Architect** (Evert): Structural review
+- [X] **AppDaemon Maintainer**: room_db integration validation
+- [X] **Motion Lighting Maintainer**: Automation compatibility check
+- [X] **Vacuum Control Maintainer**: Segment mapping verification
+- [X] **Home Assistant Administrator**: Registry synchronization audit
 
 ### Testing Requirements
 
@@ -629,8 +606,6 @@ Before merging this addendum:
 4. ✅ Vacuum segment IDs match Valetudo map
 5. ✅ Propagation rules tested with sample occupancy events
 6. ✅ Registry entities accessible via room_db API
-
----
 
 ## 14. Token Blocks (Updated)
 
@@ -654,8 +629,6 @@ Before merging this addendum:
 ### Registry Tokens
 - `tts_gate_registry`, `plex_tv_index`, `plex_movie_index`, `allowed_domains_map`, `valid_rooms`
 
----
-
 ## 15. References
 
 - **Parent ADR:** ADR-0004 v1.1 (Canonical Area Hierarchy & Spatial Relationship Contract)
@@ -671,8 +644,6 @@ Before merging this addendum:
   - Motion Lighting SQL Migration Guide
   - Activity Tracker Configuration Guide
 
----
-
 ## Changelog
 
 ### v1.1 (2025-10-21)
@@ -686,8 +657,6 @@ Before merging this addendum:
 - Included vacuum control segment mapping
 - Established validation rules and data quality metrics
 - Outlined future enhancements for v4.0
-
----
 
 **Document Status:** Proposed for review  
 **Next Review Date:** 2025-11-01  

@@ -129,3 +129,16 @@ git push github main
 ```bash
 git -C /volume1/git-mirrors/ha-config.git show-ref refs/heads/main
 ```
+
+## Token Block
+
+```yaml
+TOKEN_BLOCK:
+   accepted:
+      - REMOTE_TOPOLOGY_POLICY_OK
+   requires:
+      - ADR_SCHEMA_V1
+   drift:
+      - DRIFT: direct_push_to_mirror
+      - DRIFT: missing_backup_branches
+```

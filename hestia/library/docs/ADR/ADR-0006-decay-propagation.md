@@ -50,3 +50,16 @@ This ADR formalizes the canonical rules for decay and propagation logic in Home 
 
 ## 4. Tokens
 - `decay_profile`, `propagation_rules`, `aggregate_method`, `timeout`, `confidence`, `retention`, `signal_type`
+
+## Token Block
+
+```yaml
+TOKEN_BLOCK:
+  accepted:
+    - DECAY_PROPAGATION_CONTRACT_OK
+  requires:
+    - ADR_SCHEMA_V1
+  drift:
+    - DRIFT: invalid_decay_profile
+    - DRIFT: propagation_rules_conflict
+```

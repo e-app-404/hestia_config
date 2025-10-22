@@ -1,6 +1,6 @@
 ---
 id: ADR-0017
-title: "ADR-0017: Fallback local logging path for HA tooling (non-repo, cross-platform)"
+title: "Fallback local logging path for HA tooling (non-repo, cross-platform)"
 slug: fallback-local-logging-path-for-ha-tooling-non-repo-cross-platform
 status: "Proposed"
 related:
@@ -9,7 +9,7 @@ related:
 - ADR-0024
 - ADR-0026
 supersedes: []
-last_updated: '2025-10-15'
+last_updated: '2025-10-22'
 date: '2025-09-25'
 decision: "When ${HA_MOUNT} is not writable, tooling writes to a platform-specific local path outside the repo with strict perms."
 author: "e-app-404"

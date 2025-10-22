@@ -59,5 +59,17 @@ This ADR formalizes the canonical meta and governance patterns, including schema
 ## 4. Tokens
 - `doctrine`, `pattern`, `schema`, `prompt`, `validation_rule`, `meta_instruction`, `index`, `governance_tag`
 
----
 _Last updated: 2025-09-11_
+
+## Token Block
+
+```yaml
+TOKEN_BLOCK:
+  accepted:
+    - META_GOVERNANCE_SCHEMA_OK
+  requires:
+    - ADR_SCHEMA_V1
+  drift:
+    - DRIFT: schema_out_of_sync
+    - DRIFT: governance_tokens_missing
+```

@@ -264,3 +264,16 @@ TOKEN_BLOCK:
 
 ---
 _Last updated: 2025-09-11_
+
+## Token Block
+
+```yaml
+TOKEN_BLOCK:
+  accepted:
+    - TIER_DEFINITIONS_OK
+  requires:
+    - ADR_SCHEMA_V1
+  drift:
+    - DRIFT: missing_tier_assignments
+    - DRIFT: invalid_tier_flow
+```
